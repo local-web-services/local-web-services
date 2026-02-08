@@ -123,6 +123,7 @@ def create_management_router(
     orchestrator: Orchestrator,
     compute_providers: dict[str, ICompute],
     providers: dict[str, Provider] | None = None,
+    resource_metadata: dict[str, Any] | None = None,
 ) -> APIRouter:
     """Create a management API router.
 
@@ -130,12 +131,14 @@ def create_management_router(
         orchestrator: The running ``Orchestrator`` instance.
         compute_providers: Map of function name to ``ICompute`` provider.
         providers: Optional map of all providers for status reporting.
+        resource_metadata: Pre-built resource metadata for the ``/_ldk/resources`` endpoint.
 
     Returns:
         A FastAPI ``APIRouter`` to be included in the main application.
     """
     router = APIRouter(prefix="/_ldk", tags=["management"])
     all_providers = providers or orchestrator._providers
+    _resource_metadata = resource_metadata or {}
 
     @router.post("/invoke")
     async def invoke_function(request: InvokeRequest) -> JSONResponse:
@@ -148,5 +151,9 @@ def create_management_router(
     @router.get("/status")
     async def get_status() -> JSONResponse:
         return await _handle_status(orchestrator, all_providers)
+
+    @router.get("/resources")
+    async def get_resources() -> JSONResponse:
+        return JSONResponse(content=_resource_metadata)
 
     return router

@@ -126,10 +126,10 @@ def test_print_resource_summary_with_local_details() -> None:
         functions = ["processOrder (python3.11)"]
 
         local_details = {
-            "API Route:/orders": "http://localhost:3000/orders GET -> getOrders",
-            "Table:OrdersTable": "http://localhost:3001 | AWS_ENDPOINT_URL_DYNAMODB",
+            "API Route:/orders": "lws apigateway test-invoke-method --resource /orders --http-method GET",
+            "Table:OrdersTable": "lws dynamodb scan --table-name OrdersTable",
             "Function:processOrder": "ldk invoke processOrder",
-            "Queue:MyQueue": "http://localhost:3002 | AWS_ENDPOINT_URL_SQS",
+            "Queue:MyQueue": "lws sqs receive-message --queue-name MyQueue",
         }
 
         print_resource_summary(
@@ -137,10 +137,10 @@ def test_print_resource_summary_with_local_details() -> None:
         )
         output = buf.getvalue()
 
-        assert "http://localhost:3000/orders" in output
-        assert "AWS_ENDPOINT_URL_DYNAMODB" in output
+        assert "lws apigateway test-invoke-method --resource /orders --http-method GET" in output
+        assert "lws dynamodb scan --table-name OrdersTable" in output
         assert "ldk invoke processOrder" in output
-        assert "AWS_ENDPOINT_URL_SQS" in output
+        assert "lws sqs receive-message --queue-name MyQueue" in output
     finally:
         display.console = original
 

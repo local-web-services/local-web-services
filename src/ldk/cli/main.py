@@ -371,50 +371,60 @@ def _build_local_details(app_model: AppModel, port: int) -> dict[str, str]:
     sf_port = port + 6
     cognito_port = port + 7
 
-    # API routes: browsable URL with method and handler
+    # API routes: lws apigateway test-invoke-method snippet
     for api_def in app_model.apis:
         for r in api_def.routes:
             method = r.method
-            handler = r.handler_name or ""
-            url = f"http://localhost:{port}{r.path}"
-            suffix = f" {method} -> {handler}" if handler else f" {method}"
-            details[f"API Route:{r.path}"] = url + suffix
+            details[f"API Route:{r.path}"] = (
+                f"lws apigateway test-invoke-method"
+                f" --resource {r.path} --http-method {method}"
+            )
 
     # DynamoDB tables
     for t in app_model.tables:
         details[f"Table:{t.name}"] = (
-            f"http://localhost:{dynamo_port} | AWS_ENDPOINT_URL_DYNAMODB"
+            f"lws dynamodb scan --table-name {t.name}"
         )
 
     # Lambda functions
     for f in app_model.functions:
         details[f"Function:{f.name}"] = f"ldk invoke {f.name}"
 
-    # SDK-backed services: endpoint URL | env var
-    _SERVICE_DETAILS: list[tuple[str, str, str, int]] = [
-        ("queues", "name", "AWS_ENDPOINT_URL_SQS", sqs_port),
-        ("buckets", "name", "AWS_ENDPOINT_URL_S3", s3_port),
-        ("topics", "name", "AWS_ENDPOINT_URL_SNS", sns_port),
-        ("event_buses", "name", "AWS_ENDPOINT_URL_EVENTS", eb_port),
-        ("state_machines", "name", "AWS_ENDPOINT_URL_STEPFUNCTIONS", sf_port),
-        ("user_pools", "user_pool_name", "AWS_ENDPOINT_URL_COGNITO_IDP", cognito_port),
-    ]
-    _TYPE_LABELS = {
-        "queues": "Queue",
-        "buckets": "Bucket",
-        "topics": "Topic",
-        "event_buses": "Event Bus",
-        "state_machines": "State Machine",
-        "user_pools": "User Pool",
-    }
-    for model_attr, name_attr, env_var, svc_port in _SERVICE_DETAILS:
-        items = getattr(app_model, model_attr, [])
-        label = _TYPE_LABELS[model_attr]
-        for item in items:
-            name = getattr(item, name_attr, str(item))
-            details[f"{label}:{name}"] = (
-                f"http://localhost:{svc_port} | {env_var}"
-            )
+    # SQS queues
+    for q in app_model.queues:
+        details[f"Queue:{q.name}"] = (
+            f"lws sqs receive-message --queue-name {q.name}"
+        )
+
+    # S3 buckets
+    for b in app_model.buckets:
+        details[f"Bucket:{b.name}"] = (
+            f"lws s3api list-objects-v2 --bucket {b.name}"
+        )
+
+    # SNS topics
+    for t in app_model.topics:
+        details[f"Topic:{t.name}"] = (
+            f"lws sns publish --topic-name {t.name} --message '...'"
+        )
+
+    # EventBridge event buses
+    for b in app_model.event_buses:
+        details[f"Event Bus:{b.name}"] = (
+            f"lws events list-rules --event-bus-name {b.name}"
+        )
+
+    # Step Functions state machines
+    for sm in app_model.state_machines:
+        details[f"State Machine:{sm.name}"] = (
+            f"lws stepfunctions start-execution --name {sm.name}"
+        )
+
+    # Cognito user pools
+    for p in app_model.user_pools:
+        details[f"User Pool:{p.user_pool_name}"] = (
+            f"lws cognito-idp sign-up --user-pool-name {p.user_pool_name}"
+        )
 
     return details
 
@@ -494,7 +504,10 @@ async def _run_dev(
     orchestrator = Orchestrator()
 
     # Mount management API
-    _mount_management_api(providers, orchestrator, compute_providers, config.port)
+    resource_metadata = _build_resource_metadata(app_model, config.port)
+    _mount_management_api(
+        providers, orchestrator, compute_providers, config.port, resource_metadata
+    )
 
     # Append non-graph provider keys (HTTP servers, management) to startup order.
     # This must happen after _mount_management_api so the fallback management
@@ -1052,18 +1065,123 @@ class _HttpServiceProvider(Provider):
         return self._server is not None
 
 
+def _build_resource_metadata(app_model: AppModel, port: int) -> dict[str, Any]:
+    """Build resource metadata for the ``/_ldk/resources`` endpoint."""
+    metadata: dict[str, Any] = {"port": port, "services": {}}
+    services = metadata["services"]
+
+    dynamo_port = port + 1
+    sqs_port = port + 2
+    s3_port = port + 3
+    sns_port = port + 4
+    eb_port = port + 5
+    sf_port = port + 6
+    cognito_port = port + 7
+
+    if app_model.apis:
+        routes = []
+        for api_def in app_model.apis:
+            for r in api_def.routes:
+                routes.append({
+                    "name": api_def.name,
+                    "path": r.path,
+                    "method": r.method,
+                    "handler": r.handler_name or "",
+                })
+        services["apigateway"] = {
+            "port": port,
+            "resources": routes,
+        }
+
+    if app_model.tables:
+        services["dynamodb"] = {
+            "port": dynamo_port,
+            "resources": [{"name": t.name} for t in app_model.tables],
+        }
+
+    if app_model.queues:
+        services["sqs"] = {
+            "port": sqs_port,
+            "resources": [
+                {
+                    "name": q.name,
+                    "queue_url": f"http://localhost:{sqs_port}/000000000000/{q.name}",
+                }
+                for q in app_model.queues
+            ],
+        }
+
+    if app_model.buckets:
+        services["s3"] = {
+            "port": s3_port,
+            "resources": [{"name": b.name} for b in app_model.buckets],
+        }
+
+    if app_model.topics:
+        services["sns"] = {
+            "port": sns_port,
+            "resources": [
+                {
+                    "name": t.name,
+                    "arn": t.topic_arn
+                    or f"arn:aws:sns:us-east-1:000000000000:{t.name}",
+                }
+                for t in app_model.topics
+            ],
+        }
+
+    if app_model.event_buses:
+        services["events"] = {
+            "port": eb_port,
+            "resources": [
+                {
+                    "name": b.name,
+                    "arn": b.bus_arn
+                    or f"arn:aws:events:us-east-1:000000000000:event-bus/{b.name}",
+                }
+                for b in app_model.event_buses
+            ],
+        }
+
+    if app_model.state_machines:
+        services["stepfunctions"] = {
+            "port": sf_port,
+            "resources": [
+                {
+                    "name": sm.name,
+                    "arn": f"arn:aws:states:us-east-1:000000000000:stateMachine:{sm.name}",
+                }
+                for sm in app_model.state_machines
+            ],
+        }
+
+    if app_model.user_pools:
+        services["cognito-idp"] = {
+            "port": cognito_port,
+            "resources": [
+                {"name": p.user_pool_name, "user_pool_id": f"us-east-1_{p.logical_id}"}
+                for p in app_model.user_pools
+            ],
+        }
+
+    return metadata
+
+
 def _mount_management_api(
     providers: dict[str, Provider],
     orchestrator: Orchestrator,
     compute_providers: dict[str, ICompute],
     port: int,
+    resource_metadata: dict[str, Any] | None = None,
 ) -> None:
     """Mount the management API router on the API Gateway app or create a standalone one."""
     from fastapi import FastAPI
 
     from ldk.api.management import create_management_router
 
-    mgmt_router = create_management_router(orchestrator, compute_providers, providers)
+    mgmt_router = create_management_router(
+        orchestrator, compute_providers, providers, resource_metadata=resource_metadata
+    )
 
     # Try to find an existing API Gateway provider to mount on
     for key, prov in providers.items():

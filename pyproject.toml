@@ -1,6 +1,6 @@
 [project]
 name = "ldk"
-version = "0.1.0"
+version = "0.1.4"
 description = "Local Development Kit - Run AWS CDK applications locally"
 requires-python = ">=3.11"
 dependencies = [
@@ -13,10 +13,12 @@ dependencies = [
     "rich>=13.0.0",
     "python-multipart>=0.0.9",
     "pyjwt[crypto]>=2.8.0",
+    "httpx>=0.27.0",
 ]
 
 [project.scripts]
 ldk = "ldk.cli.main:app"
+lws = "ldk.cli.lws:app"
 
 [build-system]
 requires = ["hatchling"]
