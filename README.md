@@ -47,7 +47,17 @@ LDK will discover your API routes, Lambda functions, DynamoDB tables, SQS queues
 
 ## Supported Services
 
+Each service has two dimensions of support: **CDK constructs** parsed from your `cdk synth` output, and **API operations** emulated at runtime.
+
 ### DynamoDB
+
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_dynamodb.Table` | tableName, partitionKey, sortKey, globalSecondaryIndexes |
+
+**API Operations:**
 
 | Operation | Supported |
 |-----------|-----------|
@@ -65,9 +75,17 @@ LDK will discover your API routes, Lambda functions, DynamoDB tables, SQS queues
 | TransactGetItems | No |
 | TransactWriteItems | No |
 
-Tables are configured from your CDK template. Backed by SQLite. Supports Global Secondary Indexes, expression attribute names/values, filter expressions, and eventual consistency simulation.
+Backed by SQLite. Supports expression attribute names/values, filter expressions, and eventual consistency simulation.
 
 ### SQS
+
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_sqs.Queue` | queueName, fifo, visibilityTimeout, contentBasedDeduplication, deadLetterQueue |
+
+**API Operations:**
 
 | Operation | Supported |
 |-----------|-----------|
@@ -82,9 +100,17 @@ Tables are configured from your CDK template. Backed by SQLite. Supports Global 
 | PurgeQueue | No |
 | ChangeMessageVisibility | No |
 
-Supports FIFO queues with content-based deduplication, message attributes, visibility timeouts, dead-letter queues, and long polling.
+Supports message attributes, long polling, and dead-letter queue wiring from RedrivePolicy.
 
 ### S3
+
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_s3.Bucket` | bucketName |
+
+**API Operations:**
 
 | Operation | Supported |
 |-----------|-----------|
@@ -102,6 +128,16 @@ Backed by the local filesystem. Supports event notifications (ObjectCreated, Obj
 
 ### SNS
 
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_sns.Topic` | topicName |
+
+`aws_sns.Subscription` is not parsed. Subscriptions are wired at runtime via the API or auto-wired by LDK for Lambda/SQS targets.
+
+**API Operations:**
+
 | Operation | Supported |
 |-----------|-----------|
 | Publish | Yes |
@@ -116,6 +152,15 @@ Backed by the local filesystem. Supports event notifications (ObjectCreated, Obj
 Supports Lambda and SQS subscription protocols, message attributes, and fan-out to multiple subscribers.
 
 ### EventBridge
+
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_events.EventBus` | eventBusName |
+| `aws_events.Rule` | ruleName, eventBus, eventPattern, schedule, targets |
+
+**API Operations:**
 
 | Operation | Supported |
 |-----------|-----------|
@@ -132,6 +177,14 @@ Supports event pattern matching, schedule expressions (rate and cron), Lambda ta
 
 ### Step Functions
 
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_stepfunctions.StateMachine` | stateMachineName, definitionBody, stateMachineType |
+
+**API Operations:**
+
 | Operation | Supported |
 |-----------|-----------|
 | StartExecution | Yes |
@@ -143,9 +196,18 @@ Supports event pattern matching, schedule expressions (rate and cron), Lambda ta
 | GetExecutionHistory | No |
 | CreateStateMachine | No |
 
-State types: Task, Pass, Choice, Wait, Succeed, Fail, Parallel, Map. Supports JSONPath (InputPath, OutputPath, ResultPath), error handling (Retry, Catch), and Standard & Express workflows. State machines are configured from your CDK template.
+State types: Task, Pass, Choice, Wait, Succeed, Fail, Parallel, Map. Supports JSONPath (InputPath, OutputPath, ResultPath), error handling (Retry, Catch), and Standard & Express workflows.
 
 ### Cognito
+
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_cognito.UserPool` | userPoolName, lambdaTriggers (preAuthentication, postConfirmation), passwordPolicy |
+| `aws_cognito.UserPoolClient` | userPool |
+
+**API Operations:**
 
 | Operation | Supported |
 |-----------|-----------|
@@ -158,19 +220,40 @@ State types: Task, Pass, Choice, Wait, Succeed, Fail, Parallel, Map. Supports JS
 | ChangePassword | No |
 | GlobalSignOut | No |
 
-Backed by SQLite. Supports JWT token generation (ID, access, refresh), user attributes, password hashing, and Lambda triggers (PreAuthentication, PostConfirmation).
+Backed by SQLite. Supports JWT token generation (ID, access, refresh), user attributes, and password hashing.
 
 ### Lambda
 
-Runs Lambda functions locally using Python or Node.js runtimes. Supports timeout enforcement, realistic context objects, and environment variable injection. Not an AWS API endpoint — functions are invoked by other services (API Gateway, SNS, EventBridge, Step Functions).
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_lambda.Function` | handler, runtime, code, timeout, memorySize, environment |
+
+Runs functions locally using Python or Node.js runtimes. Supports timeout enforcement, realistic context objects, and environment variable injection. Not an AWS API endpoint — functions are invoked by other services (API Gateway, SNS, EventBridge, Step Functions).
 
 ### API Gateway
 
-HTTP API (V1 proxy integration) that routes requests to local Lambda functions. Supports path parameters, query parameters, and request/response mapping. Configured from your CDK template.
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_apigateway.RestApi` | routes, methods, integrations |
+| `aws_apigatewayv2.HttpApi` | routes, integrations |
+
+HTTP API (V1 proxy integration) that routes requests to local Lambda functions. Supports path parameters, query parameters, and request/response mapping.
 
 ### ECS
 
-Runs ECS services as local subprocesses. Supports health checking, service discovery, file watching with auto-restart, and port mapping. Configured from your CDK template with optional local command overrides via `ldk.local_command` metadata.
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_ecs.TaskDefinition` | containerDefinitions |
+| `aws_ecs.FargateService` / `aws_ecs.Ec2Service` | taskDefinition |
+| `aws_elasticloadbalancingv2.ApplicationListenerRule` | conditions, actions |
+
+Runs services as local subprocesses. Supports health checking, service discovery, file watching with auto-restart, and port mapping. Supports local command overrides via `ldk.local_command` metadata.
 
 ## Development
 
