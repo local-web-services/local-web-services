@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "FullStack.assets": {
+      "type": "aws:cdk:asset-manifest",
+      "properties": {
+        "file": "FullStack.assets.json"
+      }
+    },
+    "FullStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://000000000000/us-east-1",
+      "properties": {
+        "templateFile": "FullStack.template.json"
+      },
+      "dependencies": ["FullStack.assets"]
+    }
+  }
+}
