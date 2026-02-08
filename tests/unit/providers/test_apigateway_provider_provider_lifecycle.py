@@ -44,11 +44,12 @@ def _success_payload(
 def _make_provider(
     routes: list[RouteConfig],
     compute_providers: dict[str, ICompute],
+    port: int = 0,
 ) -> ApiGatewayProvider:
     return ApiGatewayProvider(
         routes=routes,
         compute_providers=compute_providers,
-        port=3000,
+        port=port,
     )
 
 
