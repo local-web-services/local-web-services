@@ -1,6 +1,6 @@
 [project]
 name = "ldk"
-version = "0.1.4"
+version = "0.2.1"
 description = "Local Development Kit - Run AWS CDK applications locally"
 requires-python = ">=3.11"
 dependencies = [
@@ -64,6 +64,9 @@ select = ["E", "F", "I", "W", "UP", "C90"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["ldk"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/ldk/api/gui.py" = ["E501"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10

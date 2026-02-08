@@ -7,12 +7,18 @@ concise, colour-coded single-line summaries using Rich console output.
 
 from __future__ import annotations
 
+import asyncio
 import logging
+from collections import deque
 from datetime import datetime
+from typing import Any
 
 from rich.console import Console
 
 _console = Console(stderr=True)
+
+# Global log handler for WebSocket streaming; set by _run_dev at startup.
+_ws_handler: WebSocketLogHandler | None = None
 
 # Mapping from log level name to Rich style for the level badge
 _LEVEL_STYLES: dict[str, str] = {
@@ -38,6 +44,62 @@ def _status_style(status: str) -> str:
 def _timestamp() -> str:
     """Return the current time as HH:MM:SS."""
     return datetime.now().strftime("%H:%M:%S")
+
+
+class WebSocketLogHandler:
+    """Captures structured log entries and publishes them to WebSocket clients.
+
+    Maintains a bounded deque of recent entries.  On each new entry every
+    connected client queue receives the message.  New clients get the full
+    backlog first.
+    """
+
+    def __init__(self, max_buffer: int = 500) -> None:
+        self._buffer: deque[dict[str, Any]] = deque(maxlen=max_buffer)
+        self._clients: list[asyncio.Queue[dict[str, Any]]] = []
+
+    def emit(self, entry: dict[str, Any]) -> None:
+        """Buffer *entry* and publish to all connected client queues."""
+        self._buffer.append(entry)
+        for q in self._clients:
+            try:
+                q.put_nowait(entry)
+            except asyncio.QueueFull:
+                pass  # drop if client is too slow
+
+    def subscribe(self) -> asyncio.Queue[dict[str, Any]]:
+        """Create a new client queue and return it (caller reads from it)."""
+        q: asyncio.Queue[dict[str, Any]] = asyncio.Queue(maxsize=1000)
+        self._clients.append(q)
+        return q
+
+    def unsubscribe(self, q: asyncio.Queue[dict[str, Any]]) -> None:
+        """Remove a client queue."""
+        try:
+            self._clients.remove(q)
+        except ValueError:
+            pass
+
+    def backlog(self) -> list[dict[str, Any]]:
+        """Return a copy of the current buffer."""
+        return list(self._buffer)
+
+
+def _emit_to_ws(entry: dict[str, Any]) -> None:
+    """Send a structured entry to the global WebSocket handler, if set."""
+    if _ws_handler is not None:
+        _ws_handler.emit(entry)
+
+
+def set_ws_handler(handler: WebSocketLogHandler | None) -> None:
+    """Set the global WebSocket log handler."""
+    global _ws_handler  # noqa: PLW0603
+    _ws_handler = handler
+
+
+def get_ws_handler() -> WebSocketLogHandler | None:
+    """Return the global WebSocket log handler."""
+    return _ws_handler
 
 
 class LdkLogger:
@@ -88,6 +150,20 @@ class LdkLogger:
             f"[bold]{method}[/bold] {path} -> {handler_name} "
             f"({duration_ms:.0f}ms) -> [{style}]{status_code}[/{style}]"
         )
+        _emit_to_ws(
+            {
+                "timestamp": ts,
+                "level": "INFO",
+                "message": (
+                    f"{method} {path} -> {handler_name}" f" ({duration_ms:.0f}ms) -> {status_code}"
+                ),
+                "method": method,
+                "path": path,
+                "handler": handler_name,
+                "duration_ms": duration_ms,
+                "status_code": status_code,
+            }
+        )
 
     def log_sqs_invocation(
         self,
@@ -111,6 +187,21 @@ class LdkLogger:
             f"[bold magenta]SQS[/bold magenta] {queue_name} -> {handler_name} "
             f"({message_count} {msg_word}, {duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
         )
+        _emit_to_ws(
+            {
+                "timestamp": ts,
+                "level": "INFO",
+                "message": (
+                    f"SQS {queue_name} -> {handler_name}"
+                    f" ({message_count} {msg_word}, {duration_ms:.0f}ms) -> {status}"
+                ),
+                "service": "sqs",
+                "queue": queue_name,
+                "handler": handler_name,
+                "duration_ms": duration_ms,
+                "status": status,
+            }
+        )
 
     def log_dynamodb_operation(
         self,
@@ -132,6 +223,18 @@ class LdkLogger:
             f"[bold blue]DynamoDB[/bold blue] {operation} {table_name} "
             f"({duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
         )
+        _emit_to_ws(
+            {
+                "timestamp": ts,
+                "level": "INFO",
+                "message": f"DynamoDB {operation} {table_name} ({duration_ms:.0f}ms) -> {status}",
+                "service": "dynamodb",
+                "operation": operation,
+                "table": table_name,
+                "duration_ms": duration_ms,
+                "status": status,
+            }
+        )
 
     # ------------------------------------------------------------------
     # Standard log methods
@@ -143,6 +246,7 @@ class LdkLogger:
             formatted = message % args if args else message
             ts = _timestamp()
             _console.print(f"[dim][{ts}] DEBUG {self._logger.name}: {formatted}[/dim]")
+            _emit_to_ws({"timestamp": ts, "level": "DEBUG", "message": formatted})
 
     def info(self, message: str, *args: object) -> None:
         """Log an info message."""
@@ -150,6 +254,7 @@ class LdkLogger:
             formatted = message % args if args else message
             ts = _timestamp()
             _console.print(f"[dim][{ts}][/dim] [cyan]INFO[/cyan] {self._logger.name}: {formatted}")
+            _emit_to_ws({"timestamp": ts, "level": "INFO", "message": formatted})
 
     def warning(self, message: str, *args: object) -> None:
         """Log a warning message."""
@@ -159,6 +264,7 @@ class LdkLogger:
             _console.print(
                 f"[dim][{ts}][/dim] [yellow]WARN[/yellow] {self._logger.name}: {formatted}"
             )
+            _emit_to_ws({"timestamp": ts, "level": "WARNING", "message": formatted})
 
     def error(self, message: str, *args: object) -> None:
         """Log an error message."""
@@ -168,6 +274,7 @@ class LdkLogger:
             _console.print(
                 f"[dim][{ts}][/dim] [bold red]ERROR[/bold red] {self._logger.name}: {formatted}"
             )
+            _emit_to_ws({"timestamp": ts, "level": "ERROR", "message": formatted})
 
     def is_enabled_for(self, level: int) -> bool:
         """Check if the logger is enabled for the given level."""

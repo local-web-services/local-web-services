@@ -1,8 +1,8 @@
 """Management API for LDK.
 
 Provides a FastAPI ``APIRouter`` mounted at ``/_ldk/`` that exposes endpoints
-for invoking Lambda functions, resetting local state, and querying provider
-status -- all without restarting the ``ldk dev`` process.
+for invoking Lambda functions, resetting local state, querying provider
+status, serving the web dashboard, and streaming logs via WebSocket.
 """
 
 from __future__ import annotations
@@ -10,13 +10,15 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+import httpx
+from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
+from ldk.api.gui import get_dashboard_html
 from ldk.interfaces import ICompute, InvocationResult, LambdaContext
 from ldk.interfaces.provider import Provider
-from ldk.logging.logger import get_logger
+from ldk.logging.logger import get_logger, get_ws_handler
 from ldk.runtime.orchestrator import Orchestrator
 
 _logger = get_logger("ldk.management")
@@ -119,6 +121,55 @@ async def _handle_status(
     )
 
 
+async def _handle_ws_logs(websocket: WebSocket) -> None:
+    """Stream log entries to a WebSocket client."""
+    await websocket.accept()
+    handler = get_ws_handler()
+    if handler is None:
+        await websocket.close()
+        return
+    for entry in handler.backlog():
+        await websocket.send_json(entry)
+    q = handler.subscribe()
+    try:
+        while True:
+            entry = await q.get()
+            await websocket.send_json(entry)
+    except WebSocketDisconnect:
+        pass
+    finally:
+        handler.unsubscribe(q)
+
+
+async def _handle_service_proxy(request: Request) -> JSONResponse:
+    """Proxy requests to local service ports (avoids browser CORS)."""
+    body = await request.json()
+    url = body.get("url", "")
+    if not url.startswith("http://localhost:"):
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Only localhost URLs are allowed"},
+        )
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.request(
+                method=body.get("method", "GET"),
+                url=url,
+                headers=body.get("headers", {}),
+                content=body.get("body", ""),
+                timeout=10.0,
+            )
+        return JSONResponse(
+            content={
+                "status": resp.status_code,
+                "headers": dict(resp.headers),
+                "body": resp.text,
+            }
+        )
+    except Exception as exc:
+        return JSONResponse(status_code=502, content={"error": str(exc)})
+
+
 def create_management_router(
     orchestrator: Orchestrator,
     compute_providers: dict[str, ICompute],
@@ -155,5 +206,17 @@ def create_management_router(
     @router.get("/resources")
     async def get_resources() -> JSONResponse:
         return JSONResponse(content=_resource_metadata)
+
+    @router.get("/gui")
+    async def dashboard() -> HTMLResponse:
+        return get_dashboard_html()
+
+    @router.websocket("/ws/logs")
+    async def ws_logs(websocket: WebSocket) -> None:
+        await _handle_ws_logs(websocket)
+
+    @router.post("/service-proxy")
+    async def service_proxy(request: Request) -> JSONResponse:
+        return await _handle_service_proxy(request)
 
     return router

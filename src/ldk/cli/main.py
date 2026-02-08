@@ -473,6 +473,12 @@ async def _run_dev(
 
     orchestrator = Orchestrator()
 
+    # Enable WebSocket log streaming
+    from ldk.logging.logger import WebSocketLogHandler, set_ws_handler
+
+    ws_log_handler = WebSocketLogHandler()
+    set_ws_handler(ws_log_handler)
+
     # Mount management API
     resource_metadata = _build_resource_metadata(app_model, config.port)
     _mount_management_api(
@@ -493,6 +499,7 @@ async def _run_dev(
         raise typer.Exit(1)
 
     _display_summary(app_model, config.port)
+    typer.echo(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
 
     watcher = FileWatcher(
         watch_dir=project_dir,
@@ -506,6 +513,7 @@ async def _run_dev(
         await orchestrator.wait_for_shutdown()
     finally:
         watcher.stop()
+        set_ws_handler(None)
         await orchestrator.stop()
         typer.echo("Goodbye")
 
