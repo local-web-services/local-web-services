@@ -1,0 +1,29 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "create-handler-asset": {
+      "source": {
+        "path": "asset.create-handler-asset",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-assets",
+          "objectKey": "create-handler-asset.zip"
+        }
+      }
+    },
+    "get-handler-asset": {
+      "source": {
+        "path": "asset.get-handler-asset",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-assets",
+          "objectKey": "get-handler-asset.zip"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "create-order-handler": {
+      "source": {
+        "path": "asset.create-order-handler",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-assets",
+          "objectKey": "create-order-handler.zip"
+        }
+      }
+    },
+    "get-order-handler": {
+      "source": {
+        "path": "asset.get-order-handler",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-assets",
+          "objectKey": "get-order-handler.zip"
+        }
+      }
+    },
+    "process-order-handler": {
+      "source": {
+        "path": "asset.process-order-handler",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-assets",
+          "objectKey": "process-order-handler.zip"
+        }
+      }
+    }
+  }
+}

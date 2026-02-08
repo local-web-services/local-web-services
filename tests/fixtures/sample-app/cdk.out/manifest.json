@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "SampleStack.assets": {
+      "type": "aws:cdk:asset-manifest",
+      "properties": {
+        "file": "SampleStack.assets.json"
+      }
+    },
+    "SampleStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://000000000000/us-east-1",
+      "properties": {
+        "templateFile": "SampleStack.template.json"
+      },
+      "dependencies": ["SampleStack.assets"]
+    }
+  }
+}

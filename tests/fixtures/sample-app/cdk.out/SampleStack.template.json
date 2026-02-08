@@ -1,0 +1,77 @@
+{
+  "Resources": {
+    "ItemsTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "Items",
+        "KeySchema": [
+          { "AttributeName": "id", "KeyType": "HASH" }
+        ],
+        "AttributeDefinitions": [
+          { "AttributeName": "id", "AttributeType": "S" }
+        ]
+      }
+    },
+    "CreateItemFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "CreateItemFunction",
+        "Handler": "index.createItem",
+        "Runtime": "nodejs20.x",
+        "Code": {
+          "S3Bucket": "cdk-assets",
+          "S3Key": "create-handler-asset.zip"
+        },
+        "Timeout": 30,
+        "MemorySize": 128,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Items"
+          }
+        }
+      }
+    },
+    "GetItemFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "GetItemFunction",
+        "Handler": "index.getItem",
+        "Runtime": "nodejs20.x",
+        "Code": {
+          "S3Bucket": "cdk-assets",
+          "S3Key": "get-handler-asset.zip"
+        },
+        "Timeout": 30,
+        "MemorySize": 128,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Items"
+          }
+        }
+      }
+    },
+    "ApiGateway": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "ItemsApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "PostItemsRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": { "Ref": "ApiGateway" },
+        "RouteKey": "POST /items",
+        "Target": { "Fn::Join": ["/", ["integrations", { "Ref": "CreateItemFunction" }]] }
+      }
+    },
+    "GetItemsRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": { "Ref": "ApiGateway" },
+        "RouteKey": "GET /items/{id}",
+        "Target": { "Fn::Join": ["/", ["integrations", { "Ref": "GetItemFunction" }]] }
+      }
+    }
+  }
+}

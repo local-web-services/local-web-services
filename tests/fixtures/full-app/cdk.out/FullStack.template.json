@@ -1,0 +1,134 @@
+{
+  "Resources": {
+    "OrdersTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "Orders",
+        "KeySchema": [
+          { "AttributeName": "orderId", "KeyType": "HASH" }
+        ],
+        "AttributeDefinitions": [
+          { "AttributeName": "orderId", "AttributeType": "S" }
+        ]
+      }
+    },
+    "OrderQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "order-processing-queue",
+        "VisibilityTimeout": 60
+      }
+    },
+    "OrderDeadLetterQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "order-dlq"
+      }
+    },
+    "OrderAttachments": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "order-attachments"
+      }
+    },
+    "OrderNotifications": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "order-notifications"
+      }
+    },
+    "CreateOrderFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "CreateOrderFunction",
+        "Handler": "index.handler",
+        "Runtime": "nodejs20.x",
+        "Code": {
+          "S3Bucket": "cdk-assets",
+          "S3Key": "create-order-handler.zip"
+        },
+        "Timeout": 30,
+        "MemorySize": 256,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Orders",
+            "QUEUE_URL": "http://localhost:3002/000000000000/order-processing-queue",
+            "BUCKET_NAME": "order-attachments"
+          }
+        }
+      }
+    },
+    "GetOrderFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "GetOrderFunction",
+        "Handler": "index.handler",
+        "Runtime": "nodejs20.x",
+        "Code": {
+          "S3Bucket": "cdk-assets",
+          "S3Key": "get-order-handler.zip"
+        },
+        "Timeout": 30,
+        "MemorySize": 128,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Orders"
+          }
+        }
+      }
+    },
+    "ProcessOrderFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "ProcessOrderFunction",
+        "Handler": "index.handler",
+        "Runtime": "nodejs20.x",
+        "Code": {
+          "S3Bucket": "cdk-assets",
+          "S3Key": "process-order-handler.zip"
+        },
+        "Timeout": 60,
+        "MemorySize": 256,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Orders",
+            "TOPIC_ARN": "arn:aws:sns:us-east-1:000000000000:order-notifications",
+            "BUCKET_NAME": "order-attachments"
+          }
+        }
+      }
+    },
+    "OrderWorkflow": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "StateMachineName": "OrderWorkflow",
+        "StateMachineType": "STANDARD",
+        "RoleArn": "arn:aws:iam::000000000000:role/sfn-role",
+        "DefinitionString": "{\"Comment\":\"Order processing workflow\",\"StartAt\":\"ProcessOrder\",\"States\":{\"ProcessOrder\":{\"Type\":\"Task\",\"Resource\":\"arn:aws:lambda:us-east-1:000000000000:function:ProcessOrderFunction\",\"Next\":\"OrderComplete\"},\"OrderComplete\":{\"Type\":\"Succeed\"}}}"
+      }
+    },
+    "ApiGateway": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "OrdersApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "PostOrdersRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": { "Ref": "ApiGateway" },
+        "RouteKey": "POST /orders",
+        "Target": { "Fn::Join": ["/", ["integrations", { "Ref": "CreateOrderFunction" }]] }
+      }
+    },
+    "GetOrderRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": { "Ref": "ApiGateway" },
+        "RouteKey": "GET /orders/{id}",
+        "Target": { "Fn::Join": ["/", ["integrations", { "Ref": "GetOrderFunction" }]] }
+      }
+    }
+  }
+}

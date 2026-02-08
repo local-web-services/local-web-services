@@ -1,0 +1,15 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "FullStack": {
+        "id": "FullStack",
+        "path": "FullStack",
+        "constructInfo": { "fqn": "aws-cdk-lib.Stack" }
+      }
+    },
+    "constructInfo": { "fqn": "aws-cdk-lib.App" }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "SampleStack": {
+        "id": "SampleStack",
+        "path": "SampleStack",
+        "children": {
+          "ItemsTable": {
+            "id": "ItemsTable",
+            "path": "SampleStack/ItemsTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SampleStack/ItemsTable/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table"
+            }
+          },
+          "CreateItemFunction": {
+            "id": "CreateItemFunction",
+            "path": "SampleStack/CreateItemFunction",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SampleStack/CreateItemFunction/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function"
+            }
+          },
+          "GetItemFunction": {
+            "id": "GetItemFunction",
+            "path": "SampleStack/GetItemFunction",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SampleStack/GetItemFunction/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App"
+    }
+  }
+}
