@@ -1,0 +1,41 @@
+"""Integration tests for orchestrator start/stop."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from ldk.cli.main import _create_providers
+from ldk.config.loader import LdkConfig
+from ldk.graph.builder import build_graph
+from ldk.parser.assembly import parse_assembly
+from ldk.runtime.orchestrator import Orchestrator
+
+FIXTURES_DIR = Path(__file__).parent.parent / "fixtures" / "sample-app"
+CDK_OUT = FIXTURES_DIR / "cdk.out"
+
+
+class TestOrchestratorIntegration:
+    """Test orchestrator start/stop with real provider instances."""
+
+    async def test_start_and_stop_dynamo_provider(self, tmp_path):
+        app_model = parse_assembly(CDK_OUT)
+        graph = build_graph(app_model)
+        config = LdkConfig(port=9200)
+
+        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+
+        # Only keep the dynamo provider (not HTTP or Lambda, which need node/port)
+        dynamo_providers = {k: v for k, v in providers.items() if v.name == "dynamodb"}
+        if not dynamo_providers:
+            pytest.skip("No DynamoDB provider created")
+
+        orchestrator = Orchestrator()
+        startup_order = list(dynamo_providers.keys())
+
+        await orchestrator.start(dynamo_providers, startup_order)
+        assert orchestrator.running
+
+        await orchestrator.stop()
+        assert not orchestrator.running

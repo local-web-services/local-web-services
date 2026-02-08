@@ -1,0 +1,137 @@
+"""Tests for API Gateway provider (P0-17)."""
+
+from __future__ import annotations
+
+from unittest.mock import AsyncMock
+
+import httpx
+import pytest
+
+from ldk.interfaces import ICompute, InvocationResult
+from ldk.providers.apigateway.provider import (
+    ApiGatewayProvider,
+    RouteConfig,
+)
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a mock ICompute whose ``invoke`` resolves to the given payload/error."""
+    mock = AsyncMock(spec=ICompute)
+    mock.invoke.return_value = InvocationResult(
+        payload=payload,
+        error=error,
+        duration_ms=1.0,
+        request_id="test-request-id",
+    )
+    return mock
+
+
+def _success_payload(
+    status_code: int = 200,
+    body: str = '{"ok": true}',
+    headers: dict | None = None,
+) -> dict:
+    result: dict = {"statusCode": status_code, "body": body}
+    if headers is not None:
+        result["headers"] = headers
+    return result
+
+
+def _make_provider(
+    routes: list[RouteConfig],
+    compute_providers: dict[str, ICompute],
+) -> ApiGatewayProvider:
+    return ApiGatewayProvider(
+        routes=routes,
+        compute_providers=compute_providers,
+        port=3000,
+    )
+
+
+def _client(provider: ApiGatewayProvider) -> httpx.AsyncClient:
+    """Create an httpx.AsyncClient wired to the provider's ASGI app."""
+    transport = httpx.ASGITransport(app=provider.app)  # type: ignore[arg-type]
+    return httpx.AsyncClient(transport=transport, base_url="http://testserver")
+
+
+# ---------------------------------------------------------------------------
+# Tests: GET request transforms to correct proxy event
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Tests: POST request with JSON body
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Tests: Path parameters extraction
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Tests: Query string parameters extraction
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Tests: Lambda response transforms to HTTP response
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Tests: 500 response on Lambda invocation error
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Tests: build_http_response helper directly
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Tests: Provider lifecycle (name, health_check)
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Tests: LambdaContext passed to compute
+# ---------------------------------------------------------------------------
+
+
+class TestQueryStringParameterExtraction:
+    """Query string parameters are extracted into the proxy event."""
+
+    @pytest.mark.asyncio
+    async def test_query_string_parameters_extracted(self) -> None:
+        mock_compute = _make_compute_mock(payload=_success_payload())
+        provider = _make_provider(
+            routes=[RouteConfig(method="GET", path="/search", handler_name="search")],
+            compute_providers={"search": mock_compute},
+        )
+
+        async with _client(provider) as client:
+            response = await client.get("/search?q=hello&page=2")
+
+        assert response.status_code == 200
+
+        event: dict = mock_compute.invoke.call_args[0][0]
+        assert event["queryStringParameters"] == {"q": "hello", "page": "2"}
+
+    @pytest.mark.asyncio
+    async def test_no_query_string_gives_none(self) -> None:
+        mock_compute = _make_compute_mock(payload=_success_payload())
+        provider = _make_provider(
+            routes=[RouteConfig(method="GET", path="/items", handler_name="list-items")],
+            compute_providers={"list-items": mock_compute},
+        )
+
+        async with _client(provider) as client:
+            await client.get("/items")
+
+        event: dict = mock_compute.invoke.call_args[0][0]
+        assert event["queryStringParameters"] is None
