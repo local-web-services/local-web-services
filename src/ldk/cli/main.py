@@ -817,26 +817,26 @@ def _wire_remaining_providers(
         sns_provider.set_compute_providers(compute_providers)
         if sqs_provider:
             sns_provider.set_queue_provider(sqs_provider)
-        local_endpoints["sns"] = f"http://localhost:{sns_port}"
+        local_endpoints["sns"] = f"http://127.0.0.1:{sns_port}"
 
     eb_provider, eb_providers = _create_eventbridge_providers(app_model, graph)
     providers.update(eb_providers)
     if eb_provider:
         eb_provider.set_compute_providers(compute_providers)
-        local_endpoints["events"] = f"http://localhost:{eb_port}"
+        local_endpoints["events"] = f"http://127.0.0.1:{eb_port}"
 
     sf_provider, sf_providers = _create_stepfunctions_providers(app_model, graph)
     providers.update(sf_providers)
     if sf_provider:
         sf_provider.set_compute_providers(compute_providers)
-        local_endpoints["stepfunctions"] = f"http://localhost:{sf_port}"
+        local_endpoints["stepfunctions"] = f"http://127.0.0.1:{sf_port}"
 
     cognito_provider, cognito_providers = _create_cognito_providers(
         app_model, data_dir, compute_providers
     )
     providers.update(cognito_providers)
     if cognito_provider:
-        local_endpoints["cognito-idp"] = f"http://localhost:{cognito_port}"
+        local_endpoints["cognito-idp"] = f"http://127.0.0.1:{cognito_port}"
 
     api_provider, api_providers = _create_api_providers(
         app_model, graph, compute_providers, api_port
@@ -881,11 +881,11 @@ def _create_providers(
     # 2. Build local_endpoints for SDK env redirection
     local_endpoints: dict[str, str] = {}
     if dynamo_provider:
-        local_endpoints["dynamodb"] = f"http://localhost:{dynamo_port}"
+        local_endpoints["dynamodb"] = f"http://127.0.0.1:{dynamo_port}"
     if sqs_provider:
-        local_endpoints["sqs"] = f"http://localhost:{sqs_port}"
+        local_endpoints["sqs"] = f"http://127.0.0.1:{sqs_port}"
     if s3_provider:
-        local_endpoints["s3"] = f"http://localhost:{s3_port}"
+        local_endpoints["s3"] = f"http://127.0.0.1:{s3_port}"
 
     # 3. Compute (Lambda — Node.js + Python)
     sdk_env = build_sdk_env(local_endpoints)

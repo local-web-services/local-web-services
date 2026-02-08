@@ -70,6 +70,21 @@ class LambdaComputeBridge:
 
     async def invoke_function(self, resource_arn: str, payload: Any) -> Any:
         """Invoke a Lambda function by resolving its resource ARN."""
+        # Handle SFN service integration: arn:...:states:::lambda:invoke
+        if "lambda:invoke" in resource_arn and isinstance(payload, dict):
+            fn_ref = payload.get("FunctionName", "")
+            actual_payload = payload.get("Payload", payload)
+            function_name = _extract_function_name(fn_ref)
+            compute = self._providers.get(function_name)
+            if compute is None:
+                compute = _find_provider_by_arn(self._providers, fn_ref)
+            if compute is None:
+                raise RuntimeError(f"No compute provider for: {fn_ref}")
+            result = await _invoke_compute(compute, function_name, actual_payload)
+            inner = _process_invocation_result(result, resource_arn)
+            # Wrap in service integration envelope (matches real AWS behaviour)
+            return {"Payload": inner, "StatusCode": 200}
+
         function_name = _extract_function_name(resource_arn)
         compute = self._providers.get(function_name)
         if compute is None:
@@ -289,6 +304,9 @@ def _extract_function_name(resource_arn: str) -> str:
     """Extract the function name from a Lambda ARN or resource string."""
     if ":function:" in resource_arn:
         return resource_arn.split(":function:")[-1].split(":")[0]
+    # LDK-style ARN: arn:ldk:lambda:local:000000000000:function/Name
+    if "function/" in resource_arn:
+        return resource_arn.split("function/")[-1].split(":")[0]
     # For simple names / aliases
     return resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
 

@@ -419,6 +419,21 @@ class SqliteDynamoProvider(IKeyValueStore):
         self._version_store = _VersionStore(delay_ms=consistency_delay_ms)
         self._stream_dispatcher = stream_dispatcher
 
+    def _resolve_table_name(self, table_name: str) -> str:
+        """Normalize a table name that may be an ARN or contain a logical ID."""
+        if table_name in self._tables:
+            return table_name
+        # Handle ARN format: arn:...:table/TableName or arn:...:table/LogicalId
+        if "/" in table_name:
+            suffix = table_name.rsplit("/", 1)[-1]
+            if suffix in self._tables:
+                return suffix
+        # Try matching as a substring (logical ID in ARN)
+        for known_name in self._tables:
+            if known_name in table_name:
+                return known_name
+        return table_name
+
     # -- Provider lifecycle ---------------------------------------------------
 
     @property
@@ -473,6 +488,7 @@ class SqliteDynamoProvider(IKeyValueStore):
     # -- CRUD -----------------------------------------------------------------
 
     async def put_item(self, table_name: str, item: dict) -> None:
+        table_name = self._resolve_table_name(table_name)
         config = self._tables[table_name]
         conn = self._connections[table_name]
 
@@ -507,6 +523,7 @@ class SqliteDynamoProvider(IKeyValueStore):
         key: dict,
         consistent_read: bool = True,
     ) -> dict | None:
+        table_name = self._resolve_table_name(table_name)
         config = self._tables[table_name]
         conn = self._connections[table_name]
 
@@ -525,6 +542,7 @@ class SqliteDynamoProvider(IKeyValueStore):
         return json.loads(result_json)
 
     async def delete_item(self, table_name: str, key: dict) -> None:
+        table_name = self._resolve_table_name(table_name)
         config = self._tables[table_name]
         conn = self._connections[table_name]
 
@@ -583,6 +601,7 @@ class SqliteDynamoProvider(IKeyValueStore):
         index_name: str | None = None,
         filter_expression: str | None = None,
     ) -> list[dict]:
+        table_name = self._resolve_table_name(table_name)
         conn = self._connections[table_name]
         table = f"gsi_{index_name}" if index_name else "items"
 
@@ -612,6 +631,7 @@ class SqliteDynamoProvider(IKeyValueStore):
         expression_values: dict | None = None,
         expression_names: dict | None = None,
     ) -> list[dict]:
+        table_name = self._resolve_table_name(table_name)
         conn = self._connections[table_name]
         cursor = await conn.execute("SELECT item_json FROM items")
         rows = await cursor.fetchall()
