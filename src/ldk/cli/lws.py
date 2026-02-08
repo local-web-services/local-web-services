@@ -67,11 +67,13 @@ async def _run_status(port: int, *, json_output: bool = False) -> None:
     ]
 
     if json_output:
-        output_json({
-            "running": status_data.get("running", False),
-            "providers": providers,
-            "services": service_list,
-        })
+        output_json(
+            {
+                "running": status_data.get("running", False),
+                "providers": providers,
+                "services": service_list,
+            }
+        )
         return
 
     from rich.console import Console

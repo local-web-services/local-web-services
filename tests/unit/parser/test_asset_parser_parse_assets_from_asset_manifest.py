@@ -115,3 +115,35 @@ class TestParseAssetsFromAssetManifest:
 
         result = parse_assets(cdk_out)
         assert "docker1" in result
+
+    def test_cdk_asset_manifest_type(self, cdk_out: Path):
+        """Modern CDK emits ``cdk:asset-manifest`` instead of ``aws:cdk:asset-manifest``."""
+        asset_dir = cdk_out / "asset.modern1"
+        asset_dir.mkdir()
+        (asset_dir / "index.js").write_text("exports.handler = () => {}")
+
+        asset_manifest = {
+            "version": "36.0.0",
+            "files": {
+                "modern1": {
+                    "source": {"path": "asset.modern1", "packaging": "zip"},
+                    "destinations": {},
+                }
+            },
+        }
+        _write_json(cdk_out / "MyStack.assets.json", asset_manifest)
+
+        manifest = {
+            "version": "36.0.0",
+            "artifacts": {
+                "MyStack.assets": {
+                    "type": "cdk:asset-manifest",
+                    "properties": {"file": "MyStack.assets.json"},
+                }
+            },
+        }
+        _write_json(cdk_out / "manifest.json", manifest)
+
+        result = parse_assets(cdk_out)
+        assert "modern1" in result
+        assert result["modern1"] == (cdk_out / "asset.modern1").resolve()

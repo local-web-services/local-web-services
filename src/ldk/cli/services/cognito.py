@@ -29,9 +29,7 @@ def sign_up(
     asyncio.run(_sign_up(user_pool_name, username, password, port))
 
 
-async def _sign_up(
-    user_pool_name: str, username: str, password: str, port: int
-) -> None:
+async def _sign_up(user_pool_name: str, username: str, password: str, port: int) -> None:
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, user_pool_name)
@@ -92,9 +90,7 @@ def initiate_auth(
     asyncio.run(_initiate_auth(user_pool_name, username, password, port))
 
 
-async def _initiate_auth(
-    user_pool_name: str, username: str, password: str, port: int
-) -> None:
+async def _initiate_auth(user_pool_name: str, username: str, password: str, port: int) -> None:
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, user_pool_name)

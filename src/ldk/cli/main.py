@@ -362,71 +362,41 @@ def _build_local_details(app_model: AppModel, port: int) -> dict[str, str]:
     """Build a mapping of ``"Type:Name"`` to local detail strings."""
     details: dict[str, str] = {}
 
-    # Port allocation mirrors _create_providers
-    dynamo_port = port + 1
-    sqs_port = port + 2
-    s3_port = port + 3
-    sns_port = port + 4
-    eb_port = port + 5
-    sf_port = port + 6
-    cognito_port = port + 7
+    _add_api_details(details, app_model)
+    _add_resource_details(details, app_model)
+    return details
 
-    # API routes: lws apigateway test-invoke-method snippet
+
+def _add_api_details(details: dict[str, str], app_model: AppModel) -> None:
+    """Add API route and Lambda function details."""
     for api_def in app_model.apis:
         for r in api_def.routes:
-            method = r.method
             details[f"API Route:{r.path}"] = (
                 f"lws apigateway test-invoke-method"
-                f" --resource {r.path} --http-method {method}"
+                f" --resource {r.path} --http-method {r.method}"
             )
-
-    # DynamoDB tables
-    for t in app_model.tables:
-        details[f"Table:{t.name}"] = (
-            f"lws dynamodb scan --table-name {t.name}"
-        )
-
-    # Lambda functions
     for f in app_model.functions:
         details[f"Function:{f.name}"] = f"ldk invoke {f.name}"
 
-    # SQS queues
+
+def _add_resource_details(details: dict[str, str], app_model: AppModel) -> None:
+    """Add service resource details (DynamoDB, SQS, S3, etc.)."""
+    for t in app_model.tables:
+        details[f"Table:{t.name}"] = f"lws dynamodb scan --table-name {t.name}"
     for q in app_model.queues:
-        details[f"Queue:{q.name}"] = (
-            f"lws sqs receive-message --queue-name {q.name}"
-        )
-
-    # S3 buckets
+        details[f"Queue:{q.name}"] = f"lws sqs receive-message --queue-name {q.name}"
     for b in app_model.buckets:
-        details[f"Bucket:{b.name}"] = (
-            f"lws s3api list-objects-v2 --bucket {b.name}"
-        )
-
-    # SNS topics
+        details[f"Bucket:{b.name}"] = f"lws s3api list-objects-v2 --bucket {b.name}"
     for t in app_model.topics:
-        details[f"Topic:{t.name}"] = (
-            f"lws sns publish --topic-name {t.name} --message '...'"
-        )
-
-    # EventBridge event buses
+        details[f"Topic:{t.name}"] = f"lws sns publish --topic-name {t.name} --message '...'"
     for b in app_model.event_buses:
-        details[f"Event Bus:{b.name}"] = (
-            f"lws events list-rules --event-bus-name {b.name}"
-        )
-
-    # Step Functions state machines
+        details[f"Event Bus:{b.name}"] = f"lws events list-rules --event-bus-name {b.name}"
     for sm in app_model.state_machines:
-        details[f"State Machine:{sm.name}"] = (
-            f"lws stepfunctions start-execution --name {sm.name}"
-        )
-
-    # Cognito user pools
+        details[f"State Machine:{sm.name}"] = f"lws stepfunctions start-execution --name {sm.name}"
     for p in app_model.user_pools:
         details[f"User Pool:{p.user_pool_name}"] = (
             f"lws cognito-idp sign-up --user-pool-name {p.user_pool_name}"
         )
-
-    return details
 
 
 def _display_summary(app_model: AppModel, port: int) -> None:
@@ -1069,37 +1039,55 @@ def _build_resource_metadata(app_model: AppModel, port: int) -> dict[str, Any]:
     """Build resource metadata for the ``/_ldk/resources`` endpoint."""
     metadata: dict[str, Any] = {"port": port, "services": {}}
     services = metadata["services"]
+    ports = _service_ports(port)
 
-    dynamo_port = port + 1
-    sqs_port = port + 2
-    s3_port = port + 3
-    sns_port = port + 4
-    eb_port = port + 5
-    sf_port = port + 6
-    cognito_port = port + 7
+    _add_api_metadata(services, app_model, port)
+    _add_service_metadata(services, app_model, ports)
+    return metadata
 
-    if app_model.apis:
-        routes = []
-        for api_def in app_model.apis:
-            for r in api_def.routes:
-                routes.append({
+
+def _service_ports(port: int) -> dict[str, int]:
+    """Return a mapping of service name to port number."""
+    return {
+        "dynamodb": port + 1,
+        "sqs": port + 2,
+        "s3": port + 3,
+        "sns": port + 4,
+        "events": port + 5,
+        "stepfunctions": port + 6,
+        "cognito-idp": port + 7,
+    }
+
+
+def _add_api_metadata(services: dict[str, Any], app_model: AppModel, port: int) -> None:
+    """Add API Gateway metadata to services."""
+    if not app_model.apis:
+        return
+    routes = []
+    for api_def in app_model.apis:
+        for r in api_def.routes:
+            routes.append(
+                {
                     "name": api_def.name,
                     "path": r.path,
                     "method": r.method,
                     "handler": r.handler_name or "",
-                })
-        services["apigateway"] = {
-            "port": port,
-            "resources": routes,
-        }
+                }
+            )
+    services["apigateway"] = {"port": port, "resources": routes}
 
+
+def _add_service_metadata(
+    services: dict[str, Any], app_model: AppModel, ports: dict[str, int]
+) -> None:
+    """Add non-API service metadata to services."""
     if app_model.tables:
         services["dynamodb"] = {
-            "port": dynamo_port,
+            "port": ports["dynamodb"],
             "resources": [{"name": t.name} for t in app_model.tables],
         }
-
     if app_model.queues:
+        sqs_port = ports["sqs"]
         services["sqs"] = {
             "port": sqs_port,
             "resources": [
@@ -1110,42 +1098,36 @@ def _build_resource_metadata(app_model: AppModel, port: int) -> dict[str, Any]:
                 for q in app_model.queues
             ],
         }
-
     if app_model.buckets:
         services["s3"] = {
-            "port": s3_port,
+            "port": ports["s3"],
             "resources": [{"name": b.name} for b in app_model.buckets],
         }
-
     if app_model.topics:
         services["sns"] = {
-            "port": sns_port,
+            "port": ports["sns"],
             "resources": [
                 {
                     "name": t.name,
-                    "arn": t.topic_arn
-                    or f"arn:aws:sns:us-east-1:000000000000:{t.name}",
+                    "arn": t.topic_arn or f"arn:aws:sns:us-east-1:000000000000:{t.name}",
                 }
                 for t in app_model.topics
             ],
         }
-
     if app_model.event_buses:
         services["events"] = {
-            "port": eb_port,
+            "port": ports["events"],
             "resources": [
                 {
                     "name": b.name,
-                    "arn": b.bus_arn
-                    or f"arn:aws:events:us-east-1:000000000000:event-bus/{b.name}",
+                    "arn": b.bus_arn or f"arn:aws:events:us-east-1:000000000000:event-bus/{b.name}",
                 }
                 for b in app_model.event_buses
             ],
         }
-
     if app_model.state_machines:
         services["stepfunctions"] = {
-            "port": sf_port,
+            "port": ports["stepfunctions"],
             "resources": [
                 {
                     "name": sm.name,
@@ -1154,17 +1136,14 @@ def _build_resource_metadata(app_model: AppModel, port: int) -> dict[str, Any]:
                 for sm in app_model.state_machines
             ],
         }
-
     if app_model.user_pools:
         services["cognito-idp"] = {
-            "port": cognito_port,
+            "port": ports["cognito-idp"],
             "resources": [
                 {"name": p.user_pool_name, "user_pool_id": f"us-east-1_{p.logical_id}"}
                 for p in app_model.user_pools
             ],
         }
-
-    return metadata
 
 
 def _mount_management_api(

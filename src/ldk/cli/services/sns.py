@@ -28,17 +28,13 @@ def publish(
     asyncio.run(_publish(topic_name, message, subject, port))
 
 
-async def _publish(
-    topic_name: str, message: str, subject: str | None, port: int
-) -> None:
+async def _publish(topic_name: str, message: str, subject: str | None, port: int) -> None:
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, topic_name)
     except Exception as exc:
         exit_with_error(str(exc))
-    topic_arn = resource.get(
-        "arn", f"arn:aws:sns:us-east-1:000000000000:{topic_name}"
-    )
+    topic_arn = resource.get("arn", f"arn:aws:sns:us-east-1:000000000000:{topic_name}")
     params: dict[str, str] = {
         "Action": "Publish",
         "TopicArn": topic_arn,

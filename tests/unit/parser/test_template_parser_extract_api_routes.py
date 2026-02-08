@@ -85,6 +85,70 @@ class TestExtractApiRoutes:
         assert routes[0].http_method == "POST"
         assert routes[0].resource_path == "/users"
 
+    def test_http_api_v2_route_resolves_integration_uri(self):
+        """V2 route Target with Fn::Join should resolve to the integration's IntegrationUri."""
+        resources = [
+            CfnResource(
+                logical_id="MyIntegration",
+                resource_type="AWS::ApiGatewayV2::Integration",
+                properties={
+                    "IntegrationUri": {"Fn::GetAtt": ["CreateOrderFunction7F1C188E", "Arn"]},
+                },
+            ),
+            CfnResource(
+                logical_id="CreateOrderFunction7F1C188E",
+                resource_type="AWS::Lambda::Function",
+                properties={},
+            ),
+            CfnResource(
+                logical_id="Route1",
+                resource_type="AWS::ApiGatewayV2::Route",
+                properties={
+                    "RouteKey": "POST /orders",
+                    "Target": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "integrations/",
+                                {"Ref": "MyIntegration"},
+                            ],
+                        ]
+                    },
+                },
+            ),
+        ]
+        routes = extract_api_routes(resources)
+        assert len(routes) == 1
+        assert routes[0].http_method == "POST"
+        assert routes[0].resource_path == "/orders"
+        # Should resolve to the integration's IntegrationUri, not the route's Target
+        assert routes[0].integration_uri == {"Fn::GetAtt": ["CreateOrderFunction7F1C188E", "Arn"]}
+
+    def test_http_api_v2_route_no_integration_resource_falls_back(self):
+        """When the Ref in Target doesn't match an integration resource, use Target as-is."""
+        target = {
+            "Fn::Join": [
+                "",
+                [
+                    "integrations/",
+                    {"Ref": "NonExistentIntegration"},
+                ],
+            ]
+        }
+        resources = [
+            CfnResource(
+                logical_id="Route1",
+                resource_type="AWS::ApiGatewayV2::Route",
+                properties={
+                    "RouteKey": "GET /fallback",
+                    "Target": target,
+                },
+            ),
+        ]
+        routes = extract_api_routes(resources)
+        assert len(routes) == 1
+        assert routes[0].integration_uri == target
+
     def test_mixed_v1_and_v2(self):
         resources = [
             CfnResource(

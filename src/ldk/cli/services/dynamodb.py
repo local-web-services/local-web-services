@@ -129,9 +129,7 @@ async def _scan(
         except json.JSONDecodeError as exc:
             exit_with_error(f"Invalid JSON in --expression-attribute-values: {exc}")
     try:
-        result = await client.json_target_request(
-            _SERVICE, f"{_TARGET_PREFIX}.Scan", body
-        )
+        result = await client.json_target_request(_SERVICE, f"{_TARGET_PREFIX}.Scan", body)
     except Exception as exc:
         exit_with_error(str(exc))
     output_json(result)
@@ -149,9 +147,7 @@ def query(
     port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
 ) -> None:
     """Query a table."""
-    asyncio.run(
-        _query(table_name, key_condition_expression, expression_attribute_values, port)
-    )
+    asyncio.run(_query(table_name, key_condition_expression, expression_attribute_values, port))
 
 
 async def _query(

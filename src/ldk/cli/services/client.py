@@ -57,17 +57,13 @@ class LwsClient:
             return []
         return svc.get("resources", [])
 
-    async def resolve_resource(
-        self, service: str, name: str, key: str = "name"
-    ) -> dict[str, Any]:
+    async def resolve_resource(self, service: str, name: str, key: str = "name") -> dict[str, Any]:
         """Find a resource by *name* within *service*."""
         resources = await self.service_resources(service)
         for r in resources:
             if r.get(key) == name:
                 return r
-        raise DiscoveryError(
-            f"Resource '{name}' not found in service '{service}'"
-        )
+        raise DiscoveryError(f"Resource '{name}' not found in service '{service}'")
 
     # ------------------------------------------------------------------
     # Wire protocol helpers
@@ -95,9 +91,7 @@ class LwsClient:
             )
         return resp.json()
 
-    async def form_request(
-        self, service: str, params: dict[str, str]
-    ) -> str:
+    async def form_request(self, service: str, params: dict[str, str]) -> str:
         """Send a form-encoded request and return the XML response body."""
         port = await self.service_port(service)
         async with httpx.AsyncClient() as client:

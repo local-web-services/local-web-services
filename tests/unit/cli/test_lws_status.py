@@ -10,7 +10,6 @@ import pytest
 
 from ldk.cli.lws import _run_status
 
-
 SAMPLE_STATUS = {
     "running": True,
     "providers": [

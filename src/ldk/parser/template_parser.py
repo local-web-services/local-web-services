@@ -157,6 +157,51 @@ def _build_resource_path_map(resources: list[CfnResource]) -> dict[str, str]:
     return path_map
 
 
+def _find_integration_ref(parts: list[Any], resources: list[CfnResource]) -> str | None:
+    """Find a Ref in join parts that points to an ApiGatewayV2 Integration."""
+    for part in parts:
+        if not isinstance(part, dict) or "Ref" not in part:
+            continue
+        ref_value = part["Ref"]
+        for res in resources:
+            if (
+                res.logical_id == ref_value
+                and res.resource_type == "AWS::ApiGatewayV2::Integration"
+            ):
+                return ref_value
+    return None
+
+
+def _resolve_v2_integration_uri(target: Any, resources: list[CfnResource]) -> Any:
+    """Resolve a v2 route Target to the underlying integration's IntegrationUri.
+
+    A v2 route's ``Target`` is typically a ``Fn::Join`` that embeds a ``Ref``
+    to an ``AWS::ApiGatewayV2::Integration`` resource.  The actual Lambda
+    reference lives on that integration's ``IntegrationUri`` property.
+
+    If the integration resource can be found, return its ``IntegrationUri``;
+    otherwise fall back to the original *target*.
+    """
+    if not isinstance(target, dict):
+        return target
+
+    # Walk Fn::Join values to find a Ref to the integration resource
+    join_parts = target.get("Fn::Join")
+    if not isinstance(join_parts, list) or len(join_parts) < 2:
+        return target
+
+    integration_logical_id = _find_integration_ref(join_parts[1], resources)
+    if not integration_logical_id:
+        return target
+
+    # Look up the integration resource and return its IntegrationUri
+    for res in resources:
+        if res.logical_id == integration_logical_id:
+            return res.properties.get("IntegrationUri", target)
+
+    return target
+
+
 def extract_api_routes(resources: list[CfnResource]) -> list[ApiGatewayRouteProps]:
     """Extract API Gateway routes from both REST API v1 and HTTP API v2."""
     routes: list[ApiGatewayRouteProps] = []
@@ -183,11 +228,12 @@ def extract_api_routes(resources: list[CfnResource]) -> list[ApiGatewayRouteProp
             method = parts[0] if len(parts) >= 1 else None
             path = parts[1] if len(parts) >= 2 else "/"
             target = r.properties.get("Target")
+            integration_uri = _resolve_v2_integration_uri(target, resources)
             routes.append(
                 ApiGatewayRouteProps(
                     http_method=method,
                     resource_path=path,
-                    integration_uri=target,
+                    integration_uri=integration_uri,
                 )
             )
 

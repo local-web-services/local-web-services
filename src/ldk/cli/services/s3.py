@@ -39,9 +39,7 @@ async def _put_object(bucket: str, key: str, body_path: str, port: int) -> None:
     if not path.exists():
         exit_with_error(f"File not found: {body_path}")
     file_bytes = path.read_bytes()
-    resp = await client.rest_request(
-        _SERVICE, "PUT", f"{bucket}/{key}", body=file_bytes
-    )
+    resp = await client.rest_request(_SERVICE, "PUT", f"{bucket}/{key}", body=file_bytes)
     result: dict = {"ETag": resp.headers.get("etag", "")}
     output_json(result)
 
@@ -57,9 +55,7 @@ def get_object(
     asyncio.run(_get_object(bucket, key, outfile, port))
 
 
-async def _get_object(
-    bucket: str, key: str, outfile: str | None, port: int
-) -> None:
+async def _get_object(bucket: str, key: str, outfile: str | None, port: int) -> None:
     client = _client(port)
     try:
         await client.service_port(_SERVICE)
@@ -70,18 +66,22 @@ async def _get_object(
         exit_with_error(f"Object not found: {key}")
     if outfile:
         Path(outfile).write_bytes(resp.content)
-        output_json({
-            "ContentLength": len(resp.content),
-            "ETag": resp.headers.get("etag", ""),
-            "ContentType": resp.headers.get("content-type", ""),
-        })
+        output_json(
+            {
+                "ContentLength": len(resp.content),
+                "ETag": resp.headers.get("etag", ""),
+                "ContentType": resp.headers.get("content-type", ""),
+            }
+        )
     else:
-        output_json({
-            "Body": resp.text,
-            "ContentLength": len(resp.content),
-            "ETag": resp.headers.get("etag", ""),
-            "ContentType": resp.headers.get("content-type", ""),
-        })
+        output_json(
+            {
+                "Body": resp.text,
+                "ContentLength": len(resp.content),
+                "ETag": resp.headers.get("etag", ""),
+                "ContentType": resp.headers.get("content-type", ""),
+            }
+        )
 
 
 @app.command("delete-object")
@@ -123,9 +123,7 @@ async def _list_objects_v2(bucket: str, prefix: str, port: int) -> None:
     params: dict[str, str] = {}
     if prefix:
         params["prefix"] = prefix
-    resp = await client.rest_request(
-        _SERVICE, "GET", bucket, params=params
-    )
+    resp = await client.rest_request(_SERVICE, "GET", bucket, params=params)
     output_json(xml_to_dict(resp.text))
 
 
@@ -148,9 +146,11 @@ async def _head_object(bucket: str, key: str, port: int) -> None:
     resp = await client.rest_request(_SERVICE, "HEAD", f"{bucket}/{key}")
     if resp.status_code == 404:
         exit_with_error(f"Object not found: {key}")
-    output_json({
-        "ContentLength": resp.headers.get("content-length", "0"),
-        "ContentType": resp.headers.get("content-type", ""),
-        "ETag": resp.headers.get("etag", ""),
-        "LastModified": resp.headers.get("last-modified", ""),
-    })
+    output_json(
+        {
+            "ContentLength": resp.headers.get("content-length", "0"),
+            "ContentType": resp.headers.get("content-type", ""),
+            "ETag": resp.headers.get("etag", ""),
+            "LastModified": resp.headers.get("last-modified", ""),
+        }
+    )

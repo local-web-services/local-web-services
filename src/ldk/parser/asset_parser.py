@@ -60,7 +60,7 @@ def parse_assets(cdk_out_path: Path) -> dict[str, Path]:
 
     assets: dict[str, Path] = {}
     for _artifact_id, artifact in (manifest.get("artifacts") or {}).items():
-        if artifact.get("type") == "aws:cdk:asset-manifest":
+        if artifact.get("type") in ("aws:cdk:asset-manifest", "cdk:asset-manifest"):
             _process_asset_manifest_artifact(cdk_out_path, artifact, assets)
         _process_metadata_assets(cdk_out_path, artifact, assets)
 
