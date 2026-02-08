@@ -56,9 +56,7 @@ class TestRequestLoggingIntegration:
             tables=[
                 TableConfig(
                     table_name="TestTable",
-                    key_schema=KeySchema(
-                        partition_key=KeyAttribute(name="pk", type="S")
-                    ),
+                    key_schema=KeySchema(partition_key=KeyAttribute(name="pk", type="S")),
                 )
             ],
         )
@@ -75,9 +73,7 @@ class TestRequestLoggingIntegration:
     async def dynamodb_client(self, dynamodb_app):
         """Create DynamoDB HTTP client."""
         transport = httpx.ASGITransport(app=dynamodb_app)
-        async with httpx.AsyncClient(
-            transport=transport, base_url="http://testserver"
-        ) as c:
+        async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
             yield c
 
     async def test_dynamodb_put_item_logs_request_and_response(
@@ -164,9 +160,7 @@ class TestRequestLoggingIntegration:
     async def sqs_client(self, sqs_app):
         """Create SQS HTTP client."""
         transport = httpx.ASGITransport(app=sqs_app)
-        async with httpx.AsyncClient(
-            transport=transport, base_url="http://testserver"
-        ) as c:
+        async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
             yield c
 
     async def test_sqs_send_message_logs_request_and_response(
@@ -215,9 +209,7 @@ class TestRequestLoggingIntegration:
     async def s3_client(self, s3_app):
         """Create S3 HTTP client."""
         transport = httpx.ASGITransport(app=s3_app)
-        async with httpx.AsyncClient(
-            transport=transport, base_url="http://testserver"
-        ) as c:
+        async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as c:
             yield c
 
     async def test_s3_put_object_logs_request_and_response(
@@ -269,9 +261,7 @@ class TestRequestLoggingIntegration:
 
         ws_handler.unsubscribe(queue)
 
-    async def test_multiple_clients_receive_same_log(
-        self, ws_handler: WebSocketLogHandler
-    ):
+    async def test_multiple_clients_receive_same_log(self, ws_handler: WebSocketLogHandler):
         """Verify all connected clients receive the same log entries."""
         q1 = ws_handler.subscribe()
         q2 = ws_handler.subscribe()
