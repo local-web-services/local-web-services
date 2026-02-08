@@ -427,15 +427,17 @@ async def _run_dev(
     data_dir.mkdir(parents=True, exist_ok=True)
     providers, compute_providers = _create_providers(app_model, graph, config, data_dir)
 
-    # Append non-graph provider keys (HTTP servers, management) to startup order
-    for key in providers:
-        if key not in startup_order:
-            startup_order.append(key)
-
     orchestrator = Orchestrator()
 
     # Mount management API
     _mount_management_api(providers, orchestrator, compute_providers, config.port)
+
+    # Append non-graph provider keys (HTTP servers, management) to startup order.
+    # This must happen after _mount_management_api so the fallback management
+    # HTTP server (when no API Gateway exists) is included in the startup order.
+    for key in providers:
+        if key not in startup_order:
+            startup_order.append(key)
 
     try:
         await orchestrator.start(providers, startup_order)
@@ -968,6 +970,11 @@ class _HttpServiceProvider(Provider):
         )
         self._server = uvicorn.Server(uvi_config)
         self._task = asyncio.create_task(self._server.serve())
+        # Wait for the server to actually bind before reporting as started
+        for _ in range(50):
+            if self._server.started:
+                break
+            await asyncio.sleep(0.1)
 
     async def stop(self) -> None:
         if self._server is not None:

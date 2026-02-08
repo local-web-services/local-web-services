@@ -140,6 +140,11 @@ class ApiGatewayProvider(Provider):
         )
         self._server = uvicorn.Server(config)
         self._serve_task = asyncio.create_task(self._server.serve())
+        # Wait for the server to actually bind before reporting as running
+        for _ in range(50):
+            if self._server.started:
+                break
+            await asyncio.sleep(0.1)
         self._status = ProviderStatus.RUNNING
 
     async def stop(self) -> None:
