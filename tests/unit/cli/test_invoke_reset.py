@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
+import re
+
 from typer.testing import CliRunner
+
+
+def _strip_ansi(text: str) -> str:
+    return re.sub(r"\x1b\[[0-9;]*m", "", text)
 
 from ldk.cli.main import app
 
@@ -23,9 +29,10 @@ class TestInvokeCommand:
 
     def test_invoke_help_shows_options(self):
         result = runner.invoke(app, ["invoke", "--help"])
-        assert "--function-name" in result.output
-        assert "--event" in result.output
-        assert "--event-file" in result.output
+        output = _strip_ansi(result.output)
+        assert "--function-name" in output
+        assert "--event" in output
+        assert "--event-file" in output
 
     def test_invoke_with_invalid_json_event(self):
         result = runner.invoke(app, ["invoke", "--function-name", "f", "--event", "not-json"])
@@ -48,8 +55,9 @@ class TestResetCommand:
 
     def test_reset_help_shows_options(self):
         result = runner.invoke(app, ["reset", "--help"])
-        assert "--yes" in result.output
-        assert "--project-dir" in result.output
+        output = _strip_ansi(result.output)
+        assert "--yes" in output
+        assert "--project-dir" in output
 
     def test_reset_with_no_data_dir(self, tmp_path):
         """Reset when no data directory exists should exit cleanly."""
