@@ -47,15 +47,130 @@ LDK will discover your API routes, Lambda functions, DynamoDB tables, SQS queues
 
 ## Supported Services
 
-| Service | Status |
-|---------|--------|
-| API Gateway (HTTP API) | Supported |
-| Lambda (Node.js, Python) | Supported |
-| DynamoDB | Supported |
-| SQS | Supported |
-| SNS | Supported |
-| S3 | Supported |
-| Step Functions | Supported |
+### DynamoDB
+
+| Operation | Supported |
+|-----------|-----------|
+| PutItem | Yes |
+| GetItem | Yes |
+| DeleteItem | Yes |
+| UpdateItem | Yes |
+| Query | Yes |
+| Scan | Yes |
+| BatchGetItem | Yes |
+| BatchWriteItem | Yes |
+| CreateTable | No |
+| DeleteTable | No |
+| DescribeTable | No |
+| TransactGetItems | No |
+| TransactWriteItems | No |
+
+Tables are configured from your CDK template. Backed by SQLite. Supports Global Secondary Indexes, expression attribute names/values, filter expressions, and eventual consistency simulation.
+
+### SQS
+
+| Operation | Supported |
+|-----------|-----------|
+| SendMessage | Yes |
+| ReceiveMessage | Yes |
+| DeleteMessage | Yes |
+| CreateQueue | Yes |
+| GetQueueUrl | Yes |
+| GetQueueAttributes | Yes |
+| SendMessageBatch | No |
+| DeleteMessageBatch | No |
+| PurgeQueue | No |
+| ChangeMessageVisibility | No |
+
+Supports FIFO queues with content-based deduplication, message attributes, visibility timeouts, dead-letter queues, and long polling.
+
+### S3
+
+| Operation | Supported |
+|-----------|-----------|
+| PutObject | Yes |
+| GetObject | Yes |
+| DeleteObject | Yes |
+| HeadObject | Yes |
+| ListObjectsV2 | Yes |
+| CopyObject | No |
+| DeleteObjects | No |
+| CreateMultipartUpload | No |
+| ListBuckets | No |
+
+Backed by the local filesystem. Supports event notifications (ObjectCreated, ObjectRemoved), presigned URL generation, ETags, and content-type headers.
+
+### SNS
+
+| Operation | Supported |
+|-----------|-----------|
+| Publish | Yes |
+| Subscribe | Yes |
+| CreateTopic | Yes |
+| ListTopics | Yes |
+| ListSubscriptions | Yes |
+| Unsubscribe | No |
+| DeleteTopic | No |
+| SetSubscriptionAttributes | No |
+
+Supports Lambda and SQS subscription protocols, message attributes, and fan-out to multiple subscribers.
+
+### EventBridge
+
+| Operation | Supported |
+|-----------|-----------|
+| PutEvents | Yes |
+| PutRule | Yes |
+| PutTargets | Yes |
+| ListRules | Yes |
+| ListEventBuses | Yes |
+| RemoveTargets | No |
+| DeleteRule | No |
+| DescribeRule | No |
+
+Supports event pattern matching, schedule expressions (rate and cron), Lambda targets, and input transformations.
+
+### Step Functions
+
+| Operation | Supported |
+|-----------|-----------|
+| StartExecution | Yes |
+| StartSyncExecution | Yes |
+| DescribeExecution | Yes |
+| ListExecutions | Yes |
+| ListStateMachines | Yes |
+| StopExecution | No |
+| GetExecutionHistory | No |
+| CreateStateMachine | No |
+
+State types: Task, Pass, Choice, Wait, Succeed, Fail, Parallel, Map. Supports JSONPath (InputPath, OutputPath, ResultPath), error handling (Retry, Catch), and Standard & Express workflows. State machines are configured from your CDK template.
+
+### Cognito
+
+| Operation | Supported |
+|-----------|-----------|
+| SignUp | Yes |
+| ConfirmSignUp | Yes |
+| InitiateAuth | Yes (USER_PASSWORD_AUTH) |
+| JWKS endpoint | Yes |
+| AdminCreateUser | No |
+| ForgotPassword | No |
+| ChangePassword | No |
+| GlobalSignOut | No |
+
+Backed by SQLite. Supports JWT token generation (ID, access, refresh), user attributes, password hashing, and Lambda triggers (PreAuthentication, PostConfirmation).
+
+### Lambda
+
+Runs Lambda functions locally using Python or Node.js runtimes. Supports timeout enforcement, realistic context objects, and environment variable injection. Not an AWS API endpoint — functions are invoked by other services (API Gateway, SNS, EventBridge, Step Functions).
+
+### API Gateway
+
+HTTP API (V1 proxy integration) that routes requests to local Lambda functions. Supports path parameters, query parameters, and request/response mapping. Configured from your CDK template.
+
+### ECS
+
+Runs ECS services as local subprocesses. Supports health checking, service discovery, file watching with auto-restart, and port mapping. Configured from your CDK template with optional local command overrides via `ldk.local_command` metadata.
 
 ## Development
 
