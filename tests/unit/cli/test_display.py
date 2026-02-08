@@ -110,6 +110,37 @@ def test_print_resource_summary_with_sample_data() -> None:
         assert "Function" in output
         assert "processOrder" in output
         assert "sendEmail" in output
+        assert "Local Details" in output
+    finally:
+        display.console = original
+
+
+def test_print_resource_summary_with_local_details() -> None:
+    """print_resource_summary renders local details when provided."""
+    cons, buf = _capture_console()
+    original = display.console
+    display.console = cons
+    try:
+        routes = [{"method": "GET", "path": "/orders", "handler": "getOrders"}]
+        tables = ["OrdersTable"]
+        functions = ["processOrder (python3.11)"]
+
+        local_details = {
+            "API Route:/orders": "http://localhost:3000/orders GET -> getOrders",
+            "Table:OrdersTable": "http://localhost:3001 | AWS_ENDPOINT_URL_DYNAMODB",
+            "Function:processOrder": "ldk invoke processOrder",
+            "Queue:MyQueue": "http://localhost:3002 | AWS_ENDPOINT_URL_SQS",
+        }
+
+        print_resource_summary(
+            routes, tables, functions, local_details=local_details, queues=["MyQueue"]
+        )
+        output = buf.getvalue()
+
+        assert "http://localhost:3000/orders" in output
+        assert "AWS_ENDPOINT_URL_DYNAMODB" in output
+        assert "ldk invoke processOrder" in output
+        assert "AWS_ENDPOINT_URL_SQS" in output
     finally:
         display.console = original
 

@@ -21,6 +21,7 @@ def print_resource_summary(
     routes: list[dict],
     tables: list[str],
     functions: list[str],
+    local_details: dict[str, str] | None = None,
     **kwargs: list[str],
 ) -> None:
     """Print a Rich table showing discovered resources.
@@ -29,25 +30,32 @@ def print_resource_summary(
         routes: List of dicts with 'method', 'path', and optionally other keys.
         tables: List of table names.
         functions: List of function descriptors like "myFunc (python3.11)".
+        local_details: Optional mapping of ``"Type:Name"`` to local detail strings
+            (e.g. endpoint URLs, env vars, CLI commands).
         **kwargs: Additional resource lists keyed by type label
             (e.g. queues, buckets, topics, state_machines, ecs_services).
     """
+    details = local_details or {}
     table = Table(title="Discovered Resources")
     table.add_column("Type", style="bold")
     table.add_column("Name")
-    table.add_column("Details")
+    table.add_column("Local Details")
 
     for route in routes:
         method = route.get("method", "GET")
         path = route.get("path", "/")
         handler = route.get("handler", "")
-        table.add_row("API Route", path, f"{method} -> {handler}" if handler else method)
+        detail = details.get(f"API Route:{path}", "")
+        if not detail:
+            detail = f"{method} -> {handler}" if handler else method
+        table.add_row("API Route", path, detail)
 
     for tbl_name in tables:
-        table.add_row("Table", tbl_name, "")
+        table.add_row("Table", tbl_name, details.get(f"Table:{tbl_name}", ""))
 
     for func in functions:
-        table.add_row("Function", func, "")
+        func_name = func.split(" (")[0] if " (" in func else func
+        table.add_row("Function", func, details.get(f"Function:{func_name}", ""))
 
     _EXTRA_LABELS = {
         "queues": "Queue",
@@ -60,7 +68,7 @@ def print_resource_summary(
     }
     for key, label in _EXTRA_LABELS.items():
         for name in kwargs.get(key, []):
-            table.add_row(label, name, "")
+            table.add_row(label, name, details.get(f"{label}:{name}", ""))
 
     console.print(table)
 

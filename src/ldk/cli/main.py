@@ -358,6 +358,67 @@ def _collect_extra_resources(app_model: AppModel) -> dict[str, list[str]]:
     return extras
 
 
+def _build_local_details(app_model: AppModel, port: int) -> dict[str, str]:
+    """Build a mapping of ``"Type:Name"`` to local detail strings."""
+    details: dict[str, str] = {}
+
+    # Port allocation mirrors _create_providers
+    dynamo_port = port + 1
+    sqs_port = port + 2
+    s3_port = port + 3
+    sns_port = port + 4
+    eb_port = port + 5
+    sf_port = port + 6
+    cognito_port = port + 7
+
+    # API routes: browsable URL with method and handler
+    for api_def in app_model.apis:
+        for r in api_def.routes:
+            method = r.method
+            handler = r.handler_name or ""
+            url = f"http://localhost:{port}{r.path}"
+            suffix = f" {method} -> {handler}" if handler else f" {method}"
+            details[f"API Route:{r.path}"] = url + suffix
+
+    # DynamoDB tables
+    for t in app_model.tables:
+        details[f"Table:{t.name}"] = (
+            f"http://localhost:{dynamo_port} | AWS_ENDPOINT_URL_DYNAMODB"
+        )
+
+    # Lambda functions
+    for f in app_model.functions:
+        details[f"Function:{f.name}"] = f"ldk invoke {f.name}"
+
+    # SDK-backed services: endpoint URL | env var
+    _SERVICE_DETAILS: list[tuple[str, str, str, int]] = [
+        ("queues", "name", "AWS_ENDPOINT_URL_SQS", sqs_port),
+        ("buckets", "name", "AWS_ENDPOINT_URL_S3", s3_port),
+        ("topics", "name", "AWS_ENDPOINT_URL_SNS", sns_port),
+        ("event_buses", "name", "AWS_ENDPOINT_URL_EVENTS", eb_port),
+        ("state_machines", "name", "AWS_ENDPOINT_URL_STEPFUNCTIONS", sf_port),
+        ("user_pools", "user_pool_name", "AWS_ENDPOINT_URL_COGNITO_IDP", cognito_port),
+    ]
+    _TYPE_LABELS = {
+        "queues": "Queue",
+        "buckets": "Bucket",
+        "topics": "Topic",
+        "event_buses": "Event Bus",
+        "state_machines": "State Machine",
+        "user_pools": "User Pool",
+    }
+    for model_attr, name_attr, env_var, svc_port in _SERVICE_DETAILS:
+        items = getattr(app_model, model_attr, [])
+        label = _TYPE_LABELS[model_attr]
+        for item in items:
+            name = getattr(item, name_attr, str(item))
+            details[f"{label}:{name}"] = (
+                f"http://localhost:{svc_port} | {env_var}"
+            )
+
+    return details
+
+
 def _display_summary(app_model: AppModel, port: int) -> None:
     """Print resource summary and startup-complete banner."""
     routes_info = [
@@ -369,7 +430,10 @@ def _display_summary(app_model: AppModel, port: int) -> None:
     functions_info = [f"{f.name} ({f.runtime})" for f in app_model.functions]
 
     extra_resources = _collect_extra_resources(app_model)
-    print_resource_summary(routes_info, tables_info, functions_info, **extra_resources)
+    local_details = _build_local_details(app_model, port)
+    print_resource_summary(
+        routes_info, tables_info, functions_info, local_details=local_details, **extra_resources
+    )
 
     extra_counts = {f"num_{k}": len(v) for k, v in extra_resources.items()}
     print_startup_complete(
