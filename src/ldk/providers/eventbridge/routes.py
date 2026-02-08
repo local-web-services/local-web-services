@@ -12,7 +12,11 @@ import uuid
 
 from fastapi import FastAPI, Request, Response
 
+from ldk.logging.logger import get_logger
+from ldk.logging.middleware import RequestLoggingMiddleware
 from ldk.providers.eventbridge.provider import EventBridgeProvider, RuleTarget
+
+_logger = get_logger("ldk.eventbridge")
 
 # ------------------------------------------------------------------
 # Action handlers
@@ -151,6 +155,7 @@ _TARGET_HANDLERS = {
 def create_eventbridge_app(provider: EventBridgeProvider) -> FastAPI:
     """Create a FastAPI application that speaks the EventBridge wire protocol."""
     app = FastAPI(title="LDK EventBridge")
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="eventbridge")
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

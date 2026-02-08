@@ -11,7 +11,11 @@ import uuid
 
 from fastapi import FastAPI, Request, Response
 
+from ldk.logging.logger import get_logger
+from ldk.logging.middleware import RequestLoggingMiddleware
 from ldk.providers.sns.provider import SnsProvider
+
+_logger = get_logger("ldk.sns")
 
 
 async def _parse_form(request: Request) -> dict[str, str]:
@@ -196,6 +200,7 @@ def _parse_message_attributes(params: dict[str, str]) -> dict:
 def create_sns_app(provider: SnsProvider) -> FastAPI:
     """Create a FastAPI application that speaks the SNS wire protocol."""
     app = FastAPI(title="LDK SNS")
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sns")
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

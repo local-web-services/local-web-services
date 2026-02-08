@@ -13,6 +13,10 @@ from fastapi.responses import Response
 
 from ldk.interfaces import ICompute, InvocationResult, LambdaContext, ProviderStatus
 from ldk.interfaces.provider import Provider
+from ldk.logging.logger import get_logger
+from ldk.logging.middleware import RequestLoggingMiddleware
+
+_logger = get_logger("ldk.apigateway")
 
 
 @dataclass
@@ -166,6 +170,7 @@ class ApiGatewayProvider(Provider):
     def _build_app(self) -> FastAPI:
         """Create a FastAPI application and register all configured routes."""
         app = FastAPI(title="LDK API Gateway")
+        app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="apigateway")
 
         for route in self._routes:
             self._register_route(app, route)

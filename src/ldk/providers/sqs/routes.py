@@ -15,7 +15,11 @@ from urllib.parse import parse_qs
 
 from fastapi import APIRouter, FastAPI, Request, Response
 
+from ldk.logging.logger import get_logger
+from ldk.logging.middleware import RequestLoggingMiddleware
 from ldk.providers.sqs.provider import QueueConfig, SqsProvider
+
+_logger = get_logger("ldk.sqs")
 
 # Account / region used for constructing queue URLs in responses.
 _FAKE_ACCOUNT = "000000000000"
@@ -531,6 +535,7 @@ def _error_xml(code: str, message: str, status_code: int = 400) -> Response:
 def create_sqs_app(provider: SqsProvider) -> FastAPI:
     """Create a FastAPI application that speaks the SQS wire protocol."""
     app = FastAPI()
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sqs")
     sqs_router = SqsRouter(provider)
     app.include_router(sqs_router.router)
     return app

@@ -242,6 +242,45 @@ main { flex:1; overflow:hidden; position:relative; }
     }
     div.innerHTML = ts + lvl + msg;
     div.dataset.level = entry.level || 'INFO';
+
+    // Add expandable request/response details if present
+    if (entry.request_body || entry.response_body) {
+      const detailsBtn = document.createElement('button');
+      detailsBtn.textContent = '▼ Details';
+      detailsBtn.style.cssText = 'margin-left:8px;font-size:11px;cursor:pointer;' +
+        'background:var(--bg3);border:1px solid var(--border);color:var(--fg);' +
+        'padding:2px 6px;border-radius:3px;';
+      detailsBtn.onclick = function() {
+        const details = div.querySelector('.log-details');
+        if (details.style.display === 'none') {
+          details.style.display = 'block';
+          detailsBtn.textContent = '▲ Details';
+        } else {
+          details.style.display = 'none';
+          detailsBtn.textContent = '▼ Details';
+        }
+      };
+      div.appendChild(detailsBtn);
+
+      const details = document.createElement('div');
+      details.className = 'log-details';
+      details.style.cssText = 'display:none;margin-top:6px;padding:8px;' +
+        'background:var(--bg3);border-radius:4px;font-size:12px;';
+      let detailsHtml = '';
+      if (entry.request_body) {
+        detailsHtml += '<div style="margin-bottom:8px;"><strong>Request:</strong><pre style="margin:4px 0;' +
+          'padding:6px;background:var(--bg);border-radius:3px;overflow-x:auto;">' +
+          esc(entry.request_body) + '</pre></div>';
+      }
+      if (entry.response_body) {
+        detailsHtml += '<div><strong>Response:</strong><pre style="margin:4px 0;' +
+          'padding:6px;background:var(--bg);border-radius:3px;overflow-x:auto;">' +
+          esc(entry.response_body) + '</pre></div>';
+      }
+      details.innerHTML = detailsHtml;
+      div.appendChild(details);
+    }
+
     logContainer.appendChild(div);
     updateLogCount();
     if (!paused) logContainer.scrollIntoView({block:'end'});

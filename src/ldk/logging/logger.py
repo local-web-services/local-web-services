@@ -135,35 +135,51 @@ class LdkLogger:
         handler_name: str,
         duration_ms: float,
         status_code: int,
+        service: str | None = None,
+        request_body: str | None = None,
+        response_body: str | None = None,
     ) -> None:
         """Log an HTTP/API Gateway request.
 
-        Format: ``POST /orders -> createOrder (234ms) -> 201``
+        Format: ``[SERVICE] POST /orders -> createOrder (234ms) -> 201``
         """
         if not self._logger.isEnabledFor(logging.INFO):
             return
         status_str = str(status_code)
         style = _status_style(status_str)
         ts = _timestamp()
+
+        # CLI output with service prefix
+        service_prefix = f"[bold cyan]{service.upper()}[/bold cyan] " if service else ""
         _console.print(
-            f"[dim][{ts}][/dim] "
+            f"[dim][{ts}][/dim] {service_prefix}"
             f"[bold]{method}[/bold] {path} -> {handler_name} "
             f"({duration_ms:.0f}ms) -> [{style}]{status_code}[/{style}]"
         )
-        _emit_to_ws(
-            {
-                "timestamp": ts,
-                "level": "INFO",
-                "message": (
-                    f"{method} {path} -> {handler_name}" f" ({duration_ms:.0f}ms) -> {status_code}"
-                ),
-                "method": method,
-                "path": path,
-                "handler": handler_name,
-                "duration_ms": duration_ms,
-                "status_code": status_code,
-            }
-        )
+
+        # WebSocket output with full details
+        entry = {
+            "timestamp": ts,
+            "level": "INFO",
+            "message": (
+                f"{service.upper()} {method} {path} -> {handler_name}"
+                f" ({duration_ms:.0f}ms) -> {status_code}"
+                if service
+                else f"{method} {path} -> {handler_name}" f" ({duration_ms:.0f}ms) -> {status_code}"
+            ),
+            "method": method,
+            "path": path,
+            "handler": handler_name,
+            "duration_ms": duration_ms,
+            "status_code": status_code,
+        }
+        if service:
+            entry["service"] = service
+        if request_body is not None:
+            entry["request_body"] = request_body
+        if response_body is not None:
+            entry["response_body"] = response_body
+        _emit_to_ws(entry)
 
     def log_sqs_invocation(
         self,

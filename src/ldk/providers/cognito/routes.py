@@ -6,8 +6,12 @@ import json
 
 from fastapi import APIRouter, FastAPI, Request, Response
 
+from ldk.logging.logger import get_logger
+from ldk.logging.middleware import RequestLoggingMiddleware
 from ldk.providers.cognito.provider import CognitoProvider
 from ldk.providers.cognito.user_store import CognitoError
+
+_logger = get_logger("ldk.cognito")
 
 # Prefix the AWS SDK uses in the X-Amz-Target header.
 _TARGET_PREFIX = "AWSCognitoIdentityProviderService."
@@ -114,6 +118,7 @@ def _error_response(error_type: str, message: str) -> Response:
 def create_cognito_app(provider: CognitoProvider) -> FastAPI:
     """Create a FastAPI application that speaks the Cognito wire protocol."""
     app = FastAPI(title="LDK Cognito")
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="cognito")
     cognito_router = CognitoRouter(provider)
     app.include_router(cognito_router.router)
     return app

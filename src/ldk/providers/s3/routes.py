@@ -5,7 +5,11 @@ from __future__ import annotations
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import StreamingResponse
 
+from ldk.logging.logger import get_logger
+from ldk.logging.middleware import RequestLoggingMiddleware
 from ldk.providers.s3.provider import S3Provider
+
+_logger = get_logger("ldk.s3")
 
 # ------------------------------------------------------------------
 # XML helpers
@@ -164,6 +168,7 @@ async def _list_objects_v2(bucket: str, request: Request, provider: S3Provider) 
 def create_s3_app(provider: S3Provider) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     app = FastAPI()
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="s3")
 
     @app.api_route("/{bucket}/{key:path}", methods=["PUT"])
     async def put_object(bucket: str, key: str, request: Request) -> Response:

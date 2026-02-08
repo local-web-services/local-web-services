@@ -12,7 +12,11 @@ from typing import Any
 
 from fastapi import APIRouter, FastAPI, Request, Response
 
+from ldk.logging.logger import get_logger
+from ldk.logging.middleware import RequestLoggingMiddleware
 from ldk.providers.stepfunctions.provider import StepFunctionsProvider
+
+_logger = get_logger("ldk.stepfunctions")
 
 
 class StepFunctionsRouter:
@@ -215,6 +219,7 @@ def _error_response(code: str, message: str, status_code: int = 400) -> Response
 def create_stepfunctions_app(provider: StepFunctionsProvider) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol."""
     app = FastAPI()
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions")
     sfn_router = StepFunctionsRouter(provider)
     app.include_router(sfn_router.router)
     return app

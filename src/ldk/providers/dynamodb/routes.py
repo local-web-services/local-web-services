@@ -12,6 +12,10 @@ import json
 from fastapi import APIRouter, FastAPI, Request, Response
 
 from ldk.interfaces.key_value_store import IKeyValueStore
+from ldk.logging.logger import get_logger
+from ldk.logging.middleware import RequestLoggingMiddleware
+
+_logger = get_logger("ldk.dynamodb")
 
 # Prefix the AWS SDK uses in the X-Amz-Target header.
 _TARGET_PREFIX = "DynamoDB_20120810."
@@ -186,6 +190,7 @@ def _error_response(error_type: str, message: str) -> Response:
 def create_dynamodb_app(store: IKeyValueStore) -> FastAPI:
     """Create a FastAPI application that speaks the DynamoDB wire protocol."""
     app = FastAPI()
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="dynamodb")
     dynamo_router = DynamoDbRouter(store)
     app.include_router(dynamo_router.router)
     return app
