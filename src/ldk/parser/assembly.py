@@ -236,7 +236,8 @@ def _process_stack(
 
     resources = parse_template(template_path)
     resource_type_map = {r.logical_id: r.resource_type for r in resources}
-    resolver = RefResolver(resource_types=resource_type_map)
+    resource_map = _build_resource_map(resources)
+    resolver = RefResolver(resource_map=resource_map, resource_types=resource_type_map)
 
     model.functions.extend(_collect_lambdas(resources, asset_map, cdk_out_path, resolver))
     model.tables.extend(_collect_tables(resources, resolver))
@@ -256,6 +257,45 @@ def _process_stack(
         raw_template = json.load(fh)
     ecs_services = _collect_ecs_services(raw_template)
     model.ecs_services.extend(ecs_services)
+
+
+def _build_resource_map(resources: list[CfnResource]) -> dict[str, str]:
+    """Build a Ref resource_map so intrinsic ``Ref`` calls resolve to useful local values.
+
+    In real CloudFormation:
+    - ``Ref`` on an ``AWS::SQS::Queue`` returns the queue URL.
+    - ``Ref`` on an ``AWS::DynamoDB::Table`` returns the table name.
+
+    We reproduce this behaviour with deterministic local placeholders so that
+    Lambda environment variables like ``QUEUE_URL`` and ``TABLE_NAME`` resolve
+    to values the local providers can understand.
+    """
+    resource_map: dict[str, str] = {}
+    for r in resources:
+        if r.resource_type == "AWS::SQS::Queue":
+            queue_name = r.properties.get("QueueName", r.logical_id)
+            if isinstance(queue_name, str):
+                # Use ARN format so the SDK connects via AWS_ENDPOINT_URL_SQS
+                # rather than trying to resolve the QueueUrl as a hostname.
+                resource_map[r.logical_id] = f"arn:ldk:sqs:local:000000000000:queue/{queue_name}"
+        elif r.resource_type == "AWS::DynamoDB::Table":
+            # Ref returns the table name.
+            table_name = r.properties.get("TableName", r.logical_id)
+            if isinstance(table_name, str):
+                resource_map[r.logical_id] = table_name
+        elif r.resource_type == "AWS::S3::Bucket":
+            # Ref returns the bucket name.
+            bucket_name = r.properties.get("BucketName", r.logical_id)
+            if isinstance(bucket_name, str):
+                resource_map[r.logical_id] = bucket_name
+            else:
+                resource_map[r.logical_id] = r.logical_id
+        elif r.resource_type == "AWS::SNS::Topic":
+            # Ref returns the topic ARN.
+            topic_name = r.properties.get("TopicName", r.logical_id)
+            if isinstance(topic_name, str):
+                resource_map[r.logical_id] = f"arn:ldk:sns:local:000000000000:{topic_name}"
+    return resource_map
 
 
 def _collect_lambdas(

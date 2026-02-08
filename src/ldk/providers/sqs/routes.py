@@ -1,13 +1,14 @@
 """SQS wire-protocol HTTP server.
 
-Implements the SQS query-string / form-body protocol that AWS SDKs
-expect.  Each operation is dispatched based on the ``Action`` parameter
-found in the query string or the URL-encoded form body.
+Implements both the legacy SQS query-string / form-body protocol and
+the AWS JSON 1.0 protocol (``X-Amz-Target: AmazonSQS.*``) that newer
+AWS SDKs use.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json as _json
 import time
 import uuid
 from urllib.parse import parse_qs
@@ -35,6 +36,16 @@ class SqsRouter:
     # ------------------------------------------------------------------
 
     async def _dispatch(self, request: Request) -> Response:
+        # Detect AWS JSON 1.0 protocol via X-Amz-Target header
+        amz_target = request.headers.get("x-amz-target", "")
+        if amz_target.startswith("AmazonSQS."):
+            action = amz_target[len("AmazonSQS.") :]
+            body = await request.json()
+            handler = self._json_handlers().get(action)
+            if handler is None:
+                return _json_error("InvalidAction", f"Unknown action: {action}")
+            return await handler(body)
+
         params = await _extract_params(request)
         action = params.get("Action", "")
 
@@ -52,6 +63,16 @@ class SqsRouter:
             "CreateQueue": self._create_queue,
             "GetQueueUrl": self._get_queue_url,
             "GetQueueAttributes": self._get_queue_attributes,
+        }
+
+    def _json_handlers(self) -> dict:
+        return {
+            "SendMessage": self._json_send_message,
+            "ReceiveMessage": self._json_receive_message,
+            "DeleteMessage": self._json_delete_message,
+            "CreateQueue": self._json_create_queue,
+            "GetQueueUrl": self._json_get_queue_url,
+            "GetQueueAttributes": self._json_get_queue_attributes,
         }
 
     # ------------------------------------------------------------------
@@ -196,6 +217,127 @@ class SqsRouter:
         )
         return _xml_response(xml)
 
+    # ------------------------------------------------------------------
+    # JSON protocol action handlers (AWS JSON 1.0)
+    # ------------------------------------------------------------------
+
+    async def _json_send_message(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        msg_body = body.get("MessageBody", "")
+        delay = int(body.get("DelaySeconds", 0))
+        message_attributes = body.get("MessageAttributes", {})
+
+        message_id = await self.provider.send_message(
+            queue_name=queue_name,
+            message_body=msg_body,
+            message_attributes=message_attributes or None,
+            delay_seconds=delay,
+        )
+
+        md5_body = hashlib.md5(msg_body.encode()).hexdigest()
+        return _json_response(
+            {
+                "MessageId": message_id,
+                "MD5OfMessageBody": md5_body,
+            }
+        )
+
+    async def _json_receive_message(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        max_messages = int(body.get("MaxNumberOfMessages", 1))
+        wait_time = int(body.get("WaitTimeSeconds", 0))
+        visibility_timeout = body.get("VisibilityTimeout")
+
+        messages = await self.provider.receive_messages(
+            queue_name=queue_name,
+            max_messages=max_messages,
+            wait_time_seconds=wait_time,
+        )
+
+        if visibility_timeout is not None:
+            queue = self.provider.get_queue(queue_name)
+            if queue is not None:
+                vt = int(visibility_timeout)
+                import time as _time
+
+                now = _time.monotonic()
+                for msg_dict in messages:
+                    for m in queue._messages:
+                        if m.message_id == msg_dict["MessageId"]:
+                            m.visibility_timeout_until = now + vt
+
+        json_messages = []
+        for msg in messages:
+            json_msg: dict = {
+                "MessageId": msg["MessageId"],
+                "ReceiptHandle": msg["ReceiptHandle"],
+                "Body": msg["Body"],
+                "MD5OfBody": msg["MD5OfBody"],
+            }
+            if msg.get("Attributes"):
+                json_msg["Attributes"] = msg["Attributes"]
+            if msg.get("MessageAttributes"):
+                json_msg["MessageAttributes"] = msg["MessageAttributes"]
+            json_messages.append(json_msg)
+
+        return _json_response({"Messages": json_messages})
+
+    async def _json_delete_message(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        receipt_handle = body.get("ReceiptHandle", "")
+        await self.provider.delete_message(queue_name, receipt_handle)
+        return _json_response({})
+
+    async def _json_create_queue(self, body: dict) -> Response:
+        queue_name = body.get("QueueName", "")
+        is_fifo = queue_name.endswith(".fifo")
+        attrs = body.get("Attributes", {})
+        visibility_timeout = int(attrs.get("VisibilityTimeout", "30"))
+        content_based_dedup = str(attrs.get("ContentBasedDeduplication", "false")).lower() == "true"
+
+        config = QueueConfig(
+            queue_name=queue_name,
+            visibility_timeout=visibility_timeout,
+            is_fifo=is_fifo,
+            content_based_dedup=content_based_dedup,
+        )
+        self.provider.create_queue(config)
+        return _json_response({"QueueUrl": _queue_url(queue_name)})
+
+    async def _json_get_queue_url(self, body: dict) -> Response:
+        queue_name = body.get("QueueName", "")
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+        return _json_response({"QueueUrl": _queue_url(queue_name)})
+
+    async def _json_get_queue_attributes(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+        attrs = {
+            "QueueArn": f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{queue_name}",
+            "ApproximateNumberOfMessages": str(len(queue._messages)),
+            "VisibilityTimeout": str(queue.visibility_timeout),
+            "CreatedTimestamp": str(int(time.time())),
+            "LastModifiedTimestamp": str(int(time.time())),
+        }
+        if queue.is_fifo:
+            attrs["FifoQueue"] = "true"
+            attrs["ContentBasedDeduplication"] = str(queue.content_based_dedup).lower()
+        return _json_response({"Attributes": attrs})
+
+    # ------------------------------------------------------------------
+    # Legacy XML action handlers
+    # ------------------------------------------------------------------
+
     async def _get_queue_attributes(self, params: dict) -> Response:
         queue_name = _extract_queue_name(params)
         queue = self.provider.get_queue(queue_name)
@@ -329,9 +471,33 @@ def _build_message_attributes_xml(attrs: dict) -> str:
     return "".join(parts)
 
 
+def _extract_queue_name_from_url(queue_url: str) -> str:
+    """Extract queue name from a QueueUrl like ``http://.../<account>/<name>``."""
+    if queue_url:
+        return queue_url.rstrip("/").split("/")[-1]
+    return ""
+
+
 def _queue_url(queue_name: str) -> str:
     """Build a fake queue URL for *queue_name*."""
     return f"http://localhost:4566/{_FAKE_ACCOUNT}/{queue_name}"
+
+
+def _json_response(data: dict, status_code: int = 200) -> Response:
+    """Return a JSON ``Response`` for the AWS JSON 1.0 protocol."""
+    return Response(
+        content=_json.dumps(data),
+        status_code=status_code,
+        media_type="application/x-amz-json-1.0",
+    )
+
+
+def _json_error(code: str, message: str, status_code: int = 400) -> Response:
+    """Return an SQS error response in JSON format."""
+    return _json_response(
+        {"__type": code, "message": message},
+        status_code=status_code,
+    )
 
 
 def _xml_response(body: str, status_code: int = 200) -> Response:
