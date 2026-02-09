@@ -15,4 +15,4 @@ The Discovered Resources table currently shows endpoint URLs and environment var
 
 ## Impact
 - Affected specs: cli (Local Details Column requirement)
-- Affected code: `src/ldk/cli/main.py` (`_build_local_details`), tests
+- Affected code: `src/lws/cli/main.py` (`_build_local_details`), tests

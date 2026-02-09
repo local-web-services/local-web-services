@@ -7,8 +7,8 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 
-from ldk.interfaces.key_value_store import IKeyValueStore
-from ldk.providers.dynamodb.routes import create_dynamodb_app
+from lws.interfaces.key_value_store import IKeyValueStore
+from lws.providers.dynamodb.routes import create_dynamodb_app
 
 # ---------------------------------------------------------------------------
 # Fixtures

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.cli.main import (
+from lws.cli.ldk import (
     _build_gsi,
 )
 

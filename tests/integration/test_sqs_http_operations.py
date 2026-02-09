@@ -5,8 +5,8 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from ldk.providers.sqs.provider import QueueConfig, SqsProvider
-from ldk.providers.sqs.routes import create_sqs_app
+from lws.providers.sqs.provider import QueueConfig, SqsProvider
+from lws.providers.sqs.routes import create_sqs_app
 
 
 @pytest.fixture

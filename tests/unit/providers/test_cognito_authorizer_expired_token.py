@@ -7,8 +7,8 @@ import time
 import jwt
 import pytest
 
-from ldk.providers.cognito.authorizer import AuthorizationError, CognitoAuthorizer
-from ldk.providers.cognito.tokens import TokenIssuer
+from lws.providers.cognito.authorizer import AuthorizationError, CognitoAuthorizer
+from lws.providers.cognito.tokens import TokenIssuer
 
 # ---------------------------------------------------------------------------
 # Fixtures

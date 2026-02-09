@@ -1,6 +1,6 @@
-# LDK Architecture
+# local-web-services Architecture
 
-LDK (Local Development Kit) is a local AWS emulator for CDK applications. It parses synthesized CloudFormation templates from `cdk.out/` and runs local emulations of AWS services so developers can build and test without deploying to AWS.
+local-web-services is a local AWS emulator for CDK applications. It parses synthesized CloudFormation templates from `cdk.out/` and runs local emulations of AWS services so developers can build and test without deploying to AWS. It provides two CLIs: `ldk` (the server) and `lws` (an AWS CLI-compatible client).
 
 ## High-Level Overview
 
@@ -53,7 +53,7 @@ LDK (Local Development Kit) is a local AWS emulator for CDK applications. It par
 ## Directory Structure
 
 ```
-src/ldk/
+src/lws/
   cli/              CLI commands (Typer)
     main.py          ldk dev, ldk invoke, ldk reset (server)
     lws.py           lws CLI entry point (client)

@@ -5,7 +5,7 @@ from __future__ import annotations
 import jwt
 import pytest
 
-from ldk.providers.cognito.tokens import TokenIssuer
+from lws.providers.cognito.tokens import TokenIssuer
 
 # ---------------------------------------------------------------------------
 # Fixtures

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from ldk.cli.services.client import output_json
+from lws.cli.services.client import output_json
 
 
 class TestOutputJson:

@@ -6,7 +6,7 @@ import asyncio
 import signal
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from ldk.providers.ecs.process_manager import ManagedProcess, ProcessConfig
+from lws.providers.ecs.process_manager import ManagedProcess, ProcessConfig
 
 # ---------------------------------------------------------------------------
 # Helpers

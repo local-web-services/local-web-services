@@ -9,7 +9,7 @@ class TestLwsApp:
     def test_app_has_service_commands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["--help"])
@@ -25,7 +25,7 @@ class TestLwsApp:
     def test_apigateway_subcommands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["apigateway", "--help"])
@@ -34,7 +34,7 @@ class TestLwsApp:
     def test_stepfunctions_subcommands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["stepfunctions", "--help"])
@@ -46,7 +46,7 @@ class TestLwsApp:
     def test_sqs_subcommands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["sqs", "--help"])
@@ -58,7 +58,7 @@ class TestLwsApp:
     def test_dynamodb_subcommands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["dynamodb", "--help"])
@@ -71,7 +71,7 @@ class TestLwsApp:
     def test_s3api_subcommands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["s3api", "--help"])
@@ -84,7 +84,7 @@ class TestLwsApp:
     def test_sns_subcommands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["sns", "--help"])
@@ -95,7 +95,7 @@ class TestLwsApp:
     def test_events_subcommands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["events", "--help"])
@@ -105,7 +105,7 @@ class TestLwsApp:
     def test_cognito_subcommands(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["cognito-idp", "--help"])

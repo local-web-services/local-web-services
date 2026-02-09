@@ -6,7 +6,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from ldk.runtime.watcher import FileWatcher
+from lws.runtime.watcher import FileWatcher
 
 # ---------------------------------------------------------------
 # _matches() tests

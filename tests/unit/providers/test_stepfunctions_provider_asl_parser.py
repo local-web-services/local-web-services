@@ -11,7 +11,7 @@ import json
 import httpx
 import pytest
 
-from ldk.providers.stepfunctions.asl_parser import (
+from lws.providers.stepfunctions.asl_parser import (
     ChoiceState,
     FailState,
     MapState,
@@ -23,12 +23,12 @@ from ldk.providers.stepfunctions.asl_parser import (
     WaitState,
     parse_definition,
 )
-from ldk.providers.stepfunctions.provider import (
+from lws.providers.stepfunctions.provider import (
     StateMachineConfig,
     StepFunctionsProvider,
     WorkflowType,
 )
-from ldk.providers.stepfunctions.routes import create_stepfunctions_app
+from lws.providers.stepfunctions.routes import create_stepfunctions_app
 
 # ---------------------------------------------------------------------------
 # Fixtures

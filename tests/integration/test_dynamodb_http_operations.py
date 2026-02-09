@@ -7,9 +7,9 @@ from pathlib import Path
 import httpx
 import pytest
 
-from ldk.interfaces import KeyAttribute, KeySchema, TableConfig
-from ldk.providers.dynamodb.provider import SqliteDynamoProvider
-from ldk.providers.dynamodb.routes import create_dynamodb_app
+from lws.interfaces import KeyAttribute, KeySchema, TableConfig
+from lws.providers.dynamodb.provider import SqliteDynamoProvider
+from lws.providers.dynamodb.routes import create_dynamodb_app
 
 
 @pytest.fixture

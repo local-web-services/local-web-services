@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from ldk.providers.s3.presigned import generate_presigned_url, validate_presigned_url
-from ldk.providers.s3.provider import S3Provider
-from ldk.providers.s3.storage import LocalBucketStorage
+from lws.providers.s3.presigned import generate_presigned_url, validate_presigned_url
+from lws.providers.s3.provider import S3Provider
+from lws.providers.s3.storage import LocalBucketStorage
 
 # ---------------------------------------------------------------------------
 # Fixtures

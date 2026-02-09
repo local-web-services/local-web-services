@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.providers.ecs.alb import (
+from lws.providers.ecs.alb import (
     _extract_path_pattern,
 )
 

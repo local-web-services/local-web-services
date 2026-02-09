@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 
-from ldk.logging.logger import get_logger
+from lws.logging.logger import get_logger
 
 
 class TestLdkLoggerLevels:

@@ -5,8 +5,8 @@ import re
 
 from rich.console import Console
 
-from ldk.cli import display
-from ldk.cli.display import (
+from lws.cli import display
+from lws.cli.display import (
     format_invocation_log,
     print_banner,
     print_error,

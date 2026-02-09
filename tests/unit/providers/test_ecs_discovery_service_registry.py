@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.providers.ecs.discovery import ServiceEndpoint, ServiceRegistry
+from lws.providers.ecs.discovery import ServiceEndpoint, ServiceRegistry
 
 # ---------------------------------------------------------------------------
 # ServiceEndpoint tests

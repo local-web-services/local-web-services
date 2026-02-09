@@ -5,8 +5,8 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from ldk.providers.sns.provider import SnsProvider, TopicConfig
-from ldk.providers.sns.routes import create_sns_app
+from lws.providers.sns.provider import SnsProvider, TopicConfig
+from lws.providers.sns.routes import create_sns_app
 
 
 @pytest.fixture

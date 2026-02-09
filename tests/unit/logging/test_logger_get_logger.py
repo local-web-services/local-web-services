@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.logging.logger import LdkLogger, get_logger
+from lws.logging.logger import LdkLogger, get_logger
 
 
 class TestGetLogger:

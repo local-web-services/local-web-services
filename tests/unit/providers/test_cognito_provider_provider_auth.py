@@ -7,8 +7,8 @@ from typing import Any
 
 import pytest
 
-from ldk.providers.cognito.provider import CognitoProvider
-from ldk.providers.cognito.user_store import (
+from lws.providers.cognito.provider import CognitoProvider
+from lws.providers.cognito.user_store import (
     NotAuthorizedException,
     PasswordPolicy,
     UserPoolConfig,
@@ -107,7 +107,7 @@ class TestProviderAuth:
         assert auth_result["TokenType"] == "Bearer"
 
     async def test_unsupported_auth_flow(self, provider: CognitoProvider) -> None:
-        from ldk.providers.cognito.user_store import CognitoError
+        from lws.providers.cognito.user_store import CognitoError
 
         await provider.sign_up("alice", "Password1A")
         with pytest.raises(CognitoError, match="Unsupported"):

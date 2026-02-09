@@ -7,8 +7,8 @@ import json
 import httpx
 import pytest
 
-from ldk.providers.eventbridge.provider import EventBridgeProvider, EventBusConfig
-from ldk.providers.eventbridge.routes import create_eventbridge_app
+from lws.providers.eventbridge.provider import EventBridgeProvider, EventBusConfig
+from lws.providers.eventbridge.routes import create_eventbridge_app
 
 
 @pytest.fixture

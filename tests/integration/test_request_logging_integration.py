@@ -16,14 +16,14 @@ from pathlib import Path
 import httpx
 import pytest
 
-from ldk.interfaces import KeyAttribute, KeySchema, TableConfig
-from ldk.logging.logger import WebSocketLogHandler, get_logger, set_ws_handler
-from ldk.providers.dynamodb.provider import SqliteDynamoProvider
-from ldk.providers.dynamodb.routes import create_dynamodb_app
-from ldk.providers.s3.provider import S3Provider
-from ldk.providers.s3.routes import create_s3_app
-from ldk.providers.sqs.provider import QueueConfig, SqsProvider
-from ldk.providers.sqs.routes import create_sqs_app
+from lws.interfaces import KeyAttribute, KeySchema, TableConfig
+from lws.logging.logger import WebSocketLogHandler, get_logger, set_ws_handler
+from lws.providers.dynamodb.provider import SqliteDynamoProvider
+from lws.providers.dynamodb.routes import create_dynamodb_app
+from lws.providers.s3.provider import S3Provider
+from lws.providers.s3.routes import create_s3_app
+from lws.providers.sqs.provider import QueueConfig, SqsProvider
+from lws.providers.sqs.routes import create_sqs_app
 
 
 @pytest.fixture(autouse=True)

@@ -6,13 +6,13 @@ from pathlib import Path
 
 import pytest
 
-from ldk.interfaces import (
+from lws.interfaces import (
     GsiDefinition,
     KeyAttribute,
     KeySchema,
     TableConfig,
 )
-from ldk.providers.dynamodb.provider import SqliteDynamoProvider
+from lws.providers.dynamodb.provider import SqliteDynamoProvider
 
 # ---------------------------------------------------------------------------
 # Fixtures

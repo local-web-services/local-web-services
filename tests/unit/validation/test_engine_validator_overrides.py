@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from ldk.validation.engine import (
+from lws.validation.engine import (
     ValidationContext,
     ValidationEngine,
     ValidationError,

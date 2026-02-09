@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from ldk.providers.ecs.discovery import ServiceEndpoint
+from lws.providers.ecs.discovery import ServiceEndpoint
 
 # ---------------------------------------------------------------------------
 # ServiceEndpoint tests

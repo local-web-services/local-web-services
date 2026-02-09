@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.logging.tracer import TraceContext
+from lws.logging.tracer import TraceContext
 
 
 class TestTraceContext:

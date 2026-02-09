@@ -7,12 +7,12 @@ import json
 import httpx
 import pytest
 
-from ldk.providers.stepfunctions.provider import (
+from lws.providers.stepfunctions.provider import (
     StateMachineConfig,
     StepFunctionsProvider,
     WorkflowType,
 )
-from ldk.providers.stepfunctions.routes import create_stepfunctions_app
+from lws.providers.stepfunctions.routes import create_stepfunctions_app
 
 _SM_ARN = "arn:aws:states:us-east-1:000000000000:stateMachine:PassMachine"
 _DEFINITION = {"StartAt": "PassState", "States": {"PassState": {"Type": "Pass", "End": True}}}

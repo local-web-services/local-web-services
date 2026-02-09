@@ -6,8 +6,8 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from ldk.api.management import create_management_router
-from ldk.runtime.orchestrator import Orchestrator
+from lws.api.management import create_management_router
+from lws.runtime.orchestrator import Orchestrator
 
 from ._helpers import FakeProvider
 

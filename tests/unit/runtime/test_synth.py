@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from ldk.runtime.synth import SynthError, ensure_synth, is_synth_stale
+from lws.runtime.synth import SynthError, ensure_synth, is_synth_stale
 
 # ---------------------------------------------------------------------------
 # is_synth_stale
@@ -99,9 +99,9 @@ async def test_ensure_synth_force_always_runs(tmp_path: Path) -> None:
 
     with (
         patch(
-            "ldk.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc
+            "lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc
         ) as mock_exec,
-        patch("ldk.runtime.synth.is_synth_stale", return_value=False),
+        patch("lws.runtime.synth.is_synth_stale", return_value=False),
         patch("sys.stdout") as mock_stdout,
         patch("sys.stderr") as mock_stderr,
     ):
@@ -120,8 +120,8 @@ async def test_ensure_synth_raises_synth_error(tmp_path: Path) -> None:
     fake_proc = _make_fake_process(exit_code=2, stderr=b"Error: something broke")
 
     with (
-        patch("ldk.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc),
-        patch("ldk.runtime.synth.is_synth_stale", return_value=True),
+        patch("lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc),
+        patch("lws.runtime.synth.is_synth_stale", return_value=True),
         patch("sys.stdout") as mock_stdout,
         patch("sys.stderr") as mock_stderr,
     ):
@@ -138,8 +138,8 @@ async def test_ensure_synth_raises_synth_error(tmp_path: Path) -> None:
 async def test_ensure_synth_skips_when_not_stale(tmp_path: Path) -> None:
     """When synth is not stale and force is False, subprocess should not run."""
     with (
-        patch("ldk.runtime.synth.asyncio.create_subprocess_exec") as mock_exec,
-        patch("ldk.runtime.synth.is_synth_stale", return_value=False),
+        patch("lws.runtime.synth.asyncio.create_subprocess_exec") as mock_exec,
+        patch("lws.runtime.synth.is_synth_stale", return_value=False),
     ):
         result = await ensure_synth(tmp_path, force=False)
 
@@ -154,9 +154,9 @@ async def test_ensure_synth_runs_when_stale(tmp_path: Path) -> None:
 
     with (
         patch(
-            "ldk.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc
+            "lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc
         ) as mock_exec,
-        patch("ldk.runtime.synth.is_synth_stale", return_value=True),
+        patch("lws.runtime.synth.is_synth_stale", return_value=True),
         patch("sys.stdout") as mock_stdout,
         patch("sys.stderr") as mock_stderr,
     ):

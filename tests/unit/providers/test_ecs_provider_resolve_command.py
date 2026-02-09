@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock
 
-from ldk.providers.ecs.provider import (
+from lws.providers.ecs.provider import (
     ContainerDefinition,
     ServiceDefinition,
     _resolve_command,

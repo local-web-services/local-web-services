@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.runtime.sdk_env import build_sdk_env
+from lws.runtime.sdk_env import build_sdk_env
 
 
 def test_single_service_endpoint() -> None:

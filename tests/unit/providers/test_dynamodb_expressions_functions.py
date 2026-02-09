@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.providers.dynamodb.expressions import (
+from lws.providers.dynamodb.expressions import (
     evaluate_filter_expression,
 )
 

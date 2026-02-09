@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from ldk.cli.main import _create_providers
-from ldk.config.loader import LdkConfig
-from ldk.graph.builder import build_graph
-from ldk.parser.assembly import parse_assembly
-from ldk.runtime.orchestrator import Orchestrator
+from lws.cli.ldk import _create_providers
+from lws.config.loader import LdkConfig
+from lws.graph.builder import build_graph
+from lws.parser.assembly import parse_assembly
+from lws.runtime.orchestrator import Orchestrator
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures" / "sample-app"
 CDK_OUT = FIXTURES_DIR / "cdk.out"

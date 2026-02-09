@@ -2,7 +2,7 @@
 
 import pytest
 
-from ldk.interfaces import (
+from lws.interfaces import (
     IObjectStore,
 )
 

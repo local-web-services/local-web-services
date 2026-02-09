@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from ldk.validation.engine import ValidationContext, ValidationLevel
-from ldk.validation.event_shape_validator import EventShapeValidator
+from lws.validation.engine import ValidationContext, ValidationLevel
+from lws.validation.event_shape_validator import EventShapeValidator
 
 # ---------------------------------------------------------------------------
 # Helpers

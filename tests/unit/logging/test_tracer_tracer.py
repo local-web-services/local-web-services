@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 
-from ldk.logging.tracer import Tracer
+from lws.logging.tracer import Tracer
 
 
 class TestTracer:

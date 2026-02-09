@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ldk.validation.engine import (
+from lws.validation.engine import (
     ValidationContext,
     ValidationIssue,
     ValidationLevel,

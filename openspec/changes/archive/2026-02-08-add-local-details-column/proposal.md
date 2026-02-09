@@ -19,4 +19,4 @@ The Discovered Resources table displayed on `ldk dev` startup shows Type, Name, 
 
 ## Impact
 - Affected specs: cli
-- Affected code: `src/ldk/cli/display.py`, `src/ldk/cli/main.py`
+- Affected code: `src/lws/cli/display.py`, `src/lws/cli/main.py`

@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, patch
 
-from ldk.providers.ecs.health_check import (
+from lws.providers.ecs.health_check import (
     HealthCheckConfig,
     HealthChecker,
     HealthStatus,
@@ -64,7 +64,7 @@ class TestHealthChecker:
         assert checker._consecutive_failures == 0
 
     @patch(
-        "ldk.providers.ecs.health_check._http_get_ok",
+        "lws.providers.ecs.health_check._http_get_ok",
         new_callable=AsyncMock,
         return_value=True,
     )
@@ -87,7 +87,7 @@ class TestHealthChecker:
         await checker.stop()  # should not raise
 
     @patch(
-        "ldk.providers.ecs.health_check._http_get_ok",
+        "lws.providers.ecs.health_check._http_get_ok",
         new_callable=AsyncMock,
         return_value=False,
     )

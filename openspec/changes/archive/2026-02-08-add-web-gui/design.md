@@ -22,7 +22,7 @@ LDK currently outputs structured logs to the terminal via Rich and exposes manag
 - **Implementation:** The handler maintains a bounded deque of recent log entries (e.g. 500). On WebSocket connect, the backlog is sent first, then new entries stream as they arrive. Each log entry is a JSON object with `timestamp`, `level`, `message`, and optional structured fields (`method`, `path`, `handler`, `duration_ms`, `status_code`, `service`, `operation`, `table`, `error`).
 
 ### GUI serving
-- **Decision:** A single Python module (`src/ldk/api/gui.py`) returns an `HTMLResponse` with the full dashboard inlined — HTML, CSS, and JS in one response.
+- **Decision:** A single Python module (`src/lws/api/gui.py`) returns an `HTMLResponse` with the full dashboard inlined — HTML, CSS, and JS in one response.
 - **Alternatives considered:**
   - Static files directory with `StaticFiles`: adds file management complexity for a single page
   - CDN-loaded framework (React, Vue): adds external dependency and network requirement

@@ -7,8 +7,8 @@ from unittest.mock import AsyncMock
 
 import httpx
 
-from ldk.interfaces import ICompute, InvocationResult
-from ldk.providers.apigateway.provider import (
+from lws.interfaces import ICompute, InvocationResult
+from lws.providers.apigateway.provider import (
     ApiGatewayProvider,
     RouteConfig,
     build_http_response,

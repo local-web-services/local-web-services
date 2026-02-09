@@ -8,14 +8,14 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 
-from ldk.interfaces import ICompute, InvocationResult
-from ldk.providers.eventbridge.provider import (
+from lws.interfaces import ICompute, InvocationResult
+from lws.providers.eventbridge.provider import (
     EventBridgeProvider,
     EventBusConfig,
     RuleConfig,
     RuleTarget,
 )
-from ldk.providers.eventbridge.routes import create_eventbridge_app
+from lws.providers.eventbridge.routes import create_eventbridge_app
 
 # ---------------------------------------------------------------------------
 # Helpers

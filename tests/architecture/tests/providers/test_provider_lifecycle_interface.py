@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-PROVIDERS_DIR = Path(__file__).parent.parent.parent.parent.parent / "src" / "ldk" / "providers"
+PROVIDERS_DIR = Path(__file__).parent.parent.parent.parent.parent / "src" / "lws" / "providers"
 
 # Providers that follow the standard lifecycle pattern.
 # apigateway and ecs are included because they also inherit from Provider.

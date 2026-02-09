@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, patch
 import httpx
 from fastapi.testclient import TestClient
 
-from ldk.providers.ecs.alb import (
+from lws.providers.ecs.alb import (
     AlbConfig,
     ListenerRule,
     build_alb_app,

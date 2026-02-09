@@ -2,7 +2,7 @@
 
 import time
 
-from ldk.interfaces import (
+from lws.interfaces import (
     LambdaContext,
 )
 

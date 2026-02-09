@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from ldk.cli.main import (
+from lws.cli.ldk import (
     _find_node_id,
 )
-from ldk.graph.builder import AppGraph, GraphNode, NodeType
+from lws.graph.builder import AppGraph, GraphNode, NodeType
 
 
 class TestFindNodeId:

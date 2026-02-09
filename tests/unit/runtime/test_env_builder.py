@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from ldk.runtime.env_builder import build_lambda_env
+from lws.runtime.env_builder import build_lambda_env
 
 # ---------------------------------------------------------------------------
 # Standard Lambda env vars

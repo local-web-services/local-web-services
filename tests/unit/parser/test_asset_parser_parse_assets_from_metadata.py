@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from ldk.parser.asset_parser import parse_assets
+from lws.parser.asset_parser import parse_assets
 
 
 @pytest.fixture()

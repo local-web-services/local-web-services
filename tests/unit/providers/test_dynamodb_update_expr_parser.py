@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.providers.dynamodb.update_expression import (
+from lws.providers.dynamodb.update_expression import (
     parse_update_expression,
 )
 

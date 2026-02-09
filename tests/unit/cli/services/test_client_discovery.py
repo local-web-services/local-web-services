@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from ldk.cli.services.client import DiscoveryError, LwsClient
+from lws.cli.services.client import DiscoveryError, LwsClient
 
 SAMPLE_METADATA = {
     "port": 3000,

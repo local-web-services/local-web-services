@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from ldk.parser.tree_parser import parse_tree
+from lws.parser.tree_parser import parse_tree
 
 
 @pytest.fixture()

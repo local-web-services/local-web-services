@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from ldk.config.loader import ConfigError, load_config
+from lws.config.loader import ConfigError, load_config
 
 
 def test_no_config_file_returns_defaults(tmp_path: Path) -> None:
@@ -25,7 +25,7 @@ def test_no_config_file_returns_defaults(tmp_path: Path) -> None:
 
 def test_valid_config_overrides_all_values(tmp_path: Path) -> None:
     """A config file that sets every value should override all defaults."""
-    config_file = tmp_path / "ldk.config.py"
+    config_file = tmp_path / "lws.config.py"
     config_file.write_text(
         "port = 4000\n"
         "persist = False\n"
@@ -51,7 +51,7 @@ def test_valid_config_overrides_all_values(tmp_path: Path) -> None:
 
 def test_partial_config_keeps_remaining_defaults(tmp_path: Path) -> None:
     """A config file that only overrides some values should leave the rest as defaults."""
-    config_file = tmp_path / "ldk.config.py"
+    config_file = tmp_path / "lws.config.py"
     config_file.write_text('port = 8080\nlog_level = "warning"\n')
 
     config = load_config(tmp_path)
@@ -71,7 +71,7 @@ def test_partial_config_keeps_remaining_defaults(tmp_path: Path) -> None:
 
 def test_invalid_port_raises_config_error(tmp_path: Path) -> None:
     """A port outside 1-65535 should raise ConfigError."""
-    config_file = tmp_path / "ldk.config.py"
+    config_file = tmp_path / "lws.config.py"
     config_file.write_text("port = 99999\n")
 
     with pytest.raises(ConfigError, match="Invalid port"):
@@ -80,7 +80,7 @@ def test_invalid_port_raises_config_error(tmp_path: Path) -> None:
 
 def test_port_zero_raises_config_error(tmp_path: Path) -> None:
     """Port 0 is not valid and should raise ConfigError."""
-    config_file = tmp_path / "ldk.config.py"
+    config_file = tmp_path / "lws.config.py"
     config_file.write_text("port = 0\n")
 
     with pytest.raises(ConfigError, match="Invalid port"):
@@ -89,7 +89,7 @@ def test_port_zero_raises_config_error(tmp_path: Path) -> None:
 
 def test_negative_port_raises_config_error(tmp_path: Path) -> None:
     """A negative port should raise ConfigError."""
-    config_file = tmp_path / "ldk.config.py"
+    config_file = tmp_path / "lws.config.py"
     config_file.write_text("port = -1\n")
 
     with pytest.raises(ConfigError, match="Invalid port"):
@@ -98,7 +98,7 @@ def test_negative_port_raises_config_error(tmp_path: Path) -> None:
 
 def test_invalid_log_level_raises_config_error(tmp_path: Path) -> None:
     """An unrecognised log_level should raise ConfigError."""
-    config_file = tmp_path / "ldk.config.py"
+    config_file = tmp_path / "lws.config.py"
     config_file.write_text('log_level = "verbose"\n')
 
     with pytest.raises(ConfigError, match="Invalid log_level"):
@@ -107,7 +107,7 @@ def test_invalid_log_level_raises_config_error(tmp_path: Path) -> None:
 
 def test_unknown_variables_in_config_are_ignored(tmp_path: Path) -> None:
     """Extra variables in the config file that don't match fields are silently ignored."""
-    config_file = tmp_path / "ldk.config.py"
+    config_file = tmp_path / "lws.config.py"
     config_file.write_text('port = 5000\ncustom_setting = "foo"\n')
 
     config = load_config(tmp_path)

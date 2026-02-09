@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ldk.interfaces import ICompute, InvocationResult, LambdaContext
-from ldk.interfaces.provider import Provider
+from lws.interfaces import ICompute, InvocationResult, LambdaContext
+from lws.interfaces.provider import Provider
 
 
 class FakeCompute(ICompute):

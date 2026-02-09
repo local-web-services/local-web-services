@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.logging.tracer import Span
+from lws.logging.tracer import Span
 
 
 class TestSpan:

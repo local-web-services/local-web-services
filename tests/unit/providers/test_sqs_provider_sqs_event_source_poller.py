@@ -14,12 +14,12 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 
-from ldk.interfaces.compute import ICompute, InvocationResult
-from ldk.interfaces.queue import IQueue
-from ldk.providers.sqs.event_source import EventSourceMapping, SqsEventSourcePoller
-from ldk.providers.sqs.provider import QueueConfig, RedrivePolicy, SqsProvider
-from ldk.providers.sqs.queue import LocalQueue
-from ldk.providers.sqs.routes import create_sqs_app
+from lws.interfaces.compute import ICompute, InvocationResult
+from lws.interfaces.queue import IQueue
+from lws.providers.sqs.event_source import EventSourceMapping, SqsEventSourcePoller
+from lws.providers.sqs.provider import QueueConfig, RedrivePolicy, SqsProvider
+from lws.providers.sqs.queue import LocalQueue
+from lws.providers.sqs.routes import create_sqs_app
 
 # ---------------------------------------------------------------------------
 # Fixtures

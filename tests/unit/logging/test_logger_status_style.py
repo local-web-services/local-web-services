@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.logging.logger import _status_style
+from lws.logging.logger import _status_style
 
 
 class TestStatusStyle:

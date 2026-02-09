@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from ldk.providers.stepfunctions.asl_parser import parse_definition
-from ldk.providers.stepfunctions.engine import (
+from lws.providers.stepfunctions.asl_parser import parse_definition
+from lws.providers.stepfunctions.engine import (
     ExecutionEngine,
 )
 

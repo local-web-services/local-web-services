@@ -10,4 +10,4 @@ There is no way to check whether `ldk dev` is running and what state its provide
 
 ## Impact
 - Affected specs: `cli`
-- Affected code: `src/ldk/cli/lws.py`
+- Affected code: `src/lws/cli/lws.py`

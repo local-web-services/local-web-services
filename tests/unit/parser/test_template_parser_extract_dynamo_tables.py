@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from ldk.parser.template_parser import (
+from lws.parser.template_parser import (
     CfnResource,
     extract_dynamo_tables,
 )

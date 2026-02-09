@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.runtime.watcher import FileChangeHandler
+from lws.runtime.watcher import FileChangeHandler
 
 # ---------------------------------------------------------------
 # _matches() tests

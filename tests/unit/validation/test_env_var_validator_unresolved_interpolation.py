@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from ldk.graph.builder import AppGraph, GraphNode, NodeType
-from ldk.validation.engine import ValidationContext, ValidationLevel
-from ldk.validation.env_var_validator import EnvVarValidator
+from lws.graph.builder import AppGraph, GraphNode, NodeType
+from lws.validation.engine import ValidationContext, ValidationLevel
+from lws.validation.env_var_validator import EnvVarValidator
 
 # ---------------------------------------------------------------------------
 # Helpers

@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
-from ldk.providers.ecs.process_manager import ProcessConfig
+from lws.providers.ecs.process_manager import ProcessConfig
 
 # ---------------------------------------------------------------------------
 # Helpers

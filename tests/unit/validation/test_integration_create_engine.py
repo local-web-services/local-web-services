@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from ldk.graph.builder import AppGraph, EdgeType, GraphEdge, GraphNode, NodeType
-from ldk.interfaces import KeyAttribute, KeySchema, TableConfig
-from ldk.validation.integration import (
+from lws.graph.builder import AppGraph, EdgeType, GraphEdge, GraphNode, NodeType
+from lws.interfaces import KeyAttribute, KeySchema, TableConfig
+from lws.validation.integration import (
     create_validation_engine,
     validate_operation,
 )

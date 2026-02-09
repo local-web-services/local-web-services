@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from ldk.logging.logger import WebSocketLogHandler
+from lws.logging.logger import WebSocketLogHandler
 
 
 class TestWebSocketLogHandler:

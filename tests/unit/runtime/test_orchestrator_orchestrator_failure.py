@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import pytest
 
-from ldk.interfaces.provider import ProviderStartError
+from lws.interfaces.provider import ProviderStartError
 
 from ._helpers import FakeProvider
 
 
 @pytest.fixture
 def orchestrator():
-    from ldk.runtime.orchestrator import Orchestrator
+    from lws.runtime.orchestrator import Orchestrator
 
     return Orchestrator()
 

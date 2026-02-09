@@ -8,9 +8,9 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from ldk.api.management import create_management_router
-from ldk.logging.logger import WebSocketLogHandler
-from ldk.runtime.orchestrator import Orchestrator
+from lws.api.management import create_management_router
+from lws.logging.logger import WebSocketLogHandler
+from lws.runtime.orchestrator import Orchestrator
 
 from ._helpers import FakeCompute, FakeProvider
 
@@ -50,14 +50,14 @@ class TestWebSocketLogEndpoint:
     """Tests for WS /_ldk/ws/logs."""
 
     def test_ws_receives_backlog(self, client, ws_handler):
-        with patch("ldk.api.management.get_ws_handler", return_value=ws_handler):
+        with patch("lws.api.management.get_ws_handler", return_value=ws_handler):
             with client.websocket_connect("/_ldk/ws/logs") as ws:
                 data = ws.receive_json()
                 assert data["message"] == "backlog entry"
                 assert data["level"] == "INFO"
 
     def test_ws_receives_live_entry(self, client, ws_handler):
-        with patch("ldk.api.management.get_ws_handler", return_value=ws_handler):
+        with patch("lws.api.management.get_ws_handler", return_value=ws_handler):
             with client.websocket_connect("/_ldk/ws/logs") as ws:
                 # Consume backlog
                 ws.receive_json()
@@ -70,7 +70,7 @@ class TestWebSocketLogEndpoint:
                 assert data["level"] == "ERROR"
 
     def test_ws_closes_when_no_handler(self, client):
-        with patch("ldk.api.management.get_ws_handler", return_value=None):
+        with patch("lws.api.management.get_ws_handler", return_value=None):
             with pytest.raises(Exception):
                 with client.websocket_connect("/_ldk/ws/logs") as ws:
                     ws.receive_json()

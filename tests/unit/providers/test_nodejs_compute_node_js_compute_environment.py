@@ -6,12 +6,12 @@ import json
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from ldk.interfaces import (
+from lws.interfaces import (
     ComputeConfig,
     LambdaContext,
     ProviderStatus,
 )
-from ldk.providers.lambda_runtime.nodejs import NodeJsCompute
+from lws.providers.lambda_runtime.nodejs import NodeJsCompute
 
 # ---------------------------------------------------------------------------
 # Helpers

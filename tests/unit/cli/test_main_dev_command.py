@@ -9,7 +9,7 @@ class TestDevCommand:
     def test_app_has_dev_command(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.main import app
+        from lws.cli.ldk import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["--help"])

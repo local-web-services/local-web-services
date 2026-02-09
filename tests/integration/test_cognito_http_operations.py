@@ -7,9 +7,9 @@ from pathlib import Path
 import httpx
 import pytest
 
-from ldk.providers.cognito.provider import CognitoProvider
-from ldk.providers.cognito.routes import create_cognito_app
-from ldk.providers.cognito.user_store import UserPoolConfig
+from lws.providers.cognito.provider import CognitoProvider
+from lws.providers.cognito.routes import create_cognito_app
+from lws.providers.cognito.user_store import UserPoolConfig
 
 
 @pytest.fixture

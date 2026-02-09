@@ -16,7 +16,7 @@ import asyncio
 # ---------------------------------------------------------------------------
 # StreamDispatcher tests
 # ---------------------------------------------------------------------------
-from ldk.providers.dynamodb.streams import (
+from lws.providers.dynamodb.streams import (
     EventName,
     StreamConfiguration,
     StreamDispatcher,

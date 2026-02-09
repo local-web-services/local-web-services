@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from ldk.providers.s3.provider import S3Provider
-from ldk.providers.s3.storage import LocalBucketStorage
+from lws.providers.s3.provider import S3Provider
+from lws.providers.s3.storage import LocalBucketStorage
 
 # ---------------------------------------------------------------------------
 # Fixtures

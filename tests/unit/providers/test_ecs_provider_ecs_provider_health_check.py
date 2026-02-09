@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from ldk.interfaces.provider import ProviderStatus
-from ldk.providers.ecs.provider import (
+from lws.interfaces.provider import ProviderStatus
+from lws.providers.ecs.provider import (
     ContainerDefinition,
     EcsProvider,
     ServiceDefinition,

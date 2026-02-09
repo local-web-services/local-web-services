@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.cli.services.client import xml_to_dict
+from lws.cli.services.client import xml_to_dict
 
 
 class TestXmlToDict:

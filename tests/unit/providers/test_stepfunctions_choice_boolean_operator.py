@@ -6,8 +6,8 @@ type-checking operators, and JSONPath-like path processing.
 
 from __future__ import annotations
 
-from ldk.providers.stepfunctions.asl_parser import ChoiceRule
-from ldk.providers.stepfunctions.choice_evaluator import (
+from lws.providers.stepfunctions.asl_parser import ChoiceRule
+from lws.providers.stepfunctions.choice_evaluator import (
     evaluate_rule,
 )
 

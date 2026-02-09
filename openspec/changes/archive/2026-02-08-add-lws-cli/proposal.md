@@ -12,4 +12,4 @@ Interacting with local LDK resources currently requires verbose curl/SDK calls w
 
 ## Impact
 - Affected specs: cli
-- Affected code: `src/ldk/cli/lws.py`, `src/ldk/cli/services/`, `src/ldk/api/management.py`, `pyproject.toml`
+- Affected code: `src/lws/cli/lws.py`, `src/lws/cli/services/`, `src/lws/api/management.py`, `pyproject.toml`

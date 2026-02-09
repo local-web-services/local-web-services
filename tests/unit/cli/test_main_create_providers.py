@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from ldk.cli.main import (
+from lws.cli.ldk import (
     _create_providers,
 )
-from ldk.config.loader import LdkConfig
-from ldk.graph.builder import build_graph
-from ldk.parser.assembly import (
+from lws.config.loader import LdkConfig
+from lws.graph.builder import build_graph
+from lws.parser.assembly import (
     AppModel,
     DynamoTable,
     LambdaFunction,

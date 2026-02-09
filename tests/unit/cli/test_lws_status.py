@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from ldk.cli.lws import _run_status
+from lws.cli.lws import _run_status
 
 SAMPLE_STATUS = {
     "running": True,
@@ -34,7 +34,7 @@ SAMPLE_RESOURCES = {
 
 def _mock_client(status_resp, resources_resp):
     """Return a patched httpx.AsyncClient context manager."""
-    patcher = patch("ldk.cli.lws.httpx.AsyncClient")
+    patcher = patch("lws.cli.lws.httpx.AsyncClient")
     mock_cls = patcher.start()
     instance = AsyncMock()
     instance.get.side_effect = [status_resp, resources_resp]
@@ -103,7 +103,7 @@ class TestLwsStatus:
 
     @pytest.mark.asyncio
     async def test_status_exits_when_not_running(self):
-        with patch("ldk.cli.lws.httpx.AsyncClient") as mock_cls:
+        with patch("lws.cli.lws.httpx.AsyncClient") as mock_cls:
             instance = AsyncMock()
             instance.get.side_effect = httpx.ConnectError("connection refused")
             instance.__aenter__ = AsyncMock(return_value=instance)
@@ -116,7 +116,7 @@ class TestLwsStatus:
     def test_status_appears_in_help(self):
         from typer.testing import CliRunner
 
-        from ldk.cli.lws import app
+        from lws.cli.lws import app
 
         runner = CliRunner()
         result = runner.invoke(app, ["--help"])

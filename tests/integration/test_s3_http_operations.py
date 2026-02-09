@@ -7,8 +7,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from ldk.providers.s3.provider import S3Provider
-from ldk.providers.s3.routes import create_s3_app
+from lws.providers.s3.provider import S3Provider
+from lws.providers.s3.routes import create_s3_app
 
 
 @pytest.fixture

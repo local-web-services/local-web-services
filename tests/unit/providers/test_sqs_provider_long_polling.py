@@ -14,9 +14,9 @@ import time
 import httpx
 import pytest
 
-from ldk.providers.sqs.provider import QueueConfig, RedrivePolicy, SqsProvider
-from ldk.providers.sqs.queue import LocalQueue
-from ldk.providers.sqs.routes import create_sqs_app
+from lws.providers.sqs.provider import QueueConfig, RedrivePolicy, SqsProvider
+from lws.providers.sqs.queue import LocalQueue
+from lws.providers.sqs.routes import create_sqs_app
 
 # ---------------------------------------------------------------------------
 # Fixtures

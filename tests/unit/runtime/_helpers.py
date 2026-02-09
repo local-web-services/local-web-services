@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ldk.interfaces.provider import Provider, ProviderStatus
+from lws.interfaces.provider import Provider, ProviderStatus
 
 
 class FakeProvider(Provider):

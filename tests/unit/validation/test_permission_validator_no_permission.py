@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from ldk.graph.builder import AppGraph, EdgeType, GraphEdge, GraphNode, NodeType
-from ldk.validation.engine import ValidationContext
-from ldk.validation.permission_validator import PermissionValidator
+from lws.graph.builder import AppGraph, EdgeType, GraphEdge, GraphNode, NodeType
+from lws.validation.engine import ValidationContext
+from lws.validation.permission_validator import PermissionValidator
 
 # ---------------------------------------------------------------------------
 # Helpers

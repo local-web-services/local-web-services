@@ -9,10 +9,10 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 
-from ldk.api.management import create_management_router
-from ldk.interfaces import KeyAttribute, KeySchema, TableConfig
-from ldk.providers.dynamodb.provider import SqliteDynamoProvider
-from ldk.runtime.orchestrator import Orchestrator
+from lws.api.management import create_management_router
+from lws.interfaces import KeyAttribute, KeySchema, TableConfig
+from lws.providers.dynamodb.provider import SqliteDynamoProvider
+from lws.runtime.orchestrator import Orchestrator
 
 
 class TestLwsStatusIntegration:
@@ -67,7 +67,7 @@ class TestLwsStatusIntegration:
 
         try:
             # Run the actual lws status command
-            from ldk.cli.lws import _run_status
+            from lws.cli.lws import _run_status
 
             # Test JSON output mode
             await _run_status(port, json_output=True)

@@ -10,4 +10,4 @@ Developers can test API Gateway routes with curl, but it requires knowing the ex
 
 ## Impact
 - Affected specs: cli
-- Affected code: `src/ldk/cli/services/apigateway.py` (new), `src/ldk/cli/lws.py`, `src/ldk/cli/main.py`, `pyproject.toml` (no change), tests
+- Affected code: `src/lws/cli/services/apigateway.py` (new), `src/lws/cli/lws.py`, `src/lws/cli/main.py`, `pyproject.toml` (no change), tests

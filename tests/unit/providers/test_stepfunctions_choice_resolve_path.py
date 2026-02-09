@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from ldk.providers.stepfunctions.path_utils import (
+from lws.providers.stepfunctions.path_utils import (
     resolve_path,
 )
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.providers.ecs.alb import (
+from lws.providers.ecs.alb import (
     ListenerRule,
     _find_matching_rule,
 )

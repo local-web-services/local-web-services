@@ -11,13 +11,13 @@ import json
 import httpx
 import pytest
 
-from ldk.interfaces.state_machine import IStateMachine
-from ldk.providers.stepfunctions.provider import (
+from lws.interfaces.state_machine import IStateMachine
+from lws.providers.stepfunctions.provider import (
     StateMachineConfig,
     StepFunctionsProvider,
     WorkflowType,
 )
-from ldk.providers.stepfunctions.routes import create_stepfunctions_app
+from lws.providers.stepfunctions.routes import create_stepfunctions_app
 
 # ---------------------------------------------------------------------------
 # Fixtures

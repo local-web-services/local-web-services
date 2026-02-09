@@ -6,7 +6,7 @@ import re
 
 from typer.testing import CliRunner
 
-from ldk.cli.main import app
+from lws.cli.ldk import app
 
 
 def _strip_ansi(text: str) -> str:

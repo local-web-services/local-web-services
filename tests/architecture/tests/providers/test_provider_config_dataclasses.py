@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-SRC_DIR = Path(__file__).parent.parent.parent.parent.parent / "src" / "ldk"
+SRC_DIR = Path(__file__).parent.parent.parent.parent.parent / "src" / "lws"
 PROVIDERS_DIR = SRC_DIR / "providers"
 INTERFACES_DIR = SRC_DIR / "interfaces"
 

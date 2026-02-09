@@ -7,10 +7,10 @@ import asyncio
 import httpx
 import pytest
 
-from ldk.providers.sns.provider import SnsProvider, TopicConfig
-from ldk.providers.sns.routes import create_sns_app
-from ldk.providers.sqs.provider import QueueConfig, SqsProvider
-from ldk.providers.sqs.routes import create_sqs_app
+from lws.providers.sns.provider import SnsProvider, TopicConfig
+from lws.providers.sns.routes import create_sns_app
+from lws.providers.sqs.provider import QueueConfig, SqsProvider
+from lws.providers.sqs.routes import create_sqs_app
 
 _TOPIC_ARN = "arn:aws:sns:us-east-1:123456789012:fanout-topic"
 _QUEUE_ARN = "arn:aws:sqs:us-east-1:123456789012:fanout-queue"

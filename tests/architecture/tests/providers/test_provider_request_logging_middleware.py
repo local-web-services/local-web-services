@@ -16,7 +16,7 @@ class TestProviderRequestLoggingMiddleware:
     def test_all_provider_routes_have_logging_middleware(self):
         """All create_*_app functions must add RequestLoggingMiddleware."""
         violations = []
-        providers_dir = Path("src/ldk/providers")
+        providers_dir = Path("src/lws/providers")
 
         # Find all routes.py files
         for routes_file in providers_dir.glob("*/routes.py"):

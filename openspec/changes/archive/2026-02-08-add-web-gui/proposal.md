@@ -14,4 +14,4 @@ Developers currently rely on terminal logs and CLI commands to understand what i
 
 ## Impact
 - Affected specs: `cli` (new management API endpoints and GUI serving), `logging` (new log capture handler for streaming)
-- Affected code: `src/ldk/api/management.py`, `src/ldk/logging/logger.py`, new `src/ldk/api/gui.py`
+- Affected code: `src/lws/api/management.py`, `src/lws/logging/logger.py`, new `src/lws/api/gui.py`

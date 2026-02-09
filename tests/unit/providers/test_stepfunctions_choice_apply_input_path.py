@@ -6,7 +6,7 @@ type-checking operators, and JSONPath-like path processing.
 
 from __future__ import annotations
 
-from ldk.providers.stepfunctions.path_utils import (
+from lws.providers.stepfunctions.path_utils import (
     apply_input_path,
 )
 

@@ -20,7 +20,7 @@ from __future__ import annotations
 # ---------------------------------------------------------------------------
 # build_graph
 # ---------------------------------------------------------------------------
-from ldk.graph.builder import (
+from lws.graph.builder import (
     AppGraph,
     EdgeType,
     GraphEdge,

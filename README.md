@@ -1,6 +1,6 @@
-# LDK - Local Development Kit
+# local-web-services
 
-Run your AWS CDK applications locally. LDK reads your CDK project's synthesized CloudFormation templates and spins up local emulations of API Gateway, Lambda, DynamoDB, SQS, SNS, S3, and Step Functions so you can develop and test without deploying to AWS.
+Run your AWS CDK applications locally. local-web-services reads your CDK project's synthesized CloudFormation templates and spins up local emulations of API Gateway, Lambda, DynamoDB, SQS, SNS, S3, and Step Functions so you can develop and test without deploying to AWS.
 
 ## Try It Out
 
@@ -56,7 +56,7 @@ The sample project also includes a full end-to-end test script (`test-orders.sh`
 
 ## Installation
 
-LDK requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
+local-web-services requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uvx --from local-web-services ldk
@@ -79,13 +79,13 @@ cd your-cdk-project
 npx cdk synth
 ```
 
-2. Start LDK:
+2. Start local-web-services:
 
 ```bash
 uvx --from local-web-services ldk dev --project-dir /path/to/your-cdk-project --port 3000
 ```
 
-LDK will discover your API routes, Lambda functions, DynamoDB tables, SQS queues, SNS topics, S3 buckets, and Step Functions state machines automatically from the CDK output.
+`ldk` will discover your API routes, Lambda functions, DynamoDB tables, SQS queues, SNS topics, S3 buckets, and Step Functions state machines automatically from the CDK output.
 
 ## Supported Services
 
@@ -176,7 +176,7 @@ Backed by the local filesystem. Supports event notifications (ObjectCreated, Obj
 |-----------|-------------------|
 | `aws_sns.Topic` | topicName |
 
-`aws_sns.Subscription` is not parsed. Subscriptions are wired at runtime via the API or auto-wired by LDK for Lambda/SQS targets.
+`aws_sns.Subscription` is not parsed. Subscriptions are wired at runtime via the API or auto-wired by local-web-services for Lambda/SQS targets.
 
 **API Operations:**
 

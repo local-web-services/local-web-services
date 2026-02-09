@@ -1,5 +1,5 @@
 ## 1. Implementation
-- [x] 1.1 Add `lws status` command in `src/ldk/cli/lws.py` that queries `GET /_ldk/status` and `GET /_ldk/resources`
+- [x] 1.1 Add `lws status` command in `src/lws/cli/lws.py` that queries `GET /_ldk/status` and `GET /_ldk/resources`
 - [x] 1.2 Display overall LDK status (running / not reachable)
 - [x] 1.3 Display provider table with name and health status
 - [x] 1.4 Display service table with name, port, and resource count

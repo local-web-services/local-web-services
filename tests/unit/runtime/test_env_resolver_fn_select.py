@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.runtime.env_resolver import resolve_env_vars
+from lws.runtime.env_resolver import resolve_env_vars
 
 # ---------------------------------------------------------------------------
 # Plain string passthrough

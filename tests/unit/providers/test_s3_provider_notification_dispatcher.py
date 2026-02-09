@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from ldk.providers.s3.notifications import NotificationDispatcher
-from ldk.providers.s3.provider import S3Provider
-from ldk.providers.s3.storage import LocalBucketStorage
+from lws.providers.s3.notifications import NotificationDispatcher
+from lws.providers.s3.provider import S3Provider
+from lws.providers.s3.storage import LocalBucketStorage
 
 # ---------------------------------------------------------------------------
 # Fixtures

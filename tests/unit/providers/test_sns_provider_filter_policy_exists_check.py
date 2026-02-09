@@ -6,10 +6,10 @@ from unittest.mock import AsyncMock
 
 import httpx
 
-from ldk.interfaces import ICompute, InvocationResult
-from ldk.interfaces.queue import IQueue
-from ldk.providers.sns.filter import matches_filter_policy
-from ldk.providers.sns.provider import (
+from lws.interfaces import ICompute, InvocationResult
+from lws.interfaces.queue import IQueue
+from lws.providers.sns.filter import matches_filter_policy
+from lws.providers.sns.provider import (
     SnsProvider,
     TopicConfig,
 )

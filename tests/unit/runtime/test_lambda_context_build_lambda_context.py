@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ldk.interfaces import ComputeConfig
-from ldk.runtime.lambda_context import build_lambda_context
+from lws.interfaces import ComputeConfig
+from lws.runtime.lambda_context import build_lambda_context
 
 # ---------------------------------------------------------------------------
 # Helpers

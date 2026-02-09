@@ -7,13 +7,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from ldk.interfaces import (
+from lws.interfaces import (
     ComputeConfig,
     LambdaContext,
     ProviderStartError,
     ProviderStatus,
 )
-from ldk.providers.lambda_runtime.nodejs import NodeJsCompute
+from lws.providers.lambda_runtime.nodejs import NodeJsCompute
 
 # ---------------------------------------------------------------------------
 # Helpers

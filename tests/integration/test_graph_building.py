@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ldk.graph.builder import build_graph
-from ldk.parser.assembly import parse_assembly
+from lws.graph.builder import build_graph
+from lws.parser.assembly import parse_assembly
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures" / "sample-app"
 CDK_OUT = FIXTURES_DIR / "cdk.out"

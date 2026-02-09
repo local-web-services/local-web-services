@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.parser.ref_resolver import RefResolver
+from lws.parser.ref_resolver import RefResolver
 
 
 class TestFnIf:

@@ -6,9 +6,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from ldk.interfaces.provider import ProviderStartError, ProviderStatus
-from ldk.providers.ecs.discovery import ServiceRegistry
-from ldk.providers.ecs.provider import (
+from lws.interfaces.provider import ProviderStartError, ProviderStatus
+from lws.providers.ecs.discovery import ServiceRegistry
+from lws.providers.ecs.provider import (
     ContainerDefinition,
     EcsProvider,
     ServiceDefinition,

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 
-from ldk.parser.ref_resolver import RefResolver
+from lws.parser.ref_resolver import RefResolver
 
 
 class TestWarnings:

@@ -36,15 +36,15 @@ Repository = "https://github.com/local-web-services/local-web-services"
 Issues = "https://github.com/local-web-services/local-web-services/issues"
 
 [project.scripts]
-ldk = "ldk.cli.main:app"
-lws = "ldk.cli.lws:app"
+ldk = "lws.cli.ldk:app"
+lws = "lws.cli.lws:app"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ldk"]
+packages = ["src/lws"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -82,10 +82,10 @@ target-version = "py311"
 select = ["E", "F", "I", "W", "UP", "C90"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["ldk"]
+known-first-party = ["lws"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/ldk/api/gui.py" = ["E501"]
+"src/lws/api/gui.py" = ["E501"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10

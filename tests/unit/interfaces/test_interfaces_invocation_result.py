@@ -1,6 +1,6 @@
 """Tests for LDK interface definitions (P0-07 through P0-10)."""
 
-from ldk.interfaces import (
+from lws.interfaces import (
     InvocationResult,
 )
 

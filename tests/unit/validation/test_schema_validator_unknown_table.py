@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from ldk.interfaces import KeyAttribute, KeySchema, TableConfig
-from ldk.validation.engine import ValidationContext
-from ldk.validation.schema_validator import SchemaValidator
+from lws.interfaces import KeyAttribute, KeySchema, TableConfig
+from lws.validation.engine import ValidationContext
+from lws.validation.schema_validator import SchemaValidator
 
 # ---------------------------------------------------------------------------
 # Helpers

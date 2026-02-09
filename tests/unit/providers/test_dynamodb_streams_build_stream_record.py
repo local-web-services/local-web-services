@@ -14,7 +14,7 @@ from __future__ import annotations
 # ---------------------------------------------------------------------------
 # StreamDispatcher tests
 # ---------------------------------------------------------------------------
-from ldk.providers.dynamodb.streams import (
+from lws.providers.dynamodb.streams import (
     EventName,
     StreamViewType,
     build_stream_record,

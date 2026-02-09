@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.providers.eventbridge.pattern_matcher import match_event
+from lws.providers.eventbridge.pattern_matcher import match_event
 
 # ===========================================================================
 # Exact value matching

@@ -6,7 +6,7 @@ import ast
 import re
 from pathlib import Path
 
-PROVIDERS_DIR = Path(__file__).parent.parent.parent.parent.parent / "src" / "ldk" / "providers"
+PROVIDERS_DIR = Path(__file__).parent.parent.parent.parent.parent / "src" / "lws" / "providers"
 
 # Providers that are expected to have a routes.py with a create_*_app factory.
 # apigateway has no routes.py (it builds routes dynamically).

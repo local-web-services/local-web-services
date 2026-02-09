@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ldk.providers.ecs.health_check import (
+from lws.providers.ecs.health_check import (
     _http_get_ok,
 )
 
