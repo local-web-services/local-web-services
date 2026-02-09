@@ -359,7 +359,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ldk"
+name = "local-web-services"
 version = "0.2.1"
 source = { editable = "." }
 dependencies = [

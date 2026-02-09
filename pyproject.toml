@@ -1,5 +1,5 @@
 [project]
-name = "ldk"
+name = "local-web-services"
 version = "0.2.1"
 description = "Local Development Kit - Run AWS CDK applications locally"
 requires-python = ">=3.11"

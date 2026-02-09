@@ -9,16 +9,16 @@ install: ## Install dependencies
 	uv sync
 
 lint: ## Run linter
-	uv run ruff check src tests
+	uvx ruff check src tests
 
 format: ## Auto-format code
-	uv run black src tests
+	uvx black src tests
 
 format-check: ## Check formatting without changing files
-	uv run black --check src tests
+	uvx black --check src tests
 
 complexity: ## Check cyclomatic complexity (fail on C+ grades)
-	uv run radon cc src -a -nc
+	uvx radon cc src -a -nc
 
 test: ## Run test suite
 	uv run pytest
