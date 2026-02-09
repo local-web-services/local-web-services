@@ -19,7 +19,7 @@ Start the local environment:
 uvx --from local-web-services ldk dev
 ```
 
-Open http://localhost:3000 in your browser to see the GUI — you can watch request logs, browse DynamoDB tables, inspect S3 buckets, and interact with all your resources as you run through the steps below.
+Open http://localhost:3000/_ldk/gui in your browser to see the GUI — you can watch request logs, browse DynamoDB tables, inspect S3 buckets, and interact with all your resources as you run through the steps below.
 
 In another terminal, create an order:
 
