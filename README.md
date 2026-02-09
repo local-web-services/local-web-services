@@ -2,23 +2,75 @@
 
 Run your AWS CDK applications locally. LDK reads your CDK project's synthesized CloudFormation templates and spins up local emulations of API Gateway, Lambda, DynamoDB, SQS, SNS, S3, and Step Functions so you can develop and test without deploying to AWS.
 
+## Try It Out
+
+Clone the [sample project](https://github.com/local-web-services/sample-project) — a serverless order processing system with API Gateway, Lambda, DynamoDB, SQS, S3, SNS, and Step Functions:
+
+```bash
+git clone https://github.com/local-web-services/sample-project.git
+cd sample-project
+npm install
+npx cdk synth
+```
+
+Start the local environment:
+
+```bash
+uvx --from local-web-services ldk dev
+```
+
+Open http://localhost:3000 in your browser to see the GUI — you can watch request logs, browse DynamoDB tables, inspect S3 buckets, and interact with all your resources as you run through the steps below.
+
+In another terminal, create an order:
+
+```bash
+lws apigateway test-invoke-method \
+  --resource /orders \
+  --http-method POST \
+  --body '{"customerName": "Alice", "items": ["widget", "gadget"], "total": 49.99}'
+```
+
+Start the order processing workflow:
+
+```bash
+lws stepfunctions start-execution \
+  --name OrderWorkflow \
+  --input '{"orderId": "<ORDER_ID>", "items": ["widget", "gadget"], "total": 49.99}'
+```
+
+Check the workflow status:
+
+```bash
+lws stepfunctions describe-execution --execution-arn <EXECUTION_ARN>
+```
+
+Retrieve the order:
+
+```bash
+lws apigateway test-invoke-method \
+  --resource /orders/<ORDER_ID> \
+  --http-method GET
+```
+
+The sample project also includes a full end-to-end test script (`test-orders.sh`) that runs all of these steps automatically.
+
 ## Installation
 
 LDK requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-uv tool install ldk
+uvx --from local-web-services ldk
 ```
 
 Or install from source:
 
 ```bash
-git clone https://github.com/local-development-kit/ldk.git
-cd ldk
+git clone https://github.com/local-web-services/local-web-services.git
+cd local-web-services
 uv sync
 ```
 
-## Quick Start
+## Quick Start (Your Own Project)
 
 1. Make sure your CDK project has been synthesized:
 
@@ -30,17 +82,7 @@ npx cdk synth
 2. Start LDK:
 
 ```bash
-ldk dev --project-dir /path/to/your-cdk-project --port 3000
-```
-
-3. Send requests to your local endpoints:
-
-```bash
-curl -X POST http://localhost:3000/orders \
-  -H 'Content-Type: application/json' \
-  -d '{"customerName": "Alice", "items": ["widget"]}'
-
-curl http://localhost:3000/orders/some-id
+uvx --from local-web-services ldk dev --project-dir /path/to/your-cdk-project --port 3000
 ```
 
 LDK will discover your API routes, Lambda functions, DynamoDB tables, SQS queues, SNS topics, S3 buckets, and Step Functions state machines automatically from the CDK output.
