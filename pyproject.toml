@@ -1,8 +1,22 @@
 [project]
 name = "local-web-services"
 version = "0.2.1"
-description = "Local Development Kit - Run AWS CDK applications locally"
+description = "Run AWS CDK applications locally - accelerate development with agentic code editors"
+readme = "README.md"
+license = "MIT"
 requires-python = ">=3.11"
+keywords = ["aws", "cdk", "local", "development", "lambda", "dynamodb", "sqs", "sns", "s3", "agentic", "ai", "code-editor", "vibe-coding"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Libraries",
+]
 dependencies = [
     "fastapi>=0.110.0",
     "uvicorn[standard]>=0.27.0",
@@ -15,6 +29,11 @@ dependencies = [
     "pyjwt[crypto]>=2.8.0",
     "httpx>=0.27.0",
 ]
+
+[project.urls]
+Homepage = "https://local-web-services.github.io/www"
+Repository = "https://github.com/local-web-services/local-web-services"
+Issues = "https://github.com/local-web-services/local-web-services/issues"
 
 [project.scripts]
 ldk = "ldk.cli.main:app"
