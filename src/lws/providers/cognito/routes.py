@@ -37,7 +37,11 @@ class CognitoRouter:
 
         handler = self._handlers().get(operation)
         if handler is None:
-            return _error_response("ValidationException", f"Unknown operation: {operation}")
+            _logger.warning("Unknown Cognito operation: %s", operation)
+            return _error_response(
+                "UnknownOperationException",
+                f"lws: Cognito operation '{operation}' is not yet implemented",
+            )
 
         try:
             return await handler(body)

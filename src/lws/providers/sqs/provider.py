@@ -35,6 +35,7 @@ class QueueConfig:
     content_based_dedup: bool = False
     redrive_policy: RedrivePolicy | None = None
     tags: dict[str, str] = field(default_factory=dict)
+    custom_attrs: dict[str, str] = field(default_factory=dict)
 
 
 class SqsProvider(IQueue):

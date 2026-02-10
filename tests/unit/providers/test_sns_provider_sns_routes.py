@@ -198,7 +198,7 @@ class TestSnsRoutes:
         assert "my-topic" in response.text
 
     @pytest.mark.asyncio
-    async def test_unknown_action_returns_400(self) -> None:
+    async def test_unknown_action_returns_error(self) -> None:
         provider = await _started_provider()
         app = create_sns_app(provider)
 
@@ -209,7 +209,11 @@ class TestSnsRoutes:
             )
 
         assert response.status_code == 400
-        assert "InvalidAction" in response.text
+        assert "<ErrorResponse>" in response.text
+        assert "<Code>InvalidAction</Code>" in response.text
+        assert "lws" in response.text
+        assert "SNS" in response.text
+        assert "Bogus" in response.text
 
     @pytest.mark.asyncio
     async def test_publish_with_message_attributes(self) -> None:

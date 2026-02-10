@@ -1,0 +1,99 @@
+## MODIFIED Requirements
+
+### Requirement: Dev Command
+The CLI SHALL provide an `ldk dev` command that starts the full local development environment from a CDK project directory or a Terraform/OpenTofu project directory. The command SHALL be built with Typer and use `asyncio.run()` for the event loop. In CDK mode, the command SHALL run `cdk synth` if the cloud assembly is stale or missing, parse the cloud assembly, start local service equivalents for all discovered resources, wire event sources and triggers, configure SDK endpoint redirection, and begin watching for file changes. In Terraform mode, the command SHALL start all service providers in always-on mode, generate a `_lws_override.tf` provider override file pointing at local endpoints, and clean up the override file on shutdown.
+
+#### Scenario: Start local environment from CDK project
+- **WHEN** a developer runs `ldk dev` in a directory containing a valid CDK project
+- **THEN** the cloud assembly is synthesized (if needed), all application resources are started locally, and the terminal displays a summary of routes, handlers, tables, queues, and other resources with their local endpoints
+
+#### Scenario: Start local environment from Terraform project
+- **WHEN** a developer runs `ldk dev` in a directory containing `.tf` files and no `cdk.out`
+- **THEN** all service providers SHALL start in always-on mode, a `_lws_override.tf` file SHALL be generated with AWS provider endpoint overrides pointing to local ports, and the terminal SHALL display the available service endpoints and instruct the user to run `terraform apply`
+
+#### Scenario: Auto-detect project type
+- **WHEN** a developer runs `ldk dev` without a `--mode` flag
+- **THEN** LWS SHALL detect the project type by checking for `.tf` files (Terraform mode) or `cdk.out` directory (CDK mode) and start accordingly
+
+#### Scenario: Explicit mode selection
+- **WHEN** a developer runs `ldk dev --mode terraform` or `ldk dev --mode cdk`
+- **THEN** LWS SHALL use the specified mode regardless of file detection
+
+#### Scenario: Ambiguous project type
+- **WHEN** a developer runs `ldk dev` in a directory containing both `.tf` files and a `cdk.out` directory without specifying `--mode`
+- **THEN** LWS SHALL display an error asking the user to specify `--mode cdk` or `--mode terraform`
+
+#### Scenario: No project detected
+- **WHEN** a developer runs `ldk dev` in a directory with neither `.tf` files nor `cdk.out`
+- **THEN** LWS SHALL display an error explaining that no CDK or Terraform project was found
+
+#### Scenario: Auto-synthesis when cloud assembly is stale
+- **WHEN** a developer runs `ldk dev` and the `cdk.out` directory is missing or older than the CDK source files
+- **THEN** LDK SHALL automatically run `cdk synth` before starting the local environment
+
+#### Scenario: Graceful shutdown in Terraform mode
+- **WHEN** a developer presses Ctrl+C while `ldk dev` is running in Terraform mode
+- **THEN** all local services SHALL be gracefully shut down and the `_lws_override.tf` file SHALL be deleted
+
+#### Scenario: Stale override file cleanup
+- **WHEN** a developer runs `ldk dev` in Terraform mode and a `_lws_override.tf` file already exists with the LWS marker comment
+- **THEN** LWS SHALL overwrite the stale file with a fresh override
+
+#### Scenario: Refuse to overwrite user override file
+- **WHEN** a developer runs `ldk dev` in Terraform mode and a `_lws_override.tf` file exists without the LWS marker comment
+- **THEN** LWS SHALL display an error and refuse to overwrite the file
+
+#### Scenario: Typer CLI framework
+- **WHEN** the `ldk` CLI is invoked
+- **THEN** the command SHALL be dispatched via Typer with the entry point `ldk.cli.main:app` and the async orchestration SHALL run inside `asyncio.run()`
+
+## ADDED Requirements
+
+### Requirement: Terraform Override File Generation
+In Terraform mode, LWS SHALL generate a `_lws_override.tf` file in the project root that configures the AWS provider to use local LWS endpoints. The file SHALL contain an `aws` provider block with `endpoints` for all supported services (dynamodb, sqs, s3, sns, cloudwatchevents, stepfunctions, cognitoidp), dummy credentials, and flags to skip AWS credential validation and metadata checks. The file SHALL include a marker comment on the first line identifying it as LWS-generated. The file SHALL be removed on graceful shutdown.
+
+#### Scenario: Override file contains correct endpoints
+- **WHEN** LWS generates the override file with base port 3000
+- **THEN** the file SHALL contain endpoint overrides with `dynamodb = "http://localhost:3001"`, `sqs = "http://localhost:3002"`, `s3 = "http://localhost:3003"`, `sns = "http://localhost:3004"`, `cloudwatchevents = "http://localhost:3005"`, `stepfunctions = "http://localhost:3006"`, and `cognitoidp = "http://localhost:3007"`
+
+#### Scenario: Override file includes marker comment
+- **WHEN** LWS generates the override file
+- **THEN** the first line SHALL be `# Auto-generated by LWS - do not edit. Deleted on shutdown.`
+
+#### Scenario: Override file includes s3 force path style
+- **WHEN** LWS generates the override file
+- **THEN** the provider block SHALL include `s3_use_path_style = true` to ensure S3 requests use path-style addressing compatible with the local provider
+
+#### Scenario: Override file works with OpenTofu
+- **WHEN** a developer uses OpenTofu instead of Terraform
+- **THEN** the `_lws_override.tf` file SHALL work identically since OpenTofu uses the same provider configuration format
+
+### Requirement: Gitignore Management
+When generating the Terraform override file, LWS SHALL check the project's `.gitignore` file (if present) for the `_lws_override.tf` entry. If the entry is not present, LWS SHALL append it to `.gitignore`. If no `.gitignore` exists, LWS SHALL create one containing the entry.
+
+#### Scenario: Add override file to existing gitignore
+- **WHEN** LWS generates the override file and `.gitignore` exists but does not contain `_lws_override.tf`
+- **THEN** LWS SHALL append `_lws_override.tf` to `.gitignore`
+
+#### Scenario: Gitignore already contains entry
+- **WHEN** LWS generates the override file and `.gitignore` already contains `_lws_override.tf`
+- **THEN** LWS SHALL not modify `.gitignore`
+
+#### Scenario: No gitignore exists
+- **WHEN** LWS generates the override file and no `.gitignore` file exists
+- **THEN** LWS SHALL create `.gitignore` with `_lws_override.tf` as its content
+
+### Requirement: Terraform Stub Operations
+Each service provider's HTTP routes SHALL handle unrecognised operations by returning an empty success response instead of an error. This SHALL be logged at warning level with the operation name. This ensures that `terraform apply` does not fail when the AWS provider calls operations that LWS has not fully implemented (e.g., TagResource, ListTagsForResource, DescribeTimeToLive).
+
+#### Scenario: Unknown DynamoDB operation returns success
+- **WHEN** a Terraform apply sends a `DynamoDB_20120810.TagResource` request to the DynamoDB endpoint
+- **THEN** the endpoint SHALL return HTTP 200 with an empty JSON body and log a warning
+
+#### Scenario: Unknown Cognito operation returns success
+- **WHEN** a Terraform apply sends an unrecognised `AWSCognitoIdentityProviderService.*` operation
+- **THEN** the endpoint SHALL return HTTP 200 with an empty JSON body and log a warning
+
+#### Scenario: Known operations still work normally
+- **WHEN** a recognised operation like `CreateTable` is called
+- **THEN** it SHALL be handled by its existing handler, not the stub

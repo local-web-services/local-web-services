@@ -77,7 +77,7 @@ class NodeJsCompute(ICompute):
             duration_ms = (time.monotonic() - start) * 1000
             return InvocationResult(
                 payload=None,
-                error="Task timed out after " f"{self._config.timeout} seconds",
+                error=f"Task timed out after {self._config.timeout} seconds",
                 duration_ms=duration_ms,
                 request_id=context.aws_request_id,
             )

@@ -92,10 +92,10 @@ class TestCreateTable:
         mock_store.create_table.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_create_table_already_exists(
+    async def test_create_table_idempotent(
         self, client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
-        mock_store.create_table.side_effect = ValueError("Table already exists: MyTable")
+        mock_store.create_table.return_value = {"TableName": "MyTable", "TableStatus": "ACTIVE"}
 
         payload = {
             "TableName": "MyTable",
@@ -104,9 +104,9 @@ class TestCreateTable:
         }
         resp = await client.post("/", json=payload, headers=_target("CreateTable"))
 
-        assert resp.status_code == 400
+        assert resp.status_code == 200
         data = resp.json()
-        assert data["__type"] == "ResourceInUseException"
+        assert "TableDescription" in data
 
     @pytest.mark.asyncio
     async def test_create_table_with_gsi(

@@ -165,7 +165,7 @@ class LdkLogger:
                 f"{service.upper()} {method} {path} -> {handler_name}"
                 f" ({duration_ms:.0f}ms) -> {status_code}"
                 if service
-                else f"{method} {path} -> {handler_name}" f" ({duration_ms:.0f}ms) -> {status_code}"
+                else f"{method} {path} -> {handler_name} ({duration_ms:.0f}ms) -> {status_code}"
             ),
             "method": method,
             "path": path,

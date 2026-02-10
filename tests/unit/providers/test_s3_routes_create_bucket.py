@@ -34,7 +34,7 @@ class TestCreateBucket:
         assert resp.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_create_bucket_duplicate(
+    async def test_create_bucket_duplicate_is_idempotent(
         self,
         client: httpx.AsyncClient,
         provider: S3Provider,
@@ -43,5 +43,4 @@ class TestCreateBucket:
 
         resp = await client.put("/my-bucket")
 
-        assert resp.status_code == 409
-        assert "BucketAlreadyOwnedByYou" in resp.text
+        assert resp.status_code == 200

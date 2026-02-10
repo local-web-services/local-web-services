@@ -32,9 +32,9 @@ async def _start_execution(name: str, input_str: str, port: int) -> None:
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    arn = resource.get("arn", f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}")
+        arn = resource.get("arn", f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}")
+    except Exception:
+        arn = f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
     result = await client.json_target_request(
         _SERVICE,
         f"{_TARGET_PREFIX}.StartExecution",
@@ -78,9 +78,9 @@ async def _list_executions(name: str, port: int) -> None:
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    arn = resource.get("arn", f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}")
+        arn = resource.get("arn", f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}")
+    except Exception:
+        arn = f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
     result = await client.json_target_request(
         _SERVICE,
         f"{_TARGET_PREFIX}.ListExecutions",

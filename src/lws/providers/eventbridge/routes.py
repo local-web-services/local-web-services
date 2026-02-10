@@ -8,7 +8,6 @@ selects the operation.  Responses use JSON format.
 from __future__ import annotations
 
 import json
-import uuid
 
 from fastapi import FastAPI, Request, Response
 
@@ -239,10 +238,11 @@ def create_eventbridge_app(provider: EventBridgeProvider) -> FastAPI:
 
         handler = _TARGET_HANDLERS.get(target)
         if handler is None:
+            action = target.rsplit(".", 1)[-1] if "." in target else target
+            _logger.warning("Unknown EventBridge target: %s", target)
             error_body = {
-                "Error": "UnknownOperation",
-                "Message": f"Unknown target: {target}",
-                "RequestId": str(uuid.uuid4()),
+                "__type": "UnknownOperationException",
+                "message": f"lws: EventBridge operation '{action}' is not yet implemented",
             }
             return Response(
                 content=json.dumps(error_body),

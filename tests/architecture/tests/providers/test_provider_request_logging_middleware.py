@@ -41,14 +41,14 @@ class TestProviderRequestLoggingMiddleware:
                     break
 
             if create_app_func is None:
-                violations.append(f"{routes_file}: " f"No create_*_app function found")
+                violations.append(f"{routes_file}: No create_*_app function found")
                 continue
 
             # Check that RequestLoggingMiddleware is imported
             has_middleware_import = "RequestLoggingMiddleware" in content
 
             if not has_middleware_import:
-                violations.append(f"{routes_file}: " f"RequestLoggingMiddleware not imported")
+                violations.append(f"{routes_file}: RequestLoggingMiddleware not imported")
                 continue
 
             # Check that add_middleware is called with RequestLoggingMiddleware

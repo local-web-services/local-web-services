@@ -160,7 +160,7 @@ class ExecutionEngine:
         if execution_arn is None:
             uid = uuid.uuid4()
             execution_arn = (
-                f"arn:aws:states:us-east-1:000000000000" f":execution:{state_machine_name}:{uid}"
+                f"arn:aws:states:us-east-1:000000000000:execution:{state_machine_name}:{uid}"
             )
 
         history = ExecutionHistory(

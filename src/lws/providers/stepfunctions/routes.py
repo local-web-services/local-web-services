@@ -35,7 +35,11 @@ class StepFunctionsRouter:
 
         handler = self._handlers().get(action)
         if handler is None:
-            return _error_response("UnknownAction", f"Unknown action: {action}")
+            _logger.warning("Unknown Step Functions action: %s", action)
+            return _error_response(
+                "UnknownOperationException",
+                f"lws: StepFunctions operation '{action}' is not yet implemented",
+            )
         return await handler(body)
 
     def _handlers(self) -> dict:
@@ -49,6 +53,11 @@ class StepFunctionsRouter:
             "CreateStateMachine": self._create_state_machine,
             "DeleteStateMachine": self._delete_state_machine,
             "DescribeStateMachine": self._describe_state_machine,
+            "ValidateStateMachineDefinition": self._validate_definition,
+            "ListStateMachineVersions": self._list_state_machine_versions,
+            "TagResource": self._tag_resource,
+            "UntagResource": self._untag_resource,
+            "ListTagsForResource": self._list_tags_for_resource,
         }
 
     # ------------------------------------------------------------------
@@ -168,6 +177,22 @@ class StepFunctionsRouter:
             )
         return _json_response(attrs)
 
+    async def _validate_definition(self, body: dict) -> Response:
+        """Handle ValidateStateMachineDefinition — always valid."""
+        return _json_response({"result": "OK", "diagnostics": []})
+
+    async def _list_state_machine_versions(self, body: dict) -> Response:
+        return _json_response({"stateMachineVersions": []})
+
+    async def _tag_resource(self, body: dict) -> Response:
+        return _json_response({})
+
+    async def _untag_resource(self, body: dict) -> Response:
+        return _json_response({})
+
+    async def _list_tags_for_resource(self, body: dict) -> Response:
+        return _json_response({"tags": []})
+
 
 # ------------------------------------------------------------------
 # Helpers
@@ -219,7 +244,7 @@ def _format_execution(history: Any) -> dict:
     result: dict[str, Any] = {
         "executionArn": history.execution_arn,
         "stateMachineArn": (
-            f"arn:aws:states:us-east-1:000000000000" f":stateMachine:{history.state_machine_name}"
+            f"arn:aws:states:us-east-1:000000000000:stateMachine:{history.state_machine_name}"
         ),
         "name": history.execution_arn.rsplit(":", 1)[-1],
         "status": history.status.value,

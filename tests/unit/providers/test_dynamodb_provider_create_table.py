@@ -75,11 +75,13 @@ class TestCreateTable:
         assert result["data"] == "hello"
 
     @pytest.mark.asyncio
-    async def test_create_table_duplicate_raises(self, provider: SqliteDynamoProvider) -> None:
-        await provider.create_table(_simple_config())
+    async def test_create_table_duplicate_is_idempotent(
+        self, provider: SqliteDynamoProvider
+    ) -> None:
+        first = await provider.create_table(_simple_config())
+        second = await provider.create_table(_simple_config())
 
-        with pytest.raises(ValueError, match="already exists"):
-            await provider.create_table(_simple_config())
+        assert first["TableName"] == second["TableName"]
 
     @pytest.mark.asyncio
     async def test_create_table_with_gsi(self, provider: SqliteDynamoProvider) -> None:

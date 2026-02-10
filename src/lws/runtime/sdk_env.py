@@ -26,6 +26,7 @@ def build_sdk_env(endpoints: dict[str, str]) -> dict[str, str]:
         "AWS_ACCESS_KEY_ID": "ldk-local",
         "AWS_SECRET_ACCESS_KEY": "ldk-local",
         "AWS_DEFAULT_REGION": "us-east-1",
+        "AWS_REGION": "us-east-1",
     }
 
     for service_name, url in endpoints.items():

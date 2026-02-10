@@ -251,16 +251,18 @@ async def test_batch_write_item(client: httpx.AsyncClient, mock_store: AsyncMock
 
 
 @pytest.mark.asyncio
-async def test_unknown_operation_returns_400(
+async def test_unknown_operation_returns_error(
     client: httpx.AsyncClient,
 ) -> None:
     payload = {"TableName": "Users"}
     resp = await client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
     assert resp.status_code == 400
-    data = resp.json()
-    assert data["__type"] == "ValidationException"
-    assert "Unknown operation" in data["message"]
+    body = resp.json()
+    assert body["__type"] == "UnknownOperationException"
+    assert "lws" in body["message"]
+    assert "DynamoDB" in body["message"]
+    assert "TransactWriteItems" in body["message"]
 
 
 @pytest.mark.asyncio

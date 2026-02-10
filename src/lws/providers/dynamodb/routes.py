@@ -52,9 +52,10 @@ class DynamoDbRouter:
 
         handler = self._handlers().get(operation)
         if handler is None:
+            _logger.warning("Unknown DynamoDB operation: %s", operation)
             return _error_response(
-                "ValidationException",
-                f"Unknown operation: {operation}",
+                "UnknownOperationException",
+                f"lws: DynamoDB operation '{operation}' is not yet implemented",
             )
 
         return await handler(body)
@@ -73,6 +74,10 @@ class DynamoDbRouter:
             "DeleteTable": self._delete_table,
             "DescribeTable": self._describe_table,
             "ListTables": self._list_tables,
+            "DescribeTimeToLive": self._describe_time_to_live,
+            "ListTagsOfResource": self._list_tags_of_resource,
+            "TagResource": self._tag_resource,
+            "UntagResource": self._untag_resource,
         }
 
     # ------------------------------------------------------------------
@@ -172,15 +177,8 @@ class DynamoDbRouter:
         return _json_response({})
 
     async def _create_table(self, body: dict) -> Response:
-        table_name = body.get("TableName", "")
         config = _parse_table_config(body)
-        try:
-            description = await self.store.create_table(config)
-        except ValueError:
-            return _error_response(
-                "ResourceInUseException",
-                f"Table already exists: {table_name}",
-            )
+        description = await self.store.create_table(config)
         return _json_response({"TableDescription": description})
 
     async def _delete_table(self, body: dict) -> Response:
@@ -208,6 +206,26 @@ class DynamoDbRouter:
     async def _list_tables(self, body: dict) -> Response:
         table_names = await self.store.list_tables()
         return _json_response({"TableNames": table_names})
+
+    async def _describe_time_to_live(self, body: dict) -> Response:
+        table_name = body.get("TableName", "")
+        return _json_response(
+            {
+                "TimeToLiveDescription": {
+                    "TimeToLiveStatus": "DISABLED",
+                    "TableName": table_name,
+                }
+            }
+        )
+
+    async def _list_tags_of_resource(self, body: dict) -> Response:
+        return _json_response({"Tags": []})
+
+    async def _tag_resource(self, body: dict) -> Response:
+        return _json_response({})
+
+    async def _untag_resource(self, body: dict) -> Response:
+        return _json_response({})
 
 
 # ------------------------------------------------------------------

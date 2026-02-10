@@ -25,6 +25,15 @@ def _xml_response(body: str, status_code: int = 200) -> Response:
     )
 
 
+def _json_s3_response(body: str, status_code: int = 200) -> Response:
+    """Return a JSON response (used for GetBucketPolicy etc.)."""
+    return Response(
+        content=body,
+        status_code=status_code,
+        media_type="application/json",
+    )
+
+
 def _xml_escape(text: str) -> str:
     """Escape special XML characters."""
     return (
@@ -139,9 +148,7 @@ async def _list_objects_v2(bucket: str, request: Request, provider: S3Provider) 
     token_xml = ""
     if result["next_token"]:
         token_xml = (
-            f"<NextContinuationToken>"
-            f"{_xml_escape(result['next_token'])}"
-            f"</NextContinuationToken>"
+            f"<NextContinuationToken>{_xml_escape(result['next_token'])}</NextContinuationToken>"
         )
 
     body = (
@@ -165,16 +172,36 @@ async def _list_objects_v2(bucket: str, request: Request, provider: S3Provider) 
 # ------------------------------------------------------------------
 
 
+async def _get_bucket(bucket: str, request: Request, provider: S3Provider) -> Response:
+    """Handle GET /{bucket} — dispatches based on query params."""
+    if "policy" in request.query_params:
+        return _json_s3_response('{"Version":"2012-10-17","Statement":[]}')
+    if "tagging" in request.query_params:
+        return _xml_response(
+            '<?xml version="1.0" encoding="UTF-8"?><Tagging><TagSet></TagSet></Tagging>'
+        )
+    if "versioning" in request.query_params:
+        return _xml_response('<?xml version="1.0" encoding="UTF-8"?><VersioningConfiguration/>')
+    if "acl" in request.query_params:
+        return _xml_response(
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            "<AccessControlPolicy>"
+            "<Owner><ID>000000000000</ID></Owner>"
+            "<AccessControlList>"
+            "<Grant><Grantee><ID>000000000000</ID></Grantee>"
+            "<Permission>FULL_CONTROL</Permission></Grant>"
+            "</AccessControlList>"
+            "</AccessControlPolicy>"
+        )
+    return await _list_objects_v2(bucket, request, provider)
+
+
 async def _create_bucket(bucket: str, provider: S3Provider) -> Response:
-    """Handle CreateBucket (PUT /{bucket} with no key)."""
+    """Handle CreateBucket (PUT /{bucket} with no key). Idempotent."""
     try:
         await provider.create_bucket(bucket)
     except ValueError:
-        return _error_xml(
-            "BucketAlreadyOwnedByYou",
-            f"Your previous request to create the named bucket succeeded: {bucket}",
-            status_code=409,
-        )
+        pass  # Bucket already exists — treat as success (idempotent)
     return Response(status_code=200)
 
 
@@ -269,7 +296,7 @@ def create_s3_app(provider: S3Provider) -> FastAPI:
         return await _head_bucket(bucket, provider)
 
     @app.api_route("/{bucket}", methods=["GET"])
-    async def list_objects_v2(bucket: str, request: Request) -> Response:
-        return await _list_objects_v2(bucket, request, provider)
+    async def get_bucket_route(bucket: str, request: Request) -> Response:
+        return await _get_bucket(bucket, request, provider)
 
     return app

@@ -246,7 +246,7 @@ class TestEventBridgeRoutes:
         assert "custom-bus" in names
 
     @pytest.mark.asyncio
-    async def test_unknown_target_returns_400(self) -> None:
+    async def test_unknown_target_returns_error(self) -> None:
         provider = await _started_provider()
         app = create_eventbridge_app(provider)
 
@@ -259,7 +259,10 @@ class TestEventBridgeRoutes:
 
         assert response.status_code == 400
         body = response.json()
-        assert body["Error"] == "UnknownOperation"
+        assert body["__type"] == "UnknownOperationException"
+        assert "lws" in body["message"]
+        assert "EventBridge" in body["message"]
+        assert "Bogus" in body["message"]
 
     @pytest.mark.asyncio
     async def test_empty_body_handling(self) -> None:

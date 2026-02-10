@@ -410,9 +410,7 @@ def _resolve_definition(config: StateMachineConfig) -> str | dict:
 
 def _build_execution_arn(state_machine_name: str, execution_name: str) -> str:
     """Build a fake execution ARN."""
-    return (
-        f"arn:aws:states:us-east-1:000000000000" f":execution:{state_machine_name}:{execution_name}"
-    )
+    return f"arn:aws:states:us-east-1:000000000000:execution:{state_machine_name}:{execution_name}"
 
 
 def _build_sync_response(history: ExecutionHistory) -> dict:

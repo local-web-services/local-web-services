@@ -671,7 +671,7 @@ class SqliteDynamoProvider(IKeyValueStore):
 
     async def create_table(self, config: TableConfig) -> dict:
         if config.table_name in self._tables:
-            raise ValueError(f"Table already exists: {config.table_name}")
+            return self._build_table_description(self._tables[config.table_name])
 
         self._tables[config.table_name] = config
 
@@ -834,7 +834,7 @@ class SqliteDynamoProvider(IKeyValueStore):
         )
         projected_json = _project_item_for_gsi(item, gsi, table_config)
         await conn.execute(
-            f"INSERT OR REPLACE INTO gsi_{gsi.index_name} " "(pk, sk, item_json) VALUES (?, ?, ?)",
+            f"INSERT OR REPLACE INTO gsi_{gsi.index_name} (pk, sk, item_json) VALUES (?, ?, ?)",
             (gsi_pk, gsi_sk, projected_json),
         )
 

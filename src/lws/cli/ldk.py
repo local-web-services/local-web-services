@@ -90,10 +90,11 @@ def dev(
         None, "--log-level", "-l", help="Log level (debug/info/warning/error)"
     ),
     project_dir: Path = typer.Option(".", "--project-dir", "-d", help="Project root directory"),
+    mode: str = typer.Option(None, "--mode", "-m", help="Project mode (cdk or terraform)"),
 ) -> None:
     """Start the local development environment."""
     try:
-        asyncio.run(_run_dev(project_dir, port, no_persist, force_synth, log_level))
+        asyncio.run(_run_dev(project_dir, port, no_persist, force_synth, log_level, mode))
     except KeyboardInterrupt:
         pass
 
@@ -372,8 +373,7 @@ def _add_api_details(details: dict[str, str], app_model: AppModel) -> None:
     for api_def in app_model.apis:
         for r in api_def.routes:
             details[f"API Route:{r.path}"] = (
-                f"lws apigateway test-invoke-method"
-                f" --resource {r.path} --http-method {r.method}"
+                f"lws apigateway test-invoke-method --resource {r.path} --http-method {r.method}"
             )
     for f in app_model.functions:
         details[f"Function:{f.name}"] = f"ldk invoke {f.name}"
@@ -425,6 +425,214 @@ def _display_summary(app_model: AppModel, port: int) -> None:
     )
 
 
+def _resolve_mode(project_dir: Path, config: LdkConfig, mode_override: str | None) -> str:
+    """Resolve the project mode from CLI flag, config, or auto-detection.
+
+    Returns ``"cdk"`` or ``"terraform"``.
+    Raises ``typer.Exit(1)`` on error.
+    """
+    from lws.terraform.detect import detect_project_type
+
+    mode = mode_override or config.mode
+    if mode:
+        if mode not in ("cdk", "terraform"):
+            print_error("Invalid mode", f"Must be 'cdk' or 'terraform', got '{mode}'")
+            raise typer.Exit(1)
+        return mode
+
+    detected = detect_project_type(project_dir)
+    if detected == "ambiguous":
+        print_error(
+            "Ambiguous project",
+            "Both .tf files and cdk.out found. Use --mode cdk or --mode terraform.",
+        )
+        raise typer.Exit(1)
+    if detected == "none":
+        print_error(
+            "No project found",
+            "No .tf files or cdk.out directory found. "
+            "Run from a CDK or Terraform project directory.",
+        )
+        raise typer.Exit(1)
+    return detected
+
+
+async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
+    """Run the dev server in Terraform mode.
+
+    Starts all service providers in always-on mode, generates the
+    Terraform provider override file, and waits for shutdown.
+    """
+    from lws.terraform.gitignore import ensure_gitignore
+    from lws.terraform.override import cleanup_override, generate_override
+
+    port = config.port
+    data_dir = project_dir / config.data_dir
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    # Generate override file
+    try:
+        override_path = generate_override(port, project_dir)
+    except FileExistsError as exc:
+        print_error("Override file conflict", str(exc))
+        raise typer.Exit(1)
+
+    ensure_gitignore(project_dir)
+
+    # Create all providers in always-on mode (no app model)
+    providers, ports = _create_terraform_providers(config, data_dir, project_dir)
+
+    orchestrator = Orchestrator()
+
+    # Enable WebSocket log streaming
+    from lws.logging.logger import WebSocketLogHandler, set_ws_handler
+
+    ws_log_handler = WebSocketLogHandler()
+    set_ws_handler(ws_log_handler)
+
+    # Build resource metadata so the CLI client can discover services
+    resource_metadata: dict[str, Any] = {
+        "port": port,
+        "services": {
+            svc_name: {"port": svc_port, "resources": []} for svc_name, svc_port in ports.items()
+        },
+    }
+
+    # Mount management API (no compute providers in terraform mode)
+    _mount_management_api(providers, orchestrator, {}, port, resource_metadata)
+
+    for key in providers:
+        pass  # All keys are already in the dict
+
+    startup_order = list(providers.keys())
+
+    try:
+        await orchestrator.start(providers, startup_order)
+    except Exception as exc:
+        cleanup_override(project_dir)
+        print_error("Failed to start providers", str(exc))
+        raise typer.Exit(1)
+
+    # Display summary
+    _console.print()
+    _console.print("[bold green]Terraform mode active[/bold green]")
+    _console.print(f"  Override file: {override_path}")
+    _console.print()
+    _console.print("[bold]Service endpoints:[/bold]")
+    for svc_name, svc_port in sorted(ports.items()):
+        _console.print(f"  {svc_name:20s} http://localhost:{svc_port}")
+    _console.print()
+    _console.print("[dim]Run 'terraform init && terraform apply' to create resources.[/dim]")
+    _console.print(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
+    _console.print()
+
+    try:
+        await orchestrator.wait_for_shutdown()
+    finally:
+        cleanup_override(project_dir)
+        set_ws_handler(None)
+        await orchestrator.stop()
+        typer.echo("Goodbye")
+
+
+def _create_terraform_providers(
+    config: LdkConfig,
+    data_dir: Path,
+    project_dir: Path | None = None,
+) -> tuple[dict[str, Provider], dict[str, int]]:
+    """Create all service providers for Terraform mode (no app model)."""
+    providers: dict[str, Provider] = {}
+
+    port = config.port
+    ports = {
+        "dynamodb": port + 1,
+        "sqs": port + 2,
+        "s3": port + 3,
+        "sns": port + 4,
+        "eventbridge": port + 5,
+        "stepfunctions": port + 6,
+        "cognito": port + 7,
+        "apigateway": port + 8,
+        "lambda": port + 9,
+        "iam": port + 10,
+        "sts": port + 11,
+    }
+
+    dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
+    sqs_provider = SqsProvider()
+    s3_provider = S3Provider(data_dir=data_dir)
+    sns_provider = SnsProvider()
+    eb_provider = EventBridgeProvider()
+    sf_provider = StepFunctionsProvider()
+
+    pool_config = UserPoolConfig(
+        user_pool_id="us-east-1_default",
+        user_pool_name="default",
+    )
+    cognito_provider = CognitoProvider(data_dir=data_dir, config=pool_config)
+
+    _register_http_providers(
+        providers,
+        dynamo_provider=dynamo_provider,
+        sqs_provider=sqs_provider,
+        s3_provider=s3_provider,
+        sns_provider=sns_provider,
+        eb_provider=eb_provider,
+        sf_provider=sf_provider,
+        cognito_provider=cognito_provider,
+        ports=ports,
+    )
+
+    # Shared Lambda registry for Lambda management and API Gateway V2 proxy
+    from lws.providers.lambda_runtime.routes import LambdaRegistry, create_lambda_management_app
+
+    lambda_registry = LambdaRegistry()
+
+    # Wire Lambda registry compute providers into Step Functions so SFN can
+    # invoke Lambda functions that Terraform creates dynamically.
+    sf_provider.set_compute_providers(lambda_registry._compute)
+
+    # Build SDK env so Lambda functions can reach local services
+    local_endpoints: dict[str, str] = {
+        "dynamodb": f"http://127.0.0.1:{ports['dynamodb']}",
+        "sqs": f"http://127.0.0.1:{ports['sqs']}",
+        "s3": f"http://127.0.0.1:{ports['s3']}",
+        "sns": f"http://127.0.0.1:{ports['sns']}",
+        "events": f"http://127.0.0.1:{ports['eventbridge']}",
+        "stepfunctions": f"http://127.0.0.1:{ports['stepfunctions']}",
+        "cognito-idp": f"http://127.0.0.1:{ports['cognito']}",
+    }
+    sdk_env = build_sdk_env(local_endpoints)
+
+    # Lambda management API
+    providers["__lambda_http__"] = _HttpServiceProvider(
+        "lambda-http",
+        lambda: create_lambda_management_app(lambda_registry, project_dir, sdk_env),
+        ports["lambda"],
+    )
+
+    # API Gateway management API with V2 support and Lambda proxy
+    from lws.providers.apigateway.routes import create_apigateway_management_app
+
+    providers["__apigateway_http__"] = _HttpServiceProvider(
+        "apigateway-http",
+        lambda: create_apigateway_management_app(lambda_registry),
+        ports["apigateway"],
+    )
+
+    # IAM stub
+    from lws.providers.iam.routes import create_iam_app
+
+    providers["__iam_http__"] = _HttpServiceProvider("iam-http", create_iam_app, ports["iam"])
+
+    # STS stub
+    from lws.providers.sts.routes import create_sts_app
+
+    providers["__sts_http__"] = _HttpServiceProvider("sts-http", create_sts_app, ports["sts"])
+
+    return providers, ports
+
+
 def _has_any_resources(app_model: AppModel) -> bool:
     """Return True if the app model contains at least one resource."""
     return bool(
@@ -447,11 +655,18 @@ async def _run_dev(
     no_persist: bool,
     force_synth: bool,
     log_level_override: str | None,
+    mode_override: str | None = None,
 ) -> None:
     """Async implementation of the ``ldk dev`` command."""
     project_dir = project_dir.resolve()
     config = _load_and_apply_config(project_dir, port_override, no_persist, log_level_override)
     print_banner(__version__, project_dir.name)
+
+    # Resolve project mode
+    resolved_mode = _resolve_mode(project_dir, config, mode_override)
+    if resolved_mode == "terraform":
+        await _run_dev_terraform(project_dir, config)
+        return
 
     try:
         cdk_out = await ensure_synth(project_dir, force=force_synth)
@@ -991,7 +1206,9 @@ def _register_http_providers(
     http_services.append(
         ("dynamodb", ports["dynamodb"], lambda p=dynamo_provider: create_dynamodb_app(p))
     )
-    http_services.append(("sqs", ports["sqs"], lambda p=sqs_provider: create_sqs_app(p)))
+    http_services.append(
+        ("sqs", ports["sqs"], lambda p=sqs_provider, pt=ports["sqs"]: create_sqs_app(p, pt))
+    )
     http_services.append(("s3", ports["s3"], lambda p=s3_provider: create_s3_app(p)))
     http_services.append(("sns", ports["sns"], lambda p=sns_provider: create_sns_app(p)))
     http_services.append(

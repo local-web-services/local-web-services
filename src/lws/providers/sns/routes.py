@@ -184,7 +184,7 @@ async def _handle_list_topics(provider: SnsProvider, params: dict[str, str]) -> 
     """Handle the ``ListTopics`` action."""
     members: list[str] = []
     for topic in provider.list_topics():
-        members.append("<member>" f"<TopicArn>{topic.topic_arn}</TopicArn>" "</member>")
+        members.append(f"<member><TopicArn>{topic.topic_arn}</TopicArn></member>")
 
     xml = (
         "<ListTopicsResponse>"
@@ -201,6 +201,68 @@ async def _handle_list_topics(provider: SnsProvider, params: dict[str, str]) -> 
 # Action dispatch table
 # ------------------------------------------------------------------
 
+
+async def _handle_set_topic_attributes(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``SetTopicAttributes`` action."""
+    topic_arn = params.get("TopicArn", "")
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    attr_name = params.get("AttributeName", "")
+    attr_value = params.get("AttributeValue", "")
+    try:
+        await provider.set_topic_attribute(topic_name, attr_name, attr_value)
+    except KeyError:
+        xml = (
+            "<ErrorResponse>"
+            "<Error>"
+            "<Code>NotFound</Code>"
+            f"<Message>Topic not found: {topic_arn}</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=404, media_type="text/xml")
+
+    xml = (
+        "<SetTopicAttributesResponse>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</SetTopicAttributesResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_list_tags_for_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``ListTagsForResource`` action."""
+    xml = (
+        "<ListTagsForResourceResponse>"
+        "<ListTagsForResourceResult>"
+        "<Tags/>"
+        "</ListTagsForResourceResult>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</ListTagsForResourceResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_tag_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``TagResource`` action."""
+    xml = (
+        "<TagResourceResponse>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</TagResourceResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_untag_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``UntagResource`` action."""
+    xml = (
+        "<UntagResourceResponse>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</UntagResourceResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
 _ACTION_HANDLERS = {
     "Publish": _handle_publish,
     "Subscribe": _handle_subscribe,
@@ -208,7 +270,11 @@ _ACTION_HANDLERS = {
     "CreateTopic": _handle_create_topic,
     "DeleteTopic": _handle_delete_topic,
     "GetTopicAttributes": _handle_get_topic_attributes,
+    "SetTopicAttributes": _handle_set_topic_attributes,
     "ListTopics": _handle_list_topics,
+    "ListTagsForResource": _handle_list_tags_for_resource,
+    "TagResource": _handle_tag_resource,
+    "UntagResource": _handle_untag_resource,
 }
 
 
@@ -259,11 +325,13 @@ def create_sns_app(provider: SnsProvider) -> FastAPI:
         action = params.get("Action", "")
         handler = _ACTION_HANDLERS.get(action)
         if handler is None:
+            _logger.warning("Unknown SNS action: %s", action)
             xml = (
                 "<ErrorResponse>"
                 "<Error>"
+                "<Type>Sender</Type>"
                 "<Code>InvalidAction</Code>"
-                f"<Message>Unknown action: {action}</Message>"
+                f"<Message>lws: SNS operation '{action}' is not yet implemented</Message>"
                 "</Error>"
                 f"<RequestId>{uuid.uuid4()}</RequestId>"
                 "</ErrorResponse>"

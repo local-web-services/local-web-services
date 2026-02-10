@@ -127,7 +127,7 @@ def test_print_resource_summary_with_local_details() -> None:
 
         local_details = {
             "API Route:/orders": (
-                "lws apigateway test-invoke-method" " --resource /orders --http-method GET"
+                "lws apigateway test-invoke-method --resource /orders --http-method GET"
             ),
             "Table:OrdersTable": "lws dynamodb scan --table-name OrdersTable",
             "Function:processOrder": "ldk invoke processOrder",

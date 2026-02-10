@@ -48,6 +48,7 @@ class LdkConfig:
         default_factory=lambda: ["node_modules/**", ".git/**", "cdk.out/**"]
     )
     eventual_consistency_delay_ms: int = 200
+    mode: str | None = None
 
 
 def _validate_config(config: LdkConfig) -> None:

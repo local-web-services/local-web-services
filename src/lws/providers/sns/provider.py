@@ -164,11 +164,26 @@ class SnsProvider(Provider):
         topic = self._topics.get(topic_name)
         if topic is None:
             raise KeyError(f"Topic not found: {topic_name}")
-        return {
+        attrs: dict[str, str] = {
             "TopicArn": topic.topic_arn,
             "DisplayName": topic.topic_name,
             "SubscriptionsConfirmed": str(len(topic.subscribers)),
+            "Policy": '{"Version":"2012-10-17","Statement":[]}',
         }
+        # Overlay any attributes set via SetTopicAttributes
+        custom = getattr(topic, "_custom_attrs", None)
+        if custom:
+            attrs.update(custom)
+        return attrs
+
+    async def set_topic_attribute(self, topic_name: str, attr_name: str, attr_value: str) -> None:
+        """Set a single topic attribute. Raises KeyError if not found."""
+        topic = self._topics.get(topic_name)
+        if topic is None:
+            raise KeyError(f"Topic not found: {topic_name}")
+        if not hasattr(topic, "_custom_attrs"):
+            topic._custom_attrs = {}  # type: ignore[attr-defined]
+        topic._custom_attrs[attr_name] = attr_value  # type: ignore[attr-defined]
 
     # -- Dispatch helpers -----------------------------------------------------
 
