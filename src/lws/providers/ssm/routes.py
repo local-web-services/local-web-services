@@ -317,11 +317,21 @@ _ACTION_HANDLERS: dict[str, Any] = {
 # ------------------------------------------------------------------
 
 
-def create_ssm_app() -> FastAPI:
+def create_ssm_app(initial_parameters: list[dict] | None = None) -> FastAPI:
     """Create a FastAPI application that speaks the SSM wire protocol."""
     app = FastAPI(title="LDK SSM")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="ssm")
     state = _SsmState()
+
+    if initial_parameters:
+        for p in initial_parameters:
+            param = _Parameter(
+                name=p["name"],
+                value=p.get("value", ""),
+                param_type=p.get("type", "String"),
+                description=p.get("description", ""),
+            )
+            state._parameters[param.name] = param
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

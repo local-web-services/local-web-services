@@ -440,11 +440,29 @@ _ACTION_HANDLERS: dict[str, Any] = {
 # ------------------------------------------------------------------
 
 
-def create_secretsmanager_app() -> FastAPI:
+def create_secretsmanager_app(initial_secrets: list[dict] | None = None) -> FastAPI:
     """Create a FastAPI application that speaks the Secrets Manager wire protocol."""
     app = FastAPI(title="LDK Secrets Manager")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="secretsmanager")
     state = _SecretsState()
+
+    if initial_secrets:
+        for s in initial_secrets:
+            secret = _Secret(
+                name=s["name"],
+                description=s.get("description", ""),
+            )
+            secret_string = s.get("secret_string")
+            if secret_string is not None:
+                version_id = str(uuid.uuid4())
+                version = _SecretVersion(
+                    version_id=version_id,
+                    secret_string=secret_string,
+                    stages=["AWSCURRENT"],
+                )
+                secret.versions[version_id] = version
+                secret.current_version_id = version_id
+            state._secrets[secret.name] = secret
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

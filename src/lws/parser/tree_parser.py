@@ -32,6 +32,8 @@ FQN_CATEGORY_MAP: dict[str, str] = {
     "aws-cdk-lib.aws_sns.Topic": "sns",
     "aws-cdk-lib.aws_stepfunctions.StateMachine": "stepfunctions",
     "aws-cdk-lib.aws_events.Rule": "events",
+    "aws-cdk-lib.aws_ssm.StringParameter": "ssm",
+    "aws-cdk-lib.aws_secretsmanager.Secret": "secretsmanager",
 }
 
 
