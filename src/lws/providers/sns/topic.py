@@ -113,6 +113,25 @@ class LocalTopic:
         message_id = str(uuid.uuid4())
         return message_id
 
+    async def remove_subscription(self, subscription_arn: str) -> bool:
+        """Remove a subscription by ARN.
+
+        Returns True if a subscription was removed, False if not found.
+        """
+        async with self._lock:
+            for i, sub in enumerate(self.subscribers):
+                if sub.subscription_arn == subscription_arn:
+                    self.subscribers.pop(i)
+                    return True
+        return False
+
+    def find_subscription(self, subscription_arn: str) -> Subscription | None:
+        """Find a subscription by ARN. Returns None if not found."""
+        for sub in self.subscribers:
+            if sub.subscription_arn == subscription_arn:
+                return sub
+        return None
+
     def get_matching_subscribers(
         self,
         message_attributes: dict | None = None,

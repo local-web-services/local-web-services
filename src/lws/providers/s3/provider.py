@@ -25,6 +25,9 @@ class S3Provider(IObjectStore):
         self._dispatcher = NotificationDispatcher()
         self._started = False
         self._bucket_created: dict[str, float] = {}
+        self._bucket_tagging: dict[str, dict[str, str]] = {}
+        self._bucket_policies: dict[str, str] = {}
+        self._bucket_notification_configs: dict[str, str] = {}
 
     # -- Provider lifecycle ---------------------------------------------------
 
@@ -95,6 +98,9 @@ class S3Provider(IObjectStore):
             shutil.rmtree(bucket_dir)
         self._buckets.remove(bucket_name)
         self._bucket_created.pop(bucket_name, None)
+        self._bucket_tagging.pop(bucket_name, None)
+        self._bucket_policies.pop(bucket_name, None)
+        self._bucket_notification_configs.pop(bucket_name, None)
 
     async def head_bucket(self, bucket_name: str) -> dict:
         """Return bucket metadata. Raises KeyError if not found."""
@@ -116,6 +122,57 @@ class S3Provider(IObjectStore):
     def storage(self) -> LocalBucketStorage:
         """Expose underlying storage for route handlers that need full metadata."""
         return self._storage
+
+    # -- Bucket tagging -------------------------------------------------------
+
+    def put_bucket_tagging(self, bucket_name: str, tags: dict[str, str]) -> None:
+        """Store tags for a bucket. Raises KeyError if bucket not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        self._bucket_tagging[bucket_name] = dict(tags)
+
+    def get_bucket_tagging(self, bucket_name: str) -> dict[str, str]:
+        """Return tags for a bucket. Raises KeyError if bucket not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        return dict(self._bucket_tagging.get(bucket_name, {}))
+
+    def delete_bucket_tagging(self, bucket_name: str) -> None:
+        """Remove all tags for a bucket. Raises KeyError if bucket not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        self._bucket_tagging.pop(bucket_name, None)
+
+    # -- Bucket policy --------------------------------------------------------
+
+    def put_bucket_policy(self, bucket_name: str, policy: str) -> None:
+        """Store a policy document for a bucket. Raises KeyError if not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        self._bucket_policies[bucket_name] = policy
+
+    def get_bucket_policy(self, bucket_name: str) -> str:
+        """Return the policy document for a bucket. Raises KeyError if not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        return self._bucket_policies.get(bucket_name, '{"Version":"2012-10-17","Statement":[]}')
+
+    # -- Bucket notification configuration ------------------------------------
+
+    def put_bucket_notification_configuration(self, bucket_name: str, config_xml: str) -> None:
+        """Store notification configuration XML. Raises KeyError if not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        self._bucket_notification_configs[bucket_name] = config_xml
+
+    def get_bucket_notification_configuration(self, bucket_name: str) -> str:
+        """Return notification configuration XML. Raises KeyError if not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        return self._bucket_notification_configs.get(
+            bucket_name,
+            '<?xml version="1.0" encoding="UTF-8"?><NotificationConfiguration/>',
+        )
 
     # -- Notification support -------------------------------------------------
 

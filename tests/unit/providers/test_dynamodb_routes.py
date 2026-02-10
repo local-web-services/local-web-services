@@ -255,14 +255,14 @@ async def test_unknown_operation_returns_error(
     client: httpx.AsyncClient,
 ) -> None:
     payload = {"TableName": "Users"}
-    resp = await client.post("/", json=payload, headers=_target("TransactWriteItems"))
+    resp = await client.post("/", json=payload, headers=_target("SomeUnknownOp"))
 
     assert resp.status_code == 400
     body = resp.json()
     assert body["__type"] == "UnknownOperationException"
     assert "lws" in body["message"]
     assert "DynamoDB" in body["message"]
-    assert "TransactWriteItems" in body["message"]
+    assert "SomeUnknownOp" in body["message"]
 
 
 @pytest.mark.asyncio

@@ -42,8 +42,35 @@ async def _handle_get_caller_identity(params: dict[str, str]) -> Response:
     return Response(content=xml, media_type="text/xml")
 
 
+async def _handle_assume_role(params: dict[str, str]) -> Response:
+    role_arn = params.get("RoleArn", f"arn:aws:iam::{_ACCOUNT_ID}:role/assumed-role")
+    session_name = params.get("RoleSessionName", "session")
+    access_key_id = "ASIALWSLOCALKEY"
+    secret_access_key = "lws-local-secret"
+    session_token = f"lws-session-token-{uuid.uuid4()}"
+    xml = (
+        '<AssumeRoleResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">'
+        "<AssumeRoleResult>"
+        "<AssumedRoleUser>"
+        f"<AssumedRoleId>{_ACCOUNT_ID}:{session_name}</AssumedRoleId>"
+        f"<Arn>{role_arn}</Arn>"
+        "</AssumedRoleUser>"
+        "<Credentials>"
+        f"<AccessKeyId>{access_key_id}</AccessKeyId>"
+        f"<SecretAccessKey>{secret_access_key}</SecretAccessKey>"
+        f"<SessionToken>{session_token}</SessionToken>"
+        "<Expiration>2099-12-31T23:59:59Z</Expiration>"
+        "</Credentials>"
+        "</AssumeRoleResult>"
+        f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
+        "</AssumeRoleResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
 _ACTION_HANDLERS = {
     "GetCallerIdentity": _handle_get_caller_identity,
+    "AssumeRole": _handle_assume_role,
 }
 
 

@@ -53,6 +53,9 @@ class StepFunctionsRouter:
             "CreateStateMachine": self._create_state_machine,
             "DeleteStateMachine": self._delete_state_machine,
             "DescribeStateMachine": self._describe_state_machine,
+            "StopExecution": self._stop_execution,
+            "UpdateStateMachine": self._update_state_machine,
+            "GetExecutionHistory": self._get_execution_history,
             "ValidateStateMachineDefinition": self._validate_definition,
             "ListStateMachineVersions": self._list_state_machine_versions,
             "TagResource": self._tag_resource,
@@ -192,6 +195,62 @@ class StepFunctionsRouter:
 
     async def _list_tags_for_resource(self, body: dict) -> Response:
         return _json_response({"tags": []})
+
+    async def _stop_execution(self, body: dict) -> Response:
+        """Handle StopExecution API action."""
+        execution_arn = body.get("executionArn", "")
+        error = body.get("error")
+        cause = body.get("cause")
+
+        try:
+            self.provider.stop_execution(
+                execution_arn=execution_arn,
+                error=error,
+                cause=cause,
+            )
+        except KeyError:
+            return _error_response(
+                "ExecutionDoesNotExist",
+                f"Execution not found: {execution_arn}",
+            )
+        return _json_response({"stopDate": __import__("time").time()})
+
+    async def _update_state_machine(self, body: dict) -> Response:
+        """Handle UpdateStateMachine API action."""
+        sm_arn = body.get("stateMachineArn", "")
+        sm_name = sm_arn.rsplit(":", 1)[-1] if ":" in sm_arn else sm_arn
+        definition = body.get("definition")
+        role_arn = body.get("roleArn")
+
+        try:
+            update_date = self.provider.update_state_machine(
+                name=sm_name,
+                definition=definition,
+                role_arn=role_arn,
+            )
+        except KeyError:
+            return _error_response(
+                "StateMachineDoesNotExist",
+                f"State machine not found: {sm_arn}",
+            )
+        return _json_response({"updateDate": update_date})
+
+    async def _get_execution_history(self, body: dict) -> Response:
+        """Handle GetExecutionHistory API action."""
+        execution_arn = body.get("executionArn", "")
+        max_results = body.get("maxResults")
+
+        try:
+            events = self.provider.get_execution_history(
+                execution_arn=execution_arn,
+                max_results=max_results,
+            )
+        except KeyError:
+            return _error_response(
+                "ExecutionDoesNotExist",
+                f"Execution not found: {execution_arn}",
+            )
+        return _json_response({"events": events})
 
 
 # ------------------------------------------------------------------

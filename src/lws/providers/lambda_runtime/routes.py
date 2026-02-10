@@ -43,10 +43,18 @@ class LambdaRegistry:
     def __init__(self) -> None:
         self._functions: dict[str, dict[str, Any]] = {}
         self._compute: dict[str, Any] = {}  # name -> ICompute
+        self._tags: dict[str, dict[str, str]] = {}  # arn -> {key: value}
 
     def register(self, name: str, config: dict[str, Any], compute: Any) -> None:
         self._functions[name] = config
         self._compute[name] = compute
+
+    def update_config(self, name: str, updates: dict[str, Any]) -> dict[str, Any] | None:
+        config = self._functions.get(name)
+        if config is None:
+            return None
+        config.update(updates)
+        return config
 
     def get_config(self, name: str) -> dict[str, Any] | None:
         return self._functions.get(name)
@@ -62,6 +70,17 @@ class LambdaRegistry:
 
     def list_functions(self) -> list[dict[str, Any]]:
         return list(self._functions.values())
+
+    def get_tags(self, arn: str) -> dict[str, str]:
+        return dict(self._tags.get(arn, {}))
+
+    def tag_resource(self, arn: str, tags: dict[str, str]) -> None:
+        self._tags.setdefault(arn, {}).update(tags)
+
+    def untag_resource(self, arn: str, tag_keys: list[str]) -> None:
+        if arn in self._tags:
+            for key in tag_keys:
+                self._tags[arn].pop(key, None)
 
 
 # ---------------------------------------------------------------------------
@@ -245,6 +264,16 @@ class LambdaManagementRouter:
             self._delete_function,
             methods=["DELETE"],
         )
+        r.add_api_route(
+            "/2015-03-31/functions/{function_name}/configuration",
+            self._update_function_configuration,
+            methods=["PUT"],
+        )
+        r.add_api_route(
+            "/2015-03-31/functions/{function_name}/code",
+            self._update_function_code,
+            methods=["PUT"],
+        )
 
         # Invocations
         r.add_api_route(
@@ -271,6 +300,11 @@ class LambdaManagementRouter:
         )
 
         # Event source mappings - stubs
+        r.add_api_route(
+            "/2015-03-31/event-source-mappings",
+            self._list_event_source_mappings,
+            methods=["GET"],
+        )
         r.add_api_route(
             "/2015-03-31/event-source-mappings",
             self._create_event_source_mapping,
@@ -306,7 +340,32 @@ class LambdaManagementRouter:
             methods=["GET"],
         )
 
-        # Tags - stub
+        # Tags
+        r.add_api_route(
+            "/2017-03-31/tags/{arn:path}",
+            self._tag_resource,
+            methods=["POST"],
+        )
+        r.add_api_route(
+            "/2017-03-31/tags/{arn:path}",
+            self._untag_resource,
+            methods=["DELETE"],
+        )
+        r.add_api_route(
+            "/2017-03-31/tags/{arn:path}",
+            self._list_tags,
+            methods=["GET"],
+        )
+        r.add_api_route(
+            "/2015-03-31/tags/{arn:path}",
+            self._tag_resource,
+            methods=["POST"],
+        )
+        r.add_api_route(
+            "/2015-03-31/tags/{arn:path}",
+            self._untag_resource,
+            methods=["DELETE"],
+        )
         r.add_api_route(
             "/2015-03-31/tags/{arn:path}",
             self._list_tags,
@@ -377,6 +436,44 @@ class LambdaManagementRouter:
     async def _delete_function(self, function_name: str) -> Response:
         self._registry.delete(function_name)
         return Response(status_code=204)
+
+    async def _update_function_configuration(
+        self, function_name: str, request: Request
+    ) -> Response:
+        body = await _parse_body(request)
+        config = self._registry.get_config(function_name)
+        if config is None:
+            return _json_response(
+                {
+                    "Message": f"Function not found: {function_name}",
+                    "Type": "ResourceNotFoundException",
+                },
+                404,
+            )
+        updates: dict[str, Any] = {}
+        for key in ("Handler", "Runtime", "Timeout", "MemorySize", "Description", "Role"):
+            if key in body:
+                updates[key] = body[key]
+        if "Environment" in body:
+            updates["Environment"] = body["Environment"]
+        self._registry.update_config(function_name, updates)
+        updated_config = self._registry.get_config(function_name)
+        _logger.info("Updated configuration for Lambda function: %s", function_name)
+        return _json_response(_format_function_config(updated_config))
+
+    async def _update_function_code(self, function_name: str, request: Request) -> Response:
+        await _parse_body(request)  # consume body
+        config = self._registry.get_config(function_name)
+        if config is None:
+            return _json_response(
+                {
+                    "Message": f"Function not found: {function_name}",
+                    "Type": "ResourceNotFoundException",
+                },
+                404,
+            )
+        _logger.info("UpdateFunctionCode called for %s (no-op in local dev)", function_name)
+        return _json_response(_format_function_config(config))
 
     # -- Invocations ---------------------------------------------------------
 
@@ -485,6 +582,9 @@ class LambdaManagementRouter:
         mapping["State"] = "Deleting"
         return _json_response(mapping, 202)
 
+    async def _list_event_source_mappings(self, request: Request) -> Response:
+        return _json_response({"EventSourceMappings": []})
+
     # -- Other stubs ---------------------------------------------------------
 
     async def _list_versions(self, function_name: str) -> Response:
@@ -502,8 +602,23 @@ class LambdaManagementRouter:
     async def _get_code_signing_config(self, function_name: str) -> Response:
         return _json_response({"CodeSigningConfigArn": "", "FunctionName": function_name})
 
+    async def _tag_resource(self, arn: str, request: Request) -> Response:
+        body = await _parse_body(request)
+        tags = body.get("Tags", {})
+        self._registry.tag_resource(arn, tags)
+        _logger.info("Tagged resource %s with %d tags", arn, len(tags))
+        return Response(status_code=204)
+
+    async def _untag_resource(self, arn: str, request: Request) -> Response:
+        tag_keys_param = request.query_params.get("tagKeys", "")
+        tag_keys = [k for k in tag_keys_param.split(",") if k]
+        self._registry.untag_resource(arn, tag_keys)
+        _logger.info("Untagged resource %s, removed keys: %s", arn, tag_keys)
+        return Response(status_code=204)
+
     async def _list_tags(self, arn: str) -> Response:
-        return _json_response({"Tags": {}})
+        tags = self._registry.get_tags(arn)
+        return _json_response({"Tags": tags})
 
     async def _stub_handler(self, request: Request, path: str) -> Response:
         _logger.warning("Unknown Lambda path: %s %s", request.method, path)

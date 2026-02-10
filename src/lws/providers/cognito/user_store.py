@@ -321,6 +321,87 @@ class UserStore:
         row = await cursor.fetchone()
         return row[0] if row else None
 
+    async def admin_create_user(
+        self,
+        username: str,
+        temporary_password: str | None = None,
+        attributes: dict[str, str] | None = None,
+    ) -> dict:
+        """Create a user as an admin. Returns user info dict.
+
+        The user is created as confirmed. If no temporary password is provided,
+        a random one is generated.
+
+        Raises UsernameExistsException.
+        """
+        assert self._conn is not None
+        attributes = attributes or {}
+
+        await self._check_username_available(username)
+
+        password = temporary_password or uuid.uuid4().hex + "Aa1!"
+        if temporary_password:
+            validate_password(password, self._config.password_policy)
+
+        sub = str(uuid.uuid4())
+        pw_hash, pw_salt = _hash_password(password)
+
+        await self._conn.execute(
+            "INSERT INTO users (username, sub, password_hash, password_salt, confirmed, attributes)"
+            " VALUES (?, ?, ?, ?, ?, ?)",
+            (username, sub, pw_hash, pw_salt, 1, json.dumps(attributes)),
+        )
+        await self._conn.commit()
+        return {
+            "username": username,
+            "sub": sub,
+            "confirmed": True,
+            "attributes": attributes,
+        }
+
+    async def admin_delete_user(self, username: str) -> None:
+        """Delete a user as an admin.
+
+        Raises UserNotFoundException if the user does not exist.
+        """
+        assert self._conn is not None
+        user = await self._get_user_row(username)
+        if user is None:
+            raise UserNotFoundException(username)
+        await self._conn.execute("DELETE FROM users WHERE username = ?", (username,))
+        await self._conn.commit()
+
+    async def admin_get_user(self, username: str) -> dict:
+        """Get user info as an admin.
+
+        Raises UserNotFoundException if the user does not exist.
+        """
+        assert self._conn is not None
+        user = await self._get_user_row(username)
+        if user is None:
+            raise UserNotFoundException(username)
+        return {
+            "username": user["username"],
+            "sub": user["sub"],
+            "confirmed": bool(user["confirmed"]),
+            "attributes": json.loads(user["attributes"]),
+        }
+
+    async def list_users(self) -> list[dict]:
+        """List all users in the user pool."""
+        assert self._conn is not None
+        cursor = await self._conn.execute("SELECT username, sub, confirmed, attributes FROM users")
+        rows = await cursor.fetchall()
+        return [
+            {
+                "username": row[0],
+                "sub": row[1],
+                "confirmed": bool(row[2]),
+                "attributes": json.loads(row[3]),
+            }
+            for row in rows
+        ]
+
     # -- Private helpers -------------------------------------------------------
 
     async def _check_username_available(self, username: str) -> None:

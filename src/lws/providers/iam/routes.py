@@ -406,6 +406,58 @@ async def _handle_untag_role(state: _IamState, params: dict[str, str]) -> Respon
     return _xml_response(xml)
 
 
+async def _handle_list_roles(state: _IamState, params: dict[str, str]) -> Response:
+    members = ""
+    for role in state._roles.values():
+        members += (
+            "<member>"
+            f"<RoleName>{role['RoleName']}</RoleName>"
+            f"<RoleId>{role['RoleId']}</RoleId>"
+            f"<Arn>{role['Arn']}</Arn>"
+            f"<Path>{role['Path']}</Path>"
+            f"<AssumeRolePolicyDocument>{role['AssumeRolePolicyDocument']}"
+            "</AssumeRolePolicyDocument>"
+            "<CreateDate>2024-01-01T00:00:00Z</CreateDate>"
+            "</member>"
+        )
+    xml = (
+        "<ListRolesResponse>"
+        "<ListRolesResult>"
+        f"<Roles>{members}</Roles>"
+        "<IsTruncated>false</IsTruncated>"
+        "</ListRolesResult>"
+        f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
+        "</ListRolesResponse>"
+    )
+    return _xml_response(xml)
+
+
+async def _handle_list_policies(state: _IamState, params: dict[str, str]) -> Response:
+    members = ""
+    for policy in state._policies.values():
+        members += (
+            "<member>"
+            f"<PolicyName>{policy['PolicyName']}</PolicyName>"
+            f"<PolicyId>{policy['PolicyId']}</PolicyId>"
+            f"<Arn>{policy['Arn']}</Arn>"
+            f"<Path>{policy['Path']}</Path>"
+            f"<DefaultVersionId>{policy['DefaultVersionId']}</DefaultVersionId>"
+            f"<AttachmentCount>{policy['AttachmentCount']}</AttachmentCount>"
+            "<CreateDate>2024-01-01T00:00:00Z</CreateDate>"
+            "</member>"
+        )
+    xml = (
+        "<ListPoliciesResponse>"
+        "<ListPoliciesResult>"
+        f"<Policies>{members}</Policies>"
+        "<IsTruncated>false</IsTruncated>"
+        "</ListPoliciesResult>"
+        f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
+        "</ListPoliciesResponse>"
+    )
+    return _xml_response(xml)
+
+
 # ------------------------------------------------------------------
 # Action dispatch table
 # ------------------------------------------------------------------
@@ -429,6 +481,8 @@ _ACTION_HANDLERS = {
     "DeleteInstanceProfile": _handle_delete_instance_profile,
     "TagRole": _handle_tag_role,
     "UntagRole": _handle_untag_role,
+    "ListRoles": _handle_list_roles,
+    "ListPolicies": _handle_list_policies,
 }
 
 

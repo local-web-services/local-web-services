@@ -23,7 +23,7 @@ class TestGenerateOverride:
         content = override_path.read_text()
         assert MARKER_COMMENT in content
 
-        # Verify endpoint URLs (base port + 1 through 11)
+        # Verify endpoint URLs (base port + 1 through 13)
         assert f"http://localhost:{port + 1}" in content  # dynamodb
         assert f"http://localhost:{port + 2}" in content  # sqs
         assert f"http://localhost:{port + 3}" in content  # s3
@@ -35,6 +35,8 @@ class TestGenerateOverride:
         assert f"http://localhost:{port + 9}" in content  # lambda
         assert f"http://localhost:{port + 10}" in content  # iam
         assert f"http://localhost:{port + 11}" in content  # sts
+        assert f"http://localhost:{port + 12}" in content  # ssm
+        assert f"http://localhost:{port + 13}" in content  # secretsmanager
 
         # Verify both V1 and V2 API Gateway endpoints point to same port
         assert f'apigateway       = "http://localhost:{port + 8}"' in content

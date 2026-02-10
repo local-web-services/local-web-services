@@ -1,11 +1,11 @@
 [project]
 name = "local-web-services"
-version = "0.3.0"
+version = "0.4.0"
 description = "Run AWS CDK applications locally - accelerate development with agentic code editors"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
-keywords = ["aws", "cdk", "local", "development", "lambda", "dynamodb", "sqs", "sns", "s3", "agentic", "ai", "code-editor", "vibe-coding"]
+keywords = ["aws", "cdk", "local", "development", "lambda", "dynamodb", "sqs", "sns", "s3", "ssm", "secretsmanager", "agentic", "ai", "code-editor", "vibe-coding"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

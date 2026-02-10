@@ -200,6 +200,129 @@ async def _handle_delete_rule(provider: EventBridgeProvider, body: dict) -> Resp
     )
 
 
+async def _handle_describe_rule(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``DescribeRule`` action."""
+    rule_name = body.get("Name", "")
+    event_bus = body.get("EventBusName", "default")
+    try:
+        attrs = provider.describe_rule(rule_name, event_bus)
+    except KeyError:
+        return Response(
+            content=json.dumps({"Error": f"Rule not found: {rule_name}"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return Response(
+        content=json.dumps(attrs),
+        media_type="application/json",
+    )
+
+
+async def _handle_list_targets_by_rule(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``ListTargetsByRule`` action."""
+    rule_name = body.get("Rule", "")
+    event_bus = body.get("EventBusName", "default")
+    try:
+        targets = provider.list_targets_by_rule(rule_name, event_bus)
+    except KeyError:
+        return Response(
+            content=json.dumps({"Error": f"Rule not found: {rule_name}"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return Response(
+        content=json.dumps({"Targets": targets}),
+        media_type="application/json",
+    )
+
+
+async def _handle_remove_targets(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``RemoveTargets`` action."""
+    rule_name = body.get("Rule", "")
+    event_bus = body.get("EventBusName", "default")
+    ids = body.get("Ids", [])
+    try:
+        failed = await provider.remove_targets(rule_name, ids, event_bus)
+    except KeyError:
+        return Response(
+            content=json.dumps({"Error": f"Rule not found: {rule_name}"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return Response(
+        content=json.dumps({"FailedEntryCount": len(failed), "FailedEntries": failed}),
+        media_type="application/json",
+    )
+
+
+async def _handle_enable_rule(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``EnableRule`` action."""
+    rule_name = body.get("Name", "")
+    event_bus = body.get("EventBusName", "default")
+    try:
+        await provider.enable_rule(rule_name, event_bus)
+    except KeyError:
+        return Response(
+            content=json.dumps({"Error": f"Rule not found: {rule_name}"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return Response(
+        content=json.dumps({}),
+        media_type="application/json",
+    )
+
+
+async def _handle_disable_rule(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``DisableRule`` action."""
+    rule_name = body.get("Name", "")
+    event_bus = body.get("EventBusName", "default")
+    try:
+        await provider.disable_rule(rule_name, event_bus)
+    except KeyError:
+        return Response(
+            content=json.dumps({"Error": f"Rule not found: {rule_name}"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return Response(
+        content=json.dumps({}),
+        media_type="application/json",
+    )
+
+
+async def _handle_tag_resource(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``TagResource`` action."""
+    resource_arn = body.get("ResourceARN", "")
+    tags = body.get("Tags", [])
+    provider.tag_resource(resource_arn, tags)
+    return Response(
+        content=json.dumps({}),
+        media_type="application/json",
+    )
+
+
+async def _handle_untag_resource(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``UntagResource`` action."""
+    resource_arn = body.get("ResourceARN", "")
+    tag_keys = body.get("TagKeys", [])
+    provider.untag_resource(resource_arn, tag_keys)
+    return Response(
+        content=json.dumps({}),
+        media_type="application/json",
+    )
+
+
+async def _handle_list_tags_for_resource(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``ListTagsForResource`` action."""
+    resource_arn = body.get("ResourceARN", "")
+    tags = provider.list_tags_for_resource(resource_arn)
+    return Response(
+        content=json.dumps({"Tags": tags}),
+        media_type="application/json",
+    )
+
+
 # ------------------------------------------------------------------
 # Target dispatch table
 # ------------------------------------------------------------------
@@ -214,6 +337,14 @@ _TARGET_HANDLERS = {
     "AWSEvents.DeleteEventBus": _handle_delete_event_bus,
     "AWSEvents.DescribeEventBus": _handle_describe_event_bus,
     "AWSEvents.DeleteRule": _handle_delete_rule,
+    "AWSEvents.DescribeRule": _handle_describe_rule,
+    "AWSEvents.ListTargetsByRule": _handle_list_targets_by_rule,
+    "AWSEvents.RemoveTargets": _handle_remove_targets,
+    "AWSEvents.EnableRule": _handle_enable_rule,
+    "AWSEvents.DisableRule": _handle_disable_rule,
+    "AWSEvents.TagResource": _handle_tag_resource,
+    "AWSEvents.UntagResource": _handle_untag_resource,
+    "AWSEvents.ListTagsForResource": _handle_list_tags_for_resource,
 }
 
 

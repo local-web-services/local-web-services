@@ -33,11 +33,11 @@ class TestStepFunctionsStubOperations:
         resp = await client.post(
             "/",
             json={},
-            headers={"x-amz-target": "AWSStepFunctions.GetExecutionHistory"},
+            headers={"x-amz-target": "AWSStepFunctions.SendTaskSuccess"},
         )
         assert resp.status_code == 400
         body = resp.json()
         assert body["__type"] == "UnknownOperationException"
         assert "lws" in body["message"]
         assert "StepFunctions" in body["message"]
-        assert "GetExecutionHistory" in body["message"]
+        assert "SendTaskSuccess" in body["message"]

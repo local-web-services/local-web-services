@@ -73,7 +73,7 @@ _console = Console()
 
 app = typer.Typer(name="ldk", help="Local Development Kit - Run AWS CDK applications locally")
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 
 @app.callback()
@@ -556,6 +556,8 @@ def _create_terraform_providers(
         "lambda": port + 9,
         "iam": port + 10,
         "sts": port + 11,
+        "ssm": port + 12,
+        "secretsmanager": port + 13,
     }
 
     dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
@@ -601,6 +603,8 @@ def _create_terraform_providers(
         "events": f"http://127.0.0.1:{ports['eventbridge']}",
         "stepfunctions": f"http://127.0.0.1:{ports['stepfunctions']}",
         "cognito-idp": f"http://127.0.0.1:{ports['cognito']}",
+        "ssm": f"http://127.0.0.1:{ports['ssm']}",
+        "secretsmanager": f"http://127.0.0.1:{ports['secretsmanager']}",
     }
     sdk_env = build_sdk_env(local_endpoints)
 
@@ -629,6 +633,18 @@ def _create_terraform_providers(
     from lws.providers.sts.routes import create_sts_app
 
     providers["__sts_http__"] = _HttpServiceProvider("sts-http", create_sts_app, ports["sts"])
+
+    # SSM Parameter Store
+    from lws.providers.ssm.routes import create_ssm_app
+
+    providers["__ssm_http__"] = _HttpServiceProvider("ssm-http", create_ssm_app, ports["ssm"])
+
+    # Secrets Manager
+    from lws.providers.secretsmanager.routes import create_secretsmanager_app
+
+    providers["__secretsmanager_http__"] = _HttpServiceProvider(
+        "secretsmanager-http", create_secretsmanager_app, ports["secretsmanager"]
+    )
 
     return providers, ports
 
@@ -1292,6 +1308,8 @@ def _service_ports(port: int) -> dict[str, int]:
         "events": port + 5,
         "stepfunctions": port + 6,
         "cognito-idp": port + 7,
+        "ssm": port + 12,
+        "secretsmanager": port + 13,
     }
 
 

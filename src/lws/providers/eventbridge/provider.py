@@ -73,6 +73,7 @@ class EventBridgeProvider(IEventBus):
         self._rule_configs = rules or []
         self._buses: dict[str, EventBusConfig] = {}
         self._rules: dict[str, RuleConfig] = {}
+        self._tags: dict[str, dict[str, str]] = {}
         self._status = ProviderStatus.STOPPED
         self._compute_providers: dict[str, ICompute] = {}
         self._lock = asyncio.Lock()
@@ -104,6 +105,7 @@ class EventBridgeProvider(IEventBus):
         async with self._lock:
             self._buses.clear()
             self._rules.clear()
+            self._tags.clear()
             self._status = ProviderStatus.STOPPED
 
     async def health_check(self) -> bool:
@@ -210,6 +212,105 @@ class EventBridgeProvider(IEventBus):
             if rule_name not in self._rules:
                 raise KeyError(f"Rule not found: {rule_name}")
             del self._rules[rule_name]
+
+    def describe_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+    ) -> dict:
+        """Describe a rule. Raises KeyError if not found."""
+        rule = self._rules.get(rule_name)
+        if rule is None or rule.event_bus_name != event_bus_name:
+            raise KeyError(f"Rule not found: {rule_name}")
+        result: dict = {
+            "Name": rule.rule_name,
+            "Arn": f"arn:aws:events:us-east-1:000000000000:rule/{rule.rule_name}",
+            "EventBusName": rule.event_bus_name,
+            "State": "ENABLED" if rule.enabled else "DISABLED",
+        }
+        if rule.event_pattern:
+            result["EventPattern"] = json.dumps(rule.event_pattern)
+        if rule.schedule_expression:
+            result["ScheduleExpression"] = rule.schedule_expression
+        return result
+
+    def list_targets_by_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+    ) -> list[dict]:
+        """Return the targets for a rule. Raises KeyError if not found."""
+        rule = self._rules.get(rule_name)
+        if rule is None or rule.event_bus_name != event_bus_name:
+            raise KeyError(f"Rule not found: {rule_name}")
+        targets = []
+        for t in rule.targets:
+            entry: dict = {"Id": t.target_id, "Arn": t.arn}
+            if t.input_path:
+                entry["InputPath"] = t.input_path
+            if t.input_template:
+                entry["InputTransformer"] = {"InputTemplate": t.input_template}
+            targets.append(entry)
+        return targets
+
+    async def remove_targets(
+        self,
+        rule_name: str,
+        ids: list[str],
+        event_bus_name: str = "default",
+    ) -> list[dict]:
+        """Remove targets from a rule by ID. Returns list of failed entries."""
+        async with self._lock:
+            rule = self._rules.get(rule_name)
+            if rule is None or rule.event_bus_name != event_bus_name:
+                raise KeyError(f"Rule not found: {rule_name}")
+            ids_set = set(ids)
+            rule.targets = [t for t in rule.targets if t.target_id not in ids_set]
+        return []
+
+    async def enable_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+    ) -> None:
+        """Enable a rule. Raises KeyError if not found."""
+        async with self._lock:
+            rule = self._rules.get(rule_name)
+            if rule is None or rule.event_bus_name != event_bus_name:
+                raise KeyError(f"Rule not found: {rule_name}")
+            rule.enabled = True
+
+    async def disable_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+    ) -> None:
+        """Disable a rule. Raises KeyError if not found."""
+        async with self._lock:
+            rule = self._rules.get(rule_name)
+            if rule is None or rule.event_bus_name != event_bus_name:
+                raise KeyError(f"Rule not found: {rule_name}")
+            rule.enabled = False
+
+    def tag_resource(self, resource_arn: str, tags: list[dict]) -> None:
+        """Add or overwrite tags on a resource ARN."""
+        if resource_arn not in self._tags:
+            self._tags[resource_arn] = {}
+        for tag in tags:
+            key = tag.get("Key", "")
+            value = tag.get("Value", "")
+            self._tags[resource_arn][key] = value
+
+    def untag_resource(self, resource_arn: str, tag_keys: list[str]) -> None:
+        """Remove tags from a resource ARN by key."""
+        if resource_arn in self._tags:
+            for key in tag_keys:
+                self._tags[resource_arn].pop(key, None)
+
+    def list_tags_for_resource(self, resource_arn: str) -> list[dict]:
+        """Return the tags for a resource ARN."""
+        tag_map = self._tags.get(resource_arn, {})
+        return [{"Key": k, "Value": v} for k, v in tag_map.items()]
 
     # -- Internal event publishing for cross-service routing ------------------
 

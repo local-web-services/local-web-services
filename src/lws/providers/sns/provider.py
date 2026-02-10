@@ -176,6 +176,69 @@ class SnsProvider(Provider):
             attrs.update(custom)
         return attrs
 
+    async def unsubscribe(self, subscription_arn: str) -> bool:
+        """Remove a subscription by ARN across all topics.
+
+        Returns True if a subscription was removed, False if not found.
+        """
+        for topic in self._topics.values():
+            if await topic.remove_subscription(subscription_arn):
+                return True
+        return False
+
+    def find_subscription(self, subscription_arn: str) -> tuple:
+        """Find a subscription by ARN across all topics.
+
+        Returns a tuple of (Subscription, LocalTopic) or (None, None) if not found.
+        """
+        for topic in self._topics.values():
+            sub = topic.find_subscription(subscription_arn)
+            if sub is not None:
+                return sub, topic
+        return None, None
+
+    def list_subscriptions_by_topic(self, topic_name: str) -> list:
+        """Return all subscriptions for a specific topic. Raises KeyError if not found."""
+        topic = self._topics.get(topic_name)
+        if topic is None:
+            raise KeyError(f"Topic not found: {topic_name}")
+        return list(topic.subscribers)
+
+    async def get_subscription_attributes(self, subscription_arn: str) -> dict:
+        """Return subscription attributes dict. Raises KeyError if not found."""
+        sub, topic = self.find_subscription(subscription_arn)
+        if sub is None or topic is None:
+            raise KeyError(f"Subscription not found: {subscription_arn}")
+        attrs: dict[str, str] = {
+            "SubscriptionArn": sub.subscription_arn,
+            "TopicArn": topic.topic_arn,
+            "Protocol": sub.protocol,
+            "Endpoint": sub.endpoint,
+            "Owner": "000000000000",
+            "ConfirmationWasAuthenticated": "true",
+            "PendingConfirmation": "false",
+        }
+        if sub.filter_policy is not None:
+            import json
+
+            attrs["FilterPolicy"] = json.dumps(sub.filter_policy)
+        # Overlay any custom attributes set via SetSubscriptionAttributes
+        custom = getattr(sub, "_custom_attrs", None)
+        if custom:
+            attrs.update(custom)
+        return attrs
+
+    async def set_subscription_attribute(
+        self, subscription_arn: str, attr_name: str, attr_value: str
+    ) -> None:
+        """Set a single subscription attribute. Raises KeyError if not found."""
+        sub, _topic = self.find_subscription(subscription_arn)
+        if sub is None:
+            raise KeyError(f"Subscription not found: {subscription_arn}")
+        if not hasattr(sub, "_custom_attrs"):
+            sub._custom_attrs = {}  # type: ignore[attr-defined]
+        sub._custom_attrs[attr_name] = attr_value  # type: ignore[attr-defined]
+
     async def set_topic_attribute(self, topic_name: str, attr_name: str, attr_value: str) -> None:
         """Set a single topic attribute. Raises KeyError if not found."""
         topic = self._topics.get(topic_name)

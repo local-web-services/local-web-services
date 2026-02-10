@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import xml.etree.ElementTree as ET
+
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import StreamingResponse
 
@@ -168,6 +170,224 @@ async def _list_objects_v2(bucket: str, request: Request, provider: S3Provider) 
 
 
 # ------------------------------------------------------------------
+# CopyObject
+# ------------------------------------------------------------------
+
+
+async def _copy_object(bucket: str, key: str, request: Request, provider: S3Provider) -> Response:
+    """Handle CopyObject (PUT /{bucket}/{key} with x-amz-copy-source header)."""
+    copy_source = request.headers.get("x-amz-copy-source", "")
+    # The header value is /source-bucket/source-key (with leading slash)
+    copy_source = copy_source.lstrip("/")
+    if "/" not in copy_source:
+        return _error_xml("InvalidArgument", "Invalid x-amz-copy-source header", 400)
+
+    src_bucket, src_key = copy_source.split("/", 1)
+    result = await provider.storage.get_object(src_bucket, src_key)
+    if result is None:
+        return _error_xml("NoSuchKey", f"The specified key does not exist: {src_key}", 404)
+
+    put_result = await provider.storage.put_object(
+        bucket, key, result["body"], content_type=result["content_type"]
+    )
+    provider._dispatcher.dispatch(bucket, "ObjectCreated:Copy", key)
+
+    # Return a CopyObjectResult XML
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<CopyObjectResult>"
+        f"<ETag>{_xml_escape(put_result['ETag'])}</ETag>"
+        f"<LastModified>{_xml_escape(result['last_modified'])}</LastModified>"
+        "</CopyObjectResult>"
+    )
+    return _xml_response(body)
+
+
+# ------------------------------------------------------------------
+# DeleteObjects (multi-object delete)
+# ------------------------------------------------------------------
+
+
+async def _delete_objects(bucket: str, request: Request, provider: S3Provider) -> Response:
+    """Handle DeleteObjects (POST /{bucket}?delete)."""
+    body = await request.body()
+    try:
+        root = ET.fromstring(body)  # noqa: S314
+    except ET.ParseError:
+        return _error_xml("MalformedXML", "The XML you provided was not well-formed.", 400)
+
+    # Parse keys from the XML - handle both namespaced and non-namespaced
+    ns = ""
+    if root.tag.startswith("{"):
+        ns = root.tag.split("}")[0] + "}"
+
+    deleted_keys: list[str] = []
+    error_keys: list[dict] = []
+
+    for obj_elem in root.findall(f"{ns}Object"):
+        key_elem = obj_elem.find(f"{ns}Key")
+        if key_elem is None or key_elem.text is None:
+            continue
+        key = key_elem.text
+        try:
+            await provider.storage.delete_object(bucket, key)
+            provider._dispatcher.dispatch(bucket, "ObjectRemoved:Delete", key)
+            deleted_keys.append(key)
+        except Exception as exc:
+            error_keys.append({"key": key, "code": "InternalError", "message": str(exc)})
+
+    deleted_xml = ""
+    for k in deleted_keys:
+        deleted_xml += f"<Deleted><Key>{_xml_escape(k)}</Key></Deleted>"
+    error_xml = ""
+    for e in error_keys:
+        error_xml += (
+            "<Error>"
+            f"<Key>{_xml_escape(e['key'])}</Key>"
+            f"<Code>{_xml_escape(e['code'])}</Code>"
+            f"<Message>{_xml_escape(e['message'])}</Message>"
+            "</Error>"
+        )
+
+    result_body = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<DeleteResult>"
+        f"{deleted_xml}"
+        f"{error_xml}"
+        "</DeleteResult>"
+    )
+    return _xml_response(result_body)
+
+
+# ------------------------------------------------------------------
+# Bucket tagging
+# ------------------------------------------------------------------
+
+
+async def _put_bucket_tagging(bucket: str, request: Request, provider: S3Provider) -> Response:
+    """Handle PutBucketTagging (PUT /{bucket}?tagging)."""
+    body = await request.body()
+    try:
+        root = ET.fromstring(body)  # noqa: S314
+    except ET.ParseError:
+        return _error_xml("MalformedXML", "The XML you provided was not well-formed.", 400)
+
+    ns = ""
+    if root.tag.startswith("{"):
+        ns = root.tag.split("}")[0] + "}"
+
+    tags: dict[str, str] = {}
+    tag_set = root.find(f"{ns}TagSet")
+    if tag_set is not None:
+        for tag_elem in tag_set.findall(f"{ns}Tag"):
+            key_elem = tag_elem.find(f"{ns}Key")
+            val_elem = tag_elem.find(f"{ns}Value")
+            if key_elem is not None and key_elem.text is not None:
+                val = val_elem.text if val_elem is not None and val_elem.text else ""
+                tags[key_elem.text] = val
+
+    try:
+        provider.put_bucket_tagging(bucket, tags)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return Response(status_code=204)
+
+
+async def _delete_bucket_tagging(bucket: str, provider: S3Provider) -> Response:
+    """Handle DeleteBucketTagging (DELETE /{bucket}?tagging)."""
+    try:
+        provider.delete_bucket_tagging(bucket)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return Response(status_code=204)
+
+
+async def _get_bucket_tagging(bucket: str, provider: S3Provider) -> Response:
+    """Handle GetBucketTagging (GET /{bucket}?tagging)."""
+    try:
+        tags = provider.get_bucket_tagging(bucket)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+
+    tag_set_xml = ""
+    for k, v in tags.items():
+        tag_set_xml += f"<Tag><Key>{_xml_escape(k)}</Key><Value>{_xml_escape(v)}</Value></Tag>"
+
+    body = (
+        f'<?xml version="1.0" encoding="UTF-8"?><Tagging><TagSet>{tag_set_xml}</TagSet></Tagging>'
+    )
+    return _xml_response(body)
+
+
+# ------------------------------------------------------------------
+# Bucket location
+# ------------------------------------------------------------------
+
+
+async def _get_bucket_location(bucket: str, provider: S3Provider) -> Response:
+    """Handle GetBucketLocation (GET /{bucket}?location)."""
+    try:
+        await provider.head_bucket(bucket)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?><LocationConstraint>us-east-1</LocationConstraint>'
+    )
+    return _xml_response(body)
+
+
+# ------------------------------------------------------------------
+# Bucket policy
+# ------------------------------------------------------------------
+
+
+async def _put_bucket_policy(bucket: str, request: Request, provider: S3Provider) -> Response:
+    """Handle PutBucketPolicy (PUT /{bucket}?policy)."""
+    body = await request.body()
+    try:
+        provider.put_bucket_policy(bucket, body.decode("utf-8"))
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return Response(status_code=204)
+
+
+async def _get_bucket_policy(bucket: str, provider: S3Provider) -> Response:
+    """Handle GetBucketPolicy (GET /{bucket}?policy)."""
+    try:
+        policy = provider.get_bucket_policy(bucket)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return _json_s3_response(policy)
+
+
+# ------------------------------------------------------------------
+# Bucket notification configuration
+# ------------------------------------------------------------------
+
+
+async def _put_bucket_notification_configuration(
+    bucket: str, request: Request, provider: S3Provider
+) -> Response:
+    """Handle PutBucketNotificationConfiguration (PUT /{bucket}?notification)."""
+    body = await request.body()
+    try:
+        provider.put_bucket_notification_configuration(bucket, body.decode("utf-8"))
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return Response(status_code=200)
+
+
+async def _get_bucket_notification_configuration(bucket: str, provider: S3Provider) -> Response:
+    """Handle GetBucketNotificationConfiguration (GET /{bucket}?notification)."""
+    try:
+        config = provider.get_bucket_notification_configuration(bucket)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return _xml_response(config)
+
+
+# ------------------------------------------------------------------
 # App factory
 # ------------------------------------------------------------------
 
@@ -175,11 +395,13 @@ async def _list_objects_v2(bucket: str, request: Request, provider: S3Provider) 
 async def _get_bucket(bucket: str, request: Request, provider: S3Provider) -> Response:
     """Handle GET /{bucket} — dispatches based on query params."""
     if "policy" in request.query_params:
-        return _json_s3_response('{"Version":"2012-10-17","Statement":[]}')
+        return await _get_bucket_policy(bucket, provider)
     if "tagging" in request.query_params:
-        return _xml_response(
-            '<?xml version="1.0" encoding="UTF-8"?><Tagging><TagSet></TagSet></Tagging>'
-        )
+        return await _get_bucket_tagging(bucket, provider)
+    if "location" in request.query_params:
+        return await _get_bucket_location(bucket, provider)
+    if "notification" in request.query_params:
+        return await _get_bucket_notification_configuration(bucket, provider)
     if "versioning" in request.query_params:
         return _xml_response('<?xml version="1.0" encoding="UTF-8"?><VersioningConfiguration/>')
     if "acl" in request.query_params:
@@ -258,17 +480,13 @@ async def _list_all_buckets(provider: S3Provider) -> Response:
     return _xml_response(body)
 
 
-def create_s3_app(provider: S3Provider) -> FastAPI:
-    """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
-    app = FastAPI()
-    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="s3")
-
-    @app.api_route("/", methods=["GET"])
-    async def list_buckets() -> Response:
-        return await _list_all_buckets(provider)
+def _register_object_routes(app: FastAPI, provider: S3Provider) -> None:
+    """Register object-level S3 routes on *app*."""
 
     @app.api_route("/{bucket}/{key:path}", methods=["PUT"])
     async def put_object(bucket: str, key: str, request: Request) -> Response:
+        if "x-amz-copy-source" in request.headers:
+            return await _copy_object(bucket, key, request, provider)
         return await _put_object(bucket, key, request, provider)
 
     @app.api_route("/{bucket}/{key:path}", methods=["GET"])
@@ -283,12 +501,35 @@ def create_s3_app(provider: S3Provider) -> FastAPI:
     async def head_object(bucket: str, key: str) -> Response:
         return await _head_object(bucket, key, provider)
 
+
+async def _dispatch_put_bucket(bucket: str, request: Request, provider: S3Provider) -> Response:
+    """Dispatch PUT /{bucket} based on query parameters."""
+    if "tagging" in request.query_params:
+        return await _put_bucket_tagging(bucket, request, provider)
+    if "policy" in request.query_params:
+        return await _put_bucket_policy(bucket, request, provider)
+    if "notification" in request.query_params:
+        return await _put_bucket_notification_configuration(bucket, request, provider)
+    return await _create_bucket(bucket, provider)
+
+
+def _register_bucket_routes(app: FastAPI, provider: S3Provider) -> None:
+    """Register bucket-level S3 routes on *app*."""
+
+    @app.api_route("/{bucket}", methods=["POST"])
+    async def post_bucket(bucket: str, request: Request) -> Response:
+        if "delete" in request.query_params:
+            return await _delete_objects(bucket, request, provider)
+        return _error_xml("InvalidRequest", "Unsupported POST operation", 400)
+
     @app.api_route("/{bucket}", methods=["PUT"])
-    async def create_bucket(bucket: str) -> Response:
-        return await _create_bucket(bucket, provider)
+    async def create_bucket(bucket: str, request: Request) -> Response:
+        return await _dispatch_put_bucket(bucket, request, provider)
 
     @app.api_route("/{bucket}", methods=["DELETE"])
-    async def delete_bucket(bucket: str) -> Response:
+    async def delete_bucket(bucket: str, request: Request) -> Response:
+        if "tagging" in request.query_params:
+            return await _delete_bucket_tagging(bucket, provider)
         return await _delete_bucket(bucket, provider)
 
     @app.api_route("/{bucket}", methods=["HEAD"])
@@ -299,4 +540,16 @@ def create_s3_app(provider: S3Provider) -> FastAPI:
     async def get_bucket_route(bucket: str, request: Request) -> Response:
         return await _get_bucket(bucket, request, provider)
 
+
+def create_s3_app(provider: S3Provider) -> FastAPI:
+    """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
+    app = FastAPI()
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="s3")
+
+    @app.api_route("/", methods=["GET"])
+    async def list_buckets() -> Response:
+        return await _list_all_buckets(provider)
+
+    _register_object_routes(app, provider)
+    _register_bucket_routes(app, provider)
     return app

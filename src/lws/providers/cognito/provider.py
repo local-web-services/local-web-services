@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+import uuid
 from collections.abc import Callable, Coroutine
 from pathlib import Path
 from typing import Any
@@ -50,6 +51,8 @@ class CognitoProvider(Provider):
             client_id=config.client_id or "local-client-id",
         )
         self._triggers = trigger_functions or {}
+        # In-memory store for user pool clients (client_id -> client_info)
+        self._clients: dict[str, dict[str, Any]] = {}
 
     # -- Provider lifecycle ---------------------------------------------------
 
@@ -147,6 +150,152 @@ class CognitoProvider(Provider):
             raise NotAuthorizedException("User not found.")
 
         return await self._generate_auth_result(user)
+
+    # -- User Pool Client Management ------------------------------------------
+
+    async def create_user_pool_client(
+        self,
+        user_pool_id: str,
+        client_name: str,
+        explicit_auth_flows: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create a new user pool client. Returns the client info."""
+        self._validate_user_pool_id(user_pool_id)
+        client_id = str(uuid.uuid4()).replace("-", "")[:26]
+        client_info: dict[str, Any] = {
+            "ClientId": client_id,
+            "ClientName": client_name,
+            "UserPoolId": user_pool_id,
+        }
+        if explicit_auth_flows:
+            client_info["ExplicitAuthFlows"] = explicit_auth_flows
+        self._clients[client_id] = client_info
+        return {"UserPoolClient": client_info}
+
+    async def delete_user_pool_client(
+        self,
+        user_pool_id: str,
+        client_id: str,
+    ) -> None:
+        """Delete a user pool client."""
+        self._validate_user_pool_id(user_pool_id)
+        if client_id not in self._clients:
+            raise CognitoError(
+                "ResourceNotFoundException",
+                f"User pool client {client_id} does not exist.",
+            )
+        del self._clients[client_id]
+
+    async def describe_user_pool_client(
+        self,
+        user_pool_id: str,
+        client_id: str,
+    ) -> dict[str, Any]:
+        """Describe a user pool client."""
+        self._validate_user_pool_id(user_pool_id)
+        if client_id not in self._clients:
+            raise CognitoError(
+                "ResourceNotFoundException",
+                f"User pool client {client_id} does not exist.",
+            )
+        return {"UserPoolClient": self._clients[client_id]}
+
+    async def list_user_pool_clients(
+        self,
+        user_pool_id: str,
+    ) -> dict[str, Any]:
+        """List all user pool clients for a given pool."""
+        self._validate_user_pool_id(user_pool_id)
+        clients = [c for c in self._clients.values() if c["UserPoolId"] == user_pool_id]
+        return {"UserPoolClients": clients}
+
+    # -- Admin User Operations ------------------------------------------------
+
+    async def admin_create_user(
+        self,
+        user_pool_id: str,
+        username: str,
+        temporary_password: str | None = None,
+        user_attributes: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """Create a user as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        user = await self._store.admin_create_user(username, temporary_password, user_attributes)
+        attrs_list = [{"Name": k, "Value": v} for k, v in user["attributes"].items()]
+        attrs_list.append({"Name": "sub", "Value": user["sub"]})
+        return {
+            "User": {
+                "Username": user["username"],
+                "Attributes": attrs_list,
+                "UserStatus": "CONFIRMED" if user["confirmed"] else "UNCONFIRMED",
+                "Enabled": True,
+            }
+        }
+
+    async def admin_delete_user(
+        self,
+        user_pool_id: str,
+        username: str,
+    ) -> None:
+        """Delete a user as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        await self._store.admin_delete_user(username)
+
+    async def admin_get_user(
+        self,
+        user_pool_id: str,
+        username: str,
+    ) -> dict[str, Any]:
+        """Get user details as an admin."""
+        self._validate_user_pool_id(user_pool_id)
+        user = await self._store.admin_get_user(username)
+        attrs_list = [{"Name": k, "Value": v} for k, v in user["attributes"].items()]
+        attrs_list.append({"Name": "sub", "Value": user["sub"]})
+        return {
+            "Username": user["username"],
+            "UserAttributes": attrs_list,
+            "UserStatus": "CONFIRMED" if user["confirmed"] else "UNCONFIRMED",
+            "Enabled": True,
+        }
+
+    async def update_user_pool(
+        self,
+        user_pool_id: str,
+    ) -> dict[str, Any]:
+        """Update a user pool. Currently a no-op that validates the pool exists."""
+        self._validate_user_pool_id(user_pool_id)
+        return {}
+
+    async def list_users(
+        self,
+        user_pool_id: str,
+    ) -> dict[str, Any]:
+        """List users in a user pool."""
+        self._validate_user_pool_id(user_pool_id)
+        users = await self._store.list_users()
+        result = []
+        for user in users:
+            attrs_list = [{"Name": k, "Value": v} for k, v in user["attributes"].items()]
+            attrs_list.append({"Name": "sub", "Value": user["sub"]})
+            result.append(
+                {
+                    "Username": user["username"],
+                    "Attributes": attrs_list,
+                    "UserStatus": "CONFIRMED" if user["confirmed"] else "UNCONFIRMED",
+                    "Enabled": True,
+                }
+            )
+        return {"Users": result}
+
+    # -- Validation helpers ---------------------------------------------------
+
+    def _validate_user_pool_id(self, user_pool_id: str) -> None:
+        """Validate that the user pool ID matches the configured pool."""
+        if user_pool_id != self._config.user_pool_id:
+            raise CognitoError(
+                "ResourceNotFoundException",
+                f"User pool {user_pool_id} does not exist.",
+            )
 
     # -- Lambda Triggers ------------------------------------------------------
 

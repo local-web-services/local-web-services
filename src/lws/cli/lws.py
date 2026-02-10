@@ -17,8 +17,10 @@ from lws.cli.services.cognito import app as cognito_app
 from lws.cli.services.dynamodb import app as dynamodb_app
 from lws.cli.services.events import app as events_app
 from lws.cli.services.s3 import app as s3_app
+from lws.cli.services.secretsmanager import app as secretsmanager_app
 from lws.cli.services.sns import app as sns_app
 from lws.cli.services.sqs import app as sqs_app
+from lws.cli.services.ssm import app as ssm_app
 from lws.cli.services.stepfunctions import app as stepfunctions_app
 
 app = typer.Typer(
@@ -34,6 +36,8 @@ app.add_typer(s3_app, name="s3api")
 app.add_typer(dynamodb_app, name="dynamodb")
 app.add_typer(events_app, name="events")
 app.add_typer(cognito_app, name="cognito-idp")
+app.add_typer(ssm_app, name="ssm")
+app.add_typer(secretsmanager_app, name="secretsmanager")
 
 
 @app.command("status")
