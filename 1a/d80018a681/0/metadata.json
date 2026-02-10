@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "1ad80018a681",
+  "session_id": "0848d326-d20a-4593-8d6e-840180d6ad32",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-10T22:52:33.455083Z",
+  "branch": "feat/ssm-secretsmanager-v0.4.0",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/providers/secretsmanager/routes.py",
+    "src/lws/runtime/sdk_env.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "3363638a-e955-4702-b312-7db386274f6d",
+  "checkpoint_transcript_start": 974,
+  "transcript_lines_at_start": 974,
+  "token_usage": {
+    "input_tokens": 91,
+    "cache_creation_tokens": 99441,
+    "cache_read_tokens": 8178502,
+    "output_tokens": 7735,
+    "api_call_count": 80
+  }
+}
