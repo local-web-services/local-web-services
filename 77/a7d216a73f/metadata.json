@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "77a7d216a73f",
+  "strategy": "auto-commit",
+  "branch": "feat/ssm-secretsmanager-v0.4.0",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/77/a7d216a73f/0/metadata.json",
+      "transcript": "/77/a7d216a73f/0/full.jsonl",
+      "context": "",
+      "content_hash": "/77/a7d216a73f/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
