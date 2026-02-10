@@ -50,6 +50,10 @@ class CognitoRouter:
             "SignUp": self._sign_up,
             "ConfirmSignUp": self._confirm_sign_up,
             "InitiateAuth": self._initiate_auth,
+            "CreateUserPool": self._create_user_pool,
+            "DeleteUserPool": self._delete_user_pool,
+            "ListUserPools": self._list_user_pools,
+            "DescribeUserPool": self._describe_user_pool,
         }
 
     async def _jwks(self) -> Response:
@@ -81,6 +85,58 @@ class CognitoRouter:
 
         result = await self._provider.initiate_auth(auth_flow, username, password)
         return _json_response(result)
+
+    async def _create_user_pool(self, body: dict) -> Response:
+        """Handle CreateUserPool operation."""
+        pool_name = body.get("PoolName", "default")
+        config = self._provider.config
+        pool_id = config.user_pool_id
+        arn = f"arn:aws:cognito-idp:us-east-1:000000000000:userpool/{pool_id}"
+        return _json_response(
+            {
+                "UserPool": {
+                    "Id": pool_id,
+                    "Name": pool_name,
+                    "Status": "Enabled",
+                    "Arn": arn,
+                }
+            }
+        )
+
+    async def _delete_user_pool(self, body: dict) -> Response:
+        """Handle DeleteUserPool operation."""
+        return _json_response({})
+
+    async def _list_user_pools(self, body: dict) -> Response:
+        """Handle ListUserPools operation."""
+        config = self._provider.config
+        return _json_response(
+            {
+                "UserPools": [
+                    {
+                        "Id": config.user_pool_id,
+                        "Name": config.user_pool_name,
+                        "Status": "Enabled",
+                    }
+                ]
+            }
+        )
+
+    async def _describe_user_pool(self, body: dict) -> Response:
+        """Handle DescribeUserPool operation."""
+        config = self._provider.config
+        pool_id = config.user_pool_id
+        arn = f"arn:aws:cognito-idp:us-east-1:000000000000:userpool/{pool_id}"
+        return _json_response(
+            {
+                "UserPool": {
+                    "Id": pool_id,
+                    "Name": config.user_pool_name,
+                    "Status": "Enabled",
+                    "Arn": arn,
+                }
+            }
+        )
 
 
 # ---------------------------------------------------------------------------

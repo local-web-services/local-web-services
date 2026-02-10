@@ -40,8 +40,8 @@ class SnsProvider(Provider):
         List of topic configurations to create at startup.
     """
 
-    def __init__(self, topics: list[TopicConfig]) -> None:
-        self._topic_configs = topics
+    def __init__(self, topics: list[TopicConfig] | None = None) -> None:
+        self._topic_configs = topics or []
         self._topics: dict[str, LocalTopic] = {}
         self._status = ProviderStatus.STOPPED
         self._compute_providers: dict[str, ICompute] = {}
@@ -142,6 +142,33 @@ class SnsProvider(Provider):
     def list_topics(self) -> list[LocalTopic]:
         """Return all topics managed by this provider."""
         return list(self._topics.values())
+
+    async def create_topic(self, topic_name: str) -> str:
+        """Create a topic. Idempotent — returns existing ARN if already present."""
+        existing = self._topics.get(topic_name)
+        if existing is not None:
+            return existing.topic_arn
+        topic_arn = f"arn:aws:sns:us-east-1:000000000000:{topic_name}"
+        topic = LocalTopic(topic_name=topic_name, topic_arn=topic_arn)
+        self._topics[topic_name] = topic
+        return topic_arn
+
+    async def delete_topic(self, topic_name: str) -> None:
+        """Delete a topic. Raises KeyError if not found."""
+        if topic_name not in self._topics:
+            raise KeyError(f"Topic not found: {topic_name}")
+        del self._topics[topic_name]
+
+    async def get_topic_attributes(self, topic_name: str) -> dict:
+        """Return topic attributes dict. Raises KeyError if not found."""
+        topic = self._topics.get(topic_name)
+        if topic is None:
+            raise KeyError(f"Topic not found: {topic_name}")
+        return {
+            "TopicArn": topic.topic_arn,
+            "DisplayName": topic.topic_name,
+            "SubscriptionsConfirmed": str(len(topic.subscribers)),
+        }
 
     # -- Dispatch helpers -----------------------------------------------------
 

@@ -65,8 +65,11 @@ class SqsRouter:
             "ReceiveMessage": self._receive_message,
             "DeleteMessage": self._delete_message,
             "CreateQueue": self._create_queue,
+            "DeleteQueue": self._delete_queue,
             "GetQueueUrl": self._get_queue_url,
             "GetQueueAttributes": self._get_queue_attributes,
+            "ListQueues": self._list_queues,
+            "PurgeQueue": self._purge_queue,
         }
 
     def _json_handlers(self) -> dict:
@@ -75,8 +78,11 @@ class SqsRouter:
             "ReceiveMessage": self._json_receive_message,
             "DeleteMessage": self._json_delete_message,
             "CreateQueue": self._json_create_queue,
+            "DeleteQueue": self._json_delete_queue,
             "GetQueueUrl": self._json_get_queue_url,
             "GetQueueAttributes": self._json_get_queue_attributes,
+            "ListQueues": self._json_list_queues,
+            "PurgeQueue": self._json_purge_queue,
         }
 
     # ------------------------------------------------------------------
@@ -187,7 +193,7 @@ class SqsRouter:
             is_fifo=is_fifo,
             content_based_dedup=content_based_dedup,
         )
-        self.provider.create_queue(config)
+        self.provider.create_queue_from_config(config)
 
         queue_url = _queue_url(queue_name)
         xml = (
@@ -197,6 +203,53 @@ class SqsRouter:
             "</CreateQueueResult>"
             f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
             "</CreateQueueResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _delete_queue(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        try:
+            await self.provider.delete_queue(queue_name)
+        except KeyError:
+            return _error_xml(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+                status_code=400,
+            )
+        xml = (
+            "<DeleteQueueResponse>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</DeleteQueueResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _list_queues(self, params: dict) -> Response:
+        queue_names = await self.provider.list_queues()
+        urls_xml = "".join(f"<QueueUrl>{_queue_url(name)}</QueueUrl>" for name in queue_names)
+        xml = (
+            "<ListQueuesResponse>"
+            "<ListQueuesResult>"
+            f"{urls_xml}"
+            "</ListQueuesResult>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</ListQueuesResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _purge_queue(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        try:
+            await self.provider.purge_queue(queue_name)
+        except KeyError:
+            return _error_xml(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+                status_code=400,
+            )
+        xml = (
+            "<PurgeQueueResponse>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</PurgeQueueResponse>"
         )
         return _xml_response(xml)
 
@@ -305,8 +358,38 @@ class SqsRouter:
             is_fifo=is_fifo,
             content_based_dedup=content_based_dedup,
         )
-        self.provider.create_queue(config)
+        self.provider.create_queue_from_config(config)
         return _json_response({"QueueUrl": _queue_url(queue_name)})
+
+    async def _json_delete_queue(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        try:
+            await self.provider.delete_queue(queue_name)
+        except KeyError:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+        return _json_response({})
+
+    async def _json_list_queues(self, body: dict) -> Response:
+        queue_names = await self.provider.list_queues()
+        return _json_response(
+            {
+                "QueueUrls": [_queue_url(name) for name in queue_names],
+            }
+        )
+
+    async def _json_purge_queue(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        try:
+            await self.provider.purge_queue(queue_name)
+        except KeyError:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+        return _json_response({})
 
     async def _json_get_queue_url(self, body: dict) -> Response:
         queue_name = body.get("QueueName", "")

@@ -7,10 +7,14 @@ as a pluggable provider.
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 
 from lws.interfaces.queue import IQueue
 from lws.providers.sqs.queue import LocalQueue
+
+_FAKE_ACCOUNT = "000000000000"
+_FAKE_REGION = "us-east-1"
 
 
 @dataclass
@@ -147,8 +151,12 @@ class SqsProvider(IQueue):
         """Return the ``LocalQueue`` for *queue_name*, or *None*."""
         return self._queues.get(queue_name)
 
-    def create_queue(self, config: QueueConfig) -> LocalQueue:
+    def create_queue_from_config(self, config: QueueConfig) -> LocalQueue:
         """Dynamically create a new queue from *config*."""
+        # Idempotent: if queue already exists, return it
+        existing = self._queues.get(config.queue_name)
+        if existing is not None:
+            return existing
         queue = LocalQueue(
             queue_name=config.queue_name,
             visibility_timeout=config.visibility_timeout,
@@ -159,9 +167,61 @@ class SqsProvider(IQueue):
         self._configs[config.queue_name] = config
         return queue
 
-    def list_queues(self) -> list[str]:
+    # ------------------------------------------------------------------
+    # IQueue management interface
+    # ------------------------------------------------------------------
+
+    async def create_queue(self, queue_name: str, attributes: dict | None = None) -> str:
+        """Create a queue. Returns the queue URL. Idempotent per AWS behaviour."""
+        attrs = attributes or {}
+        is_fifo = queue_name.endswith(".fifo")
+        visibility_timeout = int(attrs.get("VisibilityTimeout", "30"))
+        content_based_dedup = str(attrs.get("ContentBasedDeduplication", "false")).lower() == "true"
+
+        config = QueueConfig(
+            queue_name=queue_name,
+            visibility_timeout=visibility_timeout,
+            is_fifo=is_fifo,
+            content_based_dedup=content_based_dedup,
+        )
+        self.create_queue_from_config(config)
+        return f"http://localhost:4566/{_FAKE_ACCOUNT}/{queue_name}"
+
+    async def delete_queue(self, queue_name: str) -> None:
+        """Delete a queue. Raises KeyError if not found."""
+        if queue_name not in self._queues:
+            raise KeyError(f"Queue not found: {queue_name}")
+        del self._queues[queue_name]
+        self._configs.pop(queue_name, None)
+
+    async def get_queue_attributes(self, queue_name: str) -> dict:
+        """Return queue attributes dict. Raises KeyError if not found."""
+        queue = self._queues.get(queue_name)
+        if queue is None:
+            raise KeyError(f"Queue not found: {queue_name}")
+        attrs: dict[str, str] = {
+            "QueueArn": f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{queue_name}",
+            "ApproximateNumberOfMessages": str(len(queue._messages)),
+            "VisibilityTimeout": str(queue.visibility_timeout),
+            "CreatedTimestamp": str(int(time.time())),
+            "LastModifiedTimestamp": str(int(time.time())),
+        }
+        if queue.is_fifo:
+            attrs["FifoQueue"] = "true"
+            attrs["ContentBasedDeduplication"] = str(queue.content_based_dedup).lower()
+        return attrs
+
+    async def list_queues(self) -> list[str]:
         """Return sorted list of queue names."""
         return sorted(self._queues.keys())
+
+    async def purge_queue(self, queue_name: str) -> None:
+        """Purge all messages from a queue. Raises KeyError if not found."""
+        queue = self._queues.get(queue_name)
+        if queue is None:
+            raise KeyError(f"Queue not found: {queue_name}")
+        async with queue._lock:
+            queue._messages.clear()
 
     # ------------------------------------------------------------------
     # Internal

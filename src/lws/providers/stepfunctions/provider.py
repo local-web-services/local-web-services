@@ -214,6 +214,58 @@ class StepFunctionsProvider(IStateMachine):
         return self._definitions.get(name)
 
     # ------------------------------------------------------------------
+    # Management operations
+    # ------------------------------------------------------------------
+
+    def create_state_machine(
+        self,
+        name: str,
+        definition: str | dict,
+        role_arn: str = "",
+        workflow_type: str = "STANDARD",
+    ) -> str:
+        """Create a state machine dynamically. Returns the state machine ARN.
+
+        Idempotent: if a state machine with the same name exists, its
+        definition is updated.
+        """
+        wf_type = WorkflowType.EXPRESS if workflow_type == "EXPRESS" else WorkflowType.STANDARD
+        config = StateMachineConfig(
+            name=name,
+            definition=definition,
+            workflow_type=wf_type,
+            role_arn=role_arn,
+        )
+        self._configs[name] = config
+        definition_data = _resolve_definition(config)
+        self._definitions[name] = parse_definition(definition_data)
+        self._workflow_types[name] = wf_type
+        return f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
+
+    def delete_state_machine(self, name: str) -> None:
+        """Delete a state machine by name. Raises KeyError if not found."""
+        if name not in self._definitions:
+            raise KeyError(f"State machine not found: {name}")
+        del self._definitions[name]
+        self._configs.pop(name, None)
+        self._workflow_types.pop(name, None)
+
+    def describe_state_machine(self, name: str) -> dict:
+        """Describe a state machine. Raises KeyError if not found."""
+        if name not in self._definitions:
+            raise KeyError(f"State machine not found: {name}")
+        config = self._configs.get(name)
+        wf_type = self._workflow_types.get(name, WorkflowType.STANDARD)
+        return {
+            "name": name,
+            "stateMachineArn": f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}",
+            "type": wf_type.value,
+            "roleArn": config.role_arn if config else "",
+            "status": "ACTIVE",
+            "creationDate": time.time(),
+        }
+
+    # ------------------------------------------------------------------
     # Internal execution methods
     # ------------------------------------------------------------------
 

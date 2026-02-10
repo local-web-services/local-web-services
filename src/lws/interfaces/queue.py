@@ -37,3 +37,23 @@ class IQueue(Provider):
     async def delete_message(self, queue_name: str, receipt_handle: str) -> None:
         """Delete a message from the queue using its receipt handle."""
         ...
+
+    @abstractmethod
+    async def create_queue(self, queue_name: str, attributes: dict | None = None) -> str:
+        """Create a queue. Returns the queue URL."""
+        ...
+
+    @abstractmethod
+    async def delete_queue(self, queue_name: str) -> None:
+        """Delete a queue."""
+        ...
+
+    @abstractmethod
+    async def get_queue_attributes(self, queue_name: str) -> dict:
+        """Return queue attributes dict."""
+        ...
+
+    @abstractmethod
+    async def list_queues(self) -> list[str]:
+        """Return list of queue names."""
+        ...

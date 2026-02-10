@@ -409,12 +409,12 @@ class SqliteDynamoProvider(IKeyValueStore):
     def __init__(
         self,
         data_dir: Path,
-        tables: list[TableConfig],
+        tables: list[TableConfig] | None = None,
         consistency_delay_ms: int = 200,
         stream_dispatcher: StreamDispatcher | None = None,
     ) -> None:
         self._data_dir = data_dir
-        self._tables = {t.table_name: t for t in tables}
+        self._tables = {t.table_name: t for t in (tables or [])}
         self._connections: dict[str, aiosqlite.Connection] = {}
         self._version_store = _VersionStore(delay_ms=consistency_delay_ms)
         self._stream_dispatcher = stream_dispatcher
@@ -666,6 +666,146 @@ class SqliteDynamoProvider(IKeyValueStore):
             await self.put_item(table_name, item)
         for key in delete_keys or []:
             await self.delete_item(table_name, key)
+
+    # -- Table management ------------------------------------------------------
+
+    async def create_table(self, config: TableConfig) -> dict:
+        if config.table_name in self._tables:
+            raise ValueError(f"Table already exists: {config.table_name}")
+
+        self._tables[config.table_name] = config
+
+        db_dir = self._data_dir / "dynamodb"
+        db_dir.mkdir(parents=True, exist_ok=True)
+        db_path = db_dir / f"{config.table_name}.db"
+        conn = await aiosqlite.connect(str(db_path))
+        self._connections[config.table_name] = conn
+
+        await conn.execute("PRAGMA journal_mode=WAL")
+        await conn.execute(
+            "CREATE TABLE IF NOT EXISTS items "
+            "(pk TEXT, sk TEXT, item_json TEXT, PRIMARY KEY (pk, sk))"
+        )
+        for gsi in config.gsi_definitions:
+            await conn.execute(
+                f"CREATE TABLE IF NOT EXISTS gsi_{gsi.index_name} "
+                "(pk TEXT, sk TEXT, item_json TEXT, PRIMARY KEY (pk, sk))"
+            )
+        await conn.commit()
+
+        return self._build_table_description(config)
+
+    async def delete_table(self, table_name: str) -> dict:
+        if table_name not in self._tables:
+            raise KeyError(f"Table not found: {table_name}")
+
+        config = self._tables[table_name]
+        description = self._build_table_description(config)
+
+        conn = self._connections.pop(table_name)
+        await conn.close()
+        del self._tables[table_name]
+
+        db_path = self._data_dir / "dynamodb" / f"{table_name}.db"
+        if db_path.exists():
+            db_path.unlink()
+
+        return description
+
+    async def describe_table(self, table_name: str) -> dict:
+        if table_name not in self._tables:
+            raise KeyError(f"Table not found: {table_name}")
+        return self._build_table_description(self._tables[table_name])
+
+    async def list_tables(self) -> list[str]:
+        return sorted(self._tables.keys())
+
+    def _build_table_description(self, config: TableConfig) -> dict:
+        """Build an AWS-compatible TableDescription dict."""
+        key_schema = [
+            {
+                "AttributeName": config.key_schema.partition_key.name,
+                "KeyType": "HASH",
+            }
+        ]
+        attr_defs = [
+            {
+                "AttributeName": config.key_schema.partition_key.name,
+                "AttributeType": config.key_schema.partition_key.type,
+            }
+        ]
+        if config.key_schema.sort_key:
+            key_schema.append(
+                {
+                    "AttributeName": config.key_schema.sort_key.name,
+                    "KeyType": "RANGE",
+                }
+            )
+            attr_defs.append(
+                {
+                    "AttributeName": config.key_schema.sort_key.name,
+                    "AttributeType": config.key_schema.sort_key.type,
+                }
+            )
+
+        description: dict = {
+            "TableName": config.table_name,
+            "TableStatus": "ACTIVE",
+            "KeySchema": key_schema,
+            "AttributeDefinitions": attr_defs,
+            "TableArn": f"arn:aws:dynamodb:us-east-1:000000000000:table/{config.table_name}",
+            "ItemCount": 0,
+            "TableSizeBytes": 0,
+            "CreationDateTime": time.time(),
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 0,
+                "WriteCapacityUnits": 0,
+            },
+        }
+
+        if config.gsi_definitions:
+            gsis = []
+            for gsi in config.gsi_definitions:
+                gsi_key_schema = [
+                    {
+                        "AttributeName": gsi.key_schema.partition_key.name,
+                        "KeyType": "HASH",
+                    }
+                ]
+                gsi_attr = {
+                    "AttributeName": gsi.key_schema.partition_key.name,
+                    "AttributeType": gsi.key_schema.partition_key.type,
+                }
+                if gsi_attr not in attr_defs:
+                    attr_defs.append(gsi_attr)
+                if gsi.key_schema.sort_key:
+                    gsi_key_schema.append(
+                        {
+                            "AttributeName": gsi.key_schema.sort_key.name,
+                            "KeyType": "RANGE",
+                        }
+                    )
+                    gsi_sk_attr = {
+                        "AttributeName": gsi.key_schema.sort_key.name,
+                        "AttributeType": gsi.key_schema.sort_key.type,
+                    }
+                    if gsi_sk_attr not in attr_defs:
+                        attr_defs.append(gsi_sk_attr)
+                gsis.append(
+                    {
+                        "IndexName": gsi.index_name,
+                        "KeySchema": gsi_key_schema,
+                        "Projection": {"ProjectionType": gsi.projection_type},
+                        "IndexStatus": "ACTIVE",
+                        "ProvisionedThroughput": {
+                            "ReadCapacityUnits": 0,
+                            "WriteCapacityUnits": 0,
+                        },
+                    }
+                )
+            description["GlobalSecondaryIndexes"] = gsis
+
+        return description
 
     # -- Private helpers -------------------------------------------------------
 

@@ -73,7 +73,7 @@ _console = Console()
 
 app = typer.Typer(name="ldk", help="Local Development Kit - Run AWS CDK applications locally")
 
-__version__ = "0.1.0"
+__version__ = "0.3.0"
 
 
 @app.callback()
@@ -522,8 +522,12 @@ def _create_dynamo_providers(
     app_model: AppModel,
     graph: AppGraph,
     data_dir: Path,
-) -> tuple[SqliteDynamoProvider | None, dict[str, Provider]]:
-    """Create DynamoDB table providers from the app model."""
+) -> tuple[SqliteDynamoProvider, dict[str, Provider]]:
+    """Create DynamoDB table providers from the app model.
+
+    Always returns a provider (even with no CDK tables) so the DynamoDB
+    HTTP endpoint is available for Terraform/CLI table creation.
+    """
     providers: dict[str, Provider] = {}
     table_configs: list[TableConfig] = []
     for table in app_model.tables:
@@ -532,9 +536,6 @@ def _create_dynamo_providers(
         table_configs.append(
             TableConfig(table_name=table.name, key_schema=ks, gsi_definitions=gsi_defs)
         )
-
-    if not table_configs:
-        return None, providers
 
     dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=table_configs)
     for table in app_model.tables:
@@ -613,11 +614,13 @@ def _create_api_providers(
 def _create_sqs_providers(
     app_model: AppModel,
     graph: AppGraph,
-) -> tuple[SqsProvider | None, dict[str, Provider]]:
-    """Create SQS queue providers from the app model."""
+) -> tuple[SqsProvider, dict[str, Provider]]:
+    """Create SQS queue providers from the app model.
+
+    Always returns a provider (even with no CDK queues) so the SQS
+    HTTP endpoint is available for Terraform/CLI queue creation.
+    """
     providers: dict[str, Provider] = {}
-    if not app_model.queues:
-        return None, providers
     queue_configs = []
     for q in app_model.queues:
         redrive = None
@@ -634,7 +637,7 @@ def _create_sqs_providers(
                 redrive_policy=redrive,
             )
         )
-    sqs_provider = SqsProvider(queues=queue_configs)
+    sqs_provider = SqsProvider(queues=queue_configs if queue_configs else None)
     for q in app_model.queues:
         node_id = _find_node_id(graph, NodeType.SQS_QUEUE, q.name)
         if node_id:
@@ -646,13 +649,15 @@ def _create_s3_providers(
     app_model: AppModel,
     graph: AppGraph,
     data_dir: Path,
-) -> tuple[S3Provider | None, dict[str, Provider]]:
-    """Create S3 bucket providers from the app model."""
+) -> tuple[S3Provider, dict[str, Provider]]:
+    """Create S3 bucket providers from the app model.
+
+    Always returns a provider (even with no CDK buckets) so the S3
+    HTTP endpoint is available for Terraform/CLI bucket creation.
+    """
     providers: dict[str, Provider] = {}
-    if not app_model.buckets:
-        return None, providers
     bucket_names = [b.name for b in app_model.buckets]
-    s3_provider = S3Provider(data_dir=data_dir, buckets=bucket_names)
+    s3_provider = S3Provider(data_dir=data_dir, buckets=bucket_names if bucket_names else None)
     for b in app_model.buckets:
         node_id = _find_node_id(graph, NodeType.S3_BUCKET, b.name)
         if node_id:
@@ -663,15 +668,17 @@ def _create_s3_providers(
 def _create_sns_providers(
     app_model: AppModel,
     graph: AppGraph,
-) -> tuple[SnsProvider | None, dict[str, Provider]]:
-    """Create SNS topic providers from the app model."""
+) -> tuple[SnsProvider, dict[str, Provider]]:
+    """Create SNS topic providers from the app model.
+
+    Always returns a provider (even with no CDK topics) so the SNS
+    HTTP endpoint is available for Terraform/CLI topic creation.
+    """
     providers: dict[str, Provider] = {}
-    if not app_model.topics:
-        return None, providers
     topic_configs = [
         TopicConfig(topic_name=t.name, topic_arn=t.topic_arn) for t in app_model.topics
     ]
-    sns_provider = SnsProvider(topics=topic_configs)
+    sns_provider = SnsProvider(topics=topic_configs if topic_configs else None)
     for t in app_model.topics:
         node_id = _find_node_id(graph, NodeType.SNS_TOPIC, t.name)
         if node_id:
@@ -682,11 +689,13 @@ def _create_sns_providers(
 def _create_eventbridge_providers(
     app_model: AppModel,
     graph: AppGraph,
-) -> tuple[EventBridgeProvider | None, dict[str, Provider]]:
-    """Create EventBridge providers from the app model."""
+) -> tuple[EventBridgeProvider, dict[str, Provider]]:
+    """Create EventBridge providers from the app model.
+
+    Always returns a provider (even with no CDK buses) so the EventBridge
+    HTTP endpoint is available for Terraform/CLI event bus creation.
+    """
     providers: dict[str, Provider] = {}
-    if not app_model.event_buses and not app_model.event_rules:
-        return None, providers
     bus_configs = [
         EventBusConfig(bus_name=b.name, bus_arn=b.bus_arn) for b in app_model.event_buses
     ]
@@ -705,7 +714,10 @@ def _create_eventbridge_providers(
                 targets=targets,
             )
         )
-    eb_provider = EventBridgeProvider(buses=bus_configs, rules=rule_configs)
+    eb_provider = EventBridgeProvider(
+        buses=bus_configs if bus_configs else None,
+        rules=rule_configs if rule_configs else None,
+    )
     for b in app_model.event_buses:
         node_id = _find_node_id(graph, NodeType.EVENT_BUS, b.name)
         if node_id:
@@ -716,11 +728,13 @@ def _create_eventbridge_providers(
 def _create_stepfunctions_providers(
     app_model: AppModel,
     graph: AppGraph,
-) -> tuple[StepFunctionsProvider | None, dict[str, Provider]]:
-    """Create Step Functions providers from the app model."""
+) -> tuple[StepFunctionsProvider, dict[str, Provider]]:
+    """Create Step Functions providers from the app model.
+
+    Always returns a provider (even with no CDK state machines) so the
+    Step Functions HTTP endpoint is available for Terraform/CLI creation.
+    """
     providers: dict[str, Provider] = {}
-    if not app_model.state_machines:
-        return None, providers
     sm_configs = []
     for sm in app_model.state_machines:
         wf_type = WorkflowType.EXPRESS if sm.workflow_type == "EXPRESS" else WorkflowType.STANDARD
@@ -733,7 +747,9 @@ def _create_stepfunctions_providers(
                 definition_substitutions=sm.definition_substitutions,
             )
         )
-    sf_provider = StepFunctionsProvider(state_machines=sm_configs)
+    sf_provider = StepFunctionsProvider(
+        state_machines=sm_configs if sm_configs else None,
+    )
     for sm in app_model.state_machines:
         node_id = _find_node_id(graph, NodeType.STATE_MACHINE, sm.name)
         if node_id:
@@ -744,12 +760,15 @@ def _create_stepfunctions_providers(
 def _create_ecs_providers(
     app_model: AppModel,
     graph: AppGraph,
-) -> tuple[EcsProvider | None, dict[str, Provider]]:
-    """Create ECS service providers from the app model."""
+) -> tuple[EcsProvider, dict[str, Provider]]:
+    """Create ECS service providers from the app model.
+
+    Always returns a provider (even with no CDK services).
+    """
     providers: dict[str, Provider] = {}
-    if not app_model.ecs_services:
-        return None, providers
-    ecs_provider = EcsProvider(services=app_model.ecs_services)
+    ecs_provider = EcsProvider(
+        services=app_model.ecs_services if app_model.ecs_services else None,
+    )
     for svc in app_model.ecs_services:
         svc_name = getattr(svc, "service_name", str(id(svc)))
         node_id = _find_node_id(graph, NodeType.ECS_SERVICE, svc_name)
@@ -762,11 +781,20 @@ def _create_cognito_providers(
     app_model: AppModel,
     data_dir: Path,
     compute_providers: dict[str, ICompute],
-) -> tuple[CognitoProvider | None, dict[str, Provider]]:
-    """Create Cognito user pool providers from the app model."""
+) -> tuple[CognitoProvider, dict[str, Provider]]:
+    """Create Cognito user pool providers from the app model.
+
+    Always returns a provider (even with no CDK user pools) so the
+    Cognito HTTP endpoint is available for Terraform/CLI user pool creation.
+    """
     providers: dict[str, Provider] = {}
     if not app_model.user_pools:
-        return None, providers
+        pool_config = UserPoolConfig(
+            user_pool_id="us-east-1_default",
+            user_pool_name="default",
+        )
+        cognito_provider = CognitoProvider(data_dir=data_dir, config=pool_config)
+        return cognito_provider, providers
     # Use the first user pool (multi-pool support can be added later)
     pool = app_model.user_pools[0]
     pw = pool.password_policy
@@ -803,7 +831,7 @@ def _wire_remaining_providers(
     graph: AppGraph,
     providers: dict[str, Provider],
     compute_providers: dict[str, ICompute],
-    sqs_provider: SqsProvider | None,
+    sqs_provider: SqsProvider,
     local_endpoints: dict[str, str],
     data_dir: Path,
     api_port: int,
@@ -813,38 +841,33 @@ def _wire_remaining_providers(
     sf_port: int,
     cognito_port: int,
 ) -> tuple[
-    SnsProvider | None,
-    EventBridgeProvider | None,
-    StepFunctionsProvider | None,
-    CognitoProvider | None,
+    SnsProvider,
+    EventBridgeProvider,
+    StepFunctionsProvider,
+    CognitoProvider,
 ]:
     """Wire messaging, cognito, and API Gateway providers."""
     sns_provider, sns_providers = _create_sns_providers(app_model, graph)
     providers.update(sns_providers)
-    if sns_provider:
-        sns_provider.set_compute_providers(compute_providers)
-        if sqs_provider:
-            sns_provider.set_queue_provider(sqs_provider)
-        local_endpoints["sns"] = f"http://127.0.0.1:{sns_port}"
+    sns_provider.set_compute_providers(compute_providers)
+    sns_provider.set_queue_provider(sqs_provider)
+    local_endpoints["sns"] = f"http://127.0.0.1:{sns_port}"
 
     eb_provider, eb_providers = _create_eventbridge_providers(app_model, graph)
     providers.update(eb_providers)
-    if eb_provider:
-        eb_provider.set_compute_providers(compute_providers)
-        local_endpoints["events"] = f"http://127.0.0.1:{eb_port}"
+    eb_provider.set_compute_providers(compute_providers)
+    local_endpoints["events"] = f"http://127.0.0.1:{eb_port}"
 
     sf_provider, sf_providers = _create_stepfunctions_providers(app_model, graph)
     providers.update(sf_providers)
-    if sf_provider:
-        sf_provider.set_compute_providers(compute_providers)
-        local_endpoints["stepfunctions"] = f"http://127.0.0.1:{sf_port}"
+    sf_provider.set_compute_providers(compute_providers)
+    local_endpoints["stepfunctions"] = f"http://127.0.0.1:{sf_port}"
 
     cognito_provider, cognito_providers = _create_cognito_providers(
         app_model, data_dir, compute_providers
     )
     providers.update(cognito_providers)
-    if cognito_provider:
-        local_endpoints["cognito-idp"] = f"http://127.0.0.1:{cognito_port}"
+    local_endpoints["cognito-idp"] = f"http://127.0.0.1:{cognito_port}"
 
     api_provider, api_providers = _create_api_providers(
         app_model, graph, compute_providers, api_port
@@ -888,12 +911,9 @@ def _create_providers(
 
     # 2. Build local_endpoints for SDK env redirection
     local_endpoints: dict[str, str] = {}
-    if dynamo_provider:
-        local_endpoints["dynamodb"] = f"http://127.0.0.1:{dynamo_port}"
-    if sqs_provider:
-        local_endpoints["sqs"] = f"http://127.0.0.1:{sqs_port}"
-    if s3_provider:
-        local_endpoints["s3"] = f"http://127.0.0.1:{s3_port}"
+    local_endpoints["dynamodb"] = f"http://127.0.0.1:{dynamo_port}"
+    local_endpoints["sqs"] = f"http://127.0.0.1:{sqs_port}"
+    local_endpoints["s3"] = f"http://127.0.0.1:{s3_port}"
 
     # 3. Compute (Lambda — Node.js + Python)
     sdk_env = build_sdk_env(local_endpoints)
@@ -953,49 +973,40 @@ def _create_providers(
 def _register_http_providers(
     providers: dict[str, Provider],
     *,
-    dynamo_provider: SqliteDynamoProvider | None,
-    sqs_provider: SqsProvider | None,
-    s3_provider: S3Provider | None,
-    sns_provider: SnsProvider | None,
-    eb_provider: EventBridgeProvider | None,
-    sf_provider: StepFunctionsProvider | None,
-    cognito_provider: CognitoProvider | None,
+    dynamo_provider: SqliteDynamoProvider,
+    sqs_provider: SqsProvider,
+    s3_provider: S3Provider,
+    sns_provider: SnsProvider,
+    eb_provider: EventBridgeProvider,
+    sf_provider: StepFunctionsProvider,
+    cognito_provider: CognitoProvider,
     ports: dict[str, int],
 ) -> None:
     """Register HTTP service providers for each active backend."""
+    from lws.providers.cognito.routes import create_cognito_app
+    from lws.providers.eventbridge.routes import create_eventbridge_app
+    from lws.providers.stepfunctions.routes import create_stepfunctions_app
+
     http_services: list[tuple[str, Any, Callable[[], Any]]] = []
-    if dynamo_provider:
-        http_services.append(
-            ("dynamodb", ports["dynamodb"], lambda p=dynamo_provider: create_dynamodb_app(p))
+    http_services.append(
+        ("dynamodb", ports["dynamodb"], lambda p=dynamo_provider: create_dynamodb_app(p))
+    )
+    http_services.append(("sqs", ports["sqs"], lambda p=sqs_provider: create_sqs_app(p)))
+    http_services.append(("s3", ports["s3"], lambda p=s3_provider: create_s3_app(p)))
+    http_services.append(("sns", ports["sns"], lambda p=sns_provider: create_sns_app(p)))
+    http_services.append(
+        ("eventbridge", ports["eventbridge"], lambda p=eb_provider: create_eventbridge_app(p))
+    )
+    http_services.append(
+        (
+            "stepfunctions",
+            ports["stepfunctions"],
+            lambda p=sf_provider: create_stepfunctions_app(p),
         )
-    if sqs_provider:
-        http_services.append(("sqs", ports["sqs"], lambda p=sqs_provider: create_sqs_app(p)))
-    if s3_provider:
-        http_services.append(("s3", ports["s3"], lambda p=s3_provider: create_s3_app(p)))
-    if sns_provider:
-        http_services.append(("sns", ports["sns"], lambda p=sns_provider: create_sns_app(p)))
-    if eb_provider:
-        from lws.providers.eventbridge.routes import create_eventbridge_app
-
-        http_services.append(
-            ("eventbridge", ports["eventbridge"], lambda p=eb_provider: create_eventbridge_app(p))
-        )
-    if sf_provider:
-        from lws.providers.stepfunctions.routes import create_stepfunctions_app
-
-        http_services.append(
-            (
-                "stepfunctions",
-                ports["stepfunctions"],
-                lambda p=sf_provider: create_stepfunctions_app(p),
-            )
-        )
-    if cognito_provider:
-        from lws.providers.cognito.routes import create_cognito_app
-
-        http_services.append(
-            ("cognito", ports["cognito"], lambda p=cognito_provider: create_cognito_app(p))
-        )
+    )
+    http_services.append(
+        ("cognito", ports["cognito"], lambda p=cognito_provider: create_cognito_app(p))
+    )
 
     for svc_name, port, factory in http_services:
         providers[f"__{svc_name}_http__"] = _HttpServiceProvider(f"{svc_name}-http", factory, port)
@@ -1089,6 +1100,17 @@ def _add_service_metadata(
     services: dict[str, Any], app_model: AppModel, ports: dict[str, int]
 ) -> None:
     """Add non-API service metadata to services."""
+    if app_model.functions:
+        services["lambda"] = {
+            "resources": [
+                {
+                    "name": f.name,
+                    "runtime": f.runtime,
+                    "arn": f"arn:aws:lambda:us-east-1:000000000000:function:{f.name}",
+                }
+                for f in app_model.functions
+            ],
+        }
     if app_model.tables:
         services["dynamodb"] = {
             "port": ports["dynamodb"],

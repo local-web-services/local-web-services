@@ -108,3 +108,81 @@ async def _list_state_machines(port: int) -> None:
     except Exception as exc:
         exit_with_error(str(exc))
     output_json(result)
+
+
+@app.command("create-state-machine")
+def create_state_machine(
+    name: str = typer.Option(..., "--name", help="State machine name"),
+    definition: str = typer.Option(..., "--definition", help="ASL definition JSON"),
+    role_arn: str = typer.Option("", "--role-arn", help="IAM role ARN"),
+    sm_type: str = typer.Option("STANDARD", "--type", help="STANDARD or EXPRESS"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create a state machine."""
+    asyncio.run(_create_state_machine(name, definition, role_arn, sm_type, port))
+
+
+async def _create_state_machine(
+    name: str, definition: str, role_arn: str, sm_type: str, port: int
+) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.CreateStateMachine",
+            {
+                "name": name,
+                "definition": definition,
+                "roleArn": role_arn,
+                "type": sm_type,
+            },
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("delete-state-machine")
+def delete_state_machine(
+    name: str = typer.Option(..., "--name", help="State machine name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete a state machine."""
+    asyncio.run(_delete_state_machine(name, port))
+
+
+async def _delete_state_machine(name: str, port: int) -> None:
+    client = _client(port)
+    arn = f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DeleteStateMachine",
+            {"stateMachineArn": arn},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("describe-state-machine")
+def describe_state_machine(
+    name: str = typer.Option(..., "--name", help="State machine name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Describe a state machine."""
+    asyncio.run(_describe_state_machine(name, port))
+
+
+async def _describe_state_machine(name: str, port: int) -> None:
+    client = _client(port)
+    arn = f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DescribeStateMachine",
+            {"stateMachineArn": arn},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)

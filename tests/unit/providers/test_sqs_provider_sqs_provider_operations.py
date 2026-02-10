@@ -178,11 +178,11 @@ class TestSqsProviderOperations:
         assert messages[0]["MessageAttributes"] == attrs
 
     async def test_create_queue(self, provider: SqsProvider) -> None:
-        provider.create_queue(QueueConfig(queue_name="dynamic-queue"))
+        provider.create_queue_from_config(QueueConfig(queue_name="dynamic-queue"))
         msg_id = await provider.send_message("dynamic-queue", "works")
         assert msg_id is not None
 
     async def test_list_queues(self, provider: SqsProvider) -> None:
-        names = provider.list_queues()
+        names = await provider.list_queues()
         assert "queue-a" in names
         assert "queue-b" in names

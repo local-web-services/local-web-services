@@ -134,6 +134,73 @@ async def _handle_list_event_buses(provider: EventBridgeProvider, body: dict) ->
     )
 
 
+async def _handle_create_event_bus(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``CreateEventBus`` action."""
+    bus_name = body.get("Name", "")
+    if not bus_name:
+        return Response(
+            content=json.dumps({"Error": "Name is required"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    arn = await provider.create_event_bus(bus_name)
+    return Response(
+        content=json.dumps({"EventBusArn": arn}),
+        media_type="application/json",
+    )
+
+
+async def _handle_delete_event_bus(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``DeleteEventBus`` action."""
+    bus_name = body.get("Name", "")
+    try:
+        await provider.delete_event_bus(bus_name)
+    except (KeyError, ValueError) as exc:
+        return Response(
+            content=json.dumps({"Error": str(exc)}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return Response(
+        content=json.dumps({}),
+        media_type="application/json",
+    )
+
+
+async def _handle_describe_event_bus(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``DescribeEventBus`` action."""
+    bus_name = body.get("Name", "default")
+    try:
+        attrs = provider.describe_event_bus(bus_name)
+    except KeyError:
+        return Response(
+            content=json.dumps({"Error": f"Event bus not found: {bus_name}"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return Response(
+        content=json.dumps(attrs),
+        media_type="application/json",
+    )
+
+
+async def _handle_delete_rule(provider: EventBridgeProvider, body: dict) -> Response:
+    """Handle the ``DeleteRule`` action."""
+    rule_name = body.get("Name", "")
+    try:
+        await provider.delete_rule(rule_name)
+    except KeyError:
+        return Response(
+            content=json.dumps({"Error": f"Rule not found: {rule_name}"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    return Response(
+        content=json.dumps({}),
+        media_type="application/json",
+    )
+
+
 # ------------------------------------------------------------------
 # Target dispatch table
 # ------------------------------------------------------------------
@@ -144,6 +211,10 @@ _TARGET_HANDLERS = {
     "AWSEvents.PutTargets": _handle_put_targets,
     "AWSEvents.ListRules": _handle_list_rules,
     "AWSEvents.ListEventBuses": _handle_list_event_buses,
+    "AWSEvents.CreateEventBus": _handle_create_event_bus,
+    "AWSEvents.DeleteEventBus": _handle_delete_event_bus,
+    "AWSEvents.DescribeEventBus": _handle_describe_event_bus,
+    "AWSEvents.DeleteRule": _handle_delete_rule,
 }
 
 

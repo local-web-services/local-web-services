@@ -107,18 +107,9 @@ async def _handle_list_subscriptions(provider: SnsProvider, params: dict[str, st
 
 
 async def _handle_create_topic(provider: SnsProvider, params: dict[str, str]) -> Response:
-    """Handle the ``CreateTopic`` action.
-
-    For local development this is a no-op if the topic already exists.
-    """
+    """Handle the ``CreateTopic`` action. Idempotent per AWS behaviour."""
     topic_name = params.get("Name", "")
-    try:
-        topic = provider.get_topic(topic_name)
-        topic_arn = topic.topic_arn
-    except KeyError:
-        # Topic doesn't exist -- in a real implementation we'd create it,
-        # but for local dev we return a synthesised ARN.
-        topic_arn = f"arn:aws:sns:us-east-1:000000000000:{topic_name}"
+    topic_arn = await provider.create_topic(topic_name)
 
     xml = (
         "<CreateTopicResponse>"
@@ -127,6 +118,64 @@ async def _handle_create_topic(provider: SnsProvider, params: dict[str, str]) ->
         "</CreateTopicResult>"
         f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
         "</CreateTopicResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_delete_topic(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``DeleteTopic`` action."""
+    topic_arn = params.get("TopicArn", "")
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    try:
+        await provider.delete_topic(topic_name)
+    except KeyError:
+        xml = (
+            "<ErrorResponse>"
+            "<Error>"
+            "<Code>NotFound</Code>"
+            f"<Message>Topic not found: {topic_arn}</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=404, media_type="text/xml")
+
+    xml = (
+        "<DeleteTopicResponse>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</DeleteTopicResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_get_topic_attributes(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``GetTopicAttributes`` action."""
+    topic_arn = params.get("TopicArn", "")
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    try:
+        attrs = await provider.get_topic_attributes(topic_name)
+    except KeyError:
+        xml = (
+            "<ErrorResponse>"
+            "<Error>"
+            "<Code>NotFound</Code>"
+            f"<Message>Topic not found: {topic_arn}</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=404, media_type="text/xml")
+
+    attrs_xml = "".join(
+        f"<entry><key>{k}</key><value>{v}</value></entry>" for k, v in attrs.items()
+    )
+    xml = (
+        "<GetTopicAttributesResponse>"
+        "<GetTopicAttributesResult>"
+        f"<Attributes>{attrs_xml}</Attributes>"
+        "</GetTopicAttributesResult>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</GetTopicAttributesResponse>"
     )
     return Response(content=xml, media_type="text/xml")
 
@@ -157,6 +206,8 @@ _ACTION_HANDLERS = {
     "Subscribe": _handle_subscribe,
     "ListSubscriptions": _handle_list_subscriptions,
     "CreateTopic": _handle_create_topic,
+    "DeleteTopic": _handle_delete_topic,
+    "GetTopicAttributes": _handle_get_topic_attributes,
     "ListTopics": _handle_list_topics,
 }
 

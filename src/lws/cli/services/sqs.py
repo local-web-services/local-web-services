@@ -118,3 +118,90 @@ async def _get_queue_attributes(queue_name: str, port: int) -> None:
         {"Action": "GetQueueAttributes", "QueueUrl": queue_url},
     )
     output_json(xml_to_dict(xml))
+
+
+@app.command("create-queue")
+def create_queue(
+    queue_name: str = typer.Option(..., "--queue-name", help="Queue name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create a queue."""
+    asyncio.run(_create_queue(queue_name, port))
+
+
+async def _create_queue(queue_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        xml = await client.form_request(
+            _SERVICE,
+            {"Action": "CreateQueue", "QueueName": queue_name},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(xml_to_dict(xml))
+
+
+@app.command("delete-queue")
+def delete_queue(
+    queue_name: str = typer.Option(..., "--queue-name", help="Queue name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete a queue."""
+    asyncio.run(_delete_queue(queue_name, port))
+
+
+async def _delete_queue(queue_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        svc_port = await client.service_port(_SERVICE)
+        queue_url = f"http://localhost:{svc_port}/000000000000/{queue_name}"
+        xml = await client.form_request(
+            _SERVICE,
+            {"Action": "DeleteQueue", "QueueUrl": queue_url},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(xml_to_dict(xml))
+
+
+@app.command("list-queues")
+def list_queues(
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List all queues."""
+    asyncio.run(_list_queues(port))
+
+
+async def _list_queues(port: int) -> None:
+    client = _client(port)
+    try:
+        xml = await client.form_request(
+            _SERVICE,
+            {"Action": "ListQueues"},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(xml_to_dict(xml))
+
+
+@app.command("purge-queue")
+def purge_queue(
+    queue_name: str = typer.Option(..., "--queue-name", help="Queue name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Purge all messages from a queue."""
+    asyncio.run(_purge_queue(queue_name, port))
+
+
+async def _purge_queue(queue_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        svc_port = await client.service_port(_SERVICE)
+        queue_url = f"http://localhost:{svc_port}/000000000000/{queue_name}"
+        xml = await client.form_request(
+            _SERVICE,
+            {"Action": "PurgeQueue", "QueueUrl": queue_url},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(xml_to_dict(xml))

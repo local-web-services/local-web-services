@@ -165,10 +165,80 @@ async def _list_objects_v2(bucket: str, request: Request, provider: S3Provider) 
 # ------------------------------------------------------------------
 
 
+async def _create_bucket(bucket: str, provider: S3Provider) -> Response:
+    """Handle CreateBucket (PUT /{bucket} with no key)."""
+    try:
+        await provider.create_bucket(bucket)
+    except ValueError:
+        return _error_xml(
+            "BucketAlreadyOwnedByYou",
+            f"Your previous request to create the named bucket succeeded: {bucket}",
+            status_code=409,
+        )
+    return Response(status_code=200)
+
+
+async def _delete_bucket(bucket: str, provider: S3Provider) -> Response:
+    """Handle DeleteBucket (DELETE /{bucket})."""
+    try:
+        await provider.delete_bucket(bucket)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return Response(status_code=204)
+
+
+async def _head_bucket(bucket: str, provider: S3Provider) -> Response:
+    """Handle HeadBucket (HEAD /{bucket})."""
+    try:
+        await provider.head_bucket(bucket)
+    except KeyError:
+        return Response(status_code=404)
+    return Response(
+        status_code=200,
+        headers={
+            "x-amz-bucket-region": "us-east-1",
+        },
+    )
+
+
+async def _list_all_buckets(provider: S3Provider) -> Response:
+    """Handle ListBuckets (GET /)."""
+    bucket_names = await provider.list_buckets()
+    buckets_xml = ""
+    for name in bucket_names:
+        try:
+            meta = await provider.head_bucket(name)
+            creation_date = meta["CreationDate"]
+        except KeyError:
+            creation_date = ""
+        buckets_xml += (
+            "<Bucket>"
+            f"<Name>{_xml_escape(name)}</Name>"
+            f"<CreationDate>{creation_date}</CreationDate>"
+            "</Bucket>"
+        )
+
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<ListAllMyBucketsResult>"
+        f"<Buckets>{buckets_xml}</Buckets>"
+        "<Owner>"
+        "<ID>000000000000</ID>"
+        "<DisplayName>local</DisplayName>"
+        "</Owner>"
+        "</ListAllMyBucketsResult>"
+    )
+    return _xml_response(body)
+
+
 def create_s3_app(provider: S3Provider) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     app = FastAPI()
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="s3")
+
+    @app.api_route("/", methods=["GET"])
+    async def list_buckets() -> Response:
+        return await _list_all_buckets(provider)
 
     @app.api_route("/{bucket}/{key:path}", methods=["PUT"])
     async def put_object(bucket: str, key: str, request: Request) -> Response:
@@ -185,6 +255,18 @@ def create_s3_app(provider: S3Provider) -> FastAPI:
     @app.api_route("/{bucket}/{key:path}", methods=["HEAD"])
     async def head_object(bucket: str, key: str) -> Response:
         return await _head_object(bucket, key, provider)
+
+    @app.api_route("/{bucket}", methods=["PUT"])
+    async def create_bucket(bucket: str) -> Response:
+        return await _create_bucket(bucket, provider)
+
+    @app.api_route("/{bucket}", methods=["DELETE"])
+    async def delete_bucket(bucket: str) -> Response:
+        return await _delete_bucket(bucket, provider)
+
+    @app.api_route("/{bucket}", methods=["HEAD"])
+    async def head_bucket_route(bucket: str) -> Response:
+        return await _head_bucket(bucket, provider)
 
     @app.api_route("/{bucket}", methods=["GET"])
     async def list_objects_v2(bucket: str, request: Request) -> Response:

@@ -46,6 +46,9 @@ class StepFunctionsRouter:
             "DescribeExecution": self._describe_execution,
             "ListExecutions": self._list_executions,
             "ListStateMachines": self._list_state_machines,
+            "CreateStateMachine": self._create_state_machine,
+            "DeleteStateMachine": self._delete_state_machine,
+            "DescribeStateMachine": self._describe_state_machine,
         }
 
     # ------------------------------------------------------------------
@@ -113,6 +116,57 @@ class StepFunctionsRouter:
             for n in names
         ]
         return _json_response({"stateMachines": machines})
+
+    async def _create_state_machine(self, body: dict) -> Response:
+        """Handle CreateStateMachine API action."""
+        name = body.get("name", "")
+        definition = body.get("definition", "{}")
+        role_arn = body.get("roleArn", "")
+        sm_type = body.get("type", "STANDARD")
+
+        if not name:
+            return _error_response("ValidationException", "name is required")
+
+        arn = self.provider.create_state_machine(
+            name=name,
+            definition=definition,
+            role_arn=role_arn,
+            workflow_type=sm_type,
+        )
+        return _json_response(
+            {
+                "stateMachineArn": arn,
+                "creationDate": __import__("time").time(),
+            }
+        )
+
+    async def _delete_state_machine(self, body: dict) -> Response:
+        """Handle DeleteStateMachine API action."""
+        sm_arn = body.get("stateMachineArn", "")
+        sm_name = sm_arn.rsplit(":", 1)[-1] if ":" in sm_arn else sm_arn
+
+        try:
+            self.provider.delete_state_machine(sm_name)
+        except KeyError:
+            return _error_response(
+                "StateMachineDoesNotExist",
+                f"State machine not found: {sm_arn}",
+            )
+        return _json_response({})
+
+    async def _describe_state_machine(self, body: dict) -> Response:
+        """Handle DescribeStateMachine API action."""
+        sm_arn = body.get("stateMachineArn", "")
+        sm_name = sm_arn.rsplit(":", 1)[-1] if ":" in sm_arn else sm_arn
+
+        try:
+            attrs = self.provider.describe_state_machine(sm_name)
+        except KeyError:
+            return _error_response(
+                "StateMachineDoesNotExist",
+                f"State machine not found: {sm_arn}",
+            )
+        return _json_response(attrs)
 
 
 # ------------------------------------------------------------------

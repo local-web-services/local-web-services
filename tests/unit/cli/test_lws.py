@@ -42,6 +42,9 @@ class TestLwsApp:
         assert "describe-execution" in result.output
         assert "list-executions" in result.output
         assert "list-state-machines" in result.output
+        assert "create-state-machine" in result.output
+        assert "delete-state-machine" in result.output
+        assert "describe-state-machine" in result.output
 
     def test_sqs_subcommands(self):
         from typer.testing import CliRunner
@@ -54,6 +57,10 @@ class TestLwsApp:
         assert "receive-message" in result.output
         assert "delete-message" in result.output
         assert "get-queue-attributes" in result.output
+        assert "create-queue" in result.output
+        assert "delete-queue" in result.output
+        assert "list-queues" in result.output
+        assert "purge-queue" in result.output
 
     def test_dynamodb_subcommands(self):
         from typer.testing import CliRunner
@@ -67,6 +74,10 @@ class TestLwsApp:
         assert "delete-item" in result.output
         assert "scan" in result.output
         assert "query" in result.output
+        assert "create-table" in result.output
+        assert "delete-table" in result.output
+        assert "describe-table" in result.output
+        assert "list-tables" in result.output
 
     def test_s3api_subcommands(self):
         from typer.testing import CliRunner
@@ -80,6 +91,10 @@ class TestLwsApp:
         assert "delete-object" in result.output
         assert "list-objects-v2" in result.output
         assert "head-object" in result.output
+        assert "create-bucket" in result.output
+        assert "delete-bucket" in result.output
+        assert "head-bucket" in result.output
+        assert "list-buckets" in result.output
 
     def test_sns_subcommands(self):
         from typer.testing import CliRunner
@@ -91,6 +106,9 @@ class TestLwsApp:
         assert "publish" in result.output
         assert "list-topics" in result.output
         assert "list-subscriptions" in result.output
+        assert "create-topic" in result.output
+        assert "delete-topic" in result.output
+        assert "subscribe" in result.output
 
     def test_events_subcommands(self):
         from typer.testing import CliRunner
@@ -101,6 +119,11 @@ class TestLwsApp:
         result = runner.invoke(app, ["events", "--help"])
         assert "put-events" in result.output
         assert "list-rules" in result.output
+        assert "create-event-bus" in result.output
+        assert "delete-event-bus" in result.output
+        assert "list-event-buses" in result.output
+        assert "put-rule" in result.output
+        assert "delete-rule" in result.output
 
     def test_cognito_subcommands(self):
         from typer.testing import CliRunner
@@ -112,3 +135,7 @@ class TestLwsApp:
         assert "sign-up" in result.output
         assert "confirm-sign-up" in result.output
         assert "initiate-auth" in result.output
+        assert "create-user-pool" in result.output
+        assert "delete-user-pool" in result.output
+        assert "list-user-pools" in result.output
+        assert "describe-user-pool" in result.output

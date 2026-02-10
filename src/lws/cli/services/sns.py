@@ -78,3 +78,73 @@ async def _list_subscriptions(port: int) -> None:
     except Exception as exc:
         exit_with_error(str(exc))
     output_json(xml_to_dict(xml))
+
+
+@app.command("create-topic")
+def create_topic(
+    name: str = typer.Option(..., "--name", help="Topic name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create a topic."""
+    asyncio.run(_create_topic(name, port))
+
+
+async def _create_topic(name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        xml = await client.form_request(
+            _SERVICE,
+            {"Action": "CreateTopic", "Name": name},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(xml_to_dict(xml))
+
+
+@app.command("delete-topic")
+def delete_topic(
+    topic_arn: str = typer.Option(..., "--topic-arn", help="Topic ARN"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete a topic."""
+    asyncio.run(_delete_topic(topic_arn, port))
+
+
+async def _delete_topic(topic_arn: str, port: int) -> None:
+    client = _client(port)
+    try:
+        xml = await client.form_request(
+            _SERVICE,
+            {"Action": "DeleteTopic", "TopicArn": topic_arn},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(xml_to_dict(xml))
+
+
+@app.command("subscribe")
+def subscribe(
+    topic_arn: str = typer.Option(..., "--topic-arn", help="Topic ARN"),
+    protocol: str = typer.Option(..., "--protocol", help="Subscription protocol"),
+    endpoint: str = typer.Option(..., "--notification-endpoint", help="Subscription endpoint"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Subscribe an endpoint to a topic."""
+    asyncio.run(_subscribe(topic_arn, protocol, endpoint, port))
+
+
+async def _subscribe(topic_arn: str, protocol: str, endpoint: str, port: int) -> None:
+    client = _client(port)
+    try:
+        xml = await client.form_request(
+            _SERVICE,
+            {
+                "Action": "Subscribe",
+                "TopicArn": topic_arn,
+                "Protocol": protocol,
+                "Endpoint": endpoint,
+            },
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(xml_to_dict(xml))

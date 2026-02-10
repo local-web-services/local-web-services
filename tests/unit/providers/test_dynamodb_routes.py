@@ -255,7 +255,7 @@ async def test_unknown_operation_returns_400(
     client: httpx.AsyncClient,
 ) -> None:
     payload = {"TableName": "Users"}
-    resp = await client.post("/", json=payload, headers=_target("CreateTable"))
+    resp = await client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
     assert resp.status_code == 400
     data = resp.json()
