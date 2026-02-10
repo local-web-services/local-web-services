@@ -1,10 +1,12 @@
 # local-web-services
 
-Run your AWS CDK applications locally. local-web-services reads your CDK project's synthesized CloudFormation templates and spins up local emulations of API Gateway, Lambda, DynamoDB, SQS, SNS, S3, and Step Functions so you can develop and test without deploying to AWS.
+Run your AWS CDK and Terraform applications locally. local-web-services reads your CDK cloud assembly or Terraform configuration and spins up local emulations of API Gateway, Lambda, DynamoDB, SQS, SNS, S3, Step Functions, Cognito, EventBridge, and more — so you can develop and test without deploying to AWS.
 
 ## Try It Out
 
-Clone the [sample project](https://github.com/local-web-services/sample-project) — a serverless order processing system with API Gateway, Lambda, DynamoDB, SQS, S3, SNS, and Step Functions:
+### CDK Sample Project
+
+Clone the [CDK sample project](https://github.com/local-web-services/sample-project) — a serverless order processing system with API Gateway, Lambda, DynamoDB, SQS, S3, SNS, and Step Functions:
 
 ```bash
 git clone https://github.com/local-web-services/sample-project.git
@@ -19,12 +21,34 @@ Start the local environment:
 uvx --from local-web-services ldk dev
 ```
 
+### Terraform Sample Project
+
+Clone the [Terraform sample project](https://github.com/local-web-services/sample-project-terraform) — the same order processing system built with Terraform:
+
+```bash
+git clone https://github.com/local-web-services/sample-project-terraform.git
+cd sample-project-terraform
+terraform init
+```
+
+Start the local environment, then apply:
+
+```bash
+# Terminal 1: Start local services
+uvx --from local-web-services ldk dev
+
+# Terminal 2: Apply Terraform against local endpoints
+terraform apply -auto-approve
+```
+
+### Interact with Local Services
+
 Open http://localhost:3000/_ldk/gui in your browser to see the GUI — you can watch request logs, browse DynamoDB tables, inspect S3 buckets, and interact with all your resources as you run through the steps below.
 
 In another terminal, create an order:
 
 ```bash
-lws apigateway test-invoke-method \
+uvx --from local-web-services lws apigateway test-invoke-method \
   --resource /orders \
   --http-method POST \
   --body '{"customerName": "Alice", "items": ["widget", "gadget"], "total": 49.99}'
@@ -33,7 +57,7 @@ lws apigateway test-invoke-method \
 Start the order processing workflow:
 
 ```bash
-lws stepfunctions start-execution \
+uvx --from local-web-services lws stepfunctions start-execution \
   --name OrderWorkflow \
   --input '{"orderId": "<ORDER_ID>", "items": ["widget", "gadget"], "total": 49.99}'
 ```
@@ -41,18 +65,18 @@ lws stepfunctions start-execution \
 Check the workflow status:
 
 ```bash
-lws stepfunctions describe-execution --execution-arn <EXECUTION_ARN>
+uvx --from local-web-services lws stepfunctions describe-execution --execution-arn <EXECUTION_ARN>
 ```
 
 Retrieve the order:
 
 ```bash
-lws apigateway test-invoke-method \
+uvx --from local-web-services lws apigateway test-invoke-method \
   --resource /orders/<ORDER_ID> \
   --http-method GET
 ```
 
-The sample project also includes a full end-to-end test script (`test-orders.sh`) that runs all of these steps automatically.
+Both sample projects include a full end-to-end test script (`test-orders.sh`) that runs all of these steps automatically.
 
 ## Installation
 
@@ -72,6 +96,8 @@ uv sync
 
 ## Quick Start (Your Own Project)
 
+### CDK Projects
+
 1. Make sure your CDK project has been synthesized:
 
 ```bash
@@ -87,9 +113,43 @@ uvx --from local-web-services ldk dev --project-dir /path/to/your-cdk-project --
 
 `ldk` will discover your API routes, Lambda functions, DynamoDB tables, SQS queues, SNS topics, S3 buckets, and Step Functions state machines automatically from the CDK output.
 
+### Terraform Projects
+
+1. Initialize your Terraform project:
+
+```bash
+cd your-terraform-project
+terraform init
+```
+
+2. Start local-web-services:
+
+```bash
+uvx --from local-web-services ldk dev --project-dir /path/to/your-terraform-project
+```
+
+`ldk` auto-detects `.tf` files and starts all service providers in always-on mode. A `_lws_override.tf` file is generated to redirect the AWS provider to local endpoints.
+
+3. Apply your Terraform configuration:
+
+```bash
+terraform apply
+```
+
+Terraform creates resources (tables, queues, buckets, Lambda functions, API routes) against your local services. No AWS account needed.
+
+### Mode Selection
+
+`ldk dev` auto-detects your project type. To force a specific mode:
+
+```bash
+uvx --from local-web-services ldk dev --mode cdk        # Force CDK mode
+uvx --from local-web-services ldk dev --mode terraform   # Force Terraform mode
+```
+
 ## Supported Services
 
-Each service has two dimensions of support: **CDK constructs** parsed from your `cdk synth` output, and **API operations** emulated at runtime.
+Each service has two dimensions of support: **IaC constructs** parsed from your project, and **API operations** emulated at runtime.
 
 ### DynamoDB
 
@@ -111,9 +171,10 @@ Each service has two dimensions of support: **CDK constructs** parsed from your 
 | Scan | Yes |
 | BatchGetItem | Yes |
 | BatchWriteItem | Yes |
-| CreateTable | No |
-| DeleteTable | No |
-| DescribeTable | No |
+| CreateTable | Yes |
+| DeleteTable | Yes |
+| DescribeTable | Yes |
+| ListTables | Yes |
 | TransactGetItems | No |
 | TransactWriteItems | No |
 
@@ -135,11 +196,14 @@ Backed by SQLite. Supports expression attribute names/values, filter expressions
 | ReceiveMessage | Yes |
 | DeleteMessage | Yes |
 | CreateQueue | Yes |
+| DeleteQueue | Yes |
 | GetQueueUrl | Yes |
 | GetQueueAttributes | Yes |
+| SetQueueAttributes | Yes |
+| ListQueues | Yes |
+| PurgeQueue | Yes |
 | SendMessageBatch | No |
 | DeleteMessageBatch | No |
-| PurgeQueue | No |
 | ChangeMessageVisibility | No |
 
 Supports message attributes, long polling, and dead-letter queue wiring from RedrivePolicy.
@@ -161,10 +225,13 @@ Supports message attributes, long polling, and dead-letter queue wiring from Red
 | DeleteObject | Yes |
 | HeadObject | Yes |
 | ListObjectsV2 | Yes |
+| CreateBucket | Yes |
+| DeleteBucket | Yes |
+| HeadBucket | Yes |
+| ListBuckets | Yes |
 | CopyObject | No |
 | DeleteObjects | No |
 | CreateMultipartUpload | No |
-| ListBuckets | No |
 
 Backed by the local filesystem. Supports event notifications (ObjectCreated, ObjectRemoved), presigned URL generation, ETags, and content-type headers.
 
@@ -187,8 +254,9 @@ Backed by the local filesystem. Supports event notifications (ObjectCreated, Obj
 | CreateTopic | Yes |
 | ListTopics | Yes |
 | ListSubscriptions | Yes |
+| DeleteTopic | Yes |
+| SetTopicAttributes | Yes |
 | Unsubscribe | No |
-| DeleteTopic | No |
 | SetSubscriptionAttributes | No |
 
 Supports Lambda and SQS subscription protocols, message attributes, and fan-out to multiple subscribers.
@@ -234,9 +302,9 @@ Supports event pattern matching, schedule expressions (rate and cron), Lambda ta
 | DescribeExecution | Yes |
 | ListExecutions | Yes |
 | ListStateMachines | Yes |
+| CreateStateMachine | Yes |
 | StopExecution | No |
 | GetExecutionHistory | No |
-| CreateStateMachine | No |
 
 State types: Task, Pass, Choice, Wait, Succeed, Fail, Parallel, Map. Supports JSONPath (InputPath, OutputPath, ResultPath), error handling (Retry, Catch), and Standard & Express workflows.
 
@@ -272,7 +340,17 @@ Backed by SQLite. Supports JWT token generation (ID, access, refresh), user attr
 |-----------|-------------------|
 | `aws_lambda.Function` | handler, runtime, code, timeout, memorySize, environment |
 
-Runs functions locally using Python or Node.js runtimes. Supports timeout enforcement, realistic context objects, and environment variable injection. Not an AWS API endpoint — functions are invoked by other services (API Gateway, SNS, EventBridge, Step Functions).
+**Management API (Terraform mode):**
+
+| Operation | Supported |
+|-----------|-----------|
+| CreateFunction | Yes |
+| GetFunction | Yes |
+| DeleteFunction | Yes |
+| ListFunctions | Yes |
+| Invoke | Yes |
+
+Runs functions locally using Python or Node.js runtimes. Supports timeout enforcement, realistic context objects, and environment variable injection. In CDK mode, functions are discovered from the cloud assembly. In Terraform mode, functions are created dynamically via the management API.
 
 ### API Gateway
 
@@ -283,7 +361,15 @@ Runs functions locally using Python or Node.js runtimes. Supports timeout enforc
 | `aws_apigateway.RestApi` | routes, methods, integrations |
 | `aws_apigatewayv2.HttpApi` | routes, integrations |
 
-HTTP API (V1 proxy integration) that routes requests to local Lambda functions. Supports path parameters, query parameters, and request/response mapping.
+**REST API (V1) Management:**
+
+CreateRestApi, GetRestApi, DeleteRestApi, CreateResource, PutMethod, PutIntegration, CreateDeployment, CreateStage.
+
+**HTTP API (V2) Management:**
+
+CreateApi, GetApi, DeleteApi, CreateRoute, CreateIntegration, CreateStage.
+
+Supports both REST API (V1) and HTTP API (V2) with Lambda proxy integration. Routes requests to local Lambda functions with path parameters, query parameters, and request/response mapping.
 
 ### ECS
 
@@ -295,7 +381,11 @@ HTTP API (V1 proxy integration) that routes requests to local Lambda functions. 
 | `aws_ecs.FargateService` / `aws_ecs.Ec2Service` | taskDefinition |
 | `aws_elasticloadbalancingv2.ApplicationListenerRule` | conditions, actions |
 
-Runs services as local subprocesses. Supports health checking, service discovery, file watching with auto-restart, and port mapping. Supports local command overrides via `ldk.local_command` metadata.
+Runs services as local subprocesses. Supports health checking, service discovery, file watching with auto-restart, and port mapping. Supports local command overrides via `ldk.local_command` metadata. CDK mode only.
+
+### IAM & STS
+
+Stub APIs that return AWS-compatible responses for Terraform compatibility. IAM role and policy operations are accepted and stored in memory. STS returns dummy credentials and caller identity.
 
 ## Development
 
@@ -313,7 +403,7 @@ Run `make` with no arguments to see all available targets.
 
 ## Documentation
 
-Visit [https://github.com/local-development-kit/ldk-site](https://github.com/local-development-kit/ldk-site) for full documentation.
+Visit [https://local-web-services.github.io/www/](https://local-web-services.github.io/www/) for full documentation.
 
 ## Contributing
 
