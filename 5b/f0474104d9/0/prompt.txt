@@ -1,0 +1,139 @@
+Implement the following plan:
+
+# Plan: Add SSM & Secrets Manager to CDK mode CloudFormation parsing and auto-creation
+
+## Context
+
+SSM Parameter Store and Secrets Manager providers are already implemented and working in Terraform mode (where `tofu apply` creates resources via API). However, in CDK mode, LDK parses the CloudFormation template to auto-create resources on startup — and the parser doesn't know about `AWS::SSM::Parameter` or `AWS::SecretsManager::Secret` yet. This means CDK projects that define SSM parameters or secrets (like the sample-project) fail at runtime because the Lambda functions can't find those resources.
+
+Additionally, the `create_ssm_app()` and `create_secretsmanager_app()` factory functions currently accept no initial state — they always start empty. We need them to accept pre-seeded resources.
+
+## Files to modify
+
+### 1. `src/lws/parser/assembly.py` — Add dataclasses and collectors
+
+**Add dataclasses** (after `CognitoUserPool`, before `AppModel`):
+```python
+@dataclass
+class SsmParameter:
+    name: str
+    type: str          # "String", "StringList", "SecureString"
+    value: str
+    description: str = ""
+
+@dataclass
+class SmSecret:
+    name: str
+    description: str = ""
+    secret_string: str | None = None  # from SecretString or GenerateSecretString template
+```
+
+**Add fields to `AppModel`**:
+```python
+ssm_parameters: list[SsmParameter] = field(default_factory=list)
+secrets: list[SmSecret] = field(default_factory=list)
+```
+
+**Add collector functions**:
+- `_collect_ssm_parameters(resources, resolver)` — filter `AWS::SSM::Parameter`, extract Name, Type, Value, Description
+- `_collect_secrets(resources, resolver)` — filter `AWS::SecretsManager::Secret`, extract Name, Description, and SecretString (or `SecretStringTemplate` from `GenerateSecretString`)
+
+**Add to `_process_stack()`**:
+```python
+model.ssm_parameters.extend(_collect_ssm_parameters(resources, resolver))
+model.secrets.extend(_collect_secrets(resources, resolver))
+```
+
+**Add to `_build_resource_map()`** — SSM Ref returns the parameter name, Secrets Manager Ref returns the secret ARN:
+```python
+elif r.resource_type == "AWS::SSM::Parameter":
+    name = r.properties.get("Name", r.logical_id)
+    resource_map[r.logical_id] = name
+elif r.resource_type == "AWS::SecretsManager::Secret":
+    name = r.properties.get("Name", r.logical_id)
+    resource_map[r.logical_id] = f"arn:aws:secretsmanager:us-east-1:000000000000:secret:{name}"
+```
+
+### 2. `src/lws/parser/tree_parser.py` — Add FQN mappings
+
+Add to `FQN_CATEGORY_MAP`:
+```python
+"aws-cdk-lib.aws_ssm.StringParameter": "ssm",
+"aws-cdk-lib.aws_secretsmanager.Secret": "secretsmanager",
+```
+
+### 3. `src/lws/providers/ssm/routes.py` — Accept initial parameters
+
+Change `create_ssm_app()` signature to accept optional initial parameters:
+```python
+def create_ssm_app(initial_parameters: list[dict] | None = None) -> FastAPI:
+```
+After creating `state = _SsmState()`, seed it with initial parameters by creating `_Parameter` objects for each entry.
+
+### 4. `src/lws/providers/secretsmanager/routes.py` — Accept initial secrets
+
+Change `create_secretsmanager_app()` signature to accept optional initial secrets:
+```python
+def create_secretsmanager_app(initial_secrets: list[dict] | None = None) -> FastAPI:
+```
+After creating `state = _SecretsState()`, seed it with initial secrets by creating `_Secret` and `_SecretVersion` objects for each entry.
+
+### 5. `src/lws/cli/ldk.py` — Pass parsed resources to providers in CDK mode
+
+In `_create_providers()` (CDK mode), where SSM and SecretsManager HTTP providers are created (step 9), pass the AppModel data:
+
+```python
+ssm_params = [{"name": p.name, "type": p.type, "value": p.value, "description": p.description}
+              for p in app_model.ssm_parameters]
+sm_secrets = [{"name": s.name, "description": s.description, "secret_string": s.secret_string}
+              for s in app_model.secrets]
+
+providers["__ssm_http__"] = _HttpServiceProvider(
+    "ssm-http", lambda: create_ssm_app(ssm_params), ssm_port
+)
+providers["__secretsmanager_http__"] = _HttpServiceProvider(
+    "secretsmanager-http", lambda: create_secretsmanager_app(sm_secrets), secretsmanager_port
+)
+```
+
+### 6. `src/lws/cli/ldk.py` — Add display details
+
+In `_collect_extra_resources()`, add:
+```python
+"ssm_parameters": ("name", "ssm_parameters"),
+"secrets": ("name", "secrets"),
+```
+
+In `_add_resource_details()`, add:
+```python
+for p in app_model.ssm_parameters:
+    details[f"Parameter:{p.name}"] = f"lws ssm get-parameter --name {p.name}"
+for s in app_model.secrets:
+    details[f"Secret:{s.name}"] = f"lws secretsmanager get-secret-value --secret-id {s.name}"
+```
+
+## Verification
+
+```bash
+# 1. Unit tests
+cd /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services
+uv run python -m pytest tests/ -x -q
+
+# 2. Lint
+uvx ruff check src tests
+
+# 3. CDK sample E2E
+cd /Users/eamonnfaherty/Development/github.com/local-web-services/sample-project
+npx cdk synth
+ldk dev &  # wait for startup — should show Parameter and Secret in resource table
+bash test-orders.sh  # workflow should SUCCEED with SSM and SecretsManager calls working
+
+# 4. Terraform sample E2E (should still work — no changes to terraform mode)
+cd /Users/eamonnfaherty/Development/github.com/local-web-services/sample-project-terraform
+ldk dev --mode terraform &
+tofu apply -auto-approve
+bash test-orders.sh
+```
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/eamonnfaherty/.REDACTED.jsonl

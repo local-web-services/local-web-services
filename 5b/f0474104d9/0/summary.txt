@@ -1,0 +1,23 @@
+All done. Here's a summary of the changes:
+
+**`src/lws/parser/assembly.py`**
+- Added `SsmParameter` and `SmSecret` dataclasses
+- Added `ssm_parameters` and `secrets` fields to `AppModel`
+- Added `_collect_ssm_parameters()` and `_collect_secrets()` collector functions
+- Wired collectors into `_process_stack()`
+- Added SSM/SecretsManager Ref resolution to `_build_resource_map()` (refactored to dispatch table to stay under complexity limit)
+
+**`src/lws/parser/tree_parser.py`**
+- Added `aws-cdk-lib.aws_ssm.StringParameter` and `aws-cdk-lib.aws_secretsmanager.Secret` to `FQN_CATEGORY_MAP`
+
+**`src/lws/providers/ssm/routes.py`**
+- `create_ssm_app()` now accepts `initial_parameters: list[dict] | None` and pre-seeds state
+
+**`src/lws/providers/secretsmanager/routes.py`**
+- `create_secretsmanager_app()` now accepts `initial_secrets: list[dict] | None` and pre-seeds state with secret versions
+
+**`src/lws/cli/ldk.py`**
+- CDK mode `_create_providers()` now passes parsed SSM/SecretsManager data to the app factories
+- Added SSM parameters and secrets to `_collect_extra_resources()`, `_add_resource_details()`, `_has_any_resources()`, and `_add_service_metadata()`
+
+All 1657 tests pass, ruff lint clean on all modified files.
