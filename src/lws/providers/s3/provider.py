@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import shutil
+import time
 from collections.abc import Callable
 from pathlib import Path
 
@@ -16,12 +18,13 @@ class S3Provider(IObjectStore):
     Each bucket is a directory under ``<data_dir>/s3/<bucket>``.
     """
 
-    def __init__(self, data_dir: Path, buckets: list[str]) -> None:
+    def __init__(self, data_dir: Path, buckets: list[str] | None = None) -> None:
         self._data_dir = data_dir
-        self._buckets = buckets
+        self._buckets = list(buckets or [])
         self._storage = LocalBucketStorage(data_dir)
         self._dispatcher = NotificationDispatcher()
         self._started = False
+        self._bucket_created: dict[str, float] = {}
 
     # -- Provider lifecycle ---------------------------------------------------
 
@@ -31,9 +34,11 @@ class S3Provider(IObjectStore):
 
     async def start(self) -> None:
         """Create bucket directories and mark the provider as started."""
+        now = time.time()
         for bucket in self._buckets:
             bucket_dir = self._data_dir / "s3" / bucket
             bucket_dir.mkdir(parents=True, exist_ok=True)
+            self._bucket_created.setdefault(bucket, now)
         self._started = True
 
     async def stop(self) -> None:
@@ -69,6 +74,41 @@ class S3Provider(IObjectStore):
     async def list_objects(self, bucket_name: str, prefix: str = "") -> list[str]:
         result = await self._storage.list_objects(bucket_name, prefix=prefix)
         return [item["key"] for item in result["contents"]]
+
+    # -- Bucket management ----------------------------------------------------
+
+    async def create_bucket(self, bucket_name: str) -> None:
+        """Create a bucket. Raises ValueError if it already exists."""
+        if bucket_name in self._buckets:
+            raise ValueError(f"Bucket already exists: {bucket_name}")
+        bucket_dir = self._data_dir / "s3" / bucket_name
+        bucket_dir.mkdir(parents=True, exist_ok=True)
+        self._buckets.append(bucket_name)
+        self._bucket_created[bucket_name] = time.time()
+
+    async def delete_bucket(self, bucket_name: str) -> None:
+        """Delete a bucket. Raises KeyError if not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        bucket_dir = self._data_dir / "s3" / bucket_name
+        if bucket_dir.exists():
+            shutil.rmtree(bucket_dir)
+        self._buckets.remove(bucket_name)
+        self._bucket_created.pop(bucket_name, None)
+
+    async def head_bucket(self, bucket_name: str) -> dict:
+        """Return bucket metadata. Raises KeyError if not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        created = self._bucket_created.get(bucket_name, time.time())
+        return {
+            "BucketName": bucket_name,
+            "CreationDate": time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime(created)),
+        }
+
+    async def list_buckets(self) -> list[str]:
+        """Return sorted list of bucket names."""
+        return sorted(self._buckets)
 
     # -- Extended storage access (used by routes) -----------------------------
 

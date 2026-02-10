@@ -111,3 +111,94 @@ async def _initiate_auth(user_pool_name: str, username: str, password: str, port
         content_type="application/x-amz-json-1.1",
     )
     output_json(result)
+
+
+@app.command("create-user-pool")
+def create_user_pool(
+    pool_name: str = typer.Option(..., "--pool-name", help="User pool name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create a user pool."""
+    asyncio.run(_create_user_pool(pool_name, port))
+
+
+async def _create_user_pool(pool_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.CreateUserPool",
+            {"PoolName": pool_name},
+            content_type="application/x-amz-json-1.1",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("delete-user-pool")
+def delete_user_pool(
+    user_pool_id: str = typer.Option(..., "--user-pool-id", help="User pool ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete a user pool."""
+    asyncio.run(_delete_user_pool(user_pool_id, port))
+
+
+async def _delete_user_pool(user_pool_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DeleteUserPool",
+            {"UserPoolId": user_pool_id},
+            content_type="application/x-amz-json-1.1",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("list-user-pools")
+def list_user_pools(
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List user pools."""
+    asyncio.run(_list_user_pools(port))
+
+
+async def _list_user_pools(port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.ListUserPools",
+            {"MaxResults": 60},
+            content_type="application/x-amz-json-1.1",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("describe-user-pool")
+def describe_user_pool(
+    user_pool_id: str = typer.Option(..., "--user-pool-id", help="User pool ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Describe a user pool."""
+    asyncio.run(_describe_user_pool(user_pool_id, port))
+
+
+async def _describe_user_pool(user_pool_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DescribeUserPool",
+            {"UserPoolId": user_pool_id},
+            content_type="application/x-amz-json-1.1",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)

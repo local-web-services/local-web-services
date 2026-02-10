@@ -267,13 +267,17 @@ class TestSqsRoutes:
         assert "VisibilityTimeout" in resp.text
         assert "QueueArn" in resp.text
 
-    async def test_unknown_action(self, sqs_client: httpx.AsyncClient) -> None:
+    async def test_unknown_action_returns_error(self, sqs_client: httpx.AsyncClient) -> None:
         resp = await sqs_client.post(
             "/",
             data={"Action": "BogusAction"},
         )
         assert resp.status_code == 400
-        assert "InvalidAction" in resp.text
+        assert "<ErrorResponse>" in resp.text
+        assert "<Code>InvalidAction</Code>" in resp.text
+        assert "lws" in resp.text
+        assert "SQS" in resp.text
+        assert "BogusAction" in resp.text
 
     async def test_send_with_query_params(self, sqs_client: httpx.AsyncClient) -> None:
         """Action can also be passed as query parameter."""

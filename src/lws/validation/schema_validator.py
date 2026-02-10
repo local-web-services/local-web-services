@@ -119,7 +119,7 @@ def _type_mismatch(
     return ValidationIssue(
         level=ValidationLevel.ERROR,
         message=(
-            f"Key attribute '{attr_name}' type mismatch: " f"expected '{expected}', got '{actual}'"
+            f"Key attribute '{attr_name}' type mismatch: expected '{expected}', got '{actual}'"
         ),
         resource=context.resource_id,
         operation=context.operation,

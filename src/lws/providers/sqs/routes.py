@@ -47,7 +47,11 @@ class SqsRouter:
             body = await request.json()
             handler = self._json_handlers().get(action)
             if handler is None:
-                return _json_error("InvalidAction", f"Unknown action: {action}")
+                _logger.warning("Unknown SQS JSON action: %s", action)
+                return _json_error(
+                    "UnknownOperationException",
+                    f"lws: SQS operation '{action}' is not yet implemented",
+                )
             return await handler(body)
 
         params = await _extract_params(request)
@@ -55,7 +59,11 @@ class SqsRouter:
 
         handler = self._handlers().get(action)
         if handler is None:
-            return _error_xml("InvalidAction", f"Unknown action: {action}")
+            _logger.warning("Unknown SQS XML action: %s", action)
+            return _error_xml(
+                "InvalidAction",
+                f"lws: SQS operation '{action}' is not yet implemented",
+            )
 
         return await handler(params)
 
@@ -65,8 +73,15 @@ class SqsRouter:
             "ReceiveMessage": self._receive_message,
             "DeleteMessage": self._delete_message,
             "CreateQueue": self._create_queue,
+            "DeleteQueue": self._delete_queue,
             "GetQueueUrl": self._get_queue_url,
             "GetQueueAttributes": self._get_queue_attributes,
+            "SetQueueAttributes": self._set_queue_attributes,
+            "ListQueues": self._list_queues,
+            "PurgeQueue": self._purge_queue,
+            "ListQueueTags": self._list_queue_tags,
+            "TagQueue": self._tag_queue,
+            "UntagQueue": self._untag_queue,
         }
 
     def _json_handlers(self) -> dict:
@@ -75,8 +90,15 @@ class SqsRouter:
             "ReceiveMessage": self._json_receive_message,
             "DeleteMessage": self._json_delete_message,
             "CreateQueue": self._json_create_queue,
+            "DeleteQueue": self._json_delete_queue,
             "GetQueueUrl": self._json_get_queue_url,
             "GetQueueAttributes": self._json_get_queue_attributes,
+            "SetQueueAttributes": self._json_set_queue_attributes,
+            "ListQueues": self._json_list_queues,
+            "PurgeQueue": self._json_purge_queue,
+            "ListQueueTags": self._json_list_queue_tags,
+            "TagQueue": self._json_tag_queue,
+            "UntagQueue": self._json_untag_queue,
         }
 
     # ------------------------------------------------------------------
@@ -186,8 +208,9 @@ class SqsRouter:
             visibility_timeout=visibility_timeout,
             is_fifo=is_fifo,
             content_based_dedup=content_based_dedup,
+            custom_attrs=dict(attrs),
         )
-        self.provider.create_queue(config)
+        self.provider.create_queue_from_config(config)
 
         queue_url = _queue_url(queue_name)
         xml = (
@@ -197,6 +220,53 @@ class SqsRouter:
             "</CreateQueueResult>"
             f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
             "</CreateQueueResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _delete_queue(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        try:
+            await self.provider.delete_queue(queue_name)
+        except KeyError:
+            return _error_xml(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+                status_code=400,
+            )
+        xml = (
+            "<DeleteQueueResponse>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</DeleteQueueResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _list_queues(self, params: dict) -> Response:
+        queue_names = await self.provider.list_queues()
+        urls_xml = "".join(f"<QueueUrl>{_queue_url(name)}</QueueUrl>" for name in queue_names)
+        xml = (
+            "<ListQueuesResponse>"
+            "<ListQueuesResult>"
+            f"{urls_xml}"
+            "</ListQueuesResult>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</ListQueuesResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _purge_queue(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        try:
+            await self.provider.purge_queue(queue_name)
+        except KeyError:
+            return _error_xml(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+                status_code=400,
+            )
+        xml = (
+            "<PurgeQueueResponse>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</PurgeQueueResponse>"
         )
         return _xml_response(xml)
 
@@ -304,9 +374,40 @@ class SqsRouter:
             visibility_timeout=visibility_timeout,
             is_fifo=is_fifo,
             content_based_dedup=content_based_dedup,
+            custom_attrs=dict(attrs),
         )
-        self.provider.create_queue(config)
+        self.provider.create_queue_from_config(config)
         return _json_response({"QueueUrl": _queue_url(queue_name)})
+
+    async def _json_delete_queue(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        try:
+            await self.provider.delete_queue(queue_name)
+        except KeyError:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+        return _json_response({})
+
+    async def _json_list_queues(self, body: dict) -> Response:
+        queue_names = await self.provider.list_queues()
+        return _json_response(
+            {
+                "QueueUrls": [_queue_url(name) for name in queue_names],
+            }
+        )
+
+    async def _json_purge_queue(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        try:
+            await self.provider.purge_queue(queue_name)
+        except KeyError:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+        return _json_response({})
 
     async def _json_get_queue_url(self, body: dict) -> Response:
         queue_name = body.get("QueueName", "")
@@ -326,17 +427,42 @@ class SqsRouter:
                 "AWS.SimpleQueueService.NonExistentQueue",
                 f"The specified queue does not exist: {queue_name}",
             )
-        attrs = {
-            "QueueArn": f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{queue_name}",
-            "ApproximateNumberOfMessages": str(len(queue._messages)),
-            "VisibilityTimeout": str(queue.visibility_timeout),
-            "CreatedTimestamp": str(int(time.time())),
-            "LastModifiedTimestamp": str(int(time.time())),
-        }
-        if queue.is_fifo:
-            attrs["FifoQueue"] = "true"
-            attrs["ContentBasedDeduplication"] = str(queue.content_based_dedup).lower()
-        return _json_response({"Attributes": attrs})
+        config = self.provider._configs.get(queue_name)
+        return _json_response({"Attributes": _build_queue_attrs(queue_name, queue, config)})
+
+    async def _json_set_queue_attributes(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+        attrs = body.get("Attributes", {})
+        config = self.provider._configs.get(queue_name)
+        _apply_queue_attrs(queue, attrs, config)
+        return _json_response({})
+
+    async def _json_list_queue_tags(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        config = self.provider._configs.get(queue_name)
+        tags = config.tags if config else {}
+        return _json_response({"Tags": tags})
+
+    async def _json_tag_queue(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        config = self.provider._configs.get(queue_name)
+        if config:
+            config.tags.update(body.get("Tags", {}))
+        return _json_response({})
+
+    async def _json_untag_queue(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        config = self.provider._configs.get(queue_name)
+        if config:
+            for key in body.get("TagKeys", []):
+                config.tags.pop(key, None)
+        return _json_response({})
 
     # ------------------------------------------------------------------
     # Legacy XML action handlers
@@ -352,17 +478,8 @@ class SqsRouter:
                 status_code=400,
             )
 
-        attrs = {
-            "QueueArn": f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{queue_name}",
-            "ApproximateNumberOfMessages": str(len(queue._messages)),
-            "VisibilityTimeout": str(queue.visibility_timeout),
-            "CreatedTimestamp": str(int(time.time())),
-            "LastModifiedTimestamp": str(int(time.time())),
-        }
-        if queue.is_fifo:
-            attrs["FifoQueue"] = "true"
-            attrs["ContentBasedDeduplication"] = str(queue.content_based_dedup).lower()
-
+        config = self.provider._configs.get(queue_name)
+        attrs = _build_queue_attrs(queue_name, queue, config)
         attrs_xml = "".join(
             f"<Attribute><Name>{k}</Name><Value>{v}</Value></Attribute>" for k, v in attrs.items()
         )
@@ -376,10 +493,139 @@ class SqsRouter:
         )
         return _xml_response(xml)
 
+    async def _set_queue_attributes(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _error_xml(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+                status_code=400,
+            )
+        attrs = _extract_queue_attributes(params)
+        config = self.provider._configs.get(queue_name)
+        _apply_queue_attrs(queue, attrs, config)
+        xml = (
+            "<SetQueueAttributesResponse>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</SetQueueAttributesResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _list_queue_tags(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        config = self.provider._configs.get(queue_name)
+        tags = config.tags if config else {}
+        tags_xml = "".join(
+            f"<entry><key>{k}</key><value>{v}</value></entry>" for k, v in tags.items()
+        )
+        xml = (
+            "<ListQueueTagsResponse>"
+            "<ListQueueTagsResult>"
+            f"{tags_xml}"
+            "</ListQueueTagsResult>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</ListQueueTagsResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _tag_queue(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        config = self.provider._configs.get(queue_name)
+        if config:
+            tags = _extract_queue_tags(params)
+            config.tags.update(tags)
+        xml = (
+            "<TagQueueResponse>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</TagQueueResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _untag_queue(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        config = self.provider._configs.get(queue_name)
+        if config:
+            n = 1
+            while f"TagKey.{n}" in params:
+                config.tags.pop(params[f"TagKey.{n}"], None)
+                n += 1
+        xml = (
+            "<UntagQueueResponse>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</UntagQueueResponse>"
+        )
+        return _xml_response(xml)
+
 
 # ------------------------------------------------------------------
 # Helpers
 # ------------------------------------------------------------------
+
+
+def _build_queue_attrs(
+    queue_name: str, queue: object, config: QueueConfig | None = None
+) -> dict[str, str]:
+    """Build the full set of queue attributes that Terraform expects."""
+    import json as _j
+
+    now_ts = str(int(time.time()))
+    # Start with defaults
+    attrs: dict[str, str] = {
+        "QueueArn": f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{queue_name}",
+        "ApproximateNumberOfMessages": str(len(queue._messages)),  # type: ignore[attr-defined]
+        "ApproximateNumberOfMessagesNotVisible": "0",
+        "ApproximateNumberOfMessagesDelayed": "0",
+        "VisibilityTimeout": str(queue.visibility_timeout),  # type: ignore[attr-defined]
+        "CreatedTimestamp": now_ts,
+        "LastModifiedTimestamp": now_ts,
+        "DelaySeconds": "0",
+        "MaximumMessageSize": "262144",
+        "MessageRetentionPeriod": "345600",
+        "ReceiveMessageWaitTimeSeconds": "0",
+        "SqsManagedSseEnabled": "false",
+    }
+    if queue.is_fifo:  # type: ignore[attr-defined]
+        attrs["FifoQueue"] = "true"
+        attrs["ContentBasedDeduplication"] = str(
+            queue.content_based_dedup  # type: ignore[attr-defined]
+        ).lower()
+    if hasattr(queue, "dead_letter_queue") and queue.dead_letter_queue is not None:
+        dlq_name = queue.dead_letter_queue.queue_name
+        dlq_arn = f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{dlq_name}"
+        max_count = getattr(queue, "max_receive_count", 5)
+        attrs["RedrivePolicy"] = _j.dumps(
+            {"deadLetterTargetArn": dlq_arn, "maxReceiveCount": max_count}
+        )
+    # Overlay any attributes that were set via CreateQueue/SetQueueAttributes
+    if config is not None:
+        for k, v in config.custom_attrs.items():
+            if k not in ("QueueArn", "ApproximateNumberOfMessages"):
+                attrs[k] = v
+    return attrs
+
+
+def _apply_queue_attrs(
+    queue: object, attrs: dict[str, str], config: QueueConfig | None = None
+) -> None:
+    """Apply attribute updates to a queue and persist in config."""
+    if "VisibilityTimeout" in attrs:
+        queue.visibility_timeout = int(attrs["VisibilityTimeout"])  # type: ignore[attr-defined]
+    if config is not None:
+        config.custom_attrs.update(attrs)
+
+
+def _extract_queue_tags(params: dict[str, str]) -> dict[str, str]:
+    """Extract Tag.N.Key / Tag.N.Value parameters into a dict."""
+    tags: dict[str, str] = {}
+    n = 1
+    while True:
+        key = params.get(f"Tag.{n}.Key")
+        if key is None:
+            break
+        tags[key] = params.get(f"Tag.{n}.Value", "")
+        n += 1
+    return tags
 
 
 async def _extract_params(request: Request) -> dict[str, str]:
@@ -482,9 +728,12 @@ def _extract_queue_name_from_url(queue_url: str) -> str:
     return ""
 
 
+_sqs_port: int = 4566
+
+
 def _queue_url(queue_name: str) -> str:
     """Build a fake queue URL for *queue_name*."""
-    return f"http://localhost:4566/{_FAKE_ACCOUNT}/{queue_name}"
+    return f"http://127.0.0.1:{_sqs_port}/{_FAKE_ACCOUNT}/{queue_name}"
 
 
 def _json_response(data: dict, status_code: int = 200) -> Response:
@@ -532,8 +781,10 @@ def _error_xml(code: str, message: str, status_code: int = 400) -> Response:
 # ------------------------------------------------------------------
 
 
-def create_sqs_app(provider: SqsProvider) -> FastAPI:
+def create_sqs_app(provider: SqsProvider, port: int = 4566) -> FastAPI:
     """Create a FastAPI application that speaks the SQS wire protocol."""
+    global _sqs_port  # noqa: PLW0603
+    _sqs_port = port
     app = FastAPI()
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sqs")
     sqs_router = SqsRouter(provider)

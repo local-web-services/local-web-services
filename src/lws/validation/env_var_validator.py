@@ -120,7 +120,7 @@ def _unresolvable_ref(
     """Create an issue for an unresolvable reference."""
     return ValidationIssue(
         level=ValidationLevel.ERROR,
-        message=(f"Environment variable '{env_key}' references " f"unknown resource '{ref_name}'"),
+        message=(f"Environment variable '{env_key}' references unknown resource '{ref_name}'"),
         resource=context.resource_id,
         operation=context.operation,
     )

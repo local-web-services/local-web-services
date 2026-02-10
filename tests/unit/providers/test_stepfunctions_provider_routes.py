@@ -240,13 +240,18 @@ class TestRoutes:
         data = resp.json()
         assert len(data["stateMachines"]) == 2
 
-    async def test_unknown_action(self, sfn_client: httpx.AsyncClient) -> None:
+    async def test_unknown_action_returns_error(self, sfn_client: httpx.AsyncClient) -> None:
         resp = await sfn_client.post(
             "/",
             json={},
             headers={"x-amz-target": "AWSStepFunctions.Bogus"},
         )
         assert resp.status_code == 400
+        body = resp.json()
+        assert body["__type"] == "UnknownOperationException"
+        assert "lws" in body["message"]
+        assert "StepFunctions" in body["message"]
+        assert "Bogus" in body["message"]
 
     async def test_nonexistent_state_machine(self, sfn_client: httpx.AsyncClient) -> None:
         resp = await sfn_client.post(

@@ -154,3 +154,90 @@ async def _head_object(bucket: str, key: str, port: int) -> None:
             "LastModified": resp.headers.get("last-modified", ""),
         }
     )
+
+
+@app.command("create-bucket")
+def create_bucket(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create a bucket."""
+    asyncio.run(_create_bucket(bucket, port))
+
+
+async def _create_bucket(bucket: str, port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    resp = await client.rest_request(_SERVICE, "PUT", bucket)
+    if resp.status_code >= 400:
+        output_json(xml_to_dict(resp.text))
+    else:
+        output_json({"Location": f"/{bucket}"})
+
+
+@app.command("delete-bucket")
+def delete_bucket(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete a bucket."""
+    asyncio.run(_delete_bucket(bucket, port))
+
+
+async def _delete_bucket(bucket: str, port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    resp = await client.rest_request(_SERVICE, "DELETE", bucket)
+    if resp.status_code >= 400:
+        output_json(xml_to_dict(resp.text))
+    else:
+        output_json({})
+
+
+@app.command("head-bucket")
+def head_bucket(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Check if a bucket exists."""
+    asyncio.run(_head_bucket(bucket, port))
+
+
+async def _head_bucket(bucket: str, port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    resp = await client.rest_request(_SERVICE, "HEAD", bucket)
+    if resp.status_code == 404:
+        exit_with_error(f"Bucket not found: {bucket}")
+    output_json(
+        {
+            "BucketRegion": resp.headers.get("x-amz-bucket-region", "us-east-1"),
+        }
+    )
+
+
+@app.command("list-buckets")
+def list_buckets(
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List all buckets."""
+    asyncio.run(_list_buckets(port))
+
+
+async def _list_buckets(port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    resp = await client.rest_request(_SERVICE, "GET", "")
+    output_json(xml_to_dict(resp.text))

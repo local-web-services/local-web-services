@@ -177,6 +177,40 @@ class EventBridgeProvider(IEventBus):
         """Return all event buses."""
         return list(self._buses.values())
 
+    async def create_event_bus(self, bus_name: str) -> str:
+        """Create an event bus. Returns the bus ARN. Idempotent."""
+        arn = f"arn:aws:events:us-east-1:000000000000:event-bus/{bus_name}"
+        async with self._lock:
+            if bus_name not in self._buses:
+                self._buses[bus_name] = EventBusConfig(bus_name=bus_name, bus_arn=arn)
+        return arn
+
+    async def delete_event_bus(self, bus_name: str) -> None:
+        """Delete an event bus. Raises KeyError if not found."""
+        if bus_name == "default":
+            raise ValueError("Cannot delete the default event bus")
+        async with self._lock:
+            if bus_name not in self._buses:
+                raise KeyError(f"Event bus not found: {bus_name}")
+            del self._buses[bus_name]
+
+    def describe_event_bus(self, bus_name: str) -> dict:
+        """Describe an event bus. Raises KeyError if not found."""
+        bus = self._buses.get(bus_name)
+        if bus is None:
+            raise KeyError(f"Event bus not found: {bus_name}")
+        return {
+            "Name": bus.bus_name,
+            "Arn": bus.bus_arn,
+        }
+
+    async def delete_rule(self, rule_name: str) -> None:
+        """Delete a rule. Raises KeyError if not found."""
+        async with self._lock:
+            if rule_name not in self._rules:
+                raise KeyError(f"Rule not found: {rule_name}")
+            del self._rules[rule_name]
+
     # -- Internal event publishing for cross-service routing ------------------
 
     async def publish_internal(

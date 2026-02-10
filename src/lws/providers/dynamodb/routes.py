@@ -11,7 +11,13 @@ import json
 
 from fastapi import APIRouter, FastAPI, Request, Response
 
-from lws.interfaces.key_value_store import IKeyValueStore
+from lws.interfaces.key_value_store import (
+    GsiDefinition,
+    IKeyValueStore,
+    KeyAttribute,
+    KeySchema,
+    TableConfig,
+)
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 
@@ -46,9 +52,10 @@ class DynamoDbRouter:
 
         handler = self._handlers().get(operation)
         if handler is None:
+            _logger.warning("Unknown DynamoDB operation: %s", operation)
             return _error_response(
-                "ValidationException",
-                f"Unknown operation: {operation}",
+                "UnknownOperationException",
+                f"lws: DynamoDB operation '{operation}' is not yet implemented",
             )
 
         return await handler(body)
@@ -63,6 +70,14 @@ class DynamoDbRouter:
             "Scan": self._scan,
             "BatchGetItem": self._batch_get_item,
             "BatchWriteItem": self._batch_write_item,
+            "CreateTable": self._create_table,
+            "DeleteTable": self._delete_table,
+            "DescribeTable": self._describe_table,
+            "ListTables": self._list_tables,
+            "DescribeTimeToLive": self._describe_time_to_live,
+            "ListTagsOfResource": self._list_tags_of_resource,
+            "TagResource": self._tag_resource,
+            "UntagResource": self._untag_resource,
         }
 
     # ------------------------------------------------------------------
@@ -161,6 +176,57 @@ class DynamoDbRouter:
             )
         return _json_response({})
 
+    async def _create_table(self, body: dict) -> Response:
+        config = _parse_table_config(body)
+        description = await self.store.create_table(config)
+        return _json_response({"TableDescription": description})
+
+    async def _delete_table(self, body: dict) -> Response:
+        table_name = body.get("TableName", "")
+        try:
+            description = await self.store.delete_table(table_name)
+        except KeyError:
+            return _error_response(
+                "ResourceNotFoundException",
+                f"Requested resource not found: Table: {table_name} not found",
+            )
+        return _json_response({"TableDescription": description})
+
+    async def _describe_table(self, body: dict) -> Response:
+        table_name = body.get("TableName", "")
+        try:
+            description = await self.store.describe_table(table_name)
+        except KeyError:
+            return _error_response(
+                "ResourceNotFoundException",
+                f"Requested resource not found: Table: {table_name} not found",
+            )
+        return _json_response({"Table": description})
+
+    async def _list_tables(self, body: dict) -> Response:
+        table_names = await self.store.list_tables()
+        return _json_response({"TableNames": table_names})
+
+    async def _describe_time_to_live(self, body: dict) -> Response:
+        table_name = body.get("TableName", "")
+        return _json_response(
+            {
+                "TimeToLiveDescription": {
+                    "TimeToLiveStatus": "DISABLED",
+                    "TableName": table_name,
+                }
+            }
+        )
+
+    async def _list_tags_of_resource(self, body: dict) -> Response:
+        return _json_response({"Tags": []})
+
+    async def _tag_resource(self, body: dict) -> Response:
+        return _json_response({})
+
+    async def _untag_resource(self, body: dict) -> Response:
+        return _json_response({})
+
 
 # ------------------------------------------------------------------
 # Helpers
@@ -173,6 +239,56 @@ def _json_response(data: dict, status_code: int = 200) -> Response:
         status_code=status_code,
         media_type="application/x-amz-json-1.0",
     )
+
+
+def _parse_table_config(body: dict) -> TableConfig:
+    """Parse an AWS CreateTable request body into a TableConfig."""
+    table_name = body["TableName"]
+
+    # Build attribute type lookup from AttributeDefinitions
+    attr_types: dict[str, str] = {}
+    for ad in body.get("AttributeDefinitions", []):
+        attr_types[ad["AttributeName"]] = ad.get("AttributeType", "S")
+
+    # Parse KeySchema
+    pk_attr: KeyAttribute | None = None
+    sk_attr: KeyAttribute | None = None
+    for ks in body.get("KeySchema", []):
+        name = ks["AttributeName"]
+        attr = KeyAttribute(name=name, type=attr_types.get(name, "S"))
+        if ks["KeyType"] == "HASH":
+            pk_attr = attr
+        else:
+            sk_attr = attr
+    if pk_attr is None:
+        pk_attr = KeyAttribute(name="pk", type="S")
+    key_schema = KeySchema(partition_key=pk_attr, sort_key=sk_attr)
+
+    # Parse GSIs
+    gsi_defs: list[GsiDefinition] = []
+    for gsi_raw in body.get("GlobalSecondaryIndexes", []):
+        gsi_pk: KeyAttribute | None = None
+        gsi_sk: KeyAttribute | None = None
+        for ks in gsi_raw.get("KeySchema", []):
+            name = ks["AttributeName"]
+            attr = KeyAttribute(name=name, type=attr_types.get(name, "S"))
+            if ks["KeyType"] == "HASH":
+                gsi_pk = attr
+            else:
+                gsi_sk = attr
+        if gsi_pk is None:
+            continue
+        gsi_key_schema = KeySchema(partition_key=gsi_pk, sort_key=gsi_sk)
+        projection = gsi_raw.get("Projection", {}).get("ProjectionType", "ALL")
+        gsi_defs.append(
+            GsiDefinition(
+                index_name=gsi_raw["IndexName"],
+                key_schema=gsi_key_schema,
+                projection_type=projection,
+            )
+        )
+
+    return TableConfig(table_name=table_name, key_schema=key_schema, gsi_definitions=gsi_defs)
 
 
 def _error_response(error_type: str, message: str) -> Response:

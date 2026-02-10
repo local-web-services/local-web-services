@@ -75,10 +75,10 @@ class EcsProvider(Provider):
 
     def __init__(
         self,
-        services: list[ServiceDefinition],
+        services: list[ServiceDefinition] | None = None,
         registry: ServiceRegistry | None = None,
     ) -> None:
-        self._services = services
+        self._services = services or []
         self._registry = registry or ServiceRegistry()
         self._status = ProviderStatus.STOPPED
         self._processes: dict[str, ManagedProcess] = {}

@@ -40,8 +40,8 @@ class SnsProvider(Provider):
         List of topic configurations to create at startup.
     """
 
-    def __init__(self, topics: list[TopicConfig]) -> None:
-        self._topic_configs = topics
+    def __init__(self, topics: list[TopicConfig] | None = None) -> None:
+        self._topic_configs = topics or []
         self._topics: dict[str, LocalTopic] = {}
         self._status = ProviderStatus.STOPPED
         self._compute_providers: dict[str, ICompute] = {}
@@ -142,6 +142,48 @@ class SnsProvider(Provider):
     def list_topics(self) -> list[LocalTopic]:
         """Return all topics managed by this provider."""
         return list(self._topics.values())
+
+    async def create_topic(self, topic_name: str) -> str:
+        """Create a topic. Idempotent — returns existing ARN if already present."""
+        existing = self._topics.get(topic_name)
+        if existing is not None:
+            return existing.topic_arn
+        topic_arn = f"arn:aws:sns:us-east-1:000000000000:{topic_name}"
+        topic = LocalTopic(topic_name=topic_name, topic_arn=topic_arn)
+        self._topics[topic_name] = topic
+        return topic_arn
+
+    async def delete_topic(self, topic_name: str) -> None:
+        """Delete a topic. Raises KeyError if not found."""
+        if topic_name not in self._topics:
+            raise KeyError(f"Topic not found: {topic_name}")
+        del self._topics[topic_name]
+
+    async def get_topic_attributes(self, topic_name: str) -> dict:
+        """Return topic attributes dict. Raises KeyError if not found."""
+        topic = self._topics.get(topic_name)
+        if topic is None:
+            raise KeyError(f"Topic not found: {topic_name}")
+        attrs: dict[str, str] = {
+            "TopicArn": topic.topic_arn,
+            "DisplayName": topic.topic_name,
+            "SubscriptionsConfirmed": str(len(topic.subscribers)),
+            "Policy": '{"Version":"2012-10-17","Statement":[]}',
+        }
+        # Overlay any attributes set via SetTopicAttributes
+        custom = getattr(topic, "_custom_attrs", None)
+        if custom:
+            attrs.update(custom)
+        return attrs
+
+    async def set_topic_attribute(self, topic_name: str, attr_name: str, attr_value: str) -> None:
+        """Set a single topic attribute. Raises KeyError if not found."""
+        topic = self._topics.get(topic_name)
+        if topic is None:
+            raise KeyError(f"Topic not found: {topic_name}")
+        if not hasattr(topic, "_custom_attrs"):
+            topic._custom_attrs = {}  # type: ignore[attr-defined]
+        topic._custom_attrs[attr_name] = attr_value  # type: ignore[attr-defined]
 
     # -- Dispatch helpers -----------------------------------------------------
 

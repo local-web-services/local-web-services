@@ -112,3 +112,23 @@ class IKeyValueStore(Provider):
     ) -> None:
         """Write (put and/or delete) multiple items in a single batch."""
         ...
+
+    @abstractmethod
+    async def create_table(self, config: TableConfig) -> dict:
+        """Create a table dynamically. Returns a table description dict."""
+        ...
+
+    @abstractmethod
+    async def delete_table(self, table_name: str) -> dict:
+        """Delete a table. Returns a table description dict."""
+        ...
+
+    @abstractmethod
+    async def describe_table(self, table_name: str) -> dict:
+        """Return a table description dict."""
+        ...
+
+    @abstractmethod
+    async def list_tables(self) -> list[str]:
+        """Return a list of table names."""
+        ...

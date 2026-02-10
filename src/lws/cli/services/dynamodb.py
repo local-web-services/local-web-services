@@ -135,6 +135,114 @@ async def _scan(
     output_json(result)
 
 
+@app.command("create-table")
+def create_table(
+    table_name: str = typer.Option(..., "--table-name", help="Table name"),
+    key_schema: str = typer.Option(..., "--key-schema", help="JSON key schema"),
+    attribute_definitions: str = typer.Option(
+        ..., "--attribute-definitions", help="JSON attribute definitions"
+    ),
+    global_secondary_indexes: str = typer.Option(
+        None, "--global-secondary-indexes", help="JSON global secondary indexes"
+    ),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create a table."""
+    asyncio.run(
+        _create_table(table_name, key_schema, attribute_definitions, global_secondary_indexes, port)
+    )
+
+
+async def _create_table(
+    table_name: str,
+    key_schema_json: str,
+    attribute_definitions_json: str,
+    global_secondary_indexes_json: str | None,
+    port: int,
+) -> None:
+    client = _client(port)
+    body: dict = {"TableName": table_name}
+    try:
+        body["KeySchema"] = json.loads(key_schema_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --key-schema: {exc}")
+    try:
+        body["AttributeDefinitions"] = json.loads(attribute_definitions_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --attribute-definitions: {exc}")
+    if global_secondary_indexes_json:
+        try:
+            body["GlobalSecondaryIndexes"] = json.loads(global_secondary_indexes_json)
+        except json.JSONDecodeError as exc:
+            exit_with_error(f"Invalid JSON in --global-secondary-indexes: {exc}")
+    try:
+        result = await client.json_target_request(_SERVICE, f"{_TARGET_PREFIX}.CreateTable", body)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("delete-table")
+def delete_table(
+    table_name: str = typer.Option(..., "--table-name", help="Table name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete a table."""
+    asyncio.run(_delete_table(table_name, port))
+
+
+async def _delete_table(table_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DeleteTable",
+            {"TableName": table_name},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("describe-table")
+def describe_table(
+    table_name: str = typer.Option(..., "--table-name", help="Table name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Describe a table."""
+    asyncio.run(_describe_table(table_name, port))
+
+
+async def _describe_table(table_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DescribeTable",
+            {"TableName": table_name},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("list-tables")
+def list_tables(
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List all tables."""
+    asyncio.run(_list_tables(port))
+
+
+async def _list_tables(port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(_SERVICE, f"{_TARGET_PREFIX}.ListTables", {})
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
 @app.command("query")
 def query(
     table_name: str = typer.Option(..., "--table-name", help="Table name"),
