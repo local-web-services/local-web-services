@@ -43,20 +43,20 @@ _MB_PER_VCPU = 1769
 # Minimum CPU allocation in nano-CPUs (128 millicores).
 _MIN_NANO_CPUS = 128_000_000
 
-# Runtime → Docker image mapping.
+# Runtime → Docker image mapping (official AWS Lambda base images from ECR Public).
 _RUNTIME_IMAGES: dict[str, str] = {
-    "nodejs14.x": "node:14-slim",
-    "nodejs16.x": "node:16-slim",
-    "nodejs18.x": "node:18-slim",
-    "nodejs20.x": "node:20-slim",
-    "nodejs22.x": "node:22-slim",
-    "python3.8": "python:3.8-slim",
-    "python3.9": "python:3.9-slim",
-    "python3.10": "python:3.10-slim",
-    "python3.11": "python:3.11-slim",
-    "python3.12": "python:3.12-slim",
-    "python3.13": "python:3.13-slim",
+    "nodejs18.x": "public.ecr.aws/lambda/nodejs:18",
+    "nodejs20.x": "public.ecr.aws/lambda/nodejs:20",
+    "nodejs22.x": "public.ecr.aws/lambda/nodejs:22",
+    "python3.9": "public.ecr.aws/lambda/python:3.9",
+    "python3.10": "public.ecr.aws/lambda/python:3.10",
+    "python3.11": "public.ecr.aws/lambda/python:3.11",
+    "python3.12": "public.ecr.aws/lambda/python:3.12",
+    "python3.13": "public.ecr.aws/lambda/python:3.13",
 }
+
+# EOL runtimes that are no longer supported.
+_EOL_RUNTIMES: set[str] = {"nodejs14.x", "nodejs16.x", "python3.8"}
 
 
 class DockerCompute(ICompute):
@@ -121,7 +121,8 @@ class DockerCompute(ICompute):
 
         self._container = self._client.containers.run(
             image,
-            command="sleep infinity",
+            command="infinity",
+            entrypoint=["sleep"],
             detach=True,
             name=container_name,
             volumes={
@@ -249,15 +250,26 @@ class DockerCompute(ICompute):
 
     def _resolve_image(self) -> str:
         runtime = self._config.runtime
+        if runtime in _EOL_RUNTIMES:
+            raise RuntimeError(
+                f"Runtime '{runtime}' has reached end-of-life and is not supported. "
+                f"Please upgrade to a supported runtime."
+            )
         image = _RUNTIME_IMAGES.get(runtime)
-        if image:
-            return image
-        # Fallback: try prefix matching
-        if runtime.startswith("nodejs"):
-            return "node:20-slim"
-        if runtime.startswith("python"):
-            return "python:3.12-slim"
-        return "node:20-slim"
+        if not image:
+            raise RuntimeError(
+                f"Unsupported Lambda runtime: '{runtime}'. "
+                f"Supported runtimes: {', '.join(sorted(_RUNTIME_IMAGES))}"
+            )
+        # Verify the image exists locally.
+        try:
+            self._client.images.get(image)
+        except Exception:
+            raise RuntimeError(
+                f"Docker image '{image}' not found locally. "
+                f"Run 'ldk setup lambda' to pull the required images."
+            )
+        return image
 
     def _calculate_nano_cpus(self) -> int:
         nano = int((self._config.memory_size / _MB_PER_VCPU) * 1_000_000_000)

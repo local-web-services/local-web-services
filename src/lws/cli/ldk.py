@@ -305,6 +305,65 @@ async def _try_management_reset(port: int) -> None:
         pass  # Server not running, that's fine
 
 
+@app.command()
+def setup(
+    service: str = typer.Argument(..., help="Service to set up (e.g. 'lambda')"),
+    runtime: str = typer.Option(
+        None, "--runtime", "-r", help="Pull only a specific runtime (e.g. 'python3.12')"
+    ),
+) -> None:
+    """Pull Docker images required for local service emulation."""
+    if service != "lambda":
+        print_error("Unknown service", f"'{service}' is not a supported service. Try 'lambda'.")
+        raise typer.Exit(1)
+
+    _setup_lambda(runtime)
+
+
+def _setup_lambda(runtime_filter: str | None) -> None:
+    """Pull official AWS Lambda base images from ECR Public."""
+    from lws.providers.lambda_runtime.docker import _RUNTIME_IMAGES
+
+    try:
+        import docker
+    except ImportError:
+        print_error(
+            "Docker SDK not installed",
+            "Install with: pip install local-web-services[docker]",
+        )
+        raise typer.Exit(1)
+
+    try:
+        client = docker.from_env()
+        client.ping()
+    except Exception as exc:
+        print_error("Cannot connect to Docker daemon", str(exc))
+        raise typer.Exit(1)
+
+    if runtime_filter:
+        image = _RUNTIME_IMAGES.get(runtime_filter)
+        if not image:
+            print_error(
+                "Unknown runtime",
+                f"'{runtime_filter}' is not a supported runtime. "
+                f"Supported: {', '.join(sorted(_RUNTIME_IMAGES))}",
+            )
+            raise typer.Exit(1)
+        images_to_pull = {runtime_filter: image}
+    else:
+        images_to_pull = dict(_RUNTIME_IMAGES)
+
+    for rt, image in images_to_pull.items():
+        _console.print(f"[bold]Pulling[/bold] {image} [dim]({rt})[/dim]")
+        try:
+            client.images.pull(*image.rsplit(":", 1))
+            _console.print("  [green]OK[/green]")
+        except Exception as exc:
+            _console.print(f"  [red]Failed:[/red] {exc}")
+
+    _console.print("[bold green]Done.[/bold green]")
+
+
 def _load_config_quiet(project_dir: Path) -> LdkConfig:
     """Load config without printing errors. Falls back to defaults."""
     try:
