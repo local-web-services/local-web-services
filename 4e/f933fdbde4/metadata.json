@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "4ef933fdbde4",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/logging/middleware.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/4e/f933fdbde4/0/metadata.json",
+      "transcript": "/4e/f933fdbde4/0/full.jsonl",
+      "context": "",
+      "content_hash": "/4e/f933fdbde4/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 9,
+    "cache_creation_tokens": 1668,
+    "cache_read_tokens": 1105323,
+    "output_tokens": 203,
+    "api_call_count": 7
+  }
+}
