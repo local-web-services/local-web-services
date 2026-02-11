@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "cbd04bacaa2f",
+  "session_id": "1c9632fc-f797-49a8-901c-95079a0fd094",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T02:31:33.87721Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/providers/lambda_runtime/invoker.js",
+    "src/lws/providers/lambda_runtime/python_bootstrap.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "4d122792-2c68-450f-91fe-2e5636c58227",
+  "checkpoint_transcript_start": 436,
+  "transcript_lines_at_start": 436,
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 3542,
+    "cache_read_tokens": 685200,
+    "output_tokens": 30,
+    "api_call_count": 6
+  }
+}

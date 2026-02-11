@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "cbd04bacaa2f",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/providers/lambda_runtime/invoker.js",
+    "src/lws/providers/lambda_runtime/python_bootstrap.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/cb/d04bacaa2f/0/metadata.json",
+      "transcript": "/cb/d04bacaa2f/0/full.jsonl",
+      "context": "",
+      "content_hash": "/cb/d04bacaa2f/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 3542,
+    "cache_read_tokens": 685200,
+    "output_tokens": 30,
+    "api_call_count": 6
+  }
+}

@@ -1,0 +1,1 @@
+the lambda does not terminate after the function exits

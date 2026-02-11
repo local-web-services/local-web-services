@@ -1,0 +1,6 @@
+Fixed both bootstrap scripts:
+
+- **`invoker.js`** — `process.stdout.write(...)` now takes a callback that calls `process.exit(0)` once the write flushes. This ensures the Node.js process exits even when AWS SDK clients hold keep-alive connections.
+- **`python_bootstrap.py`** — Added `sys.stdout.flush()` + `sys.exit(0)` after writing the result, for the same reason.
+
+The error paths in both scripts already called `exit(1)`, so only the success paths needed fixing.
