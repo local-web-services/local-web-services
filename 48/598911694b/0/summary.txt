@@ -1,0 +1,6 @@
+All 1657 tests pass. Two fixes applied:
+
+1. **`routes.py`**: Added `await compute.start()` in `_create_function` so the Docker client is initialized when Terraform creates Lambda functions
+2. **`docker.py`**: Function environment variables (like `QUEUE_URL` from Terraform) are now also rewritten from `127.0.0.1`/`localhost` to `host.docker.internal`, same as SDK env vars
+
+Restart `ldk dev`, re-run `terraform apply`, then try `./test-orders.sh` again.

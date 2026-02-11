@@ -1,0 +1,18 @@
+=== Creating order ===
+{
+    "status": 502,
+    "headers": {
+        "date": "Wed, 11 Feb 2026 03:54:43 GMT",
+        "server": "uvicorn",
+        "content-length": "50",
+        "content-type": "application/json"
+    },
+    "body": {
+        "message": "connect ECONNREFUSED 127.0.0.1:3002"
+    }
+}
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys,json; print(json.load(sys.stdin)['body']['orderId'])
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: 'orderId' from ./test-orders.sh
