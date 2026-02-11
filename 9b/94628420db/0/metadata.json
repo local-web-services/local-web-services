@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "9b94628420db",
+  "session_id": "1b68b70d-d8a7-4039-a173-05eca81837b4",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T01:40:30.492387Z",
+  "branch": "feat/ssm-secretsmanager-v0.4.0",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/runtime/sdk_env.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "8ed46e76-604c-4a08-8245-94410d4fd5e3",
+  "checkpoint_transcript_start": 644,
+  "transcript_lines_at_start": 644,
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 2491,
+    "cache_read_tokens": 894768,
+    "output_tokens": 73,
+    "api_call_count": 6
+  }
+}

@@ -1,0 +1,1 @@
+`make check` passes — lint clean, formatting clean, 1657 tests pass. The issue was a pre-existing import formatting problem in `sdk_env.py` (extra blank line after the import).
