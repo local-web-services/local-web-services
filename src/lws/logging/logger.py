@@ -357,9 +357,7 @@ class LdkLogger:
         entry: dict[str, Any] = {
             "timestamp": ts,
             "level": "DEBUG",
-            "message": (
-                f"DOCKER {operation} {container_name}{summary}{duration} -> {status}"
-            ),
+            "message": (f"DOCKER {operation} {container_name}{summary}{duration} -> {status}"),
             "service": "docker",
             "operation": operation,
             "container": container_name,

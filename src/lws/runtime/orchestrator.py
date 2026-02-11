@@ -104,7 +104,7 @@ class Orchestrator:
             logger.info("Stopping provider: %s", provider.name)
             try:
                 await asyncio.wait_for(provider.stop(), timeout=5.0)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.warning("Timed out stopping provider %s — skipping", provider.name)
             except Exception:
                 logger.exception("Error stopping provider %s", provider.name)

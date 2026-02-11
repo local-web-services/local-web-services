@@ -1300,7 +1300,7 @@ class _HttpServiceProvider(Provider):
         if self._task is not None:
             try:
                 await asyncio.wait_for(self._task, timeout=3.0)
-            except (asyncio.TimeoutError, asyncio.CancelledError):
+            except (TimeoutError, asyncio.CancelledError):
                 self._task.cancel()
             self._task = None
         self._server = None

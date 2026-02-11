@@ -57,7 +57,7 @@ class TestLambdaS3Integration:
     def test_lambda_writes_to_s3(self, e2e_port, lws_invoke, assert_invoke):
         # Arrange
         bucket_name = "e2e-lambda-s3-bucket"
-        object_key = "lambda-output.txt"
+        object_key = "e2e-lambda-output.txt"
         expected_body = "hello from lambda"
         function_name = "e2e-s3-writer"
         lambda_port = e2e_port + 9

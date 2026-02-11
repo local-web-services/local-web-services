@@ -192,9 +192,7 @@ class DockerCompute(ICompute):
         except Exception:
             pass
         self._container = None
-        _logger.log_docker_operation(
-            "stop", container_name, details={"id": container_id}
-        )
+        _logger.log_docker_operation("stop", container_name, details={"id": container_id})
 
     async def health_check(self) -> bool:
         return self._status is ProviderStatus.RUNNING

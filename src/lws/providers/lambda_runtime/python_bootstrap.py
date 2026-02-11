@@ -89,7 +89,7 @@ def _configure_s3_path_style() -> None:
     os.makedirs(config_dir, exist_ok=True)
     config_file = os.path.join(config_dir, "config")
     if not os.path.exists(config_file):
-        with open(config_file, "w") as f:
+        with open(config_file, "w", encoding="utf-8") as f:
             f.write("[default]\ns3 =\n    addressing_style = path\n")
 
 

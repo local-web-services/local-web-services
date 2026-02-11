@@ -76,7 +76,7 @@ class TestLambdaS3NodejsIntegration:
     def test_nodejs_lambda_writes_to_s3(self, e2e_port, lws_invoke, assert_invoke):
         # Arrange
         bucket_name = "e2e-nodejs-s3-bucket"
-        object_key = "nodejs-output.txt"
+        object_key = "e2e-nodejs-output.txt"
         expected_body = "hello from nodejs lambda"
         function_name = "e2e-nodejs-s3-writer"
         lambda_port = e2e_port + 9
@@ -98,9 +98,9 @@ class TestLambdaS3NodejsIntegration:
                 timeout=120,
                 check=False,
             )
-            assert install_result.returncode == 0, (
-                f"npm install failed: {install_result.stderr.decode()}"
-            )
+            assert (
+                install_result.returncode == 0
+            ), f"npm install failed: {install_result.stderr.decode()}"
 
             # Create the Lambda function
             resp = httpx.post(
