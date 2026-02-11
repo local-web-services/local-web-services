@@ -36,6 +36,7 @@ from lws.providers._shared.docker_client import (  # noqa: F401
     _socket_candidates,
     create_docker_client,
 )
+from lws.providers._shared.docker_service import destroy_container
 from lws.providers.lambda_runtime.result_parser import parse_invocation_output
 
 _logger = get_logger("ldk.docker-compute")
@@ -183,14 +184,7 @@ class DockerCompute(ICompute):
             return
         container_id = self._container.id[:12]
         container_name = f"ldk-{self._config.function_name}"
-        try:
-            self._container.stop(timeout=2)
-        except Exception:
-            pass
-        try:
-            self._container.remove(force=True)
-        except Exception:
-            pass
+        destroy_container(self._container)
         self._container = None
         _logger.log_docker_operation("stop", container_name, details={"id": container_id})
 

@@ -17,6 +17,18 @@ from lws.providers._shared.docker_client import create_docker_client
 _logger = get_logger("ldk.docker-service")
 
 
+def destroy_container(container: object) -> None:
+    """Stop and remove a Docker container safely."""
+    try:
+        container.stop(timeout=5)  # type: ignore[union-attr]
+    except Exception:
+        pass
+    try:
+        container.remove(force=True)  # type: ignore[union-attr]
+    except Exception:
+        pass
+
+
 @dataclass
 class DockerServiceConfig:
     """Configuration for a Docker-backed data-plane service."""
@@ -104,14 +116,7 @@ class DockerServiceManager:
         if self._container is None:
             return
         container_name = self._config.container_name
-        try:
-            self._container.stop(timeout=5)
-        except Exception:
-            pass
-        try:
-            self._container.remove(force=True)
-        except Exception:
-            pass
+        destroy_container(self._container)
         self._container = None
         _logger.info("Stopped container %s", container_name)
 

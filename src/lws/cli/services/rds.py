@@ -6,6 +6,7 @@ import asyncio
 
 import typer
 
+from lws.cli.services._shared_commands import create_db_cluster_cmd, describe_db_clusters_cmd
 from lws.cli.services.client import LwsClient, exit_with_error, output_json
 
 app = typer.Typer(help="RDS commands")
@@ -139,34 +140,18 @@ def create_db_cluster(
 ) -> None:
     """Create an RDS DB cluster."""
     asyncio.run(
-        _create_db_cluster(
-            db_cluster_identifier, engine, master_username, master_user_password, port
-        )
-    )
-
-
-async def _create_db_cluster(
-    db_cluster_identifier: str,
-    engine: str,
-    master_username: str,
-    master_user_password: str,
-    port: int,
-) -> None:
-    client = _client(port)
-    try:
-        result = await client.json_target_request(
+        create_db_cluster_cmd(
             _SERVICE,
-            f"{_TARGET_PREFIX}.CreateDBCluster",
+            _TARGET_PREFIX,
             {
                 "DBClusterIdentifier": db_cluster_identifier,
                 "Engine": engine,
                 "MasterUsername": master_username,
                 "MasterUserPassword": master_user_password,
             },
+            port,
         )
-    except Exception as exc:
-        exit_with_error(str(exc))
-    output_json(result)
+    )
 
 
 @app.command("describe-db-clusters")
@@ -177,20 +162,4 @@ def describe_db_clusters(
     port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
 ) -> None:
     """Describe RDS DB clusters."""
-    asyncio.run(_describe_db_clusters(db_cluster_identifier, port))
-
-
-async def _describe_db_clusters(db_cluster_identifier: str | None, port: int) -> None:
-    client = _client(port)
-    try:
-        body: dict = {}
-        if db_cluster_identifier:
-            body["DBClusterIdentifier"] = db_cluster_identifier
-        result = await client.json_target_request(
-            _SERVICE,
-            f"{_TARGET_PREFIX}.DescribeDBClusters",
-            body,
-        )
-    except Exception as exc:
-        exit_with_error(str(exc))
-    output_json(result)
+    asyncio.run(describe_db_clusters_cmd(_SERVICE, _TARGET_PREFIX, db_cluster_identifier, port))
