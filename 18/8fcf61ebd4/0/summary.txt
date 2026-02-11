@@ -1,0 +1,1 @@
+All checks pass — lint, formatting, complexity, and all 1657 tests green.
