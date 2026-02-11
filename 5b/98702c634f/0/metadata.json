@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "5b98702c634f",
+  "session_id": "10a97f8f-76aa-406a-bb4d-aa70803990d3",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T14:46:21.072709Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Makefile",
+    "contributing/LINTING.md"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "8d23ddfb-eeb0-4c48-a9ec-3bfad20f51b2",
+  "checkpoint_transcript_start": 2669,
+  "transcript_lines_at_start": 2669,
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 3198,
+    "cache_read_tokens": 934276,
+    "output_tokens": 802,
+    "api_call_count": 6
+  }
+}
