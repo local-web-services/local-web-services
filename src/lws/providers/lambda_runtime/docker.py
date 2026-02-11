@@ -60,6 +60,47 @@ _RUNTIME_IMAGES: dict[str, str] = {
 _EOL_RUNTIMES: set[str] = {"nodejs14.x", "nodejs16.x", "python3.8"}
 
 
+def create_docker_client():
+    """Create a Docker client, discovering the socket if necessary.
+
+    Tries ``docker.from_env()`` first (which honours ``DOCKER_HOST``).
+    If that fails, probes well-known socket paths for Colima, Rancher
+    Desktop, and Docker Desktop before giving up.
+    """
+    import docker  # pylint: disable=import-outside-toplevel
+
+    # Fast path: DOCKER_HOST is set or the default socket works.
+    try:
+        client = docker.from_env()
+        client.ping()
+        return client
+    except Exception:
+        pass
+
+    # Probe well-known alternative socket paths.
+    home = Path.home()
+    candidates = [
+        home / ".colima" / "default" / "docker.sock",
+        home / ".colima" / "docker.sock",
+        home / ".rd" / "docker.sock",
+        Path("/var/run/docker.sock"),
+        home / ".docker" / "run" / "docker.sock",
+    ]
+    for sock in candidates:
+        if sock.exists():
+            try:
+                client = docker.DockerClient(base_url=f"unix://{sock}")
+                client.ping()
+                return client
+            except Exception:
+                continue
+
+    raise docker.errors.DockerException(
+        "Cannot connect to Docker daemon. Is Docker or Colima running? "
+        "You can also set the DOCKER_HOST environment variable."
+    )
+
+
 class DockerCompute(ICompute):
     """ICompute implementation that runs Lambda handlers inside Docker containers.
 
@@ -98,17 +139,13 @@ class DockerCompute(ICompute):
         Container creation is deferred to the first ``invoke()`` call.
         """
         try:
-            import docker  # pylint: disable=import-outside-toplevel
+            self._client = create_docker_client()
         except ImportError as exc:
             self._status = ProviderStatus.ERROR
             raise ProviderStartError(
                 "Docker backend requires 'pip install local-web-services[docker]' "
                 "and a running Docker daemon."
             ) from exc
-
-        try:
-            self._client = docker.from_env()
-            self._client.ping()
         except Exception as exc:
             self._status = ProviderStatus.ERROR
             raise ProviderStartError(f"Cannot connect to Docker daemon: {exc}") from exc

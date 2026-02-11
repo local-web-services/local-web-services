@@ -206,20 +206,17 @@ def _setup_lambda(runtime_filter: str | None) -> None:
     """Pull official AWS Lambda base images from ECR Public."""
     from lws.providers.lambda_runtime.docker import (  # pylint: disable=import-outside-toplevel
         _RUNTIME_IMAGES,
+        create_docker_client,
     )
 
     try:
-        import docker  # pylint: disable=import-outside-toplevel
+        client = create_docker_client()
     except ImportError as exc:
         print_error(
             "Docker SDK not installed",
             "Install with: pip install local-web-services[docker]",
         )
         raise typer.Exit(1) from exc
-
-    try:
-        client = docker.from_env()
-        client.ping()
     except Exception as exc:
         print_error("Cannot connect to Docker daemon", str(exc))
         raise typer.Exit(1)
