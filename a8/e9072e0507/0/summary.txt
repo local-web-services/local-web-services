@@ -1,0 +1,5 @@
+All good. Here's a summary of the changes:
+
+1. **Lazy container creation** — `start()` now only validates Docker is reachable. The container is created on first `invoke()` via `_ensure_container()`.
+
+2. **Container killed on timeout** — When a function times out, `_destroy_container()` stops and removes the container. The next invocation will get a fresh container via `_ensure_container()`, mirroring real Lambda behaviour where the execution environment is destroyed on timeout.
