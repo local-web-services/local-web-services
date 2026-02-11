@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "3c919ef9f0d1",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "CLAUDE.md",
+    "contributing/LINTING.md",
+    "tests/architecture/tests/providers/test_integration_test_fixtures.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3c/919ef9f0d1/0/metadata.json",
+      "transcript": "/3c/919ef9f0d1/0/full.jsonl",
+      "context": "",
+      "content_hash": "/3c/919ef9f0d1/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 30,
+    "cache_creation_tokens": 23935,
+    "cache_read_tokens": 2282050,
+    "output_tokens": 536,
+    "api_call_count": 26
+  }
+}

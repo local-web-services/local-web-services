@@ -1,0 +1,8 @@
+Created `contributing/LINTING.md` covering all four checks in `make check`:
+
+1. **Lint** — Ruff rules (E, F, I, W, UP, C90), line length 100, import ordering
+2. **Format** — Black with line length 100, target Python 3.11
+3. **Complexity** — Radon cyclomatic complexity, max grade B (complexity 10)
+4. **Tests** — pytest for unit, integration, and architecture tests
+
+Also updated CLAUDE.md to reference the new doc.

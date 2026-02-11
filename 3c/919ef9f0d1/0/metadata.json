@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "3c919ef9f0d1",
+  "session_id": "10a97f8f-76aa-406a-bb4d-aa70803990d3",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T14:32:15.521236Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "CLAUDE.md",
+    "contributing/LINTING.md",
+    "tests/architecture/tests/providers/test_integration_test_fixtures.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "86ce8169-1ca5-406e-85e9-c7d32883cff6",
+  "checkpoint_transcript_start": 2045,
+  "transcript_lines_at_start": 2045,
+  "token_usage": {
+    "input_tokens": 30,
+    "cache_creation_tokens": 23935,
+    "cache_read_tokens": 2282050,
+    "output_tokens": 536,
+    "api_call_count": 26,
+    "subagent_tokens": {
+      "input_tokens": 37,
+      "cache_creation_tokens": 31012,
+      "cache_read_tokens": 1190662,
+      "output_tokens": 471,
+      "api_call_count": 35
+    }
+  }
+}
