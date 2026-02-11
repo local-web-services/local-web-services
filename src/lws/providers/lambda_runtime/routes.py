@@ -632,8 +632,7 @@ class LambdaManagementRouter:
     def _create_compute(self, func_config: dict[str, Any]) -> Any:
         """Create an ICompute provider from the function configuration."""
         from lws.interfaces import ComputeConfig
-        from lws.providers.lambda_runtime.nodejs import NodeJsCompute
-        from lws.providers.lambda_runtime.python import PythonCompute
+        from lws.providers.lambda_runtime.docker import DockerCompute
 
         function_name = func_config["FunctionName"]
         runtime = func_config.get("Runtime", "nodejs18.x")
@@ -668,9 +667,7 @@ class LambdaManagementRouter:
             environment=env_vars,
         )
 
-        if runtime.startswith("python"):
-            return PythonCompute(config=compute_config, sdk_env=self._sdk_env)
-        return NodeJsCompute(config=compute_config, sdk_env=self._sdk_env)
+        return DockerCompute(config=compute_config, sdk_env=self._sdk_env)
 
 
 # ---------------------------------------------------------------------------

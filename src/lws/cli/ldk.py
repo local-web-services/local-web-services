@@ -50,8 +50,7 @@ from lws.providers.eventbridge.provider import (
     RuleConfig,
     RuleTarget,
 )
-from lws.providers.lambda_runtime.nodejs import NodeJsCompute
-from lws.providers.lambda_runtime.python import PythonCompute
+from lws.providers.lambda_runtime.docker import DockerCompute
 from lws.providers.s3.provider import S3Provider
 from lws.providers.s3.routes import create_s3_app
 from lws.providers.sns.provider import SnsProvider, TopicConfig
@@ -213,7 +212,7 @@ async def _oneshot_invoke(
             memory_size=func_def.memory,
             environment=func_env,
         )
-        compute = NodeJsCompute(config=compute_config, sdk_env=sdk_env)
+        compute = DockerCompute(config=compute_config, sdk_env=sdk_env)
         await compute.start()
 
         request_id = str(_uuid.uuid4())
@@ -809,15 +808,7 @@ def _create_compute_providers(
             memory_size=func.memory,
             environment=func_env,
         )
-        if func.runtime.startswith("python"):
-            compute: ICompute = PythonCompute(config=compute_config, sdk_env=sdk_env)
-        elif func.runtime.startswith("nodejs"):
-            compute = NodeJsCompute(config=compute_config, sdk_env=sdk_env)
-        else:
-            logging.getLogger("ldk.cli").warning(
-                "Unsupported runtime %s for %s, skipping", func.runtime, func.name
-            )
-            continue
+        compute: ICompute = DockerCompute(config=compute_config, sdk_env=sdk_env)
         compute_providers[func.name] = compute
         node_id = _find_node_id(graph, NodeType.LAMBDA_FUNCTION, func.name)
         if node_id:
