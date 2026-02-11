@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "868352f4bea4",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/graph/builder.py",
+    "src/lws/logging/middleware.py",
+    "src/lws/parser/assembly.py",
+    "src/lws/providers/dynamodb/expressions.py",
+    "src/lws/providers/dynamodb/parser_base.py",
+    "src/lws/providers/dynamodb/update_expression.py",
+    "src/lws/providers/lambda_runtime/compute_base.py",
+    "src/lws/providers/lambda_runtime/nodejs.py",
+    "src/lws/providers/lambda_runtime/routes.py",
+    "src/lws/providers/sns/routes.py",
+    "src/lws/providers/sns/topic.py",
+    "src/lws/providers/stepfunctions/engine.py",
+    "src/lws/providers/stepfunctions/provider.py",
+    "src/lws/validation/integration.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/86/8352f4bea4/0/metadata.json",
+      "transcript": "/86/8352f4bea4/0/full.jsonl",
+      "context": "",
+      "content_hash": "/86/8352f4bea4/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 62,
+    "cache_creation_tokens": 78403,
+    "cache_read_tokens": 4886511,
+    "output_tokens": 4881,
+    "api_call_count": 60
+  }
+}
