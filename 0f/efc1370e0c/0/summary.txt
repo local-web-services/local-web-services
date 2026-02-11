@@ -1,0 +1,15 @@
+All done. Here's a summary of what was implemented:
+
+**Duplicate fixes (3 pairs, 66 lines removed):**
+
+1. **DynamoDB** — Removed duplicate `_unwrap_dynamo_value` and `_resolve_path` from `update_expression.py`, now imported from `expressions.py`
+2. **Lambda runtime** — Created `result_parser.py` with shared `parse_invocation_output()`, used by both `nodejs.py` and `python.py`
+3. **Numeric comparison** — Created `_shared/numeric.py` with `eval_numeric_range()` and `compare_numeric()`, used by both `eventbridge/pattern_matcher.py` and `sns/filter.py`
+
+**New `cpd` Makefile target:**
+- Runs `symilar` (from pylint) with `-d 15` threshold on `src/` only
+- Added to `check` target pipeline: `lint → format-check → complexity → cpd → test`
+
+**Other changes:**
+- Updated `contributing/LINTING.md` with CPD documentation (section 4, renumbered tests to section 5)
+- Updated architecture test to exclude `_`-prefixed directories (like `_shared`) from provider completeness checks
