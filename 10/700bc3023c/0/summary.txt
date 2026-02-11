@@ -1,0 +1,19 @@
+`make check` passes completely:
+- **Ruff lint**: all checks passed
+- **Black format**: 823 files unchanged
+- **Radon complexity**: clean (no grade C or worse)
+- **Tests**: **1733 passed** in 35s
+
+All 9 new architecture tests are working. Here's the summary of what was created:
+
+| # | Test | File | What it enforces |
+|---|------|------|-----------------|
+| 1 | AAA Comments | `test_aaa_comments.py` | Every test method has `# Act` and `# Assert` comments (ratchet: 828) |
+| 2 | No Magic Strings | `test_no_magic_strings_in_assertions.py` | No `assert x == "literal"` — extract to named variables (ratchet: 82) |
+| 3 | E2E One Class Per File | `e2e/test_one_class_per_file.py` | Each e2e test file has at most one test class |
+| 4 | E2E Resource Naming | `e2e/test_resource_naming.py` | E2E resources use `e2e-` or `/e2e/` prefix (ratchet: 7) |
+| 5 | Test File Naming | `test_file_naming.py` | All test files are `test_*.py`, `conftest.py`, `__init__.py`, or `_helpers.py` |
+| 6 | Integration Async Consistency | `integration/test_async_consistency.py` | Integration tests with `client` param are async |
+| 7 | Provider Directory Completeness | `providers/test_provider_directory_completeness.py` | Every provider has `routes.py`, `__init__.py`, and stateful ones have `provider.py` |
+| 8 | CLI Service Registration | `test_cli_service_registration.py` | Every module in `cli/services/` is imported in `lws.py` |
+| 9 | No Bare Except | `test_no_bare_except.py` | No `except:` without exception type in source code |
