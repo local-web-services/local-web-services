@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "8f932e12d343",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "pyproject.toml",
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/lambda_runtime/docker.py",
+    "src/lws/providers/lambda_runtime/routes.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/8f/932e12d343/0/metadata.json",
+      "transcript": "/8f/932e12d343/0/full.jsonl",
+      "context": "",
+      "content_hash": "/8f/932e12d343/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 30,
+    "cache_creation_tokens": 61038,
+    "cache_read_tokens": 1833145,
+    "output_tokens": 1329,
+    "api_call_count": 28
+  }
+}

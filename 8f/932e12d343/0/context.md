@@ -1,0 +1,212 @@
+# Session Context
+
+**Session ID:** 1c9632fc-f797-49a8-901c-95079a0fd094
+
+**Commit Message:** Implement the following plan:
+
+# Plan: Docker-Based Lambda Runtime
+
+## C
+
+## Prompt
+
+Implement the following plan:
+
+# Plan: Docker-Based Lambda Runtime
+
+## Context
+
+The current Lambda runtime spawns a new subprocess (`node invoker.js` or `python3 python_bootstrap.py`) for every invocation. This approach has no memory or CPU enforcement and doesn't reflect real Lambda constraints. The goal is to run Lambda functions inside Docker containers with:
+
+- Source code mounted as a volume (no copy, instant code changes)
+- Memory limits enforced via `--memory`
+- CPU limits derived from Lambda's memory-to-vCPU ratio
+- The existing subprocess approach preserved as the default (no breaking changes)
+
+## Architecture
+
+### New file: `src/lws/providers/lambda_runtime/docker.py`
+
+A new `DockerCompute` class implementing `ICompute`. Uses the `docker` Python SDK.
+
+**Container strategy: warm containers with `docker exec`**
+
+- On `start()`, create and start a long-lived container per function using a lightweight base image (`node:XX-slim` or `python:3.XX-slim`). The container runs `sleep infinity` to stay alive.
+- On `invoke()`, run `docker exec` to execute the bootstrap script inside the warm container, piping the event JSON via stdin and reading the result from stdout. This avoids cold-start overhead on every call.
+- On `stop()`, stop and remove the container.
+
+```python
+class DockerCompute(ICompute):
+    def __init__(self, config: ComputeConfig, sdk_env: dict[str, str]) -> None:
+        self._config = config
+        self._sdk_env = sdk_env
+        self._container = None
+        self._client = None
+
+    async def start(self) -> None:
+        import docker
+        self._client = docker.from_env()
+        image = self._resolve_image()  # e.g. "node:20-slim" or "python:3.12-slim"
+        self._container = self._client.containers.run(
+            image,
+            command="sleep infinity",
+            detach=True,
+            name=f"ldk-{self._config.function_name}",
+            volumes={
+                str(self._config.code_path): {"bind": "/var/task", "mode": "ro"},
+                str(_BOOTSTRAP_DIR): {"bind": "/var/bootstrap", "mode": "ro"},
+            },
+            mem_limit=f"{self._config.memory_size}m",
+            nano_cpus=self._calculate_nano_cpus(),
+            environment=self._build_env(),
+            extra_hosts={"host.docker.internal": "host-gateway"},
+        )
+
+    async def invoke(self, event: dict, context: LambdaContext) -> InvocationResult:
+        # docker exec with stdin pipe
+        exec_result = self._container.exec_run(
+            cmd=self._build_exec_cmd(),
+            stdin=True, ...
+        )
+        # parse stdout JSON same as subprocess approach
+
+    async def stop(self) -> None:
+        if self._container:
+            self._container.stop(timeout=2)
+            self._container.remove(force=True)
+```
+
+**Key design decisions:**
+
+1. **Volume mounts** — Source code is mounted read-only at `/var/task`. Bootstrap scripts (`invoker.js`, `python_bootstrap.py`) are mounted at `/var/bootstrap`. No file copying, so code changes on disk are immediately visible.
+
+2. **Memory limit** — Uses `mem_limit` (Docker `--memory` flag), directly from `ComputeConfig.memory_size`. A 128MB Lambda function gets a 128MB container.
+
+3. **CPU limit** — AWS Lambda allocates 1 vCPU per 1769MB of memory. `nano_cpus` is calculated as: `int((memory_size / 1769) * 1e9)` with a floor of `128 * 1e6` (128 millicores minimum).
+
+4. **Networking** — Containers need to reach local service endpoints (DynamoDB, SQS, etc.) on the host. Uses `extra_hosts={"host.docker.internal": "host-gateway"}`. The `_build_env()` method rewrites `AWS_ENDPOINT_URL_*` values from `127.0.0.1`/`localhost` to `host.docker.internal`.
+
+5. **Bootstrap reuse** — The existing `invoker.js` and `python_bootstrap.py` are reused inside the container. Environment variables (`LDK_HANDLER`, `LDK_CODE_PATH=/var/task`, etc.) configure them identically to the subprocess approach, but with the container-local path.
+
+6. **Exec-based invocation** — Uses `docker exec` (via `container.exec_run()`) rather than starting a new container per invocation. The bootstrap script is invoked inside the warm container, reads event from stdin, runs the handler, writes result to stdout. Timeout is enforced with `asyncio.wait_for` wrapping the exec call, same as the subprocess approach.
+
+### Modified file: `src/lws/config/loader.py`
+
+Add a `compute_backend` field to `LdkConfig`:
+
+```python
+@dataclass
+class LdkConfig:
+    ...
+    compute_backend: str = "subprocess"  # "subprocess" | "docker"
+```
+
+Also settable via `LDK_COMPUTE_BACKEND` env var or `compute_backend: docker` in `ldk.yaml`.
+
+### Modified file: `src/lws/cli/ldk.py`
+
+In `_create_compute_providers()`, check `config.compute_backend` to choose between `NodeJsCompute`/`PythonCompute` (subprocess) and `DockerCompute` (docker):
+
+```python
+def _create_compute_providers(..., config: LdkConfig):
+    for func in app_model.functions:
+        ...
+        if config.compute_backend == "docker":
+            compute = DockerCompute(config=compute_config, sdk_env=sdk_env)
+        elif func.runtime.startswith("python"):
+            compute = PythonCompute(config=compute_config, sdk_env=sdk_env)
+        elif func.runtime.startswith("nodejs"):
+            compute = NodeJsCompute(config=compute_config, sdk_env=sdk_env)
+```
+
+Same pattern in `LambdaManagementRouter._create_compute()` for Terraform mode.
+
+### Modified file: `src/lws/providers/lambda_runtime/routes.py`
+
+`LambdaManagementRouter.__init__()` needs to accept `compute_backend: str` so Terraform-mode `_create_compute()` can also select Docker.
+
+### Modified file: `pyproject.toml`
+
+Add `docker` as an optional dependency:
+
+```toml
+[project.optional-dependencies]
+docker = ["docker>=7.0.0"]
+```
+
+The `DockerCompute.start()` method does `import docker` at runtime with a clear error message if not installed: `"Docker backend requires 'pip install local-web-services[docker]' and a running Docker daemon."`
+
+## Files to modify
+
+| File | Change |
+|------|--------|
+| `src/lws/providers/lambda_runtime/docker.py` | **New** — `DockerCompute` class |
+| `src/lws/config/loader.py` | Add `compute_backend` field to `LdkConfig` |
+| `src/lws/cli/ldk.py` | Branch on `compute_backend` in `_create_compute_providers()` |
+| `src/lws/providers/lambda_runtime/routes.py` | Pass `compute_backend` to `_create_compute()` |
+| `pyproject.toml` | Add `docker` optional dependency |
+
+Existing files **not modified**: `invoker.js`, `python_bootstrap.py`, `compute.py` (ICompute interface), `nodejs.py`, `python.py`. The subprocess implementations are untouched.
+
+## Verification
+
+```bash
+# 1. Unit tests (subprocess mode unchanged)
+uv run python -m pytest tests/ -x -q
+
+# 2. Lint
+uvx ruff check src tests
+
+# 3. Docker mode E2E (CDK sample)
+cd /path/to/sample-project
+npx cdk synth
+LDK_COMPUTE_BACKEND=docker ldk dev
+bash test-orders.sh
+
+# 4. Verify resource constraints
+docker stats  # should show memory limits matching function config
+
+# 5. Verify subprocess mode still works (default)
+ldk dev  # no LDK_COMPUTE_BACKEND set
+bash test-orders.sh
+```
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/eamonnfaherty/.REDACTED.jsonl
+
+## Summary
+
+All done. Here's a summary of the changes:
+
+### New file
+- **`src/lws/providers/lambda_runtime/docker.py`** — `DockerCompute` class implementing `ICompute` with:
+  - Warm containers using `sleep infinity` + `docker exec` for invocations
+  - Memory limits via `--memory` (directly from `ComputeConfig.memory_size`)
+  - CPU limits derived from Lambda's 1 vCPU per 1769MB ratio (128 millicores floor)
+  - Source code mounted read-only at `/var/task`, bootstrap scripts at `/var/bootstrap`
+  - `host.docker.internal` rewriting for `127.0.0.1`/`localhost` endpoint URLs
+  - Docker stream framing stripped from exec output
+  - Stale container cleanup on start
+  - Runtime → image mapping (nodejs14–22, python3.8–3.13)
+
+### Modified files
+- **`src/lws/cli/ldk.py`** — Replaced `NodeJsCompute`/`PythonCompute` imports and usage with `DockerCompute` in both `_create_compute_providers()` and `_oneshot_invoke()`
+- **`src/lws/providers/lambda_runtime/routes.py`** — Replaced subprocess compute creation in `LambdaManagementRouter._create_compute()` with `DockerCompute`
+- **`pyproject.toml`** — Added `docker>=7.0.0` as a required dependency
+
+### Verification
+- Ruff lint: all checks passed
+- Pytest: 1657 tests passed, 0 failures
+
+## Key Actions
+
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/pyproject.toml
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/config/loader.py
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/cli/ldk.py
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/routes.py
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/compute.py
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/nodejs.py
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/python.py
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/interfaces.py
+- - **Glob**: src/lws/interfaces*
+- - **Grep**: class ICompute

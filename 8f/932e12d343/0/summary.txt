@@ -1,0 +1,21 @@
+All done. Here's a summary of the changes:
+
+### New file
+- **`src/lws/providers/lambda_runtime/docker.py`** — `DockerCompute` class implementing `ICompute` with:
+  - Warm containers using `sleep infinity` + `docker exec` for invocations
+  - Memory limits via `--memory` (directly from `ComputeConfig.memory_size`)
+  - CPU limits derived from Lambda's 1 vCPU per 1769MB ratio (128 millicores floor)
+  - Source code mounted read-only at `/var/task`, bootstrap scripts at `/var/bootstrap`
+  - `host.docker.internal` rewriting for `127.0.0.1`/`localhost` endpoint URLs
+  - Docker stream framing stripped from exec output
+  - Stale container cleanup on start
+  - Runtime → image mapping (nodejs14–22, python3.8–3.13)
+
+### Modified files
+- **`src/lws/cli/ldk.py`** — Replaced `NodeJsCompute`/`PythonCompute` imports and usage with `DockerCompute` in both `_create_compute_providers()` and `_oneshot_invoke()`
+- **`src/lws/providers/lambda_runtime/routes.py`** — Replaced subprocess compute creation in `LambdaManagementRouter._create_compute()` with `DockerCompute`
+- **`pyproject.toml`** — Added `docker>=7.0.0` as a required dependency
+
+### Verification
+- Ruff lint: all checks passed
+- Pytest: 1657 tests passed, 0 failures
