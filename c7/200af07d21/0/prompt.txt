@@ -1,0 +1,19 @@
+➜  sample-project-terraform git:(main) ✗ ./test-orders.sh
+=== Creating order ===
+{
+    "status": 502,
+    "headers": {
+        "date": "Wed, 11 Feb 2026 03:49:33 GMT",
+        "server": "uvicorn",
+        "content-length": "70",
+        "content-type": "application/json"
+    },
+    "body": {
+        "message": "Docker client not initialized \u2014 call start() first"
+    }
+}
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys,json; print(json.load(sys.stdin)['body']['orderId'])
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: 'orderId' when running ./test-orders.sh in the terraform sample project

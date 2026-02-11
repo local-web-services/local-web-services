@@ -1,0 +1,1 @@
+All 1657 tests pass. The fix: added `await compute.start()` in `routes.py:_create_function` so the Docker client is initialized when Terraform creates Lambda functions via the management API. This was a pre-existing bug — CDK mode worked because the orchestrator calls `start()` on providers, but Terraform mode's dynamic function creation path skipped it.
