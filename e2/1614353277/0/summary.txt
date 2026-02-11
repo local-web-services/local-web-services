@@ -1,0 +1,21 @@
+Everything works correctly:
+
+- **E2E test passes** — all 65 e2e test files found in the correctly-named directories
+- **Integration test fails as expected** — 43 missing integration tests (only 22 out of 65 exist so far)
+- **All 40 existing integration tests pass** after the renames
+
+**Summary of changes:**
+
+1. **Renamed directories** in both `tests/e2e/` and `tests/integration/`:
+   - `s3/` → `s3api/`
+   - `cognito/` → `cognito_idp/`
+   - `eventbridge/` → `events/`
+
+2. **Rewrote architecture test** to be fully convention-based:
+   - Removed `_CLI_NAME_TO_TEST_DIR` mapping entirely
+   - Removed `_MODULE_TO_CLI_NAME` mapping entirely
+   - Now parses `lws.py` with AST to auto-discover `app.add_typer(..., name="<cli_name>")` calls and their corresponding service modules
+   - Directory naming convention: `cli_name.replace("-", "_")`
+   - File naming convention: `test_{command.replace("-", "_")}.py`
+
+3. **Updated `contributing/testing/END_TO_END.md`** to reference `tests/e2e/s3api/` instead of `tests/e2e/s3/`
