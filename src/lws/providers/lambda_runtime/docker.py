@@ -60,6 +60,18 @@ _RUNTIME_IMAGES: dict[str, str] = {
 _EOL_RUNTIMES: set[str] = {"nodejs14.x", "nodejs16.x", "python3.8"}
 
 
+def _socket_candidates() -> list[Path]:
+    """Return well-known Docker socket paths to probe."""
+    home = Path.home()
+    return [
+        home / ".colima" / "default" / "docker.sock",
+        home / ".colima" / "docker.sock",
+        home / ".rd" / "docker.sock",
+        Path("/var/run/docker.sock"),
+        home / ".docker" / "run" / "docker.sock",
+    ]
+
+
 def create_docker_client():
     """Create a Docker client, discovering the socket if necessary.
 
@@ -78,15 +90,7 @@ def create_docker_client():
         pass
 
     # Probe well-known alternative socket paths.
-    home = Path.home()
-    candidates = [
-        home / ".colima" / "default" / "docker.sock",
-        home / ".colima" / "docker.sock",
-        home / ".rd" / "docker.sock",
-        Path("/var/run/docker.sock"),
-        home / ".docker" / "run" / "docker.sock",
-    ]
-    for sock in candidates:
+    for sock in _socket_candidates():
         if sock.exists():
             try:
                 client = docker.DockerClient(base_url=f"unix://{sock}")

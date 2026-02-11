@@ -37,13 +37,15 @@ class TestCreateDockerClientFromEnv:
         mock_docker.from_env.return_value = mock_env_client
         mock_docker.DockerClient.return_value = mock_sock_client
 
-        sock_path = tmp_path / ".colima" / "default" / "docker.sock"
-        sock_path.parent.mkdir(parents=True)
+        sock_path = tmp_path / "docker.sock"
         sock_path.touch()
 
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
-            patch("pathlib.Path.home", return_value=tmp_path),
+            patch(
+                "lws.providers.lambda_runtime.docker._socket_candidates",
+                return_value=[sock_path],
+            ),
         ):
             from lws.providers.lambda_runtime.docker import create_docker_client
 
