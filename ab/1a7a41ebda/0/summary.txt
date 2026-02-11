@@ -1,0 +1,3 @@
+Fixed. The issue was that `_strip_docker_stream_framing` was extracting **all** frames (stdout + stderr) into a single buffer. The AWS SDK's `TypeError: Invalid URL` error was written to stderr and got prepended to the stdout JSON result, breaking the parse.
+
+The new `_demux_docker_stream` method separates the Docker multiplexed stream by frame type — stdout (type 1) is returned for JSON parsing, stderr (type 2) is logged at debug level separately.
