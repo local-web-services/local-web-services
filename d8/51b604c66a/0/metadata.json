@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "d851b604c66a",
+  "session_id": "7ba27336-0082-4f56-9c4b-f88d22013dc0",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T18:12:00.481694Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/providers/lambda_runtime/dns_rewrite.js",
+    "src/lws/providers/lambda_runtime/docker.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "df0fafd8-1bea-45a2-981f-d447ca4cc599",
+  "checkpoint_transcript_start": 1195,
+  "transcript_lines_at_start": 1195,
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 6197,
+    "cache_read_tokens": 901624,
+    "output_tokens": 138,
+    "api_call_count": 6
+  }
+}

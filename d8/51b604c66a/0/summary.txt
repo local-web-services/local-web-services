@@ -1,0 +1,7 @@
+Now restart `ldk dev` in the sample project and re-run `test-orders.sh`. The flow is now:
+
+1. Lambda's S3 SDK constructs `http://order-receipts-123456789012-us-east-1.host.docker.internal:3003/receipts/xxx.json`
+2. **`dns_rewrite.js`** (preloaded via `NODE_OPTIONS`) intercepts `dns.lookup` and rewrites `order-receipts-123456789012-us-east-1.host.docker.internal` → `host.docker.internal` — DNS now resolves
+3. HTTP request arrives at the S3 server on port 3003 with `Host: order-receipts-123456789012-us-east-1.host.docker.internal:3003`
+4. **`_VirtualHostRewriteMiddleware`** extracts bucket name `order-receipts-123456789012-us-east-1` from the Host header and rewrites path from `/receipts/xxx.json` to `/order-receipts-123456789012-us-east-1/receipts/xxx.json`
+5. Existing path-style routes handle the request normally
