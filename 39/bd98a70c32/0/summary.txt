@@ -1,0 +1,7 @@
+All 1698 tests pass, lint is clean. Here's what was fixed:
+
+**WebSocket `CancelledError` on shutdown** — `src/lws/api/management.py`:
+- Added `asyncio.CancelledError` to the exception handler in `_handle_ws_logs()`. When uvicorn kills the server task during shutdown, the `await q.get()` raises `CancelledError` (which is a `BaseException`, not caught by `except Exception`). Now it's caught cleanly — no more traceback spam.
+
+**Docker logs visible in GUI** — `src/lws/logging/logger.py`:
+- `log_docker_operation` now always emits to the WebSocket (for the GUI), regardless of the Python logger level. Console output remains gated at DEBUG. This means when you select "All levels" in the GUI dropdown, docker operations (run, exec, stop) will appear with their expandable details.
