@@ -1,0 +1,7 @@
+All passing. Here's what changed:
+
+1. **New `log_lambda_invocation` method on `LdkLogger`** (`logger.py`) — Formats Lambda invocations consistently with other services (`[HH:MM:SS] LAMBDA ProcessOrderFunction (234ms) -> OK`) and emits structured entries to the WebSocket handler with `service: "lambda"`. Includes `event` as `request_body` and `result` as `response_body` so the web GUI can display the function arguments and return value.
+
+2. **`DockerCompute` switched from `logging.getLogger` to `get_logger`** (`docker.py`) — Now uses `LdkLogger` which outputs to both the Rich console (CLI) and the WebSocket handler (web GUI).
+
+3. **Invocation logging uses `log_lambda_invocation`** — Every invocation (success, error, timeout) goes through the structured logger, showing up in both CLI and web GUI with the event payload and result.

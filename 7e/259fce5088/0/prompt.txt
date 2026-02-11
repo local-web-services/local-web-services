@@ -1,0 +1,8 @@
+I am now seeing the logs in the cli only and not the web ui. eg: 
+
+[21:51:11] SNS POST / -> Publish (2ms) -> 200
+INFO ldk.docker-compute: OK ProcessOrderFunction50B96DD0 (1417ms, request=f5176e26-e4f4-437f-91f9-af87b5283a6e)
+[21:51:11] APIGATEWAY GET /_ldk/resources -> apigateway (0ms) -> 200
+[21:51:11] STEPFUNCTIONS POST / -> DescribeExecution (0ms) -> 200
+
+however I want the logs to show the service consistently like others - eg show lambda. I want it to appear in the web gui and I want to see the lambda function arguements for context and event in the web ui
