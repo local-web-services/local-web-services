@@ -1,0 +1,1 @@
+SQS+SNS integration tests complete — all 14 tests pass (7 new + 7 existing).

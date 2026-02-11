@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "d250be13b735",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "tests/integration/events/test_create_event_bus.py",
+    "tests/integration/ssm/test_describe_parameters.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d2/50be13b735/0/metadata.json",
+      "transcript": "/d2/50be13b735/0/full.jsonl",
+      "context": "",
+      "content_hash": "/d2/50be13b735/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 3,
+    "cache_creation_tokens": 1006,
+    "cache_read_tokens": 122912,
+    "output_tokens": 1,
+    "api_call_count": 1
+  }
+}
