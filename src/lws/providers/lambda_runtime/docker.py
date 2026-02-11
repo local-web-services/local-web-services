@@ -16,6 +16,7 @@ Container strategy: lazy warm containers with ``docker exec``.
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import logging
 import time
@@ -301,36 +302,24 @@ class DockerCompute(ICompute):
     def _run_exec_sync(
         self, cmd: list[str], env_vars: list[str], event_json: str
     ) -> str:
-        """Synchronous docker exec using the low-level API for stdin support."""
-        api = self._client.api
-        exec_id = api.exec_create(
-            self._container.id,
-            cmd,
-            stdin=True,
-            stdout=True,
-            stderr=True,
+        """Run the bootstrap script inside the container via shell pipe.
+
+        The event JSON is base64-encoded and piped through ``base64 -d``
+        into the bootstrap command. This avoids raw socket handling and
+        gives native stdout/stderr separation via ``demux=True``.
+        """
+        encoded = base64.b64encode(event_json.encode()).decode()
+        shell_cmd = f"echo {encoded} | base64 -d | {' '.join(cmd)}"
+
+        _exit_code, output = self._container.exec_run(
+            ["sh", "-c", shell_cmd],
             environment=env_vars,
+            demux=True,
         )
-        sock = api.exec_start(exec_id, socket=True, demux=False)
 
-        # Send event JSON to stdin, then close the write side.
-        sock._sock.sendall(event_json.encode())
-        sock._sock.shutdown(1)  # SHUT_WR
+        stdout_bytes = output[0] or b""
+        stderr_bytes = output[1] or b""
 
-        # Read all output.
-        chunks = []
-        while True:
-            data = sock._sock.recv(4096)
-            if not data:
-                break
-            chunks.append(data)
-        sock.close()
-
-        raw = b"".join(chunks)
-
-        # Docker multiplexes stdout/stderr with 8-byte frame headers.
-        # Extract only stdout (type 1), log stderr separately.
-        stdout_bytes, stderr_bytes = self._demux_docker_stream(raw)
         if stderr_bytes:
             _logger.debug(
                 "[%s] stderr: %s",
@@ -338,40 +327,6 @@ class DockerCompute(ICompute):
                 stderr_bytes.decode(errors="replace").rstrip(),
             )
         return stdout_bytes.decode(errors="replace")
-
-    @staticmethod
-    def _demux_docker_stream(data: bytes) -> tuple[bytes, bytes]:
-        """Separate Docker multiplexed stream into (stdout, stderr).
-
-        Docker's attach/exec protocol prepends an 8-byte header to each
-        frame: 1 byte stream type (1=stdout, 2=stderr), 3 bytes padding,
-        4 bytes big-endian payload length.
-
-        Returns raw data unchanged if no framing is detected.
-        """
-        if len(data) < 8 or data[0] not in (0, 1, 2) or data[1:4] != b"\x00\x00\x00":
-            return data, b""
-
-        stdout = bytearray()
-        stderr = bytearray()
-        offset = 0
-        while offset + 8 <= len(data):
-            stream_type = data[offset]
-            payload_len = int.from_bytes(data[offset + 4 : offset + 8], "big")
-            frame_end = offset + 8 + payload_len
-            if frame_end > len(data):
-                # Incomplete frame — attribute remaining bytes to this stream
-                payload = data[offset + 8 :]
-            else:
-                payload = data[offset + 8 : frame_end]
-            if stream_type == 1:
-                stdout.extend(payload)
-            else:
-                stderr.extend(payload)
-            if frame_end > len(data):
-                break
-            offset = frame_end
-        return bytes(stdout), bytes(stderr)
 
     @staticmethod
     def _parse_result(raw: str, duration_ms: float, request_id: str) -> InvocationResult:
