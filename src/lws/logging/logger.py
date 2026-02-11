@@ -102,6 +102,28 @@ def get_ws_handler() -> WebSocketLogHandler | None:
     return _ws_handler
 
 
+def _safe_json_truncate(data: Any, max_len: int = 10240) -> str | None:
+    """Serialize *data* to JSON, truncate to *max_len*, or return ``None``."""
+    import json
+
+    try:
+        return json.dumps(data, default=str)[:max_len]
+    except Exception:
+        return None
+
+
+def _build_lambda_request_body(event: dict | None, context: dict | None) -> str | None:
+    """Build a JSON request body from *event* and *context*."""
+    if event is None and context is None:
+        return None
+    request_data: dict[str, Any] = {}
+    if event is not None:
+        request_data["event"] = event
+    if context is not None:
+        request_data["context"] = context
+    return _safe_json_truncate(request_data)
+
+
 class LdkLogger:
     """Structured logger wrapping Python's ``logging.Logger``.
 
@@ -286,25 +308,11 @@ class LdkLogger:
             "duration_ms": duration_ms,
             "status": status,
         }
-        if event is not None or context is not None:
-            import json
-
-            try:
-                request_data: dict[str, Any] = {}
-                if event is not None:
-                    request_data["event"] = event
-                if context is not None:
-                    request_data["context"] = context
-                entry["request_body"] = json.dumps(request_data, default=str)[:10240]
-            except Exception:
-                pass
+        request_body = _build_lambda_request_body(event, context)
+        if request_body is not None:
+            entry["request_body"] = request_body
         if result is not None:
-            import json
-
-            try:
-                entry["response_body"] = json.dumps(result, default=str)[:10240]
-            except Exception:
-                pass
+            entry["response_body"] = _safe_json_truncate(result)
         if error is not None:
             entry["error"] = error
         _emit_to_ws(entry)
