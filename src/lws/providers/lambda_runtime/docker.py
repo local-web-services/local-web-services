@@ -282,7 +282,8 @@ class DockerCompute(ICompute):
         container can reach services running on the host.
         """
         env: dict[str, str] = {}
-        env.update(self._config.environment)
+        for key, value in self._config.environment.items():
+            env[key] = self._rewrite_localhost(value)
         for key, value in self._sdk_env.items():
             env[key] = self._rewrite_localhost(value)
         env["LDK_HANDLER"] = self._config.handler
