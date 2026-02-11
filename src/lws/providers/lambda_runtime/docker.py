@@ -190,6 +190,13 @@ class DockerCompute(ICompute):
             )
 
         func_name = self._config.function_name
+        context_dict = {
+            "function_name": context.function_name,
+            "memory_limit_in_mb": context.memory_limit_in_mb,
+            "timeout_seconds": context.timeout_seconds,
+            "aws_request_id": context.aws_request_id,
+            "invoked_function_arn": context.invoked_function_arn,
+        }
 
         cmd = self._build_exec_cmd()
         env_vars = self._build_exec_env(context)
@@ -211,6 +218,7 @@ class DockerCompute(ICompute):
                 status="TIMEOUT",
                 error=f"Task timed out after {self._config.timeout} seconds",
                 event=event,
+                context=context_dict,
             )
             return InvocationResult(
                 payload=None,
@@ -226,6 +234,7 @@ class DockerCompute(ICompute):
             status="ERROR" if invocation_result.error else "OK",
             error=invocation_result.error,
             event=event,
+            context=context_dict,
             result=invocation_result.payload,
         )
         return invocation_result

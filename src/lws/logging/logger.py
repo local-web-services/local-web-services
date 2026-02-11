@@ -260,6 +260,7 @@ class LdkLogger:
         status: str = "OK",
         error: str | None = None,
         event: dict | None = None,
+        context: dict | None = None,
         result: dict | None = None,
     ) -> None:
         """Log a Lambda function invocation.
@@ -285,11 +286,16 @@ class LdkLogger:
             "duration_ms": duration_ms,
             "status": status,
         }
-        if event is not None:
+        if event is not None or context is not None:
             import json
 
             try:
-                entry["request_body"] = json.dumps(event, default=str)[:10240]
+                request_data: dict[str, Any] = {}
+                if event is not None:
+                    request_data["event"] = event
+                if context is not None:
+                    request_data["context"] = context
+                entry["request_body"] = json.dumps(request_data, default=str)[:10240]
             except Exception:
                 pass
         if result is not None:
