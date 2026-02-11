@@ -1,0 +1,1 @@
+whilst that is running I want you to define a contributing directory. I want a file in there on what testing is expected for new features and how the tests should be structured. this should be machine readable for agents and for humans.
