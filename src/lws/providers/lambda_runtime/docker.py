@@ -229,6 +229,11 @@ class DockerCompute(ICompute):
                 duration_ms=duration_ms,
                 request_id=context.aws_request_id,
             )
+        # Destroy the container after each invocation so it doesn't linger
+        # in ``docker ps``.  A fresh container is created on the next call
+        # via ``_ensure_container()``.
+        self._destroy_container()
+
         invocation_result = self._parse_result(result, duration_ms, context.aws_request_id)
         _logger.log_lambda_invocation(
             function_name=func_name,
