@@ -26,7 +26,10 @@ class TestCreateDockerClientSocketDiscovery:
 
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
-            patch("pathlib.Path.home", return_value=tmp_path),
+            patch(
+                "lws.providers.lambda_runtime.docker._socket_candidates",
+                return_value=[expected_sock],
+            ),
         ):
             from lws.providers.lambda_runtime.docker import create_docker_client
 
@@ -55,7 +58,10 @@ class TestCreateDockerClientSocketDiscovery:
 
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
-            patch("pathlib.Path.home", return_value=tmp_path),
+            patch(
+                "lws.providers.lambda_runtime.docker._socket_candidates",
+                return_value=[expected_sock],
+            ),
         ):
             from lws.providers.lambda_runtime.docker import create_docker_client
 
@@ -84,7 +90,10 @@ class TestCreateDockerClientSocketDiscovery:
 
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
-            patch("pathlib.Path.home", return_value=tmp_path),
+            patch(
+                "lws.providers.lambda_runtime.docker._socket_candidates",
+                return_value=[expected_sock],
+            ),
         ):
             from lws.providers.lambda_runtime.docker import create_docker_client
 
@@ -110,18 +119,18 @@ class TestCreateDockerClientSocketDiscovery:
         mock_docker.from_env.return_value = mock_env_client
         mock_docker.DockerClient.side_effect = [mock_bad_client, mock_good_client]
 
-        # Create two sockets — first will fail ping, second will succeed
-        bad_sock = tmp_path / ".colima" / "default" / "docker.sock"
-        bad_sock.parent.mkdir(parents=True)
+        bad_sock = tmp_path / "bad.sock"
         bad_sock.touch()
 
-        good_sock = tmp_path / ".colima" / "docker.sock"
-        good_sock.parent.mkdir(parents=True, exist_ok=True)
+        good_sock = tmp_path / "good.sock"
         good_sock.touch()
 
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
-            patch("pathlib.Path.home", return_value=tmp_path),
+            patch(
+                "lws.providers.lambda_runtime.docker._socket_candidates",
+                return_value=[bad_sock, good_sock],
+            ),
         ):
             from lws.providers.lambda_runtime.docker import create_docker_client
 

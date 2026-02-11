@@ -21,7 +21,10 @@ class TestCreateDockerClientNoDocker:
 
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
-            patch("pathlib.Path.home", return_value=tmp_path),
+            patch(
+                "lws.providers.lambda_runtime.docker._socket_candidates",
+                return_value=[tmp_path / "nonexistent.sock"],
+            ),
         ):
             from lws.providers.lambda_runtime.docker import create_docker_client
 
