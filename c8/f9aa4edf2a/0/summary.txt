@@ -1,0 +1,1 @@
+All checks pass for our code and the package is reinstalled. The complexity issue is fixed by extracting `_read_json_from_fd` as a separate static method. You can test now — containers should disappear from `docker ps` after each invocation completes.
