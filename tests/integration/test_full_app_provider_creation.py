@@ -15,16 +15,18 @@ CDK_OUT = FIXTURES_DIR / "cdk.out"
 
 class TestFullAppProviderCreation:
     def test_full_app_creates_all_expected_providers(self, tmp_path):
+        # Arrange
+        expected_provider_names = {"dynamodb", "sqs", "s3", "sns", "stepfunctions"}
+
         app_model = parse_assembly(CDK_OUT)
         graph = build_graph(app_model)
         config = LdkConfig(port=9300)
 
-        providers, compute_providers = _create_providers(app_model, graph, config, tmp_path)
+        # Act
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
-        provider_names = {p.name for p in providers.values()}
+        # Assert
+        actual_provider_names = {p.name for p in providers.values()}
 
-        assert "dynamodb" in provider_names
-        assert "sqs" in provider_names
-        assert "s3" in provider_names
-        assert "sns" in provider_names
-        assert "stepfunctions" in provider_names
+        for expected_name in expected_provider_names:
+            assert expected_name in actual_provider_names

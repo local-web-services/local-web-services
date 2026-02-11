@@ -97,7 +97,11 @@ class TestLambdaTriggers:
     """Pre-auth and post-confirmation trigger invocation."""
 
     async def test_pre_auth_trigger_called(self, tmp_path: Path) -> None:
+        # Arrange
         called_with: list[dict] = []
+        username = "alice"
+        password = "Password1A"
+        expected_trigger_source = "PreAuthentication_Authentication"
 
         async def pre_auth(event: dict) -> dict:
             called_with.append(event)
@@ -111,16 +115,27 @@ class TestLambdaTriggers:
         )
         await p.start()
         try:
-            await p.sign_up("alice", "Password1A")
-            await p.initiate_auth("USER_PASSWORD_AUTH", "alice", "Password1A")
-            assert len(called_with) == 1
-            assert called_with[0]["triggerSource"] == "PreAuthentication_Authentication"
-            assert called_with[0]["userName"] == "alice"
+            await p.sign_up(username, password)
+
+            # Act
+            await p.initiate_auth("USER_PASSWORD_AUTH", username, password)
+
+            # Assert
+            expected_call_count = 1
+            actual_call_count = len(called_with)
+            assert actual_call_count == expected_call_count
+            actual_trigger_source = called_with[0]["triggerSource"]
+            actual_username = called_with[0]["userName"]
+            assert actual_trigger_source == expected_trigger_source
+            assert actual_username == username
         finally:
             await p.stop()
 
     async def test_post_confirmation_trigger_called(self, tmp_path: Path) -> None:
+        # Arrange
         called_with: list[dict] = []
+        username = "alice"
+        expected_trigger_source = "PostConfirmation_ConfirmSignUp"
 
         async def post_confirm(event: dict) -> dict:
             called_with.append(event)
@@ -137,15 +152,24 @@ class TestLambdaTriggers:
         )
         await p.start()
         try:
-            await p.sign_up("alice", "Password1A")
-            await p.confirm_sign_up("alice")
-            assert len(called_with) == 1
-            assert called_with[0]["triggerSource"] == "PostConfirmation_ConfirmSignUp"
-            assert called_with[0]["userName"] == "alice"
+            await p.sign_up(username, "Password1A")
+
+            # Act
+            await p.confirm_sign_up(username)
+
+            # Assert
+            expected_call_count = 1
+            actual_call_count = len(called_with)
+            assert actual_call_count == expected_call_count
+            actual_trigger_source = called_with[0]["triggerSource"]
+            actual_username = called_with[0]["userName"]
+            assert actual_trigger_source == expected_trigger_source
+            assert actual_username == username
         finally:
             await p.stop()
 
     async def test_post_confirmation_on_auto_confirm(self, tmp_path: Path) -> None:
+        # Arrange
         called_with: list[dict] = []
 
         async def post_confirm(event: dict) -> dict:
@@ -163,9 +187,14 @@ class TestLambdaTriggers:
         )
         await p.start()
         try:
+            # Act
             await p.sign_up("alice", "Password1A")
+
+            # Assert
             # Post-confirmation called during sign-up when auto_confirm=True
-            assert len(called_with) == 1
+            expected_call_count = 1
+            actual_call_count = len(called_with)
+            assert actual_call_count == expected_call_count
         finally:
             await p.stop()
 

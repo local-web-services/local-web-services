@@ -39,8 +39,15 @@ class TestSendMessageBatchJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_successful_count = 2
+        expected_failed_count = 0
+        expected_ids = {"msg1", "msg2"}
+
         await provider.create_queue("test-queue")
 
+        # Act
         resp = await client.post(
             "/",
             json={
@@ -53,14 +60,17 @@ class TestSendMessageBatchJson:
             headers=_headers("SendMessageBatch"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
-        assert len(data["Successful"]) == 2
-        assert len(data["Failed"]) == 0
+        actual_successful_count = len(data["Successful"])
+        actual_failed_count = len(data["Failed"])
+        assert actual_successful_count == expected_successful_count
+        assert actual_failed_count == expected_failed_count
 
-        # Verify each entry has the expected fields
-        ids = {entry["Id"] for entry in data["Successful"]}
-        assert ids == {"msg1", "msg2"}
+        actual_ids = {entry["Id"] for entry in data["Successful"]}
+        assert actual_ids == expected_ids
         for entry in data["Successful"]:
             assert "MessageId" in entry
             assert "MD5OfMessageBody" in entry
@@ -71,15 +81,20 @@ class TestSendMessageBatchJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
+        # Arrange
+        expected_status_code = 200
         await provider.create_queue("test-queue")
 
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "Entries": []},
             headers=_headers("SendMessageBatch"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
         assert data["Successful"] == []
         assert data["Failed"] == []
@@ -90,6 +105,11 @@ class TestSendMessageBatchJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_body_a = "body-a"
+        expected_body_b = "body-b"
+
         await provider.create_queue("test-queue")
 
         await client.post(
@@ -97,21 +117,24 @@ class TestSendMessageBatchJson:
             json={
                 "QueueUrl": _QUEUE_URL,
                 "Entries": [
-                    {"Id": "a", "MessageBody": "body-a"},
-                    {"Id": "b", "MessageBody": "body-b"},
+                    {"Id": "a", "MessageBody": expected_body_a},
+                    {"Id": "b", "MessageBody": expected_body_b},
                 ],
             },
             headers=_headers("SendMessageBatch"),
         )
 
-        # Receive the messages to verify they were actually enqueued
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "MaxNumberOfMessages": 10},
             headers=_headers("ReceiveMessage"),
         )
-        assert resp.status_code == 200
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
-        bodies = {msg["Body"] for msg in data["Messages"]}
-        assert "body-a" in bodies
-        assert "body-b" in bodies
+        actual_bodies = {msg["Body"] for msg in data["Messages"]}
+        assert expected_body_a in actual_bodies
+        assert expected_body_b in actual_bodies

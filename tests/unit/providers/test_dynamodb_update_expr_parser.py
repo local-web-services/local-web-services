@@ -55,29 +55,70 @@ class TestParser:
     """Test the parser produces correct action structures."""
 
     def test_parse_set_single(self) -> None:
+        # Arrange
+        expected_set_count = 1
+        expected_path = "name"
+
+        # Act
         actions = parse_update_expression("SET name = :v")
-        assert len(actions.set_actions) == 1
-        assert actions.set_actions[0].path == "name"
+
+        # Assert
+        assert len(actions.set_actions) == expected_set_count
+        actual_path = actions.set_actions[0].path
+        assert actual_path == expected_path
 
     def test_parse_set_multiple(self) -> None:
+        # Arrange
+        expected_set_count = 2
+
+        # Act
         actions = parse_update_expression("SET a = :a, b = :b")
-        assert len(actions.set_actions) == 2
+
+        # Assert
+        assert len(actions.set_actions) == expected_set_count
 
     def test_parse_remove(self) -> None:
+        # Arrange
+        expected_remove_count = 2
+
+        # Act
         actions = parse_update_expression("REMOVE a, b")
-        assert len(actions.remove_actions) == 2
+
+        # Assert
+        assert len(actions.remove_actions) == expected_remove_count
 
     def test_parse_add(self) -> None:
+        # Arrange
+        expected_add_count = 1
+
+        # Act
         actions = parse_update_expression("ADD count :v")
-        assert len(actions.add_actions) == 1
+
+        # Assert
+        assert len(actions.add_actions) == expected_add_count
 
     def test_parse_delete(self) -> None:
+        # Arrange
+        expected_delete_count = 1
+
+        # Act
         actions = parse_update_expression("DELETE tags :v")
-        assert len(actions.delete_actions) == 1
+
+        # Assert
+        assert len(actions.delete_actions) == expected_delete_count
 
     def test_parse_combined(self) -> None:
+        # Arrange
+        expected_set_count = 1
+        expected_remove_count = 1
+        expected_add_count = 1
+        expected_delete_count = 1
+
+        # Act
         actions = parse_update_expression("SET a = :a REMOVE b ADD c :c DELETE d :d")
-        assert len(actions.set_actions) == 1
-        assert len(actions.remove_actions) == 1
-        assert len(actions.add_actions) == 1
-        assert len(actions.delete_actions) == 1
+
+        # Assert
+        assert len(actions.set_actions) == expected_set_count
+        assert len(actions.remove_actions) == expected_remove_count
+        assert len(actions.add_actions) == expected_add_count
+        assert len(actions.delete_actions) == expected_delete_count

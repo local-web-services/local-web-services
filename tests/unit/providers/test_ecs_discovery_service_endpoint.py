@@ -19,7 +19,9 @@ from lws.providers.ecs.discovery import ServiceEndpoint
 class TestServiceEndpoint:
     def test_url_property(self) -> None:
         ep = ServiceEndpoint(service_name="web", host="localhost", port=3000)
-        assert ep.url == "http://localhost:3000"
+        expected_url = "http://localhost:3000"
+        actual_url = ep.url
+        assert actual_url == expected_url
 
     def test_frozen_dataclass(self) -> None:
         ep = ServiceEndpoint(service_name="web", host="localhost", port=3000)

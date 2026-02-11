@@ -31,16 +31,24 @@ class TestGetBucketLocation:
     async def test_get_bucket_location(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
+        expected_status = 200
+        expected_location_xml = "<LocationConstraint>us-east-1</LocationConstraint>"
 
+        # Act
         resp = await client.get("/my-bucket?location")
 
-        assert resp.status_code == 200
-        assert "<LocationConstraint>us-east-1</LocationConstraint>" in resp.text
+        # Assert
+        assert resp.status_code == expected_status
+        assert expected_location_xml in resp.text
 
     @pytest.mark.asyncio
     async def test_get_bucket_location_no_such_bucket(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await client.get("/nonexistent-bucket?location")
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NoSuchBucket" in resp.text

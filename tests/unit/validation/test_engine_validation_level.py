@@ -61,7 +61,9 @@ def _make_context(
 
 class TestValidationLevel:
     def test_warn_value(self) -> None:
-        assert ValidationLevel.WARN.value == "warn"
+        expected_value = "warn"
+        assert ValidationLevel.WARN.value == expected_value
 
     def test_error_value(self) -> None:
-        assert ValidationLevel.ERROR.value == "error"
+        expected_value = "error"
+        assert ValidationLevel.ERROR.value == expected_value

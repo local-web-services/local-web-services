@@ -41,6 +41,7 @@ async def _request(client: httpx.AsyncClient, operation: str, body: dict) -> htt
 
 class TestDeleteUserPool:
     async def test_delete_returns_empty(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "DeleteUserPool",
@@ -48,4 +49,7 @@ class TestDeleteUserPool:
                 "UserPoolId": "us-east-1_testpool",
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status

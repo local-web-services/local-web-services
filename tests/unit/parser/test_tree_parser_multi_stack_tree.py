@@ -26,6 +26,11 @@ class TestMultiStackTree:
     """Tree files containing more than one top-level stack."""
 
     def test_two_stacks(self, tmp_tree):
+        # Arrange
+        expected_count = 2
+        expected_ids = {"StackA", "StackB"}
+        expected_stack_a_category = "dynamodb"
+        expected_stack_b_category = "sqs"
         data = {
             "version": "tree-0.1",
             "tree": {
@@ -61,15 +66,20 @@ class TestMultiStackTree:
                 },
             },
         }
+
+        # Act
         nodes = parse_tree(tmp_tree(data))
-        assert len(nodes) == 2
-        ids = {n.id for n in nodes}
-        assert ids == {"StackA", "StackB"}
-        # Verify categories
+
+        # Assert
+        assert len(nodes) == expected_count
+        actual_ids = {n.id for n in nodes}
+        assert actual_ids == expected_ids
         stack_a = next(n for n in nodes if n.id == "StackA")
-        assert stack_a.children[0].category == "dynamodb"
+        actual_stack_a_category = stack_a.children[0].category
+        assert actual_stack_a_category == expected_stack_a_category
         stack_b = next(n for n in nodes if n.id == "StackB")
-        assert stack_b.children[0].category == "sqs"
+        actual_stack_b_category = stack_b.children[0].category
+        assert actual_stack_b_category == expected_stack_b_category
 
     def test_empty_tree(self, tmp_tree):
         data = {

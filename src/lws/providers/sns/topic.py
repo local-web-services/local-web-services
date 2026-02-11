@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from lws.providers.sns.filter import matches_filter_policy
 
@@ -22,6 +22,8 @@ class Subscription:
     endpoint: str  # function name or queue ARN
     filter_policy: dict | None
     subscription_arn: str
+    custom_attrs: dict[str, str] = field(default_factory=dict)
+    custom_attrs: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -50,6 +52,7 @@ class LocalTopic:
         self.topic_name = topic_name
         self.topic_arn = topic_arn
         self.subscribers: list[Subscription] = []
+        self.custom_attrs: dict[str, str] = {}
         self._lock = asyncio.Lock()
 
     async def add_subscription(
@@ -87,9 +90,9 @@ class LocalTopic:
 
     async def publish(
         self,
-        message: str,
-        subject: str | None = None,
-        message_attributes: dict | None = None,
+        message: str,  # pylint: disable=unused-argument
+        subject: str | None = None,  # pylint: disable=unused-argument
+        message_attributes: dict | None = None,  # pylint: disable=unused-argument
     ) -> str:
         """Publish a message and return its message ID.
 

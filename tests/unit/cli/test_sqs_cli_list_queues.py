@@ -20,6 +20,9 @@ def _mock_client_xml(return_xml: str) -> AsyncMock:
 
 class TestListQueues:
     def test_list_queues_calls_correct_endpoint(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_action = "ListQueues"
         xml = (
             "<ListQueuesResponse>"
             "<ListQueuesResult>"
@@ -28,14 +31,16 @@ class TestListQueues:
             "</ListQueuesResponse>"
         )
         mock = _mock_client_xml(xml)
+
+        # Act
         with patch("lws.cli.services.sqs._client", return_value=mock):
             result = runner.invoke(
                 app,
                 ["sqs", "list-queues"],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.form_request.assert_awaited_once()
-        call_args = mock.form_request.call_args
-        params = call_args[0][1]
-        assert params["Action"] == "ListQueues"
+        actual_params = mock.form_request.call_args[0][1]
+        assert actual_params["Action"] == expected_action

@@ -40,18 +40,28 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestDescribeRuleProvider:
     async def test_describe_existing_rule(self, provider: EventBridgeProvider) -> None:
+        # Arrange
+        rule_name = "my-rule"
+        expected_state = "ENABLED"
+        expected_bus_name = "default"
+        expected_pattern = {"source": ["test"]}
+        expected_schedule = "rate(5 minutes)"
+
+        # Act
         await provider.put_rule(
-            "my-rule",
-            event_pattern={"source": ["test"]},
-            schedule_expression="rate(5 minutes)",
+            rule_name,
+            event_pattern=expected_pattern,
+            schedule_expression=expected_schedule,
         )
-        result = provider.describe_rule("my-rule")
-        assert result["Name"] == "my-rule"
-        assert result["State"] == "ENABLED"
-        assert result["EventBusName"] == "default"
-        assert "my-rule" in result["Arn"]
-        assert json.loads(result["EventPattern"]) == {"source": ["test"]}
-        assert result["ScheduleExpression"] == "rate(5 minutes)"
+        result = provider.describe_rule(rule_name)
+
+        # Assert
+        assert result["Name"] == rule_name
+        assert result["State"] == expected_state
+        assert result["EventBusName"] == expected_bus_name
+        assert rule_name in result["Arn"]
+        assert json.loads(result["EventPattern"]) == expected_pattern
+        assert result["ScheduleExpression"] == expected_schedule
 
     async def test_describe_nonexistent_rule_raises(self, provider: EventBridgeProvider) -> None:
         with pytest.raises(KeyError, match="Rule not found"):

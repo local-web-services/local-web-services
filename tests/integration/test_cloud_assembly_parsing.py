@@ -14,27 +14,45 @@ class TestCloudAssemblyParsing:
     """Test that the sample cdk.out can be fully parsed."""
 
     def test_parse_assembly_discovers_resources(self):
+        # Arrange
+        expected_table_count = 1
+        expected_table_name = "Items"
+        expected_function_count = 2
+        expected_function_names = {"CreateItemFunction", "GetItemFunction"}
+        expected_env_var = "TABLE_NAME"
+
+        # Act
         app_model = parse_assembly(CDK_OUT)
 
-        assert len(app_model.tables) == 1
-        assert app_model.tables[0].name == "Items"
+        # Assert
+        actual_table_count = len(app_model.tables)
+        assert actual_table_count == expected_table_count
+        actual_table_name = app_model.tables[0].name
+        assert actual_table_name == expected_table_name
 
-        assert len(app_model.functions) == 2
-        func_names = {f.name for f in app_model.functions}
-        assert "CreateItemFunction" in func_names
-        assert "GetItemFunction" in func_names
+        actual_function_count = len(app_model.functions)
+        assert actual_function_count == expected_function_count
+        actual_func_names = {f.name for f in app_model.functions}
+        for expected_name in expected_function_names:
+            assert expected_name in actual_func_names
 
         # Both functions should have TABLE_NAME env var
         for func in app_model.functions:
-            assert "TABLE_NAME" in func.environment
+            assert expected_env_var in func.environment
 
     def test_parse_assembly_resolves_api_routes(self):
+        # Arrange
+        expected_methods = {"POST", "GET"}
+
+        # Act
         app_model = parse_assembly(CDK_OUT)
+
+        # Assert
         assert len(app_model.apis) >= 1
 
         all_routes = [r for api in app_model.apis for r in api.routes]
         assert len(all_routes) >= 2
 
-        methods = {r.method for r in all_routes}
-        assert "POST" in methods
-        assert "GET" in methods
+        actual_methods = {r.method for r in all_routes}
+        for expected_method in expected_methods:
+            assert expected_method in actual_methods

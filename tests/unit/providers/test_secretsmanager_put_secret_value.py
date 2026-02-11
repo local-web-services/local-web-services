@@ -30,20 +30,24 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestPutSecretValue:
     def test_put_new_version(self, client: TestClient) -> None:
+        secret_name = "rotate"
+        expected_new_value = "v2"
         _post(
             client,
             "CreateSecret",
-            {"Name": "rotate", "SecretString": "v1"},
+            {"Name": secret_name, "SecretString": "v1"},
         )
         result = _post(
             client,
             "PutSecretValue",
-            {"SecretId": "rotate", "SecretString": "v2"},
+            {"SecretId": secret_name, "SecretString": expected_new_value},
         )
+
+        # Assert
         assert "VersionId" in result
 
-        got = _post(client, "GetSecretValue", {"SecretId": "rotate"})
-        assert got["SecretString"] == "v2"
+        got = _post(client, "GetSecretValue", {"SecretId": secret_name})
+        assert got["SecretString"] == expected_new_value
 
     def test_previous_version_gets_awsprevious(self, client: TestClient) -> None:
         create = _post(

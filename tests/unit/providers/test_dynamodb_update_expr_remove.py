@@ -55,22 +55,42 @@ class TestRemove:
     """Test REMOVE clause."""
 
     def test_remove_existing_attribute(self) -> None:
+        # Arrange
         item = {"pk": "1", "temp": "value", "keep": "yes"}
+        expected_keep = "yes"
+
+        # Act
         result = apply_update_expression(item, "REMOVE temp")
+
+        # Assert
         assert "temp" not in result
-        assert result["keep"] == "yes"
+        actual_keep = result["keep"]
+        assert actual_keep == expected_keep
 
     def test_remove_multiple_attributes(self) -> None:
+        # Arrange
         item = {"pk": "1", "a": 1, "b": 2, "c": 3}
+        expected_c = 3
+
+        # Act
         result = apply_update_expression(item, "REMOVE a, b")
+
+        # Assert
         assert "a" not in result
         assert "b" not in result
-        assert result["c"] == 3
+        actual_c = result["c"]
+        assert actual_c == expected_c
 
     def test_remove_nonexistent_no_error(self) -> None:
+        # Arrange
         item = {"pk": "1", "a": 1}
+        expected_result = {"pk": "1", "a": 1}
+
+        # Act
         result = apply_update_expression(item, "REMOVE missing")
-        assert result == {"pk": "1", "a": 1}
+
+        # Assert
+        assert result == expected_result
 
     def test_remove_with_name_ref(self) -> None:
         item = {"pk": "1", "reserved": "value"}

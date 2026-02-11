@@ -30,12 +30,18 @@ class TestSnsStubOperations:
     @pytest.mark.asyncio
     async def test_unknown_operation_returns_error(self, client):
         """Test that unknown operations return HTTP 400 with InvalidAction XML."""
+        # Arrange
+        expected_status = 400
+
+        # Act
         resp = await client.post(
             "/",
             data={"Action": "AddPermission"},
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status
         assert "<ErrorResponse>" in resp.text
         assert "<Code>InvalidAction</Code>" in resp.text
         assert "lws" in resp.text

@@ -19,13 +19,20 @@ async def provider():
 class TestGetTopicAttributes:
     @pytest.mark.asyncio
     async def test_get_topic_attributes(self, provider: SnsProvider) -> None:
-        await provider.create_topic("my-topic")
-        attrs = await provider.get_topic_attributes("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        expected_display_name = "my-topic"
+        expected_subscriptions_confirmed = "0"
+        await provider.create_topic(topic_name)
 
-        assert "TopicArn" in attrs
-        assert "my-topic" in attrs["TopicArn"]
-        assert attrs["DisplayName"] == "my-topic"
-        assert attrs["SubscriptionsConfirmed"] == "0"
+        # Act
+        actual_attrs = await provider.get_topic_attributes(topic_name)
+
+        # Assert
+        assert "TopicArn" in actual_attrs
+        assert topic_name in actual_attrs["TopicArn"]
+        assert actual_attrs["DisplayName"] == expected_display_name
+        assert actual_attrs["SubscriptionsConfirmed"] == expected_subscriptions_confirmed
 
     @pytest.mark.asyncio
     async def test_get_attributes_nonexistent_raises(self, provider: SnsProvider) -> None:

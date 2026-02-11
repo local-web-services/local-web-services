@@ -19,11 +19,16 @@ async def provider():
 class TestDeleteQueue:
     @pytest.mark.asyncio
     async def test_delete_queue(self, provider: SqsProvider) -> None:
-        await provider.create_queue("my-queue")
-        await provider.delete_queue("my-queue")
+        # Arrange
+        queue_name = "my-queue"
+        await provider.create_queue(queue_name)
 
+        # Act
+        await provider.delete_queue(queue_name)
+
+        # Assert
         queues = await provider.list_queues()
-        assert "my-queue" not in queues
+        assert queue_name not in queues
 
     @pytest.mark.asyncio
     async def test_delete_nonexistent_raises(self, provider: SqsProvider) -> None:

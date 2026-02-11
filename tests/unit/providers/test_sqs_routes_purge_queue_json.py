@@ -31,23 +31,36 @@ class TestPurgeQueueJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
-        await provider.create_queue("my-queue")
-        await provider.send_message("my-queue", "msg1")
+        # Arrange
+        expected_status_code = 200
+        queue_name = "my-queue"
+        queue_url = "http://localhost:4566/000000000000/my-queue"
+        await provider.create_queue(queue_name)
+        await provider.send_message(queue_name, "msg1")
 
+        # Act
         resp = await client.post(
             "/",
-            json={"QueueUrl": "http://localhost:4566/000000000000/my-queue"},
+            json={"QueueUrl": queue_url},
             headers={"X-Amz-Target": "AmazonSQS.PurgeQueue"},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
 
     @pytest.mark.asyncio
     async def test_purge_queue_not_found(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": "http://localhost:4566/000000000000/nonexistent"},
             headers={"X-Amz-Target": "AmazonSQS.PurgeQueue"},
         )
 
-        assert resp.status_code == 400
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code

@@ -44,32 +44,48 @@ async def _request(client: httpx.AsyncClient, operation: str, body: dict) -> htt
 
 class TestAdminDeleteUser:
     async def test_delete_existing_user(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        username = "to-delete"
         await _request(
             client,
             "AdminCreateUser",
-            {"UserPoolId": POOL_ID, "Username": "to-delete"},
+            {"UserPoolId": POOL_ID, "Username": username},
         )
+
+        # Act
         resp = await _request(
             client,
             "AdminDeleteUser",
-            {"UserPoolId": POOL_ID, "Username": "to-delete"},
+            {"UserPoolId": POOL_ID, "Username": username},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_delete_status = 200
+        assert resp.status_code == expected_delete_status
 
         # Verify the user is gone
+        expected_error_status = 400
+        expected_error_type = "UserNotFoundException"
         resp = await _request(
             client,
             "AdminGetUser",
-            {"UserPoolId": POOL_ID, "Username": "to-delete"},
+            {"UserPoolId": POOL_ID, "Username": username},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "UserNotFoundException"
+        assert resp.status_code == expected_error_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type
 
     async def test_delete_nonexistent_user_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "AdminDeleteUser",
             {"UserPoolId": POOL_ID, "Username": "no-such-user"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "UserNotFoundException"
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "UserNotFoundException"
+        assert resp.status_code == expected_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

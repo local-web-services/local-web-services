@@ -23,10 +23,15 @@ class TestListPolicies:
     def test_list_empty(self) -> None:
         client = _client()
         xml = _post(client, "ListPolicies")
+
+        # Assert
         assert "ListPoliciesResponse" in xml
 
     def test_list_after_create(self) -> None:
         client = _client()
-        _post(client, "CreatePolicy", {"PolicyName": "test-policy", "PolicyDocument": "{}"})
+        policy_name = "test-policy"
+        _post(client, "CreatePolicy", {"PolicyName": policy_name, "PolicyDocument": "{}"})
         xml = _post(client, "ListPolicies")
-        assert "test-policy" in xml
+
+        # Assert
+        assert policy_name in xml

@@ -122,9 +122,13 @@ class TestEventBridgeRoutes:
 
     @pytest.mark.asyncio
     async def test_put_events_action(self) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_failed_count = 0
         provider = await _started_provider()
         app = create_eventbridge_app(provider)
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
@@ -140,12 +144,13 @@ class TestEventBridgeRoutes:
                 },
             )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status_code
         body = response.json()
         assert "Entries" in body
         assert len(body["Entries"]) == 1
         assert body["Entries"][0]["EventId"]
-        assert body["FailedEntryCount"] == 0
+        assert body["FailedEntryCount"] == expected_failed_count
 
     @pytest.mark.asyncio
     async def test_put_rule_action(self) -> None:
@@ -169,9 +174,13 @@ class TestEventBridgeRoutes:
 
     @pytest.mark.asyncio
     async def test_put_targets_action(self) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_failed_count = 0
         provider = await _started_provider()
         app = create_eventbridge_app(provider)
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
@@ -187,15 +196,19 @@ class TestEventBridgeRoutes:
                 },
             )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status_code
         body = response.json()
-        assert body["FailedEntryCount"] == 0
+        assert body["FailedEntryCount"] == expected_failed_count
 
     @pytest.mark.asyncio
     async def test_put_targets_nonexistent_rule(self) -> None:
+        # Arrange
+        expected_status_code = 400
         provider = await _started_provider(rules=[])
         app = create_eventbridge_app(provider)
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
@@ -206,7 +219,8 @@ class TestEventBridgeRoutes:
                 },
             )
 
-        assert response.status_code == 400
+        # Assert
+        assert response.status_code == expected_status_code
 
     @pytest.mark.asyncio
     async def test_list_rules_action(self) -> None:
@@ -247,9 +261,13 @@ class TestEventBridgeRoutes:
 
     @pytest.mark.asyncio
     async def test_unknown_target_returns_error(self) -> None:
+        # Arrange
+        expected_status_code = 400
+        expected_error_type = "UnknownOperationException"
         provider = await _started_provider()
         app = create_eventbridge_app(provider)
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
@@ -257,9 +275,11 @@ class TestEventBridgeRoutes:
                 json={},
             )
 
-        assert response.status_code == 400
+        # Assert
+        assert response.status_code == expected_status_code
         body = response.json()
-        assert body["__type"] == "UnknownOperationException"
+        actual_error_type = body["__type"]
+        assert actual_error_type == expected_error_type
         assert "lws" in body["message"]
         assert "EventBridge" in body["message"]
         assert "Bogus" in body["message"]

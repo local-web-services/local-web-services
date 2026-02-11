@@ -40,24 +40,32 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestTagResourceRoute:
     async def test_tag_and_list(self, client: httpx.AsyncClient) -> None:
+        # Arrange
         arn = "arn:aws:events:us-east-1:000000000000:rule/test-rule"
+        expected_status_code = 200
+        expected_key = "env"
+        expected_value = "prod"
+
+        # Act
         resp = await _request(
             client,
             "TagResource",
-            {"ResourceARN": arn, "Tags": [{"Key": "env", "Value": "prod"}]},
+            {"ResourceARN": arn, "Tags": [{"Key": expected_key, "Value": expected_value}]},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == expected_status_code
 
         resp = await _request(
             client,
             "ListTagsForResource",
             {"ResourceARN": arn},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert len(data["Tags"]) == 1
-        assert data["Tags"][0]["Key"] == "env"
-        assert data["Tags"][0]["Value"] == "prod"
+        assert data["Tags"][0]["Key"] == expected_key
+        assert data["Tags"][0]["Value"] == expected_value
 
     async def test_untag(self, client: httpx.AsyncClient) -> None:
         arn = "arn:aws:events:us-east-1:000000000000:rule/test-rule"

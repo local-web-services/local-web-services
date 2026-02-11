@@ -119,8 +119,9 @@ class TestEventBridgeProviderLifecycle:
     """Test EventBridgeProvider lifecycle methods."""
 
     def test_name(self) -> None:
+        expected_name = "eventbridge"
         provider = EventBridgeProvider()
-        assert provider.name == "eventbridge"
+        assert provider.name == expected_name
 
     @pytest.mark.asyncio
     async def test_health_check_before_start(self) -> None:

@@ -7,8 +7,12 @@ from lws.parser.ref_resolver import RefResolver
 
 class TestNestedIntrinsics:
     def test_nested_sub_in_join(self):
+        # Arrange
+        expected_value = "arn:aws:lambda:local:my-func"
         r = RefResolver(resource_map={"Fn": "my-func"})
-        result = r.resolve(
+
+        # Act
+        actual_value = r.resolve(
             {
                 "Fn::Join": [
                     ":",
@@ -19,11 +23,17 @@ class TestNestedIntrinsics:
                 ]
             }
         )
-        assert result == "arn:aws:lambda:local:my-func"
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_deeply_nested(self):
+        # Arrange
+        expected_value = "s3:/bucket"
         r = RefResolver(conditions={"Go": True}, resource_map={"B": "bucket"})
-        result = r.resolve(
+
+        # Act
+        actual_value = r.resolve(
             {
                 "Fn::If": [
                     "Go",
@@ -32,4 +42,6 @@ class TestNestedIntrinsics:
                 ]
             }
         )
-        assert result == "s3:/bucket"
+
+        # Assert
+        assert actual_value == expected_value

@@ -103,7 +103,9 @@ class Orchestrator:
                 continue
             logger.info("Stopping provider: %s", provider.name)
             try:
-                await provider.stop()
+                await asyncio.wait_for(provider.stop(), timeout=5.0)
+            except asyncio.TimeoutError:
+                logger.warning("Timed out stopping provider %s — skipping", provider.name)
             except Exception:
                 logger.exception("Error stopping provider %s", provider.name)
 
@@ -132,8 +134,21 @@ class Orchestrator:
             return
         await self._stop_event.wait()
 
+    def request_shutdown(self) -> None:
+        """Trigger graceful shutdown (same as SIGTERM)."""
+        if not self._shutting_down:
+            self._shutting_down = True
+            if self._stop_event is not None:
+                self._stop_event.set()
+
+    @property
+    def providers(self) -> dict[str, Provider]:
+        """Return the providers dict."""
+        return self._providers
+
     @property
     def running(self) -> bool:
+        """Return True if all providers have been started and not yet stopped."""
         return self._running
 
     # ------------------------------------------------------------------

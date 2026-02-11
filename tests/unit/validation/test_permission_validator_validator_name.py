@@ -68,4 +68,6 @@ def _make_context(
 
 class TestValidatorName:
     def test_name_is_permission(self) -> None:
-        assert PermissionValidator().name == "permission"
+        expected_name = "permission"
+        actual_name = PermissionValidator().name
+        assert actual_name == expected_name

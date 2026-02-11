@@ -31,47 +31,69 @@ class TestResetCommand:
 
     def test_reset_with_no_data_dir(self, tmp_path):
         """Reset when no data directory exists should exit cleanly."""
+        # Arrange
+        expected_exit_code = 0
+        expected_message = "Nothing to reset"
+
+        # Act
         result = runner.invoke(app, ["reset", "--yes", "--project-dir", str(tmp_path)])
-        assert result.exit_code == 0
-        assert "Nothing to reset" in result.output
+
+        # Assert
+        assert result.exit_code == expected_exit_code
+        assert expected_message in result.output
 
     def test_reset_with_yes_flag(self, tmp_path):
         """Reset with --yes should skip confirmation and delete data."""
+        # Arrange
+        expected_exit_code = 0
+        expected_message = "Deleted"
+        expected_remaining_count = 0
         data_dir = tmp_path / ".ldk"
         data_dir.mkdir()
         (data_dir / "test.db").write_text("data")
         (data_dir / "sqs").mkdir()
         (data_dir / "sqs" / "queue.db").write_text("data")
 
+        # Act
         result = runner.invoke(app, ["reset", "--yes", "--project-dir", str(tmp_path)])
-        assert result.exit_code == 0
-        assert "Deleted" in result.output
 
-        # Verify data was actually deleted
-        remaining = list(data_dir.iterdir())
-        assert len(remaining) == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
+        assert expected_message in result.output
+        actual_remaining_count = len(list(data_dir.iterdir()))
+        assert actual_remaining_count == expected_remaining_count
 
     def test_reset_without_yes_declines(self, tmp_path):
         """Reset without --yes should prompt and respect 'n'."""
+        # Arrange
+        expected_exit_code = 0
+        expected_message = "Aborted"
         data_dir = tmp_path / ".ldk"
         data_dir.mkdir()
         (data_dir / "test.db").write_text("data")
 
+        # Act
         result = runner.invoke(
             app,
             ["reset", "--project-dir", str(tmp_path)],
             input="n\n",
         )
-        assert result.exit_code == 0
-        assert "Aborted" in result.output
-        # File should still exist
+
+        # Assert
+        assert result.exit_code == expected_exit_code
+        assert expected_message in result.output
         assert (data_dir / "test.db").exists()
 
     def test_reset_empty_data_dir(self, tmp_path):
         """Reset when data directory exists but is empty."""
+        # Arrange
+        expected_exit_code = 0
         data_dir = tmp_path / ".ldk"
         data_dir.mkdir()
 
+        # Act
         result = runner.invoke(app, ["reset", "--yes", "--project-dir", str(tmp_path)])
-        assert result.exit_code == 0
+
+        # Assert
+        assert result.exit_code == expected_exit_code
         assert "empty" in result.output.lower() or "Nothing to reset" in result.output

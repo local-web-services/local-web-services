@@ -32,9 +32,9 @@ async def _publish(topic_name: str, message: str, subject: str | None, port: int
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, topic_name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    topic_arn = resource.get("arn", f"arn:aws:sns:us-east-1:000000000000:{topic_name}")
+        topic_arn = resource.get("arn", f"arn:aws:sns:us-east-1:000000000000:{topic_name}")
+    except Exception:
+        topic_arn = f"arn:aws:sns:us-east-1:000000000000:{topic_name}"
     params: dict[str, str] = {
         "Action": "Publish",
         "TopicArn": topic_arn,

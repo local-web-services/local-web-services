@@ -119,13 +119,24 @@ def _valid_eventbridge_event() -> dict:
 
 class TestSnsEvent:
     def test_valid_event(self) -> None:
+        # Arrange
         ctx = _make_context("sns", _valid_sns_event())
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_missing_sns_key(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         event = {"Records": [{"EventSource": "aws:sns"}]}
         ctx = _make_context("sns", event)
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert "Sns" in issues[0].message

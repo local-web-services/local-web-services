@@ -41,10 +41,18 @@ class TestProviderSetSubscriptionAttribute:
         self,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        attribute_name = "RawMessageDelivery"
+        expected_value = "true"
+        await provider.create_topic(topic_name)
         sub_arn = await provider.subscribe(
-            topic_name="my-topic", protocol="lambda", endpoint="my-func"
+            topic_name=topic_name, protocol="lambda", endpoint="my-func"
         )
-        await provider.set_subscription_attribute(sub_arn, "RawMessageDelivery", "true")
-        attrs = await provider.get_subscription_attributes(sub_arn)
-        assert attrs["RawMessageDelivery"] == "true"
+
+        # Act
+        await provider.set_subscription_attribute(sub_arn, attribute_name, expected_value)
+        actual_attrs = await provider.get_subscription_attributes(sub_arn)
+
+        # Assert
+        assert actual_attrs[attribute_name] == expected_value

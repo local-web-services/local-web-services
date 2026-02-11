@@ -43,16 +43,32 @@ class TestFnJoin:
     """Fn::Join intrinsic function resolution."""
 
     def test_join_with_delimiter(self) -> None:
+        # Arrange
+        expected_url = "hello-world"
         env = {"URL": {"Fn::Join": ["-", ["hello", "world"]]}}
+
+        # Act
         result = resolve_env_vars(env, resource_registry={})
-        assert result["URL"] == "hello-world"
+
+        # Assert
+        actual_url = result["URL"]
+        assert actual_url == expected_url
 
     def test_join_with_empty_delimiter(self) -> None:
+        # Arrange
+        expected_url = "https://example.com"
         env = {"URL": {"Fn::Join": ["", ["https://", "example", ".com"]]}}
+
+        # Act
         result = resolve_env_vars(env, resource_registry={})
-        assert result["URL"] == "https://example.com"
+
+        # Assert
+        actual_url = result["URL"]
+        assert actual_url == expected_url
 
     def test_join_resolves_nested_refs(self) -> None:
+        # Arrange
+        expected_endpoint = "https://api.example.com/prod"
         env = {
             "ENDPOINT": {
                 "Fn::Join": [
@@ -62,5 +78,10 @@ class TestFnJoin:
             }
         }
         registry = {"ApiStage": "prod"}
+
+        # Act
         result = resolve_env_vars(env, resource_registry=registry)
-        assert result["ENDPOINT"] == "https://api.example.com/prod"
+
+        # Assert
+        actual_endpoint = result["ENDPOINT"]
+        assert actual_endpoint == expected_endpoint

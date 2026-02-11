@@ -77,9 +77,14 @@ class TestDeleteTable:
     async def test_delete_table_success(
         self, client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
+        expected_status_code = 200
+
+        # Act
         resp = await client.post("/", json={"TableName": "MyTable"}, headers=_target("DeleteTable"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "TableDescription" in data
         mock_store.delete_table.assert_awaited_once_with("MyTable")
@@ -88,10 +93,16 @@ class TestDeleteTable:
     async def test_delete_table_not_found(
         self, client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         mock_store.delete_table.side_effect = KeyError("Table not found: MyTable")
+        expected_status_code = 400
+        expected_error_type = "ResourceNotFoundException"
 
+        # Act
         resp = await client.post("/", json={"TableName": "MyTable"}, headers=_target("DeleteTable"))
 
-        assert resp.status_code == 400
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["__type"] == "ResourceNotFoundException"
+        actual_error_type = data["__type"]
+        assert actual_error_type == expected_error_type

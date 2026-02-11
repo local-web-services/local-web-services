@@ -69,6 +69,10 @@ class TestProviderConfigDataclasses:
 
     def test_config_classes_exist(self):
         """At least some config classes must exist in the codebase."""
+        # Arrange
+        expected_min_config_count = 10
+
+        # Act
         all_config_classes = []
         for py_file in _collect_all_python_files():
             tree = _parse_file(py_file)
@@ -76,10 +80,13 @@ class TestProviderConfigDataclasses:
             for cls in config_classes:
                 rel = py_file.relative_to(SRC_DIR)
                 all_config_classes.append(f"{rel}:{cls.name}")
+        actual_config_count = len(all_config_classes)
 
-        assert len(all_config_classes) >= 10, (
-            f"Expected at least 10 Config/Policy classes, found {len(all_config_classes)}: "
-            + ", ".join(all_config_classes)
+        # Assert
+        assert actual_config_count >= expected_min_config_count, (
+            f"Expected at least {expected_min_config_count} "
+            f"Config/Policy classes, "
+            f"found {actual_config_count}: " + ", ".join(all_config_classes)
         )
 
     def test_config_class_naming_convention(self):

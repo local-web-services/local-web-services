@@ -63,4 +63,3 @@ class ICompute(Provider):
     @abstractmethod
     async def invoke(self, event: dict, context: LambdaContext) -> InvocationResult:
         """Invoke a function with the given event and context."""
-        ...

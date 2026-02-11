@@ -19,33 +19,41 @@ class TestIamRoutes:
 
     @pytest.mark.asyncio
     async def test_create_role(self, client) -> None:
+        role_name = "my-role"
         resp = await client.post(
             "/",
             data={
                 "Action": "CreateRole",
-                "RoleName": "my-role",
+                "RoleName": role_name,
                 "AssumeRolePolicyDocument": "{}",
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert "<CreateRoleResponse>" in resp.text
-        assert "<RoleName>my-role</RoleName>" in resp.text
+        assert f"<RoleName>{role_name}</RoleName>" in resp.text
         assert "<Arn>" in resp.text
 
     @pytest.mark.asyncio
     async def test_get_role(self, client) -> None:
+        role_name = "my-role"
         await client.post(
             "/",
-            data={"Action": "CreateRole", "RoleName": "my-role"},
+            data={"Action": "CreateRole", "RoleName": role_name},
         )
 
         resp = await client.post(
             "/",
-            data={"Action": "GetRole", "RoleName": "my-role"},
+            data={"Action": "GetRole", "RoleName": role_name},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert "<GetRoleResponse>" in resp.text
-        assert "<RoleName>my-role</RoleName>" in resp.text
+        assert f"<RoleName>{role_name}</RoleName>" in resp.text
 
     @pytest.mark.asyncio
     async def test_get_role_not_found(self, client) -> None:
@@ -53,63 +61,80 @@ class TestIamRoutes:
             "/",
             data={"Action": "GetRole", "RoleName": "nonexistent"},
         )
-        assert resp.status_code == 404
+
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NoSuchEntity" in resp.text
 
     @pytest.mark.asyncio
     async def test_delete_role(self, client) -> None:
+        role_name = "my-role"
         await client.post(
             "/",
-            data={"Action": "CreateRole", "RoleName": "my-role"},
+            data={"Action": "CreateRole", "RoleName": role_name},
         )
 
         resp = await client.post(
             "/",
-            data={"Action": "DeleteRole", "RoleName": "my-role"},
+            data={"Action": "DeleteRole", "RoleName": role_name},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_delete_status = 200
+        assert resp.status_code == expected_delete_status
         assert "<DeleteRoleResponse>" in resp.text
 
         # Verify deleted
         get_resp = await client.post(
             "/",
-            data={"Action": "GetRole", "RoleName": "my-role"},
+            data={"Action": "GetRole", "RoleName": role_name},
         )
-        assert get_resp.status_code == 404
+        expected_not_found_status = 404
+        assert get_resp.status_code == expected_not_found_status
 
     @pytest.mark.asyncio
     async def test_put_and_list_role_policies(self, client) -> None:
+        role_name = "my-role"
+        policy_name = "my-policy"
         await client.post(
             "/",
-            data={"Action": "CreateRole", "RoleName": "my-role"},
+            data={"Action": "CreateRole", "RoleName": role_name},
         )
 
         await client.post(
             "/",
             data={
                 "Action": "PutRolePolicy",
-                "RoleName": "my-role",
-                "PolicyName": "my-policy",
+                "RoleName": role_name,
+                "PolicyName": policy_name,
                 "PolicyDocument": "{}",
             },
         )
 
         resp = await client.post(
             "/",
-            data={"Action": "ListRolePolicies", "RoleName": "my-role"},
+            data={"Action": "ListRolePolicies", "RoleName": role_name},
         )
-        assert resp.status_code == 200
-        assert "my-policy" in resp.text
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
+        assert policy_name in resp.text
 
     @pytest.mark.asyncio
     async def test_unknown_action_returns_error(self, client) -> None:
+        action_name = "SomeUnknownAction"
         resp = await client.post(
             "/",
-            data={"Action": "SomeUnknownAction"},
+            data={"Action": action_name},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        expected_status = 400
+        assert resp.status_code == expected_status
         assert "<ErrorResponse>" in resp.text
         assert "<Code>InvalidAction</Code>" in resp.text
         assert "lws" in resp.text
         assert "IAM" in resp.text
-        assert "SomeUnknownAction" in resp.text
+        assert action_name in resp.text

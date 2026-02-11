@@ -114,7 +114,8 @@ class TestSnsProviderLifecycle:
 
     def test_name(self) -> None:
         provider = SnsProvider(topics=[])
-        assert provider.name == "sns"
+        expected_name = "sns"
+        assert provider.name == expected_name
 
     @pytest.mark.asyncio
     async def test_health_check_before_start(self) -> None:
@@ -134,8 +135,15 @@ class TestSnsProviderLifecycle:
 
     @pytest.mark.asyncio
     async def test_list_topics(self) -> None:
+        # Arrange
         provider = await _started_provider()
-        topics = provider.list_topics()
-        assert len(topics) == 2
-        names = {t.topic_name for t in topics}
-        assert names == {"my-topic", "other-topic"}
+        expected_count = 2
+        expected_names = {"my-topic", "other-topic"}
+
+        # Act
+        actual_topics = provider.list_topics()
+        actual_names = {t.topic_name for t in actual_topics}
+
+        # Assert
+        assert len(actual_topics) == expected_count
+        assert actual_names == expected_names

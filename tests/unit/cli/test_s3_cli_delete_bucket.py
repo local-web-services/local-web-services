@@ -29,15 +29,24 @@ def _mock_client_rest(
 
 class TestDeleteBucket:
     def test_delete_bucket_calls_correct_endpoint(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_method = "DELETE"
+        expected_bucket = "my-bucket"
         mock = _mock_client_rest(204)
+
+        # Act
         with patch("lws.cli.services.s3._client", return_value=mock):
             result = runner.invoke(
                 app,
-                ["s3api", "delete-bucket", "--bucket", "my-bucket"],
+                ["s3api", "delete-bucket", "--bucket", expected_bucket],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.rest_request.assert_awaited_once()
         call_args = mock.rest_request.call_args
-        assert call_args[0][1] == "DELETE"
-        assert call_args[0][2] == "my-bucket"
+        actual_method = call_args[0][1]
+        actual_bucket = call_args[0][2]
+        assert actual_method == expected_method
+        assert actual_bucket == expected_bucket

@@ -84,4 +84,6 @@ def _make_context(
 
 class TestValidatorName:
     def test_name_is_schema(self) -> None:
-        assert _make_validator().name == "schema"
+        expected_name = "schema"
+        actual_name = _make_validator().name
+        assert actual_name == expected_name

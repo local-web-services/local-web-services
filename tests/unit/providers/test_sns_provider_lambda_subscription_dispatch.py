@@ -115,42 +115,48 @@ class TestLambdaSubscriptionDispatch:
 
     @pytest.mark.asyncio
     async def test_lambda_dispatch_invokes_compute(self) -> None:
+        # Arrange
         provider = await _started_provider()
+        func_name = "my-func"
         mock_compute = _make_compute_mock(payload={"statusCode": 200})
-        provider.set_compute_providers({"my-func": mock_compute})
+        provider.set_compute_providers({func_name: mock_compute})
+        expected_message = "test message"
+        expected_subject = "Test Subject"
+        expected_topic_arn = "arn:aws:sns:us-east-1:000000000000:my-topic"
+        expected_event_source = "aws:sns"
+        expected_record_count = 1
 
         await provider.subscribe(
             topic_name="my-topic",
             protocol="lambda",
-            endpoint="my-func",
+            endpoint=func_name,
         )
+
+        # Act
         await provider.publish(
             topic_name="my-topic",
-            message="test message",
-            subject="Test Subject",
+            message=expected_message,
+            subject=expected_subject,
         )
-
-        # Allow the asyncio.create_task to execute
         await asyncio.sleep(0.05)
 
+        # Assert
         mock_compute.invoke.assert_called_once()
         call_args = mock_compute.invoke.call_args
-        event = call_args[0][0]
-        context = call_args[0][1]
+        actual_event = call_args[0][0]
+        actual_context = call_args[0][1]
 
-        # Verify SNS event format
-        assert "Records" in event
-        assert len(event["Records"]) == 1
-        record = event["Records"][0]
-        assert record["EventSource"] == "aws:sns"
-        assert record["Sns"]["Message"] == "test message"
-        assert record["Sns"]["Subject"] == "Test Subject"
-        assert record["Sns"]["TopicArn"] == "arn:aws:sns:us-east-1:000000000000:my-topic"
-        assert record["Sns"]["MessageId"]
+        assert "Records" in actual_event
+        assert len(actual_event["Records"]) == expected_record_count
+        actual_record = actual_event["Records"][0]
+        assert actual_record["EventSource"] == expected_event_source
+        assert actual_record["Sns"]["Message"] == expected_message
+        assert actual_record["Sns"]["Subject"] == expected_subject
+        assert actual_record["Sns"]["TopicArn"] == expected_topic_arn
+        assert actual_record["Sns"]["MessageId"]
 
-        # Verify context
-        assert isinstance(context, LambdaContext)
-        assert context.function_name == "my-func"
+        assert isinstance(actual_context, LambdaContext)
+        assert actual_context.function_name == func_name
 
     @pytest.mark.asyncio
     async def test_lambda_dispatch_missing_compute_logs_error(self) -> None:

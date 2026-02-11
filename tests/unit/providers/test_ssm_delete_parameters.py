@@ -33,5 +33,9 @@ class TestDeleteParameters:
         _post(client, "PutParameter", {"Name": "/d1", "Value": "a"})
         _post(client, "PutParameter", {"Name": "/d2", "Value": "b"})
         result = _post(client, "DeleteParameters", {"Names": ["/d1", "/d2", "/d3"]})
-        assert sorted(result["DeletedParameters"]) == ["/d1", "/d2"]
-        assert result["InvalidParameters"] == ["/d3"]
+
+        # Assert
+        expected_deleted = ["/d1", "/d2"]
+        expected_invalid = ["/d3"]
+        assert sorted(result["DeletedParameters"]) == expected_deleted
+        assert result["InvalidParameters"] == expected_invalid

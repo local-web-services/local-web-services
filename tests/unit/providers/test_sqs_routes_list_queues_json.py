@@ -27,16 +27,23 @@ def client(provider: SqsProvider) -> httpx.AsyncClient:
 class TestListQueuesJson:
     @pytest.mark.asyncio
     async def test_list_queues(self, client: httpx.AsyncClient, provider: SqsProvider) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_queue_count = 2
         await provider.create_queue("queue-a")
         await provider.create_queue("queue-b")
 
+        # Act
         resp = await client.post(
             "/",
             json={},
             headers={"X-Amz-Target": "AmazonSQS.ListQueues"},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
         assert "QueueUrls" in data
-        assert len(data["QueueUrls"]) == 2
+        actual_queue_count = len(data["QueueUrls"])
+        assert actual_queue_count == expected_queue_count

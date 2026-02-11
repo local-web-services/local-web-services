@@ -63,5 +63,7 @@ def _make_context(
 
 class TestValidatorName:
     def test_name_is_env_var(self) -> None:
+        expected_name = "env_var"
         graph = _make_graph([])
-        assert EnvVarValidator(graph).name == "env_var"
+        actual_name = EnvVarValidator(graph).name
+        assert actual_name == expected_name

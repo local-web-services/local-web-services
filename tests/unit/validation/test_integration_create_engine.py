@@ -68,23 +68,37 @@ def _make_table_config() -> dict[str, TableConfig]:
 
 class TestCreateEngine:
     def test_creates_engine_with_default_strictness(self) -> None:
+        # Arrange
         engine = create_validation_engine()
-        # Should not raise
+
+        # Act
         issues = validate_operation(
             engine,
             handler_id="h",
             resource_id="r",
             operation="get_item",
         )
+
+        # Assert
         # No graph, no table configs -> some validators produce no issues
         assert isinstance(issues, list)
 
     def test_creates_engine_with_table_configs(self) -> None:
+        # Arrange
+        expected_min_validators = 2
+
+        # Act
         engine = create_validation_engine(table_configs=_make_table_config())
-        # Engine should have schema validator registered
-        assert len(engine._validators) >= 2
+
+        # Assert
+        assert len(engine._validators) >= expected_min_validators
 
     def test_creates_engine_with_strict_mode(self) -> None:
-        engine = create_validation_engine(strictness="strict")
-        # Should create without error
-        assert engine._strictness.value == "strict"
+        # Arrange
+        expected_strictness = "strict"
+
+        # Act
+        engine = create_validation_engine(strictness=expected_strictness)
+
+        # Assert
+        assert engine._strictness.value == expected_strictness

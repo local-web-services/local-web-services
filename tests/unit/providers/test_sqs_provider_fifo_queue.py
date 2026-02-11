@@ -150,57 +150,94 @@ class TestFifoQueue:
     """FIFO queue ordering and deduplication tests."""
 
     async def test_fifo_preserves_order(self, fifo_queue: LocalQueue) -> None:
+        # Arrange
+        expected_bodies = ["msg-0", "msg-1", "msg-2", "msg-3", "msg-4"]
         for i in range(5):
             await fifo_queue.send_message(
                 f"msg-{i}",
                 message_group_id="group-1",
                 message_dedup_id=f"dedup-{i}",
             )
+
+        # Act
         messages = await fifo_queue.receive_messages(max_messages=5)
-        bodies = [m.body for m in messages]
-        assert bodies == ["msg-0", "msg-1", "msg-2", "msg-3", "msg-4"]
+
+        # Assert
+        actual_bodies = [m.body for m in messages]
+        assert actual_bodies == expected_bodies
 
     async def test_fifo_content_based_dedup(self, fifo_queue: LocalQueue) -> None:
         """Sending the same body twice should deduplicate."""
-        id1 = await fifo_queue.send_message("duplicate", message_group_id="g1")
-        id2 = await fifo_queue.send_message("duplicate", message_group_id="g1")
-        assert id1 == id2  # same message returned
+        # Arrange
+        duplicate_body = "duplicate"
+        expected_message_count = 1
 
+        # Act
+        id1 = await fifo_queue.send_message(duplicate_body, message_group_id="g1")
+        id2 = await fifo_queue.send_message(duplicate_body, message_group_id="g1")
         messages = await fifo_queue.receive_messages(max_messages=10)
-        assert len(messages) == 1
+
+        # Assert
+        assert id1 == id2  # same message returned
+        actual_message_count = len(messages)
+        assert actual_message_count == expected_message_count
 
     async def test_fifo_explicit_dedup_id(self) -> None:
+        # Arrange
+        expected_body = "a"
+        expected_message_count = 1
         q = LocalQueue(queue_name="fifo.fifo", is_fifo=True)
+
+        # Act
         id1 = await q.send_message("a", message_group_id="g", message_dedup_id="d1")
         id2 = await q.send_message("b", message_group_id="g", message_dedup_id="d1")
-        assert id1 == id2
-
         messages = await q.receive_messages(max_messages=10)
-        assert len(messages) == 1
-        assert messages[0].body == "a"
+
+        # Assert
+        assert id1 == id2
+        actual_message_count = len(messages)
+        actual_body = messages[0].body
+        assert actual_message_count == expected_message_count
+        assert actual_body == expected_body
 
     async def test_fifo_different_dedup_ids(self) -> None:
+        # Arrange
+        expected_message_count = 2
         q = LocalQueue(queue_name="fifo.fifo", is_fifo=True)
+
+        # Act
         await q.send_message("a", message_group_id="g", message_dedup_id="d1")
         await q.send_message("b", message_group_id="g", message_dedup_id="d2")
-
         messages = await q.receive_messages(max_messages=10)
-        assert len(messages) == 2
+
+        # Assert
+        actual_message_count = len(messages)
+        assert actual_message_count == expected_message_count
 
     async def test_fifo_group_ordering_no_head_of_line_blocking(self) -> None:
         """Messages from different groups should not block each other."""
+        # Arrange
+        expected_first_body = "g1-m1"
+        expected_second_body = "g2-m1"
         q = LocalQueue(queue_name="fifo.fifo", is_fifo=True, visibility_timeout=5)
 
         await q.send_message("g1-m1", message_group_id="g1", message_dedup_id="g1-1")
         await q.send_message("g1-m2", message_group_id="g1", message_dedup_id="g1-2")
         await q.send_message("g2-m1", message_group_id="g2", message_dedup_id="g2-1")
 
+        # Act
         # Receive first message from g1 (makes g1 invisible)
         msgs = await q.receive_messages(max_messages=1)
-        assert len(msgs) == 1
-        assert msgs[0].body == "g1-m1"
 
-        # g1 is blocked (head message in flight), but g2 should be available
-        msgs = await q.receive_messages(max_messages=1)
+        # Assert
         assert len(msgs) == 1
-        assert msgs[0].body == "g2-m1"
+        actual_first_body = msgs[0].body
+        assert actual_first_body == expected_first_body
+
+        # Act - g1 is blocked (head message in flight), but g2 should be available
+        msgs = await q.receive_messages(max_messages=1)
+
+        # Assert
+        assert len(msgs) == 1
+        actual_second_body = msgs[0].body
+        assert actual_second_body == expected_second_body

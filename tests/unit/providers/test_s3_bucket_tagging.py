@@ -31,7 +31,11 @@ class TestBucketTagging:
     async def test_put_and_get_bucket_tagging(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        await provider.create_bucket(bucket_name)
+        expected_put_status = 204
+        expected_get_status = 200
 
         tagging_xml = (
             '<?xml version="1.0" encoding="UTF-8"?>'
@@ -42,16 +46,18 @@ class TestBucketTagging:
             "</TagSet>"
             "</Tagging>"
         )
+
+        # Act
         put_resp = await client.put(
-            "/my-bucket?tagging",
+            f"/{bucket_name}?tagging",
             content=tagging_xml.encode(),
             headers={"content-type": "application/xml"},
         )
+        get_resp = await client.get(f"/{bucket_name}?tagging")
 
-        assert put_resp.status_code == 204
-
-        get_resp = await client.get("/my-bucket?tagging")
-        assert get_resp.status_code == 200
+        # Assert
+        assert put_resp.status_code == expected_put_status
+        assert get_resp.status_code == expected_get_status
         assert "<Tagging>" in get_resp.text
         assert "<Key>env</Key>" in get_resp.text
         assert "<Value>production</Value>" in get_resp.text
@@ -62,11 +68,15 @@ class TestBucketTagging:
     async def test_get_bucket_tagging_empty(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
+        expected_status = 200
 
+        # Act
         resp = await client.get("/my-bucket?tagging")
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "<Tagging>" in resp.text
         assert "<TagSet>" in resp.text
 
@@ -74,28 +84,33 @@ class TestBucketTagging:
     async def test_delete_bucket_tagging(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        await provider.create_bucket(bucket_name)
+        expected_delete_status = 204
+        expected_get_status = 200
 
         tagging_xml = (
             "<Tagging><TagSet><Tag><Key>env</Key><Value>staging</Value></Tag></TagSet></Tagging>"
         )
         await client.put(
-            "/my-bucket?tagging",
+            f"/{bucket_name}?tagging",
             content=tagging_xml.encode(),
             headers={"content-type": "application/xml"},
         )
 
-        delete_resp = await client.delete("/my-bucket?tagging")
-        assert delete_resp.status_code == 204
+        # Act
+        delete_resp = await client.delete(f"/{bucket_name}?tagging")
 
-        # Tags should be gone
-        get_resp = await client.get("/my-bucket?tagging")
-        assert get_resp.status_code == 200
-        # TagSet should be empty (no <Tag> elements)
+        # Assert
+        assert delete_resp.status_code == expected_delete_status
+        get_resp = await client.get(f"/{bucket_name}?tagging")
+        assert get_resp.status_code == expected_get_status
         assert "<Tag>" not in get_resp.text
 
     @pytest.mark.asyncio
     async def test_put_bucket_tagging_no_such_bucket(self, client: httpx.AsyncClient) -> None:
+        # Act
         tagging_xml = (
             "<Tagging><TagSet><Tag><Key>env</Key><Value>dev</Value></Tag></TagSet></Tagging>"
         )
@@ -105,27 +120,36 @@ class TestBucketTagging:
             headers={"content-type": "application/xml"},
         )
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NoSuchBucket" in resp.text
 
     @pytest.mark.asyncio
     async def test_delete_bucket_tagging_no_such_bucket(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await client.delete("/nonexistent-bucket?tagging")
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NoSuchBucket" in resp.text
 
     @pytest.mark.asyncio
     async def test_put_bucket_tagging_malformed_xml(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
 
+        # Act
         resp = await client.put(
             "/my-bucket?tagging",
             content=b"not valid xml",
             headers={"content-type": "application/xml"},
         )
 
-        assert resp.status_code == 400
+        # Assert
+        expected_status = 400
+        assert resp.status_code == expected_status
         assert "MalformedXML" in resp.text

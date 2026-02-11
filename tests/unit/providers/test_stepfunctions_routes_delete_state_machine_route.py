@@ -32,6 +32,8 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestDeleteStateMachineRoute:
     async def test_delete_existing(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
         await _request(
             client,
             "CreateStateMachine",
@@ -40,6 +42,8 @@ class TestDeleteStateMachineRoute:
                 "definition": '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
             },
         )
+
+        # Act
         resp = await _request(
             client,
             "DeleteStateMachine",
@@ -47,9 +51,15 @@ class TestDeleteStateMachineRoute:
                 "stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:to-delete",
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
 
     async def test_delete_nonexistent(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await _request(
             client,
             "DeleteStateMachine",
@@ -57,4 +67,6 @@ class TestDeleteStateMachineRoute:
                 "stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:nope",
             },
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code

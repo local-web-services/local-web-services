@@ -115,18 +115,32 @@ class TestScan:
     """scan() full-table and filtered scans."""
 
     async def test_scan_returns_all(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1"})
         await provider.put_item("orders", {"orderId": "o2", "itemId": "i2"})
+        expected_count = 2
+
+        # Act
         results = await provider.scan("orders")
-        assert len(results) == 2
+
+        # Assert
+        assert len(results) == expected_count
 
     async def test_scan_with_filter(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "status": "active"})
         await provider.put_item("orders", {"orderId": "o2", "itemId": "i2", "status": "inactive"})
+        expected_count = 1
+        expected_status = "active"
+
+        # Act
         results = await provider.scan(
             "orders",
             filter_expression="status = :s",
             expression_values={":s": "active"},
         )
-        assert len(results) == 1
-        assert results[0]["status"] == "active"
+
+        # Assert
+        assert len(results) == expected_count
+        actual_status = results[0]["status"]
+        assert actual_status == expected_status

@@ -51,7 +51,7 @@ async def _http_get_ok(url: str, timeout: float) -> bool:
     third-party HTTP library is required at import time.
     """
     try:
-        from urllib.parse import urlparse
+        from urllib.parse import urlparse  # pylint: disable=import-outside-toplevel
 
         parsed = urlparse(url)
         host = parsed.hostname or "localhost"

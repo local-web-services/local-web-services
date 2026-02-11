@@ -66,6 +66,7 @@ class TestProviderRoutesFactory:
 
     def test_create_app_factory_returns_fastapi(self):
         """Each create_*_app function must have a FastAPI return annotation."""
+        expected_return_type = "FastAPI"
         violations = []
         for provider_dir in sorted(PROVIDERS_DIR.iterdir()):
             if not _is_provider_dir(provider_dir):
@@ -79,11 +80,13 @@ class TestProviderRoutesFactory:
             tree = _parse_file(routes_file)
             for node in ast.iter_child_nodes(tree):
                 if isinstance(node, ast.FunctionDef) and re.match(r"create_\w+_app$", node.name):
-                    ret = _get_annotation_name(node.returns)
-                    if ret != "FastAPI":
+                    actual_return_type = _get_annotation_name(node.returns)
+                    if actual_return_type != expected_return_type:
                         violations.append(
                             f"{provider_dir.name}/routes.py: "
-                            f"{node.name} must have return type FastAPI, got {ret}"
+                            f"{node.name} must have return type "
+                            f"{expected_return_type}, "
+                            f"got {actual_return_type}"
                         )
 
         assert violations == [], "Routes factory return type violations:\n" + "\n".join(

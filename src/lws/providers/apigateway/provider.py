@@ -156,7 +156,10 @@ class ApiGatewayProvider(Provider):
         if self._server is not None:
             self._server.should_exit = True
         if self._serve_task is not None:
-            await self._serve_task
+            try:
+                await asyncio.wait_for(self._serve_task, timeout=3.0)
+            except (asyncio.TimeoutError, asyncio.CancelledError):
+                self._serve_task.cancel()
             self._serve_task = None
         self._server = None
         self._status = ProviderStatus.STOPPED

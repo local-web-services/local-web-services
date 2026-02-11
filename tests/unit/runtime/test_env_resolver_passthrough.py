@@ -43,10 +43,18 @@ class TestPassthrough:
     """Plain string values are passed through unchanged."""
 
     def test_plain_strings_unchanged(self) -> None:
-        env = {"MY_VAR": "hello", "OTHER": "world"}
-        result = resolve_env_vars(env, resource_registry={})
-        assert result == {"MY_VAR": "hello", "OTHER": "world"}
+        # Arrange
+        expected_env = {"MY_VAR": "hello", "OTHER": "world"}
+
+        # Act
+        actual_env = resolve_env_vars(expected_env, resource_registry={})
+
+        # Assert
+        assert actual_env == expected_env
 
     def test_empty_env(self) -> None:
-        result = resolve_env_vars({}, resource_registry={})
-        assert result == {}
+        # Act
+        actual_env = resolve_env_vars({}, resource_registry={})
+
+        # Assert
+        assert actual_env == {}

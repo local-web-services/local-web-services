@@ -20,6 +20,10 @@ def _mock_client_xml(return_xml: str) -> AsyncMock:
 
 class TestCreateTopic:
     def test_create_topic_calls_correct_endpoint(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_action = "CreateTopic"
+        expected_name = "my-topic"
         xml = (
             "<CreateTopicResponse>"
             "<CreateTopicResult>"
@@ -28,15 +32,17 @@ class TestCreateTopic:
             "</CreateTopicResponse>"
         )
         mock = _mock_client_xml(xml)
+
+        # Act
         with patch("lws.cli.services.sns._client", return_value=mock):
             result = runner.invoke(
                 app,
-                ["sns", "create-topic", "--name", "my-topic"],
+                ["sns", "create-topic", "--name", expected_name],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.form_request.assert_awaited_once()
-        call_args = mock.form_request.call_args
-        params = call_args[0][1]
-        assert params["Action"] == "CreateTopic"
-        assert params["Name"] == "my-topic"
+        actual_params = mock.form_request.call_args[0][1]
+        assert actual_params["Action"] == expected_action
+        assert actual_params["Name"] == expected_name

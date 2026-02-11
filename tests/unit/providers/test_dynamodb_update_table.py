@@ -86,27 +86,43 @@ class TestUpdateTable:
     async def test_update_table_returns_table_description(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {"TableName": "MyTable"}
+        expected_status_code = 200
+        expected_table_name = "MyTable"
+        expected_table_status = "ACTIVE"
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("UpdateTable"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "TableDescription" in data
-        assert data["TableDescription"]["TableName"] == "MyTable"
-        assert data["TableDescription"]["TableStatus"] == "ACTIVE"
+        actual_table_name = data["TableDescription"]["TableName"]
+        actual_table_status = data["TableDescription"]["TableStatus"]
+        assert actual_table_name == expected_table_name
+        assert actual_table_status == expected_table_status
         mock_store.describe_table.assert_awaited_once_with("MyTable")
 
     @pytest.mark.asyncio
     async def test_update_table_not_found(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         mock_store.describe_table.side_effect = KeyError("Table not found: NoSuchTable")
         payload = {"TableName": "NoSuchTable"}
+        expected_status_code = 400
+        expected_error_type = "ResourceNotFoundException"
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("UpdateTable"))
 
-        assert resp.status_code == 400
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["__type"] == "ResourceNotFoundException"
+        actual_error_type = data["__type"]
+        assert actual_error_type == expected_error_type
 
     @pytest.mark.asyncio
     async def test_update_table_integration(
@@ -114,13 +130,23 @@ class TestUpdateTable:
     ) -> None:
         await real_provider.start()
         try:
+            # Arrange
             payload = {"TableName": "TestTable"}
+            expected_status_code = 200
+            expected_table_name = "TestTable"
+            expected_table_status = "ACTIVE"
+            expected_arn_suffix = "/TestTable"
+
+            # Act
             resp = await real_client.post("/", json=payload, headers=_target("UpdateTable"))
 
-            assert resp.status_code == 200
+            # Assert
+            assert resp.status_code == expected_status_code
             data = resp.json()
-            assert data["TableDescription"]["TableName"] == "TestTable"
-            assert data["TableDescription"]["TableStatus"] == "ACTIVE"
-            assert data["TableDescription"]["TableArn"].endswith("/TestTable")
+            actual_table_name = data["TableDescription"]["TableName"]
+            actual_table_status = data["TableDescription"]["TableStatus"]
+            assert actual_table_name == expected_table_name
+            assert actual_table_status == expected_table_status
+            assert data["TableDescription"]["TableArn"].endswith(expected_arn_suffix)
         finally:
             await real_provider.stop()

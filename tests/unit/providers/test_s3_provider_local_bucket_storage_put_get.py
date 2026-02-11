@@ -54,52 +54,83 @@ class TestLocalBucketStoragePutGet:
     """put_object / get_object round-trip tests."""
 
     async def test_put_and_get_round_trip(self, storage: LocalBucketStorage) -> None:
+        # Arrange
+        bucket = "mybucket"
+        key = "greeting.txt"
         body = b"hello world"
-        result = await storage.put_object("mybucket", "greeting.txt", body)
-
-        assert "ETag" in result
         expected_etag = hashlib.md5(body).hexdigest()
-        assert result["ETag"] == f'"{expected_etag}"'
+        expected_content_type = "application/octet-stream"
 
-        obj = await storage.get_object("mybucket", "greeting.txt")
-        assert obj is not None
-        assert obj["body"] == body
-        assert obj["content_type"] == "application/octet-stream"
-        assert obj["size"] == len(body)
-        assert obj["etag"] == expected_etag
+        # Act
+        result = await storage.put_object(bucket, key, body)
+        actual_obj = await storage.get_object(bucket, key)
+
+        # Assert
+        assert "ETag" in result
+        assert result["ETag"] == f'"{expected_etag}"'
+        assert actual_obj is not None
+        assert actual_obj["body"] == body
+        assert actual_obj["content_type"] == expected_content_type
+        assert actual_obj["size"] == len(body)
+        assert actual_obj["etag"] == expected_etag
 
     async def test_put_with_content_type(self, storage: LocalBucketStorage) -> None:
-        await storage.put_object(
-            "mybucket", "data.json", b'{"a":1}', content_type="application/json"
-        )
-        obj = await storage.get_object("mybucket", "data.json")
-        assert obj is not None
-        assert obj["content_type"] == "application/json"
+        # Arrange
+        bucket = "mybucket"
+        key = "data.json"
+        expected_content_type = "application/json"
+
+        # Act
+        await storage.put_object(bucket, key, b'{"a":1}', content_type=expected_content_type)
+        actual_obj = await storage.get_object(bucket, key)
+
+        # Assert
+        assert actual_obj is not None
+        assert actual_obj["content_type"] == expected_content_type
 
     async def test_put_with_metadata(self, storage: LocalBucketStorage) -> None:
-        await storage.put_object(
-            "mybucket",
-            "tagged.txt",
-            b"data",
-            metadata={"x-amz-meta-author": "test"},
-        )
-        obj = await storage.get_object("mybucket", "tagged.txt")
-        assert obj is not None
-        assert obj["metadata"] == {"x-amz-meta-author": "test"}
+        # Arrange
+        bucket = "mybucket"
+        key = "tagged.txt"
+        expected_metadata = {"x-amz-meta-author": "test"}
+
+        # Act
+        await storage.put_object(bucket, key, b"data", metadata=expected_metadata)
+        actual_obj = await storage.get_object(bucket, key)
+
+        # Assert
+        assert actual_obj is not None
+        assert actual_obj["metadata"] == expected_metadata
 
     async def test_get_nonexistent_returns_none(self, storage: LocalBucketStorage) -> None:
         result = await storage.get_object("nobucket", "nokey")
         assert result is None
 
     async def test_put_overwrites_existing(self, storage: LocalBucketStorage) -> None:
-        await storage.put_object("mybucket", "key", b"version1")
-        await storage.put_object("mybucket", "key", b"version2")
-        obj = await storage.get_object("mybucket", "key")
-        assert obj is not None
-        assert obj["body"] == b"version2"
+        # Arrange
+        bucket = "mybucket"
+        key = "key"
+        expected_body = b"version2"
+        await storage.put_object(bucket, key, b"version1")
+
+        # Act
+        await storage.put_object(bucket, key, expected_body)
+        actual_obj = await storage.get_object(bucket, key)
+
+        # Assert
+        assert actual_obj is not None
+        assert actual_obj["body"] == expected_body
 
     async def test_nested_key(self, storage: LocalBucketStorage) -> None:
-        await storage.put_object("mybucket", "a/b/c/deep.txt", b"deep")
-        obj = await storage.get_object("mybucket", "a/b/c/deep.txt")
-        assert obj is not None
-        assert obj["body"] == b"deep"
+        # Arrange
+        bucket = "mybucket"
+        key = "a/b/c/deep.txt"
+        expected_body = b"deep"
+
+        # Act
+        await storage.put_object(bucket, key, expected_body)
+        actual_obj = await storage.get_object(bucket, key)
+
+        # Assert
+        assert actual_obj is not None
+        assert actual_obj["body"] == expected_body

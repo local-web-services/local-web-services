@@ -119,20 +119,37 @@ def _valid_eventbridge_event() -> dict:
 
 class TestEventBridgeEvent:
     def test_valid_event(self) -> None:
+        # Arrange
         ctx = _make_context("eventbridge", _valid_eventbridge_event())
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_missing_detail(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         event = {"source": "my.source", "detail-type": "MyEvent"}
         ctx = _make_context("eventbridge", event)
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert "detail" in issues[0].message
 
     def test_missing_detail_type(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         event = {"source": "my.source", "detail": {}}
         ctx = _make_context("eventbridge", event)
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert "detail-type" in issues[0].message

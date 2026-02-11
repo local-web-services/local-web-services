@@ -70,12 +70,22 @@ def _find_provider_class(tree: ast.Module) -> ast.ClassDef | None:
 
 class TestProviderLifecycleInterface:
     def test_all_expected_provider_directories_exist(self):
-        actual = sorted(p.parent.name for p in PROVIDERS_DIR.glob("*/provider.py"))
-        assert (
-            len(actual) >= 7
-        ), f"Expected at least 7 provider directories, found {len(actual)}: {actual}"
+        # Arrange
+        expected_min_provider_count = 7
+
+        # Act
+        actual_providers = sorted(p.parent.name for p in PROVIDERS_DIR.glob("*/provider.py"))
+        actual_provider_count = len(actual_providers)
+
+        # Assert
+        assert actual_provider_count >= expected_min_provider_count, (
+            f"Expected at least {expected_min_provider_count} "
+            f"provider directories, "
+            f"found {actual_provider_count}: {actual_providers}"
+        )
 
     def test_each_provider_has_name_property(self):
+        expected_return_type = "str"
         violations = []
         for provider_dir in sorted(PROVIDERS_DIR.iterdir()):
             provider_file = provider_dir / "provider.py"
@@ -93,14 +103,18 @@ class TestProviderLifecycleInterface:
             name_method = methods["name"]
             if not _has_decorator(name_method, "property"):
                 violations.append(f"{provider_dir.name}/{cls.name}: 'name' must be a @property")
-            if _get_return_annotation_name(name_method) != "str":
-                violations.append(f"{provider_dir.name}/{cls.name}: 'name' must return str")
+            ret = _get_return_annotation_name(name_method)
+            if ret != expected_return_type:
+                violations.append(
+                    f"{provider_dir.name}/{cls.name}: 'name' must return {expected_return_type}"
+                )
 
         assert violations == [], "Provider name property violations:\n" + "\n".join(
             f"  - {v}" for v in violations
         )
 
     def test_each_provider_has_async_start(self):
+        expected_return_type = "None"
         violations = []
         for provider_dir in sorted(PROVIDERS_DIR.iterdir()):
             provider_file = provider_dir / "provider.py"
@@ -117,14 +131,18 @@ class TestProviderLifecycleInterface:
             start = methods["start"]
             if not isinstance(start, ast.AsyncFunctionDef):
                 violations.append(f"{provider_dir.name}/{cls.name}: 'start' must be async")
-            if _get_return_annotation_name(start) != "None":
-                violations.append(f"{provider_dir.name}/{cls.name}: 'start' must return None")
+            ret = _get_return_annotation_name(start)
+            if ret != expected_return_type:
+                violations.append(
+                    f"{provider_dir.name}/{cls.name}: 'start' must return {expected_return_type}"
+                )
 
         assert violations == [], "Provider start() violations:\n" + "\n".join(
             f"  - {v}" for v in violations
         )
 
     def test_each_provider_has_async_stop(self):
+        expected_return_type = "None"
         violations = []
         for provider_dir in sorted(PROVIDERS_DIR.iterdir()):
             provider_file = provider_dir / "provider.py"
@@ -141,14 +159,18 @@ class TestProviderLifecycleInterface:
             stop = methods["stop"]
             if not isinstance(stop, ast.AsyncFunctionDef):
                 violations.append(f"{provider_dir.name}/{cls.name}: 'stop' must be async")
-            if _get_return_annotation_name(stop) != "None":
-                violations.append(f"{provider_dir.name}/{cls.name}: 'stop' must return None")
+            ret = _get_return_annotation_name(stop)
+            if ret != expected_return_type:
+                violations.append(
+                    f"{provider_dir.name}/{cls.name}: 'stop' must return {expected_return_type}"
+                )
 
         assert violations == [], "Provider stop() violations:\n" + "\n".join(
             f"  - {v}" for v in violations
         )
 
     def test_each_provider_has_async_health_check(self):
+        expected_return_type = "bool"
         violations = []
         for provider_dir in sorted(PROVIDERS_DIR.iterdir()):
             provider_file = provider_dir / "provider.py"
@@ -165,9 +187,11 @@ class TestProviderLifecycleInterface:
             hc = methods["health_check"]
             if not isinstance(hc, ast.AsyncFunctionDef):
                 violations.append(f"{provider_dir.name}/{cls.name}: 'health_check' must be async")
-            if _get_return_annotation_name(hc) != "bool":
+            if _get_return_annotation_name(hc) != expected_return_type:
                 violations.append(
-                    f"{provider_dir.name}/{cls.name}: 'health_check' must return bool"
+                    f"{provider_dir.name}/{cls.name}: "
+                    f"'health_check' must return "
+                    f"{expected_return_type}"
                 )
 
         assert violations == [], "Provider health_check() violations:\n" + "\n".join(

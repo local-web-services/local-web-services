@@ -41,4 +41,7 @@ def build_sdk_env(endpoints: dict[str, str]) -> dict[str, str]:
         var_name = f"AWS_ENDPOINT_URL_{sdk_id}"
         env[var_name] = url
 
+    if "s3" in endpoints:
+        env["AWS_S3_FORCE_PATH_STYLE"] = "true"
+
     return env

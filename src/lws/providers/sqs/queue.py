@@ -74,6 +74,16 @@ class LocalQueue:
         # FIFO deduplication: maps dedup_id -> expiry monotonic time
         self._dedup_cache: dict[str, float] = {}
 
+    @property
+    def messages(self) -> list[SqsMessage]:
+        """Return the messages list."""
+        return self._messages
+
+    @property
+    def lock(self) -> asyncio.Lock:
+        """Return the queue lock."""
+        return self._lock
+
     # ------------------------------------------------------------------
     # Send
     # ------------------------------------------------------------------
@@ -235,7 +245,7 @@ class LocalQueue:
             # Reset visibility so DLQ consumers can receive it immediately
             msg.visibility_timeout_until = 0.0
             msg.receipt_handle = None
-            self.dead_letter_queue._messages.append(msg)
+            self.dead_letter_queue.messages.append(msg)
 
     def _resolve_dedup_id(self, body: str, explicit_id: str | None) -> str | None:
         """Return the deduplication ID if FIFO dedup is applicable."""

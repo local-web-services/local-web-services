@@ -54,10 +54,21 @@ class TestMetadataStorage:
     """Metadata sidecar persistence."""
 
     async def test_metadata_persists(self, provider: S3Provider) -> None:
-        await provider.put_object("test-bucket", "key", b"val")
-        meta = await provider.storage.head_object("test-bucket", "key")
-        assert meta is not None
-        assert meta["size"] == 3
-        assert meta["etag"] == hashlib.md5(b"val").hexdigest()
-        assert meta["content_type"] == "application/octet-stream"
-        assert meta["last_modified"] != ""
+        # Arrange
+        bucket = "test-bucket"
+        key = "key"
+        body = b"val"
+        expected_size = 3
+        expected_etag = hashlib.md5(body).hexdigest()
+        expected_content_type = "application/octet-stream"
+
+        # Act
+        await provider.put_object(bucket, key, body)
+        actual_meta = await provider.storage.head_object(bucket, key)
+
+        # Assert
+        assert actual_meta is not None
+        assert actual_meta["size"] == expected_size
+        assert actual_meta["etag"] == expected_etag
+        assert actual_meta["content_type"] == expected_content_type
+        assert actual_meta["last_modified"] != ""

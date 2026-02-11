@@ -114,24 +114,36 @@ class TestSnsProviderPublishSubscribe:
 
     @pytest.mark.asyncio
     async def test_subscribe_returns_arn(self) -> None:
+        # Arrange
         provider = await _started_provider()
-        arn = await provider.subscribe(
-            topic_name="my-topic",
+        topic_name = "my-topic"
+
+        # Act
+        actual_arn = await provider.subscribe(
+            topic_name=topic_name,
             protocol="lambda",
             endpoint="my-func",
         )
-        assert "my-topic" in arn
+
+        # Assert
+        assert topic_name in actual_arn
 
     @pytest.mark.asyncio
     async def test_publish_returns_message_id(self) -> None:
+        # Arrange
         provider = await _started_provider()
-        message_id = await provider.publish(
+        expected_uuid_parts = 5
+
+        # Act
+        actual_message_id = await provider.publish(
             topic_name="my-topic",
             message="hello world",
         )
-        assert message_id
-        parts = message_id.split("-")
-        assert len(parts) == 5
+
+        # Assert
+        assert actual_message_id
+        actual_parts = actual_message_id.split("-")
+        assert len(actual_parts) == expected_uuid_parts
 
     @pytest.mark.asyncio
     async def test_publish_nonexistent_topic_raises(self) -> None:

@@ -26,21 +26,27 @@ class TestParseTreeSimple:
     """Simple single-stack tree with a couple of resources."""
 
     def test_single_stack_with_lambda(self, tmp_tree):
+        # Arrange
+        expected_stack_id = "MyStack"
+        expected_stack_path = "MyStack"
+        expected_func_id = "MyFunc"
+        expected_fqn = "aws-cdk-lib.aws_lambda.Function"
+        expected_category = "lambda"
         data = {
             "version": "tree-0.1",
             "tree": {
                 "id": "App",
                 "path": "",
                 "children": {
-                    "MyStack": {
-                        "id": "MyStack",
-                        "path": "MyStack",
+                    expected_stack_id: {
+                        "id": expected_stack_id,
+                        "path": expected_stack_path,
                         "children": {
-                            "MyFunc": {
-                                "id": "MyFunc",
+                            expected_func_id: {
+                                "id": expected_func_id,
                                 "path": "MyStack/MyFunc",
                                 "constructInfo": {
-                                    "fqn": "aws-cdk-lib.aws_lambda.Function",
+                                    "fqn": expected_fqn,
                                     "version": "2.100.0",
                                 },
                             }
@@ -53,16 +59,20 @@ class TestParseTreeSimple:
                 },
             },
         }
+
+        # Act
         nodes = parse_tree(tmp_tree(data))
+
+        # Assert
         assert len(nodes) == 1
         stack = nodes[0]
-        assert stack.id == "MyStack"
-        assert stack.path == "MyStack"
+        assert stack.id == expected_stack_id
+        assert stack.path == expected_stack_path
         assert len(stack.children) == 1
         func = stack.children[0]
-        assert func.id == "MyFunc"
-        assert func.fqn == "aws-cdk-lib.aws_lambda.Function"
-        assert func.category == "lambda"
+        assert func.id == expected_func_id
+        assert func.fqn == expected_fqn
+        assert func.category == expected_category
 
     def test_node_without_construct_info(self, tmp_tree):
         data = {

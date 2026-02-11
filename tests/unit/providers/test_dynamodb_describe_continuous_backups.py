@@ -84,14 +84,23 @@ def real_client(real_provider: SqliteDynamoProvider) -> httpx.AsyncClient:
 class TestDescribeContinuousBackups:
     @pytest.mark.asyncio
     async def test_describe_continuous_backups(self, mock_client: httpx.AsyncClient) -> None:
+        # Arrange
         payload = {"TableName": "MyTable"}
+        expected_status_code = 200
+        expected_backups_status = "DISABLED"
+        expected_pitr_status = "DISABLED"
+
+        # Act
         resp = await mock_client.post(
             "/", json=payload, headers=_target("DescribeContinuousBackups")
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "ContinuousBackupsDescription" in data
         desc = data["ContinuousBackupsDescription"]
-        assert desc["ContinuousBackupsStatus"] == "DISABLED"
-        assert desc["PointInTimeRecoveryDescription"]["PointInTimeRecoveryStatus"] == "DISABLED"
+        actual_backups_status = desc["ContinuousBackupsStatus"]
+        actual_pitr_status = desc["PointInTimeRecoveryDescription"]["PointInTimeRecoveryStatus"]
+        assert actual_backups_status == expected_backups_status
+        assert actual_pitr_status == expected_pitr_status

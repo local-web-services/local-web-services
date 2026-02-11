@@ -122,20 +122,32 @@ class TestEventEnvelope:
     """Test event envelope construction."""
 
     def test_build_event_envelope_structure(self) -> None:
-        entry = {
-            "Source": "my.app",
-            "DetailType": "OrderPlaced",
-            "Detail": json.dumps({"orderId": "123"}),
-        }
-        event = _build_event_envelope(entry, "evt-001")
+        # Arrange
+        expected_version = "0"
+        expected_id = "evt-001"
+        expected_source = "my.app"
+        expected_account = "000000000000"
+        expected_region = "us-east-1"
+        expected_detail_type = "OrderPlaced"
+        expected_order_id = "123"
 
-        assert event["version"] == "0"
-        assert event["id"] == "evt-001"
-        assert event["source"] == "my.app"
-        assert event["account"] == "000000000000"
-        assert event["region"] == "us-east-1"
-        assert event["detail-type"] == "OrderPlaced"
-        assert event["detail"]["orderId"] == "123"
+        entry = {
+            "Source": expected_source,
+            "DetailType": expected_detail_type,
+            "Detail": json.dumps({"orderId": expected_order_id}),
+        }
+
+        # Act
+        event = _build_event_envelope(entry, expected_id)
+
+        # Assert
+        assert event["version"] == expected_version
+        assert event["id"] == expected_id
+        assert event["source"] == expected_source
+        assert event["account"] == expected_account
+        assert event["region"] == expected_region
+        assert event["detail-type"] == expected_detail_type
+        assert event["detail"]["orderId"] == expected_order_id
         assert event["resources"] == []
         assert event["time"]
 
@@ -158,17 +170,24 @@ class TestEventEnvelope:
         assert event["detail"]["already"] == "dict"
 
     def test_build_scheduled_event(self) -> None:
+        # Arrange
+        expected_source = "aws.events"
+        expected_detail_type = "Scheduled Event"
+        rule_name = "sched-rule"
         rule = RuleConfig(
-            rule_name="sched-rule",
+            rule_name=rule_name,
             event_bus_name="default",
             schedule_expression="rate(1 minute)",
         )
+
+        # Act
         event = _build_scheduled_event(rule)
 
-        assert event["source"] == "aws.events"
-        assert event["detail-type"] == "Scheduled Event"
+        # Assert
+        assert event["source"] == expected_source
+        assert event["detail-type"] == expected_detail_type
         assert event["detail"] == {}
-        assert "sched-rule" in event["resources"][0]
+        assert rule_name in event["resources"][0]
 
     def test_extract_function_name_from_arn(self) -> None:
         arn = "arn:aws:lambda:us-east-1:000000000000:function:my-func"

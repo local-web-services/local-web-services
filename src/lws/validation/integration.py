@@ -27,7 +27,7 @@ from lws.validation.schema_validator import SchemaValidator
 
 def create_validation_engine(
     strictness: str = "warn",
-    app_graph: AppGraph | None = None,
+    app_graph: AppGraph | None = None,  # pylint: disable=unused-argument
     table_configs: dict[str, TableConfig] | None = None,
     validator_overrides: dict[str, str] | None = None,
 ) -> ValidationEngine:

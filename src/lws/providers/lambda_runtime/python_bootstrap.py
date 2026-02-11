@@ -49,6 +49,7 @@ def _build_context() -> dict:
             self.invoked_function_arn = function_arn
 
         def get_remaining_time_in_millis(self) -> int:
+            """Return milliseconds remaining before the function times out."""
             elapsed = time.monotonic() - start_time
             remaining = max(0, timeout - elapsed)
             return int(remaining * 1000)
@@ -80,13 +81,25 @@ def _load_handler(handler_spec: str, code_path: str):
     return handler_fn
 
 
+def _configure_s3_path_style() -> None:
+    """Write AWS config for path-style S3 when using a local endpoint."""
+    if not os.environ.get("AWS_ENDPOINT_URL_S3"):
+        return
+    config_dir = os.path.expanduser("~/.aws")
+    os.makedirs(config_dir, exist_ok=True)
+    config_file = os.path.join(config_dir, "config")
+    if not os.path.exists(config_file):
+        with open(config_file, "w") as f:
+            f.write("[default]\ns3 =\n    addressing_style = path\n")
+
+
 def _maybe_attach_debugger() -> None:
     """If LDK_DEBUG_PORT is set, wait for a debugpy connection."""
     debug_port = os.environ.get("LDK_DEBUG_PORT")
     if not debug_port:
         return
     try:
-        import debugpy  # type: ignore[import-untyped]
+        import debugpy  # type: ignore[import-untyped]  # pylint: disable=import-outside-toplevel
 
         debugpy.listen(("0.0.0.0", int(debug_port)))
         debugpy.wait_for_client()
@@ -106,6 +119,7 @@ def main() -> None:
         if not code_path:
             raise ValueError("LDK_CODE_PATH environment variable is required")
 
+        _configure_s3_path_style()
         _maybe_attach_debugger()
 
         # Read event JSON from stdin.

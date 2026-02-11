@@ -123,11 +123,17 @@ class TestPostRequestWithBody:
                 json=body_dict,
             )
 
-        assert response.status_code == 201
+        # Assert
+        expected_status = 201
+        expected_method = "POST"
+        expected_path = "/orders"
+        assert response.status_code == expected_status
 
         event: dict = mock_compute.invoke.call_args[0][0]
-        assert event["httpMethod"] == "POST"
-        assert event["path"] == "/orders"
+        actual_method = event["httpMethod"]
+        actual_path = event["path"]
+        assert actual_method == expected_method
+        assert actual_path == expected_path
 
         # Body should be the JSON string
         parsed_body = json.loads(event["body"])

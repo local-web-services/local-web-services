@@ -41,8 +41,20 @@ class TestProviderListSubscriptionsByTopic:
         self,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
-        await provider.subscribe(topic_name="my-topic", protocol="lambda", endpoint="func-a")
-        subs = provider.list_subscriptions_by_topic("my-topic")
-        assert len(subs) == 1
-        assert subs[0].endpoint == "func-a"
+        # Arrange
+        topic_name = "my-topic"
+        expected_endpoint = "func-a"
+        expected_count = 1
+        await provider.create_topic(topic_name)
+        await provider.subscribe(
+            topic_name=topic_name,
+            protocol="lambda",
+            endpoint=expected_endpoint,
+        )
+
+        # Act
+        actual_subs = provider.list_subscriptions_by_topic(topic_name)
+
+        # Assert
+        assert len(actual_subs) == expected_count
+        assert actual_subs[0].endpoint == expected_endpoint

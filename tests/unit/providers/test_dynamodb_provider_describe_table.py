@@ -55,23 +55,40 @@ async def provider(tmp_path: Path):
 class TestDescribeTable:
     @pytest.mark.asyncio
     async def test_describe_table(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.create_table(_simple_config())
-        result = await provider.describe_table("orders")
-
-        assert result["TableName"] == "orders"
-        assert result["TableStatus"] == "ACTIVE"
-        assert result["TableArn"] == "arn:aws:dynamodb:us-east-1:000000000000:table/orders"
-        assert result["ItemCount"] == 0
-        assert result["TableSizeBytes"] == 0
-        assert "CreationDateTime" in result
-        assert result["ProvisionedThroughput"] == {
+        expected_table_name = "orders"
+        expected_status = "ACTIVE"
+        expected_arn = "arn:aws:dynamodb:us-east-1:000000000000:table/orders"
+        expected_item_count = 0
+        expected_size_bytes = 0
+        expected_throughput = {
             "ReadCapacityUnits": 0,
             "WriteCapacityUnits": 0,
         }
+        expected_key_schema_count = 2
+
+        # Act
+        result = await provider.describe_table("orders")
+
+        # Assert
+        actual_table_name = result["TableName"]
+        actual_status = result["TableStatus"]
+        actual_arn = result["TableArn"]
+        actual_item_count = result["ItemCount"]
+        actual_size_bytes = result["TableSizeBytes"]
+        actual_throughput = result["ProvisionedThroughput"]
+        assert actual_table_name == expected_table_name
+        assert actual_status == expected_status
+        assert actual_arn == expected_arn
+        assert actual_item_count == expected_item_count
+        assert actual_size_bytes == expected_size_bytes
+        assert "CreationDateTime" in result
+        assert actual_throughput == expected_throughput
 
         # Check KeySchema
         key_schema = result["KeySchema"]
-        assert len(key_schema) == 2
+        assert len(key_schema) == expected_key_schema_count
         assert {"AttributeName": "pk", "KeyType": "HASH"} in key_schema
         assert {"AttributeName": "sk", "KeyType": "RANGE"} in key_schema
 
@@ -82,13 +99,22 @@ class TestDescribeTable:
 
     @pytest.mark.asyncio
     async def test_describe_table_with_gsi(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.create_table(_config_with_gsi())
+        expected_gsi_count = 1
+        expected_index_name = "email_index"
+        expected_projection_type = "ALL"
+
+        # Act
         result = await provider.describe_table("users")
 
+        # Assert
         gsis = result["GlobalSecondaryIndexes"]
-        assert len(gsis) == 1
-        assert gsis[0]["IndexName"] == "email_index"
-        assert gsis[0]["Projection"]["ProjectionType"] == "ALL"
+        assert len(gsis) == expected_gsi_count
+        actual_index_name = gsis[0]["IndexName"]
+        actual_projection_type = gsis[0]["Projection"]["ProjectionType"]
+        assert actual_index_name == expected_index_name
+        assert actual_projection_type == expected_projection_type
 
     @pytest.mark.asyncio
     async def test_describe_table_nonexistent_raises(self, provider: SqliteDynamoProvider) -> None:

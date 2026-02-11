@@ -30,28 +30,43 @@ class TestComputeConfig:
     def test_defaults(self) -> None:
         from pathlib import Path
 
+        # Arrange
+        expected_timeout = 3
+        expected_memory_size = 128
+
+        # Act
         cfg = ComputeConfig(
             function_name="fn",
             handler="index.handler",
             runtime="python3.11",
             code_path=Path("/tmp/code"),
         )
-        assert cfg.timeout == 3
-        assert cfg.memory_size == 128
+
+        # Assert
+        assert cfg.timeout == expected_timeout
+        assert cfg.memory_size == expected_memory_size
         assert cfg.environment == {}
 
     def test_custom_values(self) -> None:
         from pathlib import Path
 
+        # Arrange
+        expected_timeout = 30
+        expected_memory_size = 512
+        expected_environment = {"FOO": "bar"}
+
+        # Act
         cfg = ComputeConfig(
             function_name="fn",
             handler="index.handler",
             runtime="python3.11",
             code_path=Path("/tmp/code"),
-            timeout=30,
-            memory_size=512,
-            environment={"FOO": "bar"},
+            timeout=expected_timeout,
+            memory_size=expected_memory_size,
+            environment=expected_environment,
         )
-        assert cfg.timeout == 30
-        assert cfg.memory_size == 512
-        assert cfg.environment == {"FOO": "bar"}
+
+        # Assert
+        assert cfg.timeout == expected_timeout
+        assert cfg.memory_size == expected_memory_size
+        assert cfg.environment == expected_environment

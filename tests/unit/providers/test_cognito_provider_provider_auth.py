@@ -98,27 +98,49 @@ class TestProviderAuth:
     """Provider authentication operations."""
 
     async def test_initiate_auth(self, provider: CognitoProvider) -> None:
-        await provider.sign_up("alice", "Password1A")
-        result = await provider.initiate_auth("USER_PASSWORD_AUTH", "alice", "Password1A")
+        # Arrange
+        username = "alice"
+        password = "Password1A"
+        auth_flow = "USER_PASSWORD_AUTH"
+        await provider.sign_up(username, password)
+
+        # Act
+        result = await provider.initiate_auth(auth_flow, username, password)
+
+        # Assert
+        expected_token_type = "Bearer"
         auth_result = result["AuthenticationResult"]
         assert "IdToken" in auth_result
         assert "AccessToken" in auth_result
         assert "RefreshToken" in auth_result
-        assert auth_result["TokenType"] == "Bearer"
+        actual_token_type = auth_result["TokenType"]
+        assert actual_token_type == expected_token_type
 
     async def test_unsupported_auth_flow(self, provider: CognitoProvider) -> None:
         from lws.providers.cognito.user_store import CognitoError
 
-        await provider.sign_up("alice", "Password1A")
+        # Arrange
+        username = "alice"
+        password = "Password1A"
+        await provider.sign_up(username, password)
+
+        # Act / Assert
         with pytest.raises(CognitoError, match="Unsupported"):
-            await provider.initiate_auth("CUSTOM_AUTH", "alice", "Password1A")
+            await provider.initiate_auth("CUSTOM_AUTH", username, password)
 
     async def test_refresh_tokens(self, provider: CognitoProvider) -> None:
-        await provider.sign_up("alice", "Password1A")
-        result = await provider.initiate_auth("USER_PASSWORD_AUTH", "alice", "Password1A")
+        # Arrange
+        username = "alice"
+        password = "Password1A"
+        auth_flow = "USER_PASSWORD_AUTH"
+        await provider.sign_up(username, password)
+        result = await provider.initiate_auth(auth_flow, username, password)
         refresh_token = result["AuthenticationResult"]["RefreshToken"]
 
+        # Act
         new_result = await provider.refresh_tokens(refresh_token)
+
+        # Assert
         assert "AuthenticationResult" in new_result
         assert "IdToken" in new_result["AuthenticationResult"]
 

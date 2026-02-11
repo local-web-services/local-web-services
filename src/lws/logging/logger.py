@@ -104,7 +104,7 @@ def get_ws_handler() -> WebSocketLogHandler | None:
 
 def _safe_json_truncate(data: Any, max_len: int = 10240) -> str | None:
     """Serialize *data* to JSON, truncate to *max_len*, or return ``None``."""
-    import json
+    import json  # pylint: disable=import-outside-toplevel
 
     try:
         return json.dumps(data, default=str)[:max_len]
@@ -315,6 +315,60 @@ class LdkLogger:
             entry["response_body"] = _safe_json_truncate(result)
         if error is not None:
             entry["error"] = error
+        _emit_to_ws(entry)
+
+    def log_docker_operation(
+        self,
+        operation: str,
+        container_name: str,
+        status: str = "OK",
+        duration_ms: float | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        """Log a Docker container operation.
+
+        Console output is gated at DEBUG level, but the WebSocket entry is
+        always emitted so the GUI can show it when "All levels" is selected.
+
+        Format: ``DOCKER run ldk-MyFunction (128MB, nodejs:20) -> OK``
+        """
+        style = _status_style(status)
+        ts = _timestamp()
+
+        # Build a short summary from selected detail fields
+        summary_parts: list[str] = []
+        if details:
+            if "image" in details:
+                summary_parts.append(details["image"])
+            if "memory_mb" in details:
+                summary_parts.append(f"{details['memory_mb']}MB")
+        summary = f" ({', '.join(summary_parts)})" if summary_parts else ""
+        duration = f" ({duration_ms:.0f}ms)" if duration_ms is not None else ""
+
+        # Console output only at DEBUG level
+        if self._logger.isEnabledFor(logging.DEBUG):
+            _console.print(
+                f"[dim][{ts}][/dim] "
+                f"[bold white]DOCKER[/bold white] {operation} {container_name}"
+                f"{summary}{duration} -> [{style}]{status}[/{style}]"
+            )
+
+        # Always emit to WebSocket so the GUI can filter by level
+        entry: dict[str, Any] = {
+            "timestamp": ts,
+            "level": "DEBUG",
+            "message": (
+                f"DOCKER {operation} {container_name}{summary}{duration} -> {status}"
+            ),
+            "service": "docker",
+            "operation": operation,
+            "container": container_name,
+            "status": status,
+        }
+        if duration_ms is not None:
+            entry["duration_ms"] = duration_ms
+        if details is not None:
+            entry["request_body"] = _safe_json_truncate(details)
         _emit_to_ws(entry)
 
     # ------------------------------------------------------------------

@@ -34,33 +34,39 @@ class TestSetSubscriptionAttributes:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        attribute_name = "RawMessageDelivery"
+        expected_value = "true"
+        expected_status = 200
+        await provider.create_topic(topic_name)
         sub_arn = await provider.subscribe(
-            topic_name="my-topic", protocol="lambda", endpoint="my-func"
+            topic_name=topic_name, protocol="lambda", endpoint="my-func"
         )
 
+        # Act
         resp = await client.post(
             "/",
             data={
                 "Action": "SetSubscriptionAttributes",
                 "SubscriptionArn": sub_arn,
-                "AttributeName": "RawMessageDelivery",
-                "AttributeValue": "true",
+                "AttributeName": attribute_name,
+                "AttributeValue": expected_value,
             },
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "SetSubscriptionAttributesResponse" in resp.text
-
-        # Verify the attribute was actually set by reading it back
-        attrs = await provider.get_subscription_attributes(sub_arn)
-        assert attrs["RawMessageDelivery"] == "true"
+        actual_attrs = await provider.get_subscription_attributes(sub_arn)
+        assert actual_attrs[attribute_name] == expected_value
 
     @pytest.mark.asyncio
     async def test_set_subscription_attributes_not_found(
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Act
         resp = await client.post(
             "/",
             data={
@@ -71,5 +77,7 @@ class TestSetSubscriptionAttributes:
             },
         )
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NotFound" in resp.text

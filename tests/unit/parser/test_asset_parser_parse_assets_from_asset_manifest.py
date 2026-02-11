@@ -24,24 +24,23 @@ class TestParseAssetsFromAssetManifest:
     """Assets located via a dedicated ``*.assets.json`` manifest."""
 
     def test_single_file_asset(self, cdk_out: Path):
-        # Create the asset directory
-        asset_dir = cdk_out / "asset.abc123"
+        # Arrange
+        asset_hash = "abc123"
+        asset_dir = cdk_out / f"asset.{asset_hash}"
         asset_dir.mkdir()
         (asset_dir / "index.py").write_text("print('hi')")
 
-        # Asset manifest
         asset_manifest = {
             "version": "21.0.0",
             "files": {
-                "abc123": {
-                    "source": {"path": "asset.abc123", "packaging": "zip"},
+                asset_hash: {
+                    "source": {"path": f"asset.{asset_hash}", "packaging": "zip"},
                     "destinations": {},
                 }
             },
         }
         _write_json(cdk_out / "MyStack.assets.json", asset_manifest)
 
-        # Main manifest referencing the asset manifest
         manifest = {
             "version": "21.0.0",
             "artifacts": {
@@ -52,12 +51,19 @@ class TestParseAssetsFromAssetManifest:
             },
         }
         _write_json(cdk_out / "manifest.json", manifest)
+        expected_path = (cdk_out / f"asset.{asset_hash}").resolve()
 
+        # Act
         result = parse_assets(cdk_out)
-        assert "abc123" in result
-        assert result["abc123"] == (cdk_out / "asset.abc123").resolve()
+
+        # Assert
+        assert asset_hash in result
+        actual_path = result[asset_hash]
+        assert actual_path == expected_path
 
     def test_multiple_file_assets(self, cdk_out: Path):
+        # Arrange
+        expected_count = 2
         for h in ("hash1", "hash2"):
             d = cdk_out / f"asset.{h}"
             d.mkdir()
@@ -82,12 +88,16 @@ class TestParseAssetsFromAssetManifest:
         }
         _write_json(cdk_out / "manifest.json", manifest)
 
+        # Act
         result = parse_assets(cdk_out)
-        assert len(result) == 2
+
+        # Assert
+        assert len(result) == expected_count
         assert "hash1" in result
         assert "hash2" in result
 
     def test_docker_image_asset(self, cdk_out: Path):
+        # Arrange
         img_dir = cdk_out / "asset.docker1"
         img_dir.mkdir()
 
@@ -113,20 +123,25 @@ class TestParseAssetsFromAssetManifest:
         }
         _write_json(cdk_out / "manifest.json", manifest)
 
+        # Act
         result = parse_assets(cdk_out)
+
+        # Assert
         assert "docker1" in result
 
     def test_cdk_asset_manifest_type(self, cdk_out: Path):
         """Modern CDK emits ``cdk:asset-manifest`` instead of ``aws:cdk:asset-manifest``."""
-        asset_dir = cdk_out / "asset.modern1"
+        # Arrange
+        asset_hash = "modern1"
+        asset_dir = cdk_out / f"asset.{asset_hash}"
         asset_dir.mkdir()
         (asset_dir / "index.js").write_text("exports.handler = () => {}")
 
         asset_manifest = {
             "version": "36.0.0",
             "files": {
-                "modern1": {
-                    "source": {"path": "asset.modern1", "packaging": "zip"},
+                asset_hash: {
+                    "source": {"path": f"asset.{asset_hash}", "packaging": "zip"},
                     "destinations": {},
                 }
             },
@@ -143,7 +158,12 @@ class TestParseAssetsFromAssetManifest:
             },
         }
         _write_json(cdk_out / "manifest.json", manifest)
+        expected_path = (cdk_out / f"asset.{asset_hash}").resolve()
 
+        # Act
         result = parse_assets(cdk_out)
-        assert "modern1" in result
-        assert result["modern1"] == (cdk_out / "asset.modern1").resolve()
+
+        # Assert
+        assert asset_hash in result
+        actual_path = result[asset_hash]
+        assert actual_path == expected_path

@@ -151,7 +151,9 @@ class TestSqsProviderLifecycle:
     """Provider lifecycle: start, stop, health_check, name."""
 
     async def test_name(self, provider: SqsProvider) -> None:
-        assert provider.name == "sqs"
+        expected_name = "sqs"
+        actual_name = provider.name
+        assert actual_name == expected_name
 
     async def test_health_check_running(self, provider: SqsProvider) -> None:
         assert await provider.health_check() is True

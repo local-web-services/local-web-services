@@ -97,7 +97,9 @@ class TestProviderLifecycle:
     """Provider lifecycle operations."""
 
     async def test_name(self, provider: CognitoProvider) -> None:
-        assert provider.name == "cognito"
+        expected_name = "cognito"
+        actual_name = provider.name
+        assert actual_name == expected_name
 
     async def test_health_check_running(self, provider: CognitoProvider) -> None:
         assert await provider.health_check() is True

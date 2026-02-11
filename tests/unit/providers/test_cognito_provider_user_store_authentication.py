@@ -99,27 +99,45 @@ class TestUserStoreAuthentication:
     """User authentication operations."""
 
     async def test_successful_auth(self, store: UserStore) -> None:
-        await store.sign_up("alice", "Password1A")
-        user_info = await store.authenticate("alice", "Password1A")
-        assert user_info["username"] == "alice"
+        # Arrange
+        username = "alice"
+        password = "Password1A"
+        await store.sign_up(username, password)
+
+        # Act
+        user_info = await store.authenticate(username, password)
+
+        # Assert
+        actual_username = user_info["username"]
+        expected_username = username
+        assert actual_username == expected_username
         assert "sub" in user_info
 
     async def test_wrong_password(self, store: UserStore) -> None:
-        await store.sign_up("alice", "Password1A")
+        # Arrange
+        username = "alice"
+        await store.sign_up(username, "Password1A")
+
+        # Act / Assert
         with pytest.raises(NotAuthorizedException):
-            await store.authenticate("alice", "WrongPass1")
+            await store.authenticate(username, "WrongPass1")
 
     async def test_nonexistent_user(self, store: UserStore) -> None:
         with pytest.raises(NotAuthorizedException):
             await store.authenticate("nobody", "Password1A")
 
     async def test_unconfirmed_user(self, tmp_path: Path) -> None:
+        # Arrange
+        username = "bob"
+        password = "Password1A"
         config = _default_config(auto_confirm=False)
         s = UserStore(tmp_path, config)
         await s.start()
         try:
-            await s.sign_up("bob", "Password1A")
+            await s.sign_up(username, password)
+
+            # Act / Assert
             with pytest.raises(UserNotConfirmedException):
-                await s.authenticate("bob", "Password1A")
+                await s.authenticate(username, password)
         finally:
             await s.stop()

@@ -122,7 +122,9 @@ def _mock_process() -> AsyncMock:
 class TestEcsProviderLifecycle:
     def test_name(self) -> None:
         provider = EcsProvider(services=[])
-        assert provider.name == "ecs"
+        expected_name = "ecs"
+        actual_name = provider.name
+        assert actual_name == expected_name
 
     async def test_initial_status_stopped(self) -> None:
         provider = EcsProvider(services=[])

@@ -47,6 +47,10 @@ def tmp_template(tmp_path: Path):
 
 class TestExtractApiRoutes:
     def test_rest_api_v1_method(self):
+        # Arrange
+        expected_method = "GET"
+        expected_path = "/items"
+        expected_uri = "arn:aws:lambda:..."
         resources = [
             CfnResource(
                 logical_id="Res1",
@@ -57,19 +61,29 @@ class TestExtractApiRoutes:
                 logical_id="Method1",
                 resource_type="AWS::ApiGateway::Method",
                 properties={
-                    "HttpMethod": "GET",
+                    "HttpMethod": expected_method,
                     "ResourceId": "Res1",
-                    "Integration": {"Uri": "arn:aws:lambda:..."},
+                    "Integration": {"Uri": expected_uri},
                 },
             ),
         ]
+
+        # Act
         routes = extract_api_routes(resources)
+
+        # Assert
         assert len(routes) == 1
-        assert routes[0].http_method == "GET"
-        assert routes[0].resource_path == "/items"
-        assert routes[0].integration_uri == "arn:aws:lambda:..."
+        actual_method = routes[0].http_method
+        actual_path = routes[0].resource_path
+        actual_uri = routes[0].integration_uri
+        assert actual_method == expected_method
+        assert actual_path == expected_path
+        assert actual_uri == expected_uri
 
     def test_http_api_v2_route(self):
+        # Arrange
+        expected_method = "POST"
+        expected_path = "/users"
         resources = [
             CfnResource(
                 logical_id="Route1",
@@ -80,19 +94,29 @@ class TestExtractApiRoutes:
                 },
             ),
         ]
+
+        # Act
         routes = extract_api_routes(resources)
+
+        # Assert
         assert len(routes) == 1
-        assert routes[0].http_method == "POST"
-        assert routes[0].resource_path == "/users"
+        actual_method = routes[0].http_method
+        actual_path = routes[0].resource_path
+        assert actual_method == expected_method
+        assert actual_path == expected_path
 
     def test_http_api_v2_route_resolves_integration_uri(self):
         """V2 route Target with Fn::Join should resolve to the integration's IntegrationUri."""
+        # Arrange
+        expected_method = "POST"
+        expected_path = "/orders"
+        expected_uri = {"Fn::GetAtt": ["CreateOrderFunction7F1C188E", "Arn"]}
         resources = [
             CfnResource(
                 logical_id="MyIntegration",
                 resource_type="AWS::ApiGatewayV2::Integration",
                 properties={
-                    "IntegrationUri": {"Fn::GetAtt": ["CreateOrderFunction7F1C188E", "Arn"]},
+                    "IntegrationUri": expected_uri,
                 },
             ),
             CfnResource(
@@ -117,16 +141,24 @@ class TestExtractApiRoutes:
                 },
             ),
         ]
+
+        # Act
         routes = extract_api_routes(resources)
+
+        # Assert
         assert len(routes) == 1
-        assert routes[0].http_method == "POST"
-        assert routes[0].resource_path == "/orders"
+        actual_method = routes[0].http_method
+        actual_path = routes[0].resource_path
+        actual_uri = routes[0].integration_uri
+        assert actual_method == expected_method
+        assert actual_path == expected_path
         # Should resolve to the integration's IntegrationUri, not the route's Target
-        assert routes[0].integration_uri == {"Fn::GetAtt": ["CreateOrderFunction7F1C188E", "Arn"]}
+        assert actual_uri == expected_uri
 
     def test_http_api_v2_route_no_integration_resource_falls_back(self):
         """When the Ref in Target doesn't match an integration resource, use Target as-is."""
-        target = {
+        # Arrange
+        expected_uri = {
             "Fn::Join": [
                 "",
                 [
@@ -141,15 +173,23 @@ class TestExtractApiRoutes:
                 resource_type="AWS::ApiGatewayV2::Route",
                 properties={
                     "RouteKey": "GET /fallback",
-                    "Target": target,
+                    "Target": expected_uri,
                 },
             ),
         ]
+
+        # Act
         routes = extract_api_routes(resources)
+
+        # Assert
         assert len(routes) == 1
-        assert routes[0].integration_uri == target
+        actual_uri = routes[0].integration_uri
+        assert actual_uri == expected_uri
 
     def test_mixed_v1_and_v2(self):
+        # Arrange
+        expected_count = 2
+        expected_methods = {"PUT", "DELETE"}
         resources = [
             CfnResource(
                 "Res",
@@ -171,10 +211,14 @@ class TestExtractApiRoutes:
                 {"RouteKey": "DELETE /orders/{id}"},
             ),
         ]
+
+        # Act
         routes = extract_api_routes(resources)
-        assert len(routes) == 2
-        methods = {r.http_method for r in routes}
-        assert methods == {"PUT", "DELETE"}
+
+        # Assert
+        assert len(routes) == expected_count
+        actual_methods = {r.http_method for r in routes}
+        assert actual_methods == expected_methods
 
     def test_no_routes(self):
         resources = [
@@ -183,6 +227,8 @@ class TestExtractApiRoutes:
         assert extract_api_routes(resources) == []
 
     def test_method_without_matching_resource(self):
+        # Arrange
+        expected_path = "/"
         resources = [
             CfnResource(
                 "M",
@@ -194,7 +240,12 @@ class TestExtractApiRoutes:
                 },
             ),
         ]
+
+        # Act
         routes = extract_api_routes(resources)
+
+        # Assert
         assert len(routes) == 1
         # Falls back to "/" when resource not in path map
-        assert routes[0].resource_path == "/"
+        actual_path = routes[0].resource_path
+        assert actual_path == expected_path

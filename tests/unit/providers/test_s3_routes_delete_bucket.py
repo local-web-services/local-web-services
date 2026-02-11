@@ -33,15 +33,22 @@ class TestDeleteBucket:
         client: httpx.AsyncClient,
         provider: S3Provider,
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
 
+        # Act
         resp = await client.delete("/my-bucket")
 
-        assert resp.status_code == 204
+        # Assert
+        expected_status = 204
+        assert resp.status_code == expected_status
 
     @pytest.mark.asyncio
     async def test_delete_bucket_not_found(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await client.delete("/nonexistent")
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NoSuchBucket" in resp.text

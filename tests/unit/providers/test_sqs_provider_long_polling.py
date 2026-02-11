@@ -154,18 +154,25 @@ class TestLongPolling:
 
     async def test_long_poll_returns_when_message_arrives(self, queue: LocalQueue) -> None:
         """Long poll should return as soon as a message is sent."""
+        # Arrange
+        expected_body = "late arrival"
+        expected_message_count = 1
 
         async def _send_delayed():
             await asyncio.sleep(0.2)
-            await queue.send_message("late arrival")
+            await queue.send_message(expected_body)
 
+        # Act
         task = asyncio.create_task(_send_delayed())
         start = time.monotonic()
         messages = await queue.receive_messages(max_messages=1, wait_time_seconds=5)
         elapsed = time.monotonic() - start
 
-        assert len(messages) == 1
-        assert messages[0].body == "late arrival"
+        # Assert
+        actual_message_count = len(messages)
+        actual_body = messages[0].body
+        assert actual_message_count == expected_message_count
+        assert actual_body == expected_body
         assert elapsed < 3  # Should not wait full 5 seconds
         await task
 

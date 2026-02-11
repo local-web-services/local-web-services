@@ -28,12 +28,16 @@ SAMPLE_METADATA = {
 class TestDiscovery:
     @pytest.mark.asyncio
     async def test_discover_returns_metadata(self):
-        client = LwsClient(port=3000)
+        # Arrange
+        expected_port = 3000
+        expected_service_name = "sqs"
+        expected_status_code = 200
+        client = LwsClient(port=expected_port)
 
         mock_resp = httpx.Response(
-            200,
+            expected_status_code,
             json=SAMPLE_METADATA,
-            request=httpx.Request("GET", "http://localhost:3000/_ldk/resources"),
+            request=httpx.Request("GET", f"http://localhost:{expected_port}/_ldk/resources"),
         )
 
         with patch("httpx.AsyncClient") as mock_cls:
@@ -43,20 +47,31 @@ class TestDiscovery:
             instance.__aexit__ = AsyncMock(return_value=False)
             mock_cls.return_value = instance
 
+            # Act
             result = await client.discover()
-            assert result["port"] == 3000
-            assert "sqs" in result["services"]
+            actual_port = result["port"]
+
+            # Assert
+            assert actual_port == expected_port
+            assert expected_service_name in result["services"]
 
     @pytest.mark.asyncio
     async def test_discover_caches_result(self):
+        # Arrange
         client = LwsClient(port=3000)
         client._metadata = SAMPLE_METADATA
+
+        # Act
         result = await client.discover()
+
+        # Assert
         assert result is SAMPLE_METADATA
 
     @pytest.mark.asyncio
     async def test_discover_raises_on_failure(self):
+        # Arrange
         client = LwsClient(port=9999)
+
         with patch("httpx.AsyncClient") as mock_cls:
             instance = AsyncMock()
             instance.get.side_effect = Exception("connection refused")
@@ -64,5 +79,6 @@ class TestDiscovery:
             instance.__aexit__ = AsyncMock(return_value=False)
             mock_cls.return_value = instance
 
+            # Act / Assert
             with pytest.raises(DiscoveryError, match="Cannot reach"):
                 await client.discover()

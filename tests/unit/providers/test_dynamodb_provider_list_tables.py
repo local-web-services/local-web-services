@@ -60,9 +60,14 @@ class TestListTables:
 
     @pytest.mark.asyncio
     async def test_list_tables_sorted(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.create_table(_simple_config("zebra"))
         await provider.create_table(_simple_config("alpha"))
         await provider.create_table(_simple_config("middle"))
+        expected_tables = ["alpha", "middle", "zebra"]
 
-        tables = await provider.list_tables()
-        assert tables == ["alpha", "middle", "zebra"]
+        # Act
+        actual_tables = await provider.list_tables()
+
+        # Assert
+        assert actual_tables == expected_tables

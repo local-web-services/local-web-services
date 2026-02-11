@@ -28,14 +28,20 @@ class TestCognitoStubOperations:
     @pytest.mark.asyncio
     async def test_unknown_operation_returns_error(self, client):
         """Test that unknown operations return HTTP 400 with UnknownOperationException."""
+        # Act
         resp = await client.post(
             "/",
             json={},
             headers={"X-Amz-Target": "AWSCognitoIdentityProviderService.TagResource"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "UnknownOperationException"
+        assert resp.status_code == expected_status
         body = resp.json()
-        assert body["__type"] == "UnknownOperationException"
+        actual_error_type = body["__type"]
+        assert actual_error_type == expected_error_type
         assert "lws" in body["message"]
         assert "Cognito" in body["message"]
         assert "TagResource" in body["message"]

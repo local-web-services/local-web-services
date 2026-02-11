@@ -34,7 +34,14 @@ class TestGraphBuilding:
         assert len(order) == len(graph.nodes)
 
     def test_no_cycles(self):
+        # Arrange
+        expected_cycle_count = 0
+
+        # Act
         app_model = parse_assembly(CDK_OUT)
         graph = build_graph(app_model)
         cycles = graph.detect_cycles()
-        assert len(cycles) == 0
+
+        # Assert
+        actual_cycle_count = len(cycles)
+        assert actual_cycle_count == expected_cycle_count

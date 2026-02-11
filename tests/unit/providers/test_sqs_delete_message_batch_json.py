@@ -39,11 +39,16 @@ class TestDeleteMessageBatchJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
-        await provider.create_queue("test-queue")
-        await provider.send_message("test-queue", "msg1")
-        await provider.send_message("test-queue", "msg2")
+        # Arrange
+        expected_status_code = 200
+        expected_successful_count = 2
+        expected_failed_count = 0
+        queue_name = "test-queue"
 
-        # Receive to get receipt handles
+        await provider.create_queue(queue_name)
+        await provider.send_message(queue_name, "msg1")
+        await provider.send_message(queue_name, "msg2")
+
         recv_resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "MaxNumberOfMessages": 10},
@@ -57,16 +62,21 @@ class TestDeleteMessageBatchJson:
             for i, msg in enumerate(messages)
         ]
 
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "Entries": entries},
             headers=_headers("DeleteMessageBatch"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
-        assert len(data["Successful"]) == 2
-        assert len(data["Failed"]) == 0
+        actual_successful_count = len(data["Successful"])
+        actual_failed_count = len(data["Failed"])
+        assert actual_successful_count == expected_successful_count
+        assert actual_failed_count == expected_failed_count
 
     @pytest.mark.asyncio
     async def test_delete_message_batch_empty_entries(
@@ -74,15 +84,20 @@ class TestDeleteMessageBatchJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
+        # Arrange
+        expected_status_code = 200
         await provider.create_queue("test-queue")
 
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "Entries": []},
             headers=_headers("DeleteMessageBatch"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
         assert data["Successful"] == []
         assert data["Failed"] == []

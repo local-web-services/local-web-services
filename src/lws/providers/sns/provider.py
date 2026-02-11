@@ -171,9 +171,8 @@ class SnsProvider(Provider):
             "Policy": '{"Version":"2012-10-17","Statement":[]}',
         }
         # Overlay any attributes set via SetTopicAttributes
-        custom = getattr(topic, "_custom_attrs", None)
-        if custom:
-            attrs.update(custom)
+        if topic.custom_attrs:
+            attrs.update(topic.custom_attrs)
         return attrs
 
     async def unsubscribe(self, subscription_arn: str) -> bool:
@@ -219,13 +218,10 @@ class SnsProvider(Provider):
             "PendingConfirmation": "false",
         }
         if sub.filter_policy is not None:
-            import json
-
             attrs["FilterPolicy"] = json.dumps(sub.filter_policy)
         # Overlay any custom attributes set via SetSubscriptionAttributes
-        custom = getattr(sub, "_custom_attrs", None)
-        if custom:
-            attrs.update(custom)
+        if sub.custom_attrs:
+            attrs.update(sub.custom_attrs)
         return attrs
 
     async def set_subscription_attribute(
@@ -235,18 +231,14 @@ class SnsProvider(Provider):
         sub, _topic = self.find_subscription(subscription_arn)
         if sub is None:
             raise KeyError(f"Subscription not found: {subscription_arn}")
-        if not hasattr(sub, "_custom_attrs"):
-            sub._custom_attrs = {}  # type: ignore[attr-defined]
-        sub._custom_attrs[attr_name] = attr_value  # type: ignore[attr-defined]
+        sub.custom_attrs[attr_name] = attr_value
 
     async def set_topic_attribute(self, topic_name: str, attr_name: str, attr_value: str) -> None:
         """Set a single topic attribute. Raises KeyError if not found."""
         topic = self._topics.get(topic_name)
         if topic is None:
             raise KeyError(f"Topic not found: {topic_name}")
-        if not hasattr(topic, "_custom_attrs"):
-            topic._custom_attrs = {}  # type: ignore[attr-defined]
-        topic._custom_attrs[attr_name] = attr_value  # type: ignore[attr-defined]
+        topic.custom_attrs[attr_name] = attr_value
 
     # -- Dispatch helpers -----------------------------------------------------
 
@@ -260,7 +252,7 @@ class SnsProvider(Provider):
         message_attributes: dict | None,
     ) -> None:
         """Route a published message to a single subscriber."""
-        from lws.providers.sns.topic import Subscription
+        from lws.providers.sns.topic import Subscription  # pylint: disable=import-outside-toplevel
 
         sub: Subscription = subscription  # type: ignore[assignment]
         try:

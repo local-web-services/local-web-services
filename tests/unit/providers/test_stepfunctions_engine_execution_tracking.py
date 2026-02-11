@@ -84,6 +84,11 @@ class TestExecutionTracking:
     """Execution history and state transitions."""
 
     async def test_transitions_recorded(self) -> None:
+        # Arrange
+        expected_transition_count = 3
+        expected_state_names = ["A", "B", "C"]
+
+        # Act
         history = await run_engine(
             {
                 "StartAt": "A",
@@ -94,21 +99,30 @@ class TestExecutionTracking:
                 },
             },
         )
-        assert len(history.transitions) == 3
-        names = [t.state_name for t in history.transitions]
-        assert names == ["A", "B", "C"]
+
+        # Assert
+        actual_state_names = [t.state_name for t in history.transitions]
+        assert len(history.transitions) == expected_transition_count
+        assert actual_state_names == expected_state_names
 
     async def test_transition_has_input_output(self) -> None:
+        # Arrange
+        expected_input = {"orig": True}
+        expected_output = "hello"
+
+        # Act
         history = await run_engine(
             {
                 "StartAt": "P",
-                "States": {"P": {"Type": "Pass", "Result": "hello", "End": True}},
+                "States": {"P": {"Type": "Pass", "Result": expected_output, "End": True}},
             },
-            input_data={"orig": True},
+            input_data=expected_input,
         )
-        t = history.transitions[0]
-        assert t.input_data == {"orig": True}
-        assert t.output_data == "hello"
+
+        # Assert
+        actual_transition = history.transitions[0]
+        assert actual_transition.input_data == expected_input
+        assert actual_transition.output_data == expected_output
 
     async def test_execution_arn_set(self) -> None:
         history = await run_engine(

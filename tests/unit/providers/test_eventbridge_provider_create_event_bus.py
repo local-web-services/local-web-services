@@ -17,8 +17,9 @@ async def provider() -> EventBridgeProvider:
 
 class TestCreateEventBus:
     async def test_create_returns_arn(self, provider: EventBridgeProvider) -> None:
-        arn = await provider.create_event_bus("my-bus")
-        assert arn == "arn:aws:events:us-east-1:000000000000:event-bus/my-bus"
+        expected_arn = "arn:aws:events:us-east-1:000000000000:event-bus/my-bus"
+        actual_arn = await provider.create_event_bus("my-bus")
+        assert actual_arn == expected_arn
 
     async def test_created_appears_in_list(self, provider: EventBridgeProvider) -> None:
         await provider.create_event_bus("new-bus")

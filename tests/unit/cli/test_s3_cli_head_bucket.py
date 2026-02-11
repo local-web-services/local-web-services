@@ -29,15 +29,24 @@ def _mock_client_rest(
 
 class TestHeadBucket:
     def test_head_bucket_calls_correct_endpoint(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_method = "HEAD"
+        expected_bucket = "my-bucket"
         mock = _mock_client_rest(200, headers={"x-amz-bucket-region": "us-east-1"})
+
+        # Act
         with patch("lws.cli.services.s3._client", return_value=mock):
             result = runner.invoke(
                 app,
-                ["s3api", "head-bucket", "--bucket", "my-bucket"],
+                ["s3api", "head-bucket", "--bucket", expected_bucket],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.rest_request.assert_awaited_once()
         call_args = mock.rest_request.call_args
-        assert call_args[0][1] == "HEAD"
-        assert call_args[0][2] == "my-bucket"
+        actual_method = call_args[0][1]
+        actual_bucket = call_args[0][2]
+        assert actual_method == expected_method
+        assert actual_bucket == expected_bucket

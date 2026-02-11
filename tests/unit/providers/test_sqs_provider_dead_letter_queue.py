@@ -152,9 +152,12 @@ class TestDeadLetterQueue:
     """Messages exceeding max_receive_count are moved to the DLQ."""
 
     async def test_message_routed_to_dlq(self, queue_with_dlq: LocalQueue, dlq: LocalQueue) -> None:
+        # Arrange
+        expected_body = "dlq-candidate"
         # max_receive_count=2, visibility_timeout=1
-        await queue_with_dlq.send_message("dlq-candidate")
+        await queue_with_dlq.send_message(expected_body)
 
+        # Act
         # First receive (count=1)
         msgs = await queue_with_dlq.receive_messages()
         assert len(msgs) == 1
@@ -173,7 +176,9 @@ class TestDeadLetterQueue:
         msgs = await queue_with_dlq.receive_messages()
         assert len(msgs) == 0
 
+        # Assert
         # Message should now be in DLQ
         dlq_msgs = await dlq.receive_messages()
         assert len(dlq_msgs) == 1
-        assert dlq_msgs[0].body == "dlq-candidate"
+        actual_body = dlq_msgs[0].body
+        assert actual_body == expected_body

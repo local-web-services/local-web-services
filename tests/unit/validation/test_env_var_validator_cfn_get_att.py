@@ -63,24 +63,43 @@ def _make_context(
 
 class TestCfnGetAtt:
     def test_fn_getatt_known_resource(self) -> None:
+        # Arrange
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
         ctx = _make_context(environment={"TABLE_ARN": "Fn::GetAtt MyTable.Arn"})
+
+        # Act
         issues = validator.validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_fn_getatt_unknown_resource(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_resource_name = "BadResource"
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
-        ctx = _make_context(environment={"ARN": "Fn::GetAtt BadResource.Arn"})
+        ctx = _make_context(environment={"ARN": f"Fn::GetAtt {expected_resource_name}.Arn"})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 1
-        assert "BadResource" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_resource_name in issues[0].message
 
     def test_bang_getatt_unknown_resource(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_resource_name = "Missing"
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
-        ctx = _make_context(environment={"ARN": "!GetAtt Missing.Arn"})
+        ctx = _make_context(environment={"ARN": f"!GetAtt {expected_resource_name}.Arn"})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 1
-        assert "Missing" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_resource_name in issues[0].message

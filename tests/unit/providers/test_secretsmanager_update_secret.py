@@ -30,27 +30,35 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestUpdateSecret:
     def test_update_description(self, client: TestClient) -> None:
-        _post(client, "CreateSecret", {"Name": "upd"})
+        secret_name = "upd"
+        expected_description = "updated"
+        _post(client, "CreateSecret", {"Name": secret_name})
         _post(
             client,
             "UpdateSecret",
-            {"SecretId": "upd", "Description": "updated"},
+            {"SecretId": secret_name, "Description": expected_description},
         )
-        desc = _post(client, "DescribeSecret", {"SecretId": "upd"})
-        assert desc["Description"] == "updated"
+        desc = _post(client, "DescribeSecret", {"SecretId": secret_name})
+
+        # Assert
+        assert desc["Description"] == expected_description
 
     def test_update_with_new_value(self, client: TestClient) -> None:
+        secret_name = "upd2"
+        expected_new_value = "new"
         _post(
             client,
             "CreateSecret",
-            {"Name": "upd2", "SecretString": "old"},
+            {"Name": secret_name, "SecretString": "old"},
         )
         result = _post(
             client,
             "UpdateSecret",
-            {"SecretId": "upd2", "SecretString": "new"},
+            {"SecretId": secret_name, "SecretString": expected_new_value},
         )
+
+        # Assert
         assert "VersionId" in result
 
-        got = _post(client, "GetSecretValue", {"SecretId": "upd2"})
-        assert got["SecretString"] == "new"
+        got = _post(client, "GetSecretValue", {"SecretId": secret_name})
+        assert got["SecretString"] == expected_new_value

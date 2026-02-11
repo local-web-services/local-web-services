@@ -47,18 +47,44 @@ class TestDependencies:
         return graph
 
     def test_get_dependencies_returns_data_targets(self) -> None:
+        # Arrange
+        expected_dependencies = ["table"]
         graph = self._make_chain_graph()
-        assert graph.get_dependencies("fn") == ["table"]
+
+        # Act
+        actual_dependencies = graph.get_dependencies("fn")
+
+        # Assert
+        assert actual_dependencies == expected_dependencies
 
     def test_get_dependencies_ignores_trigger_edges(self) -> None:
+        # Arrange
         graph = self._make_chain_graph()
+
+        # Act
         # API has a TRIGGER edge, not DATA_DEPENDENCY, so no dependencies.
-        assert graph.get_dependencies("api") == []
+        actual_dependencies = graph.get_dependencies("api")
+
+        # Assert
+        assert actual_dependencies == []
 
     def test_get_dependents_returns_data_sources(self) -> None:
+        # Arrange
+        expected_dependents = ["fn"]
         graph = self._make_chain_graph()
-        assert graph.get_dependents("table") == ["fn"]
+
+        # Act
+        actual_dependents = graph.get_dependents("table")
+
+        # Assert
+        assert actual_dependents == expected_dependents
 
     def test_get_dependents_empty_for_leaf(self) -> None:
+        # Arrange
         graph = self._make_chain_graph()
-        assert graph.get_dependents("api") == []
+
+        # Act
+        actual_dependents = graph.get_dependents("api")
+
+        # Assert
+        assert actual_dependents == []

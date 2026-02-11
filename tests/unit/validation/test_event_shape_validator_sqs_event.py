@@ -119,24 +119,42 @@ def _valid_eventbridge_event() -> dict:
 
 class TestSqsEvent:
     def test_valid_event(self) -> None:
+        # Arrange
         ctx = _make_context("sqs", _valid_sqs_event())
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_missing_records(self) -> None:
+        # Arrange
         ctx = _make_context("sqs", {})
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
+
+        # Assert
         assert len(issues) >= 1
         assert any("Records" in i.message for i in issues)
 
     def test_record_missing_message_id(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         event = {"Records": [{"body": "hello", "eventSource": "aws:sqs"}]}
         ctx = _make_context("sqs", event)
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert "messageId" in issues[0].message
 
     def test_record_wrong_type_body(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         event = {
             "Records": [
                 {
@@ -147,6 +165,10 @@ class TestSqsEvent:
             ]
         }
         ctx = _make_context("sqs", event)
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert "body" in issues[0].message

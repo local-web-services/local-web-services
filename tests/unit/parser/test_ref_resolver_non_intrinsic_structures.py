@@ -7,19 +7,45 @@ from lws.parser.ref_resolver import RefResolver
 
 class TestNonIntrinsicStructures:
     def test_plain_string_passthrough(self):
+        # Arrange
+        expected_value = "hello"
+
+        # Act
         r = RefResolver()
-        assert r.resolve("hello") == "hello"
+        actual_value = r.resolve("hello")
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_plain_int_passthrough(self):
+        # Arrange
+        expected_value = 42
+
+        # Act
         r = RefResolver()
-        assert r.resolve(42) == 42
+        actual_value = r.resolve(42)
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_plain_dict_values_resolved(self):
+        # Arrange
+        expected_value = {"Key": "val", "Other": "literal"}
         r = RefResolver(resource_map={"X": "val"})
-        result = r.resolve({"Key": {"Ref": "X"}, "Other": "literal"})
-        assert result == {"Key": "val", "Other": "literal"}
+
+        # Act
+        actual_value = r.resolve({"Key": {"Ref": "X"}, "Other": "literal"})
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_list_elements_resolved(self):
+        # Arrange
+        expected_value = ["a_val", "plain"]
         r = RefResolver(resource_map={"A": "a_val"})
-        result = r.resolve([{"Ref": "A"}, "plain"])
-        assert result == ["a_val", "plain"]
+
+        # Act
+        actual_value = r.resolve([{"Ref": "A"}, "plain"])
+
+        # Assert
+        assert actual_value == expected_value

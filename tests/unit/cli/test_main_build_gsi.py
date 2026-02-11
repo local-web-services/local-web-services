@@ -11,12 +11,26 @@ class TestBuildGsi:
     """Tests for _build_gsi."""
 
     def test_basic_gsi(self):
+        # Arrange
+        expected_index_name = "idx1"
+        expected_partition_key_name = "gsi_pk"
+        expected_projection_type = "KEYS_ONLY"
         raw = {
-            "index_name": "idx1",
-            "key_schema": [{"attribute_name": "gsi_pk", "type": "S", "key_type": "HASH"}],
-            "projection_type": "KEYS_ONLY",
+            "index_name": expected_index_name,
+            "key_schema": [
+                {
+                    "attribute_name": expected_partition_key_name,
+                    "type": "S",
+                    "key_type": "HASH",
+                }
+            ],
+            "projection_type": expected_projection_type,
         }
+
+        # Act
         gsi = _build_gsi(raw)
-        assert gsi.index_name == "idx1"
-        assert gsi.key_schema.partition_key.name == "gsi_pk"
-        assert gsi.projection_type == "KEYS_ONLY"
+
+        # Assert
+        assert gsi.index_name == expected_index_name
+        assert gsi.key_schema.partition_key.name == expected_partition_key_name
+        assert gsi.projection_type == expected_projection_type

@@ -53,10 +53,16 @@ class TestUpdateUserPool:
         assert resp.json() == {}
 
     async def test_update_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "UpdateUserPool",
             {"UserPoolId": "us-east-1_wrong"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "ResourceNotFoundException"
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "ResourceNotFoundException"
+        assert resp.status_code == expected_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

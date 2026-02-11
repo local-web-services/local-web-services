@@ -117,16 +117,24 @@ class TestGetRequestProxyEvent:
         async with _client(provider) as client:
             response = await client.get("/items")
 
-        assert response.status_code == 200
+        expected_status = 200
+        expected_method = "GET"
+        expected_path = "/items"
+        expected_stage = "local"
+        assert response.status_code == expected_status
 
         # Inspect the event passed to invoke
         call_args = mock_compute.invoke.call_args
         event: dict = call_args[0][0]
 
-        assert event["httpMethod"] == "GET"
-        assert event["path"] == "/items"
+        actual_method = event["httpMethod"]
+        actual_path = event["path"]
+        actual_stage = event["requestContext"]["stage"]
+        actual_resource = event["resource"]
+        assert actual_method == expected_method
+        assert actual_path == expected_path
         assert event["body"] is None
         assert event["isBase64Encoded"] is False
-        assert event["requestContext"]["httpMethod"] == "GET"
-        assert event["requestContext"]["stage"] == "local"
-        assert event["resource"] == "/items"
+        assert event["requestContext"]["httpMethod"] == expected_method
+        assert actual_stage == expected_stage
+        assert actual_resource == expected_path

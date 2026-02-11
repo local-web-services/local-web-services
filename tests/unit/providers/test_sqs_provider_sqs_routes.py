@@ -150,90 +150,122 @@ class TestSqsRoutes:
     """SQS wire-protocol HTTP route tests."""
 
     async def test_send_message(self, sqs_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        queue_url = "http://localhost:4566/000000000000/test-queue"
+
+        # Act
         resp = await sqs_client.post(
             "/",
             data={
                 "Action": "SendMessage",
-                "QueueUrl": "http://localhost:4566/000000000000/test-queue",
+                "QueueUrl": queue_url,
                 "MessageBody": "hello",
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "<MessageId>" in resp.text
         assert "<MD5OfMessageBody>" in resp.text
 
     async def test_receive_message(self, sqs_client: httpx.AsyncClient) -> None:
-        # Send first
+        # Arrange
+        expected_status_code = 200
+        expected_body = "receive-me"
+        queue_url = "http://localhost:4566/000000000000/test-queue"
+
         await sqs_client.post(
             "/",
             data={
                 "Action": "SendMessage",
-                "QueueUrl": "http://localhost:4566/000000000000/test-queue",
-                "MessageBody": "receive-me",
+                "QueueUrl": queue_url,
+                "MessageBody": expected_body,
             },
         )
-        # Receive
+
+        # Act
         resp = await sqs_client.post(
             "/",
             data={
                 "Action": "ReceiveMessage",
-                "QueueUrl": "http://localhost:4566/000000000000/test-queue",
+                "QueueUrl": queue_url,
                 "MaxNumberOfMessages": "1",
             },
         )
-        assert resp.status_code == 200
-        assert "<Body>receive-me</Body>" in resp.text
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
+        assert f"<Body>{expected_body}</Body>" in resp.text
 
     async def test_delete_message(self, sqs_client: httpx.AsyncClient) -> None:
-        # Send
+        # Arrange
+        expected_status_code = 200
+        queue_url = "http://localhost:4566/000000000000/test-queue"
+
         await sqs_client.post(
             "/",
             data={
                 "Action": "SendMessage",
-                "QueueUrl": "http://localhost:4566/000000000000/test-queue",
+                "QueueUrl": queue_url,
                 "MessageBody": "del-me",
             },
         )
-        # Receive to get receipt handle
         resp = await sqs_client.post(
             "/",
             data={
                 "Action": "ReceiveMessage",
-                "QueueUrl": "http://localhost:4566/000000000000/test-queue",
+                "QueueUrl": queue_url,
             },
         )
-        # Extract receipt handle from XML
         import re
 
         match = re.search(r"<ReceiptHandle>(.*?)</ReceiptHandle>", resp.text)
         assert match is not None
         receipt = match.group(1)
 
-        # Delete
+        # Act
         resp = await sqs_client.post(
             "/",
             data={
                 "Action": "DeleteMessage",
-                "QueueUrl": "http://localhost:4566/000000000000/test-queue",
+                "QueueUrl": queue_url,
                 "ReceiptHandle": receipt,
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "<DeleteMessageResponse>" in resp.text
 
     async def test_create_queue(self, sqs_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        queue_name = "new-queue"
+
+        # Act
         resp = await sqs_client.post(
             "/",
             data={
                 "Action": "CreateQueue",
-                "QueueName": "new-queue",
+                "QueueName": queue_name,
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "<QueueUrl>" in resp.text
-        assert "new-queue" in resp.text
+        assert queue_name in resp.text
 
     async def test_get_queue_url(self, sqs_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+
+        # Act
         resp = await sqs_client.post(
             "/",
             data={
@@ -241,10 +273,17 @@ class TestSqsRoutes:
                 "QueueName": "test-queue",
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "<QueueUrl>" in resp.text
 
     async def test_get_queue_url_not_found(self, sqs_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await sqs_client.post(
             "/",
             data={
@@ -252,10 +291,17 @@ class TestSqsRoutes:
                 "QueueName": "nonexistent",
             },
         )
-        assert resp.status_code == 400
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "NonExistentQueue" in resp.text
 
     async def test_get_queue_attributes(self, sqs_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+
+        # Act
         resp = await sqs_client.post(
             "/",
             data={
@@ -263,28 +309,46 @@ class TestSqsRoutes:
                 "QueueUrl": "http://localhost:4566/000000000000/test-queue",
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "VisibilityTimeout" in resp.text
         assert "QueueArn" in resp.text
 
     async def test_unknown_action_returns_error(self, sqs_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+        bogus_action = "BogusAction"
+
+        # Act
         resp = await sqs_client.post(
             "/",
-            data={"Action": "BogusAction"},
+            data={"Action": bogus_action},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "<ErrorResponse>" in resp.text
         assert "<Code>InvalidAction</Code>" in resp.text
         assert "lws" in resp.text
         assert "SQS" in resp.text
-        assert "BogusAction" in resp.text
+        assert bogus_action in resp.text
 
     async def test_send_with_query_params(self, sqs_client: httpx.AsyncClient) -> None:
         """Action can also be passed as query parameter."""
+        # Arrange
+        expected_status_code = 200
+
+        # Act
         resp = await sqs_client.post(
             "/?Action=SendMessage"
             "&QueueUrl=http://localhost:4566/000000000000/test-queue"
             "&MessageBody=via-query",
         )
-        assert resp.status_code == 200
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "<MessageId>" in resp.text

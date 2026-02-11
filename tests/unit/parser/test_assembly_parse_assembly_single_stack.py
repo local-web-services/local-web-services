@@ -97,37 +97,57 @@ def _make_simple_cdk_out(cdk_out: Path) -> None:
 
 class TestParseAssemblySingleStack:
     def test_extracts_lambda(self, tmp_path: Path):
+        # Arrange
+        expected_name = "MyFunc"
+        expected_handler = "index.handler"
+        expected_runtime = "python3.11"
+        expected_timeout = 30
+        expected_memory = 256
+        expected_table_env = "orders"
         cdk_out = tmp_path / "cdk.out"
         cdk_out.mkdir()
         _make_simple_cdk_out(cdk_out)
 
+        # Act
         model = parse_assembly(cdk_out)
+
+        # Assert
         assert len(model.functions) == 1
-        fn = model.functions[0]
-        assert fn.name == "MyFunc"
-        assert fn.handler == "index.handler"
-        assert fn.runtime == "python3.11"
-        assert fn.timeout == 30
-        assert fn.memory == 256
-        assert fn.environment["TABLE_NAME"] == "orders"
+        actual_fn = model.functions[0]
+        assert actual_fn.name == expected_name
+        assert actual_fn.handler == expected_handler
+        assert actual_fn.runtime == expected_runtime
+        assert actual_fn.timeout == expected_timeout
+        assert actual_fn.memory == expected_memory
+        assert actual_fn.environment["TABLE_NAME"] == expected_table_env
 
     def test_extracts_table(self, tmp_path: Path):
+        # Arrange
+        expected_name = "orders"
+        expected_key_schema_count = 1
         cdk_out = tmp_path / "cdk.out"
         cdk_out.mkdir()
         _make_simple_cdk_out(cdk_out)
 
+        # Act
         model = parse_assembly(cdk_out)
+
+        # Assert
         assert len(model.tables) == 1
-        tbl = model.tables[0]
-        assert tbl.name == "orders"
-        assert len(tbl.key_schema) == 1
+        actual_tbl = model.tables[0]
+        assert actual_tbl.name == expected_name
+        assert len(actual_tbl.key_schema) == expected_key_schema_count
 
     def test_resolves_asset_path(self, tmp_path: Path):
+        # Arrange
         cdk_out = tmp_path / "cdk.out"
         cdk_out.mkdir()
         _make_simple_cdk_out(cdk_out)
 
+        # Act
         model = parse_assembly(cdk_out)
-        fn = model.functions[0]
-        assert fn.code_path is not None
-        assert fn.code_path.exists()
+
+        # Assert
+        actual_fn = model.functions[0]
+        assert actual_fn.code_path is not None
+        assert actual_fn.code_path.exists()

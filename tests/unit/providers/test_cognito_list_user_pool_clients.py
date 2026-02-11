@@ -54,6 +54,8 @@ class TestListUserPoolClients:
         assert data["UserPoolClients"] == []
 
     async def test_list_after_creating_clients(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_names = {"app-1", "app-2"}
         await _request(
             client,
             "CreateUserPoolClient",
@@ -65,22 +67,34 @@ class TestListUserPoolClients:
             {"UserPoolId": POOL_ID, "ClientName": "app-2"},
         )
 
+        # Act
         resp = await _request(
             client,
             "ListUserPoolClients",
             {"UserPoolId": POOL_ID},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        expected_count = 2
+        assert resp.status_code == expected_status
         data = resp.json()
-        assert len(data["UserPoolClients"]) == 2
-        names = {c["ClientName"] for c in data["UserPoolClients"]}
-        assert names == {"app-1", "app-2"}
+        actual_count = len(data["UserPoolClients"])
+        assert actual_count == expected_count
+        actual_names = {c["ClientName"] for c in data["UserPoolClients"]}
+        assert actual_names == expected_names
 
     async def test_list_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "ListUserPoolClients",
             {"UserPoolId": "us-east-1_wrong"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "ResourceNotFoundException"
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "ResourceNotFoundException"
+        assert resp.status_code == expected_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

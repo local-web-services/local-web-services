@@ -69,12 +69,16 @@ def _make_table_config() -> dict[str, TableConfig]:
 
 class TestValidatorOverrides:
     def test_override_permission_to_warn(self) -> None:
+        # Arrange
+        expected_min_error_issues = 1
         graph = _make_graph_with_permission("grantRead")
         engine = create_validation_engine(
             strictness="strict",
             app_graph=graph,
             validator_overrides={"permission": "warn"},
         )
+
+        # Act
         # Should NOT raise because permission validator is overridden to warn
         issues = validate_operation(
             engine,
@@ -83,5 +87,7 @@ class TestValidatorOverrides:
             operation="put_item",
             app_graph=graph,
         )
-        error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(error_issues) >= 1
+
+        # Assert
+        actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
+        assert len(actual_error_issues) >= expected_min_error_issues

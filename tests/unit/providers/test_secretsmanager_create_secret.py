@@ -30,21 +30,31 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestCreateSecret:
     def test_create_with_string(self, client: TestClient) -> None:
+        expected_name = "app/key"
         result = _post(
             client,
             "CreateSecret",
-            {"Name": "app/key", "SecretString": "my-secret"},
+            {"Name": expected_name, "SecretString": "my-secret"},
         )
-        assert result["Name"] == "app/key"
+
+        # Assert
+        assert result["Name"] == expected_name
         assert "ARN" in result
         assert "VersionId" in result
 
     def test_create_without_value(self, client: TestClient) -> None:
-        result = _post(client, "CreateSecret", {"Name": "empty-secret"})
-        assert result["Name"] == "empty-secret"
+        expected_name = "empty-secret"
+        result = _post(client, "CreateSecret", {"Name": expected_name})
+
+        # Assert
+        assert result["Name"] == expected_name
         assert "VersionId" not in result
 
     def test_create_duplicate(self, client: TestClient) -> None:
-        _post(client, "CreateSecret", {"Name": "dup"})
-        result = _post(client, "CreateSecret", {"Name": "dup"})
-        assert result["__type"] == "ResourceExistsException"
+        secret_name = "dup"
+        _post(client, "CreateSecret", {"Name": secret_name})
+        result = _post(client, "CreateSecret", {"Name": secret_name})
+
+        # Assert
+        expected_error_type = "ResourceExistsException"
+        assert result["__type"] == expected_error_type

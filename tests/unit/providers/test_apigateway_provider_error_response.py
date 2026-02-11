@@ -108,15 +108,21 @@ class TestErrorResponse:
 
     @pytest.mark.asyncio
     async def test_invocation_error_returns_500(self) -> None:
-        mock_compute = _make_compute_mock(error="RuntimeError: kaboom")
+        # Arrange
+        expected_error = "RuntimeError: kaboom"
+        mock_compute = _make_compute_mock(error=expected_error)
         provider = _make_provider(
             routes=[RouteConfig(method="GET", path="/fail", handler_name="fail-fn")],
             compute_providers={"fail-fn": mock_compute},
         )
 
+        # Act
         async with _client(provider) as client:
             response = await client.get("/fail")
 
-        assert response.status_code == 500
+        # Assert
+        expected_status = 500
+        assert response.status_code == expected_status
         body = response.json()
-        assert body["error"] == "RuntimeError: kaboom"
+        actual_error = body["error"]
+        assert actual_error == expected_error

@@ -93,25 +93,41 @@ class TestSucceedFailStates:
         assert history.output_data == {"ok": True}
 
     async def test_fail_state(self) -> None:
+        # Arrange
+        expected_error = "MyError"
+        expected_cause = "bad input"
+
+        # Act
         history = await run_engine(
             {
                 "StartAt": "F",
                 "States": {
                     "F": {
                         "Type": "Fail",
-                        "Error": "MyError",
-                        "Cause": "bad input",
+                        "Error": expected_error,
+                        "Cause": expected_cause,
                     }
                 },
             },
         )
+
+        # Assert
+        actual_error = history.error
+        actual_cause = history.cause
         assert history.status == ExecutionStatus.FAILED
-        assert history.error == "MyError"
-        assert history.cause == "bad input"
+        assert actual_error == expected_error
+        assert actual_cause == expected_cause
 
     async def test_fail_without_error(self) -> None:
+        # Arrange
+        expected_error = "States.Fail"
+
+        # Act
         history = await run_engine(
             {"StartAt": "F", "States": {"F": {"Type": "Fail"}}},
         )
+
+        # Assert
+        actual_error = history.error
         assert history.status == ExecutionStatus.FAILED
-        assert history.error == "States.Fail"
+        assert actual_error == expected_error

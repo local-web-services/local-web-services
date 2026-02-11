@@ -54,15 +54,20 @@ class TestETagComputation:
     """Verify ETag is computed as MD5 hex digest."""
 
     async def test_etag_matches_md5(self, storage: LocalBucketStorage) -> None:
+        # Arrange
+        bucket = "mybucket"
+        key = "etag-test"
         body = b"specific content for etag test"
-        expected = hashlib.md5(body).hexdigest()
+        expected_etag = hashlib.md5(body).hexdigest()
 
-        result = await storage.put_object("mybucket", "etag-test", body)
-        assert result["ETag"] == f'"{expected}"'
+        # Act
+        result = await storage.put_object(bucket, key, body)
+        actual_obj = await storage.get_object(bucket, key)
 
-        obj = await storage.get_object("mybucket", "etag-test")
-        assert obj is not None
-        assert obj["etag"] == expected
+        # Assert
+        assert result["ETag"] == f'"{expected_etag}"'
+        assert actual_obj is not None
+        assert actual_obj["etag"] == expected_etag
 
     async def test_different_content_different_etag(self, storage: LocalBucketStorage) -> None:
         r1 = await storage.put_object("mybucket", "k1", b"aaa")

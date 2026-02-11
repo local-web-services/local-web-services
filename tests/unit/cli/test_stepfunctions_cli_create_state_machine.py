@@ -20,8 +20,13 @@ def _mock_client(return_value: dict) -> AsyncMock:
 
 class TestCreateStateMachine:
     def test_create_state_machine(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_target = "CreateStateMachine"
         resp = {"stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:test-sm"}
         mock = _mock_client(resp)
+
+        # Act
         with patch("lws.cli.services.stepfunctions._client", return_value=mock):
             result = runner.invoke(
                 app,
@@ -35,7 +40,8 @@ class TestCreateStateMachine:
                 ],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.json_target_request.assert_awaited_once()
-        call_args = mock.json_target_request.call_args
-        assert "CreateStateMachine" in call_args[0][1]
+        actual_target = mock.json_target_request.call_args[0][1]
+        assert expected_target in actual_target

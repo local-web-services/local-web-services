@@ -119,4 +119,6 @@ def _valid_eventbridge_event() -> dict:
 
 class TestValidatorName:
     def test_name_is_event_shape(self) -> None:
-        assert EventShapeValidator().name == "event_shape"
+        expected_name = "event_shape"
+        actual_name = EventShapeValidator().name
+        assert actual_name == expected_name

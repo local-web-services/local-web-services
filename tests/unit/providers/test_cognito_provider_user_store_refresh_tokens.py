@@ -97,9 +97,16 @@ class TestUserStoreRefreshTokens:
     """Refresh token storage and lookup."""
 
     async def test_store_and_retrieve_refresh_token(self, store: UserStore) -> None:
-        await store.store_refresh_token("token123", "alice", 1000.0)
-        username = await store.get_refresh_token_username("token123")
-        assert username == "alice"
+        # Arrange
+        token = "token123"
+        expected_username = "alice"
+        await store.store_refresh_token(token, expected_username, 1000.0)
+
+        # Act
+        actual_username = await store.get_refresh_token_username(token)
+
+        # Assert
+        assert actual_username == expected_username
 
     async def test_unknown_refresh_token(self, store: UserStore) -> None:
         username = await store.get_refresh_token_username("unknown")

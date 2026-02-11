@@ -117,10 +117,13 @@ class TestQueryStringParameterExtraction:
         async with _client(provider) as client:
             response = await client.get("/search?q=hello&page=2")
 
-        assert response.status_code == 200
+        expected_status = 200
+        expected_query_params = {"q": "hello", "page": "2"}
+        assert response.status_code == expected_status
 
         event: dict = mock_compute.invoke.call_args[0][0]
-        assert event["queryStringParameters"] == {"q": "hello", "page": "2"}
+        actual_query_params = event["queryStringParameters"]
+        assert actual_query_params == expected_query_params
 
     @pytest.mark.asyncio
     async def test_no_query_string_gives_none(self) -> None:

@@ -109,7 +109,9 @@ class TestProviderLifecycle:
 
     def test_name(self) -> None:
         provider = _make_provider(routes=[], compute_providers={})
-        assert provider.name == "api-gateway"
+        expected_name = "api-gateway"
+        actual_name = provider.name
+        assert actual_name == expected_name
 
     @pytest.mark.asyncio
     async def test_health_check_before_start(self) -> None:

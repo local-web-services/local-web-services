@@ -73,16 +73,19 @@ class TestPythonComputeEnvironment:
 
     def test_env_merges_all_sources(self) -> None:
         """os.environ + config.environment + sdk_env are merged."""
-        config = _make_config(environment={"APP_ENV": "test"})
-        sdk_env = {"AWS_ENDPOINT_URL_DYNAMODB": "http://localhost:4566"}
+        expected_app_env = "test"
+        expected_dynamodb_url = "http://localhost:4566"
+        config = _make_config(environment={"APP_ENV": expected_app_env})
+        sdk_env = {"AWS_ENDPOINT_URL_DYNAMODB": expected_dynamodb_url}
         provider = PythonCompute(config, sdk_env=sdk_env)
 
         context = _make_context()
         env = provider._build_env(context)
 
+        # Assert
         assert "PATH" in env
-        assert env["APP_ENV"] == "test"
-        assert env["AWS_ENDPOINT_URL_DYNAMODB"] == "http://localhost:4566"
+        assert env["APP_ENV"] == expected_app_env
+        assert env["AWS_ENDPOINT_URL_DYNAMODB"] == expected_dynamodb_url
 
     def test_env_sets_ldk_vars(self) -> None:
         """LDK-specific env vars are set from config and context."""
@@ -92,24 +95,34 @@ class TestPythonComputeEnvironment:
         context = _make_context()
         env = provider._build_env(context)
 
-        assert env["LDK_HANDLER"] == "handler.main"
-        assert env["LDK_CODE_PATH"] == "/tmp/code"
-        assert env["LDK_REQUEST_ID"] == "req-abc-123"
-        assert env["LDK_FUNCTION_ARN"] == ("arn:aws:lambda:us-east-1:123456789012:function:my-func")
-        assert env["LDK_TIMEOUT"] == "30"
-        assert env["AWS_LAMBDA_FUNCTION_NAME"] == "my-func"
-        assert env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] == "128"
+        # Assert
+        expected_handler = "handler.main"
+        expected_code_path = "/tmp/code"
+        expected_request_id = "req-abc-123"
+        expected_function_arn = "arn:aws:lambda:us-east-1:123456789012:function:my-func"
+        expected_timeout = "30"
+        expected_function_name = "my-func"
+        expected_memory_size = "128"
+        assert env["LDK_HANDLER"] == expected_handler
+        assert env["LDK_CODE_PATH"] == expected_code_path
+        assert env["LDK_REQUEST_ID"] == expected_request_id
+        assert env["LDK_FUNCTION_ARN"] == expected_function_arn
+        assert env["LDK_TIMEOUT"] == expected_timeout
+        assert env["AWS_LAMBDA_FUNCTION_NAME"] == expected_function_name
+        assert env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] == expected_memory_size
 
     def test_sdk_env_overrides_config_env(self) -> None:
         """sdk_env takes precedence over config.environment for the same key."""
         config = _make_config(environment={"SHARED_KEY": "from-config"})
-        sdk_env = {"SHARED_KEY": "from-sdk"}
+        expected_value = "from-sdk"
+        sdk_env = {"SHARED_KEY": expected_value}
         provider = PythonCompute(config, sdk_env=sdk_env)
 
         context = _make_context()
         env = provider._build_env(context)
 
-        assert env["SHARED_KEY"] == "from-sdk"
+        # Assert
+        assert env["SHARED_KEY"] == expected_value
 
     def test_debug_port_env_var_when_set(self) -> None:
         """LDK_DEBUG_PORT should be set when debug_port is provided."""
@@ -119,7 +132,9 @@ class TestPythonComputeEnvironment:
         context = _make_context()
         env = provider._build_env(context)
 
-        assert env["LDK_DEBUG_PORT"] == "5678"
+        # Assert
+        expected_debug_port = "5678"
+        assert env["LDK_DEBUG_PORT"] == expected_debug_port
 
     def test_no_debug_port_env_var_by_default(self) -> None:
         """LDK_DEBUG_PORT should not be set when debug_port is None."""
@@ -144,8 +159,12 @@ class TestPythonComputeEnvironment:
 
         await provider.invoke({"key": "value"}, _make_context())
 
+        # Assert
+        expected_sdk_var = "sdk-value"
+        expected_cfg_var = "cfg-value"
+        expected_handler = "handler.main"
         call_kwargs = mock_exec.call_args.kwargs
         env_passed = call_kwargs["env"]
-        assert env_passed["SDK_VAR"] == "sdk-value"
-        assert env_passed["CFG_VAR"] == "cfg-value"
-        assert env_passed["LDK_HANDLER"] == "handler.main"
+        assert env_passed["SDK_VAR"] == expected_sdk_var
+        assert env_passed["CFG_VAR"] == expected_cfg_var
+        assert env_passed["LDK_HANDLER"] == expected_handler

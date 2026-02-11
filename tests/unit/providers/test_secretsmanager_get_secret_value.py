@@ -30,16 +30,23 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestGetSecretValue:
     def test_get_value(self, client: TestClient) -> None:
+        secret_name = "test/secret"
+        expected_secret_value = "s3cr3t"
         _post(
             client,
             "CreateSecret",
-            {"Name": "test/secret", "SecretString": "s3cr3t"},
+            {"Name": secret_name, "SecretString": expected_secret_value},
         )
-        result = _post(client, "GetSecretValue", {"SecretId": "test/secret"})
-        assert result["SecretString"] == "s3cr3t"
-        assert result["Name"] == "test/secret"
+        result = _post(client, "GetSecretValue", {"SecretId": secret_name})
+
+        # Assert
+        assert result["SecretString"] == expected_secret_value
+        assert result["Name"] == secret_name
         assert "VersionId" in result
 
     def test_get_missing(self, client: TestClient) -> None:
         result = _post(client, "GetSecretValue", {"SecretId": "nope"})
-        assert result["__type"] == "ResourceNotFoundException"
+
+        # Assert
+        expected_error_type = "ResourceNotFoundException"
+        assert result["__type"] == expected_error_type

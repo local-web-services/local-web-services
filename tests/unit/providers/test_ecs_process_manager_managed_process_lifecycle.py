@@ -67,18 +67,27 @@ def _mock_process(
 class TestManagedProcessLifecycle:
     @patch("asyncio.create_subprocess_exec")
     async def test_start_spawns_subprocess(self, mock_exec: AsyncMock) -> None:
+        # Arrange
+        expected_pid = 1234
+        expected_port = "8080"
+        expected_cwd = "/tmp/app"
         proc = _mock_process()
         mock_exec.return_value = proc
 
+        # Act
         mp = ManagedProcess(_make_config())
         await mp.start()
 
+        # Assert
         assert mp.is_running is True
-        assert mp.pid == 1234
+        actual_pid = mp.pid
+        assert actual_pid == expected_pid
         mock_exec.assert_called_once()
         call_kwargs = mock_exec.call_args.kwargs
-        assert call_kwargs["env"]["PORT"] == "8080"
-        assert call_kwargs["cwd"] == "/tmp/app"
+        actual_port = call_kwargs["env"]["PORT"]
+        actual_cwd = call_kwargs["cwd"]
+        assert actual_port == expected_port
+        assert actual_cwd == expected_cwd
 
     @patch("asyncio.create_subprocess_exec")
     async def test_stop_sends_sigterm(self, mock_exec: AsyncMock) -> None:

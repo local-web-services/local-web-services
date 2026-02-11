@@ -154,15 +154,27 @@ class TestLocalQueueBasic:
     """Core send, receive, delete operations."""
 
     async def test_send_returns_message_id(self, queue: LocalQueue) -> None:
+        # Act
         msg_id = await queue.send_message("hello")
+
+        # Assert
         assert isinstance(msg_id, str)
         assert len(msg_id) > 0
 
     async def test_receive_returns_sent_message(self, queue: LocalQueue) -> None:
-        await queue.send_message("hello world")
+        # Arrange
+        expected_body = "hello world"
+        expected_message_count = 1
+
+        # Act
+        await queue.send_message(expected_body)
         messages = await queue.receive_messages(max_messages=1)
-        assert len(messages) == 1
-        assert messages[0].body == "hello world"
+
+        # Assert
+        actual_message_count = len(messages)
+        actual_body = messages[0].body
+        assert actual_message_count == expected_message_count
+        assert actual_body == expected_body
         assert messages[0].receipt_handle is not None
 
     async def test_receive_empty_queue(self, queue: LocalQueue) -> None:
@@ -170,32 +182,52 @@ class TestLocalQueueBasic:
         assert messages == []
 
     async def test_delete_removes_message(self, queue: LocalQueue) -> None:
-        await queue.send_message("to-delete")
+        # Arrange
+        deleted_body = "to-delete"
+        await queue.send_message(deleted_body)
         messages = await queue.receive_messages(max_messages=1)
         receipt = messages[0].receipt_handle
         assert receipt is not None
 
+        # Act
         await queue.delete_message(receipt)
 
+        # Assert
         # Wait for visibility timeout to expire
         await asyncio.sleep(0.1)
         # Use a fresh queue check — the message should be gone
         remaining = await queue.receive_messages(max_messages=10)
         # The message was deleted, so even after visibility expires it won't return
         # (we need to wait for the visibility timeout to test properly)
-        assert all(m.body != "to-delete" for m in remaining)
+        assert all(m.body != deleted_body for m in remaining)
 
     async def test_receive_max_messages(self, queue: LocalQueue) -> None:
+        # Arrange
+        expected_message_count = 3
         for i in range(5):
             await queue.send_message(f"msg-{i}")
+
+        # Act
         messages = await queue.receive_messages(max_messages=3)
-        assert len(messages) == 3
+
+        # Assert
+        actual_message_count = len(messages)
+        assert actual_message_count == expected_message_count
 
     async def test_receive_increments_receive_count(self, queue: LocalQueue) -> None:
+        # Arrange
+        expected_receive_count = 1
+        expected_approx_receive_count = "1"
+
+        # Act
         await queue.send_message("count-me")
         msgs = await queue.receive_messages()
-        assert msgs[0].receive_count == 1
-        assert msgs[0].attributes["ApproximateReceiveCount"] == "1"
+
+        # Assert
+        actual_receive_count = msgs[0].receive_count
+        actual_approx_receive_count = msgs[0].attributes["ApproximateReceiveCount"]
+        assert actual_receive_count == expected_receive_count
+        assert actual_approx_receive_count == expected_approx_receive_count
 
     async def test_sent_timestamp_set(self, queue: LocalQueue) -> None:
         before = time.time()
@@ -205,12 +237,24 @@ class TestLocalQueueBasic:
         assert before <= messages[0].sent_timestamp <= after
 
     async def test_message_attributes_preserved(self, queue: LocalQueue) -> None:
-        attrs = {"key1": {"DataType": "String", "StringValue": "val1"}}
-        await queue.send_message("with-attrs", message_attributes=attrs)
+        # Arrange
+        expected_attributes = {"key1": {"DataType": "String", "StringValue": "val1"}}
+
+        # Act
+        await queue.send_message("with-attrs", message_attributes=expected_attributes)
         messages = await queue.receive_messages()
-        assert messages[0].message_attributes == attrs
+
+        # Assert
+        actual_attributes = messages[0].message_attributes
+        assert actual_attributes == expected_attributes
 
     async def test_md5_of_body(self) -> None:
+        # Arrange
         body = "test body"
-        expected = hashlib.md5(body.encode()).hexdigest()
-        assert LocalQueue.md5_of_body(body) == expected
+        expected_md5 = hashlib.md5(body.encode()).hexdigest()
+
+        # Act
+        actual_md5 = LocalQueue.md5_of_body(body)
+
+        # Assert
+        assert actual_md5 == expected_md5

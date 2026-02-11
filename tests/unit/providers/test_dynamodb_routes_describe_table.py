@@ -77,26 +77,39 @@ class TestDescribeTable:
     async def test_describe_table_success(
         self, client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_table_name = "MyTable"
+
+        # Act
         resp = await client.post(
             "/", json={"TableName": "MyTable"}, headers=_target("DescribeTable")
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "Table" in data
-        assert data["Table"]["TableName"] == "MyTable"
+        actual_table_name = data["Table"]["TableName"]
+        assert actual_table_name == expected_table_name
         mock_store.describe_table.assert_awaited_once_with("MyTable")
 
     @pytest.mark.asyncio
     async def test_describe_table_not_found(
         self, client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         mock_store.describe_table.side_effect = KeyError("Table not found: MyTable")
+        expected_status_code = 400
+        expected_error_type = "ResourceNotFoundException"
 
+        # Act
         resp = await client.post(
             "/", json={"TableName": "MyTable"}, headers=_target("DescribeTable")
         )
 
-        assert resp.status_code == 400
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["__type"] == "ResourceNotFoundException"
+        actual_error_type = data["__type"]
+        assert actual_error_type == expected_error_type

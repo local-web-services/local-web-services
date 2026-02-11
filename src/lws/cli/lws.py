@@ -16,6 +16,7 @@ from lws.cli.services.client import exit_with_error, output_json
 from lws.cli.services.cognito import app as cognito_app
 from lws.cli.services.dynamodb import app as dynamodb_app
 from lws.cli.services.events import app as events_app
+from lws.cli.services.lambda_service import app as lambda_app
 from lws.cli.services.s3 import app as s3_app
 from lws.cli.services.secretsmanager import app as secretsmanager_app
 from lws.cli.services.sns import app as sns_app
@@ -35,6 +36,7 @@ app.add_typer(sns_app, name="sns")
 app.add_typer(s3_app, name="s3api")
 app.add_typer(dynamodb_app, name="dynamodb")
 app.add_typer(events_app, name="events")
+app.add_typer(lambda_app, name="lambda")
 app.add_typer(cognito_app, name="cognito-idp")
 app.add_typer(ssm_app, name="ssm")
 app.add_typer(secretsmanager_app, name="secretsmanager")
@@ -80,8 +82,8 @@ async def _run_status(port: int, *, json_output: bool = False) -> None:
         )
         return
 
-    from rich.console import Console
-    from rich.table import Table
+    from rich.console import Console  # pylint: disable=import-outside-toplevel
+    from rich.table import Table  # pylint: disable=import-outside-toplevel
 
     console = Console()
 

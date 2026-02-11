@@ -28,7 +28,7 @@ def _request_id() -> str:
     return str(uuid.uuid4())
 
 
-async def _handle_get_caller_identity(params: dict[str, str]) -> Response:
+async def _handle_get_caller_identity(_params: dict[str, str]) -> Response:
     xml = (
         '<GetCallerIdentityResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">'
         "<GetCallerIdentityResult>"

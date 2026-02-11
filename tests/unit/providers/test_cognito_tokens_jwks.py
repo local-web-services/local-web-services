@@ -55,10 +55,16 @@ class TestJWKS:
         assert len(jwks["keys"]) == 1
 
     def test_jwk_structure(self, issuer: TokenIssuer) -> None:
+        # Act
         jwk = issuer.get_jwks()["keys"][0]
-        assert jwk["kty"] == "RSA"
-        assert jwk["alg"] == "RS256"
-        assert jwk["use"] == "sig"
+
+        # Assert
+        expected_kty = "RSA"
+        expected_alg = "RS256"
+        expected_use = "sig"
+        assert jwk["kty"] == expected_kty
+        assert jwk["alg"] == expected_alg
+        assert jwk["use"] == expected_use
         assert "kid" in jwk
         assert "n" in jwk
         assert "e" in jwk

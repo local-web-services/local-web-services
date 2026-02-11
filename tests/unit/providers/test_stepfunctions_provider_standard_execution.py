@@ -175,6 +175,10 @@ class TestStandardExecution:
     """Standard (STANDARD) workflow execution tests."""
 
     async def test_simple_pass_execution(self, provider: StepFunctionsProvider) -> None:
+        # Arrange
+        expected_output = {"greeting": "hello"}
+
+        # Act
         result = await provider.start_execution("simple-pass", input_data={"x": 1})
         assert "executionArn" in result
         assert "startDate" in result
@@ -184,8 +188,11 @@ class TestStandardExecution:
 
         execution_arn = result["executionArn"]
         history = provider.get_execution(execution_arn)
+
+        # Assert
+        actual_output = history.output_data
         assert history is not None
-        assert history.output_data == {"greeting": "hello"}
+        assert actual_output == expected_output
 
     async def test_two_step_execution(self, provider: StepFunctionsProvider) -> None:
         result = await provider.start_execution("two-step", input_data={})
@@ -196,21 +203,35 @@ class TestStandardExecution:
         assert history.output_data == {"step": 2}
 
     async def test_succeed_execution(self, provider: StepFunctionsProvider) -> None:
+        # Arrange
+        expected_status = "SUCCEEDED"
+
+        # Act
         result = await provider.start_execution("succeed-sm", input_data={"val": "ok"})
         await asyncio.sleep(0.1)
-
         history = provider.get_execution(result["executionArn"])
+
+        # Assert
+        actual_status = history.status.value
         assert history is not None
-        assert history.status.value == "SUCCEEDED"
+        assert actual_status == expected_status
 
     async def test_fail_execution(self, provider: StepFunctionsProvider) -> None:
+        # Arrange
+        expected_status = "FAILED"
+        expected_error = "CustomError"
+
+        # Act
         result = await provider.start_execution("fail-sm", input_data={})
         await asyncio.sleep(0.1)
-
         history = provider.get_execution(result["executionArn"])
+
+        # Assert
+        actual_status = history.status.value
+        actual_error = history.error
         assert history is not None
-        assert history.status.value == "FAILED"
-        assert history.error == "CustomError"
+        assert actual_status == expected_status
+        assert actual_error == expected_error
 
     async def test_unknown_state_machine_raises(self, provider: StepFunctionsProvider) -> None:
         with pytest.raises(KeyError, match="State machine not found"):

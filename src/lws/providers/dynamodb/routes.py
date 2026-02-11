@@ -208,7 +208,7 @@ class DynamoDbRouter:
             )
         return _json_response({"Table": description})
 
-    async def _list_tables(self, body: dict) -> Response:
+    async def _list_tables(self, _body: dict) -> Response:
         table_names = await self.store.list_tables()
         return _json_response({"TableNames": table_names})
 
@@ -223,13 +223,13 @@ class DynamoDbRouter:
             }
         )
 
-    async def _list_tags_of_resource(self, body: dict) -> Response:
+    async def _list_tags_of_resource(self, _body: dict) -> Response:
         return _json_response({"Tags": []})
 
-    async def _tag_resource(self, body: dict) -> Response:
+    async def _tag_resource(self, _body: dict) -> Response:
         return _json_response({})
 
-    async def _untag_resource(self, body: dict) -> Response:
+    async def _untag_resource(self, _body: dict) -> Response:
         return _json_response({})
 
     async def _update_table(self, body: dict) -> Response:

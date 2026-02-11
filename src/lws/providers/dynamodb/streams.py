@@ -135,7 +135,7 @@ def build_stream_record(
 def _filter_image(
     image: dict[str, Any] | None,
     view_type: StreamViewType,
-    key_attributes: list[str],
+    _key_attributes: list[str],
     is_new: bool,
 ) -> dict[str, Any] | None:
     """Filter an image based on the stream view type."""
@@ -256,8 +256,6 @@ class StreamDispatcher:
             try:
                 await self._collect_for_window(window_seconds)
                 await self._flush_pending()
-            except asyncio.CancelledError:
-                raise
             except Exception:
                 logger.exception("Error in stream flush loop")
 

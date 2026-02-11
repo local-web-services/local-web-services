@@ -33,6 +33,7 @@ class TestConfirmSubscription:
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Act
         resp = await client.post(
             "/",
             data={
@@ -42,7 +43,9 @@ class TestConfirmSubscription:
             },
         )
 
-        assert resp.status_code == 200
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert "ConfirmSubscriptionResponse" in resp.text
         assert "<SubscriptionArn>" in resp.text
 
@@ -51,6 +54,7 @@ class TestConfirmSubscription:
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Act
         resp = await client.post(
             "/",
             data={
@@ -60,6 +64,7 @@ class TestConfirmSubscription:
             },
         )
 
-        assert resp.status_code == 200
-        # The returned ARN should contain the topic ARN as a prefix
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert TOPIC_ARN in resp.text

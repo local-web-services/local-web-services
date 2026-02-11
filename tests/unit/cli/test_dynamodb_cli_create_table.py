@@ -22,7 +22,16 @@ def _mock_client_response(return_value: dict) -> AsyncMock:
 
 class TestCreateTable:
     def test_create_table_calls_correct_endpoint(self) -> None:
-        mock = _mock_client_response({"TableDescription": {"TableName": "MyTable"}})
+        # Arrange
+        expected_exit_code = 0
+        expected_service = "dynamodb"
+        expected_target = f"{_TARGET_PREFIX}.CreateTable"
+        expected_table_name = "MyTable"
+        expected_key_schema = [{"AttributeName": "pk", "KeyType": "HASH"}]
+        expected_attribute_definitions = [{"AttributeName": "pk", "AttributeType": "S"}]
+        mock = _mock_client_response({"TableDescription": {"TableName": expected_table_name}})
+
+        # Act
         with patch("lws.cli.services.dynamodb._client", return_value=mock):
             result = runner.invoke(
                 app,
@@ -30,25 +39,30 @@ class TestCreateTable:
                     "dynamodb",
                     "create-table",
                     "--table-name",
-                    "MyTable",
+                    expected_table_name,
                     "--key-schema",
-                    json.dumps([{"AttributeName": "pk", "KeyType": "HASH"}]),
+                    json.dumps(expected_key_schema),
                     "--attribute-definitions",
-                    json.dumps([{"AttributeName": "pk", "AttributeType": "S"}]),
+                    json.dumps(expected_attribute_definitions),
                 ],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.json_target_request.assert_awaited_once()
         call_args = mock.json_target_request.call_args
-        assert call_args[0][0] == "dynamodb"
-        assert call_args[0][1] == f"{_TARGET_PREFIX}.CreateTable"
-        body = call_args[0][2]
-        assert body["TableName"] == "MyTable"
-        assert body["KeySchema"] == [{"AttributeName": "pk", "KeyType": "HASH"}]
-        assert body["AttributeDefinitions"] == [{"AttributeName": "pk", "AttributeType": "S"}]
+        actual_service = call_args[0][0]
+        actual_target = call_args[0][1]
+        actual_body = call_args[0][2]
+        assert actual_service == expected_service
+        assert actual_target == expected_target
+        assert actual_body["TableName"] == expected_table_name
+        assert actual_body["KeySchema"] == expected_key_schema
+        assert actual_body["AttributeDefinitions"] == expected_attribute_definitions
 
     def test_create_table_with_gsi(self) -> None:
+        # Arrange
+        expected_exit_code = 0
         mock = _mock_client_response({"TableDescription": {"TableName": "MyTable"}})
         gsis = [
             {
@@ -57,6 +71,8 @@ class TestCreateTable:
                 "Projection": {"ProjectionType": "ALL"},
             }
         ]
+
+        # Act
         with patch("lws.cli.services.dynamodb._client", return_value=mock):
             result = runner.invoke(
                 app,
@@ -74,6 +90,7 @@ class TestCreateTable:
                 ],
             )
 
-        assert result.exit_code == 0
-        body = mock.json_target_request.call_args[0][2]
-        assert "GlobalSecondaryIndexes" in body
+        # Assert
+        assert result.exit_code == expected_exit_code
+        actual_body = mock.json_target_request.call_args[0][2]
+        assert "GlobalSecondaryIndexes" in actual_body

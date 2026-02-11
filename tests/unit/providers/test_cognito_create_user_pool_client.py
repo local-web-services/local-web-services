@@ -44,17 +44,26 @@ async def _request(client: httpx.AsyncClient, operation: str, body: dict) -> htt
 
 class TestCreateUserPoolClient:
     async def test_create_client_returns_client_info(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_client_name = "my-app"
+
+        # Act
         resp = await _request(
             client,
             "CreateUserPoolClient",
-            {"UserPoolId": POOL_ID, "ClientName": "my-app"},
+            {"UserPoolId": POOL_ID, "ClientName": expected_client_name},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         data = resp.json()
         assert "UserPoolClient" in data
         upc = data["UserPoolClient"]
-        assert upc["ClientName"] == "my-app"
-        assert upc["UserPoolId"] == POOL_ID
+        actual_client_name = upc["ClientName"]
+        actual_pool_id = upc["UserPoolId"]
+        assert actual_client_name == expected_client_name
+        assert actual_pool_id == POOL_ID
         assert "ClientId" in upc
 
     async def test_create_client_with_explicit_auth_flows(self, client: httpx.AsyncClient) -> None:
@@ -73,11 +82,16 @@ class TestCreateUserPoolClient:
         assert data["UserPoolClient"]["ExplicitAuthFlows"] == flows
 
     async def test_create_client_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "CreateUserPoolClient",
             {"UserPoolId": "us-east-1_wrong", "ClientName": "my-app"},
         )
-        assert resp.status_code == 400
-        data = resp.json()
-        assert data["__type"] == "ResourceNotFoundException"
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "ResourceNotFoundException"
+        assert resp.status_code == expected_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

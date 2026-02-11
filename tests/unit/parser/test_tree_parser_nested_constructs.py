@@ -26,6 +26,10 @@ class TestNestedConstructs:
     """Deeply nested constructs."""
 
     def test_nested_three_levels(self, tmp_tree):
+        # Arrange
+        expected_api_category = "apigateway"
+        expected_resource_id = "Resource"
+        expected_method_id = "Method"
         data = {
             "version": "tree-0.1",
             "tree": {
@@ -43,12 +47,12 @@ class TestNestedConstructs:
                                     "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
                                 },
                                 "children": {
-                                    "Resource": {
-                                        "id": "Resource",
+                                    expected_resource_id: {
+                                        "id": expected_resource_id,
                                         "path": "Stack/Api/Resource",
                                         "children": {
-                                            "Method": {
-                                                "id": "Method",
+                                            expected_method_id: {
+                                                "id": expected_method_id,
                                                 "path": "Stack/Api/Resource/Method",
                                             }
                                         },
@@ -60,13 +64,17 @@ class TestNestedConstructs:
                 },
             },
         }
+
+        # Act
         nodes = parse_tree(tmp_tree(data))
+
+        # Assert
         stack = nodes[0]
         api = stack.children[0]
-        assert api.category == "apigateway"
+        assert api.category == expected_api_category
         assert len(api.children) == 1
         resource = api.children[0]
-        assert resource.id == "Resource"
+        assert resource.id == expected_resource_id
         assert len(resource.children) == 1
         method = resource.children[0]
-        assert method.id == "Method"
+        assert method.id == expected_method_id

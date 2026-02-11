@@ -44,6 +44,8 @@ class TestMissingConstructInfo:
         assert nodes[0].fqn is None
 
     def test_construct_info_with_unknown_fqn(self, tmp_tree):
+        # Arrange
+        expected_fqn = "some.custom.Construct"
         data = {
             "version": "tree-0.1",
             "tree": {
@@ -54,12 +56,17 @@ class TestMissingConstructInfo:
                         "id": "S",
                         "path": "S",
                         "constructInfo": {
-                            "fqn": "some.custom.Construct",
+                            "fqn": expected_fqn,
                         },
                     }
                 },
             },
         }
+
+        # Act
         nodes = parse_tree(tmp_tree(data))
-        assert nodes[0].fqn == "some.custom.Construct"
+
+        # Assert
+        actual_fqn = nodes[0].fqn
+        assert actual_fqn == expected_fqn
         assert nodes[0].category is None

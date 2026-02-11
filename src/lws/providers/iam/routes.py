@@ -40,6 +40,31 @@ class _IamState:
         self._policies: dict[str, dict] = {}  # arn -> policy
         self._instance_profiles: dict[str, dict] = {}
 
+    @property
+    def roles(self) -> dict[str, dict]:
+        """Return roles store."""
+        return self._roles
+
+    @property
+    def role_policies(self) -> dict[str, dict[str, str]]:
+        """Return role policies store."""
+        return self._role_policies
+
+    @property
+    def attached_policies(self) -> dict[str, list[str]]:
+        """Return attached policies store."""
+        return self._attached_policies
+
+    @property
+    def policies(self) -> dict[str, dict]:
+        """Return policies store."""
+        return self._policies
+
+    @property
+    def instance_profiles(self) -> dict[str, dict]:
+        """Return instance profiles store."""
+        return self._instance_profiles
+
 
 # ------------------------------------------------------------------
 # Action handlers
@@ -67,9 +92,9 @@ async def _handle_create_role(state: _IamState, params: dict[str, str]) -> Respo
         "AssumeRolePolicyDocument": assume_role_doc,
         "CreateDate": "2024-01-01T00:00:00Z",
     }
-    state._roles[role_name] = role
-    state._role_policies.setdefault(role_name, {})
-    state._attached_policies.setdefault(role_name, [])
+    state.roles[role_name] = role
+    state.role_policies.setdefault(role_name, {})
+    state.attached_policies.setdefault(role_name, [])
 
     xml = (
         "<CreateRoleResponse>"
@@ -91,7 +116,7 @@ async def _handle_create_role(state: _IamState, params: dict[str, str]) -> Respo
 
 async def _handle_get_role(state: _IamState, params: dict[str, str]) -> Response:
     role_name = params.get("RoleName", "")
-    role = state._roles.get(role_name)
+    role = state.roles.get(role_name)
     if role is None:
         xml = (
             "<ErrorResponse>"
@@ -123,9 +148,9 @@ async def _handle_get_role(state: _IamState, params: dict[str, str]) -> Response
 
 async def _handle_delete_role(state: _IamState, params: dict[str, str]) -> Response:
     role_name = params.get("RoleName", "")
-    state._roles.pop(role_name, None)
-    state._role_policies.pop(role_name, None)
-    state._attached_policies.pop(role_name, None)
+    state.roles.pop(role_name, None)
+    state.role_policies.pop(role_name, None)
+    state.attached_policies.pop(role_name, None)
     xml = (
         "<DeleteRoleResponse>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
@@ -138,7 +163,7 @@ async def _handle_put_role_policy(state: _IamState, params: dict[str, str]) -> R
     role_name = params.get("RoleName", "")
     policy_name = params.get("PolicyName", "")
     policy_document = params.get("PolicyDocument", "{}")
-    state._role_policies.setdefault(role_name, {})[policy_name] = policy_document
+    state.role_policies.setdefault(role_name, {})[policy_name] = policy_document
     xml = (
         "<PutRolePolicyResponse>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
@@ -150,7 +175,7 @@ async def _handle_put_role_policy(state: _IamState, params: dict[str, str]) -> R
 async def _handle_get_role_policy(state: _IamState, params: dict[str, str]) -> Response:
     role_name = params.get("RoleName", "")
     policy_name = params.get("PolicyName", "")
-    doc = state._role_policies.get(role_name, {}).get(policy_name, "{}")
+    doc = state.role_policies.get(role_name, {}).get(policy_name, "{}")
     xml = (
         "<GetRolePolicyResponse>"
         "<GetRolePolicyResult>"
@@ -167,7 +192,7 @@ async def _handle_get_role_policy(state: _IamState, params: dict[str, str]) -> R
 async def _handle_delete_role_policy(state: _IamState, params: dict[str, str]) -> Response:
     role_name = params.get("RoleName", "")
     policy_name = params.get("PolicyName", "")
-    state._role_policies.get(role_name, {}).pop(policy_name, None)
+    state.role_policies.get(role_name, {}).pop(policy_name, None)
     xml = (
         "<DeleteRolePolicyResponse>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
@@ -179,7 +204,7 @@ async def _handle_delete_role_policy(state: _IamState, params: dict[str, str]) -
 async def _handle_attach_role_policy(state: _IamState, params: dict[str, str]) -> Response:
     role_name = params.get("RoleName", "")
     policy_arn = params.get("PolicyArn", "")
-    attached = state._attached_policies.setdefault(role_name, [])
+    attached = state.attached_policies.setdefault(role_name, [])
     if policy_arn not in attached:
         attached.append(policy_arn)
     xml = (
@@ -193,7 +218,7 @@ async def _handle_attach_role_policy(state: _IamState, params: dict[str, str]) -
 async def _handle_detach_role_policy(state: _IamState, params: dict[str, str]) -> Response:
     role_name = params.get("RoleName", "")
     policy_arn = params.get("PolicyArn", "")
-    attached = state._attached_policies.get(role_name, [])
+    attached = state.attached_policies.get(role_name, [])
     if policy_arn in attached:
         attached.remove(policy_arn)
     xml = (
@@ -206,7 +231,7 @@ async def _handle_detach_role_policy(state: _IamState, params: dict[str, str]) -
 
 async def _handle_list_role_policies(state: _IamState, params: dict[str, str]) -> Response:
     role_name = params.get("RoleName", "")
-    policies = state._role_policies.get(role_name, {})
+    policies = state.role_policies.get(role_name, {})
     members = "".join(f"<member>{name}</member>" for name in policies)
     xml = (
         "<ListRolePoliciesResponse>"
@@ -222,7 +247,7 @@ async def _handle_list_role_policies(state: _IamState, params: dict[str, str]) -
 
 async def _handle_list_attached_role_policies(state: _IamState, params: dict[str, str]) -> Response:
     role_name = params.get("RoleName", "")
-    attached = state._attached_policies.get(role_name, [])
+    attached = state.attached_policies.get(role_name, [])
     members = "".join(
         f"<member><PolicyArn>{arn}</PolicyArn>"
         f"<PolicyName>{arn.rsplit('/', 1)[-1]}</PolicyName></member>"
@@ -253,7 +278,7 @@ async def _handle_create_policy(state: _IamState, params: dict[str, str]) -> Res
         "AttachmentCount": 0,
         "CreateDate": "2024-01-01T00:00:00Z",
     }
-    state._policies[policy_arn] = policy
+    state.policies[policy_arn] = policy
     xml = (
         "<CreatePolicyResponse>"
         "<CreatePolicyResult>"
@@ -275,7 +300,7 @@ async def _handle_create_policy(state: _IamState, params: dict[str, str]) -> Res
 
 async def _handle_get_policy(state: _IamState, params: dict[str, str]) -> Response:
     policy_arn = params.get("PolicyArn", "")
-    policy = state._policies.get(policy_arn)
+    policy = state.policies.get(policy_arn)
     if policy is None:
         xml = (
             "<ErrorResponse>"
@@ -306,7 +331,7 @@ async def _handle_get_policy(state: _IamState, params: dict[str, str]) -> Respon
 
 async def _handle_delete_policy(state: _IamState, params: dict[str, str]) -> Response:
     policy_arn = params.get("PolicyArn", "")
-    state._policies.pop(policy_arn, None)
+    state.policies.pop(policy_arn, None)
     xml = (
         "<DeletePolicyResponse>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
@@ -327,7 +352,7 @@ async def _handle_create_instance_profile(state: _IamState, params: dict[str, st
         "Roles": [],
         "CreateDate": "2024-01-01T00:00:00Z",
     }
-    state._instance_profiles[name] = profile
+    state.instance_profiles[name] = profile
     xml = (
         "<CreateInstanceProfileResponse>"
         "<CreateInstanceProfileResult>"
@@ -348,7 +373,7 @@ async def _handle_create_instance_profile(state: _IamState, params: dict[str, st
 
 async def _handle_get_instance_profile(state: _IamState, params: dict[str, str]) -> Response:
     name = params.get("InstanceProfileName", "")
-    profile = state._instance_profiles.get(name)
+    profile = state.instance_profiles.get(name)
     if profile is None:
         xml = (
             "<ErrorResponse>"
@@ -379,7 +404,7 @@ async def _handle_get_instance_profile(state: _IamState, params: dict[str, str])
 
 async def _handle_delete_instance_profile(state: _IamState, params: dict[str, str]) -> Response:
     name = params.get("InstanceProfileName", "")
-    state._instance_profiles.pop(name, None)
+    state.instance_profiles.pop(name, None)
     xml = (
         "<DeleteInstanceProfileResponse>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
@@ -388,7 +413,7 @@ async def _handle_delete_instance_profile(state: _IamState, params: dict[str, st
     return _xml_response(xml)
 
 
-async def _handle_tag_role(state: _IamState, params: dict[str, str]) -> Response:
+async def _handle_tag_role(_state: _IamState, _params: dict[str, str]) -> Response:
     xml = (
         "<TagRoleResponse>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
@@ -397,7 +422,7 @@ async def _handle_tag_role(state: _IamState, params: dict[str, str]) -> Response
     return _xml_response(xml)
 
 
-async def _handle_untag_role(state: _IamState, params: dict[str, str]) -> Response:
+async def _handle_untag_role(_state: _IamState, _params: dict[str, str]) -> Response:
     xml = (
         "<UntagRoleResponse>"
         f"<ResponseMetadata><RequestId>{_request_id()}</RequestId></ResponseMetadata>"
@@ -406,9 +431,9 @@ async def _handle_untag_role(state: _IamState, params: dict[str, str]) -> Respon
     return _xml_response(xml)
 
 
-async def _handle_list_roles(state: _IamState, params: dict[str, str]) -> Response:
+async def _handle_list_roles(state: _IamState, _params: dict[str, str]) -> Response:
     members = ""
-    for role in state._roles.values():
+    for role in state.roles.values():
         members += (
             "<member>"
             f"<RoleName>{role['RoleName']}</RoleName>"
@@ -432,9 +457,9 @@ async def _handle_list_roles(state: _IamState, params: dict[str, str]) -> Respon
     return _xml_response(xml)
 
 
-async def _handle_list_policies(state: _IamState, params: dict[str, str]) -> Response:
+async def _handle_list_policies(state: _IamState, _params: dict[str, str]) -> Response:
     members = ""
-    for policy in state._policies.values():
+    for policy in state.policies.values():
         members += (
             "<member>"
             f"<PolicyName>{policy['PolicyName']}</PolicyName>"

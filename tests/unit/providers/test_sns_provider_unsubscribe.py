@@ -33,17 +33,26 @@ class TestProviderUnsubscribe:
         self,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        await provider.create_topic(topic_name)
         sub_arn = await provider.subscribe(
-            topic_name="my-topic", protocol="lambda", endpoint="my-func"
+            topic_name=topic_name, protocol="lambda", endpoint="my-func"
         )
-        result = await provider.unsubscribe(sub_arn)
-        assert result is True
+
+        # Act
+        actual_result = await provider.unsubscribe(sub_arn)
+
+        # Assert
+        assert actual_result is True
 
     @pytest.mark.asyncio
     async def test_unsubscribe_returns_false_when_not_found(
         self,
         provider: SnsProvider,
     ) -> None:
-        result = await provider.unsubscribe("arn:aws:sns:us-east-1:000000000000:x:nope")
-        assert result is False
+        # Act
+        actual_result = await provider.unsubscribe("arn:aws:sns:us-east-1:000000000000:x:nope")
+
+        # Assert
+        assert actual_result is False

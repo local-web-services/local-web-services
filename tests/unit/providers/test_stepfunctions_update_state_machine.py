@@ -97,15 +97,22 @@ class TestUpdateStateMachine:
 
     async def test_update_role_arn(self, client: httpx.AsyncClient) -> None:
         """UpdateStateMachine should update roleArn."""
+        # Arrange
+        expected_status_code = 200
+        expected_role_arn = "arn:aws:iam::000000000000:role/new-role"
+
+        # Act
         resp = await _request(
             client,
             "UpdateStateMachine",
             {
                 "stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:test-sm",
-                "roleArn": "arn:aws:iam::000000000000:role/new-role",
+                "roleArn": expected_role_arn,
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "updateDate" in data
 
@@ -115,13 +122,19 @@ class TestUpdateStateMachine:
             "DescribeStateMachine",
             {"stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:test-sm"},
         )
-        assert desc_resp.status_code == 200
-        assert desc_resp.json()["roleArn"] == "arn:aws:iam::000000000000:role/new-role"
+        assert desc_resp.status_code == expected_status_code
+        actual_role_arn = desc_resp.json()["roleArn"]
+        assert actual_role_arn == expected_role_arn
 
     async def test_update_nonexistent_state_machine_returns_error(
         self, client: httpx.AsyncClient
     ) -> None:
         """UpdateStateMachine with invalid ARN should return StateMachineDoesNotExist."""
+        # Arrange
+        expected_status_code = 400
+        expected_error_type = "StateMachineDoesNotExist"
+
+        # Act
         resp = await _request(
             client,
             "UpdateStateMachine",
@@ -130,12 +143,20 @@ class TestUpdateStateMachine:
                 "definition": "{}",
             },
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code
         body = resp.json()
-        assert body["__type"] == "StateMachineDoesNotExist"
+        actual_error_type = body["__type"]
+        assert actual_error_type == expected_error_type
 
     async def test_update_definition_changes_behavior(self, client: httpx.AsyncClient) -> None:
         """After updating definition, new executions should use the new definition."""
+        # Arrange
+        expected_status_code = 200
+        expected_status = "SUCCEEDED"
+        expected_output = {"greeting": "updated"}
+
         # Update with new definition
         await _request(
             client,
@@ -148,7 +169,7 @@ class TestUpdateStateMachine:
             },
         )
 
-        # Run an execution with the updated definition
+        # Act
         exec_resp = await _request(
             client,
             "StartSyncExecution",
@@ -157,8 +178,11 @@ class TestUpdateStateMachine:
                 "input": "{}",
             },
         )
-        assert exec_resp.status_code == 200
+
+        # Assert
+        assert exec_resp.status_code == expected_status_code
         data = exec_resp.json()
-        assert data["status"] == "SUCCEEDED"
-        output = json.loads(data["output"])
-        assert output == {"greeting": "updated"}
+        actual_status = data["status"]
+        actual_output = json.loads(data["output"])
+        assert actual_status == expected_status
+        assert actual_output == expected_output

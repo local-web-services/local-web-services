@@ -122,22 +122,28 @@ class TestRateExpression:
     """Test rate expression parsing."""
 
     def test_rate_1_minute(self) -> None:
-        assert parse_rate_expression("rate(1 minute)") == 60.0
+        expected_seconds = 60.0
+        assert parse_rate_expression("rate(1 minute)") == expected_seconds
 
     def test_rate_5_minutes(self) -> None:
-        assert parse_rate_expression("rate(5 minutes)") == 300.0
+        expected_seconds = 300.0
+        assert parse_rate_expression("rate(5 minutes)") == expected_seconds
 
     def test_rate_1_hour(self) -> None:
-        assert parse_rate_expression("rate(1 hour)") == 3600.0
+        expected_seconds = 3600.0
+        assert parse_rate_expression("rate(1 hour)") == expected_seconds
 
     def test_rate_12_hours(self) -> None:
-        assert parse_rate_expression("rate(12 hours)") == 43200.0
+        expected_seconds = 43200.0
+        assert parse_rate_expression("rate(12 hours)") == expected_seconds
 
     def test_rate_1_day(self) -> None:
-        assert parse_rate_expression("rate(1 day)") == 86400.0
+        expected_seconds = 86400.0
+        assert parse_rate_expression("rate(1 day)") == expected_seconds
 
     def test_rate_7_days(self) -> None:
-        assert parse_rate_expression("rate(7 days)") == 604800.0
+        expected_seconds = 604800.0
+        assert parse_rate_expression("rate(7 days)") == expected_seconds
 
     def test_rate_invalid_format(self) -> None:
         with pytest.raises(ValueError):

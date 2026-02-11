@@ -103,18 +103,37 @@ class TestUserStoreSignUp:
         assert len(sub) > 0
 
     async def test_sign_up_duplicate_rejected(self, store: UserStore) -> None:
-        await store.sign_up("alice", "Password1A")
+        # Arrange
+        username = "alice"
+        password = "Password1A"
+        await store.sign_up(username, password)
+
+        # Act / Assert
         with pytest.raises(UsernameExistsException):
-            await store.sign_up("alice", "Password1A")
+            await store.sign_up(username, password)
 
     async def test_sign_up_stores_attributes(self, store: UserStore) -> None:
-        await store.sign_up("alice", "Password1A", {"email": "alice@example.com"})
-        user = await store.get_user("alice")
+        # Arrange
+        username = "alice"
+        expected_email = "alice@example.com"
+
+        # Act
+        await store.sign_up(username, "Password1A", {"email": expected_email})
+        user = await store.get_user(username)
+
+        # Assert
         assert user is not None
-        assert user["attributes"]["email"] == "alice@example.com"
+        actual_email = user["attributes"]["email"]
+        assert actual_email == expected_email
 
     async def test_sign_up_auto_confirmed(self, store: UserStore) -> None:
-        await store.sign_up("alice", "Password1A")
-        user = await store.get_user("alice")
+        # Arrange
+        username = "alice"
+
+        # Act
+        await store.sign_up(username, "Password1A")
+        user = await store.get_user(username)
+
+        # Assert
         assert user is not None
         assert user["confirmed"] is True

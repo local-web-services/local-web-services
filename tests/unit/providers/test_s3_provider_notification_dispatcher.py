@@ -55,50 +55,72 @@ class TestNotificationDispatcher:
     """Notification dispatch with filters."""
 
     async def test_dispatch_calls_handler(self) -> None:
+        # Arrange
         received: list[dict] = []
+        bucket = "mybucket"
+        expected_key = "test-key"
 
         async def handler(record: dict) -> None:
             received.append(record)
 
         dispatcher = NotificationDispatcher()
-        dispatcher.register("mybucket", "ObjectCreated:*", handler)
-        dispatcher.dispatch("mybucket", "ObjectCreated:Put", "test-key")
+        dispatcher.register(bucket, "ObjectCreated:*", handler)
 
-        # Allow the async task to run
+        # Act
+        dispatcher.dispatch(bucket, "ObjectCreated:Put", expected_key)
         await asyncio.sleep(0.05)
-        assert len(received) == 1
-        assert received[0]["s3"]["object"]["key"] == "test-key"
+
+        # Assert
+        expected_count = 1
+        assert len(received) == expected_count
+        actual_key = received[0]["s3"]["object"]["key"]
+        assert actual_key == expected_key
 
     async def test_dispatch_prefix_filter(self) -> None:
+        # Arrange
         received: list[dict] = []
+        bucket = "mybucket"
+        expected_key = "images/photo.jpg"
 
         async def handler(record: dict) -> None:
             received.append(record)
 
         dispatcher = NotificationDispatcher()
-        dispatcher.register("mybucket", "ObjectCreated:*", handler, prefix_filter="images/")
-        dispatcher.dispatch("mybucket", "ObjectCreated:Put", "images/photo.jpg")
-        dispatcher.dispatch("mybucket", "ObjectCreated:Put", "docs/readme.md")
+        dispatcher.register(bucket, "ObjectCreated:*", handler, prefix_filter="images/")
 
+        # Act
+        dispatcher.dispatch(bucket, "ObjectCreated:Put", expected_key)
+        dispatcher.dispatch(bucket, "ObjectCreated:Put", "docs/readme.md")
         await asyncio.sleep(0.05)
-        assert len(received) == 1
-        assert received[0]["s3"]["object"]["key"] == "images/photo.jpg"
+
+        # Assert
+        expected_count = 1
+        assert len(received) == expected_count
+        actual_key = received[0]["s3"]["object"]["key"]
+        assert actual_key == expected_key
 
     async def test_dispatch_suffix_filter(self) -> None:
+        # Arrange
         received: list[dict] = []
+        bucket = "mybucket"
 
         async def handler(record: dict) -> None:
             received.append(record)
 
         dispatcher = NotificationDispatcher()
-        dispatcher.register("mybucket", "ObjectCreated:*", handler, suffix_filter=".jpg")
-        dispatcher.dispatch("mybucket", "ObjectCreated:Put", "photo.jpg")
-        dispatcher.dispatch("mybucket", "ObjectCreated:Put", "photo.png")
+        dispatcher.register(bucket, "ObjectCreated:*", handler, suffix_filter=".jpg")
 
+        # Act
+        dispatcher.dispatch(bucket, "ObjectCreated:Put", "photo.jpg")
+        dispatcher.dispatch(bucket, "ObjectCreated:Put", "photo.png")
         await asyncio.sleep(0.05)
-        assert len(received) == 1
+
+        # Assert
+        expected_count = 1
+        assert len(received) == expected_count
 
     async def test_dispatch_wrong_bucket_ignored(self) -> None:
+        # Arrange
         received: list[dict] = []
 
         async def handler(record: dict) -> None:
@@ -106,59 +128,91 @@ class TestNotificationDispatcher:
 
         dispatcher = NotificationDispatcher()
         dispatcher.register("mybucket", "ObjectCreated:*", handler)
-        dispatcher.dispatch("otherbucket", "ObjectCreated:Put", "key")
 
+        # Act
+        dispatcher.dispatch("otherbucket", "ObjectCreated:Put", "key")
         await asyncio.sleep(0.05)
-        assert len(received) == 0
+
+        # Assert
+        expected_count = 0
+        assert len(received) == expected_count
 
     async def test_dispatch_wrong_event_type_ignored(self) -> None:
+        # Arrange
         received: list[dict] = []
+        bucket = "mybucket"
 
         async def handler(record: dict) -> None:
             received.append(record)
 
         dispatcher = NotificationDispatcher()
-        dispatcher.register("mybucket", "ObjectRemoved:*", handler)
-        dispatcher.dispatch("mybucket", "ObjectCreated:Put", "key")
+        dispatcher.register(bucket, "ObjectRemoved:*", handler)
 
+        # Act
+        dispatcher.dispatch(bucket, "ObjectCreated:Put", "key")
         await asyncio.sleep(0.05)
-        assert len(received) == 0
+
+        # Assert
+        expected_count = 0
+        assert len(received) == expected_count
 
     async def test_dispatch_exact_event_match(self) -> None:
+        # Arrange
         received: list[dict] = []
+        bucket = "mybucket"
+        event_type = "ObjectCreated:Put"
 
         async def handler(record: dict) -> None:
             received.append(record)
 
         dispatcher = NotificationDispatcher()
-        dispatcher.register("mybucket", "ObjectCreated:Put", handler)
-        dispatcher.dispatch("mybucket", "ObjectCreated:Put", "key")
+        dispatcher.register(bucket, event_type, handler)
 
+        # Act
+        dispatcher.dispatch(bucket, event_type, "key")
         await asyncio.sleep(0.05)
-        assert len(received) == 1
+
+        # Assert
+        expected_count = 1
+        assert len(received) == expected_count
 
     async def test_provider_notification_on_put(self, provider: S3Provider) -> None:
+        # Arrange
         received: list[dict] = []
+        bucket = "test-bucket"
+        expected_key = "notify-test"
 
         async def handler(record: dict) -> None:
             received.append(record)
 
-        provider.register_notification_handler("test-bucket", handler)
-        await provider.put_object("test-bucket", "notify-test", b"data")
+        provider.register_notification_handler(bucket, handler)
 
+        # Act
+        await provider.put_object(bucket, expected_key, b"data")
         await asyncio.sleep(0.05)
-        assert len(received) == 1
-        assert received[0]["s3"]["object"]["key"] == "notify-test"
+
+        # Assert
+        expected_count = 1
+        assert len(received) == expected_count
+        actual_key = received[0]["s3"]["object"]["key"]
+        assert actual_key == expected_key
 
     async def test_provider_notification_on_delete(self, provider: S3Provider) -> None:
+        # Arrange
         received: list[dict] = []
+        bucket = "test-bucket"
+        key = "to-delete"
 
         async def handler(record: dict) -> None:
             received.append(record)
 
-        provider.register_notification_handler("test-bucket", handler, event_type="ObjectRemoved:*")
-        await provider.put_object("test-bucket", "to-delete", b"data")
-        await provider.delete_object("test-bucket", "to-delete")
+        provider.register_notification_handler(bucket, handler, event_type="ObjectRemoved:*")
+        await provider.put_object(bucket, key, b"data")
 
+        # Act
+        await provider.delete_object(bucket, key)
         await asyncio.sleep(0.05)
-        assert len(received) == 1
+
+        # Assert
+        expected_count = 1
+        assert len(received) == expected_count

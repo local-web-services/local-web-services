@@ -362,44 +362,9 @@ class StepFunctionsProvider(IStateMachine):
             event_id += 1
 
         # Add terminal event if execution has completed
-        if history.status == ExecutionStatus.SUCCEEDED:
-            events.append(
-                {
-                    "timestamp": history.end_time or history.start_time,
-                    "type": "ExecutionSucceeded",
-                    "id": event_id,
-                    "previousEventId": event_id - 1,
-                    "executionSucceededEventDetails": {
-                        "output": json.dumps(history.output_data) if history.output_data else "{}",
-                    },
-                }
-            )
-        elif history.status == ExecutionStatus.FAILED:
-            events.append(
-                {
-                    "timestamp": history.end_time or history.start_time,
-                    "type": "ExecutionFailed",
-                    "id": event_id,
-                    "previousEventId": event_id - 1,
-                    "executionFailedEventDetails": {
-                        "error": history.error or "",
-                        "cause": history.cause or "",
-                    },
-                }
-            )
-        elif history.status == ExecutionStatus.ABORTED:
-            events.append(
-                {
-                    "timestamp": history.end_time or history.start_time,
-                    "type": "ExecutionAborted",
-                    "id": event_id,
-                    "previousEventId": event_id - 1,
-                    "executionAbortedEventDetails": {
-                        "error": history.error or "",
-                        "cause": history.cause or "",
-                    },
-                }
-            )
+        terminal = _build_terminal_event(history, event_id)
+        if terminal is not None:
+            events.append(terminal)
 
         if max_results is not None:
             events = events[:max_results]
@@ -442,7 +407,7 @@ class StepFunctionsProvider(IStateMachine):
         self._executions[execution_arn] = history
 
         # Run in background - actual history will be updated
-        import asyncio
+        import asyncio  # pylint: disable=import-outside-toplevel
 
         asyncio.create_task(
             self._run_background_execution(engine, execution_arn, state_machine_name, input_data)
@@ -493,6 +458,37 @@ class StepFunctionsProvider(IStateMachine):
 # ---------------------------------------------------------------------------
 
 
+def _build_terminal_event(history: ExecutionHistory, event_id: int) -> dict | None:
+    """Build a terminal event dict for a completed execution, or None if still running."""
+    timestamp = history.end_time or history.start_time
+    base = {
+        "timestamp": timestamp,
+        "id": event_id,
+        "previousEventId": event_id - 1,
+    }
+    if history.status == ExecutionStatus.SUCCEEDED:
+        base["type"] = "ExecutionSucceeded"
+        base["executionSucceededEventDetails"] = {
+            "output": json.dumps(history.output_data) if history.output_data else "{}",
+        }
+        return base
+    if history.status == ExecutionStatus.FAILED:
+        base["type"] = "ExecutionFailed"
+        base["executionFailedEventDetails"] = {
+            "error": history.error or "",
+            "cause": history.cause or "",
+        }
+        return base
+    if history.status == ExecutionStatus.ABORTED:
+        base["type"] = "ExecutionAborted"
+        base["executionAbortedEventDetails"] = {
+            "error": history.error or "",
+            "cause": history.cause or "",
+        }
+        return base
+    return None
+
+
 def _extract_function_name(resource_arn: str) -> str:
     """Extract the function name from a Lambda ARN or resource string."""
     if ":function:" in resource_arn:
@@ -525,10 +521,12 @@ async def _invoke_compute(compute: ICompute, function_name: str, payload: Any) -
     return await compute.invoke(event, context)
 
 
-def _process_invocation_result(result: InvocationResult, resource_arn: str) -> Any:
+def _process_invocation_result(result: InvocationResult, _resource_arn: str) -> Any:
     """Process an InvocationResult, raising on error."""
     if result.error:
-        from lws.providers.stepfunctions.engine import StatesTaskFailed
+        from lws.providers.stepfunctions.engine import (  # pylint: disable=import-outside-toplevel
+            StatesTaskFailed,
+        )
 
         raise StatesTaskFailed(
             error="States.TaskFailed",

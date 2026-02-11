@@ -115,6 +115,7 @@ class TestGSI:
     """GSI projection and query."""
 
     async def test_gsi_query(self, gsi_provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await gsi_provider.put_item(
             "orders",
             {
@@ -142,18 +143,24 @@ class TestGSI:
                 "createdAt": "2024-01-03",
             },
         )
+        expected_count = 2
+        expected_statuses = {"shipped"}
 
+        # Act
         results = await gsi_provider.query(
             "orders",
             "status = :s",
             expression_values={":s": "shipped"},
             index_name="byStatus",
         )
-        assert len(results) == 2
-        statuses = {r["status"] for r in results}
-        assert statuses == {"shipped"}
+
+        # Assert
+        assert len(results) == expected_count
+        actual_statuses = {r["status"] for r in results}
+        assert actual_statuses == expected_statuses
 
     async def test_delete_cleans_gsi(self, gsi_provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await gsi_provider.put_item(
             "orders",
             {
@@ -164,11 +171,15 @@ class TestGSI:
             },
         )
         await gsi_provider.delete_item("orders", {"orderId": "o1", "itemId": "i1"})
+        expected_count = 0
 
+        # Act
         results = await gsi_provider.query(
             "orders",
             "status = :s",
             expression_values={":s": "shipped"},
             index_name="byStatus",
         )
-        assert len(results) == 0
+
+        # Assert
+        assert len(results) == expected_count

@@ -63,24 +63,43 @@ def _make_context(
 
 class TestCfnRefMarkers:
     def test_ref_colon_known_resource(self) -> None:
+        # Arrange
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
         ctx = _make_context(environment={"TABLE": "Ref: MyTable"})
+
+        # Act
         issues = validator.validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_ref_colon_unknown_resource(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_resource_name = "UnknownResource"
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
-        ctx = _make_context(environment={"TABLE": "Ref: UnknownResource"})
+        ctx = _make_context(environment={"TABLE": f"Ref: {expected_resource_name}"})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 1
-        assert "UnknownResource" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_resource_name in issues[0].message
 
     def test_bang_ref_unknown_resource(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_resource_name = "UnknownRes"
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
-        ctx = _make_context(environment={"TABLE": "!Ref UnknownRes"})
+        ctx = _make_context(environment={"TABLE": f"!Ref {expected_resource_name}"})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 1
-        assert "UnknownRes" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_resource_name in issues[0].message

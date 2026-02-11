@@ -55,39 +55,63 @@ async def provider(tmp_path: Path):
 class TestCreateTable:
     @pytest.mark.asyncio
     async def test_create_table(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         config = _simple_config()
+        expected_table_name = "orders"
+        expected_status = "ACTIVE"
+
+        # Act
         result = await provider.create_table(config)
 
-        assert result["TableName"] == "orders"
-        assert result["TableStatus"] == "ACTIVE"
+        # Assert
+        actual_table_name = result["TableName"]
+        actual_status = result["TableStatus"]
+        assert actual_table_name == expected_table_name
+        assert actual_status == expected_status
 
         tables = await provider.list_tables()
-        assert "orders" in tables
+        assert expected_table_name in tables
 
     @pytest.mark.asyncio
     async def test_create_table_can_put_and_get(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.create_table(_simple_config())
-
         item = {"pk": "p1", "sk": "s1", "data": "hello"}
+        expected_data = "hello"
         await provider.put_item("orders", item)
+
+        # Act
         result = await provider.get_item("orders", {"pk": "p1", "sk": "s1"})
+
+        # Assert
         assert result is not None
-        assert result["data"] == "hello"
+        actual_data = result["data"]
+        assert actual_data == expected_data
 
     @pytest.mark.asyncio
     async def test_create_table_duplicate_is_idempotent(
         self, provider: SqliteDynamoProvider
     ) -> None:
+        # Act
         first = await provider.create_table(_simple_config())
         second = await provider.create_table(_simple_config())
 
+        # Assert
         assert first["TableName"] == second["TableName"]
 
     @pytest.mark.asyncio
     async def test_create_table_with_gsi(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         config = _config_with_gsi()
+        expected_table_name = "users"
+        expected_index_name = "email_index"
+
+        # Act
         result = await provider.create_table(config)
 
-        assert result["TableName"] == "users"
+        # Assert
+        actual_table_name = result["TableName"]
+        actual_index_name = result["GlobalSecondaryIndexes"][0]["IndexName"]
+        assert actual_table_name == expected_table_name
         assert "GlobalSecondaryIndexes" in result
-        assert result["GlobalSecondaryIndexes"][0]["IndexName"] == "email_index"
+        assert actual_index_name == expected_index_name

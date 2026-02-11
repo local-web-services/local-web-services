@@ -30,29 +30,35 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestDeleteAndRestore:
     def test_soft_delete(self, client: TestClient) -> None:
+        secret_name = "del-soft"
+        expected_secret_value = "x"
         _post(
             client,
             "CreateSecret",
-            {"Name": "del-soft", "SecretString": "x"},
+            {"Name": secret_name, "SecretString": expected_secret_value},
         )
-        _post(client, "DeleteSecret", {"SecretId": "del-soft"})
+        _post(client, "DeleteSecret", {"SecretId": secret_name})
 
-        # Listed secrets should not include deleted
+        # Assert - listed secrets should not include deleted
         listed = _post(client, "ListSecrets", {})
         names = [s["Name"] for s in listed["SecretList"]]
-        assert "del-soft" not in names
+        assert secret_name not in names
 
         # But can restore
-        _post(client, "RestoreSecret", {"SecretId": "del-soft"})
-        got = _post(client, "GetSecretValue", {"SecretId": "del-soft"})
-        assert got["SecretString"] == "x"
+        _post(client, "RestoreSecret", {"SecretId": secret_name})
+        got = _post(client, "GetSecretValue", {"SecretId": secret_name})
+        assert got["SecretString"] == expected_secret_value
 
     def test_force_delete(self, client: TestClient) -> None:
-        _post(client, "CreateSecret", {"Name": "del-force"})
+        secret_name = "del-force"
+        _post(client, "CreateSecret", {"Name": secret_name})
         _post(
             client,
             "DeleteSecret",
-            {"SecretId": "del-force", "ForceDeleteWithoutRecovery": True},
+            {"SecretId": secret_name, "ForceDeleteWithoutRecovery": True},
         )
-        result = _post(client, "DescribeSecret", {"SecretId": "del-force"})
-        assert result["__type"] == "ResourceNotFoundException"
+        result = _post(client, "DescribeSecret", {"SecretId": secret_name})
+
+        # Assert
+        expected_error_type = "ResourceNotFoundException"
+        assert result["__type"] == expected_error_type

@@ -87,7 +87,11 @@ class TestTaskState:
     """Task state invocation and I/O processing."""
 
     async def test_task_invokes_compute(self) -> None:
-        compute = MockCompute({"myFunc": {"result": "done"}})
+        # Arrange
+        expected_output = {"result": "done"}
+        compute = MockCompute({"myFunc": expected_output})
+
+        # Act
         history = await run_engine(
             {
                 "StartAt": "T",
@@ -96,8 +100,11 @@ class TestTaskState:
             input_data={"key": "val"},
             compute=compute,
         )
+
+        # Assert
+        actual_output = history.output_data
         assert history.status == ExecutionStatus.SUCCEEDED
-        assert history.output_data == {"result": "done"}
+        assert actual_output == expected_output
 
     async def test_task_passes_input_to_compute(self) -> None:
         received = {}
@@ -169,7 +176,11 @@ class TestTaskState:
         assert captured.get("static") == "val"
 
     async def test_task_with_result_path(self) -> None:
-        compute = MockCompute({"fn": {"response": "ok"}})
+        # Arrange
+        expected_task_result = {"response": "ok"}
+        compute = MockCompute({"fn": expected_task_result})
+
+        # Act
         history = await run_engine(
             {
                 "StartAt": "T",
@@ -185,8 +196,11 @@ class TestTaskState:
             input_data={"original": True},
             compute=compute,
         )
+
+        # Assert
+        actual_task_result = history.output_data["taskResult"]
         assert history.output_data["original"] is True
-        assert history.output_data["taskResult"] == {"response": "ok"}
+        assert actual_task_result == expected_task_result
 
     async def test_task_no_compute_raises(self) -> None:
         history = await run_engine(
@@ -198,7 +212,11 @@ class TestTaskState:
         assert history.status == ExecutionStatus.FAILED
 
     async def test_task_timeout(self) -> None:
+        # Arrange
+        expected_error = "States.Timeout"
         compute = SlowCompute()
+
+        # Act
         history = await run_engine(
             {
                 "StartAt": "T",
@@ -213,5 +231,8 @@ class TestTaskState:
             },
             compute=compute,
         )
+
+        # Assert
+        actual_error = history.error
         assert history.status == ExecutionStatus.FAILED
-        assert history.error == "States.Timeout"
+        assert actual_error == expected_error

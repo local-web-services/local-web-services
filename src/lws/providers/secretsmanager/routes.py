@@ -15,6 +15,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 
 _logger = get_logger("ldk.secretsmanager")
 
@@ -70,6 +71,11 @@ class _SecretsState:
     def __init__(self) -> None:
         self._secrets: dict[str, _Secret] = {}
 
+    @property
+    def secrets(self) -> dict[str, _Secret]:
+        """Return the secrets store."""
+        return self._secrets
+
 
 # ------------------------------------------------------------------
 # Action handlers
@@ -84,8 +90,8 @@ async def _handle_create_secret(state: _SecretsState, body: dict) -> Response:
     tags_list = body.get("Tags", [])
     tags = {t["Key"]: t["Value"] for t in tags_list} if tags_list else {}
 
-    if name in state._secrets:
-        existing = state._secrets[name]
+    if name in state.secrets:
+        existing = state.secrets[name]
         if existing.deleted_date is not None:
             # Restore soft-deleted secret
             existing.deleted_date = None
@@ -98,7 +104,7 @@ async def _handle_create_secret(state: _SecretsState, body: dict) -> Response:
             )
 
     secret = _Secret(name=name, description=description, tags=tags)
-    state._secrets[name] = secret
+    state.secrets[name] = secret
 
     version_id: str | None = None
     if secret_string is not None or secret_binary is not None:
@@ -203,23 +209,7 @@ async def _handle_update_secret(state: _SecretsState, body: dict) -> Response:
 
     version_id: str | None = None
     if secret_string is not None or secret_binary is not None:
-        # Move AWSCURRENT from old version
-        if secret.current_version_id and secret.current_version_id in secret.versions:
-            old = secret.versions[secret.current_version_id]
-            if "AWSCURRENT" in old.stages:
-                old.stages.remove("AWSCURRENT")
-            if "AWSPREVIOUS" not in old.stages:
-                old.stages.append("AWSPREVIOUS")
-
-        version_id = str(uuid.uuid4())
-        version = _SecretVersion(
-            version_id=version_id,
-            secret_string=secret_string,
-            secret_binary=secret_binary,
-            stages=["AWSCURRENT"],
-        )
-        secret.versions[version_id] = version
-        secret.current_version_id = version_id
+        version_id = _rotate_secret_version(secret, secret_string, secret_binary)
 
     secret.last_changed_date = time.time()
     result: dict[str, Any] = {"ARN": secret.arn, "Name": secret.name}
@@ -240,7 +230,7 @@ async def _handle_delete_secret(state: _SecretsState, body: dict) -> Response:
         )
 
     if force_delete:
-        state._secrets.pop(secret.name, None)
+        state.secrets.pop(secret.name, None)
     else:
         secret.deleted_date = time.time()
 
@@ -264,9 +254,9 @@ async def _handle_describe_secret(state: _SecretsState, body: dict) -> Response:
     return _json_response(_format_secret_description(secret))
 
 
-async def _handle_list_secrets(state: _SecretsState, body: dict) -> Response:
+async def _handle_list_secrets(state: _SecretsState, _body: dict) -> Response:
     secrets = [
-        _format_secret_description(s) for s in state._secrets.values() if s.deleted_date is None
+        _format_secret_description(s) for s in state.secrets.values() if s.deleted_date is None
     ]
     return _json_response({"SecretList": secrets})
 
@@ -356,11 +346,37 @@ async def _handle_list_secret_version_ids(state: _SecretsState, body: dict) -> R
 # ------------------------------------------------------------------
 
 
+def _rotate_secret_version(
+    secret: _Secret,
+    secret_string: str | None,
+    secret_binary: str | None,
+) -> str:
+    """Rotate the AWSCURRENT version and create a new one. Returns the new version_id."""
+    # Move AWSCURRENT from old version to AWSPREVIOUS
+    if secret.current_version_id and secret.current_version_id in secret.versions:
+        old = secret.versions[secret.current_version_id]
+        if "AWSCURRENT" in old.stages:
+            old.stages.remove("AWSCURRENT")
+        if "AWSPREVIOUS" not in old.stages:
+            old.stages.append("AWSPREVIOUS")
+
+    version_id = str(uuid.uuid4())
+    version = _SecretVersion(
+        version_id=version_id,
+        secret_string=secret_string,
+        secret_binary=secret_binary,
+        stages=["AWSCURRENT"],
+    )
+    secret.versions[version_id] = version
+    secret.current_version_id = version_id
+    return version_id
+
+
 def _find_secret(state: _SecretsState, secret_id: str) -> _Secret | None:
     """Find a secret by name or ARN."""
-    if secret_id in state._secrets:
-        return state._secrets[secret_id]
-    for s in state._secrets.values():
+    if secret_id in state.secrets:
+        return state.secrets[secret_id]
+    for s in state.secrets.values():
         if s.arn == secret_id:
             return s
     return None
@@ -462,13 +478,13 @@ def create_secretsmanager_app(initial_secrets: list[dict] | None = None) -> Fast
                 )
                 secret.versions[version_id] = version
                 secret.current_version_id = version_id
-            state._secrets[secret.name] = secret
+            state.secrets[secret.name] = secret
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         target = request.headers.get("x-amz-target", "")
-        body = await _parse_request_body(request)
-        action = _resolve_action(target, body)
+        body = await parse_json_body(request)
+        action = resolve_api_action(target, body)
 
         handler = _ACTION_HANDLERS.get(action)
         if handler is None:
@@ -481,22 +497,3 @@ def create_secretsmanager_app(initial_secrets: list[dict] | None = None) -> Fast
         return await handler(state, body)
 
     return app
-
-
-async def _parse_request_body(request: Request) -> dict:
-    """Parse the JSON request body."""
-    body_bytes = await request.body()
-    if not body_bytes:
-        return {}
-    try:
-        return json.loads(body_bytes)
-    except json.JSONDecodeError:
-        return {}
-
-
-def _resolve_action(target: str, body: dict) -> str:
-    """Resolve the API action from the target header or body."""
-    if target:
-        # X-Amz-Target format: secretsmanager.CreateSecret
-        return target.rsplit(".", 1)[-1] if "." in target else target
-    return body.get("Action", "")

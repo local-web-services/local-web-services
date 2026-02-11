@@ -138,33 +138,43 @@ class TestPutEvents:
 
     @pytest.mark.asyncio
     async def test_put_events_routes_to_matching_rule(self) -> None:
+        # Arrange
+        expected_source = "my.app"
+        expected_detail_type = "OrderPlaced"
+        expected_order_id = "abc"
+        expected_version = "0"
+        expected_account = "000000000000"
+        expected_region = "us-east-1"
+
         provider = await _started_provider()
         mock_compute = _make_compute_mock(payload={"statusCode": 200})
         provider.set_compute_providers({"order-handler": mock_compute})
 
+        # Act
         await provider.put_events(
             [
                 {
-                    "Source": "my.app",
-                    "DetailType": "OrderPlaced",
-                    "Detail": json.dumps({"orderId": "abc"}),
+                    "Source": expected_source,
+                    "DetailType": expected_detail_type,
+                    "Detail": json.dumps({"orderId": expected_order_id}),
                 },
             ]
         )
 
         await asyncio.sleep(0.05)
 
+        # Assert
         mock_compute.invoke.assert_called_once()
         call_args = mock_compute.invoke.call_args
         event = call_args[0][0]
         context = call_args[0][1]
 
-        assert event["source"] == "my.app"
-        assert event["detail-type"] == "OrderPlaced"
-        assert event["detail"]["orderId"] == "abc"
-        assert event["version"] == "0"
-        assert event["account"] == "000000000000"
-        assert event["region"] == "us-east-1"
+        assert event["source"] == expected_source
+        assert event["detail-type"] == expected_detail_type
+        assert event["detail"]["orderId"] == expected_order_id
+        assert event["version"] == expected_version
+        assert event["account"] == expected_account
+        assert event["region"] == expected_region
         assert isinstance(context, LambdaContext)
 
     @pytest.mark.asyncio

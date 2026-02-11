@@ -115,7 +115,11 @@ class TestUpdateItem:
     """update_item SET and REMOVE operations."""
 
     async def test_set_existing_attribute(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "status": "new"})
+        expected_status = "shipped"
+
+        # Act
         result = await provider.update_item(
             "orders",
             {"orderId": "o1", "itemId": "i1"},
@@ -123,44 +127,75 @@ class TestUpdateItem:
             expression_values={":v": "shipped"},
             expression_names={"#s": "status"},
         )
-        assert result["status"] == "shipped"
+
+        # Assert
+        actual_status = result["status"]
+        assert actual_status == expected_status
 
     async def test_set_new_attribute(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1"})
+        expected_note = "urgent"
+
+        # Act
         result = await provider.update_item(
             "orders",
             {"orderId": "o1", "itemId": "i1"},
             "SET note = :v",
             expression_values={":v": "urgent"},
         )
-        assert result["note"] == "urgent"
+
+        # Assert
+        actual_note = result["note"]
+        assert actual_note == expected_note
 
     async def test_remove_attribute(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "temp": "gone"})
+
+        # Act
         result = await provider.update_item(
             "orders",
             {"orderId": "o1", "itemId": "i1"},
             "REMOVE temp",
         )
+
+        # Assert
         assert "temp" not in result
 
     async def test_set_and_remove_combined(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "a": 1, "b": 2})
+        expected_a = 99
+
+        # Act
         result = await provider.update_item(
             "orders",
             {"orderId": "o1", "itemId": "i1"},
             "SET a = :newA REMOVE b",
             expression_values={":newA": 99},
         )
-        assert result["a"] == 99
+
+        # Assert
+        actual_a = result["a"]
+        assert actual_a == expected_a
         assert "b" not in result
 
     async def test_update_creates_item_if_missing(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
+        expected_color = "red"
+        expected_order_id = "o1"
+
+        # Act
         result = await provider.update_item(
             "orders",
             {"orderId": "o1", "itemId": "i1"},
             "SET color = :c",
             expression_values={":c": "red"},
         )
-        assert result["color"] == "red"
-        assert result["orderId"] == "o1"
+
+        # Assert
+        actual_color = result["color"]
+        actual_order_id = result["orderId"]
+        assert actual_color == expected_color
+        assert actual_order_id == expected_order_id

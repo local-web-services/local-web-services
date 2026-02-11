@@ -83,7 +83,11 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 class TestGetExecutionHistory:
     async def test_get_execution_history_returns_events(self, client: httpx.AsyncClient) -> None:
         """GetExecutionHistory should return a list of events."""
-        # Start a sync execution
+        # Arrange
+        expected_status_code = 200
+        expected_first_event_type = "ExecutionStarted"
+        expected_last_event_type = "ExecutionSucceeded"
+
         start_resp = await _request(
             client,
             "StartSyncExecution",
@@ -94,20 +98,23 @@ class TestGetExecutionHistory:
         )
         arn = start_resp.json()["executionArn"]
 
+        # Act
         resp = await _request(
             client,
             "GetExecutionHistory",
             {"executionArn": arn},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "events" in data
         events = data["events"]
         assert len(events) >= 1
-        # First event should be ExecutionStarted
-        assert events[0]["type"] == "ExecutionStarted"
-        # Last event should be ExecutionSucceeded for a succeeded execution
-        assert events[-1]["type"] == "ExecutionSucceeded"
+        actual_first_event_type = events[0]["type"]
+        actual_last_event_type = events[-1]["type"]
+        assert actual_first_event_type == expected_first_event_type
+        assert actual_last_event_type == expected_last_event_type
 
     async def test_get_execution_history_with_max_results(self, client: httpx.AsyncClient) -> None:
         """GetExecutionHistory should respect maxResults."""
@@ -134,18 +141,29 @@ class TestGetExecutionHistory:
         self, client: httpx.AsyncClient
     ) -> None:
         """GetExecutionHistory with invalid ARN should return ExecutionDoesNotExist."""
+        # Arrange
+        expected_status_code = 400
+        expected_error_type = "ExecutionDoesNotExist"
+
+        # Act
         resp = await _request(
             client,
             "GetExecutionHistory",
             {"executionArn": "arn:aws:states:us-east-1:000:execution:sm:does-not-exist"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code
         body = resp.json()
-        assert body["__type"] == "ExecutionDoesNotExist"
+        actual_error_type = body["__type"]
+        assert actual_error_type == expected_error_type
 
     async def test_get_execution_history_aborted_execution(self, client: httpx.AsyncClient) -> None:
         """GetExecutionHistory for an aborted execution should include ExecutionAborted event."""
-        # Start and then stop an execution
+        # Arrange
+        expected_status_code = 200
+        expected_last_event_type = "ExecutionAborted"
+
         start_resp = await _request(
             client,
             "StartSyncExecution",
@@ -162,12 +180,16 @@ class TestGetExecutionHistory:
             {"executionArn": arn, "error": "Aborted", "cause": "test"},
         )
 
+        # Act
         resp = await _request(
             client,
             "GetExecutionHistory",
             {"executionArn": arn},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         events = data["events"]
-        assert events[-1]["type"] == "ExecutionAborted"
+        actual_last_event_type = events[-1]["type"]
+        assert actual_last_event_type == expected_last_event_type

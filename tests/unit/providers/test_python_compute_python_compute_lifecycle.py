@@ -75,7 +75,10 @@ class TestPythonComputeLifecycle:
 
     def test_name_property(self) -> None:
         provider = PythonCompute(_make_config(), sdk_env={})
-        assert provider.name == "lambda:my-func"
+
+        expected_name = "lambda:my-func"
+        actual_name = provider.name
+        assert actual_name == expected_name
 
     @patch("shutil.which", return_value="/usr/bin/python3")
     async def test_start_sets_running(self, _which: MagicMock) -> None:

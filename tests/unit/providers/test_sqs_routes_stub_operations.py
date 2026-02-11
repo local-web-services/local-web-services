@@ -30,29 +30,47 @@ class TestSqsStubOperations:
     @pytest.mark.asyncio
     async def test_unknown_json_operation_returns_error(self, client):
         """Test that unknown JSON operations return HTTP 400 with UnknownOperationException."""
+        # Arrange
+        expected_status_code = 400
+        expected_error_type = "UnknownOperationException"
+        action_name = "AddPermission"
+
+        # Act
         resp = await client.post(
             "/",
             json={},
-            headers={"X-Amz-Target": "AmazonSQS.AddPermission"},
+            headers={"X-Amz-Target": f"AmazonSQS.{action_name}"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         body = resp.json()
-        assert body["__type"] == "UnknownOperationException"
+        actual_error_type = body["__type"]
+        assert actual_error_type == expected_error_type
         assert "lws" in body["message"]
         assert "SQS" in body["message"]
-        assert "AddPermission" in body["message"]
+        assert action_name in body["message"]
 
     @pytest.mark.asyncio
     async def test_unknown_xml_operation_returns_error(self, client):
         """Test that unknown XML operations return HTTP 400 with ErrorResponse XML."""
+        # Arrange
+        expected_status_code = 400
+        action_name = "AddPermission"
+
+        # Act
         resp = await client.post(
             "/",
-            data={"Action": "AddPermission"},
+            data={"Action": action_name},
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "<ErrorResponse>" in resp.text
         assert "<Code>InvalidAction</Code>" in resp.text
         assert "lws" in resp.text
         assert "SQS" in resp.text
-        assert "AddPermission" in resp.text
+        assert action_name in resp.text

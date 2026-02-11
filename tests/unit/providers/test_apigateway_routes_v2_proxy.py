@@ -68,15 +68,21 @@ class TestApiGatewayV2Proxy:
 
         # Proxy request
         resp = await client.post("/orders", json={"item": "widget"})
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        expected_version = "2.0"
+        expected_route_key = "POST /orders"
+        expected_raw_path = "/orders"
+        assert resp.status_code == expected_status
         assert '{"orderId": "123"}' in resp.text
 
         # Verify Lambda was invoked with V2 event format
         call_args = mock_compute.invoke.call_args
         event = call_args[0][0]
-        assert event["version"] == "2.0"
-        assert event["routeKey"] == "POST /orders"
-        assert event["rawPath"] == "/orders"
+        assert event["version"] == expected_version
+        assert event["routeKey"] == expected_route_key
+        assert event["rawPath"] == expected_raw_path
 
     @pytest.mark.asyncio
     async def test_proxy_with_path_variables(self, client, registry) -> None:
@@ -107,7 +113,10 @@ class TestApiGatewayV2Proxy:
         )
 
         resp = await client.get("/orders/abc123")
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert "abc" in resp.text
 
     @pytest.mark.asyncio
@@ -140,14 +149,20 @@ class TestApiGatewayV2Proxy:
         )
 
         resp = await client.post("/test", json={})
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert resp.json().get("ok") is True
 
     @pytest.mark.asyncio
     async def test_unmatched_path_returns_not_found(self, client) -> None:
         """Unmatched paths return 404 Not Found."""
         resp = await client.get("/nonexistent")
-        assert resp.status_code == 404
+
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         body = resp.json()
         assert "lws" in body["message"]
         assert "API Gateway" in body["message"]

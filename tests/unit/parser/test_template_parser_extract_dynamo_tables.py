@@ -47,12 +47,16 @@ def tmp_template(tmp_path: Path):
 
 class TestExtractDynamoTables:
     def test_basic_table(self):
+        # Arrange
+        expected_table_name = "orders"
+        expected_key_schema_count = 1
+        expected_gsi_count = 1
         resources = [
             CfnResource(
                 logical_id="Tbl",
                 resource_type="AWS::DynamoDB::Table",
                 properties={
-                    "TableName": "orders",
+                    "TableName": expected_table_name,
                     "KeySchema": [
                         {"AttributeName": "pk", "KeyType": "HASH"},
                     ],
@@ -70,12 +74,16 @@ class TestExtractDynamoTables:
                 },
             ),
         ]
+
+        # Act
         result = extract_dynamo_tables(resources)
+
+        # Assert
         assert len(result) == 1
-        tp = result[0]
-        assert tp.table_name == "orders"
-        assert len(tp.key_schema) == 1
-        assert len(tp.gsi_definitions) == 1
+        actual_table = result[0]
+        assert actual_table.table_name == expected_table_name
+        assert len(actual_table.key_schema) == expected_key_schema_count
+        assert len(actual_table.gsi_definitions) == expected_gsi_count
 
     def test_table_without_gsi(self):
         resources = [

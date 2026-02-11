@@ -78,7 +78,8 @@ class TestApiGatewayV2TerraformFlow:
             "/v2/apis",
             json={"name": "orders-http-api", "protocolType": "HTTP"},
         )
-        assert api_resp.status_code == 201
+        expected_create_status = 201
+        assert api_resp.status_code == expected_create_status
         api_id = api_resp.json()["apiId"]
 
         # 3. Terraform creates the integration with invoke_arn format
@@ -96,7 +97,7 @@ class TestApiGatewayV2TerraformFlow:
                 "payloadFormatVersion": "2.0",
             },
         )
-        assert int_resp.status_code == 201
+        assert int_resp.status_code == expected_create_status
         integration_id = int_resp.json()["integrationId"]
 
         # 4. Terraform creates the route
@@ -107,30 +108,35 @@ class TestApiGatewayV2TerraformFlow:
                 "target": f"integrations/{integration_id}",
             },
         )
-        assert route_resp.status_code == 201
+        assert route_resp.status_code == expected_create_status
 
         # 5. Terraform creates the stage
         stage_resp = await client.post(
             f"/v2/apis/{api_id}/stages",
             json={"stageName": "$default", "autoDeploy": True},
         )
-        assert stage_resp.status_code == 201
+        assert stage_resp.status_code == expected_create_status
 
         # 6. Now simulate: lws apigateway test-invoke-method --resource /orders --http-method POST
         #    This sends POST /orders to the API Gateway management port.
         resp = await client.post("/orders", json={"item": "widget", "quantity": 1})
 
-        # The proxy should match the V2 route and invoke Lambda
-        assert resp.status_code == 200
+        # Assert
+        expected_proxy_status = 200
+        expected_version = "2.0"
+        expected_route_key = "POST /orders"
+        expected_raw_path = "/orders"
+        expected_method = "POST"
+        assert resp.status_code == expected_proxy_status
         assert "order-001" in resp.text
 
         # Verify Lambda was actually invoked
         mock_compute.invoke.assert_called_once()
         event = mock_compute.invoke.call_args[0][0]
-        assert event["version"] == "2.0"
-        assert event["routeKey"] == "POST /orders"
-        assert event["rawPath"] == "/orders"
-        assert event["requestContext"]["http"]["method"] == "POST"
+        assert event["version"] == expected_version
+        assert event["routeKey"] == expected_route_key
+        assert event["rawPath"] == expected_raw_path
+        assert event["requestContext"]["http"]["method"] == expected_method
 
     @pytest.mark.asyncio
     async def test_terraform_creates_get_route_with_path_param(self, client, registry) -> None:
@@ -174,7 +180,10 @@ class TestApiGatewayV2TerraformFlow:
         )
 
         resp = await client.get("/orders/abc-123")
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert "abc-123" in resp.text
         mock_compute.invoke.assert_called_once()
 
@@ -182,7 +191,10 @@ class TestApiGatewayV2TerraformFlow:
     async def test_no_v2_routes_returns_not_found(self, client) -> None:
         """When no V2 routes exist, proxy falls through to 404."""
         resp = await client.post("/orders", json={"item": "widget"})
-        assert resp.status_code == 404
+
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         body = resp.json()
         assert "lws" in body["message"]
         assert "API Gateway" in body["message"]
@@ -213,9 +225,10 @@ class TestApiGatewayV2TerraformFlow:
             },
         )
 
-        # GET should NOT match the POST route
+        # Assert - GET should NOT match the POST route
         resp = await client.get("/orders")
-        assert resp.status_code == 404
+        expected_status = 404
+        assert resp.status_code == expected_status
         body = resp.json()
         assert "lws" in body["message"]
         assert "API Gateway" in body["message"]

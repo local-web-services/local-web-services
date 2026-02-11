@@ -186,15 +186,26 @@ class TestAslParser:
     """Test ASL JSON parsing into dataclasses."""
 
     def test_parse_pass_state(self) -> None:
+        # Arrange
+        expected_start_at = "PassState"
+        expected_result = {"greeting": "hello"}
+
+        # Act
         defn = parse_definition(SIMPLE_PASS_DEFINITION)
-        assert defn.start_at == "PassState"
-        assert "PassState" in defn.states
-        state = defn.states["PassState"]
+
+        # Assert
+        assert defn.start_at == expected_start_at
+        assert expected_start_at in defn.states
+        state = defn.states[expected_start_at]
         assert isinstance(state, PassState)
-        assert state.result == {"greeting": "hello"}
+        assert state.result == expected_result
         assert state.end is True
 
     def test_parse_task_state(self) -> None:
+        # Arrange
+        expected_timeout = 30
+
+        # Act
         defn = parse_definition(
             {
                 "StartAt": "MyTask",
@@ -203,17 +214,23 @@ class TestAslParser:
                         "Type": "Task",
                         "Resource": "arn:aws:lambda:us-east-1:000:function:myFunc",
                         "End": True,
-                        "TimeoutSeconds": 30,
+                        "TimeoutSeconds": expected_timeout,
                     }
                 },
             }
         )
+
+        # Assert
         state = defn.states["MyTask"]
         assert isinstance(state, TaskState)
         assert "myFunc" in state.resource
-        assert state.timeout_seconds == 30
+        assert state.timeout_seconds == expected_timeout
 
     def test_parse_choice_state(self) -> None:
+        # Arrange
+        expected_default = "Small"
+
+        # Act
         defn = parse_definition(
             {
                 "StartAt": "Check",
@@ -227,17 +244,19 @@ class TestAslParser:
                                 "Next": "Big",
                             }
                         ],
-                        "Default": "Small",
+                        "Default": expected_default,
                     },
                     "Big": {"Type": "Succeed"},
                     "Small": {"Type": "Succeed"},
                 },
             }
         )
+
+        # Assert
         state = defn.states["Check"]
         assert isinstance(state, ChoiceState)
         assert len(state.choices) == 1
-        assert state.default == "Small"
+        assert state.default == expected_default
 
     def test_parse_wait_state(self) -> None:
         defn = parse_definition(
@@ -301,10 +320,11 @@ class TestAslParser:
         assert state.max_concurrency == 3
 
     def test_parse_fail_state(self) -> None:
+        expected_error = "CustomError"
         defn = parse_definition(FAIL_DEFINITION)
         state = defn.states["Oops"]
         assert isinstance(state, FailState)
-        assert state.error == "CustomError"
+        assert state.error == expected_error
 
     def test_parse_succeed_state(self) -> None:
         defn = parse_definition(SUCCEED_DEFINITION)
@@ -346,14 +366,15 @@ class TestAslParser:
         assert len(state.catch) == 1
 
     def test_parse_comment(self) -> None:
+        expected_comment = "My state machine"
         defn = parse_definition(
             {
-                "Comment": "My state machine",
+                "Comment": expected_comment,
                 "StartAt": "S1",
                 "States": {"S1": {"Type": "Succeed", "Comment": "done"}},
             }
         )
-        assert defn.comment == "My state machine"
+        assert defn.comment == expected_comment
 
     def test_parse_from_string(self) -> None:
         defn = parse_definition(SIMPLE_PASS_DEFINITION)

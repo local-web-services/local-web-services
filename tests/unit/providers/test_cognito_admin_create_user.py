@@ -44,22 +44,36 @@ async def _request(client: httpx.AsyncClient, operation: str, body: dict) -> htt
 
 class TestAdminCreateUser:
     async def test_create_user(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_username = "admin-user"
+        expected_status = "CONFIRMED"
+
+        # Act
         resp = await _request(
             client,
             "AdminCreateUser",
             {
                 "UserPoolId": POOL_ID,
-                "Username": "admin-user",
+                "Username": expected_username,
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_http_status = 200
+        assert resp.status_code == expected_http_status
         data = resp.json()
         assert "User" in data
-        assert data["User"]["Username"] == "admin-user"
-        assert data["User"]["UserStatus"] == "CONFIRMED"
+        actual_username = data["User"]["Username"]
+        actual_status = data["User"]["UserStatus"]
+        assert actual_username == expected_username
+        assert actual_status == expected_status
         assert data["User"]["Enabled"] is True
 
     async def test_create_user_with_attributes(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_email = "test@example.com"
+
+        # Act
         resp = await _request(
             client,
             "AdminCreateUser",
@@ -67,48 +81,75 @@ class TestAdminCreateUser:
                 "UserPoolId": POOL_ID,
                 "Username": "attr-user",
                 "UserAttributes": [
-                    {"Name": "email", "Value": "test@example.com"},
+                    {"Name": "email", "Value": expected_email},
                 ],
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_http_status = 200
+        assert resp.status_code == expected_http_status
         data = resp.json()
         attrs = {a["Name"]: a["Value"] for a in data["User"]["Attributes"]}
-        assert attrs["email"] == "test@example.com"
+        actual_email = attrs["email"]
+        assert actual_email == expected_email
         assert "sub" in attrs
 
     async def test_create_user_with_temporary_password(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_username = "pw-user"
+
+        # Act
         resp = await _request(
             client,
             "AdminCreateUser",
             {
                 "UserPoolId": POOL_ID,
-                "Username": "pw-user",
+                "Username": expected_username,
                 "TemporaryPassword": "TempPass1!",
             },
         )
-        assert resp.status_code == 200
-        assert resp.json()["User"]["Username"] == "pw-user"
+
+        # Assert
+        expected_http_status = 200
+        assert resp.status_code == expected_http_status
+        actual_username = resp.json()["User"]["Username"]
+        assert actual_username == expected_username
 
     async def test_create_duplicate_user_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        username = "dup-user"
         await _request(
             client,
             "AdminCreateUser",
-            {"UserPoolId": POOL_ID, "Username": "dup-user"},
+            {"UserPoolId": POOL_ID, "Username": username},
         )
+
+        # Act
         resp = await _request(
             client,
             "AdminCreateUser",
-            {"UserPoolId": POOL_ID, "Username": "dup-user"},
+            {"UserPoolId": POOL_ID, "Username": username},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "UsernameExistsException"
+
+        # Assert
+        expected_http_status = 400
+        expected_error_type = "UsernameExistsException"
+        assert resp.status_code == expected_http_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type
 
     async def test_create_user_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "AdminCreateUser",
             {"UserPoolId": "us-east-1_wrong", "Username": "test"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "ResourceNotFoundException"
+
+        # Assert
+        expected_http_status = 400
+        expected_error_type = "ResourceNotFoundException"
+        assert resp.status_code == expected_http_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

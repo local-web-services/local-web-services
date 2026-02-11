@@ -59,7 +59,7 @@ def _path_matches(pattern: str, path: str) -> bool:
     This is a simplified matcher: a trailing ``*`` matches any suffix,
     and a leading ``*`` matches any prefix.
     """
-    if pattern == "*" or pattern == "/*":
+    if pattern in ("*", "/*"):
         return True
     if pattern.endswith("*"):
         return path.startswith(pattern[:-1])
@@ -130,7 +130,7 @@ def build_alb_app(config: AlbConfig) -> FastAPI:
     rules = config.listener_rules
 
     @asynccontextmanager
-    async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
+    async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
         yield
         await client.aclose()
 

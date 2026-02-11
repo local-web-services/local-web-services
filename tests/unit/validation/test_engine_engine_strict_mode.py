@@ -66,20 +66,35 @@ def _make_context(
 
 class TestEngineStrictMode:
     def test_strict_mode_raises_on_error(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         engine = ValidationEngine(strictness="strict")
         engine.register(_AlwaysErrorValidator())
+
+        # Act / Assert
         with pytest.raises(ValidationError) as exc_info:
             engine.validate(_make_context())
-        assert len(exc_info.value.issues) == 1
+        assert len(exc_info.value.issues) == expected_issue_count
 
     def test_strict_mode_warns_do_not_raise(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         engine = ValidationEngine(strictness="strict")
         engine.register(_AlwaysWarnValidator())
+
+        # Act
         issues = engine.validate(_make_context())
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
 
     def test_strict_mode_no_issues_ok(self) -> None:
+        # Arrange
         engine = ValidationEngine(strictness="strict")
         engine.register(_NoIssueValidator())
+
+        # Act
         issues = engine.validate(_make_context())
+
+        # Assert
         assert issues == []

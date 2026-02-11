@@ -30,14 +30,22 @@ class TestStepFunctionsStubOperations:
     @pytest.mark.asyncio
     async def test_unknown_operation_returns_error(self, client):
         """Test that unknown operations return HTTP 400 with UnknownOperationException."""
+        # Arrange
+        expected_status_code = 400
+        expected_error_type = "UnknownOperationException"
+
+        # Act
         resp = await client.post(
             "/",
             json={},
             headers={"x-amz-target": "AWSStepFunctions.SendTaskSuccess"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code
         body = resp.json()
-        assert body["__type"] == "UnknownOperationException"
+        actual_error_type = body["__type"]
+        assert actual_error_type == expected_error_type
         assert "lws" in body["message"]
         assert "StepFunctions" in body["message"]
         assert "SendTaskSuccess" in body["message"]

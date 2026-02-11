@@ -115,9 +115,12 @@ class TestBatchOperations:
     """batch_get_items and batch_write_items."""
 
     async def test_batch_get_items(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 1})
         await provider.put_item("orders", {"orderId": "o2", "itemId": "i2", "v": 2})
+        expected_count = 2
 
+        # Act
         results = await provider.batch_get_items(
             "orders",
             [
@@ -126,7 +129,9 @@ class TestBatchOperations:
                 {"orderId": "missing", "itemId": "nope"},
             ],
         )
-        assert len(results) == 2
+
+        # Assert
+        assert len(results) == expected_count
 
     async def test_batch_write_items(self, provider: SqliteDynamoProvider) -> None:
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 1})

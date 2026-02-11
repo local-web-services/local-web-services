@@ -175,7 +175,8 @@ class TestProviderLifecycle:
     """Provider lifecycle: start, stop, health_check, name."""
 
     async def test_name(self, provider: StepFunctionsProvider) -> None:
-        assert provider.name == "stepfunctions"
+        expected_name = "stepfunctions"
+        assert provider.name == expected_name
 
     async def test_health_check_running(self, provider: StepFunctionsProvider) -> None:
         assert await provider.health_check() is True

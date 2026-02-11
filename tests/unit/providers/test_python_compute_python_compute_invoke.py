@@ -84,10 +84,13 @@ class TestPythonComputeInvoke:
 
         result = await provider.invoke({"key": "value"}, _make_context())
 
+        # Assert
+        expected_payload = {"statusCode": 200, "body": "ok"}
+        expected_request_id = "req-abc-123"
         assert isinstance(result, InvocationResult)
-        assert result.payload == {"statusCode": 200, "body": "ok"}
+        assert result.payload == expected_payload
         assert result.error is None
-        assert result.request_id == "req-abc-123"
+        assert result.request_id == expected_request_id
         assert result.duration_ms >= 0
 
     @patch("asyncio.create_subprocess_exec")
@@ -108,9 +111,12 @@ class TestPythonComputeInvoke:
 
         result = await provider.invoke({"key": "value"}, _make_context())
 
+        # Assert
+        expected_error = "name 'undefined_var' is not defined"
+        expected_request_id = "req-abc-123"
         assert result.payload is None
-        assert result.error == "name 'undefined_var' is not defined"
-        assert result.request_id == "req-abc-123"
+        assert result.error == expected_error
+        assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_timeout_kills_process(self, mock_exec: AsyncMock) -> None:
@@ -131,9 +137,11 @@ class TestPythonComputeInvoke:
 
         result = await provider.invoke({"key": "value"}, _make_context())
 
+        # Assert
+        expected_request_id = "req-abc-123"
         assert result.payload is None
         assert "timed out" in result.error
-        assert result.request_id == "req-abc-123"
+        assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_bad_json_output(self, mock_exec: AsyncMock) -> None:
@@ -181,4 +189,5 @@ class TestPythonComputeInvoke:
 
         result = await provider.invoke({"key": "value"}, _make_context())
 
-        assert result.error == "Task timed out after 5.00 seconds"
+        expected_error = "Task timed out after 5.00 seconds"
+        assert result.error == expected_error

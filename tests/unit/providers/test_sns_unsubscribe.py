@@ -34,25 +34,30 @@ class TestUnsubscribe:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        expected_status = 200
+        expected_subscriber_count = 0
+        await provider.create_topic(topic_name)
         sub_arn = await provider.subscribe(
-            topic_name="my-topic", protocol="lambda", endpoint="my-func"
+            topic_name=topic_name, protocol="lambda", endpoint="my-func"
         )
 
+        # Act
         resp = await client.post("/", data={"Action": "Unsubscribe", "SubscriptionArn": sub_arn})
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "UnsubscribeResponse" in resp.text
-
-        # Verify the subscription was actually removed
-        topic = provider.get_topic("my-topic")
-        assert len(topic.subscribers) == 0
+        actual_topic = provider.get_topic(topic_name)
+        assert len(actual_topic.subscribers) == expected_subscriber_count
 
     @pytest.mark.asyncio
     async def test_unsubscribe_not_found(
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Act
         resp = await client.post(
             "/",
             data={
@@ -61,7 +66,9 @@ class TestUnsubscribe:
             },
         )
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NotFound" in resp.text
 
     @pytest.mark.asyncio
@@ -71,18 +78,23 @@ class TestUnsubscribe:
         provider: SnsProvider,
     ) -> None:
         """Unsubscribing one subscription should not affect others."""
-        await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        expected_status = 200
+        expected_remaining_count = 1
+        await provider.create_topic(topic_name)
         sub_arn_1 = await provider.subscribe(
-            topic_name="my-topic", protocol="lambda", endpoint="func-a"
+            topic_name=topic_name, protocol="lambda", endpoint="func-a"
         )
         sub_arn_2 = await provider.subscribe(
-            topic_name="my-topic", protocol="lambda", endpoint="func-b"
+            topic_name=topic_name, protocol="lambda", endpoint="func-b"
         )
 
+        # Act
         resp = await client.post("/", data={"Action": "Unsubscribe", "SubscriptionArn": sub_arn_1})
 
-        assert resp.status_code == 200
-
-        topic = provider.get_topic("my-topic")
-        assert len(topic.subscribers) == 1
-        assert topic.subscribers[0].subscription_arn == sub_arn_2
+        # Assert
+        assert resp.status_code == expected_status
+        actual_topic = provider.get_topic(topic_name)
+        assert len(actual_topic.subscribers) == expected_remaining_count
+        assert actual_topic.subscribers[0].subscription_arn == sub_arn_2

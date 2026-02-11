@@ -34,16 +34,21 @@ class TestListSubscriptionsByTopic:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
-        await provider.subscribe(topic_name="my-topic", protocol="lambda", endpoint="func-a")
-        await provider.subscribe(topic_name="my-topic", protocol="sqs", endpoint="queue-b")
+        # Arrange
+        topic_name = "my-topic"
+        expected_status = 200
+        await provider.create_topic(topic_name)
+        await provider.subscribe(topic_name=topic_name, protocol="lambda", endpoint="func-a")
+        await provider.subscribe(topic_name=topic_name, protocol="sqs", endpoint="queue-b")
 
+        # Act
         resp = await client.post(
             "/",
             data={"Action": "ListSubscriptionsByTopic", "TopicArn": TOPIC_ARN},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "ListSubscriptionsByTopicResponse" in resp.text
         assert "func-a" in resp.text
         assert "queue-b" in resp.text
@@ -56,14 +61,18 @@ class TestListSubscriptionsByTopic:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
+        # Arrange
         await provider.create_topic("my-topic")
+        expected_status = 200
 
+        # Act
         resp = await client.post(
             "/",
             data={"Action": "ListSubscriptionsByTopic", "TopicArn": TOPIC_ARN},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "ListSubscriptionsByTopicResponse" in resp.text
         assert "<Subscriptions>" in resp.text
 
@@ -72,6 +81,7 @@ class TestListSubscriptionsByTopic:
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Act
         resp = await client.post(
             "/",
             data={
@@ -80,7 +90,9 @@ class TestListSubscriptionsByTopic:
             },
         )
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NotFound" in resp.text
 
     @pytest.mark.asyncio
@@ -90,16 +102,20 @@ class TestListSubscriptionsByTopic:
         provider: SnsProvider,
     ) -> None:
         """Subscriptions from other topics should not appear."""
+        # Arrange
+        expected_status = 200
         await provider.create_topic("my-topic")
         await provider.create_topic("other-topic")
         await provider.subscribe(topic_name="my-topic", protocol="lambda", endpoint="func-a")
         await provider.subscribe(topic_name="other-topic", protocol="lambda", endpoint="func-b")
 
+        # Act
         resp = await client.post(
             "/",
             data={"Action": "ListSubscriptionsByTopic", "TopicArn": TOPIC_ARN},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "func-a" in resp.text
         assert "func-b" not in resp.text

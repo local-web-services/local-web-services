@@ -41,9 +41,17 @@ async def _request(client: httpx.AsyncClient, operation: str, body: dict) -> htt
 
 class TestListUserPools:
     async def test_list_returns_pools(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(client, "ListUserPools", {"MaxResults": 60})
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        expected_pool_count = 1
+        expected_pool_name = "test-pool"
+        assert resp.status_code == expected_status
         data = resp.json()
         assert "UserPools" in data
-        assert len(data["UserPools"]) == 1
-        assert data["UserPools"][0]["Name"] == "test-pool"
+        actual_pool_count = len(data["UserPools"])
+        assert actual_pool_count == expected_pool_count
+        actual_pool_name = data["UserPools"][0]["Name"]
+        assert actual_pool_name == expected_pool_name

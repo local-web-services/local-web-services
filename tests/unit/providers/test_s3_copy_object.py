@@ -31,77 +31,102 @@ class TestCopyObject:
     async def test_copy_object_success(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("src-bucket")
-        await provider.create_bucket("dst-bucket")
-        await client.put("/src-bucket/my-key", content=b"hello world")
+        # Arrange
+        src_bucket = "src-bucket"
+        dst_bucket = "dst-bucket"
+        expected_body = b"hello world"
+        expected_status = 200
+        await provider.create_bucket(src_bucket)
+        await provider.create_bucket(dst_bucket)
+        await client.put(f"/{src_bucket}/my-key", content=expected_body)
 
+        # Act
         resp = await client.put(
-            "/dst-bucket/copied-key",
-            headers={"x-amz-copy-source": "/src-bucket/my-key"},
+            f"/{dst_bucket}/copied-key",
+            headers={"x-amz-copy-source": f"/{src_bucket}/my-key"},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "<CopyObjectResult>" in resp.text
         assert "<ETag>" in resp.text
-
-        # Verify the copy actually landed
-        get_resp = await client.get("/dst-bucket/copied-key")
-        assert get_resp.status_code == 200
-        assert get_resp.content == b"hello world"
+        get_resp = await client.get(f"/{dst_bucket}/copied-key")
+        assert get_resp.status_code == expected_status
+        assert get_resp.content == expected_body
 
     @pytest.mark.asyncio
     async def test_copy_object_same_bucket(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("my-bucket")
-        await client.put("/my-bucket/original", content=b"data")
+        # Arrange
+        bucket_name = "my-bucket"
+        expected_body = b"data"
+        expected_status = 200
+        await provider.create_bucket(bucket_name)
+        await client.put(f"/{bucket_name}/original", content=expected_body)
 
+        # Act
         resp = await client.put(
-            "/my-bucket/duplicate",
-            headers={"x-amz-copy-source": "/my-bucket/original"},
+            f"/{bucket_name}/duplicate",
+            headers={"x-amz-copy-source": f"/{bucket_name}/original"},
         )
 
-        assert resp.status_code == 200
-        get_resp = await client.get("/my-bucket/duplicate")
-        assert get_resp.content == b"data"
+        # Assert
+        assert resp.status_code == expected_status
+        get_resp = await client.get(f"/{bucket_name}/duplicate")
+        assert get_resp.content == expected_body
 
     @pytest.mark.asyncio
     async def test_copy_object_source_not_found(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("src-bucket")
         await provider.create_bucket("dst-bucket")
+        expected_status = 404
 
+        # Act
         resp = await client.put(
             "/dst-bucket/copied-key",
             headers={"x-amz-copy-source": "/src-bucket/nonexistent"},
         )
 
-        assert resp.status_code == 404
+        # Assert
+        assert resp.status_code == expected_status
         assert "NoSuchKey" in resp.text
 
     @pytest.mark.asyncio
     async def test_copy_object_invalid_header(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("dst-bucket")
+        expected_status = 400
 
+        # Act
         resp = await client.put(
             "/dst-bucket/copied-key",
             headers={"x-amz-copy-source": "no-slash-bucket-only"},
         )
 
-        assert resp.status_code == 400
+        # Assert
+        assert resp.status_code == expected_status
         assert "InvalidArgument" in resp.text
 
     @pytest.mark.asyncio
     async def test_copy_object_without_header_is_regular_put(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        expected_body = b"regular data"
+        expected_status = 200
+        await provider.create_bucket(bucket_name)
 
-        resp = await client.put("/my-bucket/regular-key", content=b"regular data")
+        # Act
+        resp = await client.put(f"/{bucket_name}/regular-key", content=expected_body)
 
-        assert resp.status_code == 200
-        get_resp = await client.get("/my-bucket/regular-key")
-        assert get_resp.content == b"regular data"
+        # Assert
+        assert resp.status_code == expected_status
+        get_resp = await client.get(f"/{bucket_name}/regular-key")
+        assert get_resp.content == expected_body

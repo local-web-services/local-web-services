@@ -83,33 +83,43 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 class TestProviderStopExecution:
     async def test_stop_execution_provider(self, provider: StepFunctionsProvider) -> None:
         """Provider.stop_execution should set status to ABORTED."""
+        # Arrange
+        expected_status = "ABORTED"
         result = await provider.start_execution(
             state_machine_name="test-express",
             input_data={},
         )
         arn = result["executionArn"]
 
+        # Act
         provider.stop_execution(arn)
 
+        # Assert
         history = provider.get_execution(arn)
+        actual_status = history.status.value
         assert history is not None
-        assert history.status.value == "ABORTED"
+        assert actual_status == expected_status
         assert history.end_time is not None
 
     async def test_stop_execution_with_error_cause(self, provider: StepFunctionsProvider) -> None:
         """Provider.stop_execution should store error and cause."""
+        # Arrange
+        expected_error = "MyError"
+        expected_cause = "MyCause"
         result = await provider.start_execution(
             state_machine_name="test-express",
             input_data={},
         )
         arn = result["executionArn"]
 
-        provider.stop_execution(arn, error="MyError", cause="MyCause")
+        # Act
+        provider.stop_execution(arn, error=expected_error, cause=expected_cause)
 
+        # Assert
         history = provider.get_execution(arn)
         assert history is not None
-        assert history.error == "MyError"
-        assert history.cause == "MyCause"
+        assert history.error == expected_error
+        assert history.cause == expected_cause
 
     async def test_stop_nonexistent_execution_raises(self, provider: StepFunctionsProvider) -> None:
         """Provider.stop_execution should raise KeyError for unknown ARN."""

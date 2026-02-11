@@ -41,8 +41,14 @@ async def _request(client: httpx.AsyncClient, operation: str, body: dict) -> htt
 
 class TestCreateUserPool:
     async def test_create_returns_pool(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(client, "CreateUserPool", {"PoolName": "new-pool"})
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        expected_pool_id = "us-east-1_testpool"
+        assert resp.status_code == expected_status
         data = resp.json()
         assert "UserPool" in data
-        assert data["UserPool"]["Id"] == "us-east-1_testpool"
+        actual_pool_id = data["UserPool"]["Id"]
+        assert actual_pool_id == expected_pool_id

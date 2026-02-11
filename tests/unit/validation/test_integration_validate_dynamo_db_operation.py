@@ -69,11 +69,14 @@ def _make_table_config() -> dict[str, TableConfig]:
 
 class TestValidateDynamoDBOperation:
     def test_valid_put_item(self) -> None:
+        # Arrange
         graph = _make_graph_with_permission("grantReadWrite")
         engine = create_validation_engine(
             table_configs=_make_table_config(),
             app_graph=graph,
         )
+
+        # Act
         issues = validate_dynamodb_operation(
             engine,
             handler_id="handler1",
@@ -82,14 +85,20 @@ class TestValidateDynamoDBOperation:
             item={"pk": "u1", "sk": "s1"},
             app_graph=graph,
         )
+
+        # Assert
         assert issues == []
 
     def test_missing_key_attribute(self) -> None:
+        # Arrange
+        expected_min_error_issues = 1
         graph = _make_graph_with_permission("grantReadWrite")
         engine = create_validation_engine(
             table_configs=_make_table_config(),
             app_graph=graph,
         )
+
+        # Act
         issues = validate_dynamodb_operation(
             engine,
             handler_id="handler1",
@@ -98,16 +107,22 @@ class TestValidateDynamoDBOperation:
             item={"pk": "u1"},
             app_graph=graph,
         )
-        error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(error_issues) >= 1
-        assert any("sk" in i.message for i in error_issues)
+
+        # Assert
+        actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
+        assert len(actual_error_issues) >= expected_min_error_issues
+        assert any("sk" in i.message for i in actual_error_issues)
 
     def test_no_item_provided(self) -> None:
+        # Arrange
+        expected_min_error_issues = 2
         graph = _make_graph_with_permission("grantReadWrite")
         engine = create_validation_engine(
             table_configs=_make_table_config(),
             app_graph=graph,
         )
+
+        # Act
         issues = validate_dynamodb_operation(
             engine,
             handler_id="handler1",
@@ -115,6 +130,8 @@ class TestValidateDynamoDBOperation:
             operation="put_item",
             app_graph=graph,
         )
+
+        # Assert
         # Missing pk and sk
-        error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(error_issues) >= 2
+        actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
+        assert len(actual_error_issues) >= expected_min_error_issues

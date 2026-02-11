@@ -30,13 +30,17 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestDescribeParameters:
     def test_describe_all(self, client: TestClient) -> None:
+        expected_name = "/desc"
+        expected_description = "test param"
         _post(
             client,
             "PutParameter",
-            {"Name": "/desc", "Value": "v", "Description": "test param"},
+            {"Name": expected_name, "Value": "v", "Description": expected_description},
         )
         result = _post(client, "DescribeParameters", {})
+
+        # Assert
         assert len(result["Parameters"]) >= 1
         param = result["Parameters"][0]
-        assert param["Name"] == "/desc"
-        assert param["Description"] == "test param"
+        assert param["Name"] == expected_name
+        assert param["Description"] == expected_description

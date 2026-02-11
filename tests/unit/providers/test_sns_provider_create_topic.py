@@ -19,18 +19,30 @@ async def provider():
 class TestCreateTopic:
     @pytest.mark.asyncio
     async def test_create_topic(self, provider: SnsProvider) -> None:
-        arn = await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        expected_topic_count = 1
 
-        assert "my-topic" in arn
-        topics = provider.list_topics()
-        assert len(topics) == 1
-        assert topics[0].topic_name == "my-topic"
+        # Act
+        actual_arn = await provider.create_topic(topic_name)
+
+        # Assert
+        assert topic_name in actual_arn
+        actual_topics = provider.list_topics()
+        assert len(actual_topics) == expected_topic_count
+        assert actual_topics[0].topic_name == topic_name
 
     @pytest.mark.asyncio
     async def test_create_topic_idempotent(self, provider: SnsProvider) -> None:
-        arn1 = await provider.create_topic("my-topic")
-        arn2 = await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        expected_topic_count = 1
 
-        assert arn1 == arn2
-        topics = provider.list_topics()
-        assert len(topics) == 1
+        # Act
+        actual_arn1 = await provider.create_topic(topic_name)
+        actual_arn2 = await provider.create_topic(topic_name)
+
+        # Assert
+        assert actual_arn1 == actual_arn2
+        actual_topics = provider.list_topics()
+        assert len(actual_topics) == expected_topic_count

@@ -31,4 +31,7 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 class TestUnknownAction:
     def test_unknown_action(self, client: TestClient) -> None:
         result = _post(client, "FakeAction", {})
-        assert result["__type"] == "InvalidAction"
+
+        # Assert
+        expected_error_type = "InvalidAction"
+        assert result["__type"] == expected_error_type

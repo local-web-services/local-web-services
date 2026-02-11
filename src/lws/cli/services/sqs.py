@@ -31,9 +31,10 @@ async def _send_message(queue_name: str, message_body: str, port: int) -> None:
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, queue_name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    queue_url = resource.get("queue_url", "")
+        queue_url = resource.get("queue_url", "")
+    except Exception:
+        svc_port = await client.service_port(_SERVICE)
+        queue_url = f"http://localhost:{svc_port}/000000000000/{queue_name}"
     xml = await client.form_request(
         _SERVICE,
         {"Action": "SendMessage", "QueueUrl": queue_url, "MessageBody": message_body},
@@ -55,9 +56,10 @@ async def _receive_message(queue_name: str, max_messages: int, port: int) -> Non
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, queue_name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    queue_url = resource.get("queue_url", "")
+        queue_url = resource.get("queue_url", "")
+    except Exception:
+        svc_port = await client.service_port(_SERVICE)
+        queue_url = f"http://localhost:{svc_port}/000000000000/{queue_name}"
     xml = await client.form_request(
         _SERVICE,
         {
@@ -83,9 +85,10 @@ async def _delete_message(queue_name: str, receipt_handle: str, port: int) -> No
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, queue_name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    queue_url = resource.get("queue_url", "")
+        queue_url = resource.get("queue_url", "")
+    except Exception:
+        svc_port = await client.service_port(_SERVICE)
+        queue_url = f"http://localhost:{svc_port}/000000000000/{queue_name}"
     xml = await client.form_request(
         _SERVICE,
         {
@@ -110,9 +113,10 @@ async def _get_queue_attributes(queue_name: str, port: int) -> None:
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, queue_name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    queue_url = resource.get("queue_url", "")
+        queue_url = resource.get("queue_url", "")
+    except Exception:
+        svc_port = await client.service_port(_SERVICE)
+        queue_url = f"http://localhost:{svc_port}/000000000000/{queue_name}"
     xml = await client.form_request(
         _SERVICE,
         {"Action": "GetQueueAttributes", "QueueUrl": queue_url},

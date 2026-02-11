@@ -80,62 +80,87 @@ class TestRequestLoggingIntegration:
         self, dynamodb_client: httpx.AsyncClient, ws_handler: WebSocketLogHandler
     ):
         """Verify DynamoDB PutItem operation logs with request/response bodies."""
+        # Arrange
+        expected_service = "dynamodb"
+        expected_method = "POST"
+        expected_status_code = 200
+        expected_handler = "PutItem"
+        expected_table_name = "TestTable"
+        expected_backlog_count = 1
+
+        # Act
         response = await dynamodb_client.post(
             "/",
             headers={"X-Amz-Target": "DynamoDB_20120810.PutItem"},
             json={
-                "TableName": "TestTable",
+                "TableName": expected_table_name,
                 "Item": {"pk": {"S": "test123"}, "data": {"S": "hello world"}},
             },
         )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status_code
 
         backlog = ws_handler.backlog()
-        assert len(backlog) == 1
+        assert len(backlog) == expected_backlog_count
 
         entry = backlog[0]
-        assert entry["service"] == "dynamodb"
-        assert entry["method"] == "POST"
-        assert entry["status_code"] == 200
-        assert entry["handler"] == "PutItem"
+        actual_service = entry["service"]
+        actual_method = entry["method"]
+        actual_status_code = entry["status_code"]
+        actual_handler = entry["handler"]
+        assert actual_service == expected_service
+        assert actual_method == expected_method
+        assert actual_status_code == expected_status_code
+        assert actual_handler == expected_handler
         assert "request_body" in entry
-        assert "TestTable" in entry["request_body"]
+        assert expected_table_name in entry["request_body"]
         assert "response_body" in entry
 
     async def test_dynamodb_get_item_logs_request_and_response(
         self, dynamodb_client: httpx.AsyncClient, ws_handler: WebSocketLogHandler
     ):
         """Verify DynamoDB GetItem operation logs with full details."""
+        # Arrange
+        expected_service = "dynamodb"
+        expected_handler = "GetItem"
+        expected_status_code = 200
+        expected_backlog_count = 1
+        expected_pk = "get123"
+        table_name = "TestTable"
+
         # First put an item
         await dynamodb_client.post(
             "/",
             headers={"X-Amz-Target": "DynamoDB_20120810.PutItem"},
             json={
-                "TableName": "TestTable",
-                "Item": {"pk": {"S": "get123"}, "value": {"N": "42"}},
+                "TableName": table_name,
+                "Item": {"pk": {"S": expected_pk}, "value": {"N": "42"}},
             },
         )
 
         ws_handler._buffer.clear()
 
-        # Now get it
+        # Act
         response = await dynamodb_client.post(
             "/",
             headers={"X-Amz-Target": "DynamoDB_20120810.GetItem"},
-            json={"TableName": "TestTable", "Key": {"pk": {"S": "get123"}}},
+            json={"TableName": table_name, "Key": {"pk": {"S": expected_pk}}},
         )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status_code
 
         backlog = ws_handler.backlog()
-        assert len(backlog) == 1
+        assert len(backlog) == expected_backlog_count
 
         entry = backlog[0]
-        assert entry["service"] == "dynamodb"
-        assert entry["handler"] == "GetItem"
+        actual_service = entry["service"]
+        actual_handler = entry["handler"]
+        assert actual_service == expected_service
+        assert actual_handler == expected_handler
         assert "request_body" in entry
-        assert "get123" in entry["request_body"]
+        assert expected_pk in entry["request_body"]
         assert "response_body" in entry
         assert "Item" in entry["response_body"]
 
@@ -167,6 +192,15 @@ class TestRequestLoggingIntegration:
         self, sqs_client: httpx.AsyncClient, ws_handler: WebSocketLogHandler
     ):
         """Verify SQS SendMessage operation logs with request/response bodies."""
+        # Arrange
+        expected_service = "sqs"
+        expected_method = "POST"
+        expected_status_code = 200
+        expected_handler = "SendMessage"
+        expected_message_body_fragment = "MessageBody=Hello+from+integration+test"
+        expected_backlog_count = 1
+
+        # Act
         response = await sqs_client.post(
             "/",
             data={
@@ -176,18 +210,23 @@ class TestRequestLoggingIntegration:
             },
         )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status_code
 
         backlog = ws_handler.backlog()
-        assert len(backlog) == 1
+        assert len(backlog) == expected_backlog_count
 
         entry = backlog[0]
-        assert entry["service"] == "sqs"
-        assert entry["method"] == "POST"
-        assert entry["status_code"] == 200
-        assert entry["handler"] == "SendMessage"
+        actual_service = entry["service"]
+        actual_method = entry["method"]
+        actual_status_code = entry["status_code"]
+        actual_handler = entry["handler"]
+        assert actual_service == expected_service
+        assert actual_method == expected_method
+        assert actual_status_code == expected_status_code
+        assert actual_handler == expected_handler
         assert "request_body" in entry
-        assert "MessageBody=Hello+from+integration+test" in entry["request_body"]
+        assert expected_message_body_fragment in entry["request_body"]
         assert "response_body" in entry
 
     # S3 Tests
@@ -216,32 +255,52 @@ class TestRequestLoggingIntegration:
         self, s3_client: httpx.AsyncClient, ws_handler: WebSocketLogHandler
     ):
         """Verify S3 PutObject operation logs with request/response bodies."""
+        # Arrange
+        expected_service = "s3"
+        expected_method = "PUT"
+        expected_status_code = 200
+        expected_request_body_fragment = "Hello S3!"
+        expected_response_body = ""
+        expected_backlog_count = 1
+
+        # Act
         response = await s3_client.put(
             "/test-bucket/test-file.txt",
             content=b"Hello S3!",
             headers={"Content-Type": "text/plain"},
         )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status_code
 
         backlog = ws_handler.backlog()
-        assert len(backlog) == 1
+        assert len(backlog) == expected_backlog_count
 
         entry = backlog[0]
-        assert entry["service"] == "s3"
-        assert entry["method"] == "PUT"
-        assert entry["status_code"] == 200
+        actual_service = entry["service"]
+        actual_method = entry["method"]
+        actual_status_code = entry["status_code"]
+        actual_response_body = entry["response_body"]
+        assert actual_service == expected_service
+        assert actual_method == expected_method
+        assert actual_status_code == expected_status_code
         assert "request_body" in entry
-        assert "Hello S3!" in entry["request_body"]
+        assert expected_request_body_fragment in entry["request_body"]
         assert "response_body" in entry
-        assert entry["response_body"] == ""
+        assert actual_response_body == expected_response_body
 
     # WebSocket Streaming Tests
 
     async def test_websocket_receives_live_logs(self, ws_handler: WebSocketLogHandler):
         """Verify WebSocket clients receive logs as they're emitted."""
+        # Arrange
+        expected_service = "test"
+        expected_request_body = '{"test": "request"}'
+        expected_response_body = '{"test": "response"}'
+
         queue = ws_handler.subscribe()
 
+        # Act
         logger = get_logger("test.websocket")
         logger.log_http_request(
             method="POST",
@@ -249,23 +308,31 @@ class TestRequestLoggingIntegration:
             handler_name="TestHandler",
             duration_ms=15.5,
             status_code=201,
-            service="test",
-            request_body='{"test": "request"}',
-            response_body='{"test": "response"}',
+            service=expected_service,
+            request_body=expected_request_body,
+            response_body=expected_response_body,
         )
 
+        # Assert
         entry = await asyncio.wait_for(queue.get(), timeout=1.0)
-        assert entry["service"] == "test"
-        assert entry["request_body"] == '{"test": "request"}'
-        assert entry["response_body"] == '{"test": "response"}'
+        actual_service = entry["service"]
+        actual_request_body = entry["request_body"]
+        actual_response_body = entry["response_body"]
+        assert actual_service == expected_service
+        assert actual_request_body == expected_request_body
+        assert actual_response_body == expected_response_body
 
         ws_handler.unsubscribe(queue)
 
     async def test_multiple_clients_receive_same_log(self, ws_handler: WebSocketLogHandler):
         """Verify all connected clients receive the same log entries."""
+        # Arrange
+        expected_service = "shared"
+
         q1 = ws_handler.subscribe()
         q2 = ws_handler.subscribe()
 
+        # Act
         logger = get_logger("test.multicast")
         logger.log_http_request(
             method="GET",
@@ -273,14 +340,17 @@ class TestRequestLoggingIntegration:
             handler_name="SharedHandler",
             duration_ms=5.0,
             status_code=200,
-            service="shared",
+            service=expected_service,
         )
 
+        # Assert
         entry1 = await asyncio.wait_for(q1.get(), timeout=1.0)
         entry2 = await asyncio.wait_for(q2.get(), timeout=1.0)
 
-        assert entry1["service"] == "shared"
-        assert entry2["service"] == "shared"
+        actual_service_1 = entry1["service"]
+        actual_service_2 = entry2["service"]
+        assert actual_service_1 == expected_service
+        assert actual_service_2 == expected_service
         assert entry1["message"] == entry2["message"]
 
         ws_handler.unsubscribe(q1)

@@ -21,15 +21,24 @@ def _mock_client_response(return_value: dict) -> AsyncMock:
 
 class TestListTables:
     def test_list_tables_calls_correct_endpoint(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_target = f"{_TARGET_PREFIX}.ListTables"
+        expected_body = {}
         mock = _mock_client_response({"TableNames": ["TableA", "TableB"]})
+
+        # Act
         with patch("lws.cli.services.dynamodb._client", return_value=mock):
             result = runner.invoke(
                 app,
                 ["dynamodb", "list-tables"],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.json_target_request.assert_awaited_once()
         call_args = mock.json_target_request.call_args
-        assert call_args[0][1] == f"{_TARGET_PREFIX}.ListTables"
-        assert call_args[0][2] == {}
+        actual_target = call_args[0][1]
+        actual_body = call_args[0][2]
+        assert actual_target == expected_target
+        assert actual_body == expected_body

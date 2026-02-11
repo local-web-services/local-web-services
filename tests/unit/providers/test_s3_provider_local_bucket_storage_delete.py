@@ -53,18 +53,35 @@ class TestLocalBucketStorageDelete:
     """delete_object tests."""
 
     async def test_delete_existing(self, storage: LocalBucketStorage) -> None:
-        await storage.put_object("mybucket", "key", b"data")
-        existed = await storage.delete_object("mybucket", "key")
-        assert existed is True
-        assert await storage.get_object("mybucket", "key") is None
+        # Arrange
+        bucket = "mybucket"
+        key = "key"
+        await storage.put_object(bucket, key, b"data")
+
+        # Act
+        actual_existed = await storage.delete_object(bucket, key)
+
+        # Assert
+        assert actual_existed is True
+        assert await storage.get_object(bucket, key) is None
 
     async def test_delete_nonexistent(self, storage: LocalBucketStorage) -> None:
-        existed = await storage.delete_object("mybucket", "nokey")
-        assert existed is False
+        # Act
+        actual_existed = await storage.delete_object("mybucket", "nokey")
+
+        # Assert
+        assert actual_existed is False
 
     async def test_delete_removes_metadata(self, storage: LocalBucketStorage, tmp_path: Path):
-        await storage.put_object("mybucket", "key", b"data")
-        meta_path = tmp_path / "s3" / ".metadata" / "mybucket" / "key.json"
+        # Arrange
+        bucket = "mybucket"
+        key = "key"
+        await storage.put_object(bucket, key, b"data")
+        meta_path = tmp_path / "s3" / ".metadata" / bucket / "key.json"
         assert meta_path.exists()
-        await storage.delete_object("mybucket", "key")
+
+        # Act
+        await storage.delete_object(bucket, key)
+
+        # Assert
         assert not meta_path.exists()

@@ -75,23 +75,24 @@ class GraphEdge:
 
 class _HasFunctions(Protocol):
     @property
-    def functions(self) -> list[Any]: ...
+    def functions(self) -> list[Any]:
+        """Return Lambda function definitions."""
 
 
 class _HasTables(Protocol):
     @property
-    def tables(self) -> list[Any]: ...
+    def tables(self) -> list[Any]:
+        """Return DynamoDB table definitions."""
 
 
 class _HasApis(Protocol):
     @property
-    def apis(self) -> list[Any]: ...
+    def apis(self) -> list[Any]:
+        """Return API Gateway definitions."""
 
 
 class AppModelProtocol(_HasFunctions, _HasTables, _HasApis, Protocol):
     """Structural type for an application model with functions, tables, and APIs."""
-
-    ...
 
 
 # ---------------------------------------------------------------------------

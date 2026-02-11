@@ -175,6 +175,8 @@ class TestCloudAssemblyParsing:
     """Cloud assembly state machine resource parsing."""
 
     def test_parse_basic_state_machine(self) -> None:
+        # Arrange
+        expected_name = "MySM"
         props = {
             "DefinitionString": json.dumps(
                 {
@@ -183,8 +185,12 @@ class TestCloudAssemblyParsing:
                 }
             ),
         }
-        config = parse_cloud_assembly_state_machine("MySM", props)
-        assert config.name == "MySM"
+
+        # Act
+        config = parse_cloud_assembly_state_machine(expected_name, props)
+
+        # Assert
+        assert config.name == expected_name
         assert config.workflow_type == WorkflowType.STANDARD
 
     def test_parse_express_workflow(self) -> None:
