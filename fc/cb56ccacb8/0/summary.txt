@@ -1,0 +1,20 @@
+All 1592 unit tests and 106 integration tests pass.
+
+Here's a summary of what was done:
+
+**S3 virtual-hosted-style fix** (reverted IP approach, restored dns_rewrite + aws_config):
+- The IP approach failed because `host.docker.internal` can't be resolved from the macOS host, and the fallback `172.17.0.1` doesn't work on Docker Desktop for Mac
+- Restored the working approach:
+  - **Python (boto3)**: `AWS_CONFIG_FILE` pointing to a config with `addressing_style = path`
+  - **Node.js (SDK v3)**: `dns_rewrite.js` preload hook via `NODE_OPTIONS` that resolves `*.host.docker.internal` → `host.docker.internal`
+  - **Server-side**: `_VirtualHostRewriteMiddleware` extracts bucket from the `Host` header
+
+**Docker debug logging** added to `docker.py`:
+- `docker run` — logs image, name, volumes, memory, CPU, and environment variables
+- `docker exec` — logs the full command being executed
+- `docker stop` / `docker rm` — logs container ID
+- Stale container removal — logs container ID
+
+**Test fixes**:
+- Fixed `test_orchestrator_integration.py` and `test_provider_creation.py` — still had tuple unpacking from old `_create_providers()` return type
+- Fixed `test_lws_status.py` — still passed `compute_providers` to `create_management_router()`
