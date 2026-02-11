@@ -38,13 +38,15 @@ async function main() {
 
     const result = await handler(event, context);
 
-    // Write result to stdout then exit. Explicit exit is required because
-    // AWS SDK clients keep connections alive which prevents Node from exiting.
-    process.stdout.write(JSON.stringify({result: result}), () => process.exit(0));
+    // Use synchronous write to fd 1 (stdout) to guarantee the data is
+    // flushed before process.exit(). The callback-based process.stdout.write
+    // can hang when stdout is a pipe and the event loop has pending work.
+    fs.writeFileSync(1, JSON.stringify({result: result}));
+    process.exit(0);
 }
 
 main().catch(err => {
-    process.stdout.write(JSON.stringify({
+    fs.writeFileSync(1, JSON.stringify({
         error: {
             errorMessage: err.message,
             errorType: err.constructor.name,
