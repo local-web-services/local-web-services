@@ -45,6 +45,7 @@ class ClusterDBConfig:
     endpoint_suffix: str
     include_master_username: bool = False
     include_remove_tags: bool = True
+    data_plane_endpoint: str | None = None
 
 
 # ------------------------------------------------------------------
@@ -72,9 +73,12 @@ class _DBCluster:
             f"arn:aws:{config.arn_service}:{_REGION}:{_ACCOUNT_ID}"
             f":cluster:{db_cluster_identifier}"
         )
-        self.endpoint = (
-            f"{db_cluster_identifier}.cluster-local" f".{_REGION}.{config.endpoint_suffix}"
-        )
+        if config.data_plane_endpoint:
+            self.endpoint = config.data_plane_endpoint
+        else:
+            self.endpoint = (
+                f"{db_cluster_identifier}.cluster-local" f".{_REGION}.{config.endpoint_suffix}"
+            )
         self.tags: dict[str, str] = {}
 
 
@@ -98,9 +102,12 @@ class _DBInstance:
         self.arn = (
             f"arn:aws:{config.arn_service}:{_REGION}:{_ACCOUNT_ID}" f":db:{db_instance_identifier}"
         )
-        self.endpoint = (
-            f"{db_instance_identifier}.cluster-local" f".{_REGION}.{config.endpoint_suffix}"
-        )
+        if config.data_plane_endpoint:
+            self.endpoint = config.data_plane_endpoint
+        else:
+            self.endpoint = (
+                f"{db_instance_identifier}.cluster-local" f".{_REGION}.{config.endpoint_suffix}"
+            )
         self.tags: dict[str, str] = {}
 
 

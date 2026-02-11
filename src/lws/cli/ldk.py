@@ -191,7 +191,7 @@ _SERVICE_IMAGES: dict[str, list[str]] = {
     "elasticache": ["redis:7-alpine"],
     "memorydb": ["redis:7-alpine"],
     "docdb": ["mongo:7"],
-    "neptune": ["neo4j:5-community"],
+    "neptune": ["janusgraph/janusgraph:1.0"],
     "es": ["opensearchproject/opensearch:2"],
     "opensearch": ["opensearchproject/opensearch:2"],
     "rds": ["postgres:16-alpine", "mysql:8"],
@@ -578,6 +578,7 @@ def _create_terraform_providers(
         "rds": port + 20,
         "glacier": port + 21,
         "s3tables": port + 22,
+        "neptune-data": port + 23,
     }
 
     dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
@@ -701,13 +702,19 @@ def _create_terraform_providers(
         "docdb-http", create_docdb_app, ports["docdb"]
     )
 
-    # Neptune
+    # Neptune data-plane (JanusGraph) + control-plane
+    from lws.providers.neptune.data_plane import (  # pylint: disable=import-outside-toplevel
+        NeptuneDataPlaneProvider,
+    )
     from lws.providers.neptune.routes import (  # pylint: disable=import-outside-toplevel
         create_neptune_app,
     )
 
+    providers["__neptune_data__"] = neptune_data = NeptuneDataPlaneProvider(ports["neptune-data"])
     providers["__neptune_http__"] = _HttpServiceProvider(
-        "neptune-http", create_neptune_app, ports["neptune"]
+        "neptune-http",
+        lambda: create_neptune_app(data_plane_endpoint=neptune_data.endpoint),
+        ports["neptune"],
     )
 
     # Elasticsearch
@@ -1487,6 +1494,7 @@ def _service_ports(port: int) -> dict[str, int]:
         "rds": port + 20,
         "glacier": port + 21,
         "s3tables": port + 22,
+        "neptune-data": port + 23,
     }
 
 
