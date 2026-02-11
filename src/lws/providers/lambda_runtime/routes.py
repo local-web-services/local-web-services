@@ -402,6 +402,7 @@ class LambdaManagementRouter:
 
         # Create compute provider
         compute = self._create_compute(func_config)
+        await compute.start()
         self._registry.register(function_name, func_config, compute)
 
         runtime = func_config.get("Runtime")
