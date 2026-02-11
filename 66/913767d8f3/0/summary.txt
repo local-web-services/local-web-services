@@ -1,0 +1,14 @@
+All 1592 unit tests and 106 integration tests pass.
+
+Here's a summary of the changes:
+
+**`src/lws/logging/logger.py`** — Added `log_docker_operation()` structured log method:
+- Prints a compact console line with `DOCKER` prefix (white bold, like `S3API`, `SQS`, `LAMBDA`)
+- Format: `[HH:MM:SS] DOCKER run ldk-MyFunction (nodejs:20, 128MB) -> OK`
+- Emits WebSocket entry with `request_body` containing full details JSON (image, memory, volumes, env vars, etc.) — this powers the expandable view in the GUI
+
+**`src/lws/providers/lambda_runtime/docker.py`** — Replaced all `_logger.debug()`/`_logger.info()` calls with `_logger.log_docker_operation()`:
+- **`run`** — logs image, memory, nano_cpus, code_path, bootstrap_path, and full environment dict as expandable details
+- **`exec`** — logs the command and env vars as expandable details
+- **`stop`** — logs container ID as expandable details
+- **`rm`** (stale cleanup) — logs reason and container ID as expandable details

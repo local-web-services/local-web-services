@@ -1,0 +1,2 @@
+[15:45:01] INFO Started container ldk-GenerateReceiptFunction (image=public.ecr.aws/lambda/nodejs:20, memory=128MB)
+ I would like the details for this added. I would like the extendable button like on other log messages . when extended it should show the full details. this should be for all docker calls. log lines should prefix docker like the s3api prefex appears
