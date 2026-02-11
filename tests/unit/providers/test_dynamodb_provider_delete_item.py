@@ -115,9 +115,14 @@ class TestDeleteItem:
     """delete_item removes items."""
 
     async def test_delete_removes_item(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 1})
         await provider.delete_item("orders", {"orderId": "o1", "itemId": "i1"})
+
+        # Act
         result = await provider.get_item("orders", {"orderId": "o1", "itemId": "i1"})
+
+        # Assert
         assert result is None
 
     async def test_delete_nonexistent_no_error(self, provider: SqliteDynamoProvider) -> None:

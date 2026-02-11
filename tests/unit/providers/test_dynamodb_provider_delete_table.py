@@ -55,15 +55,21 @@ async def provider(tmp_path: Path):
 class TestDeleteTable:
     @pytest.mark.asyncio
     async def test_delete_table(self, provider: SqliteDynamoProvider, tmp_path: Path) -> None:
+        # Arrange
+        expected_table_name = "orders"
         await provider.create_table(_simple_config())
         tables = await provider.list_tables()
-        assert "orders" in tables
+        assert expected_table_name in tables
 
+        # Act
         result = await provider.delete_table("orders")
-        assert result["TableName"] == "orders"
+
+        # Assert
+        actual_table_name = result["TableName"]
+        assert actual_table_name == expected_table_name
 
         tables = await provider.list_tables()
-        assert "orders" not in tables
+        assert expected_table_name not in tables
 
         # DB file should be deleted
         db_path = tmp_path / "dynamodb" / "orders.db"

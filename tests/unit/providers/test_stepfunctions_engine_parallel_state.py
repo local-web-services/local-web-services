@@ -85,6 +85,10 @@ class TestParallelState:
     """Parallel state concurrent execution."""
 
     async def test_parallel_basic(self) -> None:
+        # Arrange
+        expected_output = ["branch1", "branch2"]
+
+        # Act
         history = await run_engine(
             {
                 "StartAt": "P",
@@ -118,10 +122,17 @@ class TestParallelState:
                 },
             },
         )
+
+        # Assert
+        actual_output = history.output_data
         assert history.status == ExecutionStatus.SUCCEEDED
-        assert history.output_data == ["branch1", "branch2"]
+        assert actual_output == expected_output
 
     async def test_parallel_preserves_order(self) -> None:
+        # Arrange
+        expected_output = ["first", "second", "third"]
+
+        # Act
         history = await run_engine(
             {
                 "StartAt": "P",
@@ -165,7 +176,10 @@ class TestParallelState:
                 },
             },
         )
-        assert history.output_data == ["first", "second", "third"]
+
+        # Assert
+        actual_output = history.output_data
+        assert actual_output == expected_output
 
     async def test_parallel_branch_failure_with_catch(self) -> None:
         history = await run_engine(

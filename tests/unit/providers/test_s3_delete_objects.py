@@ -31,10 +31,14 @@ class TestDeleteObjects:
     async def test_delete_objects_success(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("my-bucket")
-        await client.put("/my-bucket/key1", content=b"data1")
-        await client.put("/my-bucket/key2", content=b"data2")
-        await client.put("/my-bucket/key3", content=b"data3")
+        # Arrange
+        bucket_name = "my-bucket"
+        expected_ok_status = 200
+        expected_gone_status = 404
+        await provider.create_bucket(bucket_name)
+        await client.put(f"/{bucket_name}/key1", content=b"data1")
+        await client.put(f"/{bucket_name}/key2", content=b"data2")
+        await client.put(f"/{bucket_name}/key3", content=b"data3")
 
         delete_xml = (
             '<?xml version="1.0" encoding="UTF-8"?>'
@@ -43,41 +47,47 @@ class TestDeleteObjects:
             "<Object><Key>key2</Key></Object>"
             "</Delete>"
         )
+
+        # Act
         resp = await client.post(
-            "/my-bucket?delete",
+            f"/{bucket_name}?delete",
             content=delete_xml.encode(),
             headers={"content-type": "application/xml"},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_ok_status
         assert "<DeleteResult>" in resp.text
         assert "<Deleted><Key>key1</Key></Deleted>" in resp.text
         assert "<Deleted><Key>key2</Key></Deleted>" in resp.text
 
-        # key3 should still exist
-        get_resp = await client.get("/my-bucket/key3")
-        assert get_resp.status_code == 200
+        get_resp = await client.get(f"/{bucket_name}/key3")
+        assert get_resp.status_code == expected_ok_status
 
-        # key1 and key2 should be gone
-        get_resp1 = await client.get("/my-bucket/key1")
-        assert get_resp1.status_code == 404
-        get_resp2 = await client.get("/my-bucket/key2")
-        assert get_resp2.status_code == 404
+        get_resp1 = await client.get(f"/{bucket_name}/key1")
+        assert get_resp1.status_code == expected_gone_status
+        get_resp2 = await client.get(f"/{bucket_name}/key2")
+        assert get_resp2.status_code == expected_gone_status
 
     @pytest.mark.asyncio
     async def test_delete_objects_nonexistent_keys(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        await provider.create_bucket(bucket_name)
+        expected_status = 200
 
+        # Act
         delete_xml = "<Delete><Object><Key>nonexistent</Key></Object></Delete>"
         resp = await client.post(
-            "/my-bucket?delete",
+            f"/{bucket_name}?delete",
             content=delete_xml.encode(),
             headers={"content-type": "application/xml"},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "<DeleteResult>" in resp.text
         # Nonexistent keys are still reported as deleted (S3 behavior)
         assert "<Deleted>" in resp.text
@@ -86,23 +96,30 @@ class TestDeleteObjects:
     async def test_delete_objects_malformed_xml(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
+        expected_status = 400
 
+        # Act
         resp = await client.post(
             "/my-bucket?delete",
             content=b"not xml",
             headers={"content-type": "application/xml"},
         )
 
-        assert resp.status_code == 400
+        # Assert
+        assert resp.status_code == expected_status
         assert "MalformedXML" in resp.text
 
     @pytest.mark.asyncio
     async def test_delete_objects_empty_list(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
+        expected_status = 200
 
+        # Act
         delete_xml = "<Delete></Delete>"
         resp = await client.post(
             "/my-bucket?delete",
@@ -110,5 +127,6 @@ class TestDeleteObjects:
             headers={"content-type": "application/xml"},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "<DeleteResult>" in resp.text

@@ -16,9 +16,9 @@ class TestCreateTerraformProviders:
         assert "__sqs_http__" in providers
         assert "__s3_http__" in providers
         assert "__sns_http__" in providers
-        assert "__eventbridge_http__" in providers
+        assert "__events_http__" in providers
         assert "__stepfunctions_http__" in providers
-        assert "__cognito_http__" in providers
+        assert "__cognito-idp_http__" in providers
         assert "__apigateway_http__" in providers
         assert "__lambda_http__" in providers
         assert "__iam_http__" in providers
@@ -27,17 +27,32 @@ class TestCreateTerraformProviders:
     def test_port_allocation(self, tmp_path) -> None:
         from lws.cli.ldk import _create_terraform_providers
 
+        # Arrange
+        expected_dynamodb_port = 4001
+        expected_sqs_port = 4002
+        expected_s3_port = 4003
+        expected_sns_port = 4004
+        expected_eventbridge_port = 4005
+        expected_stepfunctions_port = 4006
+        expected_cognito_port = 4007
+        expected_apigateway_port = 4008
+        expected_lambda_port = 4009
+        expected_iam_port = 4010
+        expected_sts_port = 4011
         config = LdkConfig(port=4000)
+
+        # Act
         _, ports = _create_terraform_providers(config, tmp_path)
 
-        assert ports["dynamodb"] == 4001
-        assert ports["sqs"] == 4002
-        assert ports["s3"] == 4003
-        assert ports["sns"] == 4004
-        assert ports["eventbridge"] == 4005
-        assert ports["stepfunctions"] == 4006
-        assert ports["cognito"] == 4007
-        assert ports["apigateway"] == 4008
-        assert ports["lambda"] == 4009
-        assert ports["iam"] == 4010
-        assert ports["sts"] == 4011
+        # Assert
+        assert ports["dynamodb"] == expected_dynamodb_port
+        assert ports["sqs"] == expected_sqs_port
+        assert ports["s3"] == expected_s3_port
+        assert ports["sns"] == expected_sns_port
+        assert ports["events"] == expected_eventbridge_port
+        assert ports["stepfunctions"] == expected_stepfunctions_port
+        assert ports["cognito-idp"] == expected_cognito_port
+        assert ports["apigateway"] == expected_apigateway_port
+        assert ports["lambda"] == expected_lambda_port
+        assert ports["iam"] == expected_iam_port
+        assert ports["sts"] == expected_sts_port

@@ -84,6 +84,7 @@ def real_client(real_provider: SqliteDynamoProvider) -> httpx.AsyncClient:
 class TestUpdateTimeToLive:
     @pytest.mark.asyncio
     async def test_update_time_to_live_enable(self, mock_client: httpx.AsyncClient) -> None:
+        # Arrange
         payload = {
             "TableName": "MyTable",
             "TimeToLiveSpecification": {
@@ -91,17 +92,24 @@ class TestUpdateTimeToLive:
                 "Enabled": True,
             },
         }
+        expected_status_code = 200
+        expected_attribute_name = "ttl"
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "TimeToLiveSpecification" in data
         spec = data["TimeToLiveSpecification"]
-        assert spec["AttributeName"] == "ttl"
+        actual_attribute_name = spec["AttributeName"]
+        assert actual_attribute_name == expected_attribute_name
         assert spec["Enabled"] is True
 
     @pytest.mark.asyncio
     async def test_update_time_to_live_disable(self, mock_client: httpx.AsyncClient) -> None:
+        # Arrange
         payload = {
             "TableName": "MyTable",
             "TimeToLiveSpecification": {
@@ -109,21 +117,34 @@ class TestUpdateTimeToLive:
                 "Enabled": False,
             },
         }
+        expected_status_code = 200
+        expected_attribute_name = "ttl"
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         spec = data["TimeToLiveSpecification"]
-        assert spec["AttributeName"] == "ttl"
+        actual_attribute_name = spec["AttributeName"]
+        assert actual_attribute_name == expected_attribute_name
         assert spec["Enabled"] is False
 
     @pytest.mark.asyncio
     async def test_update_time_to_live_missing_spec(self, mock_client: httpx.AsyncClient) -> None:
+        # Arrange
         payload = {"TableName": "MyTable"}
+        expected_status_code = 200
+        expected_attribute_name = ""
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         spec = data["TimeToLiveSpecification"]
-        assert spec["AttributeName"] == ""
+        actual_attribute_name = spec["AttributeName"]
+        assert actual_attribute_name == expected_attribute_name
         assert spec["Enabled"] is False

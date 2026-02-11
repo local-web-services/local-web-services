@@ -51,6 +51,8 @@ class TestEvaluateChoiceRules:
     """Evaluating a list of choice rules."""
 
     def test_first_matching_rule_wins(self) -> None:
+        # Arrange
+        expected_next_state = "First"
         rules = [
             ChoiceRule(
                 next_state="First",
@@ -65,8 +67,12 @@ class TestEvaluateChoiceRules:
                 comparison_value=-10,
             ),
         ]
-        result = evaluate_choice_rules(rules, {"x": 5})
-        assert result == "First"
+
+        # Act
+        actual_next_state = evaluate_choice_rules(rules, {"x": 5})
+
+        # Assert
+        assert actual_next_state == expected_next_state
 
     def test_no_match_returns_none(self) -> None:
         rules = [

@@ -1,6 +1,6 @@
 """LDK CLI entry point.
 
-Provides the ``ldk dev``, ``ldk invoke``, and ``ldk reset`` commands.
+Provides the ``ldk dev`` and ``ldk reset`` commands.
 ``ldk dev`` parses a CDK cloud assembly, builds the application graph,
 starts local providers, and watches for file changes.
 """
@@ -8,7 +8,6 @@ starts local providers, and watches for file changes.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import shutil
 from collections.abc import Callable
@@ -18,7 +17,6 @@ from typing import Any
 import typer
 import uvicorn
 from rich.console import Console
-from rich.syntax import Syntax
 
 from lws.cli.display import (
     print_banner,
@@ -72,7 +70,7 @@ _console = Console()
 
 app = typer.Typer(name="ldk", help="Local Development Kit - Run AWS CDK applications locally")
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 
 @app.callback()
@@ -99,145 +97,29 @@ def dev(
 
 
 @app.command()
-def invoke(
-    function_name: str = typer.Option(..., "--function-name", "-f", help="Lambda function name"),
-    event: str = typer.Option(None, "--event", "-e", help="Inline JSON event payload"),
-    event_file: Path = typer.Option(None, "--event-file", help="Path to JSON event file"),
-    project_dir: Path = typer.Option(".", "--project-dir", "-d", help="Project root directory"),
-    port: int = typer.Option(None, "--port", "-p", help="Management API port"),
+def stop(
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
 ) -> None:
-    """Invoke a Lambda function directly."""
-    asyncio.run(_run_invoke(function_name, event, event_file, project_dir, port))
+    """Stop a running ldk dev instance."""
+    asyncio.run(_stop(port))
 
 
-async def _run_invoke(
-    function_name: str,
-    event_json: str | None,
-    event_file: Path | None,
-    project_dir: Path,
-    port_override: int | None,
-) -> None:
-    """Async implementation of the ``ldk invoke`` command."""
-    # Resolve event payload
-    event_payload = _resolve_event_payload(event_json, event_file)
+async def _stop(port: int) -> None:
+    """Async implementation of the ``ldk stop`` command."""
+    import httpx  # pylint: disable=import-outside-toplevel
 
-    # Try connecting to running ldk dev via management API
-    project_dir = project_dir.resolve()
-    config = _load_config_quiet(project_dir)
-    mgmt_port = port_override or config.port
-
-    if await _try_management_invoke(mgmt_port, function_name, event_payload):
-        return
-
-    # Fallback: one-shot invocation
-    _console.print("[dim]No running ldk dev found, performing one-shot invocation...[/dim]")
-    await _oneshot_invoke(project_dir, config, function_name, event_payload)
-
-
-def _resolve_event_payload(event_json: str | None, event_file: Path | None) -> dict:
-    """Parse event payload from CLI args."""
-    if event_json is not None:
-        try:
-            return json.loads(event_json)
-        except json.JSONDecodeError as exc:
-            print_error("Invalid JSON in --event", str(exc))
-            raise typer.Exit(1)
-
-    if event_file is not None:
-        if not event_file.exists():
-            print_error("Event file not found", str(event_file))
-            raise typer.Exit(1)
-        try:
-            return json.loads(event_file.read_text())
-        except json.JSONDecodeError as exc:
-            print_error("Invalid JSON in event file", str(exc))
-            raise typer.Exit(1)
-
-    return {}
-
-
-async def _try_management_invoke(port: int, function_name: str, event: dict) -> bool:
-    """Try to invoke via the management API. Return True if successful."""
     try:
-        import httpx
-
         async with httpx.AsyncClient() as client:
             resp = await client.post(
-                f"http://localhost:{port}/_ldk/invoke",
-                json={"function_name": function_name, "event": event},
-                timeout=30.0,
+                f"http://localhost:{port}/_ldk/shutdown",
+                timeout=5.0,
             )
-            result = resp.json()
-            formatted = json.dumps(result, indent=2)
-            syntax = Syntax(formatted, "json", theme="monokai")
-            _console.print(syntax)
-            return True
-    except Exception:
-        return False
-
-
-async def _oneshot_invoke(
-    project_dir: Path, config: LdkConfig, function_name: str, event: dict
-) -> None:
-    """Perform a one-shot Lambda invocation without a running server."""
-    try:
-        import uuid as _uuid
-
-        from lws.interfaces import InvocationResult, LambdaContext
-
-        cdk_out = project_dir / config.cdk_out_dir
-        if not cdk_out.exists():
-            print_error("CDK output not found", f"Run 'cdk synth' first in {project_dir}")
-            raise typer.Exit(1)
-
-        app_model = parse_assembly(cdk_out)
-        func_def = next((f for f in app_model.functions if f.name == function_name), None)
-        if func_def is None:
-            print_error("Function not found", f"No function named '{function_name}'")
-            raise typer.Exit(1)
-
-        sdk_env = build_sdk_env({})
-        func_env = build_lambda_env(
-            function_name=func_def.name,
-            function_env=func_def.environment,
-            local_endpoints={},
-            resolved_refs={},
-        )
-        compute_config = ComputeConfig(
-            function_name=func_def.name,
-            handler=func_def.handler,
-            runtime=func_def.runtime,
-            code_path=func_def.code_path or Path("."),
-            timeout=func_def.timeout,
-            memory_size=func_def.memory,
-            environment=func_env,
-        )
-        compute = DockerCompute(config=compute_config, sdk_env=sdk_env)
-        await compute.start()
-
-        request_id = str(_uuid.uuid4())
-        context = LambdaContext(
-            function_name=function_name,
-            memory_limit_in_mb=compute_config.memory_size,
-            timeout_seconds=compute_config.timeout,
-            aws_request_id=request_id,
-            invoked_function_arn=(
-                f"arn:aws:lambda:us-east-1:000000000000:function:{function_name}"
-            ),
-        )
-
-        result: InvocationResult = await compute.invoke(event, context)
-        await compute.stop()
-
-        output = result.payload if result.error is None else {"error": result.error}
-        formatted = json.dumps(output, indent=2, default=str)
-        syntax = Syntax(formatted, "json", theme="monokai")
-        _console.print(syntax)
-
-    except typer.Exit:
-        raise
+            resp.raise_for_status()
+        _console.print("[green]ldk dev stopped.[/green]")
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        _console.print(f"[yellow]No ldk dev instance found on port {port}.[/yellow]")
     except Exception as exc:
-        print_error("Invocation failed", str(exc))
+        print_error("Failed to stop ldk dev", str(exc))
         raise typer.Exit(1)
 
 
@@ -292,7 +174,7 @@ def reset(
 async def _try_management_reset(port: int) -> None:
     """Try to notify running ldk dev of the reset via management API."""
     try:
-        import httpx
+        import httpx  # pylint: disable=import-outside-toplevel
 
         async with httpx.AsyncClient() as client:
             resp = await client.post(
@@ -322,16 +204,18 @@ def setup(
 
 def _setup_lambda(runtime_filter: str | None) -> None:
     """Pull official AWS Lambda base images from ECR Public."""
-    from lws.providers.lambda_runtime.docker import _RUNTIME_IMAGES
+    from lws.providers.lambda_runtime.docker import (  # pylint: disable=import-outside-toplevel
+        _RUNTIME_IMAGES,
+    )
 
     try:
-        import docker
-    except ImportError:
+        import docker  # pylint: disable=import-outside-toplevel
+    except ImportError as exc:
         print_error(
             "Docker SDK not installed",
             "Install with: pip install local-web-services[docker]",
         )
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
     try:
         client = docker.from_env()
@@ -419,7 +303,7 @@ def _collect_extra_resources(app_model: AppModel) -> dict[str, list[str]]:
     return extras
 
 
-def _build_local_details(app_model: AppModel, port: int) -> dict[str, str]:
+def _build_local_details(app_model: AppModel, _port: int) -> dict[str, str]:
     """Build a mapping of ``"Type:Name"`` to local detail strings."""
     details: dict[str, str] = {}
 
@@ -436,7 +320,7 @@ def _add_api_details(details: dict[str, str], app_model: AppModel) -> None:
                 f"lws apigateway test-invoke-method --resource {r.path} --http-method {r.method}"
             )
     for f in app_model.functions:
-        details[f"Function:{f.name}"] = f"ldk invoke {f.name}"
+        details[f"Function:{f.name}"] = f"lws lambda invoke --function-name {f.name}"
 
 
 def _add_resource_details(details: dict[str, str], app_model: AppModel) -> None:
@@ -495,7 +379,7 @@ def _resolve_mode(project_dir: Path, config: LdkConfig, mode_override: str | Non
     Returns ``"cdk"`` or ``"terraform"``.
     Raises ``typer.Exit(1)`` on error.
     """
-    from lws.terraform.detect import detect_project_type
+    from lws.terraform.detect import detect_project_type  # pylint: disable=import-outside-toplevel
 
     mode = mode_override or config.mode
     if mode:
@@ -527,8 +411,11 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     Starts all service providers in always-on mode, generates the
     Terraform provider override file, and waits for shutdown.
     """
-    from lws.terraform.gitignore import ensure_gitignore
-    from lws.terraform.override import cleanup_override, generate_override
+    from lws.terraform.gitignore import ensure_gitignore  # pylint: disable=import-outside-toplevel
+    from lws.terraform.override import (  # pylint: disable=import-outside-toplevel
+        cleanup_override,
+        generate_override,
+    )
 
     port = config.port
     data_dir = project_dir / config.data_dir
@@ -549,7 +436,10 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     orchestrator = Orchestrator()
 
     # Enable WebSocket log streaming
-    from lws.logging.logger import WebSocketLogHandler, set_ws_handler
+    from lws.logging.logger import (  # pylint: disable=import-outside-toplevel
+        WebSocketLogHandler,
+        set_ws_handler,
+    )
 
     ws_log_handler = WebSocketLogHandler()
     set_ws_handler(ws_log_handler)
@@ -562,10 +452,10 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
         },
     }
 
-    # Mount management API (no compute providers in terraform mode)
-    _mount_management_api(providers, orchestrator, {}, port, resource_metadata)
+    # Mount management API
+    _mount_management_api(providers, orchestrator, port, resource_metadata)
 
-    for key in providers:
+    for _key in providers:
         pass  # All keys are already in the dict
 
     startup_order = list(providers.keys())
@@ -613,9 +503,9 @@ def _create_terraform_providers(
         "sqs": port + 2,
         "s3": port + 3,
         "sns": port + 4,
-        "eventbridge": port + 5,
+        "events": port + 5,
         "stepfunctions": port + 6,
-        "cognito": port + 7,
+        "cognito-idp": port + 7,
         "apigateway": port + 8,
         "lambda": port + 9,
         "iam": port + 10,
@@ -636,6 +526,7 @@ def _create_terraform_providers(
         user_pool_name="default",
     )
     cognito_provider = CognitoProvider(data_dir=data_dir, config=pool_config)
+    providers["__cognito_default__"] = cognito_provider
 
     _register_http_providers(
         providers,
@@ -650,13 +541,16 @@ def _create_terraform_providers(
     )
 
     # Shared Lambda registry for Lambda management and API Gateway V2 proxy
-    from lws.providers.lambda_runtime.routes import LambdaRegistry, create_lambda_management_app
+    from lws.providers.lambda_runtime.routes import (  # pylint: disable=import-outside-toplevel
+        LambdaRegistry,
+        create_lambda_management_app,
+    )
 
     lambda_registry = LambdaRegistry()
 
     # Wire Lambda registry compute providers into Step Functions so SFN can
     # invoke Lambda functions that Terraform creates dynamically.
-    sf_provider.set_compute_providers(lambda_registry._compute)
+    sf_provider.set_compute_providers(lambda_registry.compute)
 
     # Build SDK env so Lambda functions can reach local services
     local_endpoints: dict[str, str] = {
@@ -664,9 +558,9 @@ def _create_terraform_providers(
         "sqs": f"http://127.0.0.1:{ports['sqs']}",
         "s3": f"http://127.0.0.1:{ports['s3']}",
         "sns": f"http://127.0.0.1:{ports['sns']}",
-        "events": f"http://127.0.0.1:{ports['eventbridge']}",
+        "events": f"http://127.0.0.1:{ports['events']}",
         "stepfunctions": f"http://127.0.0.1:{ports['stepfunctions']}",
-        "cognito-idp": f"http://127.0.0.1:{ports['cognito']}",
+        "cognito-idp": f"http://127.0.0.1:{ports['cognito-idp']}",
         "ssm": f"http://127.0.0.1:{ports['ssm']}",
         "secretsmanager": f"http://127.0.0.1:{ports['secretsmanager']}",
     }
@@ -680,7 +574,9 @@ def _create_terraform_providers(
     )
 
     # API Gateway management API with V2 support and Lambda proxy
-    from lws.providers.apigateway.routes import create_apigateway_management_app
+    from lws.providers.apigateway.routes import (  # pylint: disable=import-outside-toplevel
+        create_apigateway_management_app,
+    )
 
     providers["__apigateway_http__"] = _HttpServiceProvider(
         "apigateway-http",
@@ -689,22 +585,24 @@ def _create_terraform_providers(
     )
 
     # IAM stub
-    from lws.providers.iam.routes import create_iam_app
+    from lws.providers.iam.routes import create_iam_app  # pylint: disable=import-outside-toplevel
 
     providers["__iam_http__"] = _HttpServiceProvider("iam-http", create_iam_app, ports["iam"])
 
     # STS stub
-    from lws.providers.sts.routes import create_sts_app
+    from lws.providers.sts.routes import create_sts_app  # pylint: disable=import-outside-toplevel
 
     providers["__sts_http__"] = _HttpServiceProvider("sts-http", create_sts_app, ports["sts"])
 
     # SSM Parameter Store
-    from lws.providers.ssm.routes import create_ssm_app
+    from lws.providers.ssm.routes import create_ssm_app  # pylint: disable=import-outside-toplevel
 
     providers["__ssm_http__"] = _HttpServiceProvider("ssm-http", create_ssm_app, ports["ssm"])
 
     # Secrets Manager
-    from lws.providers.secretsmanager.routes import create_secretsmanager_app
+    from lws.providers.secretsmanager.routes import (  # pylint: disable=import-outside-toplevel
+        create_secretsmanager_app,
+    )
 
     providers["__secretsmanager_http__"] = _HttpServiceProvider(
         "secretsmanager-http", create_secretsmanager_app, ports["secretsmanager"]
@@ -715,19 +613,22 @@ def _create_terraform_providers(
 
 def _has_any_resources(app_model: AppModel) -> bool:
     """Return True if the app model contains at least one resource."""
-    return bool(
-        app_model.functions
-        or app_model.tables
-        or app_model.apis
-        or app_model.queues
-        or app_model.buckets
-        or app_model.topics
-        or app_model.event_buses
-        or app_model.state_machines
-        or app_model.ecs_services
-        or app_model.user_pools
-        or app_model.ssm_parameters
-        or app_model.secrets
+    return any(
+        getattr(app_model, attr)
+        for attr in (
+            "functions",
+            "tables",
+            "apis",
+            "queues",
+            "buckets",
+            "topics",
+            "event_buses",
+            "state_machines",
+            "ecs_services",
+            "user_pools",
+            "ssm_parameters",
+            "secrets",
+        )
     )
 
 
@@ -766,21 +667,22 @@ async def _run_dev(
 
     data_dir = project_dir / config.data_dir
     data_dir.mkdir(parents=True, exist_ok=True)
-    providers, compute_providers = _create_providers(app_model, graph, config, data_dir)
+    providers = _create_providers(app_model, graph, config, data_dir)
 
     orchestrator = Orchestrator()
 
     # Enable WebSocket log streaming
-    from lws.logging.logger import WebSocketLogHandler, set_ws_handler
+    from lws.logging.logger import (  # pylint: disable=import-outside-toplevel
+        WebSocketLogHandler,
+        set_ws_handler,
+    )
 
     ws_log_handler = WebSocketLogHandler()
     set_ws_handler(ws_log_handler)
 
     # Mount management API
     resource_metadata = _build_resource_metadata(app_model, config.port)
-    _mount_management_api(
-        providers, orchestrator, compute_providers, config.port, resource_metadata
-    )
+    _mount_management_api(providers, orchestrator, config.port, resource_metadata)
 
     # Append non-graph provider keys (HTTP servers, management) to startup order.
     # This must happen after _mount_management_api so the fallback management
@@ -1158,7 +1060,7 @@ def _wire_remaining_providers(
     providers.update(cognito_providers)
     local_endpoints["cognito-idp"] = f"http://127.0.0.1:{cognito_port}"
 
-    api_provider, api_providers = _create_api_providers(
+    _api_provider, api_providers = _create_api_providers(
         app_model, graph, compute_providers, api_port
     )
     providers.update(api_providers)
@@ -1171,10 +1073,10 @@ def _create_providers(
     graph: AppGraph,
     config: LdkConfig,
     data_dir: Path,
-) -> tuple[dict[str, Provider], dict[str, ICompute]]:
+) -> dict[str, Provider]:
     """Instantiate providers from the parsed app model.
 
-    Returns a tuple of (provider map, compute_providers).
+    Returns a provider map (including the Lambda HTTP server on port+9).
     """
     providers: dict[str, Provider] = {}
 
@@ -1228,18 +1130,45 @@ def _create_providers(
         sf_port=sf_port,
         cognito_port=cognito_port,
     )
-    ecs_provider, ecs_providers = _create_ecs_providers(app_model, graph)
+    _ecs_provider, ecs_providers = _create_ecs_providers(app_model, graph)
     providers.update(ecs_providers)
 
-    # 7. Add SSM and Secrets Manager endpoints, rebuild SDK env, update compute
+    # 7. Create LambdaRegistry and register CDK functions
+    from lws.providers.lambda_runtime.routes import (  # pylint: disable=import-outside-toplevel
+        LambdaRegistry,
+        create_lambda_management_app,
+    )
+
+    lambda_port = config.port + 9
+    lambda_registry = LambdaRegistry()
+
+    for func in app_model.functions:
+        func_config = {
+            "FunctionName": func.name,
+            "Runtime": func.runtime,
+            "Handler": func.handler,
+            "Timeout": func.timeout,
+            "MemorySize": func.memory,
+            "Environment": {"Variables": func.environment},
+        }
+        lambda_registry.register(func.name, func_config, compute_providers[func.name])
+
+    # 8. Add SSM and Secrets Manager endpoints, rebuild SDK env, update compute
     local_endpoints["ssm"] = f"http://127.0.0.1:{ssm_port}"
     local_endpoints["secretsmanager"] = f"http://127.0.0.1:{secretsmanager_port}"
     sdk_env = build_sdk_env(local_endpoints)
-    for compute in compute_providers.values():
-        if hasattr(compute, "_sdk_env"):
-            compute._sdk_env = sdk_env
+    for compute in lambda_registry.compute.values():
+        if hasattr(compute, "sdk_env"):
+            compute.sdk_env = sdk_env
 
-    # 8. Create HTTP servers for each active service
+    # 9. Lambda management HTTP server on port+9
+    providers["__lambda_http__"] = _HttpServiceProvider(
+        "lambda-http",
+        lambda: create_lambda_management_app(lambda_registry, None, sdk_env),
+        lambda_port,
+    )
+
+    # 10. Create HTTP servers for each active service
     _register_http_providers(
         providers,
         dynamo_provider=dynamo_provider,
@@ -1254,15 +1183,17 @@ def _create_providers(
             "sqs": sqs_port,
             "s3": s3_port,
             "sns": sns_port,
-            "eventbridge": eb_port,
+            "events": eb_port,
             "stepfunctions": sf_port,
-            "cognito": cognito_port,
+            "cognito-idp": cognito_port,
         },
     )
 
-    # 9. SSM Parameter Store and Secrets Manager (pre-seeded from CloudFormation)
-    from lws.providers.secretsmanager.routes import create_secretsmanager_app
-    from lws.providers.ssm.routes import create_ssm_app
+    # 11. SSM Parameter Store and Secrets Manager (pre-seeded from CloudFormation)
+    from lws.providers.secretsmanager.routes import (  # pylint: disable=import-outside-toplevel
+        create_secretsmanager_app,
+    )
+    from lws.providers.ssm.routes import create_ssm_app  # pylint: disable=import-outside-toplevel
 
     ssm_params = [
         {"name": p.name, "type": p.type, "value": p.value, "description": p.description}
@@ -1280,7 +1211,7 @@ def _create_providers(
         "secretsmanager-http", lambda: create_secretsmanager_app(sm_secrets), secretsmanager_port
     )
 
-    return providers, compute_providers
+    return providers
 
 
 def _register_http_providers(
@@ -1296,9 +1227,15 @@ def _register_http_providers(
     ports: dict[str, int],
 ) -> None:
     """Register HTTP service providers for each active backend."""
-    from lws.providers.cognito.routes import create_cognito_app
-    from lws.providers.eventbridge.routes import create_eventbridge_app
-    from lws.providers.stepfunctions.routes import create_stepfunctions_app
+    from lws.providers.cognito.routes import (  # pylint: disable=import-outside-toplevel
+        create_cognito_app,
+    )
+    from lws.providers.eventbridge.routes import (  # pylint: disable=import-outside-toplevel
+        create_eventbridge_app,
+    )
+    from lws.providers.stepfunctions.routes import (  # pylint: disable=import-outside-toplevel
+        create_stepfunctions_app,
+    )
 
     http_services: list[tuple[str, Any, Callable[[], Any]]] = []
     http_services.append(
@@ -1310,7 +1247,7 @@ def _register_http_providers(
     http_services.append(("s3", ports["s3"], lambda p=s3_provider: create_s3_app(p)))
     http_services.append(("sns", ports["sns"], lambda p=sns_provider: create_sns_app(p)))
     http_services.append(
-        ("eventbridge", ports["eventbridge"], lambda p=eb_provider: create_eventbridge_app(p))
+        ("events", ports["events"], lambda p=eb_provider: create_eventbridge_app(p))
     )
     http_services.append(
         (
@@ -1320,7 +1257,7 @@ def _register_http_providers(
         )
     )
     http_services.append(
-        ("cognito", ports["cognito"], lambda p=cognito_provider: create_cognito_app(p))
+        ("cognito-idp", ports["cognito-idp"], lambda p=cognito_provider: create_cognito_app(p))
     )
 
     for svc_name, port, factory in http_services:
@@ -1361,7 +1298,10 @@ class _HttpServiceProvider(Provider):
         if self._server is not None:
             self._server.should_exit = True
         if self._task is not None:
-            await self._task
+            try:
+                await asyncio.wait_for(self._task, timeout=3.0)
+            except (TimeoutError, asyncio.CancelledError):
+                self._task.cancel()
             self._task = None
         self._server = None
 
@@ -1390,6 +1330,7 @@ def _service_ports(port: int) -> dict[str, int]:
         "events": port + 5,
         "stepfunctions": port + 6,
         "cognito-idp": port + 7,
+        "lambda": port + 9,
         "ssm": port + 12,
         "secretsmanager": port + 13,
     }
@@ -1417,123 +1358,108 @@ def _add_service_metadata(
     services: dict[str, Any], app_model: AppModel, ports: dict[str, int]
 ) -> None:
     """Add non-API service metadata to services."""
-    if app_model.functions:
-        services["lambda"] = {
-            "resources": [
-                {
-                    "name": f.name,
-                    "runtime": f.runtime,
-                    "arn": f"arn:aws:lambda:us-east-1:000000000000:function:{f.name}",
-                }
-                for f in app_model.functions
-            ],
-        }
-    if app_model.tables:
-        services["dynamodb"] = {
-            "port": ports["dynamodb"],
-            "resources": [{"name": t.name} for t in app_model.tables],
-        }
-    if app_model.queues:
-        sqs_port = ports["sqs"]
-        services["sqs"] = {
-            "port": sqs_port,
-            "resources": [
-                {
-                    "name": q.name,
-                    "queue_url": f"http://localhost:{sqs_port}/000000000000/{q.name}",
-                }
-                for q in app_model.queues
-            ],
-        }
-    if app_model.buckets:
-        services["s3"] = {
-            "port": ports["s3"],
-            "resources": [{"name": b.name} for b in app_model.buckets],
-        }
-    if app_model.topics:
-        services["sns"] = {
-            "port": ports["sns"],
-            "resources": [
-                {
-                    "name": t.name,
-                    "arn": t.topic_arn or f"arn:aws:sns:us-east-1:000000000000:{t.name}",
-                }
-                for t in app_model.topics
-            ],
-        }
-    _add_extended_service_metadata(services, app_model, ports)
-
-
-def _add_extended_service_metadata(
-    services: dict[str, Any], app_model: AppModel, ports: dict[str, int]
-) -> None:
-    """Add EventBridge, Step Functions, Cognito, SSM and Secrets Manager metadata."""
-    if app_model.event_buses:
-        services["events"] = {
-            "port": ports["events"],
-            "resources": [
-                {
-                    "name": b.name,
-                    "arn": b.bus_arn or f"arn:aws:events:us-east-1:000000000000:event-bus/{b.name}",
-                }
-                for b in app_model.event_buses
-            ],
-        }
-    if app_model.state_machines:
-        services["stepfunctions"] = {
-            "port": ports["stepfunctions"],
-            "resources": [
-                {
-                    "name": sm.name,
-                    "arn": f"arn:aws:states:us-east-1:000000000000:stateMachine:{sm.name}",
-                }
-                for sm in app_model.state_machines
-            ],
-        }
-    if app_model.user_pools:
-        services["cognito-idp"] = {
-            "port": ports["cognito-idp"],
-            "resources": [
-                {"name": p.user_pool_name, "user_pool_id": f"us-east-1_{p.logical_id}"}
-                for p in app_model.user_pools
-            ],
-        }
-    if app_model.ssm_parameters:
-        services["ssm"] = {
-            "port": ports["ssm"],
-            "resources": [{"name": p.name} for p in app_model.ssm_parameters],
-        }
-    if app_model.secrets:
-        services["secretsmanager"] = {
-            "port": ports["secretsmanager"],
-            "resources": [
-                {
-                    "name": s.name,
-                    "arn": f"arn:aws:secretsmanager:us-east-1:000000000000:secret:{s.name}",
-                }
-                for s in app_model.secrets
-            ],
-        }
+    _SERVICE_DESCRIPTORS: list[
+        tuple[str, str, str | None, Callable[[Any, int | None], dict[str, Any]]]
+    ] = [
+        (
+            "functions",
+            "lambda",
+            "lambda",
+            lambda f, _p: {
+                "name": f.name,
+                "runtime": f.runtime,
+                "arn": f"arn:aws:lambda:us-east-1:000000000000:function:{f.name}",
+            },
+        ),
+        ("tables", "dynamodb", "dynamodb", lambda t, _p: {"name": t.name}),
+        (
+            "queues",
+            "sqs",
+            "sqs",
+            lambda q, p: {
+                "name": q.name,
+                "queue_url": f"http://localhost:{p}/000000000000/{q.name}",
+            },
+        ),
+        ("buckets", "s3", "s3", lambda b, _p: {"name": b.name}),
+        (
+            "topics",
+            "sns",
+            "sns",
+            lambda t, _p: {
+                "name": t.name,
+                "arn": t.topic_arn or f"arn:aws:sns:us-east-1:000000000000:{t.name}",
+            },
+        ),
+        (
+            "event_buses",
+            "events",
+            "events",
+            lambda b, _p: {
+                "name": b.name,
+                "arn": b.bus_arn or f"arn:aws:events:us-east-1:000000000000:event-bus/{b.name}",
+            },
+        ),
+        (
+            "state_machines",
+            "stepfunctions",
+            "stepfunctions",
+            lambda sm, _p: {
+                "name": sm.name,
+                "arn": f"arn:aws:states:us-east-1:000000000000:stateMachine:{sm.name}",
+            },
+        ),
+        (
+            "user_pools",
+            "cognito-idp",
+            "cognito-idp",
+            lambda p, _p2: {
+                "name": p.user_pool_name,
+                "user_pool_id": f"us-east-1_{p.logical_id}",
+            },
+        ),
+        ("ssm_parameters", "ssm", "ssm", lambda p, _p2: {"name": p.name}),
+        (
+            "secrets",
+            "secretsmanager",
+            "secretsmanager",
+            lambda s, _p: {
+                "name": s.name,
+                "arn": f"arn:aws:secretsmanager:us-east-1:000000000000:secret:{s.name}",
+            },
+        ),
+    ]
+    for attr, service_key, port_key, resource_fn in _SERVICE_DESCRIPTORS:
+        items = getattr(app_model, attr)
+        if items:
+            port = ports[port_key] if port_key else None
+            entry: dict[str, Any] = {
+                "resources": [resource_fn(item, port) for item in items],
+            }
+            if port is not None:
+                entry["port"] = port
+            services[service_key] = entry
 
 
 def _mount_management_api(
     providers: dict[str, Provider],
     orchestrator: Orchestrator,
-    compute_providers: dict[str, ICompute],
     port: int,
     resource_metadata: dict[str, Any] | None = None,
 ) -> None:
     """Mount the management API router on the API Gateway app or create a standalone one."""
-    from fastapi import FastAPI
+    from fastapi import FastAPI  # pylint: disable=import-outside-toplevel
 
-    from lws.api.management import create_management_router
+    from lws.api.management import (  # pylint: disable=import-outside-toplevel
+        create_management_router,
+    )
 
     mgmt_router = create_management_router(
-        orchestrator, compute_providers, providers, resource_metadata=resource_metadata
+        orchestrator, providers, resource_metadata=resource_metadata
     )
 
     # Try to find an existing API Gateway provider to mount on
-    for key, prov in providers.items():
+    for _key, prov in providers.items():
         if isinstance(prov, ApiGatewayProvider):
             prov.app.include_router(mgmt_router)
             return

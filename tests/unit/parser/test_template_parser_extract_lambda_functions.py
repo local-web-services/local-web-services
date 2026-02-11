@@ -47,30 +47,42 @@ def tmp_template(tmp_path: Path):
 
 class TestExtractLambdaFunctions:
     def test_basic_lambda(self):
+        # Arrange
+        expected_handler = "app.handler"
+        expected_runtime = "nodejs18.x"
+        expected_timeout = 60
+        expected_memory_size = 256
+        expected_environment = {"TABLE": "my-table"}
         resources = [
             CfnResource(
                 logical_id="Fn1",
                 resource_type="AWS::Lambda::Function",
                 properties={
-                    "Handler": "app.handler",
-                    "Runtime": "nodejs18.x",
+                    "Handler": expected_handler,
+                    "Runtime": expected_runtime,
                     "Code": {"S3Bucket": "bucket", "S3Key": "abc123.zip"},
-                    "Timeout": 60,
-                    "MemorySize": 256,
-                    "Environment": {"Variables": {"TABLE": "my-table"}},
+                    "Timeout": expected_timeout,
+                    "MemorySize": expected_memory_size,
+                    "Environment": {"Variables": expected_environment},
                 },
             ),
         ]
+
+        # Act
         result = extract_lambda_functions(resources)
+
+        # Assert
         assert len(result) == 1
-        lp = result[0]
-        assert lp.handler == "app.handler"
-        assert lp.runtime == "nodejs18.x"
-        assert lp.timeout == 60
-        assert lp.memory_size == 256
-        assert lp.environment == {"TABLE": "my-table"}
+        actual_func = result[0]
+        assert actual_func.handler == expected_handler
+        assert actual_func.runtime == expected_runtime
+        assert actual_func.timeout == expected_timeout
+        assert actual_func.memory_size == expected_memory_size
+        assert actual_func.environment == expected_environment
 
     def test_lambda_without_environment(self):
+        # Arrange
+        expected_environment = {}
         resources = [
             CfnResource(
                 logical_id="Fn2",
@@ -78,11 +90,19 @@ class TestExtractLambdaFunctions:
                 properties={"Handler": "h", "Runtime": "python3.11"},
             ),
         ]
+
+        # Act
         result = extract_lambda_functions(resources)
-        assert result[0].environment == {}
+
+        # Assert
+        actual_environment = result[0].environment
+        assert actual_environment == expected_environment
 
     def test_skips_non_lambda(self):
+        # Arrange
         resources = [
             CfnResource("T", "AWS::DynamoDB::Table", {}),
         ]
+
+        # Act / Assert
         assert extract_lambda_functions(resources) == []

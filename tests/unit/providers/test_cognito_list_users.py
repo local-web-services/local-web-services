@@ -54,6 +54,9 @@ class TestListUsers:
         assert data["Users"] == []
 
     async def test_list_after_creating_users(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_usernames = {"user-a", "user-b"}
+        expected_user_status = "CONFIRMED"
         await _request(
             client,
             "AdminCreateUser",
@@ -65,27 +68,40 @@ class TestListUsers:
             {"UserPoolId": POOL_ID, "Username": "user-b"},
         )
 
+        # Act
         resp = await _request(
             client,
             "ListUsers",
             {"UserPoolId": POOL_ID},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        expected_count = 2
+        assert resp.status_code == expected_status
         data = resp.json()
-        assert len(data["Users"]) == 2
-        usernames = {u["Username"] for u in data["Users"]}
-        assert usernames == {"user-a", "user-b"}
+        actual_count = len(data["Users"])
+        assert actual_count == expected_count
+        actual_usernames = {u["Username"] for u in data["Users"]}
+        assert actual_usernames == expected_usernames
         for user in data["Users"]:
-            assert user["UserStatus"] == "CONFIRMED"
+            actual_user_status = user["UserStatus"]
+            assert actual_user_status == expected_user_status
             assert user["Enabled"] is True
             attrs = {a["Name"]: a["Value"] for a in user["Attributes"]}
             assert "sub" in attrs
 
     async def test_list_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "ListUsers",
             {"UserPoolId": "us-east-1_wrong"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "ResourceNotFoundException"
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "ResourceNotFoundException"
+        assert resp.status_code == expected_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

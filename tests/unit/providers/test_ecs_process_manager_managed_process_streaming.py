@@ -89,17 +89,26 @@ class TestManagedProcessStreaming:
 
     @patch("asyncio.create_subprocess_exec")
     async def test_wait_returns_exit_code(self, mock_exec: AsyncMock) -> None:
+        # Arrange
+        expected_exit_code = 42
         proc = _mock_process()
-        proc.wait = AsyncMock(return_value=42)
+        proc.wait = AsyncMock(return_value=expected_exit_code)
         mock_exec.return_value = proc
 
+        # Act
         mp = ManagedProcess(_make_config())
         await mp.start()
-        code = await mp.wait()
-        assert code == 42
+        actual_exit_code = await mp.wait()
+
+        # Assert
+        assert actual_exit_code == expected_exit_code
         assert mp.is_running is False
 
     async def test_wait_without_start_returns_minus_one(self) -> None:
+        # Act
         mp = ManagedProcess(_make_config())
-        code = await mp.wait()
-        assert code == -1
+        actual_code = await mp.wait()
+
+        # Assert
+        expected_code = -1
+        assert actual_code == expected_code

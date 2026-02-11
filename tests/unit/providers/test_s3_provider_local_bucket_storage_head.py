@@ -53,12 +53,24 @@ class TestLocalBucketStorageHead:
     """head_object tests."""
 
     async def test_head_existing(self, storage: LocalBucketStorage) -> None:
-        await storage.put_object("mybucket", "key", b"content")
-        meta = await storage.head_object("mybucket", "key")
-        assert meta is not None
-        assert meta["size"] == 7
-        assert "body" not in meta
+        # Arrange
+        bucket = "mybucket"
+        key = "key"
+        body = b"content"
+        expected_size = 7
+
+        # Act
+        await storage.put_object(bucket, key, body)
+        actual_meta = await storage.head_object(bucket, key)
+
+        # Assert
+        assert actual_meta is not None
+        assert actual_meta["size"] == expected_size
+        assert "body" not in actual_meta
 
     async def test_head_nonexistent(self, storage: LocalBucketStorage) -> None:
-        result = await storage.head_object("mybucket", "nokey")
-        assert result is None
+        # Act
+        actual_result = await storage.head_object("mybucket", "nokey")
+
+        # Assert
+        assert actual_result is None

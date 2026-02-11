@@ -21,17 +21,23 @@ async def provider(tmp_path: Path):
 class TestCreateBucket:
     @pytest.mark.asyncio
     async def test_create_bucket(self, provider: S3Provider, tmp_path: Path) -> None:
-        await provider.create_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
 
-        buckets = await provider.list_buckets()
-        assert "my-bucket" in buckets
+        # Act
+        await provider.create_bucket(bucket_name)
 
-        # Directory should exist
-        assert (tmp_path / "s3" / "my-bucket").is_dir()
+        # Assert
+        actual_buckets = await provider.list_buckets()
+        assert bucket_name in actual_buckets
+        assert (tmp_path / "s3" / bucket_name).is_dir()
 
     @pytest.mark.asyncio
     async def test_create_bucket_duplicate_raises(self, provider: S3Provider) -> None:
-        await provider.create_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        await provider.create_bucket(bucket_name)
 
+        # Act / Assert
         with pytest.raises(ValueError, match="already exists"):
-            await provider.create_bucket("my-bucket")
+            await provider.create_bucket(bucket_name)

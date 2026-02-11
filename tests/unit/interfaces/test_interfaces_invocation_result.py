@@ -28,23 +28,39 @@ class TestInvocationResult:
     """InvocationResult dataclass fields."""
 
     def test_success_result(self) -> None:
+        # Arrange
+        expected_payload = {"statusCode": 200}
+        expected_duration_ms = 42.5
+        expected_request_id = "req-1"
+
+        # Act
         result = InvocationResult(
-            payload={"statusCode": 200},
+            payload=expected_payload,
             error=None,
-            duration_ms=42.5,
-            request_id="req-1",
+            duration_ms=expected_duration_ms,
+            request_id=expected_request_id,
         )
-        assert result.payload == {"statusCode": 200}
+
+        # Assert
+        assert result.payload == expected_payload
         assert result.error is None
-        assert result.duration_ms == 42.5
-        assert result.request_id == "req-1"
+        assert result.duration_ms == expected_duration_ms
+        assert result.request_id == expected_request_id
 
     def test_error_result(self) -> None:
+        # Arrange
+        expected_error = "RuntimeError: kaboom"
+        expected_duration_ms = 1.0
+        expected_request_id = "req-2"
+
+        # Act
         result = InvocationResult(
             payload=None,
-            error="RuntimeError: kaboom",
-            duration_ms=1.0,
-            request_id="req-2",
+            error=expected_error,
+            duration_ms=expected_duration_ms,
+            request_id=expected_request_id,
         )
+
+        # Assert
         assert result.payload is None
-        assert result.error == "RuntimeError: kaboom"
+        assert result.error == expected_error

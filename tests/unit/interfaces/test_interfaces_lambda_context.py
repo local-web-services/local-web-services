@@ -39,27 +39,50 @@ class TestLambdaContext:
         )
 
     def test_fields_set(self) -> None:
+        # Arrange
+        expected_function_name = "my-func"
+        expected_memory_limit = 128
+        expected_timeout = 30
+        expected_request_id = "abc-123"
+        expected_arn_prefix = "arn:aws:lambda"
+
+        # Act
         ctx = self._make_context()
-        assert ctx.function_name == "my-func"
-        assert ctx.memory_limit_in_mb == 128
-        assert ctx.timeout_seconds == 30
-        assert ctx.aws_request_id == "abc-123"
-        assert ctx.invoked_function_arn.startswith("arn:aws:lambda")
+
+        # Assert
+        assert ctx.function_name == expected_function_name
+        assert ctx.memory_limit_in_mb == expected_memory_limit
+        assert ctx.timeout_seconds == expected_timeout
+        assert ctx.aws_request_id == expected_request_id
+        assert ctx.invoked_function_arn.startswith(expected_arn_prefix)
 
     def test_remaining_time_starts_near_timeout(self) -> None:
+        # Arrange
+        expected_min_remaining_ms = 9500
+        expected_max_remaining_ms = 10000
+
+        # Act
         ctx = self._make_context(timeout=10)
-        remaining = ctx.get_remaining_time_in_millis()
-        # Should be close to 10000 ms (allow 500ms tolerance for test overhead)
-        assert 9500 <= remaining <= 10000
+        actual_remaining = ctx.get_remaining_time_in_millis()
+
+        # Assert — should be close to 10000 ms (allow 500ms tolerance for test overhead)
+        assert expected_min_remaining_ms <= actual_remaining <= expected_max_remaining_ms
 
     def test_remaining_time_decreases(self) -> None:
+        # Arrange
         ctx = self._make_context(timeout=10)
+
+        # Act
         first = ctx.get_remaining_time_in_millis()
         time.sleep(0.05)
         second = ctx.get_remaining_time_in_millis()
+
+        # Assert
         assert second < first
 
     def test_remaining_time_never_negative(self) -> None:
+        # Arrange
+        expected_remaining = 0
         ctx = LambdaContext(
             function_name="f",
             memory_limit_in_mb=128,
@@ -68,4 +91,9 @@ class TestLambdaContext:
             invoked_function_arn="arn",
             _start_time=time.monotonic() - 100,
         )
-        assert ctx.get_remaining_time_in_millis() == 0
+
+        # Act
+        actual_remaining = ctx.get_remaining_time_in_millis()
+
+        # Assert
+        assert actual_remaining == expected_remaining

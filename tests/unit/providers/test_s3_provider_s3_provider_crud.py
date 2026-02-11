@@ -53,37 +53,71 @@ class TestS3ProviderCRUD:
     """IObjectStore CRUD via S3Provider."""
 
     async def test_put_and_get(self, provider: S3Provider) -> None:
-        await provider.put_object("test-bucket", "hello.txt", b"hello")
-        result = await provider.get_object("test-bucket", "hello.txt")
-        assert result == b"hello"
+        # Arrange
+        bucket = "test-bucket"
+        key = "hello.txt"
+        expected_body = b"hello"
+
+        # Act
+        await provider.put_object(bucket, key, expected_body)
+        actual_result = await provider.get_object(bucket, key)
+
+        # Assert
+        assert actual_result == expected_body
 
     async def test_get_nonexistent(self, provider: S3Provider) -> None:
         result = await provider.get_object("test-bucket", "nope")
         assert result is None
 
     async def test_delete(self, provider: S3Provider) -> None:
-        await provider.put_object("test-bucket", "temp.txt", b"temp")
-        await provider.delete_object("test-bucket", "temp.txt")
-        assert await provider.get_object("test-bucket", "temp.txt") is None
+        # Arrange
+        bucket = "test-bucket"
+        key = "temp.txt"
+        await provider.put_object(bucket, key, b"temp")
+
+        # Act
+        await provider.delete_object(bucket, key)
+
+        # Assert
+        assert await provider.get_object(bucket, key) is None
 
     async def test_list_objects(self, provider: S3Provider) -> None:
-        await provider.put_object("test-bucket", "a.txt", b"a")
-        await provider.put_object("test-bucket", "b.txt", b"b")
-        keys = await provider.list_objects("test-bucket")
-        assert sorted(keys) == ["a.txt", "b.txt"]
+        # Arrange
+        bucket = "test-bucket"
+        expected_keys = ["a.txt", "b.txt"]
+        await provider.put_object(bucket, "a.txt", b"a")
+        await provider.put_object(bucket, "b.txt", b"b")
+
+        # Act
+        actual_keys = await provider.list_objects(bucket)
+
+        # Assert
+        assert sorted(actual_keys) == expected_keys
 
     async def test_list_objects_with_prefix(self, provider: S3Provider) -> None:
-        await provider.put_object("test-bucket", "logs/one.log", b"1")
-        await provider.put_object("test-bucket", "logs/two.log", b"2")
-        await provider.put_object("test-bucket", "data/file.txt", b"3")
-        keys = await provider.list_objects("test-bucket", prefix="logs/")
-        assert sorted(keys) == ["logs/one.log", "logs/two.log"]
+        # Arrange
+        bucket = "test-bucket"
+        expected_keys = ["logs/one.log", "logs/two.log"]
+        await provider.put_object(bucket, "logs/one.log", b"1")
+        await provider.put_object(bucket, "logs/two.log", b"2")
+        await provider.put_object(bucket, "data/file.txt", b"3")
+
+        # Act
+        actual_keys = await provider.list_objects(bucket, prefix="logs/")
+
+        # Assert
+        assert sorted(actual_keys) == expected_keys
 
     async def test_put_with_content_type(self, provider: S3Provider) -> None:
-        await provider.put_object(
-            "test-bucket", "data.json", b"{}", content_type="application/json"
-        )
-        # Verify via storage
-        obj = await provider.storage.get_object("test-bucket", "data.json")
-        assert obj is not None
-        assert obj["content_type"] == "application/json"
+        # Arrange
+        bucket = "test-bucket"
+        key = "data.json"
+        expected_content_type = "application/json"
+
+        # Act
+        await provider.put_object(bucket, key, b"{}", content_type=expected_content_type)
+        actual_obj = await provider.storage.get_object(bucket, key)
+
+        # Assert
+        assert actual_obj is not None
+        assert actual_obj["content_type"] == expected_content_type

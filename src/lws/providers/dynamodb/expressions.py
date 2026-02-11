@@ -11,8 +11,9 @@ Supports:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 from typing import Any
+
+from lws.providers.dynamodb.parser_base import BaseParser, Token, scan_number_literal
 
 # ---------------------------------------------------------------------------
 # Token types
@@ -37,15 +38,6 @@ TOKEN_EOF = "EOF"
 _KEYWORDS = {"AND", "OR", "NOT", "BETWEEN", "IN"}
 
 _OPERATOR_RE = re.compile(r"<>|<=|>=|[=<>]")
-
-
-@dataclass
-class Token:
-    """A single lexical token."""
-
-    type: str
-    value: str
-    pos: int
 
 
 # ---------------------------------------------------------------------------
@@ -143,14 +135,7 @@ def _try_number_literal(expression: str, i: int, tokens: list[Token]) -> tuple[T
     if expression[i].isdigit() or (
         expression[i] == "-" and i + 1 < len(expression) and expression[i + 1].isdigit()
     ):
-        end = i + 1
-        has_dot = False
-        while end < len(expression) and (expression[end].isdigit() or expression[end] == "."):
-            if expression[end] == ".":
-                if has_dot:
-                    break
-                has_dot = True
-            end += 1
+        end = scan_number_literal(expression, i)
         tok = Token(TOKEN_NUMBER, expression[i:end], i)
         tokens.append(tok)
         return tok, end
@@ -185,7 +170,7 @@ def _scan_identifier(expression: str, i: int, tokens: list[Token]) -> int:
 # ---------------------------------------------------------------------------
 
 
-class _Parser:
+class _Parser(BaseParser):
     """Recursive descent parser for DynamoDB filter expressions.
 
     Grammar (simplified):
@@ -197,26 +182,6 @@ class _Parser:
         operand    -> function_call | atom
         atom       -> VALUE_REF | NAME_REF | IDENT | NUMBER | '(' expr ')'
     """
-
-    def __init__(self, tokens: list[Token]) -> None:
-        self._tokens = tokens
-        self._pos = 0
-
-    def _peek(self) -> Token:
-        return self._tokens[self._pos]
-
-    def _advance(self) -> Token:
-        tok = self._tokens[self._pos]
-        self._pos += 1
-        return tok
-
-    def _expect(self, token_type: str) -> Token:
-        tok = self._advance()
-        if tok.type != token_type:
-            raise ValueError(
-                f"Expected {token_type} at pos {tok.pos}, got {tok.type} ({tok.value!r})"
-            )
-        return tok
 
     def parse(self) -> dict:
         """Parse the full expression and return an AST dict."""
@@ -311,11 +276,7 @@ class _Parser:
         known = {"attribute_exists", "attribute_not_exists", "begins_with", "contains", "size"}
         if name.lower() not in known:
             return False
-        # Look ahead for LPAREN
-        next_pos = self._pos + 1
-        if next_pos < len(self._tokens):
-            return self._tokens[next_pos].type == TOKEN_LPAREN
-        return False
+        return self._next_is(TOKEN_LPAREN)
 
     def _function_call(self) -> dict:
         """Parse a function call: func_name(arg1, arg2, ...)."""
@@ -463,7 +424,7 @@ class ExpressionEvaluator:
             raise ValueError(f"Unknown function: {name}")
         return func(node["args"], item)
 
-    def _eval_value_ref(self, node: dict, item: dict) -> Any:
+    def _eval_value_ref(self, node: dict, _item: dict) -> Any:
         ref = node["ref"]
         raw = self._values.get(ref)
         return _unwrap_dynamo_value(raw)
@@ -478,7 +439,7 @@ class ExpressionEvaluator:
         found, val = _resolve_path(item, node["path"])
         return val if found else None
 
-    def _eval_literal(self, node: dict, item: dict) -> Any:
+    def _eval_literal(self, node: dict, _item: dict) -> Any:
         return node["value"]
 
     # -- Built-in functions ---
@@ -545,9 +506,9 @@ def _unwrap_dynamo_value(raw: Any) -> Any:
         "NULL": lambda v: None,
         "L": lambda v: [_unwrap_dynamo_value(item) for item in v],
         "M": lambda v: {k: _unwrap_dynamo_value(val) for k, val in v.items()},
-        "SS": lambda v: set(v),
+        "SS": set,
         "NS": lambda v: {int(n) if "." not in str(n) else float(n) for n in v},
-        "BS": lambda v: set(v),
+        "BS": set,
     }
     for type_key, converter in type_converters.items():
         if type_key in raw:

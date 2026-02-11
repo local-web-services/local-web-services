@@ -83,15 +83,21 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 class TestProviderGetExecutionHistory:
     async def test_get_execution_history(self, provider: StepFunctionsProvider) -> None:
         """Provider.get_execution_history should return events list."""
+        # Arrange
+        expected_first_event_type = "ExecutionStarted"
         result = await provider.start_execution(
             state_machine_name="test-express",
             input_data={"x": 1},
         )
         arn = result["executionArn"]
 
+        # Act
         events = provider.get_execution_history(arn)
+
+        # Assert
         assert len(events) >= 1
-        assert events[0]["type"] == "ExecutionStarted"
+        actual_first_event_type = events[0]["type"]
+        assert actual_first_event_type == expected_first_event_type
 
     async def test_get_execution_history_max_results(self, provider: StepFunctionsProvider) -> None:
         """Provider.get_execution_history should respect max_results."""

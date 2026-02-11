@@ -86,6 +86,7 @@ class TestTransactWriteItems:
     async def test_transact_write_put_items(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {
             "TransactItems": [
                 {
@@ -102,11 +103,16 @@ class TestTransactWriteItems:
                 },
             ]
         }
+        expected_status_code = 200
+        expected_put_count = 2
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         assert resp.json() == {}
-        assert mock_store.put_item.await_count == 2
+        assert mock_store.put_item.await_count == expected_put_count
         mock_store.put_item.assert_any_await(
             "Users", {"pk": {"S": "user#1"}, "name": {"S": "Alice"}}
         )
@@ -116,6 +122,7 @@ class TestTransactWriteItems:
     async def test_transact_write_delete_items(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {
             "TransactItems": [
                 {
@@ -126,15 +133,20 @@ class TestTransactWriteItems:
                 },
             ]
         }
+        expected_status_code = 200
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         mock_store.delete_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
 
     @pytest.mark.asyncio
     async def test_transact_write_mixed_operations(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {
             "TransactItems": [
                 {
@@ -158,9 +170,13 @@ class TestTransactWriteItems:
                 },
             ]
         }
+        expected_status_code = 200
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         assert resp.json() == {}
         mock_store.put_item.assert_awaited_once()
         mock_store.delete_item.assert_awaited_once()
@@ -169,6 +185,7 @@ class TestTransactWriteItems:
     async def test_transact_write_update_item(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {
             "TransactItems": [
                 {
@@ -182,9 +199,13 @@ class TestTransactWriteItems:
                 },
             ]
         }
+        expected_status_code = 200
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         mock_store.update_item.assert_awaited_once_with(
             "Users",
             {"pk": {"S": "user#1"}},
@@ -197,10 +218,15 @@ class TestTransactWriteItems:
     async def test_transact_write_empty_list(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {"TransactItems": []}
+        expected_status_code = 200
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         assert resp.json() == {}
 
     @pytest.mark.asyncio
@@ -209,7 +235,9 @@ class TestTransactWriteItems:
     ) -> None:
         await real_provider.start()
         try:
-            # Write two items via TransactWriteItems
+            # Arrange
+            expected_status_code = 200
+            expected_name = {"S": "Alice"}
             payload = {
                 "TransactItems": [
                     {
@@ -234,10 +262,14 @@ class TestTransactWriteItems:
                     },
                 ]
             }
-            resp = await real_client.post("/", json=payload, headers=_target("TransactWriteItems"))
-            assert resp.status_code == 200
 
-            # Verify items were actually written
+            # Act - write items
+            resp = await real_client.post("/", json=payload, headers=_target("TransactWriteItems"))
+
+            # Assert - write succeeded
+            assert resp.status_code == expected_status_code
+
+            # Act - verify items were actually written
             get_resp = await real_client.post(
                 "/",
                 json={
@@ -246,10 +278,13 @@ class TestTransactWriteItems:
                 },
                 headers=_target("GetItem"),
             )
-            assert get_resp.status_code == 200
-            assert get_resp.json()["Item"]["name"] == {"S": "Alice"}
 
-            # Now delete one via TransactWriteItems
+            # Assert - item exists with expected name
+            assert get_resp.status_code == expected_status_code
+            actual_name = get_resp.json()["Item"]["name"]
+            assert actual_name == expected_name
+
+            # Arrange - delete payload
             del_payload = {
                 "TransactItems": [
                     {
@@ -260,12 +295,14 @@ class TestTransactWriteItems:
                     },
                 ]
             }
+
+            # Act - delete item
             resp = await real_client.post(
                 "/", json=del_payload, headers=_target("TransactWriteItems")
             )
-            assert resp.status_code == 200
+            assert resp.status_code == expected_status_code
 
-            # Verify it was deleted
+            # Act - verify deletion
             get_resp = await real_client.post(
                 "/",
                 json={
@@ -274,7 +311,9 @@ class TestTransactWriteItems:
                 },
                 headers=_target("GetItem"),
             )
-            assert get_resp.status_code == 200
+
+            # Assert - item is gone
+            assert get_resp.status_code == expected_status_code
             assert "Item" not in get_resp.json()
         finally:
             await real_provider.stop()

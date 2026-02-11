@@ -7,6 +7,8 @@ exists/not-exists, anything-but, and nested detail patterns.
 
 from __future__ import annotations
 
+from lws.providers._shared.numeric import eval_numeric_range
+
 
 def match_event(pattern: dict, event: dict) -> bool:
     """Return True if *event* matches the EventBridge *pattern*.
@@ -111,40 +113,8 @@ def _eval_prefix(event_value: object, prefix: str) -> bool:
 
 
 def _eval_numeric(event_value: object, operators: list) -> bool:
-    """Evaluate a ``{"numeric": [">=", 100, "<", 200]}`` condition.
-
-    The *operators* list contains alternating (operator, operand) pairs.
-    All pairs must match.
-    """
-    try:
-        num_value = float(event_value)  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        return False
-
-    i = 0
-    while i < len(operators) - 1:
-        op = operators[i]
-        operand = float(operators[i + 1])
-        if not _compare_numeric(num_value, op, operand):
-            return False
-        i += 2
-
-    return True
-
-
-def _compare_numeric(value: float, op: str, operand: float) -> bool:
-    """Perform a single numeric comparison."""
-    if op == "=":
-        return value == operand
-    if op == ">":
-        return value > operand
-    if op == ">=":
-        return value >= operand
-    if op == "<":
-        return value < operand
-    if op == "<=":
-        return value <= operand
-    return False
+    """Evaluate a ``{"numeric": [">=", 100, "<", 200]}`` condition."""
+    return eval_numeric_range(event_value, operators)
 
 
 def _eval_anything_but(event_value: object, exclusions: object) -> bool:

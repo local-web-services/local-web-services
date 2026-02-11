@@ -122,7 +122,7 @@ async def _handle_list_rules(provider: EventBridgeProvider, body: dict) -> Respo
     )
 
 
-async def _handle_list_event_buses(provider: EventBridgeProvider, body: dict) -> Response:
+async def _handle_list_event_buses(provider: EventBridgeProvider, _body: dict) -> Response:
     """Handle the ``ListEventBuses`` action."""
     buses = provider.list_buses()
     bus_list = [{"Name": b.bus_name, "Arn": b.bus_arn} for b in buses]

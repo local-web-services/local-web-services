@@ -19,13 +19,17 @@ async def provider():
 class TestPurgeQueue:
     @pytest.mark.asyncio
     async def test_purge_queue(self, provider: SqsProvider) -> None:
-        await provider.create_queue("my-queue")
-        await provider.send_message("my-queue", "msg1")
-        await provider.send_message("my-queue", "msg2")
+        # Arrange
+        queue_name = "my-queue"
+        await provider.create_queue(queue_name)
+        await provider.send_message(queue_name, "msg1")
+        await provider.send_message(queue_name, "msg2")
 
-        await provider.purge_queue("my-queue")
+        # Act
+        await provider.purge_queue(queue_name)
 
-        msgs = await provider.receive_messages("my-queue")
+        # Assert
+        msgs = await provider.receive_messages(queue_name)
         assert msgs == []
 
     @pytest.mark.asyncio

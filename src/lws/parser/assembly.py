@@ -46,6 +46,7 @@ class LambdaFunction:
 
     @property
     def logical_id(self) -> str:
+        """Return the function name as its logical identifier."""
         return self.name
 
 
@@ -59,10 +60,12 @@ class DynamoTable:
 
     @property
     def logical_id(self) -> str:
+        """Return the table name as its logical identifier."""
         return self.name
 
     @property
     def table_name(self) -> str:
+        """Return the DynamoDB table name."""
         return self.name
 
 
@@ -84,6 +87,7 @@ class ApiDefinition:
 
     @property
     def logical_id(self) -> str:
+        """Return the API name as its logical identifier."""
         return self.name
 
 
@@ -781,7 +785,9 @@ def _collect_secrets(
 def _collect_ecs_services(template: dict) -> list:
     """Extract ECS services from the raw CloudFormation template."""
     try:
-        from lws.providers.ecs.provider import parse_ecs_resources
+        from lws.providers.ecs.provider import (  # pylint: disable=import-outside-toplevel
+            parse_ecs_resources,
+        )
 
         return parse_ecs_resources(template)
     except Exception:

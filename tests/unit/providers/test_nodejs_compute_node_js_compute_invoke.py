@@ -84,10 +84,13 @@ class TestNodeJsComputeInvoke:
 
         result = await provider.invoke({"key": "value"}, _make_context())
 
+        # Assert
+        expected_payload = {"statusCode": 200, "body": "ok"}
+        expected_request_id = "req-abc-123"
         assert isinstance(result, InvocationResult)
-        assert result.payload == {"statusCode": 200, "body": "ok"}
+        assert result.payload == expected_payload
         assert result.error is None
-        assert result.request_id == "req-abc-123"
+        assert result.request_id == expected_request_id
         assert result.duration_ms >= 0
 
     @patch("asyncio.create_subprocess_exec")
@@ -109,9 +112,12 @@ class TestNodeJsComputeInvoke:
 
         result = await provider.invoke({"key": "value"}, _make_context())
 
+        # Assert
+        expected_error = "Cannot read property 'foo' of undefined"
+        expected_request_id = "req-abc-123"
         assert result.payload is None
-        assert result.error == "Cannot read property 'foo' of undefined"
-        assert result.request_id == "req-abc-123"
+        assert result.error == expected_error
+        assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_timeout_kills_process(self, mock_exec: AsyncMock) -> None:
@@ -133,9 +139,11 @@ class TestNodeJsComputeInvoke:
 
         result = await provider.invoke({"key": "value"}, _make_context())
 
+        # Assert
+        expected_request_id = "req-abc-123"
         assert result.payload is None
         assert "timed out" in result.error
-        assert result.request_id == "req-abc-123"
+        assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_bad_json_output(self, mock_exec: AsyncMock) -> None:

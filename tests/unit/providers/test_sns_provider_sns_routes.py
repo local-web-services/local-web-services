@@ -115,9 +115,12 @@ class TestSnsRoutes:
 
     @pytest.mark.asyncio
     async def test_publish_action(self) -> None:
+        # Arrange
         provider = await _started_provider()
         app = create_sns_app(provider)
+        expected_status = 200
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
@@ -128,15 +131,19 @@ class TestSnsRoutes:
                 },
             )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status
         assert "<MessageId>" in response.text
         assert "</PublishResponse>" in response.text
 
     @pytest.mark.asyncio
     async def test_subscribe_action(self) -> None:
+        # Arrange
         provider = await _started_provider()
         app = create_sns_app(provider)
+        expected_status = 200
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
@@ -148,25 +155,31 @@ class TestSnsRoutes:
                 },
             )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status
         assert "<SubscriptionArn>" in response.text
         assert "</SubscribeResponse>" in response.text
 
     @pytest.mark.asyncio
     async def test_list_topics_action(self) -> None:
+        # Arrange
         provider = await _started_provider()
         app = create_sns_app(provider)
+        expected_status = 200
 
+        # Act
         async with _client(app) as client:
             response = await client.post("/", data={"Action": "ListTopics"})
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status
         assert "<ListTopicsResponse>" in response.text
         assert "my-topic" in response.text
         assert "other-topic" in response.text
 
     @pytest.mark.asyncio
     async def test_list_subscriptions_action(self) -> None:
+        # Arrange
         provider = await _started_provider()
         await provider.subscribe(
             topic_name="my-topic",
@@ -174,41 +187,52 @@ class TestSnsRoutes:
             endpoint="func-a",
         )
         app = create_sns_app(provider)
+        expected_status = 200
 
+        # Act
         async with _client(app) as client:
             response = await client.post("/", data={"Action": "ListSubscriptions"})
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status
         assert "<ListSubscriptionsResponse>" in response.text
         assert "func-a" in response.text
 
     @pytest.mark.asyncio
     async def test_create_topic_action(self) -> None:
+        # Arrange
         provider = await _started_provider()
         app = create_sns_app(provider)
+        expected_status = 200
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
                 data={"Action": "CreateTopic", "Name": "my-topic"},
             )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status
         assert "<TopicArn>" in response.text
         assert "my-topic" in response.text
 
     @pytest.mark.asyncio
     async def test_unknown_action_returns_error(self) -> None:
+        # Arrange
         provider = await _started_provider()
         app = create_sns_app(provider)
+        expected_status = 400
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
                 data={"Action": "Bogus"},
             )
 
-        assert response.status_code == 400
+        # Assert
+        assert response.status_code == expected_status
         assert "<ErrorResponse>" in response.text
         assert "<Code>InvalidAction</Code>" in response.text
         assert "lws" in response.text
@@ -217,9 +241,12 @@ class TestSnsRoutes:
 
     @pytest.mark.asyncio
     async def test_publish_with_message_attributes(self) -> None:
+        # Arrange
         provider = await _started_provider()
         app = create_sns_app(provider)
+        expected_status = 200
 
+        # Act
         async with _client(app) as client:
             response = await client.post(
                 "/",
@@ -233,5 +260,6 @@ class TestSnsRoutes:
                 },
             )
 
-        assert response.status_code == 200
+        # Assert
+        assert response.status_code == expected_status
         assert "<MessageId>" in response.text

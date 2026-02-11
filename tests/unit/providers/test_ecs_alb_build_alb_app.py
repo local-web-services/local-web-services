@@ -45,11 +45,17 @@ from lws.providers.ecs.alb import (
 
 class TestBuildAlbApp:
     def test_catch_all_returns_404_no_rules(self) -> None:
+        # Arrange
         config = AlbConfig(listener_rules=[], port=9000)
         app = build_alb_app(config)
         client = TestClient(app)
+
+        # Act
         resp = client.get("/anything")
-        assert resp.status_code == 404
+
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
 
     @patch("httpx.AsyncClient.request")
     async def test_catch_all_proxies_matching_rule(self, mock_req: AsyncMock) -> None:
@@ -72,7 +78,8 @@ class TestBuildAlbApp:
         ) as client:
             resp = await client.get("/api/users")
 
-        assert resp.status_code == 200
+        expected_status = 200
+        assert resp.status_code == expected_status
 
     def test_health_check_route_registered(self) -> None:
         rules = [

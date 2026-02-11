@@ -40,17 +40,19 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestEnableDisableRuleProvider:
     async def test_disable_rule(self, provider: EventBridgeProvider) -> None:
+        expected_state = "DISABLED"
         await provider.put_rule("my-rule", event_pattern={"source": ["test"]})
         await provider.disable_rule("my-rule")
         result = provider.describe_rule("my-rule")
-        assert result["State"] == "DISABLED"
+        assert result["State"] == expected_state
 
     async def test_enable_rule(self, provider: EventBridgeProvider) -> None:
+        expected_state = "ENABLED"
         await provider.put_rule("my-rule", event_pattern={"source": ["test"]})
         await provider.disable_rule("my-rule")
         await provider.enable_rule("my-rule")
         result = provider.describe_rule("my-rule")
-        assert result["State"] == "ENABLED"
+        assert result["State"] == expected_state
 
     async def test_disable_nonexistent_rule_raises(self, provider: EventBridgeProvider) -> None:
         with pytest.raises(KeyError, match="Rule not found"):

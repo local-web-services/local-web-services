@@ -61,19 +61,28 @@ class TestDeleteUserPoolClient:
         assert resp.status_code == 200
 
         # Verify it's gone
+        expected_error_status = 400
+        expected_error_type = "ResourceNotFoundException"
         resp = await _request(
             client,
             "DescribeUserPoolClient",
             {"UserPoolId": POOL_ID, "ClientId": client_id},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "ResourceNotFoundException"
+        assert resp.status_code == expected_error_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type
 
     async def test_delete_nonexistent_client_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "DeleteUserPoolClient",
             {"UserPoolId": POOL_ID, "ClientId": "nonexistent"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "ResourceNotFoundException"
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "ResourceNotFoundException"
+        assert resp.status_code == expected_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

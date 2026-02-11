@@ -39,11 +39,16 @@ class TestChangeMessageVisibilityBatchJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
-        await provider.create_queue("test-queue")
-        await provider.send_message("test-queue", "msg1")
-        await provider.send_message("test-queue", "msg2")
+        # Arrange
+        expected_status_code = 200
+        expected_successful_count = 2
+        expected_failed_count = 0
+        queue_name = "test-queue"
 
-        # Receive messages
+        await provider.create_queue(queue_name)
+        await provider.send_message(queue_name, "msg1")
+        await provider.send_message(queue_name, "msg2")
+
         recv_resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "MaxNumberOfMessages": 10},
@@ -60,22 +65,31 @@ class TestChangeMessageVisibilityBatchJson:
             for i, msg in enumerate(messages)
         ]
 
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "Entries": entries},
             headers=_headers("ChangeMessageVisibilityBatch"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
-        assert len(data["Successful"]) == 2
-        assert len(data["Failed"]) == 0
+        actual_successful_count = len(data["Successful"])
+        actual_failed_count = len(data["Failed"])
+        assert actual_successful_count == expected_successful_count
+        assert actual_failed_count == expected_failed_count
 
     @pytest.mark.asyncio
     async def test_change_message_visibility_batch_nonexistent_queue(
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await client.post(
             "/",
             json={
@@ -85,7 +99,9 @@ class TestChangeMessageVisibilityBatchJson:
             headers=_headers("ChangeMessageVisibilityBatch"),
         )
 
-        assert resp.status_code == 400
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
         assert "NonExistentQueue" in data["__type"]
 
@@ -95,8 +111,16 @@ class TestChangeMessageVisibilityBatchJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_successful_count = 0
+        expected_failed_count = 1
+        expected_failed_id = "e1"
+        expected_failed_code = "ReceiptHandleIsInvalid"
+
         await provider.create_queue("test-queue")
 
+        # Act
         resp = await client.post(
             "/",
             json={
@@ -108,9 +132,15 @@ class TestChangeMessageVisibilityBatchJson:
             headers=_headers("ChangeMessageVisibilityBatch"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
-        assert len(data["Successful"]) == 0
-        assert len(data["Failed"]) == 1
-        assert data["Failed"][0]["Id"] == "e1"
-        assert data["Failed"][0]["Code"] == "ReceiptHandleIsInvalid"
+        actual_successful_count = len(data["Successful"])
+        actual_failed_count = len(data["Failed"])
+        actual_failed_id = data["Failed"][0]["Id"]
+        actual_failed_code = data["Failed"][0]["Code"]
+        assert actual_successful_count == expected_successful_count
+        assert actual_failed_count == expected_failed_count
+        assert actual_failed_id == expected_failed_id
+        assert actual_failed_code == expected_failed_code

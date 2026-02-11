@@ -68,26 +68,48 @@ def _make_context(
 
 class TestGrantWrite:
     def test_write_allows_put(self) -> None:
+        # Arrange
         graph = _make_graph_with_grant("grantWrite")
         ctx = _make_context(operation="put_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_write_allows_delete(self) -> None:
+        # Arrange
         graph = _make_graph_with_grant("grantWrite")
         ctx = _make_context(operation="delete_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_write_denies_get(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         graph = _make_graph_with_grant("grantWrite")
         ctx = _make_context(operation="get_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert issues[0].level == ValidationLevel.ERROR
 
     def test_write_denies_query(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         graph = _make_graph_with_grant("grantWrite")
         ctx = _make_context(operation="query", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count

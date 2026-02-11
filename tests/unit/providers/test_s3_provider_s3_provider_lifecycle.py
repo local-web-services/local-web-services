@@ -53,7 +53,8 @@ class TestS3ProviderLifecycle:
     """Provider lifecycle tests."""
 
     async def test_name(self, provider: S3Provider) -> None:
-        assert provider.name == "s3"
+        expected_name = "s3"
+        assert provider.name == expected_name
 
     async def test_health_check_running(self, provider: S3Provider) -> None:
         assert await provider.health_check() is True

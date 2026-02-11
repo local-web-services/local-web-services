@@ -43,23 +43,34 @@ class TestMixed:
     """Combined scenarios with multiple intrinsic types."""
 
     def test_mixed_env_with_multiple_types(self) -> None:
+        # Arrange
+        expected_plain = "just-a-string"
+        expected_table = "local-table"
+        expected_arn = "arn:aws:dynamodb:us-east-1:000:table/local-table"
+        expected_joined = "a,b,c"
+        expected_subbed = "prefix-local-table"
+        expected_selected = "z"
+
         env = {
-            "PLAIN": "just-a-string",
+            "PLAIN": expected_plain,
             "TABLE": {"Ref": "MyTable"},
             "ARN": {"Fn::GetAtt": ["MyTable", "Arn"]},
             "JOINED": {"Fn::Join": [",", ["a", "b", "c"]]},
             "SUBBED": {"Fn::Sub": "prefix-${MyTable}"},
-            "SELECTED": {"Fn::Select": [2, ["x", "y", "z"]]},
+            "SELECTED": {"Fn::Select": [2, ["x", "y", expected_selected]]},
         }
         registry = {
-            "MyTable": "local-table",
-            "MyTable.Arn": "arn:aws:dynamodb:us-east-1:000:table/local-table",
+            "MyTable": expected_table,
+            "MyTable.Arn": expected_arn,
         }
+
+        # Act
         result = resolve_env_vars(env, resource_registry=registry)
 
-        assert result["PLAIN"] == "just-a-string"
-        assert result["TABLE"] == "local-table"
-        assert result["ARN"] == "arn:aws:dynamodb:us-east-1:000:table/local-table"
-        assert result["JOINED"] == "a,b,c"
-        assert result["SUBBED"] == "prefix-local-table"
-        assert result["SELECTED"] == "z"
+        # Assert
+        assert result["PLAIN"] == expected_plain
+        assert result["TABLE"] == expected_table
+        assert result["ARN"] == expected_arn
+        assert result["JOINED"] == expected_joined
+        assert result["SUBBED"] == expected_subbed
+        assert result["SELECTED"] == expected_selected

@@ -31,7 +31,10 @@ class TestBucketNotificationConfiguration:
     async def test_put_and_get_notification_configuration(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        await provider.create_bucket(bucket_name)
+        expected_status = 200
 
         config_xml = (
             '<?xml version="1.0" encoding="UTF-8"?>'
@@ -42,16 +45,18 @@ class TestBucketNotificationConfiguration:
             "</TopicConfiguration>"
             "</NotificationConfiguration>"
         )
+
+        # Act
         put_resp = await client.put(
-            "/my-bucket?notification",
+            f"/{bucket_name}?notification",
             content=config_xml.encode(),
             headers={"content-type": "application/xml"},
         )
+        get_resp = await client.get(f"/{bucket_name}?notification")
 
-        assert put_resp.status_code == 200
-
-        get_resp = await client.get("/my-bucket?notification")
-        assert get_resp.status_code == 200
+        # Assert
+        assert put_resp.status_code == expected_status
+        assert get_resp.status_code == expected_status
         assert "<NotificationConfiguration>" in get_resp.text
         assert "my-topic" in get_resp.text
 
@@ -59,17 +64,25 @@ class TestBucketNotificationConfiguration:
     async def test_get_notification_configuration_default(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
+        expected_status = 200
 
+        # Act
         resp = await client.get("/my-bucket?notification")
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "<NotificationConfiguration/>" in resp.text
 
     @pytest.mark.asyncio
     async def test_put_notification_configuration_no_such_bucket(
         self, client: httpx.AsyncClient
     ) -> None:
+        # Arrange
+        expected_status = 404
+
+        # Act
         config_xml = "<NotificationConfiguration/>"
         resp = await client.put(
             "/nonexistent-bucket?notification",
@@ -77,14 +90,18 @@ class TestBucketNotificationConfiguration:
             headers={"content-type": "application/xml"},
         )
 
-        assert resp.status_code == 404
+        # Assert
+        assert resp.status_code == expected_status
         assert "NoSuchBucket" in resp.text
 
     @pytest.mark.asyncio
     async def test_get_notification_configuration_no_such_bucket(
         self, client: httpx.AsyncClient
     ) -> None:
+        # Act
         resp = await client.get("/nonexistent-bucket?notification")
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NoSuchBucket" in resp.text

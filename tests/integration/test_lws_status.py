@@ -49,7 +49,6 @@ class TestLwsStatusIntegration:
         app = FastAPI()
         router = create_management_router(
             orchestrator,
-            compute_providers={},
             providers=providers,
             resource_metadata=resource_metadata,
         )
@@ -66,31 +65,48 @@ class TestLwsStatusIntegration:
             await asyncio.sleep(0.1)
 
         try:
+            # Arrange
+            expected_provider_name = "dynamodb"
+            expected_provider_count = 1
+            expected_service_count = 1
+            expected_service_port = 3001
+            expected_resource_count = 1
+            expected_running_message = "LDK is running"
+            expected_health_status = "healthy"
+
             # Run the actual lws status command
             from lws.cli.lws import _run_status
 
-            # Test JSON output mode
+            # Act - JSON output mode
             await _run_status(port, json_output=True)
 
+            # Assert - JSON output mode
             output = json.loads(capsys.readouterr().out)
 
             assert output["running"] is True
-            assert len(output["providers"]) == 1
-            assert output["providers"][0]["name"] == "dynamodb"
+            actual_provider_count = len(output["providers"])
+            assert actual_provider_count == expected_provider_count
+            actual_provider_name = output["providers"][0]["name"]
+            assert actual_provider_name == expected_provider_name
             assert output["providers"][0]["healthy"] is True
-            assert len(output["services"]) == 1
-            assert output["services"][0]["name"] == "dynamodb"
-            assert output["services"][0]["port"] == 3001
-            assert output["services"][0]["resources"] == 1
+            actual_service_count = len(output["services"])
+            assert actual_service_count == expected_service_count
+            actual_service_name = output["services"][0]["name"]
+            assert actual_service_name == expected_provider_name
+            actual_service_port = output["services"][0]["port"]
+            assert actual_service_port == expected_service_port
+            actual_resource_count = output["services"][0]["resources"]
+            assert actual_resource_count == expected_resource_count
 
-            # Test default table output mode
+            # Act - default table output mode
             await _run_status(port)
 
+            # Assert - table output mode
             table_output = capsys.readouterr().out
-            assert "LDK is running" in table_output
-            assert "dynamodb" in table_output
-            assert "healthy" in table_output
-            assert "3001" in table_output
+            assert expected_running_message in table_output
+            assert expected_provider_name in table_output
+            assert expected_health_status in table_output
+            assert str(expected_service_port) in table_output
         finally:
             server.should_exit = True
             await serve_task

@@ -116,33 +116,41 @@ class TestSqsSubscriptionDispatch:
 
     @pytest.mark.asyncio
     async def test_sqs_dispatch_sends_message(self) -> None:
+        # Arrange
         provider = await _started_provider()
         mock_queue = _make_queue_mock()
         provider.set_queue_provider(mock_queue)
+        expected_queue_name = "my-queue"
+        expected_message = "sqs test message"
+        expected_subject = "SQS Subject"
+        expected_topic_arn = "arn:aws:sns:us-east-1:000000000000:my-topic"
+        expected_type = "Notification"
 
         await provider.subscribe(
             topic_name="my-topic",
             protocol="sqs",
             endpoint="arn:aws:sqs:us-east-1:000000000000:my-queue",
         )
+
+        # Act
         await provider.publish(
             topic_name="my-topic",
-            message="sqs test message",
-            subject="SQS Subject",
+            message=expected_message,
+            subject=expected_subject,
         )
-
         await asyncio.sleep(0.05)
 
+        # Assert
         mock_queue.send_message.assert_called_once()
         call_kwargs = mock_queue.send_message.call_args
-        assert call_kwargs[1]["queue_name"] == "my-queue"
+        actual_queue_name = call_kwargs[1]["queue_name"]
+        assert actual_queue_name == expected_queue_name
 
-        # The body should be a JSON SNS envelope
-        body = json.loads(call_kwargs[1]["message_body"])
-        assert body["Type"] == "Notification"
-        assert body["Message"] == "sqs test message"
-        assert body["Subject"] == "SQS Subject"
-        assert body["TopicArn"] == "arn:aws:sns:us-east-1:000000000000:my-topic"
+        actual_body = json.loads(call_kwargs[1]["message_body"])
+        assert actual_body["Type"] == expected_type
+        assert actual_body["Message"] == expected_message
+        assert actual_body["Subject"] == expected_subject
+        assert actual_body["TopicArn"] == expected_topic_arn
 
     @pytest.mark.asyncio
     async def test_sqs_dispatch_no_queue_provider_logs_error(self) -> None:

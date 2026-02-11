@@ -115,7 +115,14 @@ class TestProviderLifecycle:
     """Provider name, start, stop, health_check."""
 
     async def test_name(self, provider: SqliteDynamoProvider) -> None:
-        assert provider.name == "dynamodb"
+        # Arrange
+        expected_name = "dynamodb"
+
+        # Act
+        actual_name = provider.name
+
+        # Assert
+        assert actual_name == expected_name
 
     async def test_health_check_running(self, provider: SqliteDynamoProvider) -> None:
         assert await provider.health_check() is True

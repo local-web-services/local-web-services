@@ -81,7 +81,7 @@ async def _handle_subscribe(provider: SnsProvider, params: dict[str, str]) -> Re
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_list_subscriptions(provider: SnsProvider, params: dict[str, str]) -> Response:
+async def _handle_list_subscriptions(provider: SnsProvider, _params: dict[str, str]) -> Response:
     """Handle the ``ListSubscriptions`` action."""
     members: list[str] = []
     for topic in provider.list_topics():
@@ -180,7 +180,7 @@ async def _handle_get_topic_attributes(provider: SnsProvider, params: dict[str, 
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_list_topics(provider: SnsProvider, params: dict[str, str]) -> Response:
+async def _handle_list_topics(provider: SnsProvider, _params: dict[str, str]) -> Response:
     """Handle the ``ListTopics`` action."""
     members: list[str] = []
     for topic in provider.list_topics():
@@ -230,7 +230,9 @@ async def _handle_set_topic_attributes(provider: SnsProvider, params: dict[str, 
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_list_tags_for_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
+async def _handle_list_tags_for_resource(
+    _provider: SnsProvider, _params: dict[str, str]
+) -> Response:
     """Handle the ``ListTagsForResource`` action."""
     xml = (
         "<ListTagsForResourceResponse>"
@@ -243,7 +245,7 @@ async def _handle_list_tags_for_resource(provider: SnsProvider, params: dict[str
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_tag_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
+async def _handle_tag_resource(_provider: SnsProvider, _params: dict[str, str]) -> Response:
     """Handle the ``TagResource`` action."""
     xml = (
         "<TagResourceResponse>"
@@ -253,7 +255,7 @@ async def _handle_tag_resource(provider: SnsProvider, params: dict[str, str]) ->
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_untag_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
+async def _handle_untag_resource(_provider: SnsProvider, _params: dict[str, str]) -> Response:
     """Handle the ``UntagResource`` action."""
     xml = (
         "<UntagResourceResponse>"
@@ -349,7 +351,7 @@ async def _handle_set_subscription_attributes(
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_confirm_subscription(provider: SnsProvider, params: dict[str, str]) -> Response:
+async def _handle_confirm_subscription(_provider: SnsProvider, params: dict[str, str]) -> Response:
     """Handle the ``ConfirmSubscription`` action.
 
     This is a stub for local development — subscriptions are auto-confirmed.

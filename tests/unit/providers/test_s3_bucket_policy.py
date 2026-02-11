@@ -31,7 +31,12 @@ class TestBucketPolicy:
     async def test_put_and_get_bucket_policy(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
-        await provider.create_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        await provider.create_bucket(bucket_name)
+        expected_put_status = 204
+        expected_get_status = 200
+        expected_content_type = "application/json"
 
         policy = (
             '{"Version":"2012-10-17","Statement":'
@@ -40,44 +45,56 @@ class TestBucketPolicy:
             '"Resource":"arn:aws:s3:::my-bucket/*"}]}'
         )
         put_resp = await client.put(
-            "/my-bucket?policy",
+            f"/{bucket_name}?policy",
             content=policy.encode(),
-            headers={"content-type": "application/json"},
+            headers={"content-type": expected_content_type},
         )
 
-        assert put_resp.status_code == 204
+        # Act
+        get_resp = await client.get(f"/{bucket_name}?policy")
 
-        get_resp = await client.get("/my-bucket?policy")
-        assert get_resp.status_code == 200
+        # Assert
+        assert put_resp.status_code == expected_put_status
+        assert get_resp.status_code == expected_get_status
         assert "s3:GetObject" in get_resp.text
-        assert get_resp.headers["content-type"] == "application/json"
+        assert get_resp.headers["content-type"] == expected_content_type
 
     @pytest.mark.asyncio
     async def test_get_bucket_policy_default(
         self, client: httpx.AsyncClient, provider: S3Provider
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
+        expected_status = 200
 
+        # Act
         resp = await client.get("/my-bucket?policy")
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "2012-10-17" in resp.text
         assert "Statement" in resp.text
 
     @pytest.mark.asyncio
     async def test_put_bucket_policy_no_such_bucket(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await client.put(
             "/nonexistent-bucket?policy",
             content=b'{"Version":"2012-10-17","Statement":[]}',
             headers={"content-type": "application/json"},
         )
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NoSuchBucket" in resp.text
 
     @pytest.mark.asyncio
     async def test_get_bucket_policy_no_such_bucket(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await client.get("/nonexistent-bucket?policy")
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NoSuchBucket" in resp.text

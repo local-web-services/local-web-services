@@ -31,19 +31,28 @@ class TestGetTopicAttributes:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
+        # Arrange
         await provider.create_topic("my-topic")
         topic_arn = "arn:aws:sns:us-east-1:000000000000:my-topic"
+        expected_status = 200
 
+        # Act
         resp = await client.post("/", data={"Action": "GetTopicAttributes", "TopicArn": topic_arn})
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "GetTopicAttributesResponse" in resp.text
         assert "TopicArn" in resp.text
 
     @pytest.mark.asyncio
     async def test_get_topic_attributes_not_found(self, client: httpx.AsyncClient) -> None:
+        # Arrange
         topic_arn = "arn:aws:sns:us-east-1:000000000000:nonexistent"
+        expected_status = 404
+
+        # Act
         resp = await client.post("/", data={"Action": "GetTopicAttributes", "TopicArn": topic_arn})
 
-        assert resp.status_code == 404
+        # Assert
+        assert resp.status_code == expected_status
         assert "NotFound" in resp.text

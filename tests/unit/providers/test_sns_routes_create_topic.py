@@ -31,16 +31,21 @@ class TestCreateTopic:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
-        resp = await client.post("/", data={"Action": "CreateTopic", "Name": "my-topic"})
+        # Arrange
+        topic_name = "my-topic"
+        expected_status = 200
+        expected_topic_count = 1
 
-        assert resp.status_code == 200
+        # Act
+        resp = await client.post("/", data={"Action": "CreateTopic", "Name": topic_name})
+
+        # Assert
+        assert resp.status_code == expected_status
         assert "CreateTopicResponse" in resp.text
-        assert "my-topic" in resp.text
-
-        # Verify topic was actually created
-        topics = provider.list_topics()
-        assert len(topics) == 1
-        assert topics[0].topic_name == "my-topic"
+        assert topic_name in resp.text
+        actual_topics = provider.list_topics()
+        assert len(actual_topics) == expected_topic_count
+        assert actual_topics[0].topic_name == topic_name
 
     @pytest.mark.asyncio
     async def test_create_topic_idempotent(
@@ -48,11 +53,17 @@ class TestCreateTopic:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
-        resp1 = await client.post("/", data={"Action": "CreateTopic", "Name": "my-topic"})
-        resp2 = await client.post("/", data={"Action": "CreateTopic", "Name": "my-topic"})
+        # Arrange
+        topic_name = "my-topic"
+        expected_status = 200
+        expected_topic_count = 1
 
-        assert resp1.status_code == 200
-        assert resp2.status_code == 200
+        # Act
+        resp1 = await client.post("/", data={"Action": "CreateTopic", "Name": topic_name})
+        resp2 = await client.post("/", data={"Action": "CreateTopic", "Name": topic_name})
 
-        topics = provider.list_topics()
-        assert len(topics) == 1
+        # Assert
+        assert resp1.status_code == expected_status
+        assert resp2.status_code == expected_status
+        actual_topics = provider.list_topics()
+        assert len(actual_topics) == expected_topic_count

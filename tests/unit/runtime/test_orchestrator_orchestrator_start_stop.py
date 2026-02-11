@@ -24,6 +24,10 @@ class TestOrchestratorStartStop:
         assert orchestrator.running
 
     async def test_start_multiple_providers_in_order(self, orchestrator):
+        # Arrange
+        expected_p1_order = 0
+        expected_p2_order = 1
+        expected_p3_order = 2
         counter = {"value": 0}
         p1 = FakeProvider("first")
         p2 = FakeProvider("second")
@@ -52,16 +56,21 @@ class TestOrchestratorStartStop:
         p2.start = track_start_p2
         p3.start = track_start_p3
 
+        # Act
         await orchestrator.start(
             {"p1": p1, "p2": p2, "p3": p3},
             ["p1", "p2", "p3"],
         )
 
-        assert p1.start_order == 0
-        assert p2.start_order == 1
-        assert p3.start_order == 2
+        # Assert
+        assert p1.start_order == expected_p1_order
+        assert p2.start_order == expected_p2_order
+        assert p3.start_order == expected_p3_order
 
     async def test_stop_reverses_start_order(self, orchestrator):
+        # Arrange
+        expected_p2_stop_order = 0
+        expected_p1_stop_order = 1
         counter = {"value": 0}
         p1 = FakeProvider("first")
         p2 = FakeProvider("second")
@@ -82,12 +91,13 @@ class TestOrchestratorStartStop:
         p1.stop = track_stop_p1
         p2.stop = track_stop_p2
 
+        # Act
         await orchestrator.start({"p1": p1, "p2": p2}, ["p1", "p2"])
         await orchestrator.stop()
 
-        # p2 should stop first (reverse order)
-        assert p2.stop_order == 0
-        assert p1.stop_order == 1
+        # Assert -- p2 should stop first (reverse order)
+        assert p2.stop_order == expected_p2_stop_order
+        assert p1.stop_order == expected_p1_stop_order
         assert not orchestrator.running
 
     async def test_stop_all_providers(self, orchestrator):

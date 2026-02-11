@@ -33,21 +33,30 @@ class TestProviderFindSubscription:
         self,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        await provider.create_topic(topic_name)
         sub_arn = await provider.subscribe(
-            topic_name="my-topic", protocol="lambda", endpoint="my-func"
+            topic_name=topic_name, protocol="lambda", endpoint="my-func"
         )
-        sub, topic = provider.find_subscription(sub_arn)
-        assert sub is not None
-        assert topic is not None
-        assert sub.subscription_arn == sub_arn
-        assert topic.topic_name == "my-topic"
+
+        # Act
+        actual_sub, actual_topic = provider.find_subscription(sub_arn)
+
+        # Assert
+        assert actual_sub is not None
+        assert actual_topic is not None
+        assert actual_sub.subscription_arn == sub_arn
+        assert actual_topic.topic_name == topic_name
 
     @pytest.mark.asyncio
     async def test_find_subscription_returns_none_when_not_found(
         self,
         provider: SnsProvider,
     ) -> None:
-        sub, topic = provider.find_subscription("nonexistent")
-        assert sub is None
-        assert topic is None
+        # Act
+        actual_sub, actual_topic = provider.find_subscription("nonexistent")
+
+        # Assert
+        assert actual_sub is None
+        assert actual_topic is None

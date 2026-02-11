@@ -23,4 +23,3 @@ class IStateMachine(Provider):
 
         Returns a dict containing at minimum the execution ARN or ID.
         """
-        ...

@@ -27,19 +27,32 @@ def client(provider: SqsProvider) -> httpx.AsyncClient:
 class TestListQueuesXml:
     @pytest.mark.asyncio
     async def test_list_queues(self, client: httpx.AsyncClient, provider: SqsProvider) -> None:
-        await provider.create_queue("queue-a")
-        await provider.create_queue("queue-b")
+        # Arrange
+        expected_status_code = 200
+        queue_name_a = "queue-a"
+        queue_name_b = "queue-b"
+        await provider.create_queue(queue_name_a)
+        await provider.create_queue(queue_name_b)
 
+        # Act
         resp = await client.post("/", data={"Action": "ListQueues"})
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "ListQueuesResponse" in resp.text
-        assert "queue-a" in resp.text
-        assert "queue-b" in resp.text
+        assert queue_name_a in resp.text
+        assert queue_name_b in resp.text
 
     @pytest.mark.asyncio
     async def test_list_queues_empty(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+
+        # Act
         resp = await client.post("/", data={"Action": "ListQueues"})
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         assert "ListQueuesResponse" in resp.text

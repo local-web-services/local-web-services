@@ -55,27 +55,44 @@ class TestCombinedClauses:
     """Test combined SET, REMOVE, ADD, DELETE in a single expression."""
 
     def test_set_and_remove(self) -> None:
+        # Arrange
         item = {"pk": "1", "a": 1, "b": 2}
+        expected_a = 99
+
+        # Act
         result = apply_update_expression(
             item,
             "SET a = :v REMOVE b",
             expression_values={":v": {"N": "99"}},
         )
-        assert result["a"] == 99
+
+        # Assert
+        actual_a = result["a"]
+        assert actual_a == expected_a
         assert "b" not in result
 
     def test_set_remove_add(self) -> None:
+        # Arrange
         item = {"pk": "1", "name": "old", "temp": "gone", "count": 5}
+        expected_name = "new"
+        expected_count = 6
+
+        # Act
         result = apply_update_expression(
             item,
             "SET name = :n REMOVE temp ADD count :inc",
             expression_values={":n": {"S": "new"}, ":inc": {"N": "1"}},
         )
-        assert result["name"] == "new"
+
+        # Assert
+        actual_name = result["name"]
+        actual_count = result["count"]
+        assert actual_name == expected_name
         assert "temp" not in result
-        assert result["count"] == 6
+        assert actual_count == expected_count
 
     def test_all_four_clauses(self) -> None:
+        # Arrange
         item = {
             "pk": "1",
             "name": "old",
@@ -83,6 +100,11 @@ class TestCombinedClauses:
             "count": 10,
             "tags": {"a", "b", "c"},
         }
+        expected_name = "new"
+        expected_count = 15
+        expected_tags = {"a", "c"}
+
+        # Act
         result = apply_update_expression(
             item,
             "SET name = :n REMOVE temp ADD count :inc DELETE tags :rem",
@@ -92,7 +114,12 @@ class TestCombinedClauses:
                 ":rem": {"SS": ["b"]},
             },
         )
-        assert result["name"] == "new"
+
+        # Assert
+        actual_name = result["name"]
+        actual_count = result["count"]
+        actual_tags = result["tags"]
+        assert actual_name == expected_name
         assert "temp" not in result
-        assert result["count"] == 15
-        assert result["tags"] == {"a", "c"}
+        assert actual_count == expected_count
+        assert actual_tags == expected_tags

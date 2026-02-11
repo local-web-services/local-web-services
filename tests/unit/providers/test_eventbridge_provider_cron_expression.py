@@ -122,16 +122,19 @@ class TestCronExpression:
     """Test cron expression parsing."""
 
     def test_simple_cron(self) -> None:
-        result = parse_cron_expression("cron(0 12 * * ? *)")
-        assert result == "0 12 * * *"
+        expected_cron = "0 12 * * *"
+        actual_cron = parse_cron_expression("cron(0 12 * * ? *)")
+        assert actual_cron == expected_cron
 
     def test_cron_with_day_of_week(self) -> None:
-        result = parse_cron_expression("cron(0 8 ? * MON-FRI *)")
-        assert result == "0 8 * * MON-FRI"
+        expected_cron = "0 8 * * MON-FRI"
+        actual_cron = parse_cron_expression("cron(0 8 ? * MON-FRI *)")
+        assert actual_cron == expected_cron
 
     def test_cron_specific_day(self) -> None:
-        result = parse_cron_expression("cron(15 10 ? * 6L *)")
-        assert result == "15 10 * * 6L"
+        expected_cron = "15 10 * * 6L"
+        actual_cron = parse_cron_expression("cron(15 10 ? * 6L *)")
+        assert actual_cron == expected_cron
 
     def test_cron_invalid_fields(self) -> None:
         with pytest.raises(ValueError, match="Expected 6 fields"):

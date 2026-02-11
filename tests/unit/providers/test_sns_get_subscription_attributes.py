@@ -34,22 +34,29 @@ class TestGetSubscriptionAttributes:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        endpoint = "my-queue"
+        protocol = "sqs"
+        expected_status = 200
+        await provider.create_topic(topic_name)
         sub_arn = await provider.subscribe(
-            topic_name="my-topic", protocol="sqs", endpoint="my-queue"
+            topic_name=topic_name, protocol=protocol, endpoint=endpoint
         )
 
+        # Act
         resp = await client.post(
             "/",
             data={"Action": "GetSubscriptionAttributes", "SubscriptionArn": sub_arn},
         )
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "GetSubscriptionAttributesResponse" in resp.text
         assert "<key>Protocol</key>" in resp.text
-        assert "<value>sqs</value>" in resp.text
+        assert f"<value>{protocol}</value>" in resp.text
         assert "<key>Endpoint</key>" in resp.text
-        assert "<value>my-queue</value>" in resp.text
+        assert f"<value>{endpoint}</value>" in resp.text
         assert "<key>TopicArn</key>" in resp.text
         assert TOPIC_ARN in resp.text
         assert "<key>SubscriptionArn</key>" in resp.text
@@ -60,6 +67,7 @@ class TestGetSubscriptionAttributes:
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Act
         resp = await client.post(
             "/",
             data={
@@ -68,5 +76,7 @@ class TestGetSubscriptionAttributes:
             },
         )
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         assert "NotFound" in resp.text

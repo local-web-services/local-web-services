@@ -9,9 +9,16 @@ class TestTraceContext:
     """Tests for TraceContext dataclass."""
 
     def test_trace_has_id(self):
+        # Arrange
+        expected_trace_id_length = 16
+
+        # Act
         ctx = TraceContext()
+
+        # Assert
         assert ctx.trace_id
-        assert len(ctx.trace_id) == 16
+        actual_trace_id_length = len(ctx.trace_id)
+        assert actual_trace_id_length == expected_trace_id_length
 
     def test_defaults_none(self):
         ctx = TraceContext()

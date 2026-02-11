@@ -30,11 +30,18 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestDeleteParameter:
     def test_delete(self, client: TestClient) -> None:
-        _post(client, "PutParameter", {"Name": "/del", "Value": "x"})
-        _post(client, "DeleteParameter", {"Name": "/del"})
-        result = _post(client, "GetParameter", {"Name": "/del"})
-        assert result["__type"] == "ParameterNotFound"
+        param_name = "/del"
+        _post(client, "PutParameter", {"Name": param_name, "Value": "x"})
+        _post(client, "DeleteParameter", {"Name": param_name})
+        result = _post(client, "GetParameter", {"Name": param_name})
+
+        # Assert
+        expected_error_type = "ParameterNotFound"
+        assert result["__type"] == expected_error_type
 
     def test_delete_missing(self, client: TestClient) -> None:
         result = _post(client, "DeleteParameter", {"Name": "/nope"})
-        assert result["__type"] == "ParameterNotFound"
+
+        # Assert
+        expected_error_type = "ParameterNotFound"
+        assert result["__type"] == expected_error_type

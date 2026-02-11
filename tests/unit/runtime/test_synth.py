@@ -95,8 +95,11 @@ def _make_fake_process(exit_code: int = 0, stdout: bytes = b"", stderr: bytes = 
 @pytest.mark.asyncio
 async def test_ensure_synth_force_always_runs(tmp_path: Path) -> None:
     """With force=True, cdk synth should always run even when not stale."""
+    # Arrange
+    expected_result = tmp_path / "cdk.out"
     fake_proc = _make_fake_process(exit_code=0, stdout=b"ok")
 
+    # Act
     with (
         patch(
             "lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc
@@ -108,17 +111,21 @@ async def test_ensure_synth_force_always_runs(tmp_path: Path) -> None:
         mock_stdout.buffer = MagicMock()
         mock_stderr.buffer = MagicMock()
 
-        result = await ensure_synth(tmp_path, force=True)
+        actual_result = await ensure_synth(tmp_path, force=True)
 
-    assert result == tmp_path / "cdk.out"
+    # Assert
+    assert actual_result == expected_result
     mock_exec.assert_awaited_once()
 
 
 @pytest.mark.asyncio
 async def test_ensure_synth_raises_synth_error(tmp_path: Path) -> None:
     """When cdk synth exits non-zero, SynthError should be raised."""
-    fake_proc = _make_fake_process(exit_code=2, stderr=b"Error: something broke")
+    # Arrange
+    expected_exit_code = 2
+    fake_proc = _make_fake_process(exit_code=expected_exit_code, stderr=b"Error: something broke")
 
+    # Act / Assert
     with (
         patch("lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc),
         patch("lws.runtime.synth.is_synth_stale", return_value=True),
@@ -131,27 +138,35 @@ async def test_ensure_synth_raises_synth_error(tmp_path: Path) -> None:
         with pytest.raises(SynthError, match="exit code 2") as exc_info:
             await ensure_synth(tmp_path)
 
-    assert exc_info.value.exit_code == 2
+    assert exc_info.value.exit_code == expected_exit_code
 
 
 @pytest.mark.asyncio
 async def test_ensure_synth_skips_when_not_stale(tmp_path: Path) -> None:
     """When synth is not stale and force is False, subprocess should not run."""
+    # Arrange
+    expected_result = tmp_path / "cdk.out"
+
+    # Act
     with (
         patch("lws.runtime.synth.asyncio.create_subprocess_exec") as mock_exec,
         patch("lws.runtime.synth.is_synth_stale", return_value=False),
     ):
-        result = await ensure_synth(tmp_path, force=False)
+        actual_result = await ensure_synth(tmp_path, force=False)
 
-    assert result == tmp_path / "cdk.out"
+    # Assert
+    assert actual_result == expected_result
     mock_exec.assert_not_awaited()
 
 
 @pytest.mark.asyncio
 async def test_ensure_synth_runs_when_stale(tmp_path: Path) -> None:
     """When synth is stale, subprocess should be invoked."""
+    # Arrange
+    expected_result = tmp_path / "cdk.out"
     fake_proc = _make_fake_process(exit_code=0, stdout=b"synthesized")
 
+    # Act
     with (
         patch(
             "lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc
@@ -163,7 +178,8 @@ async def test_ensure_synth_runs_when_stale(tmp_path: Path) -> None:
         mock_stdout.buffer = MagicMock()
         mock_stderr.buffer = MagicMock()
 
-        result = await ensure_synth(tmp_path)
+        actual_result = await ensure_synth(tmp_path)
 
-    assert result == tmp_path / "cdk.out"
+    # Assert
+    assert actual_result == expected_result
     mock_exec.assert_awaited_once()

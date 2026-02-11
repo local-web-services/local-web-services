@@ -78,32 +78,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         duration_ms = (time.monotonic() - t0) * 1000
 
         # Capture response body by reading the stream (for StreamingResponse)
-        response_body = None
-        try:
-            # Read response body if it's a streaming response
-            body_chunks = []
-            async for chunk in response.body_iterator:
-                body_chunks.append(chunk)
-                if sum(len(c) for c in body_chunks) > 10240:  # 10KB limit
-                    break
-
-            # Reconstruct the body
-            body_bytes = b"".join(body_chunks)
-            if len(body_bytes) < 10240:
-                response_body = body_bytes.decode("utf-8", errors="replace") or ""
-
-            # Create new response with the captured body
-            from starlette.responses import Response as StarletteResponse
-
-            response = StarletteResponse(
-                content=body_bytes,
-                status_code=response.status_code,
-                headers=dict(response.headers),
-                media_type=response.media_type,
-            )
-        except Exception:
-            # If body reading fails, just use the original response
-            pass
+        response, response_body = await self._capture_response_body(response)
 
         # Extract operation name from path or headers (service-specific)
         operation = self._extract_operation(request, request_body)
@@ -121,24 +96,54 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
         return response
 
+    @staticmethod
+    async def _capture_response_body(response: Response) -> tuple[Response, str | None]:
+        """Read the streaming response body and return a new response with the captured body.
+
+        Returns a tuple of (response, response_body_str). If body reading fails,
+        the original response is returned with None as the body string.
+        """
+        try:
+            body_chunks = []
+            async for chunk in response.body_iterator:
+                body_chunks.append(chunk)
+                if sum(len(c) for c in body_chunks) > 10240:  # 10KB limit
+                    break
+
+            body_bytes = b"".join(body_chunks)
+            body_str = None
+            if len(body_bytes) < 10240:
+                body_str = body_bytes.decode("utf-8", errors="replace") or ""
+
+            from starlette.responses import (  # pylint: disable=import-outside-toplevel
+                Response as StarletteResponse,
+            )
+
+            new_response = StarletteResponse(
+                content=body_bytes,
+                status_code=response.status_code,
+                headers=dict(response.headers),
+                media_type=response.media_type,
+            )
+            return new_response, body_str
+        except Exception:
+            return response, None
+
+    _TARGET_PREFIXES = (
+        "DynamoDB",
+        "AWSEvents",
+        "AWSStepFunctions",
+        "AWSCognitoIdentityProviderService",
+    )
+
     def _extract_operation(self, request: Request, request_body: str | None = None) -> str | None:
         """Extract operation name from request (service-specific heuristics)."""
-        # DynamoDB: X-Amz-Target header contains operation
+        # DynamoDB, EventBridge, Step Functions, Cognito: X-Amz-Target header
         target = request.headers.get("X-Amz-Target", "")
-        if "DynamoDB" in target:
-            return target.split(".")[-1] if "." in target else None
-
-        # EventBridge: X-Amz-Target header
-        if "AWSEvents" in target:
-            return target.split(".")[-1] if "." in target else None
-
-        # Step Functions: X-Amz-Target header
-        if "AWSStepFunctions" in target:
-            return target.split(".")[-1] if "." in target else None
-
-        # Cognito: X-Amz-Target header
-        if "AWSCognitoIdentityProviderService" in target:
-            return target.split(".")[-1] if "." in target else None
+        if "." in target:
+            for prefix in self._TARGET_PREFIXES:
+                if prefix in target:
+                    return target.split(".")[-1]
 
         # SQS/SNS: Action query parameter or form data
         action = request.query_params.get("Action")

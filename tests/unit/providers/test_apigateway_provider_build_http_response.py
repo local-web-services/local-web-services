@@ -108,41 +108,64 @@ class TestBuildHttpResponse:
     """Unit tests for the build_http_response helper function."""
 
     def test_success_response(self) -> None:
+        # Arrange
+        expected_status = 200
+        expected_body = b'{"data": 1}'
+        expected_header_value = "value"
         result = InvocationResult(
             payload={
-                "statusCode": 200,
-                "headers": {"X-Custom": "value"},
+                "statusCode": expected_status,
+                "headers": {"X-Custom": expected_header_value},
                 "body": '{"data": 1}',
             },
             error=None,
             duration_ms=5.0,
             request_id="r1",
         )
+
+        # Act
         resp = build_http_response(result)
-        assert resp.status_code == 200
-        assert resp.body == b'{"data": 1}'
-        assert resp.headers["x-custom"] == "value"
+
+        # Assert
+        assert resp.status_code == expected_status
+        assert resp.body == expected_body
+        actual_header_value = resp.headers["x-custom"]
+        assert actual_header_value == expected_header_value
 
     def test_error_response(self) -> None:
+        # Arrange
+        expected_error = "timeout"
         result = InvocationResult(
             payload=None,
-            error="timeout",
+            error=expected_error,
             duration_ms=30000.0,
             request_id="r2",
         )
+
+        # Act
         resp = build_http_response(result)
-        assert resp.status_code == 500
+
+        # Assert
+        expected_status = 500
+        assert resp.status_code == expected_status
         body = json.loads(resp.body)
-        assert body["error"] == "timeout"
+        actual_error = body["error"]
+        assert actual_error == expected_error
 
     def test_missing_payload_defaults(self) -> None:
+        # Arrange
         result = InvocationResult(
             payload={},
             error=None,
             duration_ms=1.0,
             request_id="r3",
         )
+
+        # Act
         resp = build_http_response(result)
-        # Default status code is 200, body is empty string
-        assert resp.status_code == 200
-        assert resp.body == b""
+
+        # Assert
+        expected_status = 200
+        expected_body = b""
+        assert resp.status_code == expected_status
+        assert resp.body == expected_body

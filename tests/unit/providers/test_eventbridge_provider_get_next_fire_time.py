@@ -123,8 +123,9 @@ class TestGetNextFireTime:
 
     def test_rate_next_fire(self) -> None:
         base = 1000.0
-        next_time = get_next_fire_time("rate(5 minutes)", base_time=base)
-        assert next_time == 1300.0
+        expected_next_time = 1300.0
+        actual_next_time = get_next_fire_time("rate(5 minutes)", base_time=base)
+        assert actual_next_time == expected_next_time
 
     def test_cron_next_fire(self) -> None:
         # Use a known base time: 2024-01-01 00:00:00 UTC

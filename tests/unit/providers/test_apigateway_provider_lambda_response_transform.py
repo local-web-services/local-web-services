@@ -122,9 +122,13 @@ class TestLambdaResponseTransform:
         async with _client(provider) as client:
             response = await client.get("/items/123")
 
-        assert response.status_code == 200
-        assert response.json() == {"id": "123"}
-        assert response.headers["content-type"] == "application/json"
+        # Assert
+        expected_status = 200
+        expected_body = {"id": "123"}
+        expected_content_type = "application/json"
+        assert response.status_code == expected_status
+        assert response.json() == expected_body
+        assert response.headers["content-type"] == expected_content_type
 
     @pytest.mark.asyncio
     async def test_custom_status_code(self) -> None:
@@ -140,4 +144,6 @@ class TestLambdaResponseTransform:
         async with _client(provider) as client:
             response = await client.delete("/items/42")
 
-        assert response.status_code == 204
+        # Assert
+        expected_status = 204
+        assert response.status_code == expected_status

@@ -33,15 +33,24 @@ class TestHeadBucket:
         client: httpx.AsyncClient,
         provider: S3Provider,
     ) -> None:
+        # Arrange
         await provider.create_bucket("my-bucket")
+        expected_status = 200
+        expected_region = "us-east-1"
 
+        # Act
         resp = await client.head("/my-bucket")
 
-        assert resp.status_code == 200
-        assert resp.headers.get("x-amz-bucket-region") == "us-east-1"
+        # Assert
+        assert resp.status_code == expected_status
+        actual_region = resp.headers.get("x-amz-bucket-region")
+        assert actual_region == expected_region
 
     @pytest.mark.asyncio
     async def test_head_bucket_not_found(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await client.head("/nonexistent")
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status

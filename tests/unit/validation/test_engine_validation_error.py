@@ -63,11 +63,20 @@ def _make_context(
 
 class TestValidationError:
     def test_error_contains_issues(self) -> None:
+        # Arrange
+        expected_message_1 = "e1"
+        expected_message_2 = "e2"
+        expected_issue_summary = "2 issue(s)"
         issues = [
-            ValidationIssue(level=ValidationLevel.ERROR, message="e1"),
-            ValidationIssue(level=ValidationLevel.ERROR, message="e2"),
+            ValidationIssue(level=ValidationLevel.ERROR, message=expected_message_1),
+            ValidationIssue(level=ValidationLevel.ERROR, message=expected_message_2),
         ]
+
+        # Act
         err = ValidationError(issues)
+        actual_str = str(err)
+
+        # Assert
         assert err.issues == issues
-        assert "2 issue(s)" in str(err)
-        assert "e1" in str(err)
+        assert expected_issue_summary in actual_str
+        assert expected_message_1 in actual_str

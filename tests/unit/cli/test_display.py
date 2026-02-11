@@ -28,37 +28,60 @@ def _capture_console() -> tuple[Console, io.StringIO]:
 
 def test_format_invocation_log_200() -> None:
     """format_invocation_log returns correct format for a 200 response."""
-    result = format_invocation_log("POST", "/orders", "createOrder", 152.0, 200)
+    # Arrange
+    expected_method = "POST"
+    expected_path = "/orders"
+    expected_handler = "createOrder"
+    expected_duration = "152ms"
+    expected_status = "200"
+    expected_markup = "[green]"
 
-    # Should contain the method, path, handler, duration, and status
-    assert "POST" in result
-    assert "/orders" in result
-    assert "createOrder" in result
-    assert "152ms" in result
-    assert "200" in result
-    # Green markup for 2xx
-    assert "[green]" in result
+    # Act
+    result = format_invocation_log(expected_method, expected_path, expected_handler, 152.0, 200)
+
+    # Assert
+    assert expected_method in result
+    assert expected_path in result
+    assert expected_handler in result
+    assert expected_duration in result
+    assert expected_status in result
+    assert expected_markup in result
 
 
 def test_format_invocation_log_500() -> None:
     """format_invocation_log returns correct format for a 500 response."""
-    result = format_invocation_log("GET", "/health", "healthCheck", 10.0, 500)
+    # Arrange
+    expected_method = "GET"
+    expected_path = "/health"
+    expected_handler = "healthCheck"
+    expected_duration = "10ms"
+    expected_status = "500"
+    expected_markup = "[red]"
 
-    assert "GET" in result
-    assert "/health" in result
-    assert "healthCheck" in result
-    assert "10ms" in result
-    assert "500" in result
-    # Red markup for 5xx
-    assert "[red]" in result
+    # Act
+    result = format_invocation_log(expected_method, expected_path, expected_handler, 10.0, 500)
+
+    # Assert
+    assert expected_method in result
+    assert expected_path in result
+    assert expected_handler in result
+    assert expected_duration in result
+    assert expected_status in result
+    assert expected_markup in result
 
 
 def test_format_invocation_log_404() -> None:
     """format_invocation_log returns yellow markup for 4xx."""
+    # Arrange
+    expected_status = "404"
+    expected_markup = "[yellow]"
+
+    # Act
     result = format_invocation_log("GET", "/missing", "notFound", 5.0, 404)
 
-    assert "404" in result
-    assert "[yellow]" in result
+    # Assert
+    assert expected_status in result
+    assert expected_markup in result
 
 
 def test_format_invocation_log_timestamp_format() -> None:
@@ -178,16 +201,24 @@ def test_print_error_with_detail() -> None:
 
 def test_print_startup_complete() -> None:
     """print_startup_complete shows port and resource counts."""
+    # Arrange
+    expected_ready = "Ready!"
+    expected_host = "localhost:3000"
+    expected_routes = "5 route(s)"
+    expected_tables = "2 table(s)"
+    expected_functions = "3 function(s)"
     cons, buf = _capture_console()
     original = display.console
     display.console = cons
+
+    # Act / Assert
     try:
         print_startup_complete(port=3000, num_routes=5, num_tables=2, num_functions=3)
         output = buf.getvalue()
-        assert "Ready!" in output
-        assert "localhost:3000" in output
-        assert "5 route(s)" in output
-        assert "2 table(s)" in output
-        assert "3 function(s)" in output
+        assert expected_ready in output
+        assert expected_host in output
+        assert expected_routes in output
+        assert expected_tables in output
+        assert expected_functions in output
     finally:
         display.console = original

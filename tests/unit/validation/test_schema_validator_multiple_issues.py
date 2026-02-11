@@ -84,11 +84,17 @@ def _make_context(
 
 class TestMultipleIssues:
     def test_missing_both_pk_and_sk(self) -> None:
+        # Arrange
+        expected_issue_count = 2
         config = _make_table_config(sk_name="sk", sk_type="S")
         validator = SchemaValidator({"users": config})
         ctx = _make_context(data={})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 2
-        messages = {i.message for i in issues}
-        assert any("pk" in m for m in messages)
-        assert any("sk" in m for m in messages)
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        actual_messages = {i.message for i in issues}
+        assert any("pk" in m for m in actual_messages)
+        assert any("sk" in m for m in actual_messages)

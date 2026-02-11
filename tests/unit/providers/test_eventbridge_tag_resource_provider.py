@@ -40,20 +40,33 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestTagResourceProvider:
     async def test_tag_and_list(self, provider: EventBridgeProvider) -> None:
+        # Arrange
         arn = "arn:aws:events:us-east-1:000000000000:rule/my-rule"
-        provider.tag_resource(arn, [{"Key": "env", "Value": "prod"}])
+        expected_key = "env"
+        expected_value = "prod"
+
+        # Act
+        provider.tag_resource(arn, [{"Key": expected_key, "Value": expected_value}])
         tags = provider.list_tags_for_resource(arn)
+
+        # Assert
         assert len(tags) == 1
-        assert tags[0]["Key"] == "env"
-        assert tags[0]["Value"] == "prod"
+        assert tags[0]["Key"] == expected_key
+        assert tags[0]["Value"] == expected_value
 
     async def test_tag_overwrite(self, provider: EventBridgeProvider) -> None:
+        # Arrange
         arn = "arn:aws:events:us-east-1:000000000000:rule/my-rule"
+        expected_value = "prod"
+
+        # Act
         provider.tag_resource(arn, [{"Key": "env", "Value": "dev"}])
-        provider.tag_resource(arn, [{"Key": "env", "Value": "prod"}])
+        provider.tag_resource(arn, [{"Key": "env", "Value": expected_value}])
         tags = provider.list_tags_for_resource(arn)
+
+        # Assert
         assert len(tags) == 1
-        assert tags[0]["Value"] == "prod"
+        assert tags[0]["Value"] == expected_value
 
     async def test_untag(self, provider: EventBridgeProvider) -> None:
         arn = "arn:aws:events:us-east-1:000000000000:rule/my-rule"

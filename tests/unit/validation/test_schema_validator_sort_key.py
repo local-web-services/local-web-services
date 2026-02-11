@@ -84,24 +84,43 @@ def _make_context(
 
 class TestSortKey:
     def test_valid_pk_and_sk(self) -> None:
+        # Arrange
         config = _make_table_config(sk_name="sk", sk_type="S")
         validator = SchemaValidator({"users": config})
         ctx = _make_context(data={"pk": "user-1", "sk": "profile"})
+
+        # Act
         issues = validator.validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_missing_sk(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_message = "Missing required key attribute 'sk'"
         config = _make_table_config(sk_name="sk", sk_type="S")
         validator = SchemaValidator({"users": config})
         ctx = _make_context(data={"pk": "user-1"})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 1
-        assert "Missing required key attribute 'sk'" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_message in issues[0].message
 
     def test_sk_type_mismatch(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_message_fragment = "type mismatch"
         config = _make_table_config(sk_name="sk", sk_type="N")
         validator = SchemaValidator({"users": config})
         ctx = _make_context(data={"pk": "user-1", "sk": {"S": "abc"}})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 1
-        assert "type mismatch" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_message_fragment in issues[0].message

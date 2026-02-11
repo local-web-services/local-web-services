@@ -30,6 +30,7 @@ class TestStreamDispatcher:
     """Test the stream dispatcher event emission and batching."""
 
     async def test_emit_invokes_handler(self) -> None:
+        # Arrange
         handler = MockLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         dispatcher.configure_stream(
@@ -40,9 +41,11 @@ class TestStreamDispatcher:
             )
         )
         dispatcher.register_handler("users", handler)
+        expected_event_name = "INSERT"
 
         await dispatcher.start()
         try:
+            # Act
             await dispatcher.emit(
                 event_name=EventName.INSERT,
                 table_name="users",
@@ -50,29 +53,37 @@ class TestStreamDispatcher:
                 new_image={"userId": "u1", "name": "Alice"},
             )
             await handler.wait_for_invocation(timeout=2.0)
+
+            # Assert
             assert len(handler.invocations) >= 1
             event = handler.invocations[0]
             assert "Records" in event
             assert len(event["Records"]) >= 1
-            assert event["Records"][0]["eventName"] == "INSERT"
+            actual_event_name = event["Records"][0]["eventName"]
+            assert actual_event_name == expected_event_name
         finally:
             await dispatcher.stop()
 
     async def test_emit_without_config_is_noop(self) -> None:
+        # Arrange
         handler = MockLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         # No stream configured for "users"
         dispatcher.register_handler("users", handler)
+        expected_invocation_count = 0
 
         await dispatcher.start()
         try:
+            # Act
             await dispatcher.emit(
                 event_name=EventName.INSERT,
                 table_name="users",
                 keys={"userId": "u1"},
             )
             await asyncio.sleep(0.15)
-            assert len(handler.invocations) == 0
+
+            # Assert
+            assert len(handler.invocations) == expected_invocation_count
         finally:
             await dispatcher.stop()
 
@@ -94,6 +105,7 @@ class TestStreamDispatcher:
             await dispatcher.stop()
 
     async def test_batching_multiple_events(self) -> None:
+        # Arrange
         handler = MockLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=200)
         dispatcher.configure_stream(
@@ -104,10 +116,11 @@ class TestStreamDispatcher:
             )
         )
         dispatcher.register_handler("users", handler)
+        expected_total_records = 5
 
         await dispatcher.start()
         try:
-            # Emit multiple events quickly
+            # Act
             for i in range(5):
                 await dispatcher.emit(
                     event_name=EventName.INSERT,
@@ -117,13 +130,15 @@ class TestStreamDispatcher:
                 )
 
             await handler.wait_for_invocation(timeout=2.0)
-            # All events should be in one or few batches
-            total_records = sum(len(inv["Records"]) for inv in handler.invocations)
-            assert total_records == 5
+
+            # Assert
+            actual_total_records = sum(len(inv["Records"]) for inv in handler.invocations)
+            assert actual_total_records == expected_total_records
         finally:
             await dispatcher.stop()
 
     async def test_stop_flushes_pending_events(self) -> None:
+        # Arrange
         handler = MockLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=5000)  # Long window
         dispatcher.configure_stream(
@@ -142,9 +157,11 @@ class TestStreamDispatcher:
             keys={"userId": "u1"},
             new_image={"userId": "u1", "name": "Alice"},
         )
-        # Stop should flush
+
+        # Act
         await dispatcher.stop()
 
+        # Assert
         assert len(handler.invocations) >= 1
-        total_records = sum(len(inv["Records"]) for inv in handler.invocations)
-        assert total_records >= 1
+        actual_total_records = sum(len(inv["Records"]) for inv in handler.invocations)
+        assert actual_total_records >= 1

@@ -173,9 +173,12 @@ class TestRetryAndCatch:
         assert history.output_data == {"recovered": True}
 
     async def test_catch_error_info_in_result_path(self) -> None:
+        # Arrange
+        expected_error_name = "States.TaskFailed"
         compute = MockCompute({"fn": {"ok": True}})
         compute.set_error_until("fn", 100)
 
+        # Act
         history = await run_engine(
             {
                 "StartAt": "T",
@@ -198,9 +201,12 @@ class TestRetryAndCatch:
             input_data={"original": True},
             compute=compute,
         )
+
+        # Assert
+        actual_error_name = history.output_data["errorInfo"]["Error"]
         assert history.status == ExecutionStatus.SUCCEEDED
         assert "errorInfo" in history.output_data
-        assert history.output_data["errorInfo"]["Error"] == "States.TaskFailed"
+        assert actual_error_name == expected_error_name
 
     async def test_retry_then_catch(self) -> None:
         compute = MockCompute({"fn": {"ok": True}})

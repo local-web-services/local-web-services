@@ -22,16 +22,25 @@ def _write_json(path: Path, data: dict) -> None:
 
 class TestEdgeCases:
     def test_no_manifest(self, cdk_out: Path):
+        # Act
         result = parse_assets(cdk_out)
+
+        # Assert
         assert result == {}
 
     def test_empty_artifacts(self, cdk_out: Path):
+        # Arrange
         _write_json(cdk_out / "manifest.json", {"version": "21.0.0", "artifacts": {}})
+
+        # Act
         result = parse_assets(cdk_out)
+
+        # Assert
         assert result == {}
 
     def test_missing_asset_manifest_file(self, cdk_out: Path, caplog):
         """Asset manifest referenced but file doesn't exist."""
+        # Arrange
         manifest = {
             "version": "21.0.0",
             "artifacts": {
@@ -44,6 +53,9 @@ class TestEdgeCases:
         _write_json(cdk_out / "manifest.json", manifest)
         import logging
 
+        # Act
         with caplog.at_level(logging.WARNING):
             result = parse_assets(cdk_out)
+
+        # Assert
         assert result == {}

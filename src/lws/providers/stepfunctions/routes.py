@@ -14,6 +14,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.stepfunctions.provider import StepFunctionsProvider
 
 _logger = get_logger("ldk.stepfunctions")
@@ -30,8 +31,8 @@ class StepFunctionsRouter:
     async def _dispatch(self, request: Request) -> Response:
         """Dispatch based on X-Amz-Target header or Action parameter."""
         target = request.headers.get("x-amz-target", "")
-        body = await _parse_request_body(request)
-        action = _resolve_action(target, body)
+        body = await parse_json_body(request)
+        action = resolve_api_action(target, body)
 
         handler = self._handlers().get(action)
         if handler is None:
@@ -117,7 +118,7 @@ class StepFunctionsRouter:
         items = [_format_execution_summary(h) for h in executions]
         return _json_response({"executions": items})
 
-    async def _list_state_machines(self, body: dict) -> Response:
+    async def _list_state_machines(self, _body: dict) -> Response:
         """Handle ListStateMachines API action."""
         names = self.provider.list_state_machines()
         machines = [
@@ -180,20 +181,20 @@ class StepFunctionsRouter:
             )
         return _json_response(attrs)
 
-    async def _validate_definition(self, body: dict) -> Response:
+    async def _validate_definition(self, _body: dict) -> Response:
         """Handle ValidateStateMachineDefinition — always valid."""
         return _json_response({"result": "OK", "diagnostics": []})
 
-    async def _list_state_machine_versions(self, body: dict) -> Response:
+    async def _list_state_machine_versions(self, _body: dict) -> Response:
         return _json_response({"stateMachineVersions": []})
 
-    async def _tag_resource(self, body: dict) -> Response:
+    async def _tag_resource(self, _body: dict) -> Response:
         return _json_response({})
 
-    async def _untag_resource(self, body: dict) -> Response:
+    async def _untag_resource(self, _body: dict) -> Response:
         return _json_response({})
 
-    async def _list_tags_for_resource(self, body: dict) -> Response:
+    async def _list_tags_for_resource(self, _body: dict) -> Response:
         return _json_response({"tags": []})
 
     async def _stop_execution(self, body: dict) -> Response:
@@ -256,25 +257,6 @@ class StepFunctionsRouter:
 # ------------------------------------------------------------------
 # Helpers
 # ------------------------------------------------------------------
-
-
-async def _parse_request_body(request: Request) -> dict:
-    """Parse the JSON request body."""
-    body_bytes = await request.body()
-    if not body_bytes:
-        return {}
-    try:
-        return json.loads(body_bytes)
-    except json.JSONDecodeError:
-        return {}
-
-
-def _resolve_action(target: str, body: dict) -> str:
-    """Resolve the API action from the target header or body."""
-    if target:
-        # X-Amz-Target format: AWSStepFunctions.StartExecution
-        return target.rsplit(".", 1)[-1] if "." in target else target
-    return body.get("Action", "")
 
 
 def _extract_state_machine_name(body: dict) -> str:

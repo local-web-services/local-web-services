@@ -26,6 +26,8 @@ class TestCfnTypeAttribute:
     """Nodes with ``attributes.aws:cdk:cloudformation:type``."""
 
     def test_cfn_type_extracted(self, tmp_tree):
+        # Arrange
+        expected_cfn_type = "AWS::Lambda::Function"
         data = {
             "version": "tree-0.1",
             "tree": {
@@ -40,7 +42,7 @@ class TestCfnTypeAttribute:
                                 "id": "Res",
                                 "path": "S/Res",
                                 "attributes": {
-                                    "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                                    "aws:cdk:cloudformation:type": expected_cfn_type,
                                 },
                             }
                         },
@@ -48,6 +50,10 @@ class TestCfnTypeAttribute:
                 },
             },
         }
+
+        # Act
         nodes = parse_tree(tmp_tree(data))
-        res = nodes[0].children[0]
-        assert res.cfn_type == "AWS::Lambda::Function"
+
+        # Assert
+        actual_cfn_type = nodes[0].children[0].cfn_type
+        assert actual_cfn_type == expected_cfn_type

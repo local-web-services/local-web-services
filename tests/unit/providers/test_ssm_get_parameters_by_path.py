@@ -30,17 +30,25 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestGetParametersByPath:
     def test_non_recursive(self, client: TestClient) -> None:
-        _post(client, "PutParameter", {"Name": "/app/key1", "Value": "v1"})
-        _post(client, "PutParameter", {"Name": "/app/sub/key2", "Value": "v2"})
+        direct_child = "/app/key1"
+        nested_child = "/app/sub/key2"
+        _post(client, "PutParameter", {"Name": direct_child, "Value": "v1"})
+        _post(client, "PutParameter", {"Name": nested_child, "Value": "v2"})
         result = _post(client, "GetParametersByPath", {"Path": "/app/", "Recursive": False})
+
+        # Assert
         names = [p["Name"] for p in result["Parameters"]]
-        assert "/app/key1" in names
-        assert "/app/sub/key2" not in names
+        assert direct_child in names
+        assert nested_child not in names
 
     def test_recursive(self, client: TestClient) -> None:
-        _post(client, "PutParameter", {"Name": "/app/key1", "Value": "v1"})
-        _post(client, "PutParameter", {"Name": "/app/sub/key2", "Value": "v2"})
+        direct_child = "/app/key1"
+        nested_child = "/app/sub/key2"
+        _post(client, "PutParameter", {"Name": direct_child, "Value": "v1"})
+        _post(client, "PutParameter", {"Name": nested_child, "Value": "v2"})
         result = _post(client, "GetParametersByPath", {"Path": "/app/", "Recursive": True})
+
+        # Assert
         names = [p["Name"] for p in result["Parameters"]]
-        assert "/app/key1" in names
-        assert "/app/sub/key2" in names
+        assert direct_child in names
+        assert nested_child in names

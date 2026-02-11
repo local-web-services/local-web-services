@@ -130,12 +130,15 @@ class FileChangeHandler(FileSystemEventHandler):
         self._schedule_callback()
 
     def on_modified(self, event: FileSystemEvent) -> None:
+        """Handle a file modification event."""
         self._handle_event(event)
 
     def on_created(self, event: FileSystemEvent) -> None:
+        """Handle a file creation event."""
         self._handle_event(event)
 
     def on_deleted(self, event: FileSystemEvent) -> None:
+        """Handle a file deletion event."""
         self._handle_event(event)
 
 
@@ -202,6 +205,6 @@ class FileWatcher:
         if self._observer is None:
             return
         self._observer.stop()
-        self._observer.join()
+        self._observer.join(timeout=3.0)
         self._observer = None
         logger.info("FileWatcher stopped")

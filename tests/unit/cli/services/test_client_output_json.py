@@ -9,7 +9,14 @@ from lws.cli.services.client import output_json
 
 class TestOutputJson:
     def test_outputs_to_stdout(self, capsys):
-        output_json({"key": "value"})
+        # Arrange
+        expected_value = "value"
+
+        # Act
+        output_json({"key": expected_value})
         captured = capsys.readouterr()
         parsed = json.loads(captured.out)
-        assert parsed["key"] == "value"
+        actual_value = parsed["key"]
+
+        # Assert
+        assert actual_value == expected_value

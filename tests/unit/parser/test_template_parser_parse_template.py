@@ -46,24 +46,33 @@ def tmp_template(tmp_path: Path):
 
 class TestParseTemplate:
     def test_extracts_resources(self, tmp_template):
+        # Arrange
+        expected_count = 2
+        expected_first_id = "MyFunc"
+        expected_first_type = "AWS::Lambda::Function"
+        expected_second_id = "MyTable"
         tpl = {
             "AWSTemplateFormatVersion": "2010-09-09",
             "Resources": {
-                "MyFunc": {
-                    "Type": "AWS::Lambda::Function",
+                expected_first_id: {
+                    "Type": expected_first_type,
                     "Properties": {"Handler": "index.handler", "Runtime": "python3.11"},
                 },
-                "MyTable": {
+                expected_second_id: {
                     "Type": "AWS::DynamoDB::Table",
                     "Properties": {"TableName": "widgets"},
                 },
             },
         }
+
+        # Act
         resources = parse_template(tmp_template(tpl))
-        assert len(resources) == 2
-        assert resources[0].logical_id == "MyFunc"
-        assert resources[0].resource_type == "AWS::Lambda::Function"
-        assert resources[1].logical_id == "MyTable"
+
+        # Assert
+        assert len(resources) == expected_count
+        assert resources[0].logical_id == expected_first_id
+        assert resources[0].resource_type == expected_first_type
+        assert resources[1].logical_id == expected_second_id
 
     def test_empty_resources(self, tmp_template):
         tpl = {"Resources": {}}

@@ -75,9 +75,16 @@ def client(mock_store: AsyncMock) -> httpx.AsyncClient:
 class TestListTables:
     @pytest.mark.asyncio
     async def test_list_tables(self, client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_table_names = ["TableA", "TableB"]
+
+        # Act
         resp = await client.post("/", json={}, headers=_target("ListTables"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["TableNames"] == ["TableA", "TableB"]
+        actual_table_names = data["TableNames"]
+        assert actual_table_names == expected_table_names
         mock_store.list_tables.assert_awaited_once()

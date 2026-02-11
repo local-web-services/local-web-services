@@ -43,12 +43,26 @@ class TestRef:
     """Ref intrinsic function resolution."""
 
     def test_ref_resolves_from_registry(self) -> None:
+        # Arrange
+        expected_table_name = "local-my-table"
         env = {"TABLE_NAME": {"Ref": "MyTable"}}
-        registry = {"MyTable": "local-my-table"}
+        registry = {"MyTable": expected_table_name}
+
+        # Act
         result = resolve_env_vars(env, resource_registry=registry)
-        assert result["TABLE_NAME"] == "local-my-table"
+
+        # Assert
+        actual_table_name = result["TABLE_NAME"]
+        assert actual_table_name == expected_table_name
 
     def test_ref_unresolvable_uses_logical_id(self) -> None:
-        env = {"TABLE_NAME": {"Ref": "UnknownResource"}}
+        # Arrange
+        expected_table_name = "UnknownResource"
+        env = {"TABLE_NAME": {"Ref": expected_table_name}}
+
+        # Act
         result = resolve_env_vars(env, resource_registry={})
-        assert result["TABLE_NAME"] == "UnknownResource"
+
+        # Assert
+        actual_table_name = result["TABLE_NAME"]
+        assert actual_table_name == expected_table_name

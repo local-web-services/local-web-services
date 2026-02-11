@@ -47,6 +47,15 @@ def _mock_client(status_resp, resources_resp):
 class TestLwsStatus:
     @pytest.mark.asyncio
     async def test_json_flag_outputs_json(self, capsys):
+        # Arrange
+        expected_provider_count = 2
+        expected_first_provider_name = "dynamodb"
+        expected_service_count = 2
+        expected_first_service_name = "dynamodb"
+        expected_first_service_port = 3001
+        expected_first_service_resources = 1
+        expected_second_service_resources = 2
+
         status_resp = httpx.Response(
             200,
             json=SAMPLE_STATUS,
@@ -58,21 +67,31 @@ class TestLwsStatus:
             request=httpx.Request("GET", "http://localhost:3000/_ldk/resources"),
         )
 
+        # Act
         patcher = _mock_client(status_resp, resources_resp)
         try:
             await _run_status(3000, json_output=True)
         finally:
             patcher.stop()
 
+        # Assert
         output = json.loads(capsys.readouterr().out)
         assert output["running"] is True
-        assert len(output["providers"]) == 2
-        assert output["providers"][0]["name"] == "dynamodb"
-        assert len(output["services"]) == 2
-        assert output["services"][0]["name"] == "dynamodb"
-        assert output["services"][0]["port"] == 3001
-        assert output["services"][0]["resources"] == 1
-        assert output["services"][1]["resources"] == 2
+        actual_provider_count = len(output["providers"])
+        actual_first_provider_name = output["providers"][0]["name"]
+        actual_service_count = len(output["services"])
+        actual_first_service_name = output["services"][0]["name"]
+        actual_first_service_port = output["services"][0]["port"]
+        actual_first_service_resources = output["services"][0]["resources"]
+        actual_second_service_resources = output["services"][1]["resources"]
+
+        assert actual_provider_count == expected_provider_count
+        assert actual_first_provider_name == expected_first_provider_name
+        assert actual_service_count == expected_service_count
+        assert actual_first_service_name == expected_first_service_name
+        assert actual_first_service_port == expected_first_service_port
+        assert actual_first_service_resources == expected_first_service_resources
+        assert actual_second_service_resources == expected_second_service_resources
 
     @pytest.mark.asyncio
     async def test_default_outputs_table(self, capsys):

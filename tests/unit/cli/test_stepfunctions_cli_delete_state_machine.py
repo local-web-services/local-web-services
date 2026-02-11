@@ -20,14 +20,20 @@ def _mock_client(return_value: dict) -> AsyncMock:
 
 class TestDeleteStateMachine:
     def test_delete_state_machine(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_target = "DeleteStateMachine"
         mock = _mock_client({})
+
+        # Act
         with patch("lws.cli.services.stepfunctions._client", return_value=mock):
             result = runner.invoke(
                 app,
                 ["stepfunctions", "delete-state-machine", "--name", "test-sm"],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.json_target_request.assert_awaited_once()
-        call_args = mock.json_target_request.call_args
-        assert "DeleteStateMachine" in call_args[0][1]
+        actual_target = mock.json_target_request.call_args[0][1]
+        assert expected_target in actual_target

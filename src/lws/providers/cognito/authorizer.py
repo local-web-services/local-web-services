@@ -59,12 +59,12 @@ class CognitoAuthorizer:
         """Decode a JWT and validate its claims."""
         try:
             claims = self._token_issuer.decode_token(token, token_use="id")
-        except jwt.ExpiredSignatureError:
-            raise AuthorizationError("Token has expired")
-        except jwt.InvalidIssuerError:
-            raise AuthorizationError("Invalid token issuer")
+        except jwt.ExpiredSignatureError as exc:
+            raise AuthorizationError("Token has expired") from exc
+        except jwt.InvalidIssuerError as exc:
+            raise AuthorizationError("Invalid token issuer") from exc
         except jwt.InvalidTokenError as exc:
-            raise AuthorizationError(f"Invalid token: {exc}")
+            raise AuthorizationError(f"Invalid token: {exc}") from exc
         return claims
 
 

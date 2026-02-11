@@ -28,16 +28,22 @@ class TestProviderStatus:
     """ProviderStatus enum has all expected members."""
 
     def test_has_stopped(self) -> None:
-        assert ProviderStatus.STOPPED.value == "stopped"
+        expected_value = "stopped"
+        assert ProviderStatus.STOPPED.value == expected_value
 
     def test_has_starting(self) -> None:
-        assert ProviderStatus.STARTING.value == "starting"
+        expected_value = "starting"
+        assert ProviderStatus.STARTING.value == expected_value
 
     def test_has_running(self) -> None:
-        assert ProviderStatus.RUNNING.value == "running"
+        expected_value = "running"
+        assert ProviderStatus.RUNNING.value == expected_value
 
     def test_has_error(self) -> None:
-        assert ProviderStatus.ERROR.value == "error"
+        expected_value = "error"
+        assert ProviderStatus.ERROR.value == expected_value
 
     def test_member_count(self) -> None:
-        assert len(ProviderStatus) == 4
+        expected_count = 4
+        actual_count = len(ProviderStatus)
+        assert actual_count == expected_count

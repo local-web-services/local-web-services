@@ -14,6 +14,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 
 _logger = get_logger("ldk.ssm")
 
@@ -53,6 +54,11 @@ class _SsmState:
     def __init__(self) -> None:
         self._parameters: dict[str, _Parameter] = {}
 
+    @property
+    def parameters(self) -> dict[str, _Parameter]:
+        """Return the parameters store."""
+        return self._parameters
+
 
 # ------------------------------------------------------------------
 # Action handlers
@@ -68,7 +74,7 @@ async def _handle_put_parameter(state: _SsmState, body: dict) -> Response:
     tags_list = body.get("Tags", [])
     tags = {t["Key"]: t["Value"] for t in tags_list} if tags_list else {}
 
-    existing = state._parameters.get(name)
+    existing = state.parameters.get(name)
     if existing and not overwrite:
         return _error_response(
             "ParameterAlreadyExists",
@@ -93,7 +99,7 @@ async def _handle_put_parameter(state: _SsmState, body: dict) -> Response:
             description=description,
             tags=tags,
         )
-        state._parameters[name] = param
+        state.parameters[name] = param
         version = param.version
 
     return _json_response({"Version": version, "Tier": "Standard"})
@@ -102,7 +108,7 @@ async def _handle_put_parameter(state: _SsmState, body: dict) -> Response:
 async def _handle_get_parameter(state: _SsmState, body: dict) -> Response:
     name = body.get("Name", "")
     with_decryption = body.get("WithDecryption", False)
-    param = state._parameters.get(name)
+    param = state.parameters.get(name)
     if param is None:
         return _error_response(
             "ParameterNotFound",
@@ -118,7 +124,7 @@ async def _handle_get_parameters(state: _SsmState, body: dict) -> Response:
     parameters = []
     invalid = []
     for name in names:
-        param = state._parameters.get(name)
+        param = state.parameters.get(name)
         if param:
             parameters.append(_format_parameter(param, with_decryption=with_decryption))
         else:
@@ -132,7 +138,7 @@ async def _handle_get_parameters_by_path(state: _SsmState, body: dict) -> Respon
     with_decryption = body.get("WithDecryption", False)
 
     parameters = []
-    for name, param in state._parameters.items():
+    for name, param in state.parameters.items():
         if recursive:
             if name.startswith(path):
                 parameters.append(_format_parameter(param, with_decryption=with_decryption))
@@ -148,13 +154,13 @@ async def _handle_get_parameters_by_path(state: _SsmState, body: dict) -> Respon
 
 async def _handle_delete_parameter(state: _SsmState, body: dict) -> Response:
     name = body.get("Name", "")
-    if name not in state._parameters:
+    if name not in state.parameters:
         return _error_response(
             "ParameterNotFound",
             f"Parameter {name} not found.",
             status_code=400,
         )
-    del state._parameters[name]
+    del state.parameters[name]
     return _json_response({})
 
 
@@ -163,8 +169,8 @@ async def _handle_delete_parameters(state: _SsmState, body: dict) -> Response:
     deleted = []
     invalid = []
     for name in names:
-        if name in state._parameters:
-            del state._parameters[name]
+        if name in state.parameters:
+            del state.parameters[name]
             deleted.append(name)
         else:
             invalid.append(name)
@@ -173,21 +179,8 @@ async def _handle_delete_parameters(state: _SsmState, body: dict) -> Response:
 
 async def _handle_describe_parameters(state: _SsmState, body: dict) -> Response:
     filters = body.get("ParameterFilters", [])
-    params_list = list(state._parameters.values())
-
-    # Apply basic name filtering
-    for f in filters:
-        key = f.get("Key", "")
-        values = f.get("Values", [])
-        option = f.get("Option", "Equals")
-        if key == "Name":
-            if option == "Equals":
-                params_list = [p for p in params_list if p.name in values]
-            elif option == "BeginsWith":
-                params_list = [p for p in params_list if any(p.name.startswith(v) for v in values)]
-            elif option == "Contains":
-                params_list = [p for p in params_list if any(v in p.name for v in values)]
-
+    params_list = list(state.parameters.values())
+    params_list = _apply_parameter_filters(params_list, filters)
     descriptions = [_format_parameter_metadata(p) for p in params_list]
     return _json_response({"Parameters": descriptions})
 
@@ -198,7 +191,7 @@ async def _handle_add_tags_to_resource(state: _SsmState, body: dict) -> Response
     tags_list = body.get("Tags", [])
 
     if resource_type == "Parameter":
-        param = state._parameters.get(resource_id)
+        param = state.parameters.get(resource_id)
         if param is None:
             return _error_response(
                 "InvalidResourceId",
@@ -217,7 +210,7 @@ async def _handle_remove_tags_from_resource(state: _SsmState, body: dict) -> Res
     tag_keys = body.get("TagKeys", [])
 
     if resource_type == "Parameter":
-        param = state._parameters.get(resource_id)
+        param = state.parameters.get(resource_id)
         if param is None:
             return _error_response(
                 "InvalidResourceId",
@@ -236,7 +229,7 @@ async def _handle_list_tags_for_resource(state: _SsmState, body: dict) -> Respon
 
     tags: list[dict[str, str]] = []
     if resource_type == "Parameter":
-        param = state._parameters.get(resource_id)
+        param = state.parameters.get(resource_id)
         if param is not None:
             tags = [{"Key": k, "Value": v} for k, v in param.tags.items()]
 
@@ -246,6 +239,51 @@ async def _handle_list_tags_for_resource(state: _SsmState, body: dict) -> Respon
 # ------------------------------------------------------------------
 # Helpers
 # ------------------------------------------------------------------
+
+
+def _apply_parameter_filters(
+    params_list: list[_Parameter],
+    filters: list[dict],
+) -> list[_Parameter]:
+    """Apply ParameterFilters to a list of parameters."""
+    for f in filters:
+        key = f.get("Key", "")
+        values = f.get("Values", [])
+        option = f.get("Option", "Equals")
+        if key == "Name":
+            params_list = _filter_by_name(params_list, values, option)
+    return params_list
+
+
+def _name_matches_equals(name: str, values: list[str]) -> bool:
+    return name in values
+
+
+def _name_matches_begins_with(name: str, values: list[str]) -> bool:
+    return any(name.startswith(v) for v in values)
+
+
+def _name_matches_contains(name: str, values: list[str]) -> bool:
+    return any(v in name for v in values)
+
+
+_NAME_MATCHERS = {
+    "Equals": _name_matches_equals,
+    "BeginsWith": _name_matches_begins_with,
+    "Contains": _name_matches_contains,
+}
+
+
+def _filter_by_name(
+    params_list: list[_Parameter],
+    values: list[str],
+    option: str,
+) -> list[_Parameter]:
+    """Filter parameters by name using the given option."""
+    matcher = _NAME_MATCHERS.get(option)
+    if matcher is None:
+        return params_list
+    return [p for p in params_list if matcher(p.name, values)]
 
 
 def _format_parameter(param: _Parameter, *, with_decryption: bool = False) -> dict[str, Any]:
@@ -331,13 +369,13 @@ def create_ssm_app(initial_parameters: list[dict] | None = None) -> FastAPI:
                 param_type=p.get("type", "String"),
                 description=p.get("description", ""),
             )
-            state._parameters[param.name] = param
+            state.parameters[param.name] = param
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         target = request.headers.get("x-amz-target", "")
-        body = await _parse_request_body(request)
-        action = _resolve_action(target, body)
+        body = await parse_json_body(request)
+        action = resolve_api_action(target, body)
 
         handler = _ACTION_HANDLERS.get(action)
         if handler is None:
@@ -350,22 +388,3 @@ def create_ssm_app(initial_parameters: list[dict] | None = None) -> FastAPI:
         return await handler(state, body)
 
     return app
-
-
-async def _parse_request_body(request: Request) -> dict:
-    """Parse the JSON request body."""
-    body_bytes = await request.body()
-    if not body_bytes:
-        return {}
-    try:
-        return json.loads(body_bytes)
-    except json.JSONDecodeError:
-        return {}
-
-
-def _resolve_action(target: str, body: dict) -> str:
-    """Resolve the API action from the target header or body."""
-    if target:
-        # X-Amz-Target format: AmazonSSM.PutParameter
-        return target.rsplit(".", 1)[-1] if "." in target else target
-    return body.get("Action", "")

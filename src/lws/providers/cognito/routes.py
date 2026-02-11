@@ -103,6 +103,7 @@ class CognitoRouter:
         """Handle CreateUserPool operation."""
         pool_name = body.get("PoolName", "default")
         config = self._provider.config
+        config.user_pool_name = pool_name
         pool_id = config.user_pool_id
         arn = f"arn:aws:cognito-idp:us-east-1:000000000000:userpool/{pool_id}"
         return _json_response(
@@ -118,24 +119,27 @@ class CognitoRouter:
 
     async def _delete_user_pool(self, body: dict) -> Response:
         """Handle DeleteUserPool operation."""
+        pool_id = body.get("UserPoolId", "")
+        config = self._provider.config
+        if pool_id == config.user_pool_id:
+            config.user_pool_name = ""
         return _json_response({})
 
-    async def _list_user_pools(self, body: dict) -> Response:
+    async def _list_user_pools(self, _body: dict) -> Response:
         """Handle ListUserPools operation."""
         config = self._provider.config
-        return _json_response(
-            {
-                "UserPools": [
-                    {
-                        "Id": config.user_pool_id,
-                        "Name": config.user_pool_name,
-                        "Status": "Enabled",
-                    }
-                ]
-            }
-        )
+        pools = []
+        if config.user_pool_name:
+            pools.append(
+                {
+                    "Id": config.user_pool_id,
+                    "Name": config.user_pool_name,
+                    "Status": "Enabled",
+                }
+            )
+        return _json_response({"UserPools": pools})
 
-    async def _describe_user_pool(self, body: dict) -> Response:
+    async def _describe_user_pool(self, _body: dict) -> Response:
         """Handle DescribeUserPool operation."""
         config = self._provider.config
         pool_id = config.user_pool_id

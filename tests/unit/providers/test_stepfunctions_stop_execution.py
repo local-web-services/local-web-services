@@ -83,7 +83,10 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 class TestStopExecution:
     async def test_stop_execution_sets_aborted(self, client: httpx.AsyncClient) -> None:
         """StopExecution should set execution status to ABORTED."""
-        # Start a sync execution so we have an execution to stop
+        # Arrange
+        expected_status_code = 200
+        expected_status = "ABORTED"
+
         start_resp = await _request(
             client,
             "StartSyncExecution",
@@ -94,27 +97,35 @@ class TestStopExecution:
         )
         arn = start_resp.json()["executionArn"]
 
-        # Stop the execution
+        # Act
         stop_resp = await _request(
             client,
             "StopExecution",
             {"executionArn": arn},
         )
-        assert stop_resp.status_code == 200
+
+        # Assert
+        assert stop_resp.status_code == expected_status_code
         data = stop_resp.json()
         assert "stopDate" in data
 
-        # Verify status is ABORTED
         desc_resp = await _request(
             client,
             "DescribeExecution",
             {"executionArn": arn},
         )
-        assert desc_resp.status_code == 200
-        assert desc_resp.json()["status"] == "ABORTED"
+        assert desc_resp.status_code == expected_status_code
+        actual_status = desc_resp.json()["status"]
+        assert actual_status == expected_status
 
     async def test_stop_execution_with_error_and_cause(self, client: httpx.AsyncClient) -> None:
         """StopExecution should store error and cause when provided."""
+        # Arrange
+        expected_status_code = 200
+        expected_status = "ABORTED"
+        expected_error = "UserCancelled"
+        expected_cause = "User requested cancellation"
+
         start_resp = await _request(
             client,
             "StartSyncExecution",
@@ -125,16 +136,19 @@ class TestStopExecution:
         )
         arn = start_resp.json()["executionArn"]
 
+        # Act
         stop_resp = await _request(
             client,
             "StopExecution",
             {
                 "executionArn": arn,
-                "error": "UserCancelled",
-                "cause": "User requested cancellation",
+                "error": expected_error,
+                "cause": expected_cause,
             },
         )
-        assert stop_resp.status_code == 200
+
+        # Assert
+        assert stop_resp.status_code == expected_status_code
 
         desc_resp = await _request(
             client,
@@ -142,19 +156,27 @@ class TestStopExecution:
             {"executionArn": arn},
         )
         data = desc_resp.json()
-        assert data["status"] == "ABORTED"
-        assert data["error"] == "UserCancelled"
-        assert data["cause"] == "User requested cancellation"
+        assert data["status"] == expected_status
+        assert data["error"] == expected_error
+        assert data["cause"] == expected_cause
 
     async def test_stop_nonexistent_execution_returns_error(
         self, client: httpx.AsyncClient
     ) -> None:
         """StopExecution with invalid ARN should return ExecutionDoesNotExist."""
+        # Arrange
+        expected_status_code = 400
+        expected_error_type = "ExecutionDoesNotExist"
+
+        # Act
         resp = await _request(
             client,
             "StopExecution",
             {"executionArn": "arn:aws:states:us-east-1:000:execution:sm:does-not-exist"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code
         body = resp.json()
-        assert body["__type"] == "ExecutionDoesNotExist"
+        actual_error_type = body["__type"]
+        assert actual_error_type == expected_error_type

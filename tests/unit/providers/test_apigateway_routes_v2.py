@@ -24,14 +24,19 @@ class TestApiGatewayV2Routes:
 
     @pytest.mark.asyncio
     async def test_create_api(self, client) -> None:
+        expected_name = "my-http-api"
+        expected_protocol = "HTTP"
         resp = await client.post(
             "/v2/apis",
-            json={"name": "my-http-api", "protocolType": "HTTP"},
+            json={"name": expected_name, "protocolType": expected_protocol},
         )
-        assert resp.status_code == 201
+
+        # Assert
+        expected_status = 201
+        assert resp.status_code == expected_status
         data = resp.json()
-        assert data["name"] == "my-http-api"
-        assert data["protocolType"] == "HTTP"
+        assert data["name"] == expected_name
+        assert data["protocolType"] == expected_protocol
         assert "apiId" in data
 
     @pytest.mark.asyncio
@@ -40,17 +45,25 @@ class TestApiGatewayV2Routes:
         await client.post("/v2/apis", json={"name": "api-2", "protocolType": "HTTP"})
 
         resp = await client.get("/v2/apis")
-        assert resp.status_code == 200
-        assert len(resp.json()["items"]) == 2
+
+        # Assert
+        expected_status = 200
+        expected_count = 2
+        assert resp.status_code == expected_status
+        assert len(resp.json()["items"]) == expected_count
 
     @pytest.mark.asyncio
     async def test_get_api(self, client) -> None:
-        create_resp = await client.post("/v2/apis", json={"name": "my-api", "protocolType": "HTTP"})
+        api_name = "my-api"
+        create_resp = await client.post("/v2/apis", json={"name": api_name, "protocolType": "HTTP"})
         api_id = create_resp.json()["apiId"]
 
         resp = await client.get(f"/v2/apis/{api_id}")
-        assert resp.status_code == 200
-        assert resp.json()["name"] == "my-api"
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
+        assert resp.json()["name"] == api_name
 
     @pytest.mark.asyncio
     async def test_delete_api(self, client) -> None:
@@ -58,57 +71,77 @@ class TestApiGatewayV2Routes:
         api_id = create_resp.json()["apiId"]
 
         resp = await client.delete(f"/v2/apis/{api_id}")
-        assert resp.status_code == 204
+
+        # Assert
+        expected_delete_status = 204
+        expected_not_found_status = 404
+        assert resp.status_code == expected_delete_status
 
         get_resp = await client.get(f"/v2/apis/{api_id}")
-        assert get_resp.status_code == 404
+        assert get_resp.status_code == expected_not_found_status
 
     @pytest.mark.asyncio
     async def test_create_integration(self, client) -> None:
         create_resp = await client.post("/v2/apis", json={"name": "my-api", "protocolType": "HTTP"})
         api_id = create_resp.json()["apiId"]
 
+        expected_integration_type = "AWS_PROXY"
         resp = await client.post(
             f"/v2/apis/{api_id}/integrations",
             json={
-                "integrationType": "AWS_PROXY",
+                "integrationType": expected_integration_type,
                 "integrationUri": "arn:aws:lambda:us-east-1:000:function:my-func",
                 "payloadFormatVersion": "2.0",
             },
         )
-        assert resp.status_code == 201
+
+        # Assert
+        expected_status = 201
+        assert resp.status_code == expected_status
         data = resp.json()
         assert "integrationId" in data
-        assert data["integrationType"] == "AWS_PROXY"
+        assert data["integrationType"] == expected_integration_type
 
     @pytest.mark.asyncio
     async def test_create_route(self, client) -> None:
         create_resp = await client.post("/v2/apis", json={"name": "my-api", "protocolType": "HTTP"})
         api_id = create_resp.json()["apiId"]
 
+        expected_route_key = "POST /orders"
         resp = await client.post(
             f"/v2/apis/{api_id}/routes",
-            json={"routeKey": "POST /orders", "target": "integrations/abc123"},
+            json={"routeKey": expected_route_key, "target": "integrations/abc123"},
         )
-        assert resp.status_code == 201
+
+        # Assert
+        expected_status = 201
+        assert resp.status_code == expected_status
         data = resp.json()
-        assert data["routeKey"] == "POST /orders"
+        assert data["routeKey"] == expected_route_key
 
     @pytest.mark.asyncio
     async def test_create_stage(self, client) -> None:
         create_resp = await client.post("/v2/apis", json={"name": "my-api", "protocolType": "HTTP"})
         api_id = create_resp.json()["apiId"]
 
+        expected_stage_name = "$default"
         resp = await client.post(
             f"/v2/apis/{api_id}/stages",
-            json={"stageName": "$default"},
+            json={"stageName": expected_stage_name},
         )
-        assert resp.status_code == 201
-        assert resp.json()["stageName"] == "$default"
+
+        # Assert
+        expected_status = 201
+        assert resp.status_code == expected_status
+        assert resp.json()["stageName"] == expected_stage_name
 
     @pytest.mark.asyncio
     async def test_v1_routes_still_work(self, client) -> None:
         """V1 REST API routes continue to work alongside V2."""
-        resp = await client.post("/restapis", json={"name": "my-rest-api"})
-        assert resp.status_code == 201
-        assert resp.json()["name"] == "my-rest-api"
+        expected_name = "my-rest-api"
+        resp = await client.post("/restapis", json={"name": expected_name})
+
+        # Assert
+        expected_status = 201
+        assert resp.status_code == expected_status
+        assert resp.json()["name"] == expected_name

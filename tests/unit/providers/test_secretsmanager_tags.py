@@ -30,23 +30,28 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestTags:
     def test_tag_and_untag(self, client: TestClient) -> None:
-        _post(client, "CreateSecret", {"Name": "tagged"})
+        secret_name = "tagged"
+        tag_key = "env"
+        _post(client, "CreateSecret", {"Name": secret_name})
         _post(
             client,
             "TagResource",
             {
-                "SecretId": "tagged",
-                "Tags": [{"Key": "env", "Value": "dev"}],
+                "SecretId": secret_name,
+                "Tags": [{"Key": tag_key, "Value": "dev"}],
             },
         )
 
-        desc = _post(client, "DescribeSecret", {"SecretId": "tagged"})
-        assert any(t["Key"] == "env" for t in desc.get("Tags", []))
+        # Assert - tag is present
+        desc = _post(client, "DescribeSecret", {"SecretId": secret_name})
+        assert any(t["Key"] == tag_key for t in desc.get("Tags", []))
 
         _post(
             client,
             "UntagResource",
-            {"SecretId": "tagged", "TagKeys": ["env"]},
+            {"SecretId": secret_name, "TagKeys": [tag_key]},
         )
-        desc2 = _post(client, "DescribeSecret", {"SecretId": "tagged"})
+
+        # Assert - tag is removed
+        desc2 = _post(client, "DescribeSecret", {"SecretId": secret_name})
         assert "Tags" not in desc2 or len(desc2.get("Tags", [])) == 0

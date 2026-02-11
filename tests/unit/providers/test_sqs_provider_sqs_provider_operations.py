@@ -150,13 +150,22 @@ class TestSqsProviderOperations:
     """IQueue operations through SqsProvider."""
 
     async def test_send_and_receive(self, provider: SqsProvider) -> None:
-        msg_id = await provider.send_message("queue-a", "hello from provider")
-        assert isinstance(msg_id, str)
+        # Arrange
+        expected_body = "hello from provider"
+        expected_message_count = 1
 
+        # Act
+        msg_id = await provider.send_message("queue-a", expected_body)
         messages = await provider.receive_messages("queue-a", max_messages=1)
-        assert len(messages) == 1
-        assert messages[0]["Body"] == "hello from provider"
-        assert messages[0]["MessageId"] == msg_id
+
+        # Assert
+        assert isinstance(msg_id, str)
+        actual_message_count = len(messages)
+        actual_body = messages[0]["Body"]
+        actual_message_id = messages[0]["MessageId"]
+        assert actual_message_count == expected_message_count
+        assert actual_body == expected_body
+        assert actual_message_id == msg_id
         assert "MD5OfBody" in messages[0]
         assert "ReceiptHandle" in messages[0]
 
@@ -172,10 +181,16 @@ class TestSqsProviderOperations:
             await provider.send_message("nonexistent", "fail")
 
     async def test_message_attributes_in_response(self, provider: SqsProvider) -> None:
-        attrs = {"myKey": {"DataType": "String", "StringValue": "myVal"}}
-        await provider.send_message("queue-a", "body", message_attributes=attrs)
+        # Arrange
+        expected_attributes = {"myKey": {"DataType": "String", "StringValue": "myVal"}}
+
+        # Act
+        await provider.send_message("queue-a", "body", message_attributes=expected_attributes)
         messages = await provider.receive_messages("queue-a")
-        assert messages[0]["MessageAttributes"] == attrs
+
+        # Assert
+        actual_attributes = messages[0]["MessageAttributes"]
+        assert actual_attributes == expected_attributes
 
     async def test_create_queue(self, provider: SqsProvider) -> None:
         provider.create_queue_from_config(QueueConfig(queue_name="dynamic-queue"))

@@ -1,13 +1,13 @@
 """Management API for LDK.
 
 Provides a FastAPI ``APIRouter`` mounted at ``/_ldk/`` that exposes endpoints
-for invoking Lambda functions, resetting local state, querying provider
-status, serving the web dashboard, and streaming logs via WebSocket.
+for resetting local state, querying provider status, serving the web
+dashboard, and streaming logs via WebSocket.
 """
 
 from __future__ import annotations
 
-import uuid
+import asyncio
 from typing import Any
 
 import httpx
@@ -16,7 +16,6 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
 from lws.api.gui import get_dashboard_html
-from lws.interfaces import ICompute, InvocationResult, LambdaContext
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger, get_ws_handler
 from lws.runtime.orchestrator import Orchestrator
@@ -24,63 +23,11 @@ from lws.runtime.orchestrator import Orchestrator
 _logger = get_logger("ldk.management")
 
 
-class InvokeRequest(BaseModel):
-    """Request body for the invoke endpoint."""
-
-    function_name: str
-    event: dict = {}
-
-
-class InvokeResponse(BaseModel):
-    """Response body for the invoke endpoint."""
-
-    payload: dict | None = None
-    error: str | None = None
-
-
 class StatusResponse(BaseModel):
     """Response body for the status endpoint."""
 
     running: bool
     providers: list[dict[str, Any]]
-
-
-async def _handle_invoke(
-    request: InvokeRequest,
-    compute_providers: dict[str, ICompute],
-) -> JSONResponse:
-    """Invoke a Lambda function by name with the given event."""
-    compute = compute_providers.get(request.function_name)
-    if compute is None:
-        return JSONResponse(
-            status_code=404,
-            content={"error": f"Function not found: {request.function_name}"},
-        )
-
-    request_id = str(uuid.uuid4())
-    context = LambdaContext(
-        function_name=request.function_name,
-        memory_limit_in_mb=128,
-        timeout_seconds=30,
-        aws_request_id=request_id,
-        invoked_function_arn=(
-            f"arn:aws:lambda:us-east-1:000000000000:function:{request.function_name}"
-        ),
-    )
-
-    try:
-        result: InvocationResult = await compute.invoke(request.event, context)
-        _logger.info(
-            "Invoked %s via management API -> %s",
-            request.function_name,
-            "OK" if result.error is None else "ERROR",
-        )
-        return JSONResponse(
-            content={"payload": result.payload, "error": result.error},
-        )
-    except Exception as exc:
-        _logger.error("Management invoke failed: %s", exc)
-        return JSONResponse(status_code=500, content={"error": str(exc)})
 
 
 async def _handle_reset(
@@ -135,7 +82,7 @@ async def _handle_ws_logs(websocket: WebSocket) -> None:
         while True:
             entry = await q.get()
             await websocket.send_json(entry)
-    except WebSocketDisconnect:
+    except (WebSocketDisconnect, asyncio.CancelledError):
         pass
     finally:
         handler.unsubscribe(q)
@@ -172,7 +119,6 @@ async def _handle_service_proxy(request: Request) -> JSONResponse:
 
 def create_management_router(
     orchestrator: Orchestrator,
-    compute_providers: dict[str, ICompute],
     providers: dict[str, Provider] | None = None,
     resource_metadata: dict[str, Any] | None = None,
 ) -> APIRouter:
@@ -180,7 +126,6 @@ def create_management_router(
 
     Args:
         orchestrator: The running ``Orchestrator`` instance.
-        compute_providers: Map of function name to ``ICompute`` provider.
         providers: Optional map of all providers for status reporting.
         resource_metadata: Pre-built resource metadata for the ``/_ldk/resources`` endpoint.
 
@@ -188,12 +133,8 @@ def create_management_router(
         A FastAPI ``APIRouter`` to be included in the main application.
     """
     router = APIRouter(prefix="/_ldk", tags=["management"])
-    all_providers = providers or orchestrator._providers
+    all_providers = providers or orchestrator.providers
     _resource_metadata = resource_metadata or {}
-
-    @router.post("/invoke")
-    async def invoke_function(request: InvokeRequest) -> JSONResponse:
-        return await _handle_invoke(request, compute_providers)
 
     @router.post("/reset")
     async def reset_state() -> JSONResponse:
@@ -214,6 +155,11 @@ def create_management_router(
     @router.websocket("/ws/logs")
     async def ws_logs(websocket: WebSocket) -> None:
         await _handle_ws_logs(websocket)
+
+    @router.post("/shutdown")
+    async def shutdown() -> JSONResponse:
+        orchestrator.request_shutdown()
+        return JSONResponse(content={"status": "shutting_down"})
 
     @router.post("/service-proxy")
     async def service_proxy(request: Request) -> JSONResponse:

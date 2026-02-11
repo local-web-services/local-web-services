@@ -16,19 +16,13 @@ class ProviderStatus(Enum):
 class ProviderError(Exception):
     """Base exception for provider-related errors."""
 
-    pass
-
 
 class ProviderStartError(ProviderError):
     """Raised when a provider fails to start."""
 
-    pass
-
 
 class ProviderStopError(ProviderError):
     """Raised when a provider fails to stop."""
-
-    pass
 
 
 class Provider(ABC):
@@ -42,19 +36,15 @@ class Provider(ABC):
     @abstractmethod
     def name(self) -> str:
         """Return the unique name of this provider."""
-        ...
 
     @abstractmethod
     async def start(self) -> None:
         """Start the provider, making it ready to serve requests."""
-        ...
 
     @abstractmethod
     async def stop(self) -> None:
         """Stop the provider and release any resources."""
-        ...
 
     @abstractmethod
     async def health_check(self) -> bool:
         """Check whether the provider is healthy and operational."""
-        ...

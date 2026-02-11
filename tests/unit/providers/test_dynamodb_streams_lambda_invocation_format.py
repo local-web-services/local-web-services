@@ -30,6 +30,7 @@ class TestLambdaInvocationFormat:
     """Test the Lambda invocation event format matches DynamoDB Streams spec."""
 
     async def test_event_format(self) -> None:
+        # Arrange
         handler = MockLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         dispatcher.configure_stream(
@@ -40,9 +41,14 @@ class TestLambdaInvocationFormat:
             )
         )
         dispatcher.register_handler("orders", handler)
+        expected_event_name = "INSERT"
+        expected_event_version = "1.1"
+        expected_event_source = "aws:dynamodb"
+        expected_region = "local"
 
         await dispatcher.start()
         try:
+            # Act
             await dispatcher.emit(
                 event_name=EventName.INSERT,
                 table_name="orders",
@@ -51,16 +57,20 @@ class TestLambdaInvocationFormat:
             )
             await handler.wait_for_invocation(timeout=2.0)
 
+            # Assert
             event = handler.invocations[0]
             assert "Records" in event
             record = event["Records"][0]
 
-            # Verify event structure
+            actual_event_name = record["eventName"]
+            actual_event_version = record["eventVersion"]
+            actual_event_source = record["eventSource"]
+            actual_region = record["awsRegion"]
             assert "eventID" in record
-            assert record["eventName"] == "INSERT"
-            assert record["eventVersion"] == "1.1"
-            assert record["eventSource"] == "aws:dynamodb"
-            assert record["awsRegion"] == "local"
+            assert actual_event_name == expected_event_name
+            assert actual_event_version == expected_event_version
+            assert actual_event_source == expected_event_source
+            assert actual_region == expected_region
             assert "eventSourceARN" in record
             assert "orders" in record["eventSourceARN"]
 

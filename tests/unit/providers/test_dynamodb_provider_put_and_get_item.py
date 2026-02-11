@@ -115,37 +115,70 @@ class TestPutAndGetItem:
     """put_item / get_item round-trip tests."""
 
     async def test_round_trip(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         item = {"orderId": "o1", "itemId": "i1", "quantity": 5}
+        expected_order_id = "o1"
+        expected_quantity = 5
         await provider.put_item("orders", item)
+
+        # Act
         result = await provider.get_item("orders", {"orderId": "o1", "itemId": "i1"})
+
+        # Assert
         assert result is not None
-        assert result["orderId"] == "o1"
-        assert result["quantity"] == 5
+        actual_order_id = result["orderId"]
+        actual_quantity = result["quantity"]
+        assert actual_order_id == expected_order_id
+        assert actual_quantity == expected_quantity
 
     async def test_round_trip_dynamo_json(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         item = {
             "orderId": {"S": "o2"},
             "itemId": {"S": "i2"},
             "quantity": {"N": "10"},
         }
+        expected_order_id = {"S": "o2"}
         await provider.put_item("orders", item)
+
+        # Act
         result = await provider.get_item("orders", {"orderId": {"S": "o2"}, "itemId": {"S": "i2"}})
+
+        # Assert
         assert result is not None
-        assert result["orderId"] == {"S": "o2"}
+        actual_order_id = result["orderId"]
+        assert actual_order_id == expected_order_id
 
     async def test_put_overwrites_existing(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 1})
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 2})
+        expected_v = 2
+
+        # Act
         result = await provider.get_item("orders", {"orderId": "o1", "itemId": "i1"})
+
+        # Assert
         assert result is not None
-        assert result["v"] == 2
+        actual_v = result["v"]
+        assert actual_v == expected_v
 
     async def test_get_missing_returns_none(self, provider: SqliteDynamoProvider) -> None:
+        # Act
         result = await provider.get_item("orders", {"orderId": "nope", "itemId": "nada"})
+
+        # Assert
         assert result is None
 
     async def test_pk_only_table(self, pk_provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await pk_provider.put_item("users", {"userId": "u1", "name": "Alice"})
+        expected_name = "Alice"
+
+        # Act
         result = await pk_provider.get_item("users", {"userId": "u1"})
+
+        # Assert
         assert result is not None
-        assert result["name"] == "Alice"
+        actual_name = result["name"]
+        assert actual_name == expected_name

@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from lws.api.management import create_management_router
 from lws.runtime.orchestrator import Orchestrator
 
-from ._helpers import ErrorCompute, FakeCompute, FakeProvider
+from ._helpers import FakeProvider
 
 
 @pytest.fixture
@@ -17,11 +17,6 @@ def management_app():
     """Create a FastAPI app with the management router."""
     orchestrator = Orchestrator()
     orchestrator._running = True
-
-    compute_providers = {
-        "myFunc": FakeCompute("myFunc", {"statusCode": 200, "body": '{"id": 1}'}),
-        "errorFunc": ErrorCompute(),
-    }
 
     providers = {
         "lambda:myFunc": FakeProvider("lambda:myFunc"),
@@ -31,7 +26,6 @@ def management_app():
 
     router = create_management_router(
         orchestrator=orchestrator,
-        compute_providers=compute_providers,
         providers=providers,
     )
 
@@ -50,14 +44,29 @@ class TestResetEndpoint:
     """Tests for POST /_ldk/reset."""
 
     def test_reset_returns_ok(self, client):
+        # Arrange
+        expected_status_code = 200
+        expected_status = "ok"
+
+        # Act
         resp = client.post("/_ldk/reset")
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["status"] == "ok"
+        actual_status = data["status"]
+        assert actual_status == expected_status
 
     def test_reset_returns_provider_count(self, client):
+        # Arrange
+        expected_providers_reset = 0
+
+        # Act
         resp = client.post("/_ldk/reset")
+
+        # Assert
         data = resp.json()
         assert "providers_reset" in data
         # No providers have a reset() method, so count should be 0
-        assert data["providers_reset"] == 0
+        actual_providers_reset = data["providers_reset"]
+        assert actual_providers_reset == expected_providers_reset

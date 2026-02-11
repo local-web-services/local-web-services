@@ -117,9 +117,16 @@ class TestLambdaContextPassed:
         async with _client(provider) as client:
             await client.get("/ctx")
 
+        # Assert
+        expected_function_name = "ctx-fn"
+        expected_memory = 128
+        expected_timeout = 30
         context: LambdaContext = mock_compute.invoke.call_args[0][1]
-        assert context.function_name == "ctx-fn"
-        assert context.memory_limit_in_mb == 128
-        assert context.timeout_seconds == 30
+        actual_function_name = context.function_name
+        actual_memory = context.memory_limit_in_mb
+        actual_timeout = context.timeout_seconds
+        assert actual_function_name == expected_function_name
+        assert actual_memory == expected_memory
+        assert actual_timeout == expected_timeout
         assert context.aws_request_id  # non-empty string
-        assert "ctx-fn" in context.invoked_function_arn
+        assert expected_function_name in context.invoked_function_arn

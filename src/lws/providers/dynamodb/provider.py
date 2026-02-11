@@ -113,8 +113,8 @@ _DYNAMO_TYPE_CONVERTERS: dict[str, object] = {
     "N": _parse_number,
     "NULL": lambda v: None,
     "L": _convert_list,
-    "M": lambda v: _from_dynamo_json(v),
-    "SS": lambda v: set(v),
+    "M": _from_dynamo_json,
+    "SS": set,
     "NS": _convert_number_set,
 }
 
@@ -481,7 +481,7 @@ class SqliteDynamoProvider(IKeyValueStore):
         if not self._connections:
             return False
         for conn in self._connections.values():
-            if conn._running is False:
+            if conn._running is False:  # pylint: disable=protected-access
                 return False
         return True
 

@@ -33,5 +33,9 @@ class TestGetParameters:
         _post(client, "PutParameter", {"Name": "/a", "Value": "1"})
         _post(client, "PutParameter", {"Name": "/b", "Value": "2"})
         result = _post(client, "GetParameters", {"Names": ["/a", "/b", "/missing"]})
-        assert len(result["Parameters"]) == 2
-        assert result["InvalidParameters"] == ["/missing"]
+
+        # Assert
+        expected_valid_count = 2
+        expected_invalid = ["/missing"]
+        assert len(result["Parameters"]) == expected_valid_count
+        assert result["InvalidParameters"] == expected_invalid

@@ -67,22 +67,32 @@ def _make_context(
 class TestValidatorOverrides:
     def test_override_strict_for_single_validator(self) -> None:
         """Global warn, but override one validator to strict."""
+        # Arrange
+        expected_issue_count = 1
         engine = ValidationEngine(
             strictness="warn",
             validator_overrides={"always_error": "strict"},
         )
         engine.register(_AlwaysErrorValidator())
         engine.register(_AlwaysWarnValidator())
+
+        # Act / Assert
         with pytest.raises(ValidationError) as exc_info:
             engine.validate(_make_context())
-        assert len(exc_info.value.issues) == 1
+        assert len(exc_info.value.issues) == expected_issue_count
 
     def test_override_warn_for_single_validator(self) -> None:
         """Global strict, but override one validator to warn."""
+        # Arrange
+        expected_issue_count = 1
         engine = ValidationEngine(
             strictness="strict",
             validator_overrides={"always_error": "warn"},
         )
         engine.register(_AlwaysErrorValidator())
+
+        # Act
         issues = engine.validate(_make_context())
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count

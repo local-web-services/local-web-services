@@ -1,0 +1,4 @@
+[default]
+s3_force_path_style = true
+s3 =
+    addressing_style = path

@@ -32,11 +32,18 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestCreateEventBusRoute:
     async def test_create_returns_arn(self, client: httpx.AsyncClient) -> None:
-        resp = await _request(client, "CreateEventBus", {"Name": "my-bus"})
-        assert resp.status_code == 200
+        # Arrange
+        expected_status_code = 200
+        bus_name = "my-bus"
+
+        # Act
+        resp = await _request(client, "CreateEventBus", {"Name": bus_name})
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "EventBusArn" in data
-        assert "my-bus" in data["EventBusArn"]
+        assert bus_name in data["EventBusArn"]
 
     async def test_create_missing_name(self, client: httpx.AsyncClient) -> None:
         resp = await _request(client, "CreateEventBus", {})

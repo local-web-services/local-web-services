@@ -19,11 +19,16 @@ async def provider():
 class TestGetQueueAttributes:
     @pytest.mark.asyncio
     async def test_get_queue_attributes(self, provider: SqsProvider) -> None:
-        await provider.create_queue("my-queue")
-        attrs = await provider.get_queue_attributes("my-queue")
+        # Arrange
+        queue_name = "my-queue"
+        await provider.create_queue(queue_name)
 
+        # Act
+        attrs = await provider.get_queue_attributes(queue_name)
+
+        # Assert
         assert "QueueArn" in attrs
-        assert "my-queue" in attrs["QueueArn"]
+        assert queue_name in attrs["QueueArn"]
         assert "ApproximateNumberOfMessages" in attrs
         assert "VisibilityTimeout" in attrs
 

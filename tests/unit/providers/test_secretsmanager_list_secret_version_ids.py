@@ -30,15 +30,19 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestListSecretVersionIds:
     def test_versions(self, client: TestClient) -> None:
+        secret_name = "versioned"
         _post(
             client,
             "CreateSecret",
-            {"Name": "versioned", "SecretString": "v1"},
+            {"Name": secret_name, "SecretString": "v1"},
         )
         _post(
             client,
             "PutSecretValue",
-            {"SecretId": "versioned", "SecretString": "v2"},
+            {"SecretId": secret_name, "SecretString": "v2"},
         )
-        result = _post(client, "ListSecretVersionIds", {"SecretId": "versioned"})
-        assert len(result["Versions"]) == 2
+        result = _post(client, "ListSecretVersionIds", {"SecretId": secret_name})
+
+        # Assert
+        expected_version_count = 2
+        assert len(result["Versions"]) == expected_version_count

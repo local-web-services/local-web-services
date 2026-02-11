@@ -77,34 +77,47 @@ class TestCreateTable:
     async def test_create_table_success(
         self, client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {
             "TableName": "MyTable",
             "KeySchema": [{"AttributeName": "pk", "KeyType": "HASH"}],
             "AttributeDefinitions": [{"AttributeName": "pk", "AttributeType": "S"}],
         }
+        expected_status_code = 200
+        expected_table_name = "MyTable"
+        expected_table_status = "ACTIVE"
+
+        # Act
         resp = await client.post("/", json=payload, headers=_target("CreateTable"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "TableDescription" in data
-        assert data["TableDescription"]["TableName"] == "MyTable"
-        assert data["TableDescription"]["TableStatus"] == "ACTIVE"
+        actual_table_name = data["TableDescription"]["TableName"]
+        actual_table_status = data["TableDescription"]["TableStatus"]
+        assert actual_table_name == expected_table_name
+        assert actual_table_status == expected_table_status
         mock_store.create_table.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_create_table_idempotent(
         self, client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         mock_store.create_table.return_value = {"TableName": "MyTable", "TableStatus": "ACTIVE"}
-
         payload = {
             "TableName": "MyTable",
             "KeySchema": [{"AttributeName": "pk", "KeyType": "HASH"}],
             "AttributeDefinitions": [{"AttributeName": "pk", "AttributeType": "S"}],
         }
+        expected_status_code = 200
+
+        # Act
         resp = await client.post("/", json=payload, headers=_target("CreateTable"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "TableDescription" in data
 
@@ -112,6 +125,7 @@ class TestCreateTable:
     async def test_create_table_with_gsi(
         self, client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {
             "TableName": "MyTable",
             "KeySchema": [{"AttributeName": "pk", "KeyType": "HASH"}],
@@ -127,12 +141,20 @@ class TestCreateTable:
                 }
             ],
         }
+        expected_status_code = 200
+        expected_table_name = "MyTable"
+        expected_gsi_count = 1
+        expected_index_name = "gsi1"
+
+        # Act
         resp = await client.post("/", json=payload, headers=_target("CreateTable"))
 
-        assert resp.status_code == 200
-        # Verify the config was parsed correctly
+        # Assert
+        assert resp.status_code == expected_status_code
         call_args = mock_store.create_table.call_args
         config = call_args[0][0]
-        assert config.table_name == "MyTable"
-        assert len(config.gsi_definitions) == 1
-        assert config.gsi_definitions[0].index_name == "gsi1"
+        actual_table_name = config.table_name
+        actual_index_name = config.gsi_definitions[0].index_name
+        assert actual_table_name == expected_table_name
+        assert len(config.gsi_definitions) == expected_gsi_count
+        assert actual_index_name == expected_index_name

@@ -20,14 +20,20 @@ def _mock_client(return_value: dict) -> AsyncMock:
 
 class TestDeleteUserPool:
     def test_delete_user_pool(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_target = "DeleteUserPool"
         mock = _mock_client({})
+
+        # Act
         with patch("lws.cli.services.cognito._client", return_value=mock):
             result = runner.invoke(
                 app,
                 ["cognito-idp", "delete-user-pool", "--user-pool-id", "us-east-1_default"],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.json_target_request.assert_awaited_once()
-        call_args = mock.json_target_request.call_args
-        assert "DeleteUserPool" in call_args[0][1]
+        actual_target = mock.json_target_request.call_args[0][1]
+        assert expected_target in actual_target

@@ -22,6 +22,8 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.lambda_helpers import build_default_lambda_context
+from lws.providers._shared.request_helpers import parse_json_body
 
 if TYPE_CHECKING:
     from lws.providers.lambda_runtime.routes import LambdaRegistry
@@ -61,18 +63,22 @@ class _ApiGatewayState:
         self._apis: dict[str, _RestApi] = {}
 
     def create_rest_api(self, name: str, description: str = "") -> _RestApi:
+        """Create a new REST API with a generated ID and root resource."""
         api_id = str(uuid.uuid4())[:10]
         api = _RestApi(id=api_id, name=name, description=description)
         self._apis[api_id] = api
         return api
 
     def get_rest_api(self, api_id: str) -> _RestApi | None:
+        """Return the REST API with the given ID, or None if not found."""
         return self._apis.get(api_id)
 
     def list_rest_apis(self) -> list[_RestApi]:
+        """Return all stored REST APIs."""
         return list(self._apis.values())
 
     def delete_rest_api(self, api_id: str) -> bool:
+        """Delete the REST API with the given ID, returning True if it existed."""
         return self._apis.pop(api_id, None) is not None
 
 
@@ -103,6 +109,7 @@ class _ApiGatewayV2State:
         self._apis: dict[str, _HttpApi] = {}
 
     def create_api(self, name: str, protocol_type: str = "HTTP", description: str = "") -> _HttpApi:
+        """Create a new HTTP API with a generated ID."""
         api_id = str(uuid.uuid4())[:10]
         api = _HttpApi(
             api_id=api_id, name=name, protocol_type=protocol_type, description=description
@@ -111,12 +118,15 @@ class _ApiGatewayV2State:
         return api
 
     def get_api(self, api_id: str) -> _HttpApi | None:
+        """Return the HTTP API with the given ID, or None if not found."""
         return self._apis.get(api_id)
 
     def list_apis(self) -> list[_HttpApi]:
+        """Return all stored HTTP APIs."""
         return list(self._apis.values())
 
     def delete_api(self, api_id: str) -> bool:
+        """Delete the HTTP API with the given ID, returning True if it existed."""
         return self._apis.pop(api_id, None) is not None
 
 
@@ -269,13 +279,13 @@ class ApiGatewayManagementRouter:
     # -- REST APIs -----------------------------------------------------------
 
     async def _create_rest_api(self, request: Request) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         name = body.get("name", "")
         description = body.get("description", "")
         api = self._state.create_rest_api(name, description)
         return _json_response(_format_rest_api(api), 201)
 
-    async def _list_rest_apis(self, request: Request) -> Response:
+    async def _list_rest_apis(self, _request: Request) -> Response:
         apis = self._state.list_rest_apis()
         return _json_response({"item": [_format_rest_api(a) for a in apis]})
 
@@ -289,7 +299,7 @@ class ApiGatewayManagementRouter:
         api = self._state.get_rest_api(rest_api_id)
         if api is None:
             return _not_found("RestApi", rest_api_id)
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         for op in body.get("patchOperations", []):
             if op.get("path") == "/name" and op.get("op") == "replace":
                 api.name = op.get("value", api.name)
@@ -328,7 +338,7 @@ class ApiGatewayManagementRouter:
         if parent is None:
             return _not_found("Resource", resource_id)
 
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         path_part = body.get("pathPart", "")
         new_id = str(uuid.uuid4())[:10]
         parent_path = parent["path"].rstrip("/")
@@ -364,7 +374,7 @@ class ApiGatewayManagementRouter:
         if resource is None:
             return _not_found("Resource", resource_id)
 
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         method_data = {
             "httpMethod": http_method,
             "authorizationType": body.get("authorizationType", "NONE"),
@@ -412,7 +422,7 @@ class ApiGatewayManagementRouter:
         if resource is None:
             return _not_found("Resource", resource_id)
 
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         integration = {
             "type": body.get("type", "AWS_PROXY"),
             "httpMethod": body.get("httpMethod", "POST"),
@@ -454,13 +464,13 @@ class ApiGatewayManagementRouter:
 
     async def _put_integration_response(
         self,
-        rest_api_id: str,
-        resource_id: str,
-        http_method: str,
+        _rest_api_id: str,
+        _resource_id: str,
+        _http_method: str,
         status_code: str,
         request: Request,
     ) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         resp_data = {
             "statusCode": status_code,
             "responseTemplates": body.get("responseTemplates", {}),
@@ -470,9 +480,9 @@ class ApiGatewayManagementRouter:
 
     async def _get_integration_response(
         self,
-        rest_api_id: str,
-        resource_id: str,
-        http_method: str,
+        _rest_api_id: str,
+        _resource_id: str,
+        _http_method: str,
         status_code: str,
     ) -> Response:
         return _json_response({"statusCode": status_code})
@@ -481,13 +491,13 @@ class ApiGatewayManagementRouter:
 
     async def _put_method_response(
         self,
-        rest_api_id: str,
-        resource_id: str,
-        http_method: str,
+        _rest_api_id: str,
+        _resource_id: str,
+        _http_method: str,
         status_code: str,
         request: Request,
     ) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         resp_data = {
             "statusCode": status_code,
             "responseModels": body.get("responseModels", {}),
@@ -497,9 +507,9 @@ class ApiGatewayManagementRouter:
 
     async def _get_method_response(
         self,
-        rest_api_id: str,
-        resource_id: str,
-        http_method: str,
+        _rest_api_id: str,
+        _resource_id: str,
+        _http_method: str,
         status_code: str,
     ) -> Response:
         return _json_response({"statusCode": status_code})
@@ -511,7 +521,7 @@ class ApiGatewayManagementRouter:
         if api is None:
             return _not_found("RestApi", rest_api_id)
 
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         deployment_id = str(uuid.uuid4())[:10]
         deployment = {
             "id": deployment_id,
@@ -543,7 +553,7 @@ class ApiGatewayManagementRouter:
         if api is None:
             return _not_found("RestApi", rest_api_id)
 
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         stage_name = body.get("stageName", "")
         deployment_id = body.get("deploymentId", "")
         stage = {
@@ -565,7 +575,7 @@ class ApiGatewayManagementRouter:
             return _not_found("Stage", stage_name)
         return _json_response(stage)
 
-    async def _update_stage(self, rest_api_id: str, stage_name: str, request: Request) -> Response:
+    async def _update_stage(self, rest_api_id: str, stage_name: str, _request: Request) -> Response:
         api = self._state.get_rest_api(rest_api_id)
         if api is None:
             return _not_found("RestApi", rest_api_id)
@@ -595,6 +605,11 @@ class ApiGatewayV2Router:
         self._lambda_registry = lambda_registry
         self.router = APIRouter()
         self._register_routes()
+
+    @property
+    def state(self) -> _ApiGatewayV2State:
+        """Return the V2 API state."""
+        return self._state
 
     def _register_routes(self) -> None:
         r = self.router
@@ -646,7 +661,7 @@ class ApiGatewayV2Router:
     # -- APIs ----------------------------------------------------------------
 
     async def _create_api(self, request: Request) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         name = body.get("name", body.get("Name", ""))
         protocol_type = body.get("protocolType", body.get("ProtocolType", "HTTP"))
         description = body.get("description", body.get("Description", ""))
@@ -654,7 +669,7 @@ class ApiGatewayV2Router:
         _logger.info("V2 CreateApi: name=%s id=%s", name, api.api_id)
         return _json_response(_format_http_api(api), 201)
 
-    async def _list_apis(self, request: Request) -> Response:
+    async def _list_apis(self, _request: Request) -> Response:
         apis = self._state.list_apis()
         return _json_response({"items": [_format_http_api(a) for a in apis]})
 
@@ -668,7 +683,7 @@ class ApiGatewayV2Router:
         api = self._state.get_api(api_id)
         if api is None:
             return _not_found("Api", api_id)
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         if "name" in body or "Name" in body:
             api.name = body.get("name", body.get("Name", api.name))
         if "description" in body or "Description" in body:
@@ -685,7 +700,7 @@ class ApiGatewayV2Router:
         api = self._state.get_api(api_id)
         if api is None:
             return _not_found("Api", api_id)
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         stage_name = body.get("stageName", body.get("StageName", "$default"))
         stage = {
             "stageName": stage_name,
@@ -708,7 +723,7 @@ class ApiGatewayV2Router:
             return _not_found("Stage", stage_name)
         return _json_response(stage)
 
-    async def _update_stage(self, api_id: str, stage_name: str, request: Request) -> Response:
+    async def _update_stage(self, api_id: str, stage_name: str, _request: Request) -> Response:
         api = self._state.get_api(api_id)
         if api is None:
             return _not_found("Api", api_id)
@@ -730,7 +745,7 @@ class ApiGatewayV2Router:
         api = self._state.get_api(api_id)
         if api is None:
             return _not_found("Api", api_id)
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         integration_id = str(uuid.uuid4())[:7]
         int_type = body.get("integrationType", body.get("IntegrationType", "AWS_PROXY"))
         int_uri = body.get("integrationUri", body.get("IntegrationUri", ""))
@@ -780,7 +795,7 @@ class ApiGatewayV2Router:
         api = self._state.get_api(api_id)
         if api is None:
             return _not_found("Api", api_id)
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         route_id = str(uuid.uuid4())[:7]
         route_key = body.get("routeKey", body.get("RouteKey", ""))
         target = body.get("target", body.get("Target", ""))
@@ -869,7 +884,7 @@ class ApiGatewayV2Router:
         if match is None:
             return None
 
-        api, route, integration = match
+        _api, route, integration = match
         integration_uri = integration.get("integrationUri", "")
 
         # Extract Lambda function name from the integration URI
@@ -894,16 +909,7 @@ class ApiGatewayV2Router:
 
         event = _build_apigw_v2_event(request, request_path, body_str, route_key, path_params)
 
-        from lws.interfaces import LambdaContext
-
-        request_id = str(uuid.uuid4())
-        context = LambdaContext(
-            function_name=function_name,
-            memory_limit_in_mb=128,
-            timeout_seconds=30,
-            aws_request_id=request_id,
-            invoked_function_arn=f"arn:aws:lambda:{_REGION}:{_ACCOUNT_ID}:function:{function_name}",
-        )
+        context = build_default_lambda_context(function_name)
 
         result = await compute.invoke(event, context)
 
@@ -1078,16 +1084,6 @@ def _format_http_api(api: _HttpApi) -> dict[str, Any]:
     }
 
 
-async def _parse_body(request: Request) -> dict:
-    body_bytes = await request.body()
-    if not body_bytes:
-        return {}
-    try:
-        return json.loads(body_bytes)
-    except json.JSONDecodeError:
-        return {}
-
-
 def _json_response(data: dict, status_code: int = 200) -> Response:
     return Response(
         content=json.dumps(data, default=str),
@@ -1139,9 +1135,9 @@ def create_apigateway_management_app(
             if proxy_resp is not None:
                 return proxy_resp
         # Fall back to stub — include diagnostic info
-        v2_apis = v2_router._state.list_apis()
+        v2_apis = v2_router.state.list_apis()
         v2_route_count = sum(len(a.routes) for a in v2_apis)
-        reg_funcs = list(lambda_registry._functions.keys()) if lambda_registry else []
+        reg_funcs = list(lambda_registry.functions.keys()) if lambda_registry else []
         _logger.warning(
             "Unknown API Gateway path: %s %s (v2_apis=%d, v2_routes=%d, lambda_funcs=%s)",
             request.method,

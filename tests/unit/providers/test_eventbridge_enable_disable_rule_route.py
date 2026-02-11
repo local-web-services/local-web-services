@@ -40,28 +40,37 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestEnableDisableRuleRoute:
     async def test_disable_and_enable_rule(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_disabled_state = "DISABLED"
+        expected_enabled_state = "ENABLED"
+        rule_name = "test-rule"
         await _request(
             client,
             "PutRule",
-            {"Name": "test-rule", "EventPattern": '{"source":["test"]}'},
+            {"Name": rule_name, "EventPattern": '{"source":["test"]}'},
         )
 
-        resp = await _request(client, "DisableRule", {"Name": "test-rule"})
-        assert resp.status_code == 200
+        # Act & Assert - disable
+        resp = await _request(client, "DisableRule", {"Name": rule_name})
+        assert resp.status_code == expected_status_code
 
-        resp = await _request(client, "DescribeRule", {"Name": "test-rule"})
-        assert resp.json()["State"] == "DISABLED"
+        resp = await _request(client, "DescribeRule", {"Name": rule_name})
+        assert resp.json()["State"] == expected_disabled_state
 
-        resp = await _request(client, "EnableRule", {"Name": "test-rule"})
-        assert resp.status_code == 200
+        # Act & Assert - enable
+        resp = await _request(client, "EnableRule", {"Name": rule_name})
+        assert resp.status_code == expected_status_code
 
-        resp = await _request(client, "DescribeRule", {"Name": "test-rule"})
-        assert resp.json()["State"] == "ENABLED"
+        resp = await _request(client, "DescribeRule", {"Name": rule_name})
+        assert resp.json()["State"] == expected_enabled_state
 
     async def test_disable_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
+        expected_status_code = 400
         resp = await _request(client, "DisableRule", {"Name": "nope"})
-        assert resp.status_code == 400
+        assert resp.status_code == expected_status_code
 
     async def test_enable_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
+        expected_status_code = 400
         resp = await _request(client, "EnableRule", {"Name": "nope"})
-        assert resp.status_code == 400
+        assert resp.status_code == expected_status_code

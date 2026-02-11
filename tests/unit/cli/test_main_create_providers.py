@@ -28,9 +28,8 @@ class TestCreateProviders:
         )
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, compute_providers = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
-        assert isinstance(compute_providers, dict)
         # Should have the dynamo table provider + dynamo HTTP provider
         assert "__dynamodb_http__" in providers
 
@@ -47,7 +46,7 @@ class TestCreateProviders:
         )
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
         # Should have at least the Lambda provider
         assert any(p.name.startswith("lambda:") for p in providers.values())
@@ -56,7 +55,7 @@ class TestCreateProviders:
         app_model = AppModel()
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
         # DynamoDB HTTP is always available (for Terraform/CLI table creation)
         assert "__dynamodb_http__" in providers
@@ -65,7 +64,7 @@ class TestCreateProviders:
         app_model = AppModel()
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
         # SQS HTTP is always available (for Terraform/CLI queue creation)
         assert "__sqs_http__" in providers
@@ -74,7 +73,7 @@ class TestCreateProviders:
         app_model = AppModel()
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
         # S3 HTTP is always available (for Terraform/CLI bucket creation)
         assert "__s3_http__" in providers
@@ -83,7 +82,7 @@ class TestCreateProviders:
         app_model = AppModel()
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
         # SNS HTTP is always available (for Terraform/CLI topic creation)
         assert "__sns_http__" in providers
@@ -92,16 +91,16 @@ class TestCreateProviders:
         app_model = AppModel()
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
         # EventBridge HTTP is always available (for Terraform/CLI event bus creation)
-        assert "__eventbridge_http__" in providers
+        assert "__events_http__" in providers
 
     def test_empty_model_still_has_stepfunctions(self, tmp_path):
         app_model = AppModel()
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
         # Step Functions HTTP is always available (for Terraform/CLI state machine creation)
         assert "__stepfunctions_http__" in providers
@@ -110,7 +109,7 @@ class TestCreateProviders:
         app_model = AppModel()
         graph = build_graph(app_model)
         config = LdkConfig(port=4000)
-        providers, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
         # Cognito HTTP is always available (for Terraform/CLI user pool creation)
-        assert "__cognito_http__" in providers
+        assert "__cognito-idp_http__" in providers

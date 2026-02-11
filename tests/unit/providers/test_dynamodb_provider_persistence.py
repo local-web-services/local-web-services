@@ -115,16 +115,22 @@ class TestPersistence:
     """Data survives stop/start cycle."""
 
     async def test_data_persists_across_restart(self, tmp_path: Path) -> None:
+        # Arrange
         config = [_simple_table_config()]
+        expected_v = 42
 
         p1 = SqliteDynamoProvider(data_dir=tmp_path, tables=config)
         await p1.start()
         await p1.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 42})
         await p1.stop()
 
+        # Act
         p2 = SqliteDynamoProvider(data_dir=tmp_path, tables=config)
         await p2.start()
         result = await p2.get_item("orders", {"orderId": "o1", "itemId": "i1"})
+
+        # Assert
         assert result is not None
-        assert result["v"] == 42
+        actual_v = result["v"]
+        assert actual_v == expected_v
         await p2.stop()

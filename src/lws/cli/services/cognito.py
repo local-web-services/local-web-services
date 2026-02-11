@@ -33,9 +33,9 @@ async def _sign_up(user_pool_name: str, username: str, password: str, port: int)
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, user_pool_name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    client_id = resource.get("user_pool_id", "local-client-id")
+        client_id = resource.get("user_pool_id", "local-client-id")
+    except Exception:
+        client_id = "local-client-id"
     result = await client.json_target_request(
         _SERVICE,
         f"{_TARGET_PREFIX}.SignUp",
@@ -63,9 +63,9 @@ async def _confirm_sign_up(user_pool_name: str, username: str, port: int) -> Non
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, user_pool_name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    client_id = resource.get("user_pool_id", "local-client-id")
+        client_id = resource.get("user_pool_id", "local-client-id")
+    except Exception:
+        client_id = "local-client-id"
     result = await client.json_target_request(
         _SERVICE,
         f"{_TARGET_PREFIX}.ConfirmSignUp",
@@ -94,9 +94,9 @@ async def _initiate_auth(user_pool_name: str, username: str, password: str, port
     client = _client(port)
     try:
         resource = await client.resolve_resource(_SERVICE, user_pool_name)
-    except Exception as exc:
-        exit_with_error(str(exc))
-    client_id = resource.get("user_pool_id", "local-client-id")
+        client_id = resource.get("user_pool_id", "local-client-id")
+    except Exception:
+        client_id = "local-client-id"
     result = await client.json_target_request(
         _SERVICE,
         f"{_TARGET_PREFIX}.InitiateAuth",

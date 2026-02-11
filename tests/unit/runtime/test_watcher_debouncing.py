@@ -61,6 +61,10 @@ class TestDebouncing:
 
     def test_separate_files_each_reported(self) -> None:
         """Changes to distinct files should each be reported after debounce."""
+        # Arrange
+        expected_file_a = "a.txt"
+        expected_file_b = "b.txt"
+        expected_file_c = "c.txt"
         tmpdir = tempfile.mkdtemp()
         changed: list[Path] = []
 
@@ -77,16 +81,18 @@ class TestDebouncing:
         watcher.start()
 
         try:
-            for name in ("a.txt", "b.txt", "c.txt"):
+            # Act
+            for name in (expected_file_a, expected_file_b, expected_file_c):
                 (Path(tmpdir) / name).write_text("data")
                 time.sleep(0.05)
 
             # Wait for debounce
             time.sleep(1.0)
 
+            # Assert
             reported_names = {p.name for p in changed}
-            assert "a.txt" in reported_names
-            assert "b.txt" in reported_names
-            assert "c.txt" in reported_names
+            assert expected_file_a in reported_names
+            assert expected_file_b in reported_names
+            assert expected_file_c in reported_names
         finally:
             watcher.stop()

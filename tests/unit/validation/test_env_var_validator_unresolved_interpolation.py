@@ -63,20 +63,33 @@ def _make_context(
 
 class TestUnresolvedInterpolation:
     def test_unknown_interpolation_ref(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_ref_name = "UnknownTable"
+        expected_env_var_name = "TABLE_ARN"
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
-        ctx = _make_context(environment={"TABLE_ARN": "${UnknownTable}"})
+        ctx = _make_context(environment={expected_env_var_name: f"${{{expected_ref_name}}}"})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert issues[0].level == ValidationLevel.ERROR
-        assert "UnknownTable" in issues[0].message
-        assert "TABLE_ARN" in issues[0].message
+        assert expected_ref_name in issues[0].message
+        assert expected_env_var_name in issues[0].message
 
     def test_arn_like_ref_is_skipped(self) -> None:
+        # Arrange
         graph = _make_graph([])
         validator = EnvVarValidator(graph)
         ctx = _make_context(
             environment={"SOMETHING": "${arn:aws:dynamodb:us-east-1:123:table/users}"}
         )
+
+        # Act
         issues = validator.validate(ctx)
+
+        # Assert
         assert issues == []

@@ -7,6 +7,8 @@ exists checks, and anything-but exclusion.
 
 from __future__ import annotations
 
+from lws.providers._shared.numeric import eval_numeric_range
+
 
 def matches_filter_policy(
     message_attributes: dict,
@@ -86,40 +88,8 @@ def _eval_exists(attr: dict | None, should_exist: bool) -> bool:
 
 
 def _eval_numeric(value: object, operators: list) -> bool:
-    """Evaluate a ``{"numeric": [">=", 100, "<", 200]}`` condition.
-
-    The *operators* list contains alternating (operator, operand) pairs.
-    All pairs must match.
-    """
-    try:
-        num_value = float(value)  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        return False
-
-    i = 0
-    while i < len(operators) - 1:
-        op = operators[i]
-        operand = float(operators[i + 1])
-        if not _compare_numeric(num_value, op, operand):
-            return False
-        i += 2
-
-    return True
-
-
-def _compare_numeric(value: float, op: str, operand: float) -> bool:
-    """Perform a single numeric comparison."""
-    if op == "=":
-        return value == operand
-    if op == ">":
-        return value > operand
-    if op == ">=":
-        return value >= operand
-    if op == "<":
-        return value < operand
-    if op == "<=":
-        return value <= operand
-    return False
+    """Evaluate a ``{"numeric": [">=", 100, "<", 200]}`` condition."""
+    return eval_numeric_range(value, operators)
 
 
 def _eval_anything_but(value: object, exclusions: list) -> bool:

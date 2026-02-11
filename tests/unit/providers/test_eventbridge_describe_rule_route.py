@@ -40,17 +40,26 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestDescribeRuleRoute:
     async def test_describe_existing_rule(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        rule_name = "test-rule"
+        expected_state = "ENABLED"
         await _request(
             client,
             "PutRule",
-            {"Name": "test-rule", "EventPattern": '{"source":["test"]}'},
+            {"Name": rule_name, "EventPattern": '{"source":["test"]}'},
         )
-        resp = await _request(client, "DescribeRule", {"Name": "test-rule"})
-        assert resp.status_code == 200
+
+        # Act
+        resp = await _request(client, "DescribeRule", {"Name": rule_name})
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["Name"] == "test-rule"
-        assert data["State"] == "ENABLED"
+        assert data["Name"] == rule_name
+        assert data["State"] == expected_state
 
     async def test_describe_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
+        expected_status_code = 400
         resp = await _request(client, "DescribeRule", {"Name": "nope"})
-        assert resp.status_code == 400
+        assert resp.status_code == expected_status_code

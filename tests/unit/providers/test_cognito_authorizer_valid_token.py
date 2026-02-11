@@ -46,18 +46,37 @@ class TestValidToken:
     """Successful token validation."""
 
     def test_valid_id_token(self, issuer: TokenIssuer, authorizer: CognitoAuthorizer) -> None:
-        token = issuer.issue_id_token("sub-123", "alice", {"email": "alice@example.com"})
+        # Arrange
+        expected_sub = "sub-123"
+        expected_username = "alice"
+        token = issuer.issue_id_token(
+            expected_sub, expected_username, {"email": "alice@example.com"}
+        )
+
+        # Act
         claims = authorizer.validate_token(_make_bearer(token))
-        assert claims["sub"] == "sub-123"
-        assert claims["cognito:username"] == "alice"
+
+        # Assert
+        actual_sub = claims["sub"]
+        actual_username = claims["cognito:username"]
+        assert actual_sub == expected_sub
+        assert actual_username == expected_username
 
     def test_claims_context(self, issuer: TokenIssuer, authorizer: CognitoAuthorizer) -> None:
-        token = issuer.issue_id_token("sub-123", "alice", {"email": "alice@example.com"})
+        # Arrange
+        expected_sub = "sub-123"
+        expected_username = "alice"
+        expected_email = "alice@example.com"
+        token = issuer.issue_id_token(expected_sub, expected_username, {"email": expected_email})
+
+        # Act
         claims = authorizer.validate_token(_make_bearer(token))
         context = authorizer.build_claims_context(claims)
-        assert context["sub"] == "sub-123"
-        assert context["cognito:username"] == "alice"
-        assert context["email"] == "alice@example.com"
+
+        # Assert
+        assert context["sub"] == expected_sub
+        assert context["cognito:username"] == expected_username
+        assert context["email"] == expected_email
         assert "exp" in context
         assert "iat" in context
         # Numeric claims converted to strings

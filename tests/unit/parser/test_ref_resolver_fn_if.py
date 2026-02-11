@@ -7,24 +7,48 @@ from lws.parser.ref_resolver import RefResolver
 
 class TestFnIf:
     def test_if_true(self):
+        # Arrange
+        expected_value = "prod-value"
         r = RefResolver(conditions={"IsProd": True})
-        result = r.resolve({"Fn::If": ["IsProd", "prod-value", "dev-value"]})
-        assert result == "prod-value"
+
+        # Act
+        actual_value = r.resolve({"Fn::If": ["IsProd", "prod-value", "dev-value"]})
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_if_false(self):
+        # Arrange
+        expected_value = "dev-value"
         r = RefResolver(conditions={"IsProd": False})
-        result = r.resolve({"Fn::If": ["IsProd", "prod-value", "dev-value"]})
-        assert result == "dev-value"
+
+        # Act
+        actual_value = r.resolve({"Fn::If": ["IsProd", "prod-value", "dev-value"]})
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_if_unknown_condition_defaults_true(self):
+        # Arrange
+        expected_value = "yes"
         r = RefResolver()
-        result = r.resolve({"Fn::If": ["UnknownCond", "yes", "no"]})
-        assert result == "yes"
+
+        # Act
+        actual_value = r.resolve({"Fn::If": ["UnknownCond", "yes", "no"]})
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_if_with_nested_intrinsics(self):
+        # Arrange
+        expected_value = "custom-val"
         r = RefResolver(
             conditions={"UseCustom": True},
-            resource_map={"Custom": "custom-val"},
+            resource_map={"Custom": expected_value},
         )
-        result = r.resolve({"Fn::If": ["UseCustom", {"Ref": "Custom"}, "default"]})
-        assert result == "custom-val"
+
+        # Act
+        actual_value = r.resolve({"Fn::If": ["UseCustom", {"Ref": "Custom"}, "default"]})
+
+        # Assert
+        assert actual_value == expected_value

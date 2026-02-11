@@ -32,19 +32,32 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestCreateStateMachineRoute:
     async def test_create_returns_arn(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        sm_name = "test-sm"
+
+        # Act
         resp = await _request(
             client,
             "CreateStateMachine",
             {
-                "name": "test-sm",
+                "name": sm_name,
                 "definition": '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "stateMachineArn" in data
-        assert "test-sm" in data["stateMachineArn"]
+        assert sm_name in data["stateMachineArn"]
 
     async def test_create_missing_name_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await _request(client, "CreateStateMachine", {"definition": "{}"})
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code

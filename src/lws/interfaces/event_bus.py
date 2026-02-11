@@ -19,4 +19,3 @@ class IEventBus(Provider):
         Each entry should contain at minimum: Source, DetailType, and Detail.
         Returns a list of result entries indicating success or failure for each.
         """
-        ...

@@ -174,6 +174,7 @@ class TestRoutes:
     """Step Functions HTTP route tests."""
 
     async def test_start_execution(self, sfn_client: httpx.AsyncClient) -> None:
+        # Act
         resp = await sfn_client.post(
             "/",
             json={
@@ -182,11 +183,19 @@ class TestRoutes:
             },
             headers={"x-amz-target": "AWSStepFunctions.StartExecution"},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status_code = 200
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "executionArn" in data
 
     async def test_start_sync_execution(self, sfn_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_status = "SUCCEEDED"
+
+        # Act
         resp = await sfn_client.post(
             "/",
             json={
@@ -195,11 +204,18 @@ class TestRoutes:
             },
             headers={"x-amz-target": "AWSStepFunctions.StartSyncExecution"},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["status"] == "SUCCEEDED"
+        actual_status = data["status"]
+        assert actual_status == expected_status
 
     async def test_describe_execution(self, sfn_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_status = "SUCCEEDED"
+
         # Start an execution first
         start_resp = await sfn_client.post(
             "/",
@@ -211,49 +227,76 @@ class TestRoutes:
         )
         arn = start_resp.json()["executionArn"]
 
+        # Act
         resp = await sfn_client.post(
             "/",
             json={"executionArn": arn},
             headers={"x-amz-target": "AWSStepFunctions.DescribeExecution"},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["status"] == "SUCCEEDED"
+        actual_status = data["status"]
+        assert actual_status == expected_status
 
     async def test_list_executions(self, sfn_client: httpx.AsyncClient) -> None:
+        # Act
         resp = await sfn_client.post(
             "/",
             json={"stateMachineArn": "arn:aws:states:us-east-1:000:stateMachine:test-sm"},
             headers={"x-amz-target": "AWSStepFunctions.ListExecutions"},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status_code = 200
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "executions" in data
 
     async def test_list_state_machines(self, sfn_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_count = 2
+
+        # Act
         resp = await sfn_client.post(
             "/",
             json={},
             headers={"x-amz-target": "AWSStepFunctions.ListStateMachines"},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert len(data["stateMachines"]) == 2
+        assert len(data["stateMachines"]) == expected_count
 
     async def test_unknown_action_returns_error(self, sfn_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+        expected_error_type = "UnknownOperationException"
+
+        # Act
         resp = await sfn_client.post(
             "/",
             json={},
             headers={"x-amz-target": "AWSStepFunctions.Bogus"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code
         body = resp.json()
-        assert body["__type"] == "UnknownOperationException"
+        actual_error_type = body["__type"]
+        assert actual_error_type == expected_error_type
         assert "lws" in body["message"]
         assert "StepFunctions" in body["message"]
         assert "Bogus" in body["message"]
 
     async def test_nonexistent_state_machine(self, sfn_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await sfn_client.post(
             "/",
             json={
@@ -261,12 +304,20 @@ class TestRoutes:
             },
             headers={"x-amz-target": "AWSStepFunctions.StartExecution"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code
 
     async def test_describe_nonexistent_execution(self, sfn_client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await sfn_client.post(
             "/",
             json={"executionArn": "arn:aws:states:us-east-1:000:execution:sm:does-not-exist"},
             headers={"x-amz-target": "AWSStepFunctions.DescribeExecution"},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code

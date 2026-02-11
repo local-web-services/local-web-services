@@ -157,15 +157,19 @@ class TestSqsEventSourcePoller:
 
     async def test_poller_invokes_function(self) -> None:
         """Poller receives messages and invokes the correct Lambda function."""
+        # Arrange
+        expected_body = '{"key": "value"}'
+        expected_event_source = "aws:sqs"
+        queue_name = "poll-queue"
+        function_name = "my-function"
+
         queue_provider = SqsProvider(
-            queues=[QueueConfig(queue_name="poll-queue", visibility_timeout=30)]
+            queues=[QueueConfig(queue_name=queue_name, visibility_timeout=30)]
         )
         await queue_provider.start()
 
-        # Send a message
-        await queue_provider.send_message("poll-queue", '{"key": "value"}')
+        await queue_provider.send_message(queue_name, expected_body)
 
-        # Set up mock compute
         mock_compute = AsyncMock(spec=ICompute)
         mock_compute.invoke.return_value = InvocationResult(
             payload={"statusCode": 200},
@@ -175,42 +179,49 @@ class TestSqsEventSourcePoller:
         )
 
         mapping = EventSourceMapping(
-            queue_name="poll-queue",
-            function_name="my-function",
+            queue_name=queue_name,
+            function_name=function_name,
             batch_size=10,
         )
 
         poller = SqsEventSourcePoller(
             queue_provider=queue_provider,
-            compute_providers={"my-function": mock_compute},
+            compute_providers={function_name: mock_compute},
             mappings=[mapping],
             poll_interval=0.1,
         )
 
+        # Act
         await poller.start()
-        # Give the poller time to pick up the message
         await asyncio.sleep(0.5)
         await poller.stop()
 
-        # Verify the function was invoked
+        # Assert
         mock_compute.invoke.assert_called()
         call_args = mock_compute.invoke.call_args
         event = call_args[0][0]
         assert "Records" in event
         assert len(event["Records"]) >= 1
-        assert event["Records"][0]["body"] == '{"key": "value"}'
-        assert event["Records"][0]["eventSource"] == "aws:sqs"
+        actual_body = event["Records"][0]["body"]
+        actual_event_source = event["Records"][0]["eventSource"]
+        assert actual_body == expected_body
+        assert actual_event_source == expected_event_source
 
         await queue_provider.stop()
 
     async def test_poller_deletes_on_success(self) -> None:
         """Successful invocation should delete messages."""
+        # Arrange
+        queue_name = "del-queue"
+        function_name = "fn"
+        expected_remaining_count = 0
+
         queue_provider = SqsProvider(
-            queues=[QueueConfig(queue_name="del-queue", visibility_timeout=30)]
+            queues=[QueueConfig(queue_name=queue_name, visibility_timeout=30)]
         )
         await queue_provider.start()
 
-        await queue_provider.send_message("del-queue", "delete-after-invoke")
+        await queue_provider.send_message(queue_name, "delete-after-invoke")
 
         mock_compute = AsyncMock(spec=ICompute)
         mock_compute.invoke.return_value = InvocationResult(
@@ -218,36 +229,42 @@ class TestSqsEventSourcePoller:
         )
 
         mapping = EventSourceMapping(
-            queue_name="del-queue",
-            function_name="fn",
+            queue_name=queue_name,
+            function_name=function_name,
             batch_size=1,
         )
 
         poller = SqsEventSourcePoller(
             queue_provider=queue_provider,
-            compute_providers={"fn": mock_compute},
+            compute_providers={function_name: mock_compute},
             mappings=[mapping],
             poll_interval=0.1,
         )
 
+        # Act
         await poller.start()
         await asyncio.sleep(0.5)
         await poller.stop()
 
-        # Queue should be empty
-        msgs = await queue_provider.receive_messages("del-queue", max_messages=10)
-        assert len(msgs) == 0
+        # Assert
+        msgs = await queue_provider.receive_messages(queue_name, max_messages=10)
+        actual_remaining_count = len(msgs)
+        assert actual_remaining_count == expected_remaining_count
 
         await queue_provider.stop()
 
     async def test_poller_retains_on_failure(self) -> None:
         """Failed invocation should leave messages in the queue."""
+        # Arrange
+        queue_name = "fail-queue"
+        function_name = "fn"
+
         queue_provider = SqsProvider(
-            queues=[QueueConfig(queue_name="fail-queue", visibility_timeout=1)]
+            queues=[QueueConfig(queue_name=queue_name, visibility_timeout=1)]
         )
         await queue_provider.start()
 
-        await queue_provider.send_message("fail-queue", "keep-on-fail")
+        await queue_provider.send_message(queue_name, "keep-on-fail")
 
         mock_compute = AsyncMock(spec=ICompute)
         mock_compute.invoke.return_value = InvocationResult(
@@ -255,18 +272,19 @@ class TestSqsEventSourcePoller:
         )
 
         mapping = EventSourceMapping(
-            queue_name="fail-queue",
-            function_name="fn",
+            queue_name=queue_name,
+            function_name=function_name,
             batch_size=1,
         )
 
         poller = SqsEventSourcePoller(
             queue_provider=queue_provider,
-            compute_providers={"fn": mock_compute},
+            compute_providers={function_name: mock_compute},
             mappings=[mapping],
             poll_interval=0.1,
         )
 
+        # Act
         await poller.start()
         await asyncio.sleep(0.3)
         await poller.stop()
@@ -274,14 +292,17 @@ class TestSqsEventSourcePoller:
         # Wait for visibility timeout
         await asyncio.sleep(1.2)
 
-        # Message should still be in the queue
-        msgs = await queue_provider.receive_messages("fail-queue", max_messages=10)
+        # Assert
+        msgs = await queue_provider.receive_messages(queue_name, max_messages=10)
         assert len(msgs) >= 1
 
         await queue_provider.stop()
 
     async def test_poller_start_stop(self) -> None:
         """Poller can start and stop cleanly."""
+        # Arrange
+        expected_task_count_after_start = 1
+        expected_task_count_after_stop = 0
         queue_provider = AsyncMock(spec=IQueue)
         queue_provider.receive_messages.return_value = []
 
@@ -298,16 +319,22 @@ class TestSqsEventSourcePoller:
             poll_interval=0.1,
         )
 
+        # Act / Assert - start
         await poller.start()
         assert poller._running is True
-        assert len(poller._tasks) == 1
+        actual_task_count_after_start = len(poller._tasks)
+        assert actual_task_count_after_start == expected_task_count_after_start
 
+        # Act / Assert - stop
         await poller.stop()
         assert poller._running is False
-        assert len(poller._tasks) == 0
+        actual_task_count_after_stop = len(poller._tasks)
+        assert actual_task_count_after_stop == expected_task_count_after_stop
 
     async def test_poller_disabled_mapping_skipped(self) -> None:
         """Disabled mappings should not create polling tasks."""
+        # Arrange
+        expected_task_count = 0
         queue_provider = AsyncMock(spec=IQueue)
 
         mapping = EventSourceMapping(
@@ -324,6 +351,10 @@ class TestSqsEventSourcePoller:
             poll_interval=0.1,
         )
 
+        # Act
         await poller.start()
-        assert len(poller._tasks) == 0
+
+        # Assert
+        actual_task_count = len(poller._tasks)
+        assert actual_task_count == expected_task_count
         await poller.stop()

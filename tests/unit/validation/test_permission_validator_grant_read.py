@@ -68,34 +68,62 @@ def _make_context(
 
 class TestGrantRead:
     def test_read_allows_get(self) -> None:
+        # Arrange
         graph = _make_graph_with_grant("grantRead")
         ctx = _make_context(operation="get_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_read_allows_query(self) -> None:
+        # Arrange
         graph = _make_graph_with_grant("grantRead")
         ctx = _make_context(operation="query", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_read_allows_scan(self) -> None:
+        # Arrange
         graph = _make_graph_with_grant("grantRead")
         ctx = _make_context(operation="scan", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_read_denies_put(self) -> None:
-        graph = _make_graph_with_grant("grantRead")
+        # Arrange
+        expected_issue_count = 1
+        expected_grant_type = "grantRead"
+        graph = _make_graph_with_grant(expected_grant_type)
         ctx = _make_context(operation="put_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert issues[0].level == ValidationLevel.ERROR
-        assert "grantRead" in issues[0].message
+        assert expected_grant_type in issues[0].message
 
     def test_read_denies_delete(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         graph = _make_graph_with_grant("grantRead")
         ctx = _make_context(operation="delete_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert issues[0].level == ValidationLevel.ERROR

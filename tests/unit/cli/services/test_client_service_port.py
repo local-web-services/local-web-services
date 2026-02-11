@@ -25,14 +25,24 @@ SAMPLE_METADATA = {
 class TestServicePort:
     @pytest.mark.asyncio
     async def test_returns_port(self):
+        # Arrange
+        expected_port = 3002
+        service_name = "sqs"
         client = LwsClient(port=3000)
         client._metadata = SAMPLE_METADATA
-        port = await client.service_port("sqs")
-        assert port == 3002
+
+        # Act
+        actual_port = await client.service_port(service_name)
+
+        # Assert
+        assert actual_port == expected_port
 
     @pytest.mark.asyncio
     async def test_raises_for_missing_service(self):
+        # Arrange
         client = LwsClient(port=3000)
         client._metadata = SAMPLE_METADATA
+
+        # Act / Assert
         with pytest.raises(DiscoveryError, match="not found"):
             await client.service_port("nonexistent")

@@ -68,27 +68,51 @@ def _make_context(
 
 class TestNoPermission:
     def test_no_edges_produces_error(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_message_fragment = "no permission grant"
         graph = AppGraph()
         graph.add_node(GraphNode(id="handler1", node_type=NodeType.LAMBDA_FUNCTION))
         graph.add_node(GraphNode(id="table1", node_type=NodeType.DYNAMODB_TABLE))
         ctx = _make_context(operation="get_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
-        assert len(issues) == 1
-        assert "no permission grant" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_message_fragment in issues[0].message
 
     def test_no_graph_returns_empty(self) -> None:
+        # Arrange
         ctx = _make_context(operation="get_item", app_graph=None)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_wrong_handler_id_no_match(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         graph = _make_graph_with_grant("grantRead")
         ctx = _make_context(handler_id="other_handler", operation="get_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
 
     def test_wrong_resource_id_no_match(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         graph = _make_graph_with_grant("grantRead")
         ctx = _make_context(resource_id="other_table", operation="get_item", app_graph=graph)
+
+        # Act
         issues = PermissionValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count

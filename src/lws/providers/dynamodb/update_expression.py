@@ -14,6 +14,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from lws.providers.dynamodb.expressions import _resolve_path, _unwrap_dynamo_value
+from lws.providers.dynamodb.parser_base import BaseParser, Token, scan_number_literal
+
 # ---------------------------------------------------------------------------
 # Token types
 # ---------------------------------------------------------------------------
@@ -37,34 +40,22 @@ TOKEN_EOF = "EOF"
 _ACTION_KEYWORDS = {"SET", "REMOVE", "ADD", "DELETE"}
 
 
-@dataclass
-class Token:
-    """A single lexical token."""
-
-    type: str
-    value: str
-    pos: int
-
-
 # ---------------------------------------------------------------------------
-# Lexer
+# Lexer — tokenizes SET/REMOVE/ADD/DELETE update expressions
 # ---------------------------------------------------------------------------
 
 
 def tokenize(expression: str) -> list[Token]:
     """Tokenize a DynamoDB UpdateExpression into a list of tokens."""
     tokens: list[Token] = []
-    i = 0
-    length = len(expression)
-
-    while i < length:
-        ch = expression[i]
-        if ch.isspace():
-            i += 1
-            continue
-        i = _scan_next_token(expression, i, length, tokens)
-
-    tokens.append(Token(TOKEN_EOF, "", length))
+    pos = 0
+    end = len(expression)
+    while pos < end:
+        if expression[pos].isspace():
+            pos += 1
+        else:
+            pos = _scan_next_token(expression, pos, end, tokens)
+    tokens.append(Token(TOKEN_EOF, "", end))
     return tokens
 
 
@@ -134,14 +125,7 @@ def _scan_name_ref(expression: str, i: int, tokens: list[Token]) -> int:
 
 def _scan_number(expression: str, i: int, tokens: list[Token]) -> int:
     """Scan a numeric literal."""
-    end = i + 1
-    has_dot = False
-    while end < len(expression) and (expression[end].isdigit() or expression[end] == "."):
-        if expression[end] == ".":
-            if has_dot:
-                break
-            has_dot = True
-        end += 1
+    end = scan_number_literal(expression, i)
     tokens.append(Token(TOKEN_NUMBER, expression[i:end], i))
     return end
 
@@ -219,28 +203,8 @@ class UpdateActions:
 # ---------------------------------------------------------------------------
 
 
-class _Parser:
+class _Parser(BaseParser):
     """Parse a DynamoDB UpdateExpression into UpdateActions."""
-
-    def __init__(self, tokens: list[Token]) -> None:
-        self._tokens = tokens
-        self._pos = 0
-
-    def _peek(self) -> Token:
-        return self._tokens[self._pos]
-
-    def _advance(self) -> Token:
-        tok = self._tokens[self._pos]
-        self._pos += 1
-        return tok
-
-    def _expect(self, token_type: str) -> Token:
-        tok = self._advance()
-        if tok.type != token_type:
-            raise ValueError(
-                f"Expected {token_type} at pos {tok.pos}, got {tok.type} ({tok.value!r})"
-            )
-        return tok
 
     def parse(self) -> UpdateActions:
         """Parse the full update expression."""
@@ -325,10 +289,7 @@ class _Parser:
 
     def _is_function(self) -> bool:
         """Check if current IDENT is followed by LPAREN (function call)."""
-        next_pos = self._pos + 1
-        if next_pos < len(self._tokens):
-            return self._tokens[next_pos].type == TOKEN_LPAREN
-        return False
+        return self._next_is(TOKEN_LPAREN)
 
     def _parse_function_call(self) -> dict:
         """Parse a function call like if_not_exists(path, value) or list_append(a, b)."""
@@ -398,42 +359,6 @@ def _parse_number(s: str) -> int | float:
 # ---------------------------------------------------------------------------
 # Evaluator
 # ---------------------------------------------------------------------------
-
-
-def _unwrap_dynamo_value(raw: Any) -> Any:
-    """Unwrap a DynamoDB typed value to a plain Python value."""
-    if raw is None:
-        return None
-    if not isinstance(raw, dict):
-        return raw
-    type_converters = {
-        "S": lambda v: v,
-        "N": lambda v: int(v) if "." not in str(v) else float(v),
-        "B": lambda v: v,
-        "BOOL": lambda v: v,
-        "NULL": lambda v: None,
-        "L": lambda v: [_unwrap_dynamo_value(item) for item in v],
-        "M": lambda v: {k: _unwrap_dynamo_value(val) for k, val in v.items()},
-        "SS": lambda v: set(v),
-        "NS": lambda v: {int(n) if "." not in str(n) else float(n) for n in v},
-        "BS": lambda v: set(v),
-    }
-    for type_key, converter in type_converters.items():
-        if type_key in raw:
-            return converter(raw[type_key])
-    return raw
-
-
-def _resolve_path(item: dict, path: str) -> tuple[bool, Any]:
-    """Resolve a dotted path against an item. Returns (found, value)."""
-    parts = path.split(".")
-    current: Any = item
-    for part in parts:
-        if isinstance(current, dict) and part in current:
-            current = current[part]
-        else:
-            return False, None
-    return True, current
 
 
 def _set_path(item: dict, path: str, value: Any) -> None:
@@ -514,7 +439,7 @@ class UpdateExpressionEvaluator:
             raise ValueError(f"Unknown value expression op: {op}")
         return handler(expr, item)
 
-    def _eval_value_ref(self, expr: dict, item: dict) -> Any:
+    def _eval_value_ref(self, expr: dict, _item: dict) -> Any:
         raw = self._values.get(expr["ref"])
         return _unwrap_dynamo_value(raw)
 
@@ -527,7 +452,7 @@ class UpdateExpressionEvaluator:
         found, val = _resolve_path(item, expr["path"])
         return val if found else None
 
-    def _eval_literal(self, expr: dict, item: dict) -> Any:
+    def _eval_literal(self, expr: dict, _item: dict) -> Any:
         return expr["value"]
 
     def _eval_function(self, expr: dict, item: dict) -> Any:

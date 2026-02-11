@@ -17,11 +17,17 @@ async def provider() -> StepFunctionsProvider:
 
 class TestCreateStateMachine:
     async def test_create_returns_arn(self, provider: StepFunctionsProvider) -> None:
-        arn = provider.create_state_machine(
+        # Arrange
+        expected_arn = "arn:aws:states:us-east-1:000000000000:stateMachine:test-sm"
+
+        # Act
+        actual_arn = provider.create_state_machine(
             name="test-sm",
             definition='{"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": true}}}',
         )
-        assert arn == "arn:aws:states:us-east-1:000000000000:stateMachine:test-sm"
+
+        # Assert
+        assert actual_arn == expected_arn
 
     async def test_created_appears_in_list(self, provider: StepFunctionsProvider) -> None:
         provider.create_state_machine(
@@ -38,10 +44,17 @@ class TestCreateStateMachine:
         assert arn1 == arn2
 
     async def test_create_express_type(self, provider: StepFunctionsProvider) -> None:
+        # Arrange
+        expected_type = "EXPRESS"
+
+        # Act
         provider.create_state_machine(
             name="express-sm",
             definition='{"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": true}}}',
-            workflow_type="EXPRESS",
+            workflow_type=expected_type,
         )
+
+        # Assert
         attrs = provider.describe_state_machine("express-sm")
-        assert attrs["type"] == "EXPRESS"
+        actual_type = attrs["type"]
+        assert actual_type == expected_type

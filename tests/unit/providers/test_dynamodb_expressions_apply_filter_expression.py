@@ -53,31 +53,45 @@ class TestApplyFilterExpression:
         assert apply_filter_expression(items, "") == items
 
     def test_filters_items(self) -> None:
+        # Arrange
         items = [
             {"name": "Alice", "age": 30},
             {"name": "Bob", "age": 25},
             {"name": "Charlie", "age": 35},
         ]
+        expected_count = 2
+        expected_names = {"Alice", "Charlie"}
+
+        # Act
         result = apply_filter_expression(
             items,
             "age > :min",
             expression_values={":min": {"N": "28"}},
         )
-        assert len(result) == 2
-        names = {r["name"] for r in result}
-        assert names == {"Alice", "Charlie"}
+
+        # Assert
+        assert len(result) == expected_count
+        actual_names = {r["name"] for r in result}
+        assert actual_names == expected_names
 
     def test_complex_filter(self) -> None:
+        # Arrange
         items = [
             {"name": "Alice", "age": 30, "active": True},
             {"name": "Bob", "age": 25, "active": False},
             {"name": "Charlie", "age": 35, "active": True},
         ]
+        expected_count = 2
+        expected_names = {"Alice", "Charlie"}
+
+        # Act
         result = apply_filter_expression(
             items,
             "active = :t AND age >= :min",
             expression_values={":t": {"BOOL": True}, ":min": {"N": "30"}},
         )
-        assert len(result) == 2
-        names = {r["name"] for r in result}
-        assert names == {"Alice", "Charlie"}
+
+        # Assert
+        assert len(result) == expected_count
+        actual_names = {r["name"] for r in result}
+        assert actual_names == expected_names

@@ -17,7 +17,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers.sqs.provider import QueueConfig, SqsProvider
+from lws.providers.sqs.provider import QueueConfig, SqsProvider, build_queue_config
 
 _logger = get_logger("ldk.sqs")
 
@@ -158,12 +158,10 @@ class SqsRouter:
             queue = self.provider.get_queue(queue_name)
             if queue is not None:
                 vt = int(visibility_timeout)
-                import time as _time
-
-                now = _time.monotonic()
+                now = time.monotonic()
                 for msg_dict in messages:
                     # Find the underlying message and adjust
-                    for m in queue._messages:
+                    for m in queue.messages:
                         if m.message_id == msg_dict["MessageId"]:
                             m.visibility_timeout_until = now + vt
 
@@ -305,7 +303,7 @@ class SqsRouter:
             )
 
         now = time.monotonic()
-        for msg in queue._messages:
+        for msg in queue.messages:
             if msg.receipt_handle == receipt_handle:
                 msg.visibility_timeout_until = now + visibility_timeout
                 break
@@ -342,7 +340,7 @@ class SqsRouter:
             )
 
             found = False
-            for msg in queue._messages:
+            for msg in queue.messages:
                 if msg.receipt_handle == receipt_handle:
                     msg.visibility_timeout_until = now + vt
                     found = True
@@ -387,7 +385,7 @@ class SqsRouter:
             )
 
         source_queues: list[str] = []
-        for name, q in self.provider._queues.items():
+        for name, q in self.provider.queues.items():
             if hasattr(q, "dead_letter_queue") and q.dead_letter_queue is queue:
                 source_queues.append(name)
 
@@ -406,19 +404,8 @@ class SqsRouter:
 
     async def _create_queue(self, params: dict) -> Response:
         queue_name = params.get("QueueName", "")
-        is_fifo = queue_name.endswith(".fifo")
-
         attrs = _extract_queue_attributes(params)
-        visibility_timeout = int(attrs.get("VisibilityTimeout", "30"))
-        content_based_dedup = attrs.get("ContentBasedDeduplication", "false").lower() == "true"
-
-        config = QueueConfig(
-            queue_name=queue_name,
-            visibility_timeout=visibility_timeout,
-            is_fifo=is_fifo,
-            content_based_dedup=content_based_dedup,
-            custom_attrs=dict(attrs),
-        )
+        config = build_queue_config(queue_name, attrs)
         self.provider.create_queue_from_config(config)
 
         queue_url = _queue_url(queue_name)
@@ -449,7 +436,7 @@ class SqsRouter:
         )
         return _xml_response(xml)
 
-    async def _list_queues(self, params: dict) -> Response:
+    async def _list_queues(self, _params: dict) -> Response:
         queue_names = await self.provider.list_queues()
         urls_xml = "".join(f"<QueueUrl>{_queue_url(name)}</QueueUrl>" for name in queue_names)
         xml = (
@@ -541,11 +528,9 @@ class SqsRouter:
             queue = self.provider.get_queue(queue_name)
             if queue is not None:
                 vt = int(visibility_timeout)
-                import time as _time
-
-                now = _time.monotonic()
+                now = time.monotonic()
                 for msg_dict in messages:
-                    for m in queue._messages:
+                    for m in queue.messages:
                         if m.message_id == msg_dict["MessageId"]:
                             m.visibility_timeout_until = now + vt
 
@@ -573,18 +558,8 @@ class SqsRouter:
 
     async def _json_create_queue(self, body: dict) -> Response:
         queue_name = body.get("QueueName", "")
-        is_fifo = queue_name.endswith(".fifo")
         attrs = body.get("Attributes", {})
-        visibility_timeout = int(attrs.get("VisibilityTimeout", "30"))
-        content_based_dedup = str(attrs.get("ContentBasedDeduplication", "false")).lower() == "true"
-
-        config = QueueConfig(
-            queue_name=queue_name,
-            visibility_timeout=visibility_timeout,
-            is_fifo=is_fifo,
-            content_based_dedup=content_based_dedup,
-            custom_attrs=dict(attrs),
-        )
+        config = build_queue_config(queue_name, attrs)
         self.provider.create_queue_from_config(config)
         return _json_response({"QueueUrl": _queue_url(queue_name)})
 
@@ -599,7 +574,7 @@ class SqsRouter:
             )
         return _json_response({})
 
-    async def _json_list_queues(self, body: dict) -> Response:
+    async def _json_list_queues(self, _body: dict) -> Response:
         queue_names = await self.provider.list_queues()
         return _json_response(
             {
@@ -636,7 +611,7 @@ class SqsRouter:
                 "AWS.SimpleQueueService.NonExistentQueue",
                 f"The specified queue does not exist: {queue_name}",
             )
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         return _json_response({"Attributes": _build_queue_attrs(queue_name, queue, config)})
 
     async def _json_set_queue_attributes(self, body: dict) -> Response:
@@ -648,26 +623,26 @@ class SqsRouter:
                 f"The specified queue does not exist: {queue_name}",
             )
         attrs = body.get("Attributes", {})
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         _apply_queue_attrs(queue, attrs, config)
         return _json_response({})
 
     async def _json_list_queue_tags(self, body: dict) -> Response:
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         tags = config.tags if config else {}
         return _json_response({"Tags": tags})
 
     async def _json_tag_queue(self, body: dict) -> Response:
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         if config:
             config.tags.update(body.get("Tags", {}))
         return _json_response({})
 
     async def _json_untag_queue(self, body: dict) -> Response:
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         if config:
             for key in body.get("TagKeys", []):
                 config.tags.pop(key, None)
@@ -748,7 +723,7 @@ class SqsRouter:
             )
 
         now = time.monotonic()
-        for msg in queue._messages:
+        for msg in queue.messages:
             if msg.receipt_handle == receipt_handle:
                 msg.visibility_timeout_until = now + visibility_timeout
                 break
@@ -776,7 +751,7 @@ class SqsRouter:
             vt = int(entry.get("VisibilityTimeout", 0))
 
             found = False
-            for msg in queue._messages:
+            for msg in queue.messages:
                 if msg.receipt_handle == receipt_handle:
                     msg.visibility_timeout_until = now + vt
                     found = True
@@ -806,7 +781,7 @@ class SqsRouter:
             )
 
         source_queues: list[str] = []
-        for name, q in self.provider._queues.items():
+        for name, q in self.provider.queues.items():
             if hasattr(q, "dead_letter_queue") and q.dead_letter_queue is queue:
                 source_queues.append(name)
 
@@ -826,7 +801,7 @@ class SqsRouter:
                 status_code=400,
             )
 
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         attrs = _build_queue_attrs(queue_name, queue, config)
         attrs_xml = "".join(
             f"<Attribute><Name>{k}</Name><Value>{v}</Value></Attribute>" for k, v in attrs.items()
@@ -851,7 +826,7 @@ class SqsRouter:
                 status_code=400,
             )
         attrs = _extract_queue_attributes(params)
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         _apply_queue_attrs(queue, attrs, config)
         xml = (
             "<SetQueueAttributesResponse>"
@@ -862,7 +837,7 @@ class SqsRouter:
 
     async def _list_queue_tags(self, params: dict) -> Response:
         queue_name = _extract_queue_name(params)
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         tags = config.tags if config else {}
         tags_xml = "".join(
             f"<entry><key>{k}</key><value>{v}</value></entry>" for k, v in tags.items()
@@ -879,7 +854,7 @@ class SqsRouter:
 
     async def _tag_queue(self, params: dict) -> Response:
         queue_name = _extract_queue_name(params)
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         if config:
             tags = _extract_queue_tags(params)
             config.tags.update(tags)
@@ -892,7 +867,7 @@ class SqsRouter:
 
     async def _untag_queue(self, params: dict) -> Response:
         queue_name = _extract_queue_name(params)
-        config = self.provider._configs.get(queue_name)
+        config = self.provider.configs.get(queue_name)
         if config:
             n = 1
             while f"TagKey.{n}" in params:
@@ -915,13 +890,12 @@ def _build_queue_attrs(
     queue_name: str, queue: object, config: QueueConfig | None = None
 ) -> dict[str, str]:
     """Build the full set of queue attributes that Terraform expects."""
-    import json as _j
 
     now_ts = str(int(time.time()))
     # Start with defaults
     attrs: dict[str, str] = {
         "QueueArn": f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{queue_name}",
-        "ApproximateNumberOfMessages": str(len(queue._messages)),  # type: ignore[attr-defined]
+        "ApproximateNumberOfMessages": str(len(queue.messages)),  # type: ignore[attr-defined]
         "ApproximateNumberOfMessagesNotVisible": "0",
         "ApproximateNumberOfMessagesDelayed": "0",
         "VisibilityTimeout": str(queue.visibility_timeout),  # type: ignore[attr-defined]
@@ -942,7 +916,7 @@ def _build_queue_attrs(
         dlq_name = queue.dead_letter_queue.queue_name
         dlq_arn = f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{dlq_name}"
         max_count = getattr(queue, "max_receive_count", 5)
-        attrs["RedrivePolicy"] = _j.dumps(
+        attrs["RedrivePolicy"] = _json.dumps(
             {"deadLetterTargetArn": dlq_arn, "maxReceiveCount": max_count}
         )
     # Overlay any attributes that were set via CreateQueue/SetQueueAttributes

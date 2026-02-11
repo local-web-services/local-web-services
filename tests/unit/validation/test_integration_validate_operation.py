@@ -71,11 +71,14 @@ def _make_table_config() -> dict[str, TableConfig]:
 
 class TestValidateOperation:
     def test_valid_operation(self) -> None:
+        # Arrange
         graph = _make_graph_with_permission("grantReadWrite")
         engine = create_validation_engine(
             table_configs=_make_table_config(),
             app_graph=graph,
         )
+
+        # Act
         issues = validate_operation(
             engine,
             handler_id="handler1",
@@ -84,11 +87,17 @@ class TestValidateOperation:
             data={"pk": "user-1", "sk": "profile"},
             app_graph=graph,
         )
+
+        # Assert
         assert issues == []
 
     def test_permission_denied(self) -> None:
+        # Arrange
+        expected_min_error_issues = 1
         graph = _make_graph_with_permission("grantRead")
         engine = create_validation_engine(app_graph=graph)
+
+        # Act
         issues = validate_operation(
             engine,
             handler_id="handler1",
@@ -96,12 +105,17 @@ class TestValidateOperation:
             operation="put_item",
             app_graph=graph,
         )
-        error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(error_issues) >= 1
+
+        # Assert
+        actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
+        assert len(actual_error_issues) >= expected_min_error_issues
 
     def test_strict_mode_raises(self) -> None:
+        # Arrange
         graph = _make_graph_with_permission("grantRead")
         engine = create_validation_engine(strictness="strict", app_graph=graph)
+
+        # Act / Assert
         with pytest.raises(ValidationError):
             validate_operation(
                 engine,

@@ -30,42 +30,51 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestTags:
     def test_add_and_list_tags(self, client: TestClient) -> None:
-        _post(client, "PutParameter", {"Name": "/tagged", "Value": "v"})
+        resource_id = "/tagged"
+        expected_tag_key = "env"
+        _post(client, "PutParameter", {"Name": resource_id, "Value": "v"})
         _post(
             client,
             "AddTagsToResource",
             {
                 "ResourceType": "Parameter",
-                "ResourceId": "/tagged",
-                "Tags": [{"Key": "env", "Value": "dev"}],
+                "ResourceId": resource_id,
+                "Tags": [{"Key": expected_tag_key, "Value": "dev"}],
             },
         )
         result = _post(
             client,
             "ListTagsForResource",
-            {"ResourceType": "Parameter", "ResourceId": "/tagged"},
+            {"ResourceType": "Parameter", "ResourceId": resource_id},
         )
-        assert len(result["TagList"]) == 1
-        assert result["TagList"][0]["Key"] == "env"
+
+        # Assert
+        expected_tag_count = 1
+        assert len(result["TagList"]) == expected_tag_count
+        assert result["TagList"][0]["Key"] == expected_tag_key
 
     def test_remove_tags(self, client: TestClient) -> None:
+        resource_id = "/rt"
+        tag_key = "k1"
         _post(
             client,
             "PutParameter",
             {
-                "Name": "/rt",
+                "Name": resource_id,
                 "Value": "v",
-                "Tags": [{"Key": "k1", "Value": "v1"}],
+                "Tags": [{"Key": tag_key, "Value": "v1"}],
             },
         )
         _post(
             client,
             "RemoveTagsFromResource",
-            {"ResourceType": "Parameter", "ResourceId": "/rt", "TagKeys": ["k1"]},
+            {"ResourceType": "Parameter", "ResourceId": resource_id, "TagKeys": [tag_key]},
         )
         result = _post(
             client,
             "ListTagsForResource",
-            {"ResourceType": "Parameter", "ResourceId": "/rt"},
+            {"ResourceType": "Parameter", "ResourceId": resource_id},
         )
+
+        # Assert
         assert result["TagList"] == []

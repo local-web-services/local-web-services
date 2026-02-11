@@ -68,8 +68,12 @@ class TestTokenValidation:
             issuer.decode_token(token, token_use="id")
 
     def test_rs256_algorithm(self, issuer: TokenIssuer) -> None:
+        # Act
         token = issuer.issue_id_token("sub-123", "alice", {})
-        # Decode header to verify algorithm
         header = jwt.get_unverified_header(token)
-        assert header["alg"] == "RS256"
+
+        # Assert
+        expected_alg = "RS256"
+        actual_alg = header["alg"]
+        assert actual_alg == expected_alg
         assert "kid" in header

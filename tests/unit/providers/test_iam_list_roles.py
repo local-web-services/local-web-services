@@ -23,11 +23,16 @@ class TestListRoles:
     def test_list_empty(self) -> None:
         client = _client()
         xml = _post(client, "ListRoles")
+
+        # Assert
         assert "ListRolesResponse" in xml
         assert "<IsTruncated>false</IsTruncated>" in xml
 
     def test_list_after_create(self) -> None:
         client = _client()
-        _post(client, "CreateRole", {"RoleName": "test-role", "AssumeRolePolicyDocument": "{}"})
+        role_name = "test-role"
+        _post(client, "CreateRole", {"RoleName": role_name, "AssumeRolePolicyDocument": "{}"})
         xml = _post(client, "ListRoles")
-        assert "test-role" in xml
+
+        # Assert
+        assert role_name in xml

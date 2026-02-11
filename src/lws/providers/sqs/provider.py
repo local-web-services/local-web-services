@@ -38,6 +38,24 @@ class QueueConfig:
     custom_attrs: dict[str, str] = field(default_factory=dict)
 
 
+def build_queue_config(queue_name: str, attrs: dict) -> QueueConfig:
+    """Build a QueueConfig from a queue name and attribute dict.
+
+    Parses VisibilityTimeout, ContentBasedDeduplication, and FIFO
+    detection from the queue name suffix.
+    """
+    is_fifo = queue_name.endswith(".fifo")
+    visibility_timeout = int(attrs.get("VisibilityTimeout", "30"))
+    content_based_dedup = str(attrs.get("ContentBasedDeduplication", "false")).lower() == "true"
+    return QueueConfig(
+        queue_name=queue_name,
+        visibility_timeout=visibility_timeout,
+        is_fifo=is_fifo,
+        content_based_dedup=content_based_dedup,
+        custom_attrs=dict(attrs),
+    )
+
+
 class SqsProvider(IQueue):
     """In-memory SQS provider backed by ``LocalQueue`` instances.
 
@@ -49,6 +67,16 @@ class SqsProvider(IQueue):
         self._configs = {q.queue_name: q for q in (queues or [])}
         self._queues: dict[str, LocalQueue] = {}
         self._running = False
+
+    @property
+    def queues(self) -> dict[str, LocalQueue]:
+        """Return the queues store."""
+        return self._queues
+
+    @property
+    def configs(self) -> dict[str, QueueConfig]:
+        """Return the queue configs store."""
+        return self._configs
 
     # ------------------------------------------------------------------
     # Provider lifecycle
@@ -174,17 +202,7 @@ class SqsProvider(IQueue):
 
     async def create_queue(self, queue_name: str, attributes: dict | None = None) -> str:
         """Create a queue. Returns the queue URL. Idempotent per AWS behaviour."""
-        attrs = attributes or {}
-        is_fifo = queue_name.endswith(".fifo")
-        visibility_timeout = int(attrs.get("VisibilityTimeout", "30"))
-        content_based_dedup = str(attrs.get("ContentBasedDeduplication", "false")).lower() == "true"
-
-        config = QueueConfig(
-            queue_name=queue_name,
-            visibility_timeout=visibility_timeout,
-            is_fifo=is_fifo,
-            content_based_dedup=content_based_dedup,
-        )
+        config = build_queue_config(queue_name, attributes or {})
         self.create_queue_from_config(config)
         return f"http://localhost:4566/{_FAKE_ACCOUNT}/{queue_name}"
 
@@ -202,7 +220,7 @@ class SqsProvider(IQueue):
             raise KeyError(f"Queue not found: {queue_name}")
         attrs: dict[str, str] = {
             "QueueArn": f"arn:aws:sqs:{_FAKE_REGION}:{_FAKE_ACCOUNT}:{queue_name}",
-            "ApproximateNumberOfMessages": str(len(queue._messages)),
+            "ApproximateNumberOfMessages": str(len(queue.messages)),
             "VisibilityTimeout": str(queue.visibility_timeout),
             "CreatedTimestamp": str(int(time.time())),
             "LastModifiedTimestamp": str(int(time.time())),
@@ -221,8 +239,8 @@ class SqsProvider(IQueue):
         queue = self._queues.get(queue_name)
         if queue is None:
             raise KeyError(f"Queue not found: {queue_name}")
-        async with queue._lock:
-            queue._messages.clear()
+        async with queue.lock:
+            queue.messages.clear()
 
     # ------------------------------------------------------------------
     # Internal

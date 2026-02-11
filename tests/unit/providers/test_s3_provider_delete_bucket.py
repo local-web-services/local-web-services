@@ -21,14 +21,17 @@ async def provider(tmp_path: Path):
 class TestDeleteBucket:
     @pytest.mark.asyncio
     async def test_delete_bucket(self, provider: S3Provider, tmp_path: Path) -> None:
-        await provider.create_bucket("my-bucket")
-        await provider.delete_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        await provider.create_bucket(bucket_name)
 
-        buckets = await provider.list_buckets()
-        assert "my-bucket" not in buckets
+        # Act
+        await provider.delete_bucket(bucket_name)
 
-        # Directory should be removed
-        assert not (tmp_path / "s3" / "my-bucket").exists()
+        # Assert
+        actual_buckets = await provider.list_buckets()
+        assert bucket_name not in actual_buckets
+        assert not (tmp_path / "s3" / bucket_name).exists()
 
     @pytest.mark.asyncio
     async def test_delete_nonexistent_raises(self, provider: S3Provider) -> None:

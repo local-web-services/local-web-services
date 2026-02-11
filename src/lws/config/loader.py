@@ -53,7 +53,7 @@ class LdkConfig:
 
 def _validate_config(config: LdkConfig) -> None:
     """Validate configuration values and raise ConfigError for invalid ones."""
-    if not isinstance(config.port, int) or not (1 <= config.port <= 65535):
+    if not isinstance(config.port, int) or not 1 <= config.port <= 65535:
         raise ConfigError(f"Invalid port: {config.port}. Must be an integer between 1 and 65535.")
 
     if config.log_level.lower() not in VALID_LOG_LEVELS:

@@ -63,7 +63,6 @@ def client(_resource_metadata):
 
     router = create_management_router(
         orchestrator=orchestrator,
-        compute_providers={},
         providers=providers,
         resource_metadata=_resource_metadata,
     )
@@ -76,59 +75,127 @@ class TestResourcesEndpoint:
     """Tests for GET /_ldk/resources."""
 
     def test_returns_200(self, client):
+        # Arrange
+        expected_status_code = 200
+
+        # Act
         resp = client.get("/_ldk/resources")
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
 
     def test_returns_port(self, client):
+        # Arrange
+        expected_port = 3000
+
+        # Act
         data = client.get("/_ldk/resources").json()
-        assert data["port"] == 3000
+
+        # Assert
+        actual_port = data["port"]
+        assert actual_port == expected_port
 
     def test_returns_services(self, client):
+        # Arrange
+        expected_apigateway = "apigateway"
+        expected_dynamodb = "dynamodb"
+        expected_sqs = "sqs"
+        expected_stepfunctions = "stepfunctions"
+
+        # Act
         data = client.get("/_ldk/resources").json()
-        assert "apigateway" in data["services"]
-        assert "dynamodb" in data["services"]
-        assert "sqs" in data["services"]
-        assert "stepfunctions" in data["services"]
+
+        # Assert
+        actual_services = data["services"]
+        assert expected_apigateway in actual_services
+        assert expected_dynamodb in actual_services
+        assert expected_sqs in actual_services
+        assert expected_stepfunctions in actual_services
 
     def test_apigateway_has_route_details(self, client):
+        # Arrange
+        expected_port = 3000
+        expected_resource_count = 1
+        expected_path = "/orders"
+        expected_method = "GET"
+        expected_handler = "getOrders"
+
+        # Act
         data = client.get("/_ldk/resources").json()
+
+        # Assert
         apigw = data["services"]["apigateway"]
-        assert apigw["port"] == 3000
-        assert len(apigw["resources"]) == 1
+        actual_port = apigw["port"]
+        assert actual_port == expected_port
+        actual_resource_count = len(apigw["resources"])
+        assert actual_resource_count == expected_resource_count
         route = apigw["resources"][0]
-        assert route["path"] == "/orders"
-        assert route["method"] == "GET"
-        assert route["handler"] == "getOrders"
+        actual_path = route["path"]
+        assert actual_path == expected_path
+        actual_method = route["method"]
+        assert actual_method == expected_method
+        actual_handler = route["handler"]
+        assert actual_handler == expected_handler
 
     def test_dynamodb_has_port_and_resources(self, client):
+        # Arrange
+        expected_port = 3001
+        expected_resource_count = 1
+        expected_table_name = "MyTable"
+
+        # Act
         data = client.get("/_ldk/resources").json()
+
+        # Assert
         dynamo = data["services"]["dynamodb"]
-        assert dynamo["port"] == 3001
-        assert len(dynamo["resources"]) == 1
-        assert dynamo["resources"][0]["name"] == "MyTable"
+        actual_port = dynamo["port"]
+        assert actual_port == expected_port
+        actual_resource_count = len(dynamo["resources"])
+        assert actual_resource_count == expected_resource_count
+        actual_table_name = dynamo["resources"][0]["name"]
+        assert actual_table_name == expected_table_name
 
     def test_sqs_has_queue_url(self, client):
+        # Arrange
+        expected_url_prefix = "http://"
+
+        # Act
         data = client.get("/_ldk/resources").json()
+
+        # Assert
         sqs = data["services"]["sqs"]
-        assert sqs["resources"][0]["queue_url"].startswith("http://")
+        actual_queue_url = sqs["resources"][0]["queue_url"]
+        assert actual_queue_url.startswith(expected_url_prefix)
 
     def test_stepfunctions_has_arn(self, client):
+        # Arrange
+        expected_arn_prefix = "arn:"
+
+        # Act
         data = client.get("/_ldk/resources").json()
+
+        # Assert
         sfn = data["services"]["stepfunctions"]
-        assert "arn:" in sfn["resources"][0]["arn"]
+        actual_arn = sfn["resources"][0]["arn"]
+        assert expected_arn_prefix in actual_arn
 
     def test_empty_metadata(self):
         """When no resource_metadata is provided, returns empty dict."""
+        # Arrange
+        expected_data = {}
         orchestrator = Orchestrator()
         orchestrator._running = True
         orchestrator._providers = {}
         router = create_management_router(
             orchestrator=orchestrator,
-            compute_providers={},
             providers={},
         )
         app = FastAPI()
         app.include_router(router)
         c = TestClient(app)
-        data = c.get("/_ldk/resources").json()
-        assert data == {}
+
+        # Act
+        actual_data = c.get("/_ldk/resources").json()
+
+        # Assert
+        assert actual_data == expected_data

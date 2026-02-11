@@ -24,7 +24,9 @@ class TestParseAssetsFromMetadata:
     """Assets discovered via inline ``aws:cdk:asset`` metadata."""
 
     def test_metadata_asset(self, cdk_out: Path):
-        asset_dir = cdk_out / "asset.meta1"
+        # Arrange
+        asset_hash = "meta1"
+        asset_dir = cdk_out / f"asset.{asset_hash}"
         asset_dir.mkdir()
 
         manifest = {
@@ -37,8 +39,8 @@ class TestParseAssetsFromMetadata:
                             {
                                 "type": "aws:cdk:asset",
                                 "data": {
-                                    "sourceHash": "meta1",
-                                    "path": "asset.meta1",
+                                    "sourceHash": asset_hash,
+                                    "path": f"asset.{asset_hash}",
                                 },
                             }
                         ]
@@ -48,5 +50,8 @@ class TestParseAssetsFromMetadata:
         }
         _write_json(cdk_out / "manifest.json", manifest)
 
+        # Act
         result = parse_assets(cdk_out)
-        assert "meta1" in result
+
+        # Assert
+        assert asset_hash in result

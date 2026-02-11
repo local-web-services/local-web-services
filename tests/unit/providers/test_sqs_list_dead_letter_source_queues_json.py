@@ -39,15 +39,21 @@ class TestListDeadLetterSourceQueuesJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
-        await provider.create_queue("my-dlq")
+        # Arrange
+        expected_status_code = 200
+        dlq_name = "my-dlq"
+        await provider.create_queue(dlq_name)
 
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": "http://localhost:4566/000000000000/my-dlq"},
             headers=_headers("ListDeadLetterSourceQueues"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
         assert data["QueueUrls"] == []
 
@@ -57,41 +63,57 @@ class TestListDeadLetterSourceQueuesJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
-        await provider.create_queue("my-dlq")
-        await provider.create_queue("source-queue-1")
-        await provider.create_queue("source-queue-2")
+        # Arrange
+        expected_status_code = 200
+        expected_source_count = 2
+        dlq_name = "my-dlq"
+        source_name_1 = "source-queue-1"
+        source_name_2 = "source-queue-2"
 
-        # Wire up DLQ references
-        dlq = provider.get_queue("my-dlq")
-        source1 = provider.get_queue("source-queue-1")
-        source2 = provider.get_queue("source-queue-2")
+        await provider.create_queue(dlq_name)
+        await provider.create_queue(source_name_1)
+        await provider.create_queue(source_name_2)
+
+        dlq = provider.get_queue(dlq_name)
+        source1 = provider.get_queue(source_name_1)
+        source2 = provider.get_queue(source_name_2)
         source1.dead_letter_queue = dlq
         source2.dead_letter_queue = dlq
 
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": "http://localhost:4566/000000000000/my-dlq"},
             headers=_headers("ListDeadLetterSourceQueues"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
-        assert len(data["QueueUrls"]) == 2
+        actual_source_count = len(data["QueueUrls"])
+        assert actual_source_count == expected_source_count
         urls = data["QueueUrls"]
-        assert any("source-queue-1" in url for url in urls)
-        assert any("source-queue-2" in url for url in urls)
+        assert any(source_name_1 in url for url in urls)
+        assert any(source_name_2 in url for url in urls)
 
     @pytest.mark.asyncio
     async def test_list_dead_letter_source_queues_nonexistent_queue(
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await client.post(
             "/",
             json={"QueueUrl": "http://localhost:4566/000000000000/nonexistent"},
             headers=_headers("ListDeadLetterSourceQueues"),
         )
 
-        assert resp.status_code == 400
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
         assert "NonExistentQueue" in data["__type"]

@@ -7,13 +7,28 @@ from lws.config.loader import LdkConfig
 
 class TestModeConfiguration:
     def test_default_mode_is_none(self) -> None:
+        # Arrange / Act
         config = LdkConfig()
+
+        # Assert
         assert config.mode is None
 
     def test_mode_can_be_set_to_cdk(self) -> None:
-        config = LdkConfig(mode="cdk")
-        assert config.mode == "cdk"
+        # Arrange
+        expected_mode = "cdk"
+
+        # Act
+        config = LdkConfig(mode=expected_mode)
+
+        # Assert
+        assert config.mode == expected_mode
 
     def test_mode_can_be_set_to_terraform(self) -> None:
-        config = LdkConfig(mode="terraform")
-        assert config.mode == "terraform"
+        # Arrange
+        expected_mode = "terraform"
+
+        # Act
+        config = LdkConfig(mode=expected_mode)
+
+        # Assert
+        assert config.mode == expected_mode

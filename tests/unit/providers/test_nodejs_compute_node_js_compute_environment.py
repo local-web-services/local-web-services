@@ -73,19 +73,22 @@ class TestNodeJsComputeEnvironment:
 
     def test_env_merges_all_sources(self) -> None:
         """os.environ + config.environment + sdk_env are merged."""
-        config = _make_config(environment={"APP_ENV": "test"})
-        sdk_env = {"AWS_ENDPOINT_URL_DYNAMODB": "http://localhost:4566"}
+        expected_app_env = "test"
+        expected_dynamodb_url = "http://localhost:4566"
+        config = _make_config(environment={"APP_ENV": expected_app_env})
+        sdk_env = {"AWS_ENDPOINT_URL_DYNAMODB": expected_dynamodb_url}
         provider = NodeJsCompute(config, sdk_env=sdk_env)
 
         context = _make_context()
         env = provider._build_env(context)
 
+        # Assert
         # os.environ should be present (spot-check PATH)
         assert "PATH" in env
         # config.environment
-        assert env["APP_ENV"] == "test"
+        assert env["APP_ENV"] == expected_app_env
         # sdk_env
-        assert env["AWS_ENDPOINT_URL_DYNAMODB"] == "http://localhost:4566"
+        assert env["AWS_ENDPOINT_URL_DYNAMODB"] == expected_dynamodb_url
 
     def test_env_sets_ldk_vars(self) -> None:
         """LDK-specific env vars are set from config and context."""
@@ -95,23 +98,32 @@ class TestNodeJsComputeEnvironment:
         context = _make_context()
         env = provider._build_env(context)
 
-        assert env["LDK_HANDLER"] == "index.handler"
-        assert env["LDK_CODE_PATH"] == "/tmp/code"
-        assert env["LDK_REQUEST_ID"] == "req-abc-123"
-        assert env["LDK_FUNCTION_ARN"] == ("arn:aws:lambda:us-east-1:123456789012:function:my-func")
-        assert env["AWS_LAMBDA_FUNCTION_NAME"] == "my-func"
-        assert env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] == "128"
+        # Assert
+        expected_handler = "index.handler"
+        expected_code_path = "/tmp/code"
+        expected_request_id = "req-abc-123"
+        expected_function_arn = "arn:aws:lambda:us-east-1:123456789012:function:my-func"
+        expected_function_name = "my-func"
+        expected_memory_size = "128"
+        assert env["LDK_HANDLER"] == expected_handler
+        assert env["LDK_CODE_PATH"] == expected_code_path
+        assert env["LDK_REQUEST_ID"] == expected_request_id
+        assert env["LDK_FUNCTION_ARN"] == expected_function_arn
+        assert env["AWS_LAMBDA_FUNCTION_NAME"] == expected_function_name
+        assert env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] == expected_memory_size
 
     def test_sdk_env_overrides_config_env(self) -> None:
         """sdk_env takes precedence over config.environment for the same key."""
         config = _make_config(environment={"SHARED_KEY": "from-config"})
-        sdk_env = {"SHARED_KEY": "from-sdk"}
+        expected_value = "from-sdk"
+        sdk_env = {"SHARED_KEY": expected_value}
         provider = NodeJsCompute(config, sdk_env=sdk_env)
 
         context = _make_context()
         env = provider._build_env(context)
 
-        assert env["SHARED_KEY"] == "from-sdk"
+        # Assert
+        assert env["SHARED_KEY"] == expected_value
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_passes_env_to_subprocess(self, mock_exec: AsyncMock) -> None:
@@ -126,9 +138,12 @@ class TestNodeJsComputeEnvironment:
 
         await provider.invoke({"key": "value"}, _make_context())
 
-        # Inspect the env kwarg passed to create_subprocess_exec
+        # Assert
+        expected_sdk_var = "sdk-value"
+        expected_cfg_var = "cfg-value"
+        expected_handler = "index.handler"
         call_kwargs = mock_exec.call_args.kwargs
         env_passed = call_kwargs["env"]
-        assert env_passed["SDK_VAR"] == "sdk-value"
-        assert env_passed["CFG_VAR"] == "cfg-value"
-        assert env_passed["LDK_HANDLER"] == "index.handler"
+        assert env_passed["SDK_VAR"] == expected_sdk_var
+        assert env_passed["CFG_VAR"] == expected_cfg_var
+        assert env_passed["LDK_HANDLER"] == expected_handler

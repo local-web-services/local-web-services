@@ -39,10 +39,13 @@ class TestChangeMessageVisibilityJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
-        await provider.create_queue("test-queue")
-        await provider.send_message("test-queue", "hello")
+        # Arrange
+        expected_status_code = 200
+        queue_name = "test-queue"
 
-        # Receive to get receipt handle
+        await provider.create_queue(queue_name)
+        await provider.send_message(queue_name, "hello")
+
         recv_resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "MaxNumberOfMessages": 1},
@@ -51,6 +54,7 @@ class TestChangeMessageVisibilityJson:
         messages = recv_resp.json()["Messages"]
         receipt_handle = messages[0]["ReceiptHandle"]
 
+        # Act
         resp = await client.post(
             "/",
             json={
@@ -61,13 +65,19 @@ class TestChangeMessageVisibilityJson:
             headers=_headers("ChangeMessageVisibility"),
         )
 
-        assert resp.status_code == 200
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
 
     @pytest.mark.asyncio
     async def test_change_message_visibility_nonexistent_queue(
         self,
         client: httpx.AsyncClient,
     ) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await client.post(
             "/",
             json={
@@ -78,7 +88,9 @@ class TestChangeMessageVisibilityJson:
             headers=_headers("ChangeMessageVisibility"),
         )
 
-        assert resp.status_code == 400
+        # Assert
+        actual_status_code = resp.status_code
+        assert actual_status_code == expected_status_code
         data = resp.json()
         assert "NonExistentQueue" in data["__type"]
 
@@ -88,10 +100,13 @@ class TestChangeMessageVisibilityJson:
         client: httpx.AsyncClient,
         provider: SqsProvider,
     ) -> None:
-        await provider.create_queue("test-queue")
-        await provider.send_message("test-queue", "hello")
+        # Arrange
+        expected_message_count_after_visibility_reset = 1
+        queue_name = "test-queue"
 
-        # Receive message (makes it invisible)
+        await provider.create_queue(queue_name)
+        await provider.send_message(queue_name, "hello")
+
         recv_resp = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "MaxNumberOfMessages": 1},
@@ -100,7 +115,7 @@ class TestChangeMessageVisibilityJson:
         messages = recv_resp.json()["Messages"]
         receipt_handle = messages[0]["ReceiptHandle"]
 
-        # Try to receive again -- should be empty (message is invisible)
+        # Verify message is invisible
         recv_resp2 = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "MaxNumberOfMessages": 1},
@@ -108,7 +123,7 @@ class TestChangeMessageVisibilityJson:
         )
         assert recv_resp2.json()["Messages"] == []
 
-        # Set visibility timeout to 0 to make the message visible immediately
+        # Act - set visibility timeout to 0 to make the message visible immediately
         await client.post(
             "/",
             json={
@@ -119,10 +134,11 @@ class TestChangeMessageVisibilityJson:
             headers=_headers("ChangeMessageVisibility"),
         )
 
-        # Now the message should be receivable again
+        # Assert - message should be receivable again
         recv_resp3 = await client.post(
             "/",
             json={"QueueUrl": _QUEUE_URL, "MaxNumberOfMessages": 1},
             headers=_headers("ReceiveMessage"),
         )
-        assert len(recv_resp3.json()["Messages"]) == 1
+        actual_message_count = len(recv_resp3.json()["Messages"])
+        assert actual_message_count == expected_message_count_after_visibility_reset

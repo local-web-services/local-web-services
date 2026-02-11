@@ -115,48 +115,78 @@ class TestLocalTopicPublishAndSubscribe:
 
     @pytest.mark.asyncio
     async def test_add_subscription_returns_arn(self) -> None:
-        topic = LocalTopic("test", "arn:aws:sns:us-east-1:000000000000:test")
-        arn = await topic.add_subscription(protocol="lambda", endpoint="my-func")
-        assert arn.startswith("arn:aws:sns:us-east-1:000000000000:test:")
-        assert len(topic.subscribers) == 1
+        # Arrange
+        topic_arn = "arn:aws:sns:us-east-1:000000000000:test"
+        topic = LocalTopic("test", topic_arn)
+        expected_arn_prefix = "arn:aws:sns:us-east-1:000000000000:test:"
+        expected_subscriber_count = 1
+
+        # Act
+        actual_arn = await topic.add_subscription(protocol="lambda", endpoint="my-func")
+
+        # Assert
+        assert actual_arn.startswith(expected_arn_prefix)
+        assert len(topic.subscribers) == expected_subscriber_count
 
     @pytest.mark.asyncio
     async def test_publish_returns_uuid_message_id(self) -> None:
+        # Arrange
         topic = LocalTopic("test", "arn:aws:sns:us-east-1:000000000000:test")
-        message_id = await topic.publish(message="hello")
-        assert message_id  # non-empty string
-        # UUID format: 8-4-4-4-12
-        parts = message_id.split("-")
-        assert len(parts) == 5
+        expected_uuid_parts = 5
+
+        # Act
+        actual_message_id = await topic.publish(message="hello")
+
+        # Assert
+        assert actual_message_id
+        actual_parts = actual_message_id.split("-")
+        assert len(actual_parts) == expected_uuid_parts
 
     @pytest.mark.asyncio
     async def test_multiple_subscribers(self) -> None:
+        # Arrange
         topic = LocalTopic("test", "arn:aws:sns:us-east-1:000000000000:test")
-        arn1 = await topic.add_subscription(protocol="lambda", endpoint="func-a")
-        arn2 = await topic.add_subscription(protocol="sqs", endpoint="queue-b")
-        assert arn1 != arn2
-        assert len(topic.subscribers) == 2
+        expected_subscriber_count = 2
+
+        # Act
+        actual_arn1 = await topic.add_subscription(protocol="lambda", endpoint="func-a")
+        actual_arn2 = await topic.add_subscription(protocol="sqs", endpoint="queue-b")
+
+        # Assert
+        assert actual_arn1 != actual_arn2
+        assert len(topic.subscribers) == expected_subscriber_count
 
     @pytest.mark.asyncio
     async def test_get_matching_subscribers_no_filter(self) -> None:
+        # Arrange
         topic = LocalTopic("test", "arn:aws:sns:us-east-1:000000000000:test")
+        expected_matching_count = 2
         await topic.add_subscription(protocol="lambda", endpoint="func-a")
         await topic.add_subscription(protocol="sqs", endpoint="queue-b")
-        matching = topic.get_matching_subscribers()
-        assert len(matching) == 2
+
+        # Act
+        actual_matching = topic.get_matching_subscribers()
+
+        # Assert
+        assert len(actual_matching) == expected_matching_count
 
     @pytest.mark.asyncio
     async def test_get_matching_subscribers_with_filter(self) -> None:
+        # Arrange
         topic = LocalTopic("test", "arn:aws:sns:us-east-1:000000000000:test")
+        expected_endpoint = "queue-b"
+        expected_matching_count = 1
         await topic.add_subscription(
             protocol="lambda",
             endpoint="func-a",
             filter_policy={"color": ["red"]},
         )
-        await topic.add_subscription(protocol="sqs", endpoint="queue-b")
-
+        await topic.add_subscription(protocol="sqs", endpoint=expected_endpoint)
         attrs = {"color": {"DataType": "String", "StringValue": "blue"}}
-        matching = topic.get_matching_subscribers(attrs)
-        # Only the unfiltered sub matches
-        assert len(matching) == 1
-        assert matching[0].endpoint == "queue-b"
+
+        # Act
+        actual_matching = topic.get_matching_subscribers(attrs)
+
+        # Assert
+        assert len(actual_matching) == expected_matching_count
+        assert actual_matching[0].endpoint == expected_endpoint

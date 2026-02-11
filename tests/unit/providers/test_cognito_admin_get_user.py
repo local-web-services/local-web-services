@@ -44,36 +44,54 @@ async def _request(client: httpx.AsyncClient, operation: str, body: dict) -> htt
 
 class TestAdminGetUser:
     async def test_get_existing_user(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        username = "get-me"
+        expected_email = "getme@example.com"
+        expected_status = "CONFIRMED"
         await _request(
             client,
             "AdminCreateUser",
             {
                 "UserPoolId": POOL_ID,
-                "Username": "get-me",
+                "Username": username,
                 "UserAttributes": [
-                    {"Name": "email", "Value": "getme@example.com"},
+                    {"Name": "email", "Value": expected_email},
                 ],
             },
         )
+
+        # Act
         resp = await _request(
             client,
             "AdminGetUser",
-            {"UserPoolId": POOL_ID, "Username": "get-me"},
+            {"UserPoolId": POOL_ID, "Username": username},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_http_status = 200
+        assert resp.status_code == expected_http_status
         data = resp.json()
-        assert data["Username"] == "get-me"
-        assert data["UserStatus"] == "CONFIRMED"
+        actual_username = data["Username"]
+        actual_user_status = data["UserStatus"]
+        assert actual_username == username
+        assert actual_user_status == expected_status
         assert data["Enabled"] is True
         attrs = {a["Name"]: a["Value"] for a in data["UserAttributes"]}
-        assert attrs["email"] == "getme@example.com"
+        actual_email = attrs["email"]
+        assert actual_email == expected_email
         assert "sub" in attrs
 
     async def test_get_nonexistent_user_returns_error(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await _request(
             client,
             "AdminGetUser",
             {"UserPoolId": POOL_ID, "Username": "ghost"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "UserNotFoundException"
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "UserNotFoundException"
+        assert resp.status_code == expected_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

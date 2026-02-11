@@ -97,13 +97,16 @@ def _make_simple_cdk_out(cdk_out: Path) -> None:
 
 class TestParseAssemblyMultiStack:
     def test_two_stacks(self, tmp_path: Path):
+        # Arrange
+        expected_function_name = "FnA"
+        expected_table_name = "tbl-b"
         cdk_out = tmp_path / "cdk.out"
         cdk_out.mkdir()
 
         # Stack A - Lambda
         tpl_a = {
             "Resources": {
-                "FnA": {
+                expected_function_name: {
                     "Type": "AWS::Lambda::Function",
                     "Properties": {
                         "Handler": "a.handler",
@@ -120,7 +123,7 @@ class TestParseAssemblyMultiStack:
                 "TblB": {
                     "Type": "AWS::DynamoDB::Table",
                     "Properties": {
-                        "TableName": "tbl-b",
+                        "TableName": expected_table_name,
                         "KeySchema": [{"AttributeName": "id", "KeyType": "HASH"}],
                         "AttributeDefinitions": [{"AttributeName": "id", "AttributeType": "S"}],
                     },
@@ -144,8 +147,13 @@ class TestParseAssemblyMultiStack:
         }
         _write_json(cdk_out / "manifest.json", manifest)
 
+        # Act
         model = parse_assembly(cdk_out)
+
+        # Assert
         assert len(model.functions) == 1
-        assert model.functions[0].name == "FnA"
+        actual_function_name = model.functions[0].name
+        assert actual_function_name == expected_function_name
         assert len(model.tables) == 1
-        assert model.tables[0].name == "tbl-b"
+        actual_table_name = model.tables[0].name
+        assert actual_table_name == expected_table_name

@@ -102,13 +102,9 @@ class StatesError(Exception):
 class StatesTaskFailed(StatesError):
     """Raised when a task state fails."""
 
-    pass
-
 
 class StatesTimeout(StatesError):
     """Raised when a state times out."""
-
-    pass
 
 
 # ---------------------------------------------------------------------------
@@ -119,7 +115,8 @@ class StatesTimeout(StatesError):
 class ComputeInvoker(Protocol):
     """Protocol for invoking compute functions."""
 
-    async def invoke_function(self, resource_arn: str, payload: Any) -> Any: ...
+    async def invoke_function(self, resource_arn: str, payload: Any) -> Any:
+        """Invoke a compute function by resource ARN with the given payload."""
 
 
 # ---------------------------------------------------------------------------
@@ -213,7 +210,7 @@ class ExecutionEngine:
         self,
         state: Any,
         input_data: Any,
-        transition: StateTransition,
+        _transition: StateTransition,
     ) -> tuple[Any, str | None]:
         """Execute a single state and return (output, next_state_name)."""
         handlers = {
@@ -314,8 +311,11 @@ class ExecutionEngine:
                 self._compute.invoke_function(state.resource, payload),
                 timeout=state.timeout_seconds,
             )
-        except TimeoutError:
-            raise StatesTimeout("States.Timeout", f"Task timed out after {state.timeout_seconds}s")
+        except TimeoutError as exc:
+            raise StatesTimeout(
+                "States.Timeout",
+                f"Task timed out after {state.timeout_seconds}s",
+            ) from exc
 
     # -------------------------------------------------------------------
     # Choice state (P2-10)

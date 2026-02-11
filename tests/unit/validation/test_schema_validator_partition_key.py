@@ -84,34 +84,67 @@ def _make_context(
 
 class TestPartitionKey:
     def test_valid_pk_plain_string(self) -> None:
+        # Arrange
         ctx = _make_context(data={"pk": "user-123"})
+
+        # Act
         issues = _make_validator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_valid_pk_dynamo_json(self) -> None:
+        # Arrange
         ctx = _make_context(data={"pk": {"S": "user-123"}})
+
+        # Act
         issues = _make_validator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_missing_pk(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_message = "Missing required key attribute 'pk'"
         ctx = _make_context(data={})
+
+        # Act
         issues = _make_validator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert issues[0].level == ValidationLevel.ERROR
-        assert "Missing required key attribute 'pk'" in issues[0].message
+        assert expected_message in issues[0].message
 
     def test_pk_type_mismatch_dynamo_json(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_message_fragment = "type mismatch"
+        expected_type = "'S'"
+        actual_type = "'N'"
         ctx = _make_context(data={"pk": {"N": "123"}})
+
+        # Act
         issues = _make_validator().validate(ctx)
-        assert len(issues) == 1
-        assert "type mismatch" in issues[0].message
-        assert "'S'" in issues[0].message
-        assert "'N'" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_message_fragment in issues[0].message
+        assert expected_type in issues[0].message
+        assert actual_type in issues[0].message
 
     def test_pk_type_mismatch_plain_value(self) -> None:
+        # Arrange
+        expected_issue_count = 1
+        expected_message_fragment = "type mismatch"
         configs = {"users": _make_table_config(pk_type="S")}
         validator = _make_validator(configs)
         ctx = _make_context(data={"pk": 123})
+
+        # Act
         issues = validator.validate(ctx)
-        assert len(issues) == 1
-        assert "type mismatch" in issues[0].message
+
+        # Assert
+        assert len(issues) == expected_issue_count
+        assert expected_message_fragment in issues[0].message

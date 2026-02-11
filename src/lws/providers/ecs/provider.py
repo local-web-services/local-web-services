@@ -271,7 +271,7 @@ def _extract_health_path(cmd: list[str]) -> str | None:
     """
     for token in cmd:
         if token.startswith("http://") or token.startswith("https://"):
-            from urllib.parse import urlparse
+            from urllib.parse import urlparse  # pylint: disable=import-outside-toplevel
 
             return urlparse(token).path
         if "localhost" in token and "/" in token:

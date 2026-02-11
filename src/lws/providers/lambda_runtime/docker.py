@@ -32,6 +32,7 @@ from lws.interfaces import (
     ProviderStatus,
 )
 from lws.logging.logger import get_logger
+from lws.providers.lambda_runtime.result_parser import parse_invocation_output
 
 _logger = get_logger("ldk.docker-compute")
 
@@ -75,6 +76,16 @@ class DockerCompute(ICompute):
         self._container = None
         self._client = None
 
+    @property
+    def sdk_env(self) -> dict[str, str]:
+        """Return the SDK environment variables."""
+        return self._sdk_env
+
+    @sdk_env.setter
+    def sdk_env(self, value: dict[str, str]) -> None:
+        """Set the SDK environment variables."""
+        self._sdk_env = value
+
     # -- Provider lifecycle ---------------------------------------------------
 
     @property
@@ -87,7 +98,7 @@ class DockerCompute(ICompute):
         Container creation is deferred to the first ``invoke()`` call.
         """
         try:
-            import docker
+            import docker  # pylint: disable=import-outside-toplevel
         except ImportError as exc:
             self._status = ProviderStatus.ERROR
             raise ProviderStartError(
@@ -115,9 +126,16 @@ class DockerCompute(ICompute):
         # Remove any stale container from a previous run.
         try:
             stale = self._client.containers.get(container_name)
+            _logger.log_docker_operation(
+                "rm", container_name, details={"reason": "stale", "id": stale.id[:12]}
+            )
             stale.remove(force=True)
         except Exception:
             pass
+
+        container_env = self._build_container_env()
+        code_path = str(self._config.code_path.resolve())
+        bootstrap_path = str(_BOOTSTRAP_DIR.resolve())
 
         self._container = self._client.containers.run(
             image,
@@ -126,27 +144,33 @@ class DockerCompute(ICompute):
             detach=True,
             name=container_name,
             volumes={
-                str(self._config.code_path.resolve()): {
+                code_path: {
                     "bind": "/var/task",
                     "mode": "ro",
                 },
-                str(_BOOTSTRAP_DIR.resolve()): {
+                bootstrap_path: {
                     "bind": "/var/bootstrap",
                     "mode": "ro",
                 },
             },
             mem_limit=f"{self._config.memory_size}m",
             nano_cpus=self._calculate_nano_cpus(),
-            environment=self._build_container_env(),
+            environment=container_env,
             extra_hosts={"host.docker.internal": "host-gateway"},
             init=True,
         )
 
-        _logger.info(
-            "Started container %s (image=%s, memory=%dMB)",
+        _logger.log_docker_operation(
+            "run",
             container_name,
-            image,
-            self._config.memory_size,
+            details={
+                "image": image,
+                "memory_mb": self._config.memory_size,
+                "nano_cpus": self._calculate_nano_cpus(),
+                "code_path": code_path,
+                "bootstrap_path": bootstrap_path,
+                "environment": container_env,
+            },
         )
 
     async def stop(self) -> None:
@@ -157,6 +181,8 @@ class DockerCompute(ICompute):
         """Stop and remove the container. Safe to call when no container exists."""
         if self._container is None:
             return
+        container_id = self._container.id[:12]
+        container_name = f"ldk-{self._config.function_name}"
         try:
             self._container.stop(timeout=2)
         except Exception:
@@ -166,6 +192,7 @@ class DockerCompute(ICompute):
         except Exception:
             pass
         self._container = None
+        _logger.log_docker_operation("stop", container_name, details={"id": container_id})
 
     async def health_check(self) -> bool:
         return self._status is ProviderStatus.RUNNING
@@ -264,11 +291,11 @@ class DockerCompute(ICompute):
         # Verify the image exists locally.
         try:
             self._client.images.get(image)
-        except Exception:
+        except Exception as exc:
             raise RuntimeError(
                 f"Docker image '{image}' not found locally. "
                 f"Run 'ldk setup lambda' to pull the required images."
-            )
+            ) from exc
         return image
 
     def _calculate_nano_cpus(self) -> int:
@@ -280,6 +307,17 @@ class DockerCompute(ICompute):
 
         Rewrites localhost endpoint URLs to ``host.docker.internal`` so the
         container can reach services running on the host.
+
+        S3 needs extra handling because the AWS SDK defaults to
+        virtual-hosted-style addressing (``bucket.host.docker.internal``)
+        which fails DNS resolution.  Two fixes are applied:
+
+        - **Python (boto3)**: ``AWS_CONFIG_FILE`` points to a shared config
+          that sets ``addressing_style = path``.
+        - **Node.js (SDK v3)**: A ``dns.lookup`` hook loaded via
+          ``NODE_OPTIONS`` rewrites ``*.host.docker.internal`` →
+          ``host.docker.internal``.  The S3 server's virtual-host middleware
+          then extracts the bucket name from the ``Host`` header.
         """
         env: dict[str, str] = {}
         for key, value in self._config.environment.items():
@@ -290,6 +328,16 @@ class DockerCompute(ICompute):
         env["LDK_CODE_PATH"] = "/var/task"
         env["AWS_LAMBDA_FUNCTION_NAME"] = self._config.function_name
         env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] = str(self._config.memory_size)
+        # Force path-style S3 for Python boto3 via shared config file.
+        env["AWS_CONFIG_FILE"] = "/var/bootstrap/aws_config"
+        # For Node.js: preload a DNS rewrite hook that resolves
+        # *.host.docker.internal → host.docker.internal so virtual-hosted-style
+        # S3 requests reach the host.  The server's middleware extracts the
+        # bucket name from the Host header.
+        if self._config.runtime.startswith("nodejs"):
+            existing = env.get("NODE_OPTIONS", "")
+            preload = "--require /var/bootstrap/dns_rewrite.js"
+            env["NODE_OPTIONS"] = f"{existing} {preload}".strip()
         return env
 
     def _build_exec_env(self, context: LambdaContext) -> list[str]:
@@ -388,46 +436,55 @@ class DockerCompute(ICompute):
 
         Returns ``(stdout_str, timed_out)``.
         """
+        container_name = f"ldk-{self._config.function_name}"
         docker_cmd = ["docker", "exec", "-i"]
         for env in env_vars:
             docker_cmd.extend(["-e", env])
         docker_cmd.append(self._container.id)
         docker_cmd.extend(cmd)
 
-        proc = subprocess.Popen(
+        _logger.log_docker_operation(
+            "exec",
+            container_name,
+            details={
+                "command": " ".join(cmd),
+                "env_vars": env_vars,
+            },
+        )
+
+        with subprocess.Popen(
             docker_cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-        )
+        ) as proc:
+            # Send the event payload and close stdin so the bootstrap reads EOF.
+            try:
+                proc.stdin.write(event_json.encode())
+                proc.stdin.close()
+            except BrokenPipeError:
+                pass
 
-        # Send the event payload and close stdin so the bootstrap reads EOF.
-        try:
-            proc.stdin.write(event_json.encode())
-            proc.stdin.close()
-        except BrokenPipeError:
-            pass
+            output, timed_out = self._read_json_from_fd(proc.stdout.fileno(), self._config.timeout)
 
-        output, timed_out = self._read_json_from_fd(proc.stdout.fileno(), self._config.timeout)
+            # Collect stderr (best-effort, non-blocking).
+            stderr = b""
+            try:
+                os.set_blocking(proc.stderr.fileno(), False)
+                stderr = os.read(proc.stderr.fileno(), 65536)
+            except (BlockingIOError, OSError):
+                pass
 
-        # Collect stderr (best-effort, non-blocking).
-        stderr = b""
-        try:
-            os.set_blocking(proc.stderr.fileno(), False)
-            stderr = os.read(proc.stderr.fileno(), 65536)
-        except (BlockingIOError, OSError):
-            pass
-
-        # Kill the docker-exec client process.  The container itself is
-        # cleaned up separately by the caller.
-        try:
-            proc.kill()
-        except OSError:
-            pass
-        try:
-            proc.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            pass
+            # Kill the docker-exec client process.  The container itself is
+            # cleaned up separately by the caller.
+            try:
+                proc.kill()
+            except OSError:
+                pass
+            try:
+                proc.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                pass
 
         if stderr:
             _logger.debug(
@@ -441,29 +498,4 @@ class DockerCompute(ICompute):
     @staticmethod
     def _parse_result(raw: str, duration_ms: float, request_id: str) -> InvocationResult:
         """Parse the JSON emitted by the bootstrap script into an InvocationResult."""
-        try:
-            data = json.loads(raw)
-        except json.JSONDecodeError:
-            return InvocationResult(
-                payload=None,
-                error=f"Failed to parse container output: {raw!r}",
-                duration_ms=duration_ms,
-                request_id=request_id,
-            )
-
-        if "error" in data:
-            err = data["error"]
-            error_message = err.get("errorMessage", str(err)) if isinstance(err, dict) else str(err)
-            return InvocationResult(
-                payload=None,
-                error=error_message,
-                duration_ms=duration_ms,
-                request_id=request_id,
-            )
-
-        return InvocationResult(
-            payload=data.get("result"),
-            error=None,
-            duration_ms=duration_ms,
-            request_id=request_id,
-        )
+        return parse_invocation_output(raw, duration_ms, request_id)

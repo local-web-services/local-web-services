@@ -17,16 +17,24 @@ async def provider() -> StepFunctionsProvider:
 
 class TestDescribeStateMachine:
     async def test_describe_returns_attributes(self, provider: StepFunctionsProvider) -> None:
+        # Arrange
+        expected_name = "described-sm"
+        expected_role_arn = "arn:aws:iam::123:role/MyRole"
+        expected_status = "ACTIVE"
+
+        # Act
         provider.create_state_machine(
-            name="described-sm",
+            name=expected_name,
             definition='{"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": true}}}',
-            role_arn="arn:aws:iam::123:role/MyRole",
+            role_arn=expected_role_arn,
         )
-        attrs = provider.describe_state_machine("described-sm")
-        assert attrs["name"] == "described-sm"
+        attrs = provider.describe_state_machine(expected_name)
+
+        # Assert
+        assert attrs["name"] == expected_name
         assert "stateMachineArn" in attrs
-        assert attrs["roleArn"] == "arn:aws:iam::123:role/MyRole"
-        assert attrs["status"] == "ACTIVE"
+        assert attrs["roleArn"] == expected_role_arn
+        assert attrs["status"] == expected_status
 
     async def test_describe_nonexistent_raises(self, provider: StepFunctionsProvider) -> None:
         with pytest.raises(KeyError, match="State machine not found"):

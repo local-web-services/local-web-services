@@ -174,14 +174,28 @@ class TestExpressExecution:
     """Express (EXPRESS) workflow execution tests."""
 
     async def test_express_returns_output(self, express_provider: StepFunctionsProvider) -> None:
+        # Arrange
+        expected_status = "SUCCEEDED"
+
+        # Act
         result = await express_provider.start_execution("express-pass", input_data={"x": 1})
-        assert result["status"] == "SUCCEEDED"
+
+        # Assert
+        actual_status = result["status"]
+        assert actual_status == expected_status
         assert "output" in result
 
     async def test_express_blocks_until_complete(
         self, express_provider: StepFunctionsProvider
     ) -> None:
         """Express execution should block and return the result directly."""
+        # Arrange
+        expected_status = "SUCCEEDED"
+
+        # Act
         result = await express_provider.start_execution("express-pass")
-        assert result["status"] == "SUCCEEDED"
+
+        # Assert
+        actual_status = result["status"]
+        assert actual_status == expected_status
         assert "executionArn" in result

@@ -115,80 +115,116 @@ class TestQuery:
     """query() key condition parsing."""
 
     async def test_query_by_pk_only(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 1})
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i2", "v": 2})
         await provider.put_item("orders", {"orderId": "o2", "itemId": "i1", "v": 3})
+        expected_count = 2
+        expected_order_ids = {"o1"}
 
+        # Act
         results = await provider.query(
             "orders",
             "orderId = :pk",
             expression_values={":pk": "o1"},
         )
-        assert len(results) == 2
-        order_ids = {r["orderId"] for r in results}
-        assert order_ids == {"o1"}
+
+        # Assert
+        assert len(results) == expected_count
+        actual_order_ids = {r["orderId"] for r in results}
+        assert actual_order_ids == expected_order_ids
 
     async def test_query_pk_and_sk_eq(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 1})
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i2", "v": 2})
+        expected_count = 1
+        expected_v = 1
 
+        # Act
         results = await provider.query(
             "orders",
             "orderId = :pk AND itemId = :sk",
             expression_values={":pk": "o1", ":sk": "i1"},
         )
-        assert len(results) == 1
-        assert results[0]["v"] == 1
+
+        # Assert
+        assert len(results) == expected_count
+        actual_v = results[0]["v"]
+        assert actual_v == expected_v
 
     async def test_query_pk_and_sk_range(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         for i in range(5):
             await provider.put_item(
                 "orders",
                 {"orderId": "o1", "itemId": f"item-{i:03d}", "v": i},
             )
+        expected_count = 3
+        expected_vals = [1, 2, 3]
 
+        # Act
         results = await provider.query(
             "orders",
             "orderId = :pk AND itemId BETWEEN :a AND :b",
             expression_values={":pk": "o1", ":a": "item-001", ":b": "item-003"},
         )
-        assert len(results) == 3
-        vals = sorted(r["v"] for r in results)
-        assert vals == [1, 2, 3]
+
+        # Assert
+        assert len(results) == expected_count
+        actual_vals = sorted(r["v"] for r in results)
+        assert actual_vals == expected_vals
 
     async def test_query_begins_with(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "abc-1"})
         await provider.put_item("orders", {"orderId": "o1", "itemId": "abc-2"})
         await provider.put_item("orders", {"orderId": "o1", "itemId": "xyz-1"})
+        expected_count = 2
 
+        # Act
         results = await provider.query(
             "orders",
             "orderId = :pk AND begins_with(itemId, :prefix)",
             expression_values={":pk": "o1", ":prefix": "abc"},
         )
-        assert len(results) == 2
+
+        # Assert
+        assert len(results) == expected_count
 
     async def test_query_with_filter(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "status": "active"})
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i2", "status": "inactive"})
+        expected_count = 1
+        expected_status = "active"
 
+        # Act
         results = await provider.query(
             "orders",
             "orderId = :pk",
             expression_values={":pk": "o1", ":s": "active"},
             filter_expression="status = :s",
         )
-        assert len(results) == 1
-        assert results[0]["status"] == "active"
+
+        # Assert
+        assert len(results) == expected_count
+        actual_status = results[0]["status"]
+        assert actual_status == expected_status
 
     async def test_query_sk_gt(self, provider: SqliteDynamoProvider) -> None:
+        # Arrange
         await provider.put_item("orders", {"orderId": "o1", "itemId": "a"})
         await provider.put_item("orders", {"orderId": "o1", "itemId": "b"})
         await provider.put_item("orders", {"orderId": "o1", "itemId": "c"})
+        expected_count = 2
 
+        # Act
         results = await provider.query(
             "orders",
             "orderId = :pk AND itemId > :sk",
             expression_values={":pk": "o1", ":sk": "a"},
         )
-        assert len(results) == 2
+
+        # Assert
+        assert len(results) == expected_count

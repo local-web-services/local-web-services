@@ -114,34 +114,50 @@ class TestSnsEventFormat:
     """Test SNS event format builders."""
 
     def test_lambda_event_structure(self) -> None:
-        event = _build_sns_lambda_event(
-            topic_arn="arn:aws:sns:us-east-1:000000000000:my-topic",
-            message="hello",
-            message_id="msg-123",
-            subject="Test",
+        # Arrange
+        expected_topic_arn = "arn:aws:sns:us-east-1:000000000000:my-topic"
+        expected_message = "hello"
+        expected_message_id = "msg-123"
+        expected_subject = "Test"
+        expected_event_source = "aws:sns"
+        expected_event_version = "1.0"
+        expected_type = "Notification"
+
+        # Act
+        actual_event = _build_sns_lambda_event(
+            topic_arn=expected_topic_arn,
+            message=expected_message,
+            message_id=expected_message_id,
+            subject=expected_subject,
             message_attributes=None,
         )
 
-        assert "Records" in event
-        assert len(event["Records"]) == 1
+        # Assert
+        assert "Records" in actual_event
+        assert len(actual_event["Records"]) == 1
 
-        record = event["Records"][0]
-        assert record["EventSource"] == "aws:sns"
-        assert record["EventVersion"] == "1.0"
-        assert "EventSubscriptionArn" in record
+        actual_record = actual_event["Records"][0]
+        assert actual_record["EventSource"] == expected_event_source
+        assert actual_record["EventVersion"] == expected_event_version
+        assert "EventSubscriptionArn" in actual_record
 
-        sns = record["Sns"]
-        assert sns["Type"] == "Notification"
-        assert sns["MessageId"] == "msg-123"
-        assert sns["TopicArn"] == "arn:aws:sns:us-east-1:000000000000:my-topic"
-        assert sns["Subject"] == "Test"
-        assert sns["Message"] == "hello"
-        assert sns["Timestamp"]
-        assert sns["MessageAttributes"] == {}
+        actual_sns = actual_record["Sns"]
+        assert actual_sns["Type"] == expected_type
+        assert actual_sns["MessageId"] == expected_message_id
+        assert actual_sns["TopicArn"] == expected_topic_arn
+        assert actual_sns["Subject"] == expected_subject
+        assert actual_sns["Message"] == expected_message
+        assert actual_sns["Timestamp"]
+        assert actual_sns["MessageAttributes"] == {}
 
     def test_lambda_event_with_message_attributes(self) -> None:
-        attrs = {"color": {"DataType": "String", "StringValue": "red"}}
-        event = _build_sns_lambda_event(
+        # Arrange
+        expected_data_type = "String"
+        expected_color_value = "red"
+        attrs = {"color": {"DataType": expected_data_type, "StringValue": expected_color_value}}
+
+        # Act
+        actual_event = _build_sns_lambda_event(
             topic_arn="arn:aws:sns:us-east-1:000000000000:my-topic",
             message="hello",
             message_id="msg-456",
@@ -149,24 +165,34 @@ class TestSnsEventFormat:
             message_attributes=attrs,
         )
 
-        sns = event["Records"][0]["Sns"]
-        assert "color" in sns["MessageAttributes"]
-        assert sns["MessageAttributes"]["color"]["DataType"] == "String"
-        assert sns["MessageAttributes"]["color"]["StringValue"] == "red"
+        # Assert
+        actual_sns = actual_event["Records"][0]["Sns"]
+        assert "color" in actual_sns["MessageAttributes"]
+        assert actual_sns["MessageAttributes"]["color"]["DataType"] == expected_data_type
+        assert actual_sns["MessageAttributes"]["color"]["StringValue"] == expected_color_value
 
     def test_sqs_envelope_structure(self) -> None:
-        envelope = _build_sns_sqs_envelope(
-            topic_arn="arn:aws:sns:us-east-1:000000000000:my-topic",
-            message="sqs hello",
-            message_id="msg-789",
-            subject="SQS Test",
+        # Arrange
+        expected_topic_arn = "arn:aws:sns:us-east-1:000000000000:my-topic"
+        expected_message = "sqs hello"
+        expected_message_id = "msg-789"
+        expected_subject = "SQS Test"
+        expected_type = "Notification"
+
+        # Act
+        actual_envelope = _build_sns_sqs_envelope(
+            topic_arn=expected_topic_arn,
+            message=expected_message,
+            message_id=expected_message_id,
+            subject=expected_subject,
             message_attributes=None,
         )
 
-        assert envelope["Type"] == "Notification"
-        assert envelope["MessageId"] == "msg-789"
-        assert envelope["TopicArn"] == "arn:aws:sns:us-east-1:000000000000:my-topic"
-        assert envelope["Subject"] == "SQS Test"
-        assert envelope["Message"] == "sqs hello"
-        assert envelope["Timestamp"]
-        assert envelope["MessageAttributes"] == {}
+        # Assert
+        assert actual_envelope["Type"] == expected_type
+        assert actual_envelope["MessageId"] == expected_message_id
+        assert actual_envelope["TopicArn"] == expected_topic_arn
+        assert actual_envelope["Subject"] == expected_subject
+        assert actual_envelope["Message"] == expected_message
+        assert actual_envelope["Timestamp"]
+        assert actual_envelope["MessageAttributes"] == {}

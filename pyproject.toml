@@ -1,6 +1,6 @@
 [project]
 name = "local-web-services"
-version = "0.5.0"
+version = "0.6.0"
 description = "Run AWS CDK applications locally - accelerate development with agentic code editors"
 readme = "README.md"
 license = "MIT"
@@ -90,3 +90,27 @@ known-first-party = ["lws"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
+
+[tool.pylint.main]
+load-plugins = []
+
+[tool.pylint."messages control"]
+disable = [
+    "E0401",   # import-error — false positive under uvx (no venv)
+    "W0718",   # broad-exception-caught — suppressed globally per user decision
+    "R0801",   # duplicate-code — handled by `make cpd`
+    "C0301",   # line-too-long — handled by ruff/black
+    "C0302",   # too-many-lines — handled by ruff
+    "C0114",   # missing-module-docstring — not enforced in this project
+    "C0115",   # missing-class-docstring — not enforced in this project
+    "R0903",   # too-few-public-methods — dataclass/protocol pattern
+    "R0902",   # too-many-instance-attributes — config objects
+    "R0913",   # too-many-arguments — structural
+    "R0917",   # too-many-positional-arguments — structural
+    "R0904",   # too-many-public-methods — provider pattern
+    "R0911",   # too-many-return-statements — structural
+    "R0914",   # too-many-locals — structural
+    "C0103",   # invalid-name — naming conventions differ from pylint defaults
+    "W0603",   # global-statement — used sparingly, intentional
+    "W0621",   # redefined-outer-name — rare, intentional
+]

@@ -93,9 +93,16 @@ class TestProviderUpdateStateMachine:
 
     async def test_update_role_arn(self, provider: StepFunctionsProvider) -> None:
         """Provider.update_state_machine should update the role ARN."""
-        provider.update_state_machine("test-sm", role_arn="arn:aws:iam::000:role/updated")
+        # Arrange
+        expected_role_arn = "arn:aws:iam::000:role/updated"
+
+        # Act
+        provider.update_state_machine("test-sm", role_arn=expected_role_arn)
+
+        # Assert
         info = provider.describe_state_machine("test-sm")
-        assert info["roleArn"] == "arn:aws:iam::000:role/updated"
+        actual_role_arn = info["roleArn"]
+        assert actual_role_arn == expected_role_arn
 
     async def test_update_nonexistent_raises(self, provider: StepFunctionsProvider) -> None:
         """Provider.update_state_machine should raise KeyError for unknown name."""

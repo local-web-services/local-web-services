@@ -30,9 +30,13 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 class TestListSecrets:
     def test_list(self, client: TestClient) -> None:
-        _post(client, "CreateSecret", {"Name": "s1"})
-        _post(client, "CreateSecret", {"Name": "s2"})
+        secret_name_1 = "s1"
+        secret_name_2 = "s2"
+        _post(client, "CreateSecret", {"Name": secret_name_1})
+        _post(client, "CreateSecret", {"Name": secret_name_2})
         result = _post(client, "ListSecrets", {})
+
+        # Assert
         names = [s["Name"] for s in result["SecretList"]]
-        assert "s1" in names
-        assert "s2" in names
+        assert secret_name_1 in names
+        assert secret_name_2 in names

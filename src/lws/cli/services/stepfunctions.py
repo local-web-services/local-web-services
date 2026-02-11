@@ -21,11 +21,11 @@ def _client(port: int) -> LwsClient:
 @app.command("start-execution")
 def start_execution(
     name: str = typer.Option(..., "--name", help="State machine name"),
-    input: str = typer.Option("{}", "--input", help="JSON input"),
+    execution_input: str = typer.Option("{}", "--input", help="JSON input"),
     port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
 ) -> None:
     """Start a state machine execution."""
-    asyncio.run(_start_execution(name, input, port))
+    asyncio.run(_start_execution(name, execution_input, port))
 
 
 async def _start_execution(name: str, input_str: str, port: int) -> None:

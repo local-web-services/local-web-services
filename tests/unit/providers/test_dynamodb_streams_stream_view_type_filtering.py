@@ -28,6 +28,7 @@ class TestStreamViewTypeFiltering:
     """Test that different StreamViewTypes produce correct record content."""
 
     async def test_keys_only_stream(self) -> None:
+        # Arrange
         handler = MockLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         dispatcher.configure_stream(
@@ -38,9 +39,11 @@ class TestStreamViewTypeFiltering:
             )
         )
         dispatcher.register_handler("users", handler)
+        expected_keys = {"userId": "u1"}
 
         await dispatcher.start()
         try:
+            # Act
             await dispatcher.emit(
                 event_name=EventName.INSERT,
                 table_name="users",
@@ -48,15 +51,19 @@ class TestStreamViewTypeFiltering:
                 new_image={"userId": "u1", "name": "Alice"},
             )
             await handler.wait_for_invocation(timeout=2.0)
+
+            # Assert
             record = handler.invocations[0]["Records"][0]
             dynamodb = record["dynamodb"]
-            assert dynamodb["Keys"] == {"userId": "u1"}
+            actual_keys = dynamodb["Keys"]
+            assert actual_keys == expected_keys
             assert "NewImage" not in dynamodb
             assert "OldImage" not in dynamodb
         finally:
             await dispatcher.stop()
 
     async def test_new_image_stream(self) -> None:
+        # Arrange
         handler = MockLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         dispatcher.configure_stream(
@@ -70,6 +77,7 @@ class TestStreamViewTypeFiltering:
 
         await dispatcher.start()
         try:
+            # Act
             await dispatcher.emit(
                 event_name=EventName.MODIFY,
                 table_name="users",
@@ -78,6 +86,8 @@ class TestStreamViewTypeFiltering:
                 old_image={"userId": "u1", "name": "Alice"},
             )
             await handler.wait_for_invocation(timeout=2.0)
+
+            # Assert
             record = handler.invocations[0]["Records"][0]
             dynamodb = record["dynamodb"]
             assert "NewImage" in dynamodb

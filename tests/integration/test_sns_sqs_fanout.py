@@ -56,6 +56,10 @@ class TestSnsSqsFanout:
         sns_client: httpx.AsyncClient,
         sqs_client: httpx.AsyncClient,
     ):
+        # Arrange
+        expected_status_code = 200
+        expected_message = "fanout-test-message"
+
         # Subscribe the SQS queue to the SNS topic
         await sns_client.post(
             "/",
@@ -67,13 +71,14 @@ class TestSnsSqsFanout:
             },
         )
 
+        # Act
         # Publish a message to the SNS topic
         await sns_client.post(
             "/",
             data={
                 "Action": "Publish",
                 "TopicArn": _TOPIC_ARN,
-                "Message": "fanout-test-message",
+                "Message": expected_message,
             },
         )
 
@@ -89,5 +94,7 @@ class TestSnsSqsFanout:
                 "MaxNumberOfMessages": "1",
             },
         )
-        assert recv_resp.status_code == 200
-        assert "fanout-test-message" in recv_resp.text
+
+        # Assert
+        assert recv_resp.status_code == expected_status_code
+        assert expected_message in recv_resp.text

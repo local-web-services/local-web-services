@@ -32,80 +32,111 @@ from ._helpers import MockApi, MockAppModel, MockFunction, MockRoute, MockTable
 class TestBuildGraph:
     def test_simple_app_model(self) -> None:
         """API with one route -> Lambda -> DynamoDB table."""
+        # Arrange
+        table_id = "UsersTable"
+        function_id = "GetUserFn"
+        api_id = "MyApi"
+        handler_name = "get_user.handler"
+        table_name = "users"
+        expected_edge_count = 1
+
         model = MockAppModel(
-            tables=[MockTable(logical_id="UsersTable", table_name="users")],
+            tables=[MockTable(logical_id=table_id, table_name=table_name)],
             functions=[
                 MockFunction(
-                    logical_id="GetUserFn",
-                    handler="get_user.handler",
-                    environment={"TABLE_NAME": "users"},
+                    logical_id=function_id,
+                    handler=handler_name,
+                    environment={"TABLE_NAME": table_name},
                 ),
             ],
             apis=[
                 MockApi(
-                    logical_id="MyApi",
+                    logical_id=api_id,
                     routes=[
                         MockRoute(
                             http_method="GET",
                             resource_path="/users/{id}",
-                            handler_name="get_user.handler",
+                            handler_name=handler_name,
                         ),
                     ],
                 ),
             ],
         )
 
+        # Act
         graph = build_graph(model)
 
-        # Nodes
-        assert "UsersTable" in graph.nodes
-        assert graph.nodes["UsersTable"].node_type == NodeType.DYNAMODB_TABLE
-        assert "GetUserFn" in graph.nodes
-        assert graph.nodes["GetUserFn"].node_type == NodeType.LAMBDA_FUNCTION
-        assert "MyApi" in graph.nodes
-        assert graph.nodes["MyApi"].node_type == NodeType.API_GATEWAY
+        # Assert -- Nodes
+        assert table_id in graph.nodes
+        assert graph.nodes[table_id].node_type == NodeType.DYNAMODB_TABLE
+        assert function_id in graph.nodes
+        assert graph.nodes[function_id].node_type == NodeType.LAMBDA_FUNCTION
+        assert api_id in graph.nodes
+        assert graph.nodes[api_id].node_type == NodeType.API_GATEWAY
 
-        # Edges -- data dependency: GetUserFn -> UsersTable
+        # Assert -- Edges -- data dependency: GetUserFn -> UsersTable
         data_edges = [e for e in graph.edges if e.edge_type == EdgeType.DATA_DEPENDENCY]
-        assert len(data_edges) == 1
-        assert data_edges[0].source == "GetUserFn"
-        assert data_edges[0].target == "UsersTable"
+        assert len(data_edges) == expected_edge_count
+        assert data_edges[0].source == function_id
+        assert data_edges[0].target == table_id
 
-        # Edges -- trigger: MyApi -> GetUserFn
+        # Assert -- Edges -- trigger: MyApi -> GetUserFn
         trigger_edges = [e for e in graph.edges if e.edge_type == EdgeType.TRIGGER]
-        assert len(trigger_edges) == 1
-        assert trigger_edges[0].source == "MyApi"
-        assert trigger_edges[0].target == "GetUserFn"
+        assert len(trigger_edges) == expected_edge_count
+        assert trigger_edges[0].source == api_id
+        assert trigger_edges[0].target == function_id
 
     def test_topological_order_of_built_graph(self) -> None:
         """Startup order should be: table, function, api."""
+        # Arrange
+        table_id = "T"
+        function_id = "F"
+        api_id = "A"
+        handler = "h"
+        table_name = "t"
+
         model = MockAppModel(
-            tables=[MockTable(logical_id="T", table_name="t")],
+            tables=[MockTable(logical_id=table_id, table_name=table_name)],
             functions=[
-                MockFunction(logical_id="F", handler="h", environment={"TBL": "t"}),
+                MockFunction(
+                    logical_id=function_id,
+                    handler=handler,
+                    environment={"TBL": table_name},
+                ),
             ],
             apis=[
                 MockApi(
-                    logical_id="A",
-                    routes=[MockRoute("GET", "/", "h")],
+                    logical_id=api_id,
+                    routes=[MockRoute("GET", "/", handler)],
                 ),
             ],
         )
 
+        # Act
         graph = build_graph(model)
-        order = graph.topological_sort()
+        actual_order = graph.topological_sort()
 
-        assert order.index("T") < order.index("F")
-        assert order.index("F") < order.index("A")
+        # Assert
+        assert actual_order.index(table_id) < actual_order.index(function_id)
+        assert actual_order.index(function_id) < actual_order.index(api_id)
 
     def test_build_graph_empty_model(self) -> None:
+        # Arrange
+        expected_node_count = 0
+        expected_edge_count = 0
         model = MockAppModel()
+
+        # Act
         graph = build_graph(model)
-        assert len(graph.nodes) == 0
-        assert len(graph.edges) == 0
+
+        # Assert
+        assert len(graph.nodes) == expected_node_count
+        assert len(graph.edges) == expected_edge_count
 
     def test_function_without_table_reference(self) -> None:
         """A function whose env vars do not reference any table should have no data edges."""
+        # Arrange
+        expected_data_edge_count = 0
         model = MockAppModel(
             tables=[MockTable(logical_id="T", table_name="mytable")],
             functions=[
@@ -117,36 +148,52 @@ class TestBuildGraph:
             ],
         )
 
+        # Act
         graph = build_graph(model)
+
+        # Assert
         data_edges = [e for e in graph.edges if e.edge_type == EdgeType.DATA_DEPENDENCY]
-        assert len(data_edges) == 0
+        assert len(data_edges) == expected_data_edge_count
 
     def test_multiple_functions_sharing_table(self) -> None:
+        # Arrange
+        table_id = "SharedTable"
+        fn1_id = "Fn1"
+        fn2_id = "Fn2"
+        expected_data_edge_count = 2
+        expected_sources = {fn1_id, fn2_id}
+        table_name = "shared"
+
         model = MockAppModel(
-            tables=[MockTable(logical_id="SharedTable", table_name="shared")],
+            tables=[MockTable(logical_id=table_id, table_name=table_name)],
             functions=[
                 MockFunction(
-                    logical_id="Fn1",
+                    logical_id=fn1_id,
                     handler="fn1.handler",
-                    environment={"TABLE": "shared"},
+                    environment={"TABLE": table_name},
                 ),
                 MockFunction(
-                    logical_id="Fn2",
+                    logical_id=fn2_id,
                     handler="fn2.handler",
-                    environment={"TABLE": "shared"},
+                    environment={"TABLE": table_name},
                 ),
             ],
         )
 
+        # Act
         graph = build_graph(model)
+
+        # Assert
         data_edges = [e for e in graph.edges if e.edge_type == EdgeType.DATA_DEPENDENCY]
-        assert len(data_edges) == 2
-        sources = {e.source for e in data_edges}
-        assert sources == {"Fn1", "Fn2"}
-        assert all(e.target == "SharedTable" for e in data_edges)
+        assert len(data_edges) == expected_data_edge_count
+        actual_sources = {e.source for e in data_edges}
+        assert actual_sources == expected_sources
+        assert all(e.target == table_id for e in data_edges)
 
     def test_api_route_no_matching_handler(self) -> None:
         """An API route whose handler_name doesn't match any function creates no trigger edge."""
+        # Arrange
+        expected_trigger_edge_count = 0
         model = MockAppModel(
             functions=[
                 MockFunction(logical_id="F", handler="real.handler", environment={}),
@@ -159,6 +206,9 @@ class TestBuildGraph:
             ],
         )
 
+        # Act
         graph = build_graph(model)
+
+        # Assert
         trigger_edges = [e for e in graph.edges if e.edge_type == EdgeType.TRIGGER]
-        assert len(trigger_edges) == 0
+        assert len(trigger_edges) == expected_trigger_edge_count

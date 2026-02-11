@@ -175,14 +175,21 @@ class TestExecutionTracking:
     """Execution history and state transition tracking."""
 
     async def test_execution_has_transitions(self, provider: StepFunctionsProvider) -> None:
+        # Arrange
+        expected_transition_count = 2
+        expected_first_state = "First"
+        expected_second_state = "Second"
+
+        # Act
         result = await provider.start_execution("two-step", input_data={"x": 1})
         await asyncio.sleep(0.1)
-
         history = provider.get_execution(result["executionArn"])
+
+        # Assert
         assert history is not None
-        assert len(history.transitions) == 2
-        assert history.transitions[0].state_name == "First"
-        assert history.transitions[1].state_name == "Second"
+        assert len(history.transitions) == expected_transition_count
+        assert history.transitions[0].state_name == expected_first_state
+        assert history.transitions[1].state_name == expected_second_state
 
     async def test_execution_timing(self, provider: StepFunctionsProvider) -> None:
         result = await provider.start_execution("simple-pass")

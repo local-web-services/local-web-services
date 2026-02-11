@@ -32,14 +32,20 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 
 class TestDescribeStateMachineRoute:
     async def test_describe_existing(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 200
+        expected_name = "desc-sm"
+        expected_status = "ACTIVE"
         await _request(
             client,
             "CreateStateMachine",
             {
-                "name": "desc-sm",
+                "name": expected_name,
                 "definition": '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
             },
         )
+
+        # Act
         resp = await _request(
             client,
             "DescribeStateMachine",
@@ -47,12 +53,18 @@ class TestDescribeStateMachineRoute:
                 "stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:desc-sm",
             },
         )
-        assert resp.status_code == 200
+
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert data["name"] == "desc-sm"
-        assert data["status"] == "ACTIVE"
+        assert data["name"] == expected_name
+        assert data["status"] == expected_status
 
     async def test_describe_nonexistent(self, client: httpx.AsyncClient) -> None:
+        # Arrange
+        expected_status_code = 400
+
+        # Act
         resp = await _request(
             client,
             "DescribeStateMachine",
@@ -60,4 +72,6 @@ class TestDescribeStateMachineRoute:
                 "stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:nope",
             },
         )
-        assert resp.status_code == 400
+
+        # Assert
+        assert resp.status_code == expected_status_code

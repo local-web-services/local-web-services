@@ -65,11 +65,17 @@ class TestFileWatcherLifecycle:
 
     def test_on_change_registers_callback(self) -> None:
         """on_change should accumulate callbacks."""
+        # Arrange
+        expected_callback_count = 2
         tmpdir = tempfile.mkdtemp()
         watcher = FileWatcher(watch_dir=Path(tmpdir))
+
+        # Act
         watcher.on_change(lambda p: None)
         watcher.on_change(lambda p: None)
-        assert len(watcher._callbacks) == 2
+
+        # Assert
+        assert len(watcher._callbacks) == expected_callback_count
 
     def test_callback_receives_events_after_start(self) -> None:
         """A callback registered before start() should receive file events."""

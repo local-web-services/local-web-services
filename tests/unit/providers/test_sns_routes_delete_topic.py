@@ -31,21 +31,30 @@ class TestDeleteTopic:
         client: httpx.AsyncClient,
         provider: SnsProvider,
     ) -> None:
+        # Arrange
         await provider.create_topic("my-topic")
         topic_arn = "arn:aws:sns:us-east-1:000000000000:my-topic"
+        expected_status = 200
+        expected_topic_count = 0
 
+        # Act
         resp = await client.post("/", data={"Action": "DeleteTopic", "TopicArn": topic_arn})
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "DeleteTopicResponse" in resp.text
-
-        topics = provider.list_topics()
-        assert len(topics) == 0
+        actual_topics = provider.list_topics()
+        assert len(actual_topics) == expected_topic_count
 
     @pytest.mark.asyncio
     async def test_delete_topic_not_found(self, client: httpx.AsyncClient) -> None:
+        # Arrange
         topic_arn = "arn:aws:sns:us-east-1:000000000000:nonexistent"
+        expected_status = 404
+
+        # Act
         resp = await client.post("/", data={"Action": "DeleteTopic", "TopicArn": topic_arn})
 
-        assert resp.status_code == 404
+        # Assert
+        assert resp.status_code == expected_status
         assert "NotFound" in resp.text

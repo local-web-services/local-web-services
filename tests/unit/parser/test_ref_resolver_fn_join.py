@@ -7,16 +7,34 @@ from lws.parser.ref_resolver import RefResolver
 
 class TestFnJoin:
     def test_join_basic(self):
+        # Arrange
+        expected_value = "a-b-c"
+
+        # Act
         r = RefResolver()
-        result = r.resolve({"Fn::Join": ["-", ["a", "b", "c"]]})
-        assert result == "a-b-c"
+        actual_value = r.resolve({"Fn::Join": ["-", ["a", "b", "c"]]})
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_join_with_refs(self):
+        # Arrange
+        expected_value = "prefix/hello/suffix"
         r = RefResolver(resource_map={"X": "hello"})
-        result = r.resolve({"Fn::Join": ["/", ["prefix", {"Ref": "X"}, "suffix"]]})
-        assert result == "prefix/hello/suffix"
+
+        # Act
+        actual_value = r.resolve({"Fn::Join": ["/", ["prefix", {"Ref": "X"}, "suffix"]]})
+
+        # Assert
+        assert actual_value == expected_value
 
     def test_join_empty_delimiter(self):
+        # Arrange
+        expected_value = "abcdef"
+
+        # Act
         r = RefResolver()
-        result = r.resolve({"Fn::Join": ["", ["abc", "def"]]})
-        assert result == "abcdef"
+        actual_value = r.resolve({"Fn::Join": ["", ["abc", "def"]]})
+
+        # Assert
+        assert actual_value == expected_value

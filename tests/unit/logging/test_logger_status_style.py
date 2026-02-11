@@ -9,22 +9,28 @@ class TestStatusStyle:
     """Tests for the _status_style helper."""
 
     def test_2xx_is_green(self):
-        assert _status_style("200") == "green"
-        assert _status_style("201") == "green"
+        expected_style = "green"
+        assert _status_style("200") == expected_style
+        assert _status_style("201") == expected_style
 
     def test_ok_is_green(self):
-        assert _status_style("OK") == "green"
+        expected_style = "green"
+        assert _status_style("OK") == expected_style
 
     def test_4xx_is_yellow(self):
-        assert _status_style("400") == "yellow"
-        assert _status_style("404") == "yellow"
+        expected_style = "yellow"
+        assert _status_style("400") == expected_style
+        assert _status_style("404") == expected_style
 
     def test_5xx_is_red(self):
-        assert _status_style("500") == "red"
-        assert _status_style("503") == "red"
+        expected_style = "red"
+        assert _status_style("500") == expected_style
+        assert _status_style("503") == expected_style
 
     def test_error_is_red(self):
-        assert _status_style("ERROR") == "red"
+        expected_style = "red"
+        assert _status_style("ERROR") == expected_style
 
     def test_unknown_is_white(self):
-        assert _status_style("123") == "white"
+        expected_style = "white"
+        assert _status_style("123") == expected_style

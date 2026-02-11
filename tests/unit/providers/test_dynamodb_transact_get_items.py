@@ -86,6 +86,7 @@ class TestTransactGetItems:
     async def test_transact_get_items_found(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         mock_store.get_item.return_value = {
             "pk": {"S": "user#1"},
             "name": {"S": "Alice"},
@@ -100,18 +101,26 @@ class TestTransactGetItems:
                 },
             ]
         }
+        expected_status_code = 200
+        expected_response_count = 1
+        expected_pk = {"S": "user#1"}
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
         assert "Responses" in data
-        assert len(data["Responses"]) == 1
-        assert data["Responses"][0]["Item"]["pk"] == {"S": "user#1"}
+        assert len(data["Responses"]) == expected_response_count
+        actual_pk = data["Responses"][0]["Item"]["pk"]
+        assert actual_pk == expected_pk
 
     @pytest.mark.asyncio
     async def test_transact_get_items_not_found(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         mock_store.get_item.return_value = None
         payload = {
             "TransactItems": [
@@ -123,17 +132,23 @@ class TestTransactGetItems:
                 },
             ]
         }
+        expected_status_code = 200
+        expected_response_count = 1
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert len(data["Responses"]) == 1
+        assert len(data["Responses"]) == expected_response_count
         assert data["Responses"][0] == {}
 
     @pytest.mark.asyncio
     async def test_transact_get_items_multiple(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         mock_store.get_item.side_effect = [
             {"pk": {"S": "user#1"}, "name": {"S": "Alice"}},
             None,
@@ -146,11 +161,16 @@ class TestTransactGetItems:
                 {"Get": {"TableName": "Users", "Key": {"pk": {"S": "user#3"}}}},
             ]
         }
+        expected_status_code = 200
+        expected_response_count = 3
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status_code
         data = resp.json()
-        assert len(data["Responses"]) == 3
+        assert len(data["Responses"]) == expected_response_count
         assert "Item" in data["Responses"][0]
         assert data["Responses"][1] == {}
         assert "Item" in data["Responses"][2]
@@ -159,11 +179,17 @@ class TestTransactGetItems:
     async def test_transact_get_items_empty(
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
+        # Arrange
         payload = {"TransactItems": []}
+        expected_status_code = 200
+        expected_response = {"Responses": []}
+
+        # Act
         resp = await mock_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
-        assert resp.status_code == 200
-        assert resp.json() == {"Responses": []}
+        # Assert
+        assert resp.status_code == expected_status_code
+        assert resp.json() == expected_response
 
     @pytest.mark.asyncio
     async def test_transact_get_items_integration(
@@ -171,7 +197,7 @@ class TestTransactGetItems:
     ) -> None:
         await real_provider.start()
         try:
-            # Put items first
+            # Arrange
             for user_id, name in [("user#1", "Alice"), ("user#2", "Bob")]:
                 await real_client.post(
                     "/",
@@ -186,7 +212,6 @@ class TestTransactGetItems:
                     headers=_target("PutItem"),
                 )
 
-            # TransactGetItems for existing and non-existing items
             payload = {
                 "TransactItems": [
                     {
@@ -209,12 +234,22 @@ class TestTransactGetItems:
                     },
                 ]
             }
+            expected_status_code = 200
+            expected_response_count = 3
+            expected_first_name = {"S": "Alice"}
+            expected_third_name = {"S": "Bob"}
+
+            # Act
             resp = await real_client.post("/", json=payload, headers=_target("TransactGetItems"))
-            assert resp.status_code == 200
+
+            # Assert
+            assert resp.status_code == expected_status_code
             data = resp.json()
-            assert len(data["Responses"]) == 3
-            assert data["Responses"][0]["Item"]["name"] == {"S": "Alice"}
+            assert len(data["Responses"]) == expected_response_count
+            actual_first_name = data["Responses"][0]["Item"]["name"]
+            actual_third_name = data["Responses"][2]["Item"]["name"]
+            assert actual_first_name == expected_first_name
             assert data["Responses"][1] == {}
-            assert data["Responses"][2]["Item"]["name"] == {"S": "Bob"}
+            assert actual_third_name == expected_third_name
         finally:
             await real_provider.stop()

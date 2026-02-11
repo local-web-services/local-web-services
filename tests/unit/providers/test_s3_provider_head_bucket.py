@@ -21,11 +21,16 @@ async def provider(tmp_path: Path):
 class TestHeadBucket:
     @pytest.mark.asyncio
     async def test_head_bucket(self, provider: S3Provider) -> None:
-        await provider.create_bucket("my-bucket")
-        meta = await provider.head_bucket("my-bucket")
+        # Arrange
+        bucket_name = "my-bucket"
+        await provider.create_bucket(bucket_name)
 
-        assert meta["BucketName"] == "my-bucket"
-        assert "CreationDate" in meta
+        # Act
+        actual_meta = await provider.head_bucket(bucket_name)
+
+        # Assert
+        assert actual_meta["BucketName"] == bucket_name
+        assert "CreationDate" in actual_meta
 
     @pytest.mark.asyncio
     async def test_head_nonexistent_raises(self, provider: S3Provider) -> None:

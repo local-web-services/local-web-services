@@ -62,18 +62,33 @@ def _make_context(
 
 class TestValidationIssue:
     def test_issue_fields(self) -> None:
+        # Arrange
+        expected_message = "bad thing"
+        expected_resource = "tbl"
+        expected_operation = "put"
+
+        # Act
         issue = ValidationIssue(
             level=ValidationLevel.ERROR,
-            message="bad thing",
-            resource="tbl",
-            operation="put",
+            message=expected_message,
+            resource=expected_resource,
+            operation=expected_operation,
         )
+
+        # Assert
         assert issue.level == ValidationLevel.ERROR
-        assert issue.message == "bad thing"
-        assert issue.resource == "tbl"
-        assert issue.operation == "put"
+        assert issue.message == expected_message
+        assert issue.resource == expected_resource
+        assert issue.operation == expected_operation
 
     def test_issue_defaults(self) -> None:
+        # Arrange
+        expected_resource = ""
+        expected_operation = ""
+
+        # Act
         issue = ValidationIssue(level=ValidationLevel.WARN, message="hmm")
-        assert issue.resource == ""
-        assert issue.operation == ""
+
+        # Assert
+        assert issue.resource == expected_resource
+        assert issue.operation == expected_operation

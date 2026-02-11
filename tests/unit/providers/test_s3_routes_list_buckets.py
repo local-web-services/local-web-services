@@ -29,19 +29,28 @@ def client(provider: S3Provider) -> httpx.AsyncClient:
 class TestListBuckets:
     @pytest.mark.asyncio
     async def test_list_buckets(self, client: httpx.AsyncClient, provider: S3Provider) -> None:
-        await provider.create_bucket("bucket-a")
-        await provider.create_bucket("bucket-b")
+        # Arrange
+        bucket_a = "bucket-a"
+        bucket_b = "bucket-b"
+        await provider.create_bucket(bucket_a)
+        await provider.create_bucket(bucket_b)
+        expected_status = 200
 
+        # Act
         resp = await client.get("/")
 
-        assert resp.status_code == 200
+        # Assert
+        assert resp.status_code == expected_status
         assert "ListAllMyBucketsResult" in resp.text
-        assert "bucket-a" in resp.text
-        assert "bucket-b" in resp.text
+        assert bucket_a in resp.text
+        assert bucket_b in resp.text
 
     @pytest.mark.asyncio
     async def test_list_buckets_empty(self, client: httpx.AsyncClient) -> None:
+        # Act
         resp = await client.get("/")
 
-        assert resp.status_code == 200
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert "ListAllMyBucketsResult" in resp.text

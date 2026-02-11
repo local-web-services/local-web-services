@@ -85,12 +85,10 @@ class Validator(ABC):
     @abstractmethod
     def name(self) -> str:
         """Unique name for this validator."""
-        ...
 
     @abstractmethod
     def validate(self, context: ValidationContext) -> list[ValidationIssue]:
         """Validate the given context and return any issues found."""
-        ...
 
 
 # ---------------------------------------------------------------------------

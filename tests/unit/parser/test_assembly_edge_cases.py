@@ -98,10 +98,14 @@ def _make_simple_cdk_out(cdk_out: Path) -> None:
 
 class TestEdgeCases:
     def test_no_manifest(self, tmp_path: Path):
+        # Act
         model = parse_assembly(tmp_path)
+
+        # Assert
         assert model == AppModel()
 
     def test_stack_with_missing_template(self, tmp_path: Path):
+        # Arrange
         cdk_out = tmp_path / "cdk.out"
         cdk_out.mkdir()
         manifest = {
@@ -114,10 +118,15 @@ class TestEdgeCases:
             },
         }
         _write_json(cdk_out / "manifest.json", manifest)
+
+        # Act
         model = parse_assembly(cdk_out)
+
+        # Assert
         assert model == AppModel()
 
     def test_lambda_with_no_code(self, tmp_path: Path):
+        # Arrange
         cdk_out = tmp_path / "cdk.out"
         cdk_out.mkdir()
         tpl = {
@@ -139,6 +148,10 @@ class TestEdgeCases:
             },
         }
         _write_json(cdk_out / "manifest.json", manifest)
+
+        # Act
         model = parse_assembly(cdk_out)
+
+        # Assert
         assert len(model.functions) == 1
         assert model.functions[0].code_path is None

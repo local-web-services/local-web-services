@@ -69,7 +69,7 @@ async def _put_object(bucket: str, key: str, request: Request, provider: S3Provi
     body = await request.body()
     content_type = request.headers.get("content-type")
     result = await provider.storage.put_object(bucket, key, body, content_type=content_type)
-    provider._dispatcher.dispatch(bucket, "ObjectCreated:Put", key)
+    provider.dispatcher.dispatch(bucket, "ObjectCreated:Put", key)
     return Response(
         status_code=200,
         headers={"ETag": result["ETag"]},
@@ -96,7 +96,7 @@ async def _get_object(bucket: str, key: str, provider: S3Provider) -> Response:
 async def _delete_object(bucket: str, key: str, provider: S3Provider) -> Response:
     """Handle DeleteObject requests."""
     await provider.storage.delete_object(bucket, key)
-    provider._dispatcher.dispatch(bucket, "ObjectRemoved:Delete", key)
+    provider.dispatcher.dispatch(bucket, "ObjectRemoved:Delete", key)
     return Response(status_code=204)
 
 
@@ -190,7 +190,7 @@ async def _copy_object(bucket: str, key: str, request: Request, provider: S3Prov
     put_result = await provider.storage.put_object(
         bucket, key, result["body"], content_type=result["content_type"]
     )
-    provider._dispatcher.dispatch(bucket, "ObjectCreated:Copy", key)
+    provider.dispatcher.dispatch(bucket, "ObjectCreated:Copy", key)
 
     # Return a CopyObjectResult XML
     body = (
@@ -231,7 +231,7 @@ async def _delete_objects(bucket: str, request: Request, provider: S3Provider) -
         key = key_elem.text
         try:
             await provider.storage.delete_object(bucket, key)
-            provider._dispatcher.dispatch(bucket, "ObjectRemoved:Delete", key)
+            provider.dispatcher.dispatch(bucket, "ObjectRemoved:Delete", key)
             deleted_keys.append(key)
         except Exception as exc:
             error_keys.append({"key": key, "code": "InternalError", "message": str(exc)})
@@ -385,6 +385,57 @@ async def _get_bucket_notification_configuration(bucket: str, provider: S3Provid
     except KeyError:
         return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
     return _xml_response(config)
+
+
+# ------------------------------------------------------------------
+# Virtual-hosted-style middleware
+# ------------------------------------------------------------------
+
+
+class _VirtualHostRewriteMiddleware:
+    """Rewrite virtual-hosted-style S3 requests to path-style.
+
+    When the Host header contains a bucket subdomain (e.g.
+    ``my-bucket.host.docker.internal``), the bucket name is prepended
+    to the request path so the existing path-style routes handle it.
+    """
+
+    _BASE_HOSTS = frozenset({"localhost", "127.0.0.1", "host.docker.internal"})
+
+    def __init__(self, app):  # type: ignore[no-untyped-def]
+        self._app = app
+
+    async def __call__(self, scope, receive, send):  # type: ignore[no-untyped-def]
+        if scope["type"] != "http":
+            await self._app(scope, receive, send)
+            return
+
+        host_value = ""
+        for header_name, header_val in scope.get("headers", []):
+            if header_name == b"host":
+                host_value = header_val.decode("latin-1")
+                break
+
+        # Strip port to get bare hostname
+        hostname = host_value.split(":")[0].lower()
+
+        bucket: str | None = None
+        for base in self._BASE_HOSTS:
+            suffix = f".{base}"
+            if hostname.endswith(suffix):
+                bucket = hostname[: -len(suffix)]
+                break
+
+        if bucket:
+            path = scope.get("path", "/")
+            new_path = f"/{bucket}{path}"
+            scope = dict(scope)
+            scope["path"] = new_path
+            raw = scope.get("raw_path")
+            if raw is not None:
+                scope["raw_path"] = new_path.encode("latin-1")
+
+        await self._app(scope, receive, send)
 
 
 # ------------------------------------------------------------------
@@ -552,4 +603,7 @@ def create_s3_app(provider: S3Provider) -> FastAPI:
 
     _register_object_routes(app, provider)
     _register_bucket_routes(app, provider)
-    return app
+
+    # Wrap the ASGI app with virtual-hosted-style rewriting so requests
+    # like ``Host: my-bucket.host.docker.internal`` are handled transparently.
+    return _VirtualHostRewriteMiddleware(app)  # type: ignore[return-value]

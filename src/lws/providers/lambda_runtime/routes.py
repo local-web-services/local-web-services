@@ -20,6 +20,8 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.lambda_helpers import build_default_lambda_context
+from lws.providers._shared.request_helpers import parse_json_body
 
 _logger = get_logger("ldk.lambda-mgmt")
 
@@ -45,11 +47,23 @@ class LambdaRegistry:
         self._compute: dict[str, Any] = {}  # name -> ICompute
         self._tags: dict[str, dict[str, str]] = {}  # arn -> {key: value}
 
+    @property
+    def functions(self) -> dict[str, dict[str, Any]]:
+        """Return the functions store."""
+        return self._functions
+
+    @property
+    def compute(self) -> dict[str, Any]:
+        """Return the compute providers store."""
+        return self._compute
+
     def register(self, name: str, config: dict[str, Any], compute: Any) -> None:
+        """Store a function configuration and its compute provider by name."""
         self._functions[name] = config
         self._compute[name] = compute
 
     def update_config(self, name: str, updates: dict[str, Any]) -> dict[str, Any] | None:
+        """Merge updates into an existing function config, returning the result or None."""
         config = self._functions.get(name)
         if config is None:
             return None
@@ -57,27 +71,34 @@ class LambdaRegistry:
         return config
 
     def get_config(self, name: str) -> dict[str, Any] | None:
+        """Return the stored configuration for a function, or None if not found."""
         return self._functions.get(name)
 
     def get_compute(self, name: str) -> Any | None:
+        """Return the ICompute instance for a function, or None if not found."""
         return self._compute.get(name)
 
     def delete(self, name: str) -> bool:
+        """Remove a function and its compute provider, returning True if it existed."""
         removed = name in self._functions
         self._functions.pop(name, None)
         self._compute.pop(name, None)
         return removed
 
     def list_functions(self) -> list[dict[str, Any]]:
+        """Return all stored function configurations."""
         return list(self._functions.values())
 
     def get_tags(self, arn: str) -> dict[str, str]:
+        """Return a copy of the tags associated with the given ARN."""
         return dict(self._tags.get(arn, {}))
 
     def tag_resource(self, arn: str, tags: dict[str, str]) -> None:
+        """Add or overwrite tags on the resource identified by ARN."""
         self._tags.setdefault(arn, {}).update(tags)
 
     def untag_resource(self, arn: str, tag_keys: list[str]) -> None:
+        """Remove the specified tag keys from the resource identified by ARN."""
         if arn in self._tags:
             for key in tag_keys:
                 self._tags[arn].pop(key, None)
@@ -382,7 +403,7 @@ class LambdaManagementRouter:
     # -- Functions -----------------------------------------------------------
 
     async def _create_function(self, request: Request) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         function_name = body.get("FunctionName", "")
         if not function_name:
             return _json_response({"message": "FunctionName is required"}, 400)
@@ -409,7 +430,7 @@ class LambdaManagementRouter:
         _logger.info("Created Lambda function: %s (runtime=%s)", function_name, runtime)
         return _json_response(_format_function_config(func_config), 201)
 
-    async def _list_functions(self, request: Request) -> Response:
+    async def _list_functions(self, _request: Request) -> Response:
         functions = self._registry.list_functions()
         return _json_response(
             {
@@ -441,7 +462,7 @@ class LambdaManagementRouter:
     async def _update_function_configuration(
         self, function_name: str, request: Request
     ) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         config = self._registry.get_config(function_name)
         if config is None:
             return _json_response(
@@ -463,7 +484,7 @@ class LambdaManagementRouter:
         return _json_response(_format_function_config(updated_config))
 
     async def _update_function_code(self, function_name: str, request: Request) -> Response:
-        await _parse_body(request)  # consume body
+        await parse_json_body(request)  # consume body
         config = self._registry.get_config(function_name)
         if config is None:
             return _json_response(
@@ -479,8 +500,6 @@ class LambdaManagementRouter:
     # -- Invocations ---------------------------------------------------------
 
     async def _invoke_function(self, function_name: str, request: Request) -> Response:
-        from lws.interfaces import LambdaContext
-
         compute = self._registry.get_compute(function_name)
         if compute is None:
             return _json_response(
@@ -491,15 +510,8 @@ class LambdaManagementRouter:
                 404,
             )
 
-        body = await _parse_body(request)
-        request_id = str(uuid.uuid4())
-        context = LambdaContext(
-            function_name=function_name,
-            memory_limit_in_mb=128,
-            timeout_seconds=30,
-            aws_request_id=request_id,
-            invoked_function_arn=_function_arn(function_name),
-        )
+        body = await parse_json_body(request)
+        context = build_default_lambda_context(function_name)
 
         result = await compute.invoke(body, context)
 
@@ -512,7 +524,7 @@ class LambdaManagementRouter:
     # -- Permissions (stubs) -------------------------------------------------
 
     async def _add_permission(self, function_name: str, request: Request) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         sid = body.get("StatementId", str(uuid.uuid4())[:8])
         self._state.permissions.setdefault(function_name, {})[sid] = body
         qualifier = body.get("Qualifier", "$LATEST")
@@ -558,7 +570,7 @@ class LambdaManagementRouter:
     # -- Event source mappings (stubs) ---------------------------------------
 
     async def _create_event_source_mapping(self, request: Request) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         esm_uuid = str(uuid.uuid4())
         mapping = {
             "UUID": esm_uuid,
@@ -583,7 +595,7 @@ class LambdaManagementRouter:
         mapping["State"] = "Deleting"
         return _json_response(mapping, 202)
 
-    async def _list_event_source_mappings(self, request: Request) -> Response:
+    async def _list_event_source_mappings(self, _request: Request) -> Response:
         return _json_response({"EventSourceMappings": []})
 
     # -- Other stubs ---------------------------------------------------------
@@ -604,7 +616,7 @@ class LambdaManagementRouter:
         return _json_response({"CodeSigningConfigArn": "", "FunctionName": function_name})
 
     async def _tag_resource(self, arn: str, request: Request) -> Response:
-        body = await _parse_body(request)
+        body = await parse_json_body(request)
         tags = body.get("Tags", {})
         self._registry.tag_resource(arn, tags)
         _logger.info("Tagged resource %s with %d tags", arn, len(tags))
@@ -632,8 +644,10 @@ class LambdaManagementRouter:
 
     def _create_compute(self, func_config: dict[str, Any]) -> Any:
         """Create an ICompute provider from the function configuration."""
-        from lws.interfaces import ComputeConfig
-        from lws.providers.lambda_runtime.docker import DockerCompute
+        from lws.interfaces import ComputeConfig  # pylint: disable=import-outside-toplevel
+        from lws.providers.lambda_runtime.docker import (  # pylint: disable=import-outside-toplevel
+            DockerCompute,
+        )
 
         function_name = func_config["FunctionName"]
         runtime = func_config.get("Runtime", "nodejs18.x")
@@ -669,21 +683,6 @@ class LambdaManagementRouter:
         )
 
         return DockerCompute(config=compute_config, sdk_env=self._sdk_env)
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-async def _parse_body(request: Request) -> dict:
-    body_bytes = await request.body()
-    if not body_bytes:
-        return {}
-    try:
-        return json.loads(body_bytes)
-    except json.JSONDecodeError:
-        return {}
 
 
 # ---------------------------------------------------------------------------

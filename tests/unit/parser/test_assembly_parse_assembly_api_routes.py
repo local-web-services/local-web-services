@@ -97,12 +97,16 @@ def _make_simple_cdk_out(cdk_out: Path) -> None:
 
 class TestParseAssemblyApiRoutes:
     def test_api_routes_collected(self, tmp_path: Path):
+        # Arrange
+        expected_method = "GET"
+        expected_path = "/items"
+        expected_handler_name = "MyFunc"
         cdk_out = tmp_path / "cdk.out"
         cdk_out.mkdir()
 
         tpl = {
             "Resources": {
-                "MyFunc": {
+                expected_handler_name: {
                     "Type": "AWS::Lambda::Function",
                     "Properties": {"Handler": "h", "Runtime": "python3.11"},
                 },
@@ -113,7 +117,7 @@ class TestParseAssemblyApiRoutes:
                 "ApiMethod": {
                     "Type": "AWS::ApiGateway::Method",
                     "Properties": {
-                        "HttpMethod": "GET",
+                        "HttpMethod": expected_method,
                         "ResourceId": "ApiRes",
                         "Integration": {
                             "Uri": {
@@ -139,11 +143,14 @@ class TestParseAssemblyApiRoutes:
         }
         _write_json(cdk_out / "manifest.json", manifest)
 
+        # Act
         model = parse_assembly(cdk_out)
+
+        # Assert
         assert len(model.apis) == 1
         api = model.apis[0]
         assert len(api.routes) == 1
-        route = api.routes[0]
-        assert route.method == "GET"
-        assert route.path == "/items"
-        assert route.handler_name == "MyFunc"
+        actual_route = api.routes[0]
+        assert actual_route.method == expected_method
+        assert actual_route.path == expected_path
+        assert actual_route.handler_name == expected_handler_name

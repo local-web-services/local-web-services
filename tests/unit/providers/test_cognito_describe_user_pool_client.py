@@ -44,32 +44,44 @@ async def _request(client: httpx.AsyncClient, operation: str, body: dict) -> htt
 
 class TestDescribeUserPoolClient:
     async def test_describe_existing_client(self, client: httpx.AsyncClient) -> None:
-        # Create first
+        # Arrange
+        expected_client_name = "desc-test"
         create_resp = await _request(
             client,
             "CreateUserPoolClient",
-            {"UserPoolId": POOL_ID, "ClientName": "desc-test"},
+            {"UserPoolId": POOL_ID, "ClientName": expected_client_name},
         )
-        client_id = create_resp.json()["UserPoolClient"]["ClientId"]
+        expected_client_id = create_resp.json()["UserPoolClient"]["ClientId"]
 
-        # Describe
+        # Act
         resp = await _request(
             client,
             "DescribeUserPoolClient",
-            {"UserPoolId": POOL_ID, "ClientId": client_id},
+            {"UserPoolId": POOL_ID, "ClientId": expected_client_id},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         data = resp.json()
-        assert data["UserPoolClient"]["ClientId"] == client_id
-        assert data["UserPoolClient"]["ClientName"] == "desc-test"
+        actual_client_id = data["UserPoolClient"]["ClientId"]
+        actual_client_name = data["UserPoolClient"]["ClientName"]
+        assert actual_client_id == expected_client_id
+        assert actual_client_name == expected_client_name
 
     async def test_describe_nonexistent_client_returns_error(
         self, client: httpx.AsyncClient
     ) -> None:
+        # Act
         resp = await _request(
             client,
             "DescribeUserPoolClient",
             {"UserPoolId": POOL_ID, "ClientId": "nonexistent"},
         )
-        assert resp.status_code == 400
-        assert resp.json()["__type"] == "ResourceNotFoundException"
+
+        # Assert
+        expected_status = 400
+        expected_error_type = "ResourceNotFoundException"
+        assert resp.status_code == expected_status
+        actual_error_type = resp.json()["__type"]
+        assert actual_error_type == expected_error_type

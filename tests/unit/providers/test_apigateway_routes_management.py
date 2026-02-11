@@ -21,10 +21,14 @@ class TestApiGatewayManagementRoutes:
     async def test_create_rest_api(self, client: httpx.AsyncClient) -> None:
         resp = await client.post("/restapis", json={"name": "my-api", "description": "test"})
 
-        assert resp.status_code == 201
+        # Assert
+        expected_status = 201
+        expected_name = "my-api"
+        expected_description = "test"
+        assert resp.status_code == expected_status
         data = resp.json()
-        assert data["name"] == "my-api"
-        assert data["description"] == "test"
+        assert data["name"] == expected_name
+        assert data["description"] == expected_description
         assert "id" in data
         assert "rootResourceId" in data
 
@@ -35,18 +39,24 @@ class TestApiGatewayManagementRoutes:
 
         resp = await client.get("/restapis")
 
-        assert resp.status_code == 200
-        assert len(resp.json()["item"]) == 2
+        # Assert
+        expected_status = 200
+        expected_count = 2
+        assert resp.status_code == expected_status
+        assert len(resp.json()["item"]) == expected_count
 
     @pytest.mark.asyncio
     async def test_get_rest_api(self, client: httpx.AsyncClient) -> None:
-        create_resp = await client.post("/restapis", json={"name": "my-api"})
+        api_name = "my-api"
+        create_resp = await client.post("/restapis", json={"name": api_name})
         api_id = create_resp.json()["id"]
 
         resp = await client.get(f"/restapis/{api_id}")
 
-        assert resp.status_code == 200
-        assert resp.json()["name"] == "my-api"
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
+        assert resp.json()["name"] == api_name
 
     @pytest.mark.asyncio
     async def test_delete_rest_api(self, client: httpx.AsyncClient) -> None:
@@ -54,10 +64,12 @@ class TestApiGatewayManagementRoutes:
         api_id = create_resp.json()["id"]
 
         resp = await client.delete(f"/restapis/{api_id}")
-        assert resp.status_code == 202
+        expected_delete_status = 202
+        assert resp.status_code == expected_delete_status
 
         get_resp = await client.get(f"/restapis/{api_id}")
-        assert get_resp.status_code == 404
+        expected_not_found_status = 404
+        assert get_resp.status_code == expected_not_found_status
 
     @pytest.mark.asyncio
     async def test_create_resource(self, client: httpx.AsyncClient) -> None:
@@ -71,10 +83,14 @@ class TestApiGatewayManagementRoutes:
             json={"pathPart": "orders"},
         )
 
-        assert resp.status_code == 201
+        # Assert
+        expected_status = 201
+        expected_path_part = "orders"
+        expected_path = "/orders"
+        assert resp.status_code == expected_status
         data = resp.json()
-        assert data["pathPart"] == "orders"
-        assert data["path"] == "/orders"
+        assert data["pathPart"] == expected_path_part
+        assert data["path"] == expected_path
 
     @pytest.mark.asyncio
     async def test_put_method(self, client: httpx.AsyncClient) -> None:
@@ -88,8 +104,11 @@ class TestApiGatewayManagementRoutes:
             json={"authorizationType": "NONE"},
         )
 
-        assert resp.status_code == 201
-        assert resp.json()["httpMethod"] == "GET"
+        # Assert
+        expected_status = 201
+        expected_method = "GET"
+        assert resp.status_code == expected_status
+        assert resp.json()["httpMethod"] == expected_method
 
     @pytest.mark.asyncio
     async def test_create_deployment(self, client: httpx.AsyncClient) -> None:
@@ -101,11 +120,14 @@ class TestApiGatewayManagementRoutes:
             json={"description": "v1"},
         )
 
-        assert resp.status_code == 201
+        # Assert
+        expected_status = 201
+        assert resp.status_code == expected_status
         assert "id" in resp.json()
 
     @pytest.mark.asyncio
     async def test_create_and_get_stage(self, client: httpx.AsyncClient) -> None:
+        stage_name = "prod"
         create_resp = await client.post("/restapis", json={"name": "my-api"})
         api_id = create_resp.json()["id"]
 
@@ -114,19 +136,23 @@ class TestApiGatewayManagementRoutes:
 
         stage_resp = await client.post(
             f"/restapis/{api_id}/stages",
-            json={"stageName": "prod", "deploymentId": deployment_id},
+            json={"stageName": stage_name, "deploymentId": deployment_id},
         )
-        assert stage_resp.status_code == 201
+        expected_create_status = 201
+        assert stage_resp.status_code == expected_create_status
 
-        get_resp = await client.get(f"/restapis/{api_id}/stages/prod")
-        assert get_resp.status_code == 200
-        assert get_resp.json()["stageName"] == "prod"
+        get_resp = await client.get(f"/restapis/{api_id}/stages/{stage_name}")
+        expected_get_status = 200
+        assert get_resp.status_code == expected_get_status
+        assert get_resp.json()["stageName"] == stage_name
 
     @pytest.mark.asyncio
     async def test_unknown_path_returns_not_found(self, client: httpx.AsyncClient) -> None:
         resp = await client.get("/some/unknown/path")
 
-        assert resp.status_code == 404
+        # Assert
+        expected_status = 404
+        assert resp.status_code == expected_status
         body = resp.json()
         assert "lws" in body["message"]
         assert "API Gateway" in body["message"]

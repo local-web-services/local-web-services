@@ -19,25 +19,44 @@ async def provider():
 class TestCreateQueue:
     @pytest.mark.asyncio
     async def test_create_queue(self, provider: SqsProvider) -> None:
-        url = await provider.create_queue("my-queue")
+        # Arrange
+        queue_name = "my-queue"
 
-        assert "my-queue" in url
+        # Act
+        url = await provider.create_queue(queue_name)
+
+        # Assert
+        assert queue_name in url
         queues = await provider.list_queues()
-        assert "my-queue" in queues
+        assert queue_name in queues
 
     @pytest.mark.asyncio
     async def test_create_queue_idempotent(self, provider: SqsProvider) -> None:
-        url1 = await provider.create_queue("my-queue")
-        url2 = await provider.create_queue("my-queue")
+        # Arrange
+        queue_name = "my-queue"
+        expected_count = 1
 
+        # Act
+        url1 = await provider.create_queue(queue_name)
+        url2 = await provider.create_queue(queue_name)
+
+        # Assert
         assert url1 == url2
         queues = await provider.list_queues()
-        assert queues.count("my-queue") == 1
+        actual_count = queues.count(queue_name)
+        assert actual_count == expected_count
 
     @pytest.mark.asyncio
     async def test_create_fifo_queue(self, provider: SqsProvider) -> None:
-        url = await provider.create_queue("my-queue.fifo")
+        # Arrange
+        queue_name = "my-queue.fifo"
+        expected_fifo_attr = "true"
 
-        assert "my-queue.fifo" in url
-        attrs = await provider.get_queue_attributes("my-queue.fifo")
-        assert attrs["FifoQueue"] == "true"
+        # Act
+        url = await provider.create_queue(queue_name)
+
+        # Assert
+        assert queue_name in url
+        attrs = await provider.get_queue_attributes(queue_name)
+        actual_fifo_attr = attrs["FifoQueue"]
+        assert actual_fifo_attr == expected_fifo_attr

@@ -31,6 +31,7 @@ from lws.graph.builder import (
 
 class TestDetectCycles:
     def test_dag_has_no_cycles(self) -> None:
+        # Arrange
         graph = AppGraph()
         graph.add_node(GraphNode(id="a", node_type=NodeType.API_GATEWAY))
         graph.add_node(GraphNode(id="b", node_type=NodeType.LAMBDA_FUNCTION))
@@ -44,35 +45,46 @@ class TestDetectCycles:
             )
         )
 
-        assert graph.detect_cycles() == []
+        # Act
+        actual_cycles = graph.detect_cycles()
+
+        # Assert
+        assert actual_cycles == []
 
     def test_simple_cycle_detected(self) -> None:
+        # Arrange
+        node_a = "a"
+        node_b = "b"
         graph = AppGraph()
-        graph.add_node(GraphNode(id="a", node_type=NodeType.LAMBDA_FUNCTION))
-        graph.add_node(GraphNode(id="b", node_type=NodeType.LAMBDA_FUNCTION))
+        graph.add_node(GraphNode(id=node_a, node_type=NodeType.LAMBDA_FUNCTION))
+        graph.add_node(GraphNode(id=node_b, node_type=NodeType.LAMBDA_FUNCTION))
         graph.add_edge(
             GraphEdge(
-                source="a",
-                target="b",
+                source=node_a,
+                target=node_b,
                 edge_type=EdgeType.DATA_DEPENDENCY,
             )
         )
         graph.add_edge(
             GraphEdge(
-                source="b",
-                target="a",
+                source=node_b,
+                target=node_a,
                 edge_type=EdgeType.DATA_DEPENDENCY,
             )
         )
 
-        cycles = graph.detect_cycles()
-        assert len(cycles) >= 1
+        # Act
+        actual_cycles = graph.detect_cycles()
+
+        # Assert
+        assert len(actual_cycles) >= 1
         # The cycle must include both a and b
-        flat = [nid for cycle in cycles for nid in cycle]
-        assert "a" in flat
-        assert "b" in flat
+        flat = [nid for cycle in actual_cycles for nid in cycle]
+        assert node_a in flat
+        assert node_b in flat
 
     def test_three_node_cycle(self) -> None:
+        # Arrange
         graph = AppGraph()
         graph.add_node(GraphNode(id="x", node_type=NodeType.LAMBDA_FUNCTION))
         graph.add_node(GraphNode(id="y", node_type=NodeType.SQS_QUEUE))
@@ -99,9 +111,18 @@ class TestDetectCycles:
             )
         )
 
-        cycles = graph.detect_cycles()
-        assert len(cycles) >= 1
+        # Act
+        actual_cycles = graph.detect_cycles()
+
+        # Assert
+        assert len(actual_cycles) >= 1
 
     def test_empty_graph_no_cycles(self) -> None:
+        # Arrange
         graph = AppGraph()
-        assert graph.detect_cycles() == []
+
+        # Act
+        actual_cycles = graph.detect_cycles()
+
+        # Assert
+        assert actual_cycles == []

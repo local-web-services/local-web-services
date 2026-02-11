@@ -17,15 +17,20 @@ class TestProviderCreation:
     """Test that providers are correctly instantiated from the app model."""
 
     def test_creates_all_providers(self, tmp_path):
+        # Arrange
+        expected_dynamodb = "dynamodb"
+        expected_dynamodb_http = "dynamodb-http"
+
         app_model = parse_assembly(CDK_OUT)
         graph = build_graph(app_model)
         config = LdkConfig(port=9100)
 
-        providers, compute_providers = _create_providers(app_model, graph, config, tmp_path)
+        # Act
+        providers = _create_providers(app_model, graph, config, tmp_path)
 
+        # Assert
         assert len(providers) >= 1
-        assert isinstance(compute_providers, dict)
 
-        provider_names = {p.name for p in providers.values()}
-        assert "dynamodb" in provider_names
-        assert "dynamodb-http" in provider_names
+        actual_provider_names = {p.name for p in providers.values()}
+        assert expected_dynamodb in actual_provider_names
+        assert expected_dynamodb_http in actual_provider_names

@@ -150,8 +150,17 @@ class TestSqsProviderDlq:
     """Redrive policy wiring through SqsProvider."""
 
     async def test_redrive_policy_wired(self, provider_with_dlq: SqsProvider) -> None:
+        # Arrange
+        expected_dlq_name = "dlq"
+        expected_max_receive_count = 2
+
+        # Act
         main_q = provider_with_dlq.get_queue("main-queue")
+
+        # Assert
         assert main_q is not None
         assert main_q.dead_letter_queue is not None
-        assert main_q.dead_letter_queue.queue_name == "dlq"
-        assert main_q.max_receive_count == 2
+        actual_dlq_name = main_q.dead_letter_queue.queue_name
+        actual_max_receive_count = main_q.max_receive_count
+        assert actual_dlq_name == expected_dlq_name
+        assert actual_max_receive_count == expected_max_receive_count

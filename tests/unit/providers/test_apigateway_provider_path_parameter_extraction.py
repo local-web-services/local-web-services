@@ -119,9 +119,17 @@ class TestPathParameterExtraction:
         async with _client(provider) as client:
             response = await client.get("/orders/abc-123")
 
-        assert response.status_code == 200
+        # Assert
+        expected_status = 200
+        expected_path_params = {"order_id": "abc-123"}
+        expected_path = "/orders/abc-123"
+        expected_resource = "/orders/{order_id}"
+        assert response.status_code == expected_status
 
         event: dict = mock_compute.invoke.call_args[0][0]
-        assert event["pathParameters"] == {"order_id": "abc-123"}
-        assert event["path"] == "/orders/abc-123"
-        assert event["resource"] == "/orders/{order_id}"
+        actual_path_params = event["pathParameters"]
+        actual_path = event["path"]
+        actual_resource = event["resource"]
+        assert actual_path_params == expected_path_params
+        assert actual_path == expected_path
+        assert actual_resource == expected_resource

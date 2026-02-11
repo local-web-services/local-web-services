@@ -50,17 +50,14 @@ class IKeyValueStore(Provider):
     @abstractmethod
     async def put_item(self, table_name: str, item: dict) -> None:
         """Put a single item into the specified table."""
-        ...
 
     @abstractmethod
     async def get_item(self, table_name: str, key: dict) -> dict | None:
         """Get a single item by its key. Returns None if not found."""
-        ...
 
     @abstractmethod
     async def delete_item(self, table_name: str, key: dict) -> None:
         """Delete a single item by its key."""
-        ...
 
     @abstractmethod
     async def update_item(
@@ -72,7 +69,6 @@ class IKeyValueStore(Provider):
         expression_names: dict | None = None,
     ) -> dict:
         """Update an item and return the updated item."""
-        ...
 
     @abstractmethod
     async def query(
@@ -85,7 +81,6 @@ class IKeyValueStore(Provider):
         filter_expression: str | None = None,
     ) -> list[dict]:
         """Query items by key condition expression."""
-        ...
 
     @abstractmethod
     async def scan(
@@ -96,12 +91,10 @@ class IKeyValueStore(Provider):
         expression_names: dict | None = None,
     ) -> list[dict]:
         """Scan all items in a table, optionally filtering."""
-        ...
 
     @abstractmethod
     async def batch_get_items(self, table_name: str, keys: list[dict]) -> list[dict]:
         """Get multiple items by their keys in a single batch."""
-        ...
 
     @abstractmethod
     async def batch_write_items(
@@ -111,24 +104,19 @@ class IKeyValueStore(Provider):
         delete_keys: list[dict] | None = None,
     ) -> None:
         """Write (put and/or delete) multiple items in a single batch."""
-        ...
 
     @abstractmethod
     async def create_table(self, config: TableConfig) -> dict:
         """Create a table dynamically. Returns a table description dict."""
-        ...
 
     @abstractmethod
     async def delete_table(self, table_name: str) -> dict:
         """Delete a table. Returns a table description dict."""
-        ...
 
     @abstractmethod
     async def describe_table(self, table_name: str) -> dict:
         """Return a table description dict."""
-        ...
 
     @abstractmethod
     async def list_tables(self) -> list[str]:
         """Return a list of table names."""
-        ...

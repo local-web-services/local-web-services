@@ -41,12 +41,20 @@ class TestProviderGetSubscriptionAttributes:
         self,
         provider: SnsProvider,
     ) -> None:
-        await provider.create_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        expected_protocol = "sqs"
+        expected_endpoint = "my-queue"
+        await provider.create_topic(topic_name)
         sub_arn = await provider.subscribe(
-            topic_name="my-topic", protocol="sqs", endpoint="my-queue"
+            topic_name=topic_name, protocol=expected_protocol, endpoint=expected_endpoint
         )
-        attrs = await provider.get_subscription_attributes(sub_arn)
-        assert attrs["Protocol"] == "sqs"
-        assert attrs["Endpoint"] == "my-queue"
-        assert attrs["TopicArn"] == TOPIC_ARN
-        assert attrs["SubscriptionArn"] == sub_arn
+
+        # Act
+        actual_attrs = await provider.get_subscription_attributes(sub_arn)
+
+        # Assert
+        assert actual_attrs["Protocol"] == expected_protocol
+        assert actual_attrs["Endpoint"] == expected_endpoint
+        assert actual_attrs["TopicArn"] == TOPIC_ARN
+        assert actual_attrs["SubscriptionArn"] == sub_arn

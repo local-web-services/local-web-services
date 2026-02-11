@@ -20,6 +20,10 @@ def _mock_client_xml(return_xml: str) -> AsyncMock:
 
 class TestCreateQueue:
     def test_create_queue_calls_correct_endpoint(self) -> None:
+        # Arrange
+        expected_exit_code = 0
+        expected_action = "CreateQueue"
+        expected_queue_name = "my-queue"
         xml = (
             "<CreateQueueResponse>"
             "<CreateQueueResult>"
@@ -28,15 +32,17 @@ class TestCreateQueue:
             "</CreateQueueResponse>"
         )
         mock = _mock_client_xml(xml)
+
+        # Act
         with patch("lws.cli.services.sqs._client", return_value=mock):
             result = runner.invoke(
                 app,
-                ["sqs", "create-queue", "--queue-name", "my-queue"],
+                ["sqs", "create-queue", "--queue-name", expected_queue_name],
             )
 
-        assert result.exit_code == 0
+        # Assert
+        assert result.exit_code == expected_exit_code
         mock.form_request.assert_awaited_once()
-        call_args = mock.form_request.call_args
-        params = call_args[0][1]
-        assert params["Action"] == "CreateQueue"
-        assert params["QueueName"] == "my-queue"
+        actual_params = mock.form_request.call_args[0][1]
+        assert actual_params["Action"] == expected_action
+        assert actual_params["QueueName"] == expected_queue_name

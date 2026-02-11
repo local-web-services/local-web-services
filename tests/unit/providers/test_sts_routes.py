@@ -23,21 +23,29 @@ class TestStsRoutes:
             "/",
             data={"Action": "GetCallerIdentity"},
         )
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        expected_account = "000000000000"
+        assert resp.status_code == expected_status
         assert "<GetCallerIdentityResponse" in resp.text
-        assert "<Account>000000000000</Account>" in resp.text
+        assert f"<Account>{expected_account}</Account>" in resp.text
         assert "<Arn>" in resp.text
         assert "<UserId>" in resp.text
 
     @pytest.mark.asyncio
     async def test_unknown_action_returns_error(self, client) -> None:
+        action_name = "GetSessionToken"
         resp = await client.post(
             "/",
-            data={"Action": "GetSessionToken"},
+            data={"Action": action_name},
         )
-        assert resp.status_code == 400
+
+        # Assert
+        expected_status = 400
+        assert resp.status_code == expected_status
         assert "<ErrorResponse>" in resp.text
         assert "<Code>InvalidAction</Code>" in resp.text
         assert "lws" in resp.text
         assert "STS" in resp.text
-        assert "GetSessionToken" in resp.text
+        assert action_name in resp.text

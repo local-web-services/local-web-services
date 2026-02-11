@@ -43,6 +43,13 @@ make test
 make check
 ```
 
+## Further Reading
+
+Detailed guides live in the `contributing/` directory:
+
+- [Architecture](contributing/ARCHITECTURE.md) -- system design, directory structure, core concepts
+- [Testing](contributing/testing/) -- test standards, patterns, and examples
+
 ## Submitting a Pull Request
 
 1. Fork the repository and create a branch from `main`.

@@ -30,7 +30,7 @@ def test_invoke_method(
 
 
 async def _test_invoke_method(
-    rest_api_name: str,
+    _rest_api_name: str,
     resource: str,
     http_method: str,
     body: str | None,
@@ -42,7 +42,7 @@ async def _test_invoke_method(
     except Exception as exc:
         exit_with_error(str(exc))
 
-    import httpx
+    import httpx  # pylint: disable=import-outside-toplevel
 
     request_body = body.encode() if body else None
     headers: dict[str, str] = {}

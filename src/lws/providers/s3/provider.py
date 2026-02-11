@@ -123,6 +123,11 @@ class S3Provider(IObjectStore):
         """Expose underlying storage for route handlers that need full metadata."""
         return self._storage
 
+    @property
+    def dispatcher(self) -> NotificationDispatcher:
+        """Return the notification dispatcher."""
+        return self._dispatcher
+
     # -- Bucket tagging -------------------------------------------------------
 
     def put_bucket_tagging(self, bucket_name: str, tags: dict[str, str]) -> None:

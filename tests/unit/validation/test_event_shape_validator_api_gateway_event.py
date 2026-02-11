@@ -119,31 +119,54 @@ def _valid_eventbridge_event() -> dict:
 
 class TestApiGatewayEvent:
     def test_valid_event(self) -> None:
+        # Arrange
         ctx = _make_context("api_gateway", _valid_api_gateway_event())
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
+
+        # Assert
         assert issues == []
 
     def test_missing_http_method(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         event = _valid_api_gateway_event()
         del event["httpMethod"]
         ctx = _make_context("api_gateway", event)
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert "httpMethod" in issues[0].message
 
     def test_wrong_type_headers(self) -> None:
+        # Arrange
+        expected_issue_count = 1
         event = _valid_api_gateway_event()
         event["headers"] = "not-a-dict"
         ctx = _make_context("api_gateway", event)
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
-        assert len(issues) == 1
+
+        # Assert
+        assert len(issues) == expected_issue_count
         assert "headers" in issues[0].message
         assert "dict" in issues[0].message
 
     def test_missing_multiple_fields(self) -> None:
+        # Arrange
+        expected_min_issues = 3
         event = {"body": None}
         ctx = _make_context("api_gateway", event)
+
+        # Act
         issues = EventShapeValidator().validate(ctx)
+
+        # Assert
         # Should report missing httpMethod, path, headers, requestContext
         # queryStringParameters is present with None which is valid since we check 'in data'
-        assert len(issues) >= 3
+        assert len(issues) >= expected_min_issues

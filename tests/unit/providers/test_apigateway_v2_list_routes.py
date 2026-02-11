@@ -21,7 +21,10 @@ class TestListRoutes:
         api_id = resp.json()["apiId"]
 
         resp = client.get(f"/v2/apis/{api_id}/routes")
-        assert resp.status_code == 200
+
+        # Assert
+        expected_status = 200
+        assert resp.status_code == expected_status
         assert resp.json()["items"] == []
 
     def test_list_after_create(self) -> None:
@@ -34,4 +37,7 @@ class TestListRoutes:
             content=json.dumps({"routeKey": "GET /items"}),
         )
         resp = client.get(f"/v2/apis/{api_id}/routes")
-        assert len(resp.json()["items"]) == 1
+
+        # Assert
+        expected_count = 1
+        assert len(resp.json()["items"]) == expected_count

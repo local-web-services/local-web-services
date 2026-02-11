@@ -19,11 +19,17 @@ async def provider():
 class TestDeleteTopic:
     @pytest.mark.asyncio
     async def test_delete_topic(self, provider: SnsProvider) -> None:
-        await provider.create_topic("my-topic")
-        await provider.delete_topic("my-topic")
+        # Arrange
+        topic_name = "my-topic"
+        expected_topic_count = 0
+        await provider.create_topic(topic_name)
 
-        topics = provider.list_topics()
-        assert len(topics) == 0
+        # Act
+        await provider.delete_topic(topic_name)
+
+        # Assert
+        actual_topics = provider.list_topics()
+        assert len(actual_topics) == expected_topic_count
 
     @pytest.mark.asyncio
     async def test_delete_nonexistent_raises(self, provider: SnsProvider) -> None:

@@ -157,14 +157,21 @@ class TestVisibilityTimeout:
         assert messages == []
 
     async def test_message_reappears_after_timeout(self) -> None:
+        # Arrange
+        expected_receive_count = 2
         q = LocalQueue(queue_name="fast-vt", visibility_timeout=0)
         await q.send_message("reappear")
+
+        # Act
         msgs1 = await q.receive_messages()
         assert len(msgs1) == 1
         # With 0s timeout, should reappear immediately
         msgs2 = await q.receive_messages()
+
+        # Assert
         assert len(msgs2) == 1
-        assert msgs2[0].receive_count == 2
+        actual_receive_count = msgs2[0].receive_count
+        assert actual_receive_count == expected_receive_count
 
     async def test_delay_seconds(self, queue: LocalQueue) -> None:
         await queue.send_message("delayed", delay_seconds=10)

@@ -69,6 +69,7 @@ def _make_table_config() -> dict[str, TableConfig]:
 
 class TestValidateEventShape:
     def test_valid_api_gateway_event(self) -> None:
+        # Arrange
         engine = create_validation_engine()
         event = {
             "httpMethod": "GET",
@@ -78,16 +79,27 @@ class TestValidateEventShape:
             "body": None,
             "requestContext": {},
         }
+
+        # Act
         issues = validate_event_shape(engine, "handler1", "api_gateway", event)
+
+        # Assert
         assert issues == []
 
     def test_invalid_api_gateway_event(self) -> None:
+        # Arrange
+        expected_min_warn_issues = 1
         engine = create_validation_engine()
+
+        # Act
         issues = validate_event_shape(engine, "handler1", "api_gateway", {})
-        warn_issues = [i for i in issues if i.level == ValidationLevel.WARN]
-        assert len(warn_issues) >= 1
+
+        # Assert
+        actual_warn_issues = [i for i in issues if i.level == ValidationLevel.WARN]
+        assert len(actual_warn_issues) >= expected_min_warn_issues
 
     def test_valid_sqs_event(self) -> None:
+        # Arrange
         engine = create_validation_engine()
         event = {
             "Records": [
@@ -98,5 +110,9 @@ class TestValidateEventShape:
                 }
             ]
         }
+
+        # Act
         issues = validate_event_shape(engine, "handler1", "sqs", event)
+
+        # Assert
         assert issues == []
