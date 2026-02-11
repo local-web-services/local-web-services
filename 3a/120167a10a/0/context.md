@@ -1,0 +1,123 @@
+# Session Context
+
+**Session ID:** 6b92ed86-72b7-49f4-bb7e-f6747825920b
+
+**Commit Message:** Implement the following plan:
+
+# Plan: Lambda Runtime Images with AWS SD
+
+## Prompt
+
+Implement the following plan:
+
+# Plan: Lambda Runtime Images with AWS SDK
+
+## Context
+
+The Docker Lambda runtime currently uses bare `node:XX-slim` and `python:3.XX-slim` images which don't include the AWS SDK. Real AWS Lambda runtimes provide `boto3` (Python) and `@aws-sdk/*` (Node.js) pre-installed. Users whose Lambda handlers import these libraries without bundling them will get import errors.
+
+The fix: use the official AWS Lambda base images from ECR Public directly (`public.ecr.aws/lambda/nodejs:XX`, `public.ecr.aws/lambda/python:3.XX`). No custom Dockerfiles needed — just pull and use them, overriding the entrypoint at container creation time.
+
+## Approach
+
+### 1. `ldk setup lambda` command
+
+New command in `src/lws/cli/ldk.py`:
+```
+ldk setup lambda                         # pull all Lambda runtime images
+ldk setup lambda --runtime python3.12    # pull one specific runtime
+```
+
+`lambda` is a positional argument (the service name). Extensible for future services (e.g., `ldk setup ec2`).
+
+For Lambda, it pulls the official images from ECR Public:
+- `public.ecr.aws/lambda/nodejs:18`, `:20`, `:22`
+- `public.ecr.aws/lambda/python:3.9`, `:3.10`, `:3.11`, `:3.12`, `:3.13`
+
+Uses `docker.from_env().images.pull()` (Docker Python SDK, already a dependency). Shows progress via Rich console output.
+
+### 2. `docker.py` changes
+
+**Image mapping** — `_RUNTIME_IMAGES` updated to point to the official ECR Public images:
+
+```python
+_RUNTIME_IMAGES = {
+    "nodejs18.x": "public.ecr.aws/lambda/nodejs:18",
+    "nodejs20.x": "public.ecr.aws/lambda/nodejs:20",
+    ...
+}
+```
+
+**Image resolution** — `_resolve_image()` looks up the image and verifies it exists locally. If not found, raises an error telling the user to run `ldk setup lambda`.
+
+**Entrypoint override** — Official Lambda images set ENTRYPOINT to the Lambda Runtime Interface Client. `_ensure_container()` overrides it with `entrypoint=["sleep"], command="infinity"` when using the official images.
+
+**Volume mounts** — `/var/bootstrap` is always mounted (bootstrap scripts from host). `/var/task` mounted as before.
+
+### 3. EOL runtimes
+
+`nodejs14.x`, `nodejs16.x`, `python3.8` — not supported. If referenced, error tells user to upgrade runtime.
+
+## Files to modify
+
+| File | Change |
+|------|--------|
+| `src/lws/cli/ldk.py` | **Add** `setup` command with positional `service` arg and optional `--runtime` |
+| `src/lws/providers/lambda_runtime/docker.py` | **Modify** image mapping, `_resolve_image()`, `_ensure_container()` entrypoint override |
+
+No new Dockerfiles needed.
+
+## Verification
+
+```bash
+# 1. Pull all Lambda images
+ldk setup lambda
+
+# 2. Pull specific runtime
+ldk setup lambda --runtime python3.12
+
+# 3. Verify images
+docker images | grep public.ecr.aws/lambda
+
+# 4. Test with sample project
+cd sample-project && ldk dev
+
+# 5. Test missing image error
+docker rmi public.ecr.aws/lambda/nodejs:20
+ldk dev  # should error: "Run 'ldk setup lambda' first"
+
+# 6. Existing tests pass
+make check
+```
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/eamonnfaherty/.REDACTED.jsonl
+
+## Summary
+
+All done. Here's a summary of the changes:
+
+**`src/lws/providers/lambda_runtime/docker.py`:**
+- Updated `_RUNTIME_IMAGES` to use official AWS Lambda base images from ECR Public (`public.ecr.aws/lambda/nodejs:XX`, `public.ecr.aws/lambda/python:3.XX`)
+- Removed EOL runtimes (`nodejs14.x`, `nodejs16.x`, `python3.8`) from the mapping and added `_EOL_RUNTIMES` set
+- `_resolve_image()` now: rejects EOL runtimes with an upgrade message, rejects unknown runtimes, and verifies the image exists locally (pointing users to `ldk setup lambda` if missing)
+- `_ensure_container()` now uses `entrypoint=["sleep"], command="infinity"` to override the official image's ENTRYPOINT (the Lambda Runtime Interface Client)
+
+**`src/lws/cli/ldk.py`:**
+- Added `ldk setup` command with a positional `service` argument and optional `--runtime` flag
+- `ldk setup lambda` pulls all 8 supported Lambda runtime images
+- `ldk setup lambda --runtime python3.12` pulls just one specific runtime
+- Shows progress via Rich console output with success/failure per image
+
+## Key Actions
+
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/cli/ldk.py
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/docker.py
+- - **TaskCreate**: Update _RUNTIME_IMAGES mapping, _resolve_image() with local check, and _ensure_container() with entrypoint override
+- - **TaskCreate**: Add setup command with positional service arg and optional --runtime flag to pull official Lambda images
+- - **TaskCreate**: Run the project's check target to ensure nothing is broken
+- - **TaskUpdate**: 
+- - **Edit**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/docker.py
+- - **Edit**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/docker.py
+- - **Edit**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/docker.py
+- - **TaskUpdate**: 

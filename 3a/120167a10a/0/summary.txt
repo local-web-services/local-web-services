@@ -1,0 +1,13 @@
+All done. Here's a summary of the changes:
+
+**`src/lws/providers/lambda_runtime/docker.py`:**
+- Updated `_RUNTIME_IMAGES` to use official AWS Lambda base images from ECR Public (`public.ecr.aws/lambda/nodejs:XX`, `public.ecr.aws/lambda/python:3.XX`)
+- Removed EOL runtimes (`nodejs14.x`, `nodejs16.x`, `python3.8`) from the mapping and added `_EOL_RUNTIMES` set
+- `_resolve_image()` now: rejects EOL runtimes with an upgrade message, rejects unknown runtimes, and verifies the image exists locally (pointing users to `ldk setup lambda` if missing)
+- `_ensure_container()` now uses `entrypoint=["sleep"], command="infinity"` to override the official image's ENTRYPOINT (the Lambda Runtime Interface Client)
+
+**`src/lws/cli/ldk.py`:**
+- Added `ldk setup` command with a positional `service` argument and optional `--runtime` flag
+- `ldk setup lambda` pulls all 8 supported Lambda runtime images
+- `ldk setup lambda --runtime python3.12` pulls just one specific runtime
+- Shows progress via Rich console output with success/failure per image
