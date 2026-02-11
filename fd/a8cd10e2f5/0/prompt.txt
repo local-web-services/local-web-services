@@ -1,0 +1,1 @@
+ldk stop does not stop the server. it starts the shutdown but it never finishes

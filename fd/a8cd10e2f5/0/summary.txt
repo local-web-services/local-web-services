@@ -1,0 +1,13 @@
+Here's a summary of everything done:
+
+**Shutdown hang fix** — 4 files changed:
+- `src/lws/cli/ldk.py` — `_HttpServiceProvider.stop()`: added `asyncio.wait_for(..., timeout=3.0)` with cancel fallback around `await self._task`
+- `src/lws/providers/apigateway/provider.py` — `ApiGatewayProvider.stop()`: same timeout + cancel pattern around `await self._serve_task`
+- `src/lws/runtime/orchestrator.py` — `Orchestrator.stop()`: wrapped each `provider.stop()` call in `asyncio.wait_for(..., timeout=5.0)`, logs a warning and skips on timeout
+- `src/lws/runtime/watcher.py` — `FileWatcher.stop()`: added `timeout=3.0` to `observer.join()` so it doesn't block forever
+
+**Docker log level fix** — `src/lws/logging/logger.py`:
+- Changed `log_docker_operation` from `logging.INFO` to `logging.DEBUG` level check and set WebSocket entry level to `"DEBUG"`
+
+**E2E test for Node.js S3 virtual-hosted-style** — new file:
+- `tests/e2e/lambda_/test_lambda_s3_nodejs_integration.py` — Creates a Node.js Lambda that uses `@aws-sdk/client-s3` v3 **without** `forcePathStyle`, writes to S3, and verifies the object was stored correctly. This exercises the `dns_rewrite.js` hook and virtual-hosted middleware.

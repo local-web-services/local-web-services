@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "fda8cd10e2f5",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/logging/logger.py",
+    "src/lws/providers/apigateway/provider.py",
+    "src/lws/runtime/orchestrator.py",
+    "src/lws/runtime/watcher.py",
+    "tests/e2e/lambda_/test_lambda_s3_nodejs_integration.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/fd/a8cd10e2f5/0/metadata.json",
+      "transcript": "/fd/a8cd10e2f5/0/full.jsonl",
+      "context": "",
+      "content_hash": "/fd/a8cd10e2f5/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 33,
+    "cache_creation_tokens": 26971,
+    "cache_read_tokens": 3775815,
+    "output_tokens": 2154,
+    "api_call_count": 29
+  }
+}
