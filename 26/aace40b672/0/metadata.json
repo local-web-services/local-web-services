@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "26aace40b672",
+  "session_id": "10a97f8f-76aa-406a-bb4d-aa70803990d3",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T14:36:37.448704Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Makefile",
+    "tests/integration/dynamodb/test_create_table.py",
+    "tests/integration/dynamodb/test_delete_table.py",
+    "tests/integration/dynamodb/test_describe_table.py",
+    "tests/integration/dynamodb/test_list_tables.py",
+    "tests/integration/dynamodb/test_query.py",
+    "tests/integration/dynamodb/test_scan.py",
+    "tests/integration/sqs/test_create_queue.py",
+    "tests/integration/ssm/conftest.py",
+    "tests/unit/providers/test_ssm_put_and_get_parameter.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "aa644590-c4ee-465a-b683-d80d4c4ba09a",
+  "checkpoint_transcript_start": 2328,
+  "transcript_lines_at_start": 2328,
+  "token_usage": {
+    "input_tokens": 21,
+    "cache_creation_tokens": 18265,
+    "cache_read_tokens": 1882548,
+    "output_tokens": 190,
+    "api_call_count": 17,
+    "subagent_tokens": {
+      "input_tokens": 22,
+      "cache_creation_tokens": 61823,
+      "cache_read_tokens": 254615,
+      "output_tokens": 22,
+      "api_call_count": 14
+    }
+  }
+}
