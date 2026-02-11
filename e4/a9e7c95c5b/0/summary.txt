@@ -1,0 +1,1 @@
+Now after each Lambda invocation, the container is stopped and removed — it won't linger in `docker ps`. A fresh container is created on the next invocation via `_ensure_container()`. The tradeoff is a small cold-start per invocation (container creation), but you get clean `docker ps` output.

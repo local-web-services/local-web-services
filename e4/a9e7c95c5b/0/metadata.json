@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "e4a9e7c95c5b",
+  "session_id": "1c9632fc-f797-49a8-901c-95079a0fd094",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T03:13:36.889684Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/providers/lambda_runtime/docker.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "80c455bd-76a4-4c6f-acd7-1f99ee499b11",
+  "checkpoint_transcript_start": 833,
+  "transcript_lines_at_start": 833,
+  "token_usage": {
+    "input_tokens": 5,
+    "cache_creation_tokens": 56777,
+    "cache_read_tokens": 166947,
+    "output_tokens": 11,
+    "api_call_count": 3
+  }
+}
