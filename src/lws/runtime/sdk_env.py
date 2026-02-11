@@ -6,7 +6,6 @@ service endpoints provided by LDK.
 
 from __future__ import annotations
 
-
 _SERVICE_ID_MAP: dict[str, str] = {
     "secretsmanager": "SECRETS_MANAGER",
     "stepfunctions": "SFN",
