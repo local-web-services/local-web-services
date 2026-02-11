@@ -16,9 +16,9 @@ Container strategy: lazy warm containers with ``docker exec``.
 from __future__ import annotations
 
 import asyncio
-import base64
 import json
 import logging
+import subprocess
 import time
 from pathlib import Path
 
@@ -199,13 +199,10 @@ class DockerCompute(ICompute):
         event_json = json.dumps(event)
 
         start = time.monotonic()
-        try:
-            result = await asyncio.wait_for(
-                self._run_exec(cmd, env_vars, event_json),
-                timeout=self._config.timeout,
-            )
-        except TimeoutError:
-            duration_ms = (time.monotonic() - start) * 1000
+        result, timed_out = await self._run_exec(cmd, env_vars, event_json)
+        duration_ms = (time.monotonic() - start) * 1000
+
+        if timed_out:
             # Kill the container on timeout — mirrors real Lambda behaviour
             # where the execution environment is destroyed. A fresh container
             # will be created on the next invocation via _ensure_container().
@@ -220,8 +217,6 @@ class DockerCompute(ICompute):
                 duration_ms=duration_ms,
                 request_id=context.aws_request_id,
             )
-
-        duration_ms = (time.monotonic() - start) * 1000
         invocation_result = self._parse_result(result, duration_ms, context.aws_request_id)
         if invocation_result.error:
             _logger.error(
@@ -292,8 +287,8 @@ class DockerCompute(ICompute):
 
     async def _run_exec(
         self, cmd: list[str], env_vars: list[str], event_json: str
-    ) -> str:
-        """Run ``docker exec`` inside the warm container and return stdout."""
+    ) -> tuple[str, bool]:
+        """Run ``docker exec`` via the CLI and return (stdout, timed_out)."""
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(
             None, self._run_exec_sync, cmd, env_vars, event_json
@@ -301,32 +296,38 @@ class DockerCompute(ICompute):
 
     def _run_exec_sync(
         self, cmd: list[str], env_vars: list[str], event_json: str
-    ) -> str:
-        """Run the bootstrap script inside the container via shell pipe.
+    ) -> tuple[str, bool]:
+        """Run the bootstrap script via ``docker exec`` CLI subprocess.
 
-        The event JSON is base64-encoded and piped through ``base64 -d``
-        into the bootstrap command. This avoids raw socket handling and
-        gives native stdout/stderr separation via ``demux=True``.
+        Uses ``subprocess.run`` with stdin piping and a timeout so the
+        process is reliably killed if it hangs (e.g. Node.js with active
+        SDK keep-alive connections).
+
+        Returns ``(stdout_str, timed_out)``.
         """
-        encoded = base64.b64encode(event_json.encode()).decode()
-        shell_cmd = f"echo {encoded} | base64 -d | {' '.join(cmd)}"
+        docker_cmd = ["docker", "exec", "-i"]
+        for env in env_vars:
+            docker_cmd.extend(["-e", env])
+        docker_cmd.append(self._container.id)
+        docker_cmd.extend(cmd)
 
-        _exit_code, output = self._container.exec_run(
-            ["sh", "-c", shell_cmd],
-            environment=env_vars,
-            demux=True,
-        )
+        try:
+            proc = subprocess.run(
+                docker_cmd,
+                input=event_json.encode(),
+                capture_output=True,
+                timeout=self._config.timeout,
+            )
+        except subprocess.TimeoutExpired:
+            return "", True
 
-        stdout_bytes = output[0] or b""
-        stderr_bytes = output[1] or b""
-
-        if stderr_bytes:
+        if proc.stderr:
             _logger.debug(
                 "[%s] stderr: %s",
                 self._config.function_name,
-                stderr_bytes.decode(errors="replace").rstrip(),
+                proc.stderr.decode(errors="replace").rstrip(),
             )
-        return stdout_bytes.decode(errors="replace")
+        return proc.stdout.decode(errors="replace"), False
 
     @staticmethod
     def _parse_result(raw: str, duration_ms: float, request_id: str) -> InvocationResult:
