@@ -129,7 +129,7 @@ npx cdk synth
 uvx --from local-web-services ldk dev --project-dir /path/to/your-cdk-project --port 3000
 ```
 
-`ldk` will discover your API routes, Lambda functions, DynamoDB tables, SQS queues, SNS topics, S3 buckets, and Step Functions state machines automatically from the CDK output.
+`ldk` will discover your API routes, Lambda functions, DynamoDB tables, SQS queues, SNS topics, S3 buckets, Step Functions state machines, SSM parameters, and Secrets Manager secrets automatically from the CDK output.
 
 ### Terraform Projects
 
@@ -443,6 +443,12 @@ Stub APIs that return AWS-compatible responses for Terraform compatibility. IAM 
 
 ### SSM Parameter Store
 
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_ssm.StringParameter` | Name, Type, Value, Description |
+
 **API Operations:**
 
 | Operation | Supported |
@@ -458,9 +464,15 @@ Stub APIs that return AWS-compatible responses for Terraform compatibility. IAM 
 | RemoveTagsFromResource | Yes |
 | ListTagsForResource | Yes |
 
-In-memory parameter store supporting String, StringList, and SecureString types. Supports versioning (auto-incremented on overwrite), descriptions, and tags.
+In-memory parameter store supporting String, StringList, and SecureString types. Supports versioning (auto-incremented on overwrite), descriptions, and tags. In CDK mode, parameters defined in the CloudFormation template are pre-seeded on startup.
 
 ### Secrets Manager
+
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_secretsmanager.Secret` | Name, Description, SecretString, GenerateSecretString |
 
 **API Operations:**
 
@@ -478,7 +490,7 @@ In-memory parameter store supporting String, StringList, and SecureString types.
 | UntagResource | Yes |
 | ListSecretVersionIds | Yes |
 
-In-memory secret store supporting version staging (AWSCURRENT/AWSPREVIOUS), soft delete with optional recovery, and tags.
+In-memory secret store supporting version staging (AWSCURRENT/AWSPREVIOUS), soft delete with optional recovery, and tags. In CDK mode, secrets defined in the CloudFormation template are pre-seeded on startup.
 
 ## Development
 
