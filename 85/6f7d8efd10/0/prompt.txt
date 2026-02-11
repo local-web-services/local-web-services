@@ -1,0 +1,23 @@
+[21:33:09] APIGATEWAY GET /_ldk/resources -> apigateway (0ms) -> 200
+INFO ldk.docker-compute: Invoking GetOrderFunctionFD335049 (request=6d8168df-f693-413a-93f4-bd545b1cbc04)
+Exception ignored in: <http.client.HTTPResponse object at 0x10c8efb20>
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 432, in close
+    super().close() # set "closed" flag
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 445, in flush
+    self.fp.flush()
+ValueError: I/O operation on closed file.
+Exception ignored in: <http.client.HTTPResponse object at 0x10c92c970>
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 432, in close
+    super().close() # set "closed" flag
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 445, in flush
+    self.fp.flush()
+ValueError: I/O operation on closed file.
+Exception ignored in: <http.client.HTTPResponse object at 0x10c867b20>
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 432, in close
+    super().close() # set "closed" flag
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 445, in flush
+    self.fp.flush()
+ValueError: I/O operation on closed file.

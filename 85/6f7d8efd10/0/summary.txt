@@ -1,0 +1,9 @@
+Fixed. The approach is completely different now:
+
+**Before**: Raw socket API (`exec_start(socket=True)`) → manual `sock._sock.sendall` / `shutdown` / `recv` loop → Docker's internal HTTPResponse objects left dangling → GC flush errors.
+
+**After**: `exec_run` with `demux=True` using a shell pipe (`echo <base64> | base64 -d | node invoker.js`). This:
+- Uses the Docker SDK's high-level API — no raw socket manipulation
+- Gets native stdout/stderr separation without manual stream demuxing
+- Avoids the HTTPResponse GC issue entirely
+- Base64 encoding prevents any shell escaping issues with the event JSON
