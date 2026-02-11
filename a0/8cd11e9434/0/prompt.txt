@@ -1,0 +1,62 @@
+<task-notification>
+<task-id>a36bc94</task-id>
+<status>completed</status>
+<summary>Agent "Create Events+SFN+Cognito+APIGW tests" completed</summary>
+<result>All 34 tests pass (including the existing ones and all 20 newly created tests). Here is a summary of every file created:
+
+## EventBridge (4 files)
+
+1. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/events/test_create_event_bus.py`** -- Tests `AWSEvents.CreateEventBus` by creating a custom event bus and asserting the response contains an `EventBusArn` with the bus name.
+
+2. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/events/test_delete_event_bus.py`** -- Tests `AWSEvents.DeleteEventBus` by first creating a bus, then deleting it and asserting an empty response body.
+
+3. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/events/test_delete_rule.py`** -- Tests `AWSEvents.DeleteRule` by first creating a rule via `PutRule`, then deleting it and asserting an empty response body.
+
+4. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/events/test_list_event_buses.py`** -- Tests `AWSEvents.ListEventBuses` by asserting the default event bus appears in the response.
+
+## Step Functions (4 files)
+
+5. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/stepfunctions/test_create_state_machine.py`** -- Tests `AWSStepFunctions.CreateStateMachine` by creating a new state machine and asserting the response contains `stateMachineArn` and `creationDate`.
+
+6. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/stepfunctions/test_delete_state_machine.py`** -- Tests `AWSStepFunctions.DeleteStateMachine` by first creating a machine, then deleting it using the returned ARN and asserting an empty response.
+
+7. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/stepfunctions/test_describe_state_machine.py`** -- Tests `AWSStepFunctions.DescribeStateMachine` against the pre-configured `PassMachine`, asserting the name and ARN are returned.
+
+8. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/stepfunctions/test_list_executions.py`** -- Tests `AWSStepFunctions.ListExecutions` by first starting an execution, then listing executions and asserting at least one is returned with `executionArn` and `status`.
+
+## Cognito (5 files)
+
+9. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/cognito_idp/test_create_user_pool.py`** -- Tests `CreateUserPool` by creating a pool and asserting the response contains `Id`, `Name`, and `Arn`.
+
+10. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/cognito_idp/test_delete_user_pool.py`** -- Tests `DeleteUserPool` by calling delete on the configured pool and asserting an empty response.
+
+11. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/cognito_idp/test_describe_user_pool.py`** -- Tests `DescribeUserPool` by describing the configured pool and asserting `Id`, `Name`, and `Arn` are returned.
+
+12. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/cognito_idp/test_list_user_pools.py`** -- Tests `ListUserPools` by asserting the configured pool ID appears in the list.
+
+13. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/cognito_idp/test_confirm_sign_up.py`** -- Tests `ConfirmSignUp` by first signing up a user, then confirming them and asserting an empty response.
+
+## API Gateway (2 files)
+
+14. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/apigateway/conftest.py`** -- Shared fixtures creating a FastAPI app from `create_apigateway_management_app()` and an httpx async client.
+
+15. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/apigateway/test_test_invoke_method.py`** -- Since `TestInvokeMethod` is not implemented in the provider, this test exercises the closest available operations: creating a REST API, adding a child resource, putting a `GET` method on it, and retrieving that method. Asserts correct status codes and response data at each step.
+
+## S3 (5 files)
+
+16. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/s3api/test_create_bucket.py`** -- Tests `PUT /<bucket>` to create a new bucket and asserts a 200 status.
+
+17. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/s3api/test_delete_bucket.py`** -- Tests `DELETE /<bucket>` by first creating a bucket, then deleting it and asserting a 204 status.
+
+18. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/s3api/test_get_object.py`** -- Tests `GET /<bucket>/<key>` with two cases: retrieving an existing object (200 with matching content) and requesting a nonexistent key (404).
+
+19. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/s3api/test_head_bucket.py`** -- Tests `HEAD /<bucket>` with two cases: an existing bucket (200 with `x-amz-bucket-region` header) and a nonexistent bucket (404).
+
+20. **`/Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/tests/integration/s3api/test_list_buckets.py`** -- Tests `GET /` and asserts the response contains `ListAllMyBucketsResult` XML with the pre-configured `test-bucket`.
+
+All 20 new tests follow the established patterns: `from __future__ import annotations`, `import httpx`, single test class named `Test<Operation>`, `async def test_<operation>(self, client: httpx.AsyncClient)`, Arrange/Act/Assert comments, `expected_*` variables for magic strings, and assertions on both status code and response body.</result>
+<usage>total_tokens: 67696
+tool_uses: 41
+duration_ms: 124346</usage>
+</task-notification>
+Full transcript available at: REDACTED.output

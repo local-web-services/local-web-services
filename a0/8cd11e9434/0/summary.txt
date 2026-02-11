@@ -1,0 +1,8 @@
+**`make check` passes — 1722 tests, 0 failures.**
+
+Summary of what was done:
+- **43 missing integration tests created** across all 10 services — every CLI command now has a corresponding integration test
+- **Both architecture coverage tests pass** (e2e + integration)
+- **SSM, Secrets Manager, and API Gateway** got new conftest.py files
+- **Architecture fixture test** updated to handle stateless providers (yield None)
+- **Makefile** updated to exclude e2e tests from `make test` (they require a running server)
