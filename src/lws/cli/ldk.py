@@ -713,7 +713,9 @@ def _create_terraform_providers(
     providers["__neptune_data__"] = neptune_data = NeptuneDataPlaneProvider(ports["neptune-data"])
     providers["__neptune_http__"] = _HttpServiceProvider(
         "neptune-http",
-        lambda: create_neptune_app(data_plane_endpoint=neptune_data.endpoint),
+        lambda: create_neptune_app(
+            data_plane_endpoint=neptune_data.endpoint if neptune_data.available else None,
+        ),
         ports["neptune"],
     )
 

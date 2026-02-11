@@ -32,8 +32,8 @@ from lws.interfaces import (
     ProviderStatus,
 )
 from lws.logging.logger import get_logger
-from lws.providers._shared.docker_client import (  # noqa: F401
-    _socket_candidates,
+from lws.providers._shared.docker_client import (  # noqa: F401  # pylint: disable=unused-import
+    _socket_candidates,  # re-exported for test patching
     create_docker_client,
 )
 from lws.providers._shared.docker_service import destroy_container

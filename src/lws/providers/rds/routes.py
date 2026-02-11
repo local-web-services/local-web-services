@@ -412,7 +412,7 @@ async def _handle_remove_tags_from_resource(state: _RdsState, body: dict) -> Res
     return _json_response({})
 
 
-async def _handle_describe_db_engine_versions(state: _RdsState, body: dict) -> Response:
+async def _handle_describe_db_engine_versions(_state: _RdsState, body: dict) -> Response:
     """Handle DescribeDBEngineVersions."""
     engine = body.get("Engine")
 
