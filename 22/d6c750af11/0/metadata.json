@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "22d6c750af11",
+  "session_id": "f7436bbb-ae80-4d39-be8c-74e1d982092c",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T23:26:48.255988Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/lambda_runtime/docker.py",
+    "src/lws/providers/neptune/data_plane.py",
+    "src/lws/providers/rds/routes.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "da2b4db3-59ba-4859-95c0-bf32fd47ad94",
+  "checkpoint_transcript_start": 356,
+  "transcript_lines_at_start": 356,
+  "token_usage": {
+    "input_tokens": 30,
+    "cache_creation_tokens": 22292,
+    "cache_read_tokens": 3021834,
+    "output_tokens": 857,
+    "api_call_count": 28,
+    "subagent_tokens": {
+      "input_tokens": 24,
+      "cache_creation_tokens": 12737,
+      "cache_read_tokens": 53832,
+      "output_tokens": 13,
+      "api_call_count": 4
+    }
+  }
+}

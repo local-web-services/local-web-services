@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "22d6c750af11",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/lambda_runtime/docker.py",
+    "src/lws/providers/neptune/data_plane.py",
+    "src/lws/providers/rds/routes.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/22/d6c750af11/0/metadata.json",
+      "transcript": "/22/d6c750af11/0/full.jsonl",
+      "context": "",
+      "content_hash": "/22/d6c750af11/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 30,
+    "cache_creation_tokens": 22292,
+    "cache_read_tokens": 3021834,
+    "output_tokens": 857,
+    "api_call_count": 28
+  }
+}
