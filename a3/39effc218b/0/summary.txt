@@ -1,0 +1,25 @@
+All done. Here's a summary of what was implemented:
+
+## Summary
+
+### Deduplication Results: 444 → 0 duplicate lines
+
+### New shared modules created:
+1. **`src/lws/providers/_shared/response_helpers.py`** — `json_response()`, `error_response()`, `iso_now()` with configurable `message_key`
+2. **`src/lws/providers/_shared/search_service.py`** — `SearchServiceConfig` dataclass + `create_search_service_app()` factory for Elasticsearch/OpenSearch
+3. **`src/lws/providers/_shared/cluster_db_service.py`** — `ClusterDBConfig` dataclass + `create_cluster_db_app()` factory for DocDB/Neptune
+4. **`src/lws/cli/services/_shared_commands.py`** — Shared CLI helpers: `create_db_cluster_cmd`, `describe_db_clusters_cmd`, `delete_db_cluster_cmd`, `describe_domain_cmd`, `delete_domain_cmd`, `list_domain_names_cmd`
+
+### Files updated:
+- **elasticsearch/routes.py** & **opensearch/routes.py** — replaced with thin wrappers (36-38 lines each, down from ~290)
+- **docdb/routes.py** & **neptune/routes.py** — replaced with thin wrappers (29-30 lines each, down from ~300+)
+- **glacier/routes.py**, **rds/routes.py**, **elasticache/routes.py**, **memorydb/routes.py** — import from `response_helpers` instead of local copies
+- **5 CLI files** (docdb, neptune, rds, es, opensearch) — use shared command helpers
+- **docker_service.py** — extracted `destroy_container()` 
+- **lambda_runtime/docker.py** — uses shared `destroy_container()`
+
+### Verification:
+- **1502 tests pass** (4 pre-existing Docker socket failures unrelated to changes)
+- **`duplicates=0`** in CPD check
+- **ruff + black** pass cleanly
+- 2 pre-existing pylint warnings remain (not introduced by this change)
