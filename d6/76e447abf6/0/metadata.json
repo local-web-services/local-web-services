@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "d676e447abf6",
+  "session_id": "204c27fd-464c-4eb1-ab96-fa2d5ad484fa",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T17:12:09.622295Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "tests/e2e/lambda_/test_lambda_s3_integration.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "d58e8ef3-5df9-48bb-a396-5e47b2a38f22",
+  "checkpoint_transcript_start": 145,
+  "transcript_lines_at_start": 145,
+  "token_usage": {
+    "input_tokens": 16,
+    "cache_creation_tokens": 13696,
+    "cache_read_tokens": 989684,
+    "output_tokens": 119,
+    "api_call_count": 14
+  }
+}
