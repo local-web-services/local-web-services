@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "5e4de3fecef4",
+  "session_id": "2c1da5b5-66a2-4ca5-ad8d-26a15fc081b5",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T16:18:09.781012Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".git/hooks/pre-commit",
+    ".github/workflows/ci.yml",
+    ".github/workflows/publish.yml",
+    "contributing/LINTING.md"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "692e9586-ec81-4514-a1cd-09d172ddf758",
+  "checkpoint_transcript_start": 1080,
+  "transcript_lines_at_start": 1080,
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 2830,
+    "cache_read_tokens": 877409,
+    "output_tokens": 713,
+    "api_call_count": 8
+  }
+}

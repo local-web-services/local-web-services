@@ -1,0 +1,1 @@
+I want to make test-e2e run as a pre commit hook and in CI

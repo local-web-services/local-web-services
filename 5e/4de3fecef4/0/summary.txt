@@ -1,0 +1,6 @@
+Done. Here's what changed:
+
+- **Pre-commit hook** (`.git/hooks/pre-commit`): Now runs `make test-e2e` after `make check`
+- **CI** (`ci.yml`): Added `test-e2e` as a 4th parallel job
+- **Publish** (`publish.yml`): Added `test-e2e` as a 4th parallel job; `build` now depends on it
+- **LINTING.md**: Added section 7 for e2e tests, updated check count and descriptions
