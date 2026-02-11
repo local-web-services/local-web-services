@@ -4,13 +4,13 @@ Runs Lambda handlers inside Docker containers with memory and CPU limits
 enforced. Source code is mounted as a read-only volume so changes on disk
 are immediately visible without rebuilding.
 
-Container strategy: warm containers with ``docker exec``.
+Container strategy: lazy warm containers with ``docker exec``.
 
-- ``start()`` creates a long-lived container running ``sleep infinity``.
-- ``invoke()`` runs ``docker exec`` to execute the bootstrap script inside
-  the warm container, piping the event via stdin and reading the result
-  from stdout.
-- ``stop()`` stops and removes the container.
+- ``start()`` validates that the Docker daemon is reachable.
+- ``invoke()`` creates a warm container on first call (lazy), then uses
+  ``docker exec`` to run the bootstrap script, piping the event via stdin
+  and reading the result from stdout.
+- ``stop()`` stops and removes the container if one was created.
 """
 
 from __future__ import annotations
@@ -79,6 +79,10 @@ class DockerCompute(ICompute):
         return f"lambda:{self._config.function_name}"
 
     async def start(self) -> None:
+        """Validate that the Docker daemon is reachable.
+
+        Container creation is deferred to the first ``invoke()`` call.
+        """
         try:
             import docker
         except ImportError as exc:
@@ -97,6 +101,13 @@ class DockerCompute(ICompute):
                 f"Cannot connect to Docker daemon: {exc}"
             ) from exc
 
+        self._status = ProviderStatus.RUNNING
+
+    def _ensure_container(self) -> None:
+        """Create the warm container if it doesn't exist yet (lazy init)."""
+        if self._container is not None:
+            return
+
         image = self._resolve_image()
         container_name = f"ldk-{self._config.function_name}"
 
@@ -107,32 +118,26 @@ class DockerCompute(ICompute):
         except Exception:
             pass
 
-        try:
-            self._container = self._client.containers.run(
-                image,
-                command="sleep infinity",
-                detach=True,
-                name=container_name,
-                volumes={
-                    str(self._config.code_path.resolve()): {
-                        "bind": "/var/task",
-                        "mode": "ro",
-                    },
-                    str(_BOOTSTRAP_DIR.resolve()): {
-                        "bind": "/var/bootstrap",
-                        "mode": "ro",
-                    },
+        self._container = self._client.containers.run(
+            image,
+            command="sleep infinity",
+            detach=True,
+            name=container_name,
+            volumes={
+                str(self._config.code_path.resolve()): {
+                    "bind": "/var/task",
+                    "mode": "ro",
                 },
-                mem_limit=f"{self._config.memory_size}m",
-                nano_cpus=self._calculate_nano_cpus(),
-                environment=self._build_container_env(),
-                extra_hosts={"host.docker.internal": "host-gateway"},
-            )
-        except Exception as exc:
-            self._status = ProviderStatus.ERROR
-            raise ProviderStartError(
-                f"Failed to start Docker container for {self._config.function_name}: {exc}"
-            ) from exc
+                str(_BOOTSTRAP_DIR.resolve()): {
+                    "bind": "/var/bootstrap",
+                    "mode": "ro",
+                },
+            },
+            mem_limit=f"{self._config.memory_size}m",
+            nano_cpus=self._calculate_nano_cpus(),
+            environment=self._build_container_env(),
+            extra_hosts={"host.docker.internal": "host-gateway"},
+        )
 
         _logger.info(
             "Started container %s (image=%s, memory=%dMB)",
@@ -140,20 +145,24 @@ class DockerCompute(ICompute):
             image,
             self._config.memory_size,
         )
-        self._status = ProviderStatus.RUNNING
 
     async def stop(self) -> None:
-        if self._container is not None:
-            try:
-                self._container.stop(timeout=2)
-            except Exception:
-                pass
-            try:
-                self._container.remove(force=True)
-            except Exception:
-                pass
-            self._container = None
+        self._destroy_container()
         self._status = ProviderStatus.STOPPED
+
+    def _destroy_container(self) -> None:
+        """Stop and remove the container. Safe to call when no container exists."""
+        if self._container is None:
+            return
+        try:
+            self._container.stop(timeout=2)
+        except Exception:
+            pass
+        try:
+            self._container.remove(force=True)
+        except Exception:
+            pass
+        self._container = None
 
     async def health_check(self) -> bool:
         return self._status is ProviderStatus.RUNNING
@@ -161,10 +170,20 @@ class DockerCompute(ICompute):
     # -- Invocation -----------------------------------------------------------
 
     async def invoke(self, event: dict, context: LambdaContext) -> InvocationResult:
-        if self._container is None:
+        if self._client is None:
             return InvocationResult(
                 payload=None,
-                error="Container not started",
+                error="Docker client not initialized — call start() first",
+                duration_ms=0.0,
+                request_id=context.aws_request_id,
+            )
+
+        try:
+            self._ensure_container()
+        except Exception as exc:
+            return InvocationResult(
+                payload=None,
+                error=f"Failed to start container: {exc}",
                 duration_ms=0.0,
                 request_id=context.aws_request_id,
             )
@@ -181,6 +200,10 @@ class DockerCompute(ICompute):
             )
         except TimeoutError:
             duration_ms = (time.monotonic() - start) * 1000
+            # Kill the container on timeout — mirrors real Lambda behaviour
+            # where the execution environment is destroyed. A fresh container
+            # will be created on the next invocation via _ensure_container().
+            self._destroy_container()
             return InvocationResult(
                 payload=None,
                 error=f"Task timed out after {self._config.timeout} seconds",
