@@ -1,0 +1,27 @@
+All changes are complete. Here's a summary of what was implemented:
+
+## Changes Made
+
+### 1. `src/lws/cli/ldk.py`
+- Changed Neptune Docker image from `neo4j:5-community` to `janusgraph/janusgraph:1.0`
+- Added `neptune-data` port allocation at `port + 23` (in both `_create_terraform_providers` and `_service_ports`)
+- Registered `NeptuneDataPlaneProvider` as `__neptune_data__` and wired its endpoint into the Neptune control-plane
+
+### 2. `src/lws/providers/_shared/cluster_db_service.py`
+- Added optional `data_plane_endpoint: str | None = None` field to `ClusterDBConfig`
+- Updated `_DBCluster.__init__` and `_DBInstance.__init__` to use the real endpoint when `data_plane_endpoint` is set, falling back to the synthetic endpoint otherwise
+
+### 3. `src/lws/providers/neptune/data_plane.py` (NEW)
+- `NeptuneDataPlaneProvider` using `DockerServiceManager` with JanusGraph 1.0, exposing Gremlin Server on port 8182, with 60s startup timeout
+
+### 4. `src/lws/providers/neptune/routes.py`
+- Updated `create_neptune_app` to accept optional `data_plane_endpoint` keyword argument, using `dataclasses.replace` to create a modified config when provided
+
+### 5. `tests/e2e/neptune/test_gremlin.py` (NEW)
+- E2E test verifying that a created Neptune cluster endpoint references the data-plane port
+
+### Test Results
+- All 26 Neptune unit + integration tests pass
+- All 27 DocDB tests pass (shares `cluster_db_service.py`)
+- All pre-existing failures remain unchanged (none introduced)
+- Linting and formatting clean

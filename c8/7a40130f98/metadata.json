@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "c87a40130f98",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/_shared/cluster_db_service.py",
+    "src/lws/providers/neptune/data_plane.py",
+    "src/lws/providers/neptune/routes.py",
+    "tests/e2e/neptune/test_gremlin.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/c8/7a40130f98/0/metadata.json",
+      "transcript": "/c8/7a40130f98/0/full.jsonl",
+      "context": "",
+      "content_hash": "/c8/7a40130f98/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 58,
+    "cache_creation_tokens": 75559,
+    "cache_read_tokens": 3892914,
+    "output_tokens": 4237,
+    "api_call_count": 56
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "c87a40130f98",
+  "session_id": "f7436bbb-ae80-4d39-be8c-74e1d982092c",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-11T23:20:21.205099Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/_shared/cluster_db_service.py",
+    "src/lws/providers/neptune/data_plane.py",
+    "src/lws/providers/neptune/routes.py",
+    "tests/e2e/neptune/test_gremlin.py"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 58,
+    "cache_creation_tokens": 75559,
+    "cache_read_tokens": 3892914,
+    "output_tokens": 4237,
+    "api_call_count": 56
+  }
+}
