@@ -70,7 +70,7 @@ _console = Console()
 
 app = typer.Typer(name="ldk", help="Local Development Kit - Run AWS CDK applications locally")
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 
 
 @app.callback()
