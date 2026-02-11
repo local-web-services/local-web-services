@@ -63,8 +63,7 @@ class DockerServiceManager:
         except Exception:
             pass
 
-        # Build volumes
-        volumes = {}
+        # Ensure data directory exists
         if cfg.data_dir is not None:
             cfg.data_dir.mkdir(parents=True, exist_ok=True)
 

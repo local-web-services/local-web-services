@@ -29,9 +29,7 @@ def create_cluster(
     asyncio.run(_create_cluster(cluster_name, node_type, num_shards, port))
 
 
-async def _create_cluster(
-    cluster_name: str, node_type: str, num_shards: int, port: int
-) -> None:
+async def _create_cluster(cluster_name: str, node_type: str, num_shards: int, port: int) -> None:
     client = _client(port)
     try:
         result = await client.json_target_request(

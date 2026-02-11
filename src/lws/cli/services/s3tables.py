@@ -31,7 +31,9 @@ async def _create_table_bucket(name: str, port: int) -> None:
     client = _client(port)
     try:
         resp = await client.rest_request(
-            _SERVICE, "PUT", "table-buckets",
+            _SERVICE,
+            "PUT",
+            "table-buckets",
             body=json.dumps({"name": name}).encode(),
             headers={"Content-Type": "application/json"},
         )
@@ -92,7 +94,9 @@ async def _create_namespace(table_bucket: str, namespace: str, port: int) -> Non
     client = _client(port)
     try:
         resp = await client.rest_request(
-            _SERVICE, "PUT", f"table-buckets/{table_bucket}/namespaces",
+            _SERVICE,
+            "PUT",
+            f"table-buckets/{table_bucket}/namespaces",
             body=json.dumps({"namespace": [namespace]}).encode(),
             headers={"Content-Type": "application/json"},
         )
@@ -117,7 +121,8 @@ async def _create_table(table_bucket: str, namespace: str, name: str, port: int)
     client = _client(port)
     try:
         resp = await client.rest_request(
-            _SERVICE, "PUT",
+            _SERVICE,
+            "PUT",
             f"table-buckets/{table_bucket}/namespaces/{namespace}/tables",
             body=json.dumps({"name": name, "format": "ICEBERG"}).encode(),
             headers={"Content-Type": "application/json"},
@@ -142,7 +147,8 @@ async def _list_tables(table_bucket: str, namespace: str, port: int) -> None:
     client = _client(port)
     try:
         resp = await client.rest_request(
-            _SERVICE, "GET",
+            _SERVICE,
+            "GET",
             f"table-buckets/{table_bucket}/namespaces/{namespace}/tables",
         )
         result = resp.json()
@@ -166,7 +172,8 @@ async def _delete_table(table_bucket: str, namespace: str, name: str, port: int)
     client = _client(port)
     try:
         resp = await client.rest_request(
-            _SERVICE, "DELETE",
+            _SERVICE,
+            "DELETE",
             f"table-buckets/{table_bucket}/namespaces/{namespace}/tables/{name}",
         )
         result = resp.json()

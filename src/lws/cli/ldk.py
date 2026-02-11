@@ -733,9 +733,7 @@ def _create_terraform_providers(
         create_rds_app,
     )
 
-    providers["__rds_http__"] = _HttpServiceProvider(
-        "rds-http", create_rds_app, ports["rds"]
-    )
+    providers["__rds_http__"] = _HttpServiceProvider("rds-http", create_rds_app, ports["rds"])
 
     # Glacier
     from lws.providers.glacier.routes import (  # pylint: disable=import-outside-toplevel

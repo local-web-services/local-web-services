@@ -129,9 +129,7 @@ async def _delete_db_instance(db_instance_identifier: str, port: int) -> None:
 
 @app.command("create-db-cluster")
 def create_db_cluster(
-    db_cluster_identifier: str = typer.Option(
-        ..., "--db-cluster-identifier", help="Cluster ID"
-    ),
+    db_cluster_identifier: str = typer.Option(..., "--db-cluster-identifier", help="Cluster ID"),
     engine: str = typer.Option("aurora-postgresql", "--engine", help="Cluster engine"),
     master_username: str = typer.Option("admin", "--master-username", help="Master username"),
     master_user_password: str = typer.Option(
@@ -141,7 +139,9 @@ def create_db_cluster(
 ) -> None:
     """Create an RDS DB cluster."""
     asyncio.run(
-        _create_db_cluster(db_cluster_identifier, engine, master_username, master_user_password, port)
+        _create_db_cluster(
+            db_cluster_identifier, engine, master_username, master_user_password, port
+        )
     )
 
 
