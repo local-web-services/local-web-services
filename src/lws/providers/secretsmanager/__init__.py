@@ -1,0 +1,1 @@
+"""Secrets Manager provider package."""

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -157,6 +158,25 @@ class CognitoUserPool:
 
 
 @dataclass
+class SsmParameter:
+    """Parsed SSM Parameter Store parameter."""
+
+    name: str
+    type: str  # "String", "StringList", "SecureString"
+    value: str
+    description: str = ""
+
+
+@dataclass
+class SmSecret:
+    """Parsed Secrets Manager secret."""
+
+    name: str
+    description: str = ""
+    secret_string: str | None = None
+
+
+@dataclass
 class AppModel:
     """Complete parsed representation of a CDK application."""
 
@@ -171,6 +191,8 @@ class AppModel:
     state_machines: list[StateMachine] = field(default_factory=list)
     user_pools: list[CognitoUserPool] = field(default_factory=list)
     ecs_services: list[Any] = field(default_factory=list)
+    ssm_parameters: list[SsmParameter] = field(default_factory=list)
+    secrets: list[SmSecret] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -251,6 +273,8 @@ def _process_stack(
     model.event_rules.extend(_collect_event_rules(resources, resolver))
     model.state_machines.extend(_collect_state_machines(resources, resolver))
     model.user_pools.extend(_collect_user_pools(resources, resolver))
+    model.ssm_parameters.extend(_collect_ssm_parameters(resources, resolver))
+    model.secrets.extend(_collect_secrets(resources, resolver))
 
     # ECS needs the raw template dict
     with open(template_path, encoding="utf-8") as fh:
@@ -272,30 +296,64 @@ def _build_resource_map(resources: list[CfnResource]) -> dict[str, str]:
     """
     resource_map: dict[str, str] = {}
     for r in resources:
-        if r.resource_type == "AWS::SQS::Queue":
-            queue_name = r.properties.get("QueueName", r.logical_id)
-            if isinstance(queue_name, str):
-                # Use ARN format so the SDK connects via AWS_ENDPOINT_URL_SQS
-                # rather than trying to resolve the QueueUrl as a hostname.
-                resource_map[r.logical_id] = f"arn:ldk:sqs:local:000000000000:queue/{queue_name}"
-        elif r.resource_type == "AWS::DynamoDB::Table":
-            # Ref returns the table name.
-            table_name = r.properties.get("TableName", r.logical_id)
-            if isinstance(table_name, str):
-                resource_map[r.logical_id] = table_name
-        elif r.resource_type == "AWS::S3::Bucket":
-            # Ref returns the bucket name.
-            bucket_name = r.properties.get("BucketName", r.logical_id)
-            if isinstance(bucket_name, str):
-                resource_map[r.logical_id] = bucket_name
-            else:
-                resource_map[r.logical_id] = r.logical_id
-        elif r.resource_type == "AWS::SNS::Topic":
-            # Ref returns the topic ARN.
-            topic_name = r.properties.get("TopicName", r.logical_id)
-            if isinstance(topic_name, str):
-                resource_map[r.logical_id] = f"arn:ldk:sns:local:000000000000:{topic_name}"
+        ref = _resolve_ref_value(r)
+        if ref is not None:
+            resource_map[r.logical_id] = ref
     return resource_map
+
+
+def _resolve_ref_value(r: CfnResource) -> str | None:
+    """Return the local Ref value for a single CloudFormation resource, or None."""
+    handler = _REF_RESOLVERS.get(r.resource_type)
+    if handler is not None:
+        return handler(r)
+    return None
+
+
+def _ref_sqs(r: CfnResource) -> str | None:
+    queue_name = r.properties.get("QueueName", r.logical_id)
+    if isinstance(queue_name, str):
+        return f"arn:ldk:sqs:local:000000000000:queue/{queue_name}"
+    return None
+
+
+def _ref_dynamodb(r: CfnResource) -> str | None:
+    table_name = r.properties.get("TableName", r.logical_id)
+    return table_name if isinstance(table_name, str) else None
+
+
+def _ref_s3(r: CfnResource) -> str:
+    bucket_name = r.properties.get("BucketName", r.logical_id)
+    return bucket_name if isinstance(bucket_name, str) else r.logical_id
+
+
+def _ref_sns(r: CfnResource) -> str | None:
+    topic_name = r.properties.get("TopicName", r.logical_id)
+    if isinstance(topic_name, str):
+        return f"arn:ldk:sns:local:000000000000:{topic_name}"
+    return None
+
+
+def _ref_ssm(r: CfnResource) -> str | None:
+    name = r.properties.get("Name", r.logical_id)
+    return name if isinstance(name, str) else None
+
+
+def _ref_secretsmanager(r: CfnResource) -> str | None:
+    name = r.properties.get("Name", r.logical_id)
+    if isinstance(name, str):
+        return f"arn:aws:secretsmanager:us-east-1:000000000000:secret:{name}"
+    return None
+
+
+_REF_RESOLVERS: dict[str, Callable[[CfnResource], str | None]] = {
+    "AWS::SQS::Queue": _ref_sqs,
+    "AWS::DynamoDB::Table": _ref_dynamodb,
+    "AWS::S3::Bucket": _ref_s3,
+    "AWS::SNS::Topic": _ref_sns,
+    "AWS::SSM::Parameter": _ref_ssm,
+    "AWS::SecretsManager::Secret": _ref_secretsmanager,
+}
 
 
 def _collect_lambdas(
@@ -668,6 +726,56 @@ def _collect_user_pools(
             )
         )
     return pools
+
+
+def _collect_ssm_parameters(
+    resources: list[CfnResource],
+    resolver: RefResolver,
+) -> list[SsmParameter]:
+    """Extract SSM parameters from parsed CloudFormation resources."""
+    parameters: list[SsmParameter] = []
+    for r in resources:
+        if r.resource_type != "AWS::SSM::Parameter":
+            continue
+        props = r.properties
+        name = props.get("Name", r.logical_id)
+        if isinstance(name, dict):
+            name = str(resolver.resolve(name))
+        param_type = props.get("Type", "String")
+        value = props.get("Value", "")
+        if isinstance(value, dict):
+            value = str(resolver.resolve(value))
+        description = props.get("Description", "")
+        parameters.append(
+            SsmParameter(name=name, type=param_type, value=value, description=description)
+        )
+    return parameters
+
+
+def _collect_secrets(
+    resources: list[CfnResource],
+    resolver: RefResolver,
+) -> list[SmSecret]:
+    """Extract Secrets Manager secrets from parsed CloudFormation resources."""
+    secrets: list[SmSecret] = []
+    for r in resources:
+        if r.resource_type != "AWS::SecretsManager::Secret":
+            continue
+        props = r.properties
+        name = props.get("Name", r.logical_id)
+        if isinstance(name, dict):
+            name = str(resolver.resolve(name))
+        description = props.get("Description", "")
+        secret_string = props.get("SecretString")
+        if secret_string is None:
+            # Try GenerateSecretString.SecretStringTemplate
+            gen = props.get("GenerateSecretString", {})
+            if isinstance(gen, dict):
+                secret_string = gen.get("SecretStringTemplate")
+        if isinstance(secret_string, dict):
+            secret_string = str(resolver.resolve(secret_string))
+        secrets.append(SmSecret(name=name, description=description, secret_string=secret_string))
+    return secrets
 
 
 def _collect_ecs_services(template: dict) -> list:

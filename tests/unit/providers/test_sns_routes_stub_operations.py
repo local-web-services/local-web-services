@@ -32,7 +32,7 @@ class TestSnsStubOperations:
         """Test that unknown operations return HTTP 400 with InvalidAction XML."""
         resp = await client.post(
             "/",
-            data={"Action": "ConfirmSubscription"},
+            data={"Action": "AddPermission"},
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         assert resp.status_code == 400
@@ -40,4 +40,4 @@ class TestSnsStubOperations:
         assert "<Code>InvalidAction</Code>" in resp.text
         assert "lws" in resp.text
         assert "SNS" in resp.text
-        assert "ConfirmSubscription" in resp.text
+        assert "AddPermission" in resp.text

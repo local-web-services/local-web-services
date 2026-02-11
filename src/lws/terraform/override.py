@@ -81,6 +81,8 @@ provider "aws" {{
     lambda           = "http://localhost:{port + 9}"
     iam              = "http://localhost:{port + 10}"
     sts              = "http://localhost:{port + 11}"
+    ssm              = "http://localhost:{port + 12}"
+    secretsmanager   = "http://localhost:{port + 13}"
   }}
 }}
 """

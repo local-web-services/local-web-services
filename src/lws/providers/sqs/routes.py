@@ -82,6 +82,11 @@ class SqsRouter:
             "ListQueueTags": self._list_queue_tags,
             "TagQueue": self._tag_queue,
             "UntagQueue": self._untag_queue,
+            "SendMessageBatch": self._send_message_batch,
+            "DeleteMessageBatch": self._delete_message_batch,
+            "ChangeMessageVisibility": self._change_message_visibility,
+            "ChangeMessageVisibilityBatch": self._change_message_visibility_batch,
+            "ListDeadLetterSourceQueues": self._list_dead_letter_source_queues,
         }
 
     def _json_handlers(self) -> dict:
@@ -99,6 +104,11 @@ class SqsRouter:
             "ListQueueTags": self._json_list_queue_tags,
             "TagQueue": self._json_tag_queue,
             "UntagQueue": self._json_untag_queue,
+            "SendMessageBatch": self._json_send_message_batch,
+            "DeleteMessageBatch": self._json_delete_message_batch,
+            "ChangeMessageVisibility": self._json_change_message_visibility,
+            "ChangeMessageVisibilityBatch": self._json_change_message_visibility_batch,
+            "ListDeadLetterSourceQueues": self._json_list_dead_letter_source_queues,
         }
 
     # ------------------------------------------------------------------
@@ -192,6 +202,205 @@ class SqsRouter:
             "<DeleteMessageResponse>"
             f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
             "</DeleteMessageResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _send_message_batch(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        successful: list[str] = []
+        failed: list[str] = []
+
+        n = 1
+        while f"SendMessageBatchRequestEntry.{n}.Id" in params:
+            entry_id = params[f"SendMessageBatchRequestEntry.{n}.Id"]
+            msg_body = params.get(f"SendMessageBatchRequestEntry.{n}.MessageBody", "")
+            delay = int(params.get(f"SendMessageBatchRequestEntry.{n}.DelaySeconds", "0"))
+
+            try:
+                message_id = await self.provider.send_message(
+                    queue_name=queue_name,
+                    message_body=msg_body,
+                    delay_seconds=delay,
+                )
+                md5_body = hashlib.md5(msg_body.encode()).hexdigest()
+                successful.append(
+                    f"<SendMessageBatchResultEntry>"
+                    f"<Id>{entry_id}</Id>"
+                    f"<MessageId>{message_id}</MessageId>"
+                    f"<MD5OfMessageBody>{md5_body}</MD5OfMessageBody>"
+                    f"</SendMessageBatchResultEntry>"
+                )
+            except Exception as exc:
+                failed.append(
+                    f"<BatchResultErrorEntry>"
+                    f"<Id>{entry_id}</Id>"
+                    f"<SenderFault>true</SenderFault>"
+                    f"<Code>InternalError</Code>"
+                    f"<Message>{exc}</Message>"
+                    f"</BatchResultErrorEntry>"
+                )
+            n += 1
+
+        xml = (
+            "<SendMessageBatchResponse>"
+            "<SendMessageBatchResult>"
+            f"{''.join(successful)}"
+            f"{''.join(failed)}"
+            "</SendMessageBatchResult>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</SendMessageBatchResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _delete_message_batch(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        successful: list[str] = []
+        failed: list[str] = []
+
+        n = 1
+        while f"DeleteMessageBatchRequestEntry.{n}.Id" in params:
+            entry_id = params[f"DeleteMessageBatchRequestEntry.{n}.Id"]
+            receipt_handle = params.get(f"DeleteMessageBatchRequestEntry.{n}.ReceiptHandle", "")
+
+            try:
+                await self.provider.delete_message(queue_name, receipt_handle)
+                successful.append(
+                    f"<DeleteMessageBatchResultEntry>"
+                    f"<Id>{entry_id}</Id>"
+                    f"</DeleteMessageBatchResultEntry>"
+                )
+            except Exception as exc:
+                failed.append(
+                    f"<BatchResultErrorEntry>"
+                    f"<Id>{entry_id}</Id>"
+                    f"<SenderFault>true</SenderFault>"
+                    f"<Code>InternalError</Code>"
+                    f"<Message>{exc}</Message>"
+                    f"</BatchResultErrorEntry>"
+                )
+            n += 1
+
+        xml = (
+            "<DeleteMessageBatchResponse>"
+            "<DeleteMessageBatchResult>"
+            f"{''.join(successful)}"
+            f"{''.join(failed)}"
+            "</DeleteMessageBatchResult>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</DeleteMessageBatchResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _change_message_visibility(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        receipt_handle = params.get("ReceiptHandle", "")
+        visibility_timeout = int(params.get("VisibilityTimeout", "0"))
+
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _error_xml(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+                status_code=400,
+            )
+
+        now = time.monotonic()
+        for msg in queue._messages:
+            if msg.receipt_handle == receipt_handle:
+                msg.visibility_timeout_until = now + visibility_timeout
+                break
+
+        xml = (
+            "<ChangeMessageVisibilityResponse>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</ChangeMessageVisibilityResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _change_message_visibility_batch(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        successful: list[str] = []
+        failed: list[str] = []
+
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _error_xml(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+                status_code=400,
+            )
+
+        now = time.monotonic()
+        n = 1
+        while f"ChangeMessageVisibilityBatchRequestEntry.{n}.Id" in params:
+            entry_id = params[f"ChangeMessageVisibilityBatchRequestEntry.{n}.Id"]
+            receipt_handle = params.get(
+                f"ChangeMessageVisibilityBatchRequestEntry.{n}.ReceiptHandle", ""
+            )
+            vt = int(
+                params.get(f"ChangeMessageVisibilityBatchRequestEntry.{n}.VisibilityTimeout", "0")
+            )
+
+            found = False
+            for msg in queue._messages:
+                if msg.receipt_handle == receipt_handle:
+                    msg.visibility_timeout_until = now + vt
+                    found = True
+                    break
+
+            if found:
+                successful.append(
+                    f"<ChangeMessageVisibilityBatchResultEntry>"
+                    f"<Id>{entry_id}</Id>"
+                    f"</ChangeMessageVisibilityBatchResultEntry>"
+                )
+            else:
+                failed.append(
+                    f"<BatchResultErrorEntry>"
+                    f"<Id>{entry_id}</Id>"
+                    f"<SenderFault>true</SenderFault>"
+                    f"<Code>ReceiptHandleIsInvalid</Code>"
+                    f"<Message>The input receipt handle is invalid.</Message>"
+                    f"</BatchResultErrorEntry>"
+                )
+            n += 1
+
+        xml = (
+            "<ChangeMessageVisibilityBatchResponse>"
+            "<ChangeMessageVisibilityBatchResult>"
+            f"{''.join(successful)}"
+            f"{''.join(failed)}"
+            "</ChangeMessageVisibilityBatchResult>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</ChangeMessageVisibilityBatchResponse>"
+        )
+        return _xml_response(xml)
+
+    async def _list_dead_letter_source_queues(self, params: dict) -> Response:
+        queue_name = _extract_queue_name(params)
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _error_xml(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+                status_code=400,
+            )
+
+        source_queues: list[str] = []
+        for name, q in self.provider._queues.items():
+            if hasattr(q, "dead_letter_queue") and q.dead_letter_queue is queue:
+                source_queues.append(name)
+
+        urls_xml = "".join(
+            f"<QueueUrl>{_queue_url(name)}</QueueUrl>" for name in sorted(source_queues)
+        )
+        xml = (
+            "<ListDeadLetterSourceQueuesResponse>"
+            "<ListDeadLetterSourceQueuesResult>"
+            f"{urls_xml}"
+            "</ListDeadLetterSourceQueuesResult>"
+            f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+            "</ListDeadLetterSourceQueuesResponse>"
         )
         return _xml_response(xml)
 
@@ -463,6 +672,145 @@ class SqsRouter:
             for key in body.get("TagKeys", []):
                 config.tags.pop(key, None)
         return _json_response({})
+
+    async def _json_send_message_batch(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        entries = body.get("Entries", [])
+        successful: list[dict] = []
+        failed: list[dict] = []
+
+        for entry in entries:
+            entry_id = entry.get("Id", "")
+            msg_body = entry.get("MessageBody", "")
+            delay = int(entry.get("DelaySeconds", 0))
+
+            try:
+                message_id = await self.provider.send_message(
+                    queue_name=queue_name,
+                    message_body=msg_body,
+                    delay_seconds=delay,
+                )
+                md5_body = hashlib.md5(msg_body.encode()).hexdigest()
+                successful.append(
+                    {
+                        "Id": entry_id,
+                        "MessageId": message_id,
+                        "MD5OfMessageBody": md5_body,
+                    }
+                )
+            except Exception as exc:
+                failed.append(
+                    {
+                        "Id": entry_id,
+                        "SenderFault": True,
+                        "Code": "InternalError",
+                        "Message": str(exc),
+                    }
+                )
+
+        return _json_response({"Successful": successful, "Failed": failed})
+
+    async def _json_delete_message_batch(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        entries = body.get("Entries", [])
+        successful: list[dict] = []
+        failed: list[dict] = []
+
+        for entry in entries:
+            entry_id = entry.get("Id", "")
+            receipt_handle = entry.get("ReceiptHandle", "")
+
+            try:
+                await self.provider.delete_message(queue_name, receipt_handle)
+                successful.append({"Id": entry_id})
+            except Exception as exc:
+                failed.append(
+                    {
+                        "Id": entry_id,
+                        "SenderFault": True,
+                        "Code": "InternalError",
+                        "Message": str(exc),
+                    }
+                )
+
+        return _json_response({"Successful": successful, "Failed": failed})
+
+    async def _json_change_message_visibility(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        receipt_handle = body.get("ReceiptHandle", "")
+        visibility_timeout = int(body.get("VisibilityTimeout", 0))
+
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+
+        now = time.monotonic()
+        for msg in queue._messages:
+            if msg.receipt_handle == receipt_handle:
+                msg.visibility_timeout_until = now + visibility_timeout
+                break
+
+        return _json_response({})
+
+    async def _json_change_message_visibility_batch(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        entries = body.get("Entries", [])
+
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+
+        successful: list[dict] = []
+        failed: list[dict] = []
+        now = time.monotonic()
+
+        for entry in entries:
+            entry_id = entry.get("Id", "")
+            receipt_handle = entry.get("ReceiptHandle", "")
+            vt = int(entry.get("VisibilityTimeout", 0))
+
+            found = False
+            for msg in queue._messages:
+                if msg.receipt_handle == receipt_handle:
+                    msg.visibility_timeout_until = now + vt
+                    found = True
+                    break
+
+            if found:
+                successful.append({"Id": entry_id})
+            else:
+                failed.append(
+                    {
+                        "Id": entry_id,
+                        "SenderFault": True,
+                        "Code": "ReceiptHandleIsInvalid",
+                        "Message": "The input receipt handle is invalid.",
+                    }
+                )
+
+        return _json_response({"Successful": successful, "Failed": failed})
+
+    async def _json_list_dead_letter_source_queues(self, body: dict) -> Response:
+        queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return _json_error(
+                "AWS.SimpleQueueService.NonExistentQueue",
+                f"The specified queue does not exist: {queue_name}",
+            )
+
+        source_queues: list[str] = []
+        for name, q in self.provider._queues.items():
+            if hasattr(q, "dead_letter_queue") and q.dead_letter_queue is queue:
+                source_queues.append(name)
+
+        return _json_response({"QueueUrls": [_queue_url(name) for name in sorted(source_queues)]})
 
     # ------------------------------------------------------------------
     # Legacy XML action handlers

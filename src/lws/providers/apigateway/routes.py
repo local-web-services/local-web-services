@@ -620,6 +620,7 @@ class ApiGatewayV2Router:
         r.add_api_route(
             "/v2/apis/{api_id}/integrations", self._create_integration, methods=["POST"]
         )
+        r.add_api_route("/v2/apis/{api_id}/integrations", self._list_integrations, methods=["GET"])
         r.add_api_route(
             "/v2/apis/{api_id}/integrations/{integration_id}",
             self._get_integration,
@@ -633,10 +634,14 @@ class ApiGatewayV2Router:
 
         # Routes
         r.add_api_route("/v2/apis/{api_id}/routes", self._create_route, methods=["POST"])
+        r.add_api_route("/v2/apis/{api_id}/routes", self._list_routes, methods=["GET"])
         r.add_api_route("/v2/apis/{api_id}/routes/{route_id}", self._get_route, methods=["GET"])
         r.add_api_route(
             "/v2/apis/{api_id}/routes/{route_id}", self._delete_route, methods=["DELETE"]
         )
+
+        # Stages (list) - registered before the stage name GET
+        r.add_api_route("/v2/apis/{api_id}/stages", self._list_stages, methods=["GET"])
 
     # -- APIs ----------------------------------------------------------------
 
@@ -757,6 +762,12 @@ class ApiGatewayV2Router:
             return _not_found("Integration", integration_id)
         return _json_response(integration)
 
+    async def _list_integrations(self, api_id: str) -> Response:
+        api = self._state.get_api(api_id)
+        if api is None:
+            return _not_found("Api", api_id)
+        return _json_response({"items": list(api.integrations.values())})
+
     async def _delete_integration(self, api_id: str, integration_id: str) -> Response:
         api = self._state.get_api(api_id)
         if api is not None:
@@ -792,11 +803,23 @@ class ApiGatewayV2Router:
             return _not_found("Route", route_id)
         return _json_response(route)
 
+    async def _list_routes(self, api_id: str) -> Response:
+        api = self._state.get_api(api_id)
+        if api is None:
+            return _not_found("Api", api_id)
+        return _json_response({"items": list(api.routes.values())})
+
     async def _delete_route(self, api_id: str, route_id: str) -> Response:
         api = self._state.get_api(api_id)
         if api is not None:
             api.routes.pop(route_id, None)
         return Response(status_code=204)
+
+    async def _list_stages(self, api_id: str) -> Response:
+        api = self._state.get_api(api_id)
+        if api is None:
+            return _not_found("Api", api_id)
+        return _json_response({"items": list(api.stages.values())})
 
     # -- Proxy ---------------------------------------------------------------
 

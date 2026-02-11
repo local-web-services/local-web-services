@@ -75,6 +75,11 @@ class DynamoDbRouter:
             "DescribeTable": self._describe_table,
             "ListTables": self._list_tables,
             "DescribeTimeToLive": self._describe_time_to_live,
+            "UpdateTimeToLive": self._update_time_to_live,
+            "UpdateTable": self._update_table,
+            "TransactWriteItems": self._transact_write_items,
+            "TransactGetItems": self._transact_get_items,
+            "DescribeContinuousBackups": self._describe_continuous_backups,
             "ListTagsOfResource": self._list_tags_of_resource,
             "TagResource": self._tag_resource,
             "UntagResource": self._untag_resource,
@@ -226,6 +231,74 @@ class DynamoDbRouter:
 
     async def _untag_resource(self, body: dict) -> Response:
         return _json_response({})
+
+    async def _update_table(self, body: dict) -> Response:
+        table_name = body.get("TableName", "")
+        try:
+            description = await self.store.describe_table(table_name)
+        except KeyError:
+            return _error_response(
+                "ResourceNotFoundException",
+                f"Requested resource not found: Table: {table_name} not found",
+            )
+        return _json_response({"TableDescription": description})
+
+    async def _transact_write_items(self, body: dict) -> Response:
+        transact_items = body.get("TransactItems", [])
+        for transact_item in transact_items:
+            if "Put" in transact_item:
+                put = transact_item["Put"]
+                await self.store.put_item(put["TableName"], put["Item"])
+            elif "Delete" in transact_item:
+                delete = transact_item["Delete"]
+                await self.store.delete_item(delete["TableName"], delete["Key"])
+            elif "Update" in transact_item:
+                update = transact_item["Update"]
+                await self.store.update_item(
+                    update["TableName"],
+                    update["Key"],
+                    update.get("UpdateExpression", ""),
+                    expression_values=update.get("ExpressionAttributeValues"),
+                    expression_names=update.get("ExpressionAttributeNames"),
+                )
+            # ConditionCheck is a no-op for local dev
+        return _json_response({})
+
+    async def _transact_get_items(self, body: dict) -> Response:
+        transact_items = body.get("TransactItems", [])
+        responses: list[dict] = []
+        for transact_item in transact_items:
+            get = transact_item["Get"]
+            item = await self.store.get_item(get["TableName"], get["Key"])
+            if item is not None:
+                responses.append({"Item": item})
+            else:
+                responses.append({})
+        return _json_response({"Responses": responses})
+
+    async def _describe_continuous_backups(self, body: dict) -> Response:
+        body.get("TableName", "")
+        return _json_response(
+            {
+                "ContinuousBackupsDescription": {
+                    "ContinuousBackupsStatus": "DISABLED",
+                    "PointInTimeRecoveryDescription": {
+                        "PointInTimeRecoveryStatus": "DISABLED",
+                    },
+                }
+            }
+        )
+
+    async def _update_time_to_live(self, body: dict) -> Response:
+        ttl_spec = body.get("TimeToLiveSpecification", {})
+        return _json_response(
+            {
+                "TimeToLiveSpecification": {
+                    "AttributeName": ttl_spec.get("AttributeName", ""),
+                    "Enabled": ttl_spec.get("Enabled", False),
+                }
+            }
+        )
 
 
 # ------------------------------------------------------------------

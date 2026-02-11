@@ -73,7 +73,7 @@ _console = Console()
 
 app = typer.Typer(name="ldk", help="Local Development Kit - Run AWS CDK applications locally")
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 
 @app.callback()
@@ -351,6 +351,8 @@ def _collect_extra_resources(app_model: AppModel) -> dict[str, list[str]]:
         "state_machines": ("name", "state_machines"),
         "ecs_services": ("service_name", "ecs_services"),
         "user_pools": ("user_pool_name", "user_pools"),
+        "ssm_parameters": ("name", "ssm_parameters"),
+        "secrets": ("name", "secrets"),
     }
     for key, (attr, model_attr) in _RESOURCE_ATTRS.items():
         items = getattr(app_model, model_attr, [])
@@ -397,6 +399,10 @@ def _add_resource_details(details: dict[str, str], app_model: AppModel) -> None:
         details[f"User Pool:{p.user_pool_name}"] = (
             f"lws cognito-idp sign-up --user-pool-name {p.user_pool_name}"
         )
+    for p in app_model.ssm_parameters:
+        details[f"Parameter:{p.name}"] = f"lws ssm get-parameter --name {p.name}"
+    for s in app_model.secrets:
+        details[f"Secret:{s.name}"] = f"lws secretsmanager get-secret-value --secret-id {s.name}"
 
 
 def _display_summary(app_model: AppModel, port: int) -> None:
@@ -556,6 +562,8 @@ def _create_terraform_providers(
         "lambda": port + 9,
         "iam": port + 10,
         "sts": port + 11,
+        "ssm": port + 12,
+        "secretsmanager": port + 13,
     }
 
     dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
@@ -601,6 +609,8 @@ def _create_terraform_providers(
         "events": f"http://127.0.0.1:{ports['eventbridge']}",
         "stepfunctions": f"http://127.0.0.1:{ports['stepfunctions']}",
         "cognito-idp": f"http://127.0.0.1:{ports['cognito']}",
+        "ssm": f"http://127.0.0.1:{ports['ssm']}",
+        "secretsmanager": f"http://127.0.0.1:{ports['secretsmanager']}",
     }
     sdk_env = build_sdk_env(local_endpoints)
 
@@ -630,6 +640,18 @@ def _create_terraform_providers(
 
     providers["__sts_http__"] = _HttpServiceProvider("sts-http", create_sts_app, ports["sts"])
 
+    # SSM Parameter Store
+    from lws.providers.ssm.routes import create_ssm_app
+
+    providers["__ssm_http__"] = _HttpServiceProvider("ssm-http", create_ssm_app, ports["ssm"])
+
+    # Secrets Manager
+    from lws.providers.secretsmanager.routes import create_secretsmanager_app
+
+    providers["__secretsmanager_http__"] = _HttpServiceProvider(
+        "secretsmanager-http", create_secretsmanager_app, ports["secretsmanager"]
+    )
+
     return providers, ports
 
 
@@ -646,6 +668,8 @@ def _has_any_resources(app_model: AppModel) -> bool:
         or app_model.state_machines
         or app_model.ecs_services
         or app_model.user_pools
+        or app_model.ssm_parameters
+        or app_model.secrets
     )
 
 
@@ -1105,7 +1129,7 @@ def _create_providers(
     providers: dict[str, Provider] = {}
 
     # Port allocation: base+1 DynamoDB, +2 SQS, +3 S3, +4 SNS, +5 EventBridge,
-    # +6 Step Functions, +7 Cognito
+    # +6 Step Functions, +7 Cognito, +12 SSM, +13 Secrets Manager
     dynamo_port = config.port + 1
     sqs_port = config.port + 2
     s3_port = config.port + 3
@@ -1113,6 +1137,8 @@ def _create_providers(
     eb_port = config.port + 5
     sf_port = config.port + 6
     cognito_port = config.port + 7
+    ssm_port = config.port + 12
+    secretsmanager_port = config.port + 13
 
     # 1. Storage providers (no deps)
     dynamo_provider, dynamo_providers = _create_dynamo_providers(app_model, graph, data_dir)
@@ -1155,7 +1181,9 @@ def _create_providers(
     ecs_provider, ecs_providers = _create_ecs_providers(app_model, graph)
     providers.update(ecs_providers)
 
-    # 7. Rebuild SDK env with all service ports and update compute providers
+    # 7. Add SSM and Secrets Manager endpoints, rebuild SDK env, update compute
+    local_endpoints["ssm"] = f"http://127.0.0.1:{ssm_port}"
+    local_endpoints["secretsmanager"] = f"http://127.0.0.1:{secretsmanager_port}"
     sdk_env = build_sdk_env(local_endpoints)
     for compute in compute_providers.values():
         if hasattr(compute, "_sdk_env"):
@@ -1180,6 +1208,26 @@ def _create_providers(
             "stepfunctions": sf_port,
             "cognito": cognito_port,
         },
+    )
+
+    # 9. SSM Parameter Store and Secrets Manager (pre-seeded from CloudFormation)
+    from lws.providers.secretsmanager.routes import create_secretsmanager_app
+    from lws.providers.ssm.routes import create_ssm_app
+
+    ssm_params = [
+        {"name": p.name, "type": p.type, "value": p.value, "description": p.description}
+        for p in app_model.ssm_parameters
+    ]
+    sm_secrets = [
+        {"name": s.name, "description": s.description, "secret_string": s.secret_string}
+        for s in app_model.secrets
+    ]
+
+    providers["__ssm_http__"] = _HttpServiceProvider(
+        "ssm-http", lambda: create_ssm_app(ssm_params), ssm_port
+    )
+    providers["__secretsmanager_http__"] = _HttpServiceProvider(
+        "secretsmanager-http", lambda: create_secretsmanager_app(sm_secrets), secretsmanager_port
     )
 
     return providers, compute_providers
@@ -1292,6 +1340,8 @@ def _service_ports(port: int) -> dict[str, int]:
         "events": port + 5,
         "stepfunctions": port + 6,
         "cognito-idp": port + 7,
+        "ssm": port + 12,
+        "secretsmanager": port + 13,
     }
 
 
@@ -1361,6 +1411,13 @@ def _add_service_metadata(
                 for t in app_model.topics
             ],
         }
+    _add_extended_service_metadata(services, app_model, ports)
+
+
+def _add_extended_service_metadata(
+    services: dict[str, Any], app_model: AppModel, ports: dict[str, int]
+) -> None:
+    """Add EventBridge, Step Functions, Cognito, SSM and Secrets Manager metadata."""
     if app_model.event_buses:
         services["events"] = {
             "port": ports["events"],
@@ -1389,6 +1446,22 @@ def _add_service_metadata(
             "resources": [
                 {"name": p.user_pool_name, "user_pool_id": f"us-east-1_{p.logical_id}"}
                 for p in app_model.user_pools
+            ],
+        }
+    if app_model.ssm_parameters:
+        services["ssm"] = {
+            "port": ports["ssm"],
+            "resources": [{"name": p.name} for p in app_model.ssm_parameters],
+        }
+    if app_model.secrets:
+        services["secretsmanager"] = {
+            "port": ports["secretsmanager"],
+            "resources": [
+                {
+                    "name": s.name,
+                    "arn": f"arn:aws:secretsmanager:us-east-1:000000000000:secret:{s.name}",
+                }
+                for s in app_model.secrets
             ],
         }
 

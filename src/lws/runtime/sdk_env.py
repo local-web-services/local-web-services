@@ -6,14 +6,21 @@ service endpoints provided by LDK.
 
 from __future__ import annotations
 
+_SERVICE_ID_MAP: dict[str, str] = {
+    "secretsmanager": "SECRETS_MANAGER",
+    "stepfunctions": "SFN",
+    "cognito-idp": "COGNITO_IDENTITY_PROVIDER",
+    "events": "EVENTBRIDGE",
+}
+
 
 def build_sdk_env(endpoints: dict[str, str]) -> dict[str, str]:
     """Build an environment dict that redirects AWS SDK calls to local endpoints.
 
     For each service in *endpoints*, creates an ``AWS_ENDPOINT_URL_<SERVICE>``
-    variable with the service name uppercased.  The returned dict always includes
-    dummy AWS credentials and a default region so the SDK never falls back to
-    real credentials.
+    variable using the AWS SDK's canonical service ID.  The returned dict always
+    includes dummy AWS credentials and a default region so the SDK never falls
+    back to real credentials.
 
     Args:
         endpoints: Mapping of lowercase service names to their local URLs.
@@ -30,7 +37,8 @@ def build_sdk_env(endpoints: dict[str, str]) -> dict[str, str]:
     }
 
     for service_name, url in endpoints.items():
-        var_name = f"AWS_ENDPOINT_URL_{service_name.upper()}"
+        sdk_id = _SERVICE_ID_MAP.get(service_name, service_name.upper())
+        var_name = f"AWS_ENDPOINT_URL_{sdk_id}"
         env[var_name] = url
 
     return env

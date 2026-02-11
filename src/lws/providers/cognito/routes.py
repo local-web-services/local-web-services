@@ -58,6 +58,15 @@ class CognitoRouter:
             "DeleteUserPool": self._delete_user_pool,
             "ListUserPools": self._list_user_pools,
             "DescribeUserPool": self._describe_user_pool,
+            "CreateUserPoolClient": self._create_user_pool_client,
+            "DeleteUserPoolClient": self._delete_user_pool_client,
+            "DescribeUserPoolClient": self._describe_user_pool_client,
+            "ListUserPoolClients": self._list_user_pool_clients,
+            "AdminCreateUser": self._admin_create_user,
+            "AdminDeleteUser": self._admin_delete_user,
+            "AdminGetUser": self._admin_get_user,
+            "UpdateUserPool": self._update_user_pool,
+            "ListUsers": self._list_users,
         }
 
     async def _jwks(self) -> Response:
@@ -141,6 +150,73 @@ class CognitoRouter:
                 }
             }
         )
+
+    async def _create_user_pool_client(self, body: dict) -> Response:
+        """Handle CreateUserPoolClient operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        client_name = body.get("ClientName", "")
+        explicit_auth_flows = body.get("ExplicitAuthFlows")
+        result = await self._provider.create_user_pool_client(
+            user_pool_id, client_name, explicit_auth_flows
+        )
+        return _json_response(result)
+
+    async def _delete_user_pool_client(self, body: dict) -> Response:
+        """Handle DeleteUserPoolClient operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        client_id = body.get("ClientId", "")
+        await self._provider.delete_user_pool_client(user_pool_id, client_id)
+        return _json_response({})
+
+    async def _describe_user_pool_client(self, body: dict) -> Response:
+        """Handle DescribeUserPoolClient operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        client_id = body.get("ClientId", "")
+        result = await self._provider.describe_user_pool_client(user_pool_id, client_id)
+        return _json_response(result)
+
+    async def _list_user_pool_clients(self, body: dict) -> Response:
+        """Handle ListUserPoolClients operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        result = await self._provider.list_user_pool_clients(user_pool_id)
+        return _json_response(result)
+
+    async def _admin_create_user(self, body: dict) -> Response:
+        """Handle AdminCreateUser operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        username = body.get("Username", "")
+        temporary_password = body.get("TemporaryPassword")
+        user_attributes = _parse_user_attributes(body.get("UserAttributes", []))
+        result = await self._provider.admin_create_user(
+            user_pool_id, username, temporary_password, user_attributes or None
+        )
+        return _json_response(result)
+
+    async def _admin_delete_user(self, body: dict) -> Response:
+        """Handle AdminDeleteUser operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        username = body.get("Username", "")
+        await self._provider.admin_delete_user(user_pool_id, username)
+        return _json_response({})
+
+    async def _admin_get_user(self, body: dict) -> Response:
+        """Handle AdminGetUser operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        username = body.get("Username", "")
+        result = await self._provider.admin_get_user(user_pool_id, username)
+        return _json_response(result)
+
+    async def _update_user_pool(self, body: dict) -> Response:
+        """Handle UpdateUserPool operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        result = await self._provider.update_user_pool(user_pool_id)
+        return _json_response(result)
+
+    async def _list_users(self, body: dict) -> Response:
+        """Handle ListUsers operation."""
+        user_pool_id = body.get("UserPoolId", "")
+        result = await self._provider.list_users(user_pool_id)
+        return _json_response(result)
 
 
 # ---------------------------------------------------------------------------

@@ -33,11 +33,11 @@ class TestStsRoutes:
     async def test_unknown_action_returns_error(self, client) -> None:
         resp = await client.post(
             "/",
-            data={"Action": "AssumeRole"},
+            data={"Action": "GetSessionToken"},
         )
         assert resp.status_code == 400
         assert "<ErrorResponse>" in resp.text
         assert "<Code>InvalidAction</Code>" in resp.text
         assert "lws" in resp.text
         assert "STS" in resp.text
-        assert "AssumeRole" in resp.text
+        assert "GetSessionToken" in resp.text

@@ -263,6 +263,152 @@ async def _handle_untag_resource(provider: SnsProvider, params: dict[str, str]) 
     return Response(content=xml, media_type="text/xml")
 
 
+async def _handle_unsubscribe(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``Unsubscribe`` action."""
+    subscription_arn = params.get("SubscriptionArn", "")
+    found = await provider.unsubscribe(subscription_arn)
+    if not found:
+        xml = (
+            "<ErrorResponse>"
+            "<Error>"
+            "<Code>NotFound</Code>"
+            f"<Message>Subscription not found: {subscription_arn}</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=404, media_type="text/xml")
+
+    xml = (
+        "<UnsubscribeResponse>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</UnsubscribeResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_get_subscription_attributes(
+    provider: SnsProvider, params: dict[str, str]
+) -> Response:
+    """Handle the ``GetSubscriptionAttributes`` action."""
+    subscription_arn = params.get("SubscriptionArn", "")
+    try:
+        attrs = await provider.get_subscription_attributes(subscription_arn)
+    except KeyError:
+        xml = (
+            "<ErrorResponse>"
+            "<Error>"
+            "<Code>NotFound</Code>"
+            f"<Message>Subscription not found: {subscription_arn}</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=404, media_type="text/xml")
+
+    attrs_xml = "".join(
+        f"<entry><key>{k}</key><value>{v}</value></entry>" for k, v in attrs.items()
+    )
+    xml = (
+        "<GetSubscriptionAttributesResponse>"
+        "<GetSubscriptionAttributesResult>"
+        f"<Attributes>{attrs_xml}</Attributes>"
+        "</GetSubscriptionAttributesResult>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</GetSubscriptionAttributesResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_set_subscription_attributes(
+    provider: SnsProvider, params: dict[str, str]
+) -> Response:
+    """Handle the ``SetSubscriptionAttributes`` action."""
+    subscription_arn = params.get("SubscriptionArn", "")
+    attr_name = params.get("AttributeName", "")
+    attr_value = params.get("AttributeValue", "")
+    try:
+        await provider.set_subscription_attribute(subscription_arn, attr_name, attr_value)
+    except KeyError:
+        xml = (
+            "<ErrorResponse>"
+            "<Error>"
+            "<Code>NotFound</Code>"
+            f"<Message>Subscription not found: {subscription_arn}</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=404, media_type="text/xml")
+
+    xml = (
+        "<SetSubscriptionAttributesResponse>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</SetSubscriptionAttributesResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_confirm_subscription(provider: SnsProvider, params: dict[str, str]) -> Response:
+    """Handle the ``ConfirmSubscription`` action.
+
+    This is a stub for local development — subscriptions are auto-confirmed.
+    """
+    topic_arn = params.get("TopicArn", "")
+    subscription_arn = f"{topic_arn}:{uuid.uuid4().hex[:8]}"
+    xml = (
+        "<ConfirmSubscriptionResponse>"
+        "<ConfirmSubscriptionResult>"
+        f"<SubscriptionArn>{subscription_arn}</SubscriptionArn>"
+        "</ConfirmSubscriptionResult>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</ConfirmSubscriptionResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
+async def _handle_list_subscriptions_by_topic(
+    provider: SnsProvider, params: dict[str, str]
+) -> Response:
+    """Handle the ``ListSubscriptionsByTopic`` action."""
+    topic_arn = params.get("TopicArn", "")
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    try:
+        subscriptions = provider.list_subscriptions_by_topic(topic_name)
+    except KeyError:
+        xml = (
+            "<ErrorResponse>"
+            "<Error>"
+            "<Code>NotFound</Code>"
+            f"<Message>Topic not found: {topic_arn}</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=404, media_type="text/xml")
+
+    members: list[str] = []
+    for sub in subscriptions:
+        members.append(
+            "<member>"
+            f"<TopicArn>{topic_arn}</TopicArn>"
+            f"<Protocol>{sub.protocol}</Protocol>"
+            f"<SubscriptionArn>{sub.subscription_arn}</SubscriptionArn>"
+            f"<Endpoint>{sub.endpoint}</Endpoint>"
+            "</member>"
+        )
+
+    xml = (
+        "<ListSubscriptionsByTopicResponse>"
+        "<ListSubscriptionsByTopicResult>"
+        f"<Subscriptions>{''.join(members)}</Subscriptions>"
+        "</ListSubscriptionsByTopicResult>"
+        f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
+        "</ListSubscriptionsByTopicResponse>"
+    )
+    return Response(content=xml, media_type="text/xml")
+
+
 _ACTION_HANDLERS = {
     "Publish": _handle_publish,
     "Subscribe": _handle_subscribe,
@@ -275,6 +421,11 @@ _ACTION_HANDLERS = {
     "ListTagsForResource": _handle_list_tags_for_resource,
     "TagResource": _handle_tag_resource,
     "UntagResource": _handle_untag_resource,
+    "Unsubscribe": _handle_unsubscribe,
+    "GetSubscriptionAttributes": _handle_get_subscription_attributes,
+    "SetSubscriptionAttributes": _handle_set_subscription_attributes,
+    "ConfirmSubscription": _handle_confirm_subscription,
+    "ListSubscriptionsByTopic": _handle_list_subscriptions_by_topic,
 }
 
 

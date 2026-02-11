@@ -33,21 +33,21 @@ class TestSqsStubOperations:
         resp = await client.post(
             "/",
             json={},
-            headers={"X-Amz-Target": "AmazonSQS.ChangeMessageVisibility"},
+            headers={"X-Amz-Target": "AmazonSQS.AddPermission"},
         )
         assert resp.status_code == 400
         body = resp.json()
         assert body["__type"] == "UnknownOperationException"
         assert "lws" in body["message"]
         assert "SQS" in body["message"]
-        assert "ChangeMessageVisibility" in body["message"]
+        assert "AddPermission" in body["message"]
 
     @pytest.mark.asyncio
     async def test_unknown_xml_operation_returns_error(self, client):
         """Test that unknown XML operations return HTTP 400 with ErrorResponse XML."""
         resp = await client.post(
             "/",
-            data={"Action": "ChangeMessageVisibility"},
+            data={"Action": "AddPermission"},
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         assert resp.status_code == 400
@@ -55,4 +55,4 @@ class TestSqsStubOperations:
         assert "<Code>InvalidAction</Code>" in resp.text
         assert "lws" in resp.text
         assert "SQS" in resp.text
-        assert "ChangeMessageVisibility" in resp.text
+        assert "AddPermission" in resp.text

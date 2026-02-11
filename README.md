@@ -1,6 +1,6 @@
 # local-web-services
 
-Run your AWS CDK and Terraform applications locally. local-web-services reads your CDK cloud assembly or Terraform configuration and spins up local emulations of API Gateway, Lambda, DynamoDB, SQS, SNS, S3, Step Functions, Cognito, EventBridge, and more — so you can develop and test without deploying to AWS.
+Run your AWS CDK and Terraform applications locally. local-web-services reads your CDK cloud assembly or Terraform configuration and spins up local emulations of API Gateway, Lambda, DynamoDB, SQS, SNS, S3, Step Functions, Cognito, EventBridge, SSM Parameter Store, Secrets Manager, and more — so you can develop and test without deploying to AWS.
 
 ## Try It Out
 
@@ -76,6 +76,24 @@ uvx --from local-web-services lws apigateway test-invoke-method \
   --http-method GET
 ```
 
+Store and retrieve configuration:
+
+```bash
+uvx --from local-web-services lws ssm put-parameter \
+  --name /app/table-name --value orders --type String
+
+uvx --from local-web-services lws ssm get-parameter --name /app/table-name
+```
+
+Store and retrieve secrets:
+
+```bash
+uvx --from local-web-services lws secretsmanager create-secret \
+  --name app/api-key --secret-string "my-secret-key"
+
+uvx --from local-web-services lws secretsmanager get-secret-value --secret-id app/api-key
+```
+
 Both sample projects include a full end-to-end test script (`test-orders.sh`) that runs all of these steps automatically.
 
 ## Installation
@@ -111,7 +129,7 @@ npx cdk synth
 uvx --from local-web-services ldk dev --project-dir /path/to/your-cdk-project --port 3000
 ```
 
-`ldk` will discover your API routes, Lambda functions, DynamoDB tables, SQS queues, SNS topics, S3 buckets, and Step Functions state machines automatically from the CDK output.
+`ldk` will discover your API routes, Lambda functions, DynamoDB tables, SQS queues, SNS topics, S3 buckets, Step Functions state machines, SSM parameters, and Secrets Manager secrets automatically from the CDK output.
 
 ### Terraform Projects
 
@@ -175,8 +193,11 @@ Each service has two dimensions of support: **IaC constructs** parsed from your 
 | DeleteTable | Yes |
 | DescribeTable | Yes |
 | ListTables | Yes |
-| TransactGetItems | No |
-| TransactWriteItems | No |
+| TransactGetItems | Yes |
+| TransactWriteItems | Yes |
+| UpdateTable | Yes |
+| DescribeContinuousBackups | Yes |
+| UpdateTimeToLive | Yes |
 
 Backed by SQLite. Supports expression attribute names/values, filter expressions, and eventual consistency simulation.
 
@@ -202,9 +223,11 @@ Backed by SQLite. Supports expression attribute names/values, filter expressions
 | SetQueueAttributes | Yes |
 | ListQueues | Yes |
 | PurgeQueue | Yes |
-| SendMessageBatch | No |
-| DeleteMessageBatch | No |
-| ChangeMessageVisibility | No |
+| SendMessageBatch | Yes |
+| DeleteMessageBatch | Yes |
+| ChangeMessageVisibility | Yes |
+| ChangeMessageVisibilityBatch | Yes |
+| ListDeadLetterSourceQueues | Yes |
 
 Supports message attributes, long polling, and dead-letter queue wiring from RedrivePolicy.
 
@@ -229,8 +252,16 @@ Supports message attributes, long polling, and dead-letter queue wiring from Red
 | DeleteBucket | Yes |
 | HeadBucket | Yes |
 | ListBuckets | Yes |
-| CopyObject | No |
-| DeleteObjects | No |
+| CopyObject | Yes |
+| DeleteObjects | Yes |
+| PutBucketTagging | Yes |
+| GetBucketTagging | Yes |
+| DeleteBucketTagging | Yes |
+| GetBucketLocation | Yes |
+| PutBucketPolicy | Yes |
+| GetBucketPolicy | Yes |
+| PutBucketNotificationConfiguration | Yes |
+| GetBucketNotificationConfiguration | Yes |
 | CreateMultipartUpload | No |
 
 Backed by the local filesystem. Supports event notifications (ObjectCreated, ObjectRemoved), presigned URL generation, ETags, and content-type headers.
@@ -256,8 +287,11 @@ Backed by the local filesystem. Supports event notifications (ObjectCreated, Obj
 | ListSubscriptions | Yes |
 | DeleteTopic | Yes |
 | SetTopicAttributes | Yes |
-| Unsubscribe | No |
-| SetSubscriptionAttributes | No |
+| Unsubscribe | Yes |
+| GetSubscriptionAttributes | Yes |
+| SetSubscriptionAttributes | Yes |
+| ConfirmSubscription | Yes |
+| ListSubscriptionsByTopic | Yes |
 
 Supports Lambda and SQS subscription protocols, message attributes, and fan-out to multiple subscribers.
 
@@ -279,9 +313,15 @@ Supports Lambda and SQS subscription protocols, message attributes, and fan-out 
 | PutTargets | Yes |
 | ListRules | Yes |
 | ListEventBuses | Yes |
-| RemoveTargets | No |
-| DeleteRule | No |
-| DescribeRule | No |
+| RemoveTargets | Yes |
+| DeleteRule | Yes |
+| DescribeRule | Yes |
+| ListTargetsByRule | Yes |
+| EnableRule | Yes |
+| DisableRule | Yes |
+| TagResource | Yes |
+| UntagResource | Yes |
+| ListTagsForResource | Yes |
 
 Supports event pattern matching, schedule expressions (rate and cron), Lambda targets, and input transformations.
 
@@ -303,8 +343,9 @@ Supports event pattern matching, schedule expressions (rate and cron), Lambda ta
 | ListExecutions | Yes |
 | ListStateMachines | Yes |
 | CreateStateMachine | Yes |
-| StopExecution | No |
-| GetExecutionHistory | No |
+| StopExecution | Yes |
+| GetExecutionHistory | Yes |
+| UpdateStateMachine | Yes |
 
 State types: Task, Pass, Choice, Wait, Succeed, Fail, Parallel, Map. Supports JSONPath (InputPath, OutputPath, ResultPath), error handling (Retry, Catch), and Standard & Express workflows.
 
@@ -325,7 +366,15 @@ State types: Task, Pass, Choice, Wait, Succeed, Fail, Parallel, Map. Supports JS
 | ConfirmSignUp | Yes |
 | InitiateAuth | Yes (USER_PASSWORD_AUTH) |
 | JWKS endpoint | Yes |
-| AdminCreateUser | No |
+| CreateUserPoolClient | Yes |
+| DeleteUserPoolClient | Yes |
+| DescribeUserPoolClient | Yes |
+| ListUserPoolClients | Yes |
+| AdminCreateUser | Yes |
+| AdminDeleteUser | Yes |
+| AdminGetUser | Yes |
+| UpdateUserPool | Yes |
+| ListUsers | Yes |
 | ForgotPassword | No |
 | ChangePassword | No |
 | GlobalSignOut | No |
@@ -349,6 +398,11 @@ Backed by SQLite. Supports JWT token generation (ID, access, refresh), user attr
 | DeleteFunction | Yes |
 | ListFunctions | Yes |
 | Invoke | Yes |
+| UpdateFunctionConfiguration | Yes |
+| UpdateFunctionCode | Yes |
+| TagResource | Yes |
+| UntagResource | Yes |
+| ListEventSourceMappings | Yes |
 
 Runs functions locally using Python or Node.js runtimes. Supports timeout enforcement, realistic context objects, and environment variable injection. In CDK mode, functions are discovered from the cloud assembly. In Terraform mode, functions are created dynamically via the management API.
 
@@ -367,7 +421,7 @@ CreateRestApi, GetRestApi, DeleteRestApi, CreateResource, PutMethod, PutIntegrat
 
 **HTTP API (V2) Management:**
 
-CreateApi, GetApi, DeleteApi, CreateRoute, CreateIntegration, CreateStage.
+CreateApi, GetApi, DeleteApi, CreateRoute, CreateIntegration, CreateStage, ListRoutes, ListIntegrations, ListStages.
 
 Supports both REST API (V1) and HTTP API (V2) with Lambda proxy integration. Routes requests to local Lambda functions with path parameters, query parameters, and request/response mapping.
 
@@ -385,7 +439,58 @@ Runs services as local subprocesses. Supports health checking, service discovery
 
 ### IAM & STS
 
-Stub APIs that return AWS-compatible responses for Terraform compatibility. IAM role and policy operations are accepted and stored in memory. STS returns dummy credentials and caller identity.
+Stub APIs that return AWS-compatible responses for Terraform compatibility. IAM role and policy operations are accepted and stored in memory (CreateRole, GetRole, DeleteRole, CreatePolicy, GetPolicy, DeletePolicy, AttachRolePolicy, DetachRolePolicy, CreatePolicyVersion, ListRoles, ListPolicies). STS returns dummy credentials and caller identity (GetCallerIdentity, AssumeRole).
+
+### SSM Parameter Store
+
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_ssm.StringParameter` | Name, Type, Value, Description |
+
+**API Operations:**
+
+| Operation | Supported |
+|-----------|-----------|
+| PutParameter | Yes |
+| GetParameter | Yes |
+| GetParameters | Yes |
+| GetParametersByPath | Yes |
+| DeleteParameter | Yes |
+| DeleteParameters | Yes |
+| DescribeParameters | Yes |
+| AddTagsToResource | Yes |
+| RemoveTagsFromResource | Yes |
+| ListTagsForResource | Yes |
+
+In-memory parameter store supporting String, StringList, and SecureString types. Supports versioning (auto-incremented on overwrite), descriptions, and tags. In CDK mode, parameters defined in the CloudFormation template are pre-seeded on startup.
+
+### Secrets Manager
+
+**CDK Constructs:**
+
+| Construct | Parsed Properties |
+|-----------|-------------------|
+| `aws_secretsmanager.Secret` | Name, Description, SecretString, GenerateSecretString |
+
+**API Operations:**
+
+| Operation | Supported |
+|-----------|-----------|
+| CreateSecret | Yes |
+| GetSecretValue | Yes |
+| PutSecretValue | Yes |
+| UpdateSecret | Yes |
+| DeleteSecret | Yes |
+| DescribeSecret | Yes |
+| ListSecrets | Yes |
+| RestoreSecret | Yes |
+| TagResource | Yes |
+| UntagResource | Yes |
+| ListSecretVersionIds | Yes |
+
+In-memory secret store supporting version staging (AWSCURRENT/AWSPREVIOUS), soft delete with optional recovery, and tags. In CDK mode, secrets defined in the CloudFormation template are pre-seeded on startup.
 
 ## Development
 

@@ -265,6 +265,147 @@ class StepFunctionsProvider(IStateMachine):
             "creationDate": time.time(),
         }
 
+    def stop_execution(
+        self,
+        execution_arn: str,
+        error: str | None = None,
+        cause: str | None = None,
+    ) -> None:
+        """Stop a running execution by setting its status to ABORTED.
+
+        Raises KeyError if the execution does not exist.
+        """
+        history = self._executions.get(execution_arn)
+        if history is None:
+            raise KeyError(f"Execution not found: {execution_arn}")
+        history.status = ExecutionStatus.ABORTED
+        history.end_time = time.time()
+        if error is not None:
+            history.error = error
+        if cause is not None:
+            history.cause = cause
+
+    def update_state_machine(
+        self,
+        name: str,
+        definition: str | dict | None = None,
+        role_arn: str | None = None,
+    ) -> float:
+        """Update a state machine's configuration.
+
+        Returns the update timestamp. Raises KeyError if not found.
+        """
+        if name not in self._definitions:
+            raise KeyError(f"State machine not found: {name}")
+
+        config = self._configs.get(name)
+        if config is None:
+            raise KeyError(f"State machine config not found: {name}")
+
+        if definition is not None:
+            config.definition = definition
+            definition_data = _resolve_definition(config)
+            self._definitions[name] = parse_definition(definition_data)
+
+        if role_arn is not None:
+            config.role_arn = role_arn
+
+        return time.time()
+
+    def get_execution_history(
+        self,
+        execution_arn: str,
+        max_results: int | None = None,
+    ) -> list[dict]:
+        """Return execution history events for a given execution ARN.
+
+        Returns a list of event dicts. Raises KeyError if the execution
+        does not exist.
+        """
+        history = self._executions.get(execution_arn)
+        if history is None:
+            raise KeyError(f"Execution not found: {execution_arn}")
+
+        events: list[dict] = []
+
+        # Always include an ExecutionStarted event
+        events.append(
+            {
+                "timestamp": history.start_time,
+                "type": "ExecutionStarted",
+                "id": 1,
+                "previousEventId": 0,
+                "executionStartedEventDetails": {
+                    "input": json.dumps(history.input_data) if history.input_data else "{}",
+                    "roleArn": "",
+                },
+            }
+        )
+
+        # Add state transition events
+        event_id = 2
+        for transition in history.transitions:
+            events.append(
+                {
+                    "timestamp": transition.timestamp,
+                    "type": "StateEntered",
+                    "id": event_id,
+                    "previousEventId": event_id - 1,
+                    "stateEnteredEventDetails": {
+                        "name": transition.state_name,
+                        "input": (
+                            json.dumps(transition.input_data) if transition.input_data else "{}"
+                        ),
+                    },
+                }
+            )
+            event_id += 1
+
+        # Add terminal event if execution has completed
+        if history.status == ExecutionStatus.SUCCEEDED:
+            events.append(
+                {
+                    "timestamp": history.end_time or history.start_time,
+                    "type": "ExecutionSucceeded",
+                    "id": event_id,
+                    "previousEventId": event_id - 1,
+                    "executionSucceededEventDetails": {
+                        "output": json.dumps(history.output_data) if history.output_data else "{}",
+                    },
+                }
+            )
+        elif history.status == ExecutionStatus.FAILED:
+            events.append(
+                {
+                    "timestamp": history.end_time or history.start_time,
+                    "type": "ExecutionFailed",
+                    "id": event_id,
+                    "previousEventId": event_id - 1,
+                    "executionFailedEventDetails": {
+                        "error": history.error or "",
+                        "cause": history.cause or "",
+                    },
+                }
+            )
+        elif history.status == ExecutionStatus.ABORTED:
+            events.append(
+                {
+                    "timestamp": history.end_time or history.start_time,
+                    "type": "ExecutionAborted",
+                    "id": event_id,
+                    "previousEventId": event_id - 1,
+                    "executionAbortedEventDetails": {
+                        "error": history.error or "",
+                        "cause": history.cause or "",
+                    },
+                }
+            )
+
+        if max_results is not None:
+            events = events[:max_results]
+
+        return events
+
     # ------------------------------------------------------------------
     # Internal execution methods
     # ------------------------------------------------------------------

@@ -33,11 +33,11 @@ class TestEventBridgeStubOperations:
         resp = await client.post(
             "/",
             json={},
-            headers={"x-amz-target": "AWSEvents.TagResource"},
+            headers={"x-amz-target": "AWSEvents.TestConnection"},
         )
         assert resp.status_code == 400
         body = resp.json()
         assert body["__type"] == "UnknownOperationException"
         assert "lws" in body["message"]
         assert "EventBridge" in body["message"]
-        assert "TagResource" in body["message"]
+        assert "TestConnection" in body["message"]

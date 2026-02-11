@@ -26,11 +26,11 @@ class TestDynamoDbStubOperations:
         resp = await client.post(
             "/",
             json={},
-            headers={"X-Amz-Target": "DynamoDB_20120810.DescribeContinuousBackups"},
+            headers={"X-Amz-Target": "DynamoDB_20120810.SomeUnknownOp"},
         )
         assert resp.status_code == 400
         body = resp.json()
         assert body["__type"] == "UnknownOperationException"
         assert "lws" in body["message"]
         assert "DynamoDB" in body["message"]
-        assert "DescribeContinuousBackups" in body["message"]
+        assert "SomeUnknownOp" in body["message"]
