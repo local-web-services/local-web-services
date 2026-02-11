@@ -119,8 +119,10 @@ def main() -> None:
         # Invoke the handler.
         result = handler_fn(event, context)
 
-        # Write result to stdout.
+        # Write result to stdout and flush before exiting.
         sys.stdout.write(json.dumps({"result": result}))
+        sys.stdout.flush()
+        sys.exit(0)
 
     except Exception as exc:
         error_payload = {
