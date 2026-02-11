@@ -1,0 +1,38 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "e2ae3a47f065",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".git/hooks/pre-commit",
+    "src/lws/cli/ldk.py",
+    "src/lws/cli/services/cognito.py",
+    "src/lws/cli/services/sns.py",
+    "src/lws/cli/services/sqs.py",
+    "src/lws/providers/cognito/routes.py",
+    "tests/architecture/tests/test_cli_resolve_resource_fallback.py",
+    "tests/architecture/tests/test_service_name_consistency.py",
+    "tests/e2e/conftest.py",
+    "tests/e2e/s3api/test_list_buckets.py",
+    "tests/e2e/s3api/test_list_objects_v2.py",
+    "tests/unit/cli/test_create_terraform_providers.py",
+    "tests/unit/cli/test_main_create_providers.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e2/ae3a47f065/0/metadata.json",
+      "transcript": "/e2/ae3a47f065/0/full.jsonl",
+      "context": "",
+      "content_hash": "/e2/ae3a47f065/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 113,
+    "cache_creation_tokens": 129647,
+    "cache_read_tokens": 9657735,
+    "output_tokens": 6269,
+    "api_call_count": 111
+  }
+}

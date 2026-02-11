@@ -1,0 +1,40 @@
+Here's a summary of everything done:
+
+## E2E Fix Summary
+
+**All 69 e2e tests now pass** (from 22 failures + 1 error). **All 1732 `make check` tests pass.**
+
+### Fixes Applied
+
+**1. Service name mismatch in terraform mode** (`src/lws/cli/ldk.py`)
+- Renamed `"eventbridge"` → `"events"` and `"cognito"` → `"cognito-idp"` in the terraform `ports` dict
+- Updated all references in `_create_terraform_providers`, `_register_http_providers`, and the CDK mode's `_create_providers` call site
+- Updated corresponding unit tests
+
+**2. CLI commands exit on missing resource metadata** (`src/lws/cli/services/sqs.py`, `sns.py`, `cognito.py`)
+- Changed `_send_message`, `_receive_message`, `_delete_message`, `_get_queue_attributes` in SQS to construct default queue URLs via `service_port()` on fallback
+- Changed `_publish` in SNS to use default ARN on fallback
+- Changed `_sign_up`, `_confirm_sign_up`, `_initiate_auth` in Cognito to use default client_id on fallback
+
+**3. S3 test response parsing** (`tests/e2e/s3api/test_list_buckets.py`, `test_list_objects_v2.py`)
+- Fixed to navigate the XML-to-dict nested structure (`ListAllMyBucketsResult.Buckets.Bucket`, `ListBucketResult.Contents`)
+- Handled single-item dict vs list
+
+**4. Cognito provider not started in terraform mode** (`src/lws/cli/ldk.py`)
+- Added `providers["__cognito_default__"] = cognito_provider` so the orchestrator calls `start()` to initialize the SQLite database
+
+**5. Cognito CreateUserPool/DeleteUserPool stubs** (`src/lws/providers/cognito/routes.py`)
+- `_create_user_pool` now updates `config.user_pool_name`
+- `_delete_user_pool` clears the pool name so `_list_user_pools` returns empty
+
+**6. Fixture teardown timeout** (`tests/e2e/conftest.py`)
+- Added try/except with `proc.kill()` fallback for `proc.wait()` timeout
+
+### Architecture Tests Created
+
+**`test_service_name_consistency.py`** — 2 tests:
+- Terraform ports keys must be a superset of CDK mode's `_service_ports` keys
+- Terraform ports must not use internal names like `"cognito"` or `"eventbridge"`
+
+**`test_cli_resolve_resource_fallback.py`** — 1 test:
+- CLI commands must not call `exit_with_error` after `resolve_resource` failure (must use try/except fallback instead)
