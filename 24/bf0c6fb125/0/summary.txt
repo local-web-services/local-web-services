@@ -1,0 +1,3 @@
+Fixed. The root cause was that `process.stdout.write(data, callback)` with a callback-based `process.exit(0)` can hang when stdout is a pipe and the Node.js event loop has pending async work (like AWS SDK keep-alive connections). The callback never fires, so the process never exits, so `exec_run` blocks forever.
+
+The fix uses `fs.writeFileSync(1, data)` — a synchronous write directly to file descriptor 1 (stdout). This guarantees the data is fully written before `process.exit(0)` is called on the next line. Applied the same pattern to the error path for consistency.

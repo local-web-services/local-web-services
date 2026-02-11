@@ -1,0 +1,1 @@
+I still do not see lambda executions in the logs and docker containers are not stopping when the execution is complete
