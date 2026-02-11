@@ -1,0 +1,6 @@
+Done. Each invocation now logs:
+
+- **On invoke**: `INFO Invoking CreateOrderFunction (request=abc-123)`
+- **On success**: `INFO OK CreateOrderFunction (45ms, request=abc-123)`
+- **On error**: `ERROR ERROR CreateOrderFunction (45ms, request=abc-123): error message`
+- **On timeout**: `WARNING TIMEOUT CreateOrderFunction after 3000ms (request=abc-123)`
