@@ -1,0 +1,13 @@
+Package reinstalled. Here's a summary of what changed and why docker exec processes should now exit properly:
+
+**Three-layer fix:**
+
+1. **Non-blocking JSON read** (`_run_exec_sync`): Instead of `subprocess.run` which blocks until the process exits, we now use `Popen` with non-blocking I/O (`select` + `os.read`). As soon as a complete JSON object is detected in stdout, we return the result immediately and kill the `docker exec` client process. The invocation returns in milliseconds regardless of whether the Node.js/Python process exits on its own.
+
+2. **`timeout -s KILL` wrapper** (`_build_exec_cmd`): The bootstrap command inside the container is wrapped in `timeout -s KILL <seconds>`. Even if the runtime process hangs (e.g. Node.js with keep-alive connections), it will be forcibly killed by SIGKILL after the Lambda timeout expires. This prevents orphaned processes accumulating inside the container.
+
+3. **`init=True` on container** (`_ensure_container`): Adds tini as PID 1 inside the container for proper signal forwarding and zombie process reaping.
+
+**Important note about warm containers**: The Docker containers themselves (visible in `docker ps`) are **expected** to stay running — they're warm containers reused across invocations. What should now exit promptly is the `docker exec` session (the actual function execution). The containers are stopped when you Ctrl+C `ldk dev`.
+
+You can test by running `ldk dev` in the sample project and invoking a Lambda. The response should come back immediately without hanging.
