@@ -308,34 +308,50 @@ class DockerCompute(ICompute):
 
         raw = b"".join(chunks)
 
-        # Docker may prefix output with a stream header (8 bytes per frame).
-        # Strip any framing to get clean JSON.
-        return self._strip_docker_stream_framing(raw).decode(errors="replace")
+        # Docker multiplexes stdout/stderr with 8-byte frame headers.
+        # Extract only stdout (type 1), log stderr separately.
+        stdout_bytes, stderr_bytes = self._demux_docker_stream(raw)
+        if stderr_bytes:
+            _logger.debug(
+                "[%s] stderr: %s",
+                self._config.function_name,
+                stderr_bytes.decode(errors="replace").rstrip(),
+            )
+        return stdout_bytes.decode(errors="replace")
 
     @staticmethod
-    def _strip_docker_stream_framing(data: bytes) -> bytes:
-        """Strip Docker multiplexed stream headers if present.
+    def _demux_docker_stream(data: bytes) -> tuple[bytes, bytes]:
+        """Separate Docker multiplexed stream into (stdout, stderr).
 
         Docker's attach/exec protocol prepends an 8-byte header to each
-        frame: 1 byte stream type, 3 bytes padding, 4 bytes payload length.
+        frame: 1 byte stream type (1=stdout, 2=stderr), 3 bytes padding,
+        4 bytes big-endian payload length.
+
+        Returns raw data unchanged if no framing is detected.
         """
-        if len(data) < 8:
-            return data
-        # Check if first byte looks like a stream type marker (0=stdin, 1=stdout, 2=stderr)
-        if data[0] in (0, 1, 2) and data[1:4] == b"\x00\x00\x00":
-            result = bytearray()
-            offset = 0
-            while offset + 8 <= len(data):
-                payload_len = int.from_bytes(data[offset + 4 : offset + 8], "big")
-                frame_end = offset + 8 + payload_len
-                if frame_end > len(data):
-                    # Incomplete frame — take what's left
-                    result.extend(data[offset + 8 :])
-                    break
-                result.extend(data[offset + 8 : frame_end])
-                offset = frame_end
-            return bytes(result)
-        return data
+        if len(data) < 8 or data[0] not in (0, 1, 2) or data[1:4] != b"\x00\x00\x00":
+            return data, b""
+
+        stdout = bytearray()
+        stderr = bytearray()
+        offset = 0
+        while offset + 8 <= len(data):
+            stream_type = data[offset]
+            payload_len = int.from_bytes(data[offset + 4 : offset + 8], "big")
+            frame_end = offset + 8 + payload_len
+            if frame_end > len(data):
+                # Incomplete frame — attribute remaining bytes to this stream
+                payload = data[offset + 8 :]
+            else:
+                payload = data[offset + 8 : frame_end]
+            if stream_type == 1:
+                stdout.extend(payload)
+            else:
+                stderr.extend(payload)
+            if frame_end > len(data):
+                break
+            offset = frame_end
+        return bytes(stdout), bytes(stderr)
 
     @staticmethod
     def _parse_result(raw: str, duration_ms: float, request_id: str) -> InvocationResult:
