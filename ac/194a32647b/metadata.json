@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "ac194a32647b",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/providers/lambda_runtime/python_bootstrap.py",
+    "src/lws/runtime/sdk_env.py",
+    "tests/e2e/lambda_/test_lambda_s3_integration.py",
+    "tests/unit/runtime/test_sdk_env.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ac/194a32647b/0/metadata.json",
+      "transcript": "/ac/194a32647b/0/full.jsonl",
+      "context": "",
+      "content_hash": "/ac/194a32647b/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 34,
+    "cache_creation_tokens": 48852,
+    "cache_read_tokens": 1524297,
+    "output_tokens": 1257,
+    "api_call_count": 32
+  }
+}

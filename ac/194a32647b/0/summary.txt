@@ -1,0 +1,15 @@
+All four changes are complete. Here's a summary:
+
+## Changes Made
+
+### Fix 1: `src/lws/runtime/sdk_env.py`
+Added `AWS_S3_FORCE_PATH_STYLE=true` to the SDK environment when an S3 endpoint is present. This is the official AWS SDK setting that forces path-style addressing (`http://host:port/bucket/key`) instead of virtual-hosted-style (`http://bucket.host:port/key`), which fails inside Docker containers.
+
+### Fix 2: `src/lws/providers/lambda_runtime/python_bootstrap.py`
+Added `_configure_s3_path_style()` that writes `~/.aws/config` with `addressing_style = path` inside the container for legacy boto3 compatibility. Called at the top of `main()` before `_maybe_attach_debugger()`. Only activates when `AWS_ENDPOINT_URL_S3` is set and no existing config file is present.
+
+### Fix 3: `tests/e2e/lambda_/test_lambda_s3_integration.py` (new)
+E2E test that verifies a Lambda function running in Docker can write to S3 using path-style addressing. Creates an S3 bucket, registers a Python Lambda via the management API, invokes it with an event, and verifies the object was written. Automatically skips if Docker or the Lambda Python image isn't available.
+
+### Fix 4: `tests/unit/runtime/test_sdk_env.py`
+Added two unit tests: one verifying `AWS_S3_FORCE_PATH_STYLE` is set when S3 is in endpoints, and one verifying it's absent when S3 is not in endpoints. All 7 tests pass.
