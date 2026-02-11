@@ -1,0 +1,39 @@
+All 1657 existing tests pass. Implementation is complete. Here's a summary of everything that was created/modified:
+
+## Summary
+
+### Part 1: `ldk stop` Command (3 files modified)
+
+| File | Change |
+|------|--------|
+| `src/lws/runtime/orchestrator.py` | Added `request_shutdown()` method |
+| `src/lws/api/management.py` | Added `POST /_ldk/shutdown` endpoint |
+| `src/lws/cli/ldk.py` | Added `stop` command |
+
+### Part 2: E2E Test Harness (67 files created)
+
+| Directory | Test Files | Commands Covered |
+|-----------|-----------|-----------------|
+| `tests/e2e/conftest.py` | 1 | Session fixture: starts `ldk dev`, tears down via `ldk stop` |
+| `tests/e2e/dynamodb/` | 9 | create-table, delete-table, describe-table, list-tables, put-item, get-item, delete-item, scan, query |
+| `tests/e2e/sqs/` | 8 | create-queue, delete-queue, list-queues, send-message, receive-message, delete-message, get-queue-attributes, purge-queue |
+| `tests/e2e/s3/` | 9 | create-bucket, delete-bucket, head-bucket, list-buckets, put-object, get-object, delete-object, head-object, list-objects-v2 |
+| `tests/e2e/sns/` | 6 | create-topic, delete-topic, list-topics, publish, list-subscriptions, subscribe |
+| `tests/e2e/eventbridge/` | 7 | create-event-bus, delete-event-bus, list-event-buses, put-events, list-rules, put-rule, delete-rule |
+| `tests/e2e/stepfunctions/` | 7 | create-state-machine, delete-state-machine, describe-state-machine, list-state-machines, start-execution, describe-execution, list-executions |
+| `tests/e2e/cognito/` | 7 | create-user-pool, delete-user-pool, list-user-pools, describe-user-pool, sign-up, confirm-sign-up, initiate-auth |
+| `tests/e2e/ssm/` | 5 | put-parameter, get-parameter, get-parameters-by-path, delete-parameter, describe-parameters |
+| `tests/e2e/secretsmanager/` | 6 | create-secret, get-secret-value, put-secret-value, delete-secret, describe-secret, list-secrets |
+| `tests/e2e/apigateway/` | 1 | test-invoke-method |
+
+### Makefile
+
+Added `test-e2e` target: `uv run pytest tests/e2e/ -v`
+
+### How to run
+
+```bash
+make test-e2e                                        # Run all e2e tests
+uv run pytest tests/e2e/ssm/ -v                      # One service
+uv run pytest tests/e2e/ssm/test_put_parameter.py -v  # One operation
+```

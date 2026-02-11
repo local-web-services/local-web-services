@@ -1,0 +1,372 @@
+Implement the following plan:
+
+# Plan: E2E Test Harness + `ldk stop` Command
+
+## Context
+
+The project relies on external sample projects tested manually via `test-orders.sh`. These only cover a fraction of supported operations. We need automated, comprehensive test coverage that an agent can run with a single command. The test harness should use the real `ldk dev` CLI to start services and the real `lws` CLI to exercise every operation — testing the full production code path end-to-end.
+
+We also need a `ldk stop` command so the test harness (and users) can gracefully shut down a running `ldk dev` instance without sending kill signals.
+
+## Part 1: `ldk stop` Command
+
+### Design
+
+Add a `POST /_ldk/shutdown` endpoint to the management API. Add a `ldk stop` CLI command that calls it.
+
+**Files to modify:**
+
+1. **`src/lws/api/management.py`** — Add shutdown endpoint:
+   ```python
+   @router.post("/shutdown")
+   async def shutdown() -> JSONResponse:
+       orchestrator.request_shutdown()
+       return JSONResponse(content={"status": "shutting_down"})
+   ```
+
+2. **`src/lws/runtime/orchestrator.py`** — Add `request_shutdown()` method:
+   ```python
+   def request_shutdown(self) -> None:
+       """Trigger graceful shutdown (same as SIGTERM)."""
+       if not self._shutting_down:
+           self._shutting_down = True
+           if self._stop_event is not None:
+               self._stop_event.set()
+   ```
+
+3. **`src/lws/cli/ldk.py`** — Add `stop` command:
+   ```python
+   @app.command()
+   def stop(
+       port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+   ) -> None:
+       """Stop a running ldk dev instance."""
+       asyncio.run(_stop(port))
+
+   async def _stop(port: int) -> None:
+       async with httpx.AsyncClient() as client:
+           resp = await client.post(f"http://localhost:{port}/_ldk/shutdown", timeout=5.0)
+           resp.raise_for_status()
+       # print confirmation
+   ```
+
+## Part 2: E2E Test Harness
+
+### Approach
+
+- **conftest.py starts `ldk dev --mode terraform`** as a subprocess, waits for readiness via `GET /_ldk/status`, yields the port, then tears down via `ldk stop`
+- **One test file per `lws` CLI command** (65 files across 10 services)
+- **Each test invokes `lws` CLI via `CliRunner`** from `typer.testing` — same entry point as a user typing `lws dynamodb put-item`
+
+### Directory Structure
+
+```
+tests/e2e/
+├── __init__.py
+├── conftest.py                         # Starts ldk dev, tears down via ldk stop
+│
+├── dynamodb/                           # 9 CLI commands
+│   ├── __init__.py
+│   ├── test_put_item.py
+│   ├── test_get_item.py
+│   ├── test_delete_item.py
+│   ├── test_scan.py
+│   ├── test_query.py
+│   ├── test_create_table.py
+│   ├── test_delete_table.py
+│   ├── test_describe_table.py
+│   └── test_list_tables.py
+├── sqs/                                # 8 CLI commands
+│   ├── __init__.py
+│   ├── test_send_message.py
+│   ├── test_receive_message.py
+│   ├── test_delete_message.py
+│   ├── test_get_queue_attributes.py
+│   ├── test_create_queue.py
+│   ├── test_delete_queue.py
+│   ├── test_list_queues.py
+│   └── test_purge_queue.py
+├── s3/                                 # 9 CLI commands
+│   ├── __init__.py
+│   ├── test_put_object.py
+│   ├── test_get_object.py
+│   ├── test_delete_object.py
+│   ├── test_head_object.py
+│   ├── test_list_objects_v2.py
+│   ├── test_create_bucket.py
+│   ├── test_delete_bucket.py
+│   ├── test_head_bucket.py
+│   └── test_list_buckets.py
+├── sns/                                # 6 CLI commands
+│   ├── __init__.py
+│   ├── test_publish.py
+│   ├── test_list_topics.py
+│   ├── test_list_subscriptions.py
+│   ├── test_create_topic.py
+│   ├── test_delete_topic.py
+│   └── test_subscribe.py
+├── eventbridge/                        # 7 CLI commands
+│   ├── __init__.py
+│   ├── test_put_events.py
+│   ├── test_list_rules.py
+│   ├── test_create_event_bus.py
+│   ├── test_delete_event_bus.py
+│   ├── test_list_event_buses.py
+│   ├── test_put_rule.py
+│   └── test_delete_rule.py
+├── stepfunctions/                      # 7 CLI commands
+│   ├── __init__.py
+│   ├── test_start_execution.py
+│   ├── test_describe_execution.py
+│   ├── test_list_executions.py
+│   ├── test_list_state_machines.py
+│   ├── test_create_state_machine.py
+│   ├── test_delete_state_machine.py
+│   └── test_describe_state_machine.py
+├── cognito/                            # 7 CLI commands
+│   ├── __init__.py
+│   ├── test_sign_up.py
+│   ├── test_confirm_sign_up.py
+│   ├── test_initiate_auth.py
+│   ├── test_create_user_pool.py
+│   ├── test_delete_user_pool.py
+│   ├── test_list_user_pools.py
+│   └── test_describe_user_pool.py
+├── ssm/                                # 5 CLI commands
+│   ├── __init__.py
+│   ├── test_put_parameter.py
+│   ├── test_get_parameter.py
+│   ├── test_get_parameters_by_path.py
+│   ├── test_delete_parameter.py
+│   └── test_describe_parameters.py
+├── secretsmanager/                     # 6 CLI commands
+│   ├── __init__.py
+│   ├── test_create_secret.py
+│   ├── test_get_secret_value.py
+│   ├── test_put_secret_value.py
+│   ├── test_delete_secret.py
+│   ├── test_describe_secret.py
+│   └── test_list_secrets.py
+└── apigateway/                         # 1 CLI command
+    ├── __init__.py
+    └── test_test_invoke_method.py
+```
+
+### conftest.py — Start `ldk dev`, Tear Down via `ldk stop`
+
+```python
+"""Session-scoped fixtures: start ldk dev, tear down via ldk stop."""
+
+import subprocess
+import time
+import httpx
+import pytest
+
+E2E_PORT = 19300
+
+@pytest.fixture(scope="session")
+def e2e_port():
+    return E2E_PORT
+
+@pytest.fixture(scope="session", autouse=True)
+def ldk_server(tmp_path_factory, e2e_port):
+    """Start ldk dev as a subprocess, wait for readiness, yield, stop."""
+    project_dir = tmp_path_factory.mktemp("e2e_project")
+    proc = subprocess.Popen(
+        ["uv", "run", "ldk", "dev",
+         "--mode", "terraform",
+         "--port", str(e2e_port),
+         "--project-dir", str(project_dir),
+         "--no-persist"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    # Poll /_ldk/status until running=true (timeout after 30s)
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        try:
+            resp = httpx.get(f"http://localhost:{e2e_port}/_ldk/status", timeout=2.0)
+            if resp.status_code == 200 and resp.json().get("running"):
+                break
+        except (httpx.ConnectError, httpx.ConnectTimeout):
+            pass
+        time.sleep(0.5)
+    else:
+        proc.kill()
+        raise RuntimeError("ldk dev failed to start within 30 seconds")
+
+    yield e2e_port
+
+    # Teardown via ldk stop
+    subprocess.run(
+        ["uv", "run", "ldk", "stop", "--port", str(e2e_port)],
+        timeout=10,
+    )
+    proc.wait(timeout=10)
+```
+
+### Test Pattern — Independent Tests with Arrange/Act/Assert
+
+Every test is **fully independent** — can run in any order, can run alone. Each test handles its own setup in the "arrange" phase via CLI calls. A shared helper `lws_invoke()` is used for arrange steps and clearly distinguishes setup failures from act failures.
+
+**`conftest.py` also provides the helper:**
+
+```python
+def lws_invoke(args: list[str]) -> str:
+    """Invoke lws CLI. Returns stdout. Use in arrange phase."""
+    from typer.testing import CliRunner
+    from lws.cli.lws import app
+    result = CliRunner().invoke(app, args)
+    if result.exit_code != 0:
+        cmd = " ".join(args)
+        raise RuntimeError(f"Setup failed (lws {cmd}): {result.output}")
+    return result.output
+```
+
+**Example: test_get_object.py — arrange calls put-object, act calls get-object:**
+
+```python
+# tests/e2e/s3/test_get_object.py
+import json
+from typer.testing import CliRunner
+from lws.cli.lws import app
+
+runner = CliRunner()
+
+class TestGetObject:
+    def test_get_object(self, e2e_port, tmp_path, lws_invoke):
+        # Arrange — create bucket and put object (setup)
+        lws_invoke(["s3api", "create-bucket", "--bucket", "test-get-obj", "--port", str(e2e_port)])
+        body_file = tmp_path / "input.txt"
+        body_file.write_text("hello world")
+        lws_invoke(["s3api", "put-object", "--bucket", "test-get-obj", "--key", "doc.txt",
+                     "--body", str(body_file), "--port", str(e2e_port)])
+
+        # Act — the operation under test
+        outfile = tmp_path / "output.txt"
+        result = runner.invoke(app, [
+            "s3api", "get-object",
+            "--bucket", "test-get-obj",
+            "--key", "doc.txt",
+            str(outfile),
+            "--port", str(e2e_port),
+        ])
+
+        # Assert
+        assert result.exit_code == 0, result.output
+        assert outfile.read_text() == "hello world"
+```
+
+**Example: test_put_item.py — no arrange needed, act is direct:**
+
+```python
+# tests/e2e/dynamodb/test_put_item.py
+import json
+from typer.testing import CliRunner
+from lws.cli.lws import app
+
+runner = CliRunner()
+
+class TestPutItem:
+    def test_put_item(self, e2e_port, lws_invoke):
+        # Arrange — create table (setup)
+        lws_invoke(["dynamodb", "create-table",
+                     "--table-name", "put-item-test",
+                     "--key-schema", '[{"AttributeName":"pk","KeyType":"HASH"}]',
+                     "--attribute-definitions", '[{"AttributeName":"pk","AttributeType":"S"}]',
+                     "--port", str(e2e_port)])
+
+        # Act
+        result = runner.invoke(app, [
+            "dynamodb", "put-item",
+            "--table-name", "put-item-test",
+            "--item", '{"pk": {"S": "k1"}, "data": {"S": "hello"}}',
+            "--port", str(e2e_port),
+        ])
+
+        # Assert
+        assert result.exit_code == 0, result.output
+```
+
+**Example: test_get_parameter.py — arrange puts, act gets:**
+
+```python
+# tests/e2e/ssm/test_get_parameter.py
+import json
+from typer.testing import CliRunner
+from lws.cli.lws import app
+
+runner = CliRunner()
+
+class TestGetParameter:
+    def test_get_parameter(self, e2e_port, lws_invoke):
+        # Arrange
+        lws_invoke(["ssm", "put-parameter", "--name", "/e2e/get-param-test",
+                     "--value", "hello", "--type", "String", "--port", str(e2e_port)])
+
+        # Act
+        result = runner.invoke(app, [
+            "ssm", "get-parameter",
+            "--name", "/e2e/get-param-test",
+            "--port", str(e2e_port),
+        ])
+
+        # Assert
+        assert result.exit_code == 0, result.output
+        data = json.loads(result.output)
+        assert data["Parameter"]["Value"] == "hello"
+```
+
+**Key principles:**
+- Each test uses **unique resource names** (e.g., `put-item-test`, `get-param-test`) so tests never collide
+- **Arrange failures** raise `RuntimeError("Setup failed ...")` — clearly distinct from assertion failures
+- **Act** is always a single `runner.invoke()` call to the `lws` CLI — the operation under test
+- **Assert** checks exit code and parsed output
+
+## Critical Files to Modify/Reference
+
+| File | Change |
+|------|--------|
+| `src/lws/api/management.py` | Add `POST /_ldk/shutdown` endpoint |
+| `src/lws/runtime/orchestrator.py` | Add `request_shutdown()` method |
+| `src/lws/cli/ldk.py` | Add `stop` command |
+| `src/lws/cli/lws.py` | Reference only — CLI entry point invoked via CliRunner |
+| `src/lws/cli/services/*.py` | Reference only — defines all CLI flags/args |
+
+## Makefile Targets
+
+```makefile
+test-e2e: ## Run e2e tests (no Docker required)
+	uv run pytest tests/e2e/ -v
+```
+
+## Implementation Order
+
+1. **`ldk stop` command** — orchestrator method, management API endpoint, CLI command
+2. Create e2e directory structure and `__init__.py` files
+3. Build `conftest.py` (start `ldk dev`, poll for readiness, teardown via `ldk stop`)
+4. `ssm/` (5 files) and `secretsmanager/` (6 files) — simplest, verify pattern works
+5. `dynamodb/` (9 files)
+6. `sqs/` (8 files), `sns/` (6 files), `s3/` (9 files)
+7. `eventbridge/` (7 files), `stepfunctions/` (7 files), `cognito/` (7 files)
+8. `apigateway/` (1 file)
+9. Makefile update
+
+## Verification
+
+```bash
+make test-e2e                                      # Run all
+uv run pytest tests/e2e/ssm/ -v                    # One service
+uv run pytest tests/e2e/ssm/test_put_parameter.py -v  # One operation
+```
+
+## Scope
+
+- 3 files for `ldk stop` (orchestrator, management API, CLI)
+- 65 test files (one per CLI command, 10 service directories)
+- 1 conftest.py + Makefile update
+- ~100+ test methods
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/eamonnfaherty/.REDACTED.jsonl
