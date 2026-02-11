@@ -1,0 +1,50 @@
+# Session Context
+
+**Session ID:** 1c9632fc-f797-49a8-901c-95079a0fd094
+
+**Commit Message:** In the web gui it shows request and response for lambda. the request doe
+
+## Prompt
+
+in the web gui it shows request and response for lambda. the request does not appear to be event and context like I expected.
+
+## Summary
+
+The web GUI `request_body` will now show:
+
+```json
+{
+  "event": { "httpMethod": "POST", "body": "...", ... },
+  "context": {
+    "function_name": "ProcessOrderFunction",
+    "memory_limit_in_mb": 128,
+    "timeout_seconds": 30,
+    "aws_request_id": "abc-123",
+    "invoked_function_arn": "arn:aws:lambda:..."
+  }
+}
+```
+
+---
+
+Regarding containers not exiting — the `subprocess.run` approach uses `docker exec -i` which pipes stdin then closes it. When stdin closes, the Node.js `fs.readFileSync('/dev/stdin')` gets EOF. But the Node process still hangs if there are active SDK connections and the installed `invoker.js` doesn't have our `process.exit(0)` fix.
+
+Have you reinstalled the package from the source tree since we changed `invoker.js`? The mounted bootstrap files come from the installed package location. You can verify by checking which `invoker.js` is actually being used:
+
+```bash
+python3 -c "from lws.providers.lambda_runtime.docker import _BOOTSTRAP_DIR; print(_BOOTSTRAP_DIR)"
+```
+
+If it points to the pipx install path, you need to reinstall:
+
+```bash
+pipx install --force /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services
+```
+
+## Key Actions
+
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/logging/logger.py
+- - **Edit**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/logging/logger.py
+- - **Read**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/docker.py
+- - **Edit**: /Users/eamonnfaherty/Development/github.com/local-web-services/local-web-services/src/lws/providers/lambda_runtime/docker.py
+- - **Bash**: Lint and run tests

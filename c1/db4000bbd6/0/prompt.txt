@@ -1,0 +1,1 @@
+in the web gui it shows request and response for lambda. the request does not appear to be event and context like I expected.
