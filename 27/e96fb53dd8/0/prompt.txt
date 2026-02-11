@@ -1,0 +1,11 @@
+i still get an error: Workflow failed:
+{
+    "executionArn": "arn:aws:states:us-east-1:000000000000:execution:OrderWorkflow:cbab46b1-a8fb-41f9-b226-f3354ebb87b5",
+    "stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:OrderWorkflow",
+    "name": "cbab46b1-a8fb-41f9-b226-f3354ebb87b5",
+    "status": "FAILED",
+    "startDate": 1770831543.101623,
+    "stopDate": 1770831544.346055,
+    "error": "States.TaskFailed",
+    "cause": "getaddrinfo ENOTFOUND order-receipts-123456789012-us-east-1.host.docker.internal"
+}
