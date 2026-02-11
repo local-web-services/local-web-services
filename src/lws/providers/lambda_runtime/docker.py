@@ -17,6 +17,8 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
+import select
 import subprocess
 import time
 from pathlib import Path
@@ -138,6 +140,7 @@ class DockerCompute(ICompute):
             nano_cpus=self._calculate_nano_cpus(),
             environment=self._build_container_env(),
             extra_hosts={"host.docker.internal": "host-gateway"},
+            init=True,
         )
 
         _logger.info(
@@ -282,10 +285,23 @@ class DockerCompute(ICompute):
         ]
 
     def _build_exec_cmd(self) -> list[str]:
+        """Build the command run inside the container via ``docker exec``.
+
+        Wraps the bootstrap in ``timeout -s KILL`` so the runtime process is
+        forcibly terminated even if it doesn't call ``process.exit()`` or
+        ``sys.exit()``.
+        """
         runtime = self._config.runtime
+        timeout_secs = int(self._config.timeout)
         if runtime.startswith("python"):
-            return ["python3", "/var/bootstrap/python_bootstrap.py"]
-        return ["node", "/var/bootstrap/invoker.js"]
+            return [
+                "timeout", "-s", "KILL", str(timeout_secs),
+                "python3", "/var/bootstrap/python_bootstrap.py",
+            ]
+        return [
+            "timeout", "-s", "KILL", str(timeout_secs),
+            "node", "/var/bootstrap/invoker.js",
+        ]
 
     @staticmethod
     def _rewrite_localhost(value: str) -> str:
@@ -308,9 +324,11 @@ class DockerCompute(ICompute):
     ) -> tuple[str, bool]:
         """Run the bootstrap script via ``docker exec`` CLI subprocess.
 
-        Uses ``subprocess.run`` with stdin piping and a timeout so the
-        process is reliably killed if it hangs (e.g. Node.js with active
-        SDK keep-alive connections).
+        Uses non-blocking I/O to detect when a complete JSON response has
+        been received, then returns immediately *without* waiting for the
+        process to exit.  This handles runtimes that don't explicitly call
+        ``process.exit()`` (e.g. Node.js with active SDK keep-alive
+        connections).
 
         Returns ``(stdout_str, timed_out)``.
         """
@@ -320,23 +338,80 @@ class DockerCompute(ICompute):
         docker_cmd.append(self._container.id)
         docker_cmd.extend(cmd)
 
-        try:
-            proc = subprocess.run(
-                docker_cmd,
-                input=event_json.encode(),
-                capture_output=True,
-                timeout=self._config.timeout,
-            )
-        except subprocess.TimeoutExpired:
-            return "", True
+        proc = subprocess.Popen(
+            docker_cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
-        if proc.stderr:
+        # Send the event payload and close stdin so the bootstrap reads EOF.
+        try:
+            proc.stdin.write(event_json.encode())
+            proc.stdin.close()
+        except BrokenPipeError:
+            pass
+
+        # Read stdout with non-blocking I/O.  Return as soon as a complete
+        # JSON object has been received rather than waiting for the process
+        # to exit (which may never happen without process.exit()).
+        stdout_fd = proc.stdout.fileno()
+        os.set_blocking(stdout_fd, False)
+
+        output = b""
+        deadline = time.monotonic() + self._config.timeout
+        timed_out = False
+
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                timed_out = True
+                break
+
+            ready, _, _ = select.select([stdout_fd], [], [], min(remaining, 1.0))
+            if ready:
+                try:
+                    chunk = os.read(stdout_fd, 65536)
+                except BlockingIOError:
+                    continue
+                if not chunk:
+                    break  # EOF — process closed stdout or exited
+                output += chunk
+                # Check if we've received a complete JSON response.
+                try:
+                    json.loads(output)
+                    break  # Complete JSON object received
+                except (json.JSONDecodeError, UnicodeDecodeError):
+                    continue  # incomplete — keep reading
+
+        # Collect stderr (best-effort, non-blocking).
+        stderr = b""
+        try:
+            stderr_fd = proc.stderr.fileno()
+            os.set_blocking(stderr_fd, False)
+            stderr = os.read(stderr_fd, 65536)
+        except (BlockingIOError, OSError):
+            pass
+
+        # Kill the docker-exec client process.  The warm container itself
+        # stays alive; only the exec session is terminated.
+        try:
+            proc.kill()
+        except OSError:
+            pass
+        try:
+            proc.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            pass
+
+        if stderr:
             _logger.debug(
                 "[%s] stderr: %s",
                 self._config.function_name,
-                proc.stderr.decode(errors="replace").rstrip(),
+                stderr.decode(errors="replace").rstrip(),
             )
-        return proc.stdout.decode(errors="replace"), False
+
+        return output.decode(errors="replace"), timed_out
 
     @staticmethod
     def _parse_result(raw: str, duration_ms: float, request_id: str) -> InvocationResult:
