@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import logging
 import subprocess
 import time
 from pathlib import Path
@@ -30,8 +29,9 @@ from lws.interfaces import (
     ProviderStartError,
     ProviderStatus,
 )
+from lws.logging.logger import get_logger
 
-_logger = logging.getLogger("ldk.docker-compute")
+_logger = get_logger("ldk.docker-compute")
 
 _BOOTSTRAP_DIR = Path(__file__).parent
 
@@ -190,9 +190,6 @@ class DockerCompute(ICompute):
             )
 
         func_name = self._config.function_name
-        _logger.info(
-            "Invoking %s (request=%s)", func_name, context.aws_request_id
-        )
 
         cmd = self._build_exec_cmd()
         env_vars = self._build_exec_env(context)
@@ -207,9 +204,13 @@ class DockerCompute(ICompute):
             # where the execution environment is destroyed. A fresh container
             # will be created on the next invocation via _ensure_container().
             self._destroy_container()
-            _logger.warning(
-                "TIMEOUT %s after %.0fms (request=%s)",
-                func_name, duration_ms, context.aws_request_id,
+            _logger.log_lambda_invocation(
+                function_name=func_name,
+                request_id=context.aws_request_id,
+                duration_ms=duration_ms,
+                status="TIMEOUT",
+                error=f"Task timed out after {self._config.timeout} seconds",
+                event=event,
             )
             return InvocationResult(
                 payload=None,
@@ -218,16 +219,15 @@ class DockerCompute(ICompute):
                 request_id=context.aws_request_id,
             )
         invocation_result = self._parse_result(result, duration_ms, context.aws_request_id)
-        if invocation_result.error:
-            _logger.error(
-                "ERROR %s (%.0fms, request=%s): %s",
-                func_name, duration_ms, context.aws_request_id, invocation_result.error,
-            )
-        else:
-            _logger.info(
-                "OK %s (%.0fms, request=%s)",
-                func_name, duration_ms, context.aws_request_id,
-            )
+        _logger.log_lambda_invocation(
+            function_name=func_name,
+            request_id=context.aws_request_id,
+            duration_ms=duration_ms,
+            status="ERROR" if invocation_result.error else "OK",
+            error=invocation_result.error,
+            event=event,
+            result=invocation_result.payload,
+        )
         return invocation_result
 
     # -- Internal helpers -----------------------------------------------------

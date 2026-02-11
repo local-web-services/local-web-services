@@ -252,6 +252,57 @@ class LdkLogger:
             }
         )
 
+    def log_lambda_invocation(
+        self,
+        function_name: str,
+        request_id: str,
+        duration_ms: float,
+        status: str = "OK",
+        error: str | None = None,
+        event: dict | None = None,
+        result: dict | None = None,
+    ) -> None:
+        """Log a Lambda function invocation.
+
+        Format: ``LAMBDA ProcessOrderFunction (234ms) -> OK``
+        """
+        if not self._logger.isEnabledFor(logging.INFO):
+            return
+        style = _status_style(status)
+        ts = _timestamp()
+        _console.print(
+            f"[dim][{ts}][/dim] "
+            f"[bold green]LAMBDA[/bold green] {function_name} "
+            f"({duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
+        )
+        entry: dict[str, Any] = {
+            "timestamp": ts,
+            "level": "ERROR" if status == "ERROR" else "INFO",
+            "message": f"LAMBDA {function_name} ({duration_ms:.0f}ms) -> {status}",
+            "service": "lambda",
+            "handler": function_name,
+            "request_id": request_id,
+            "duration_ms": duration_ms,
+            "status": status,
+        }
+        if event is not None:
+            import json
+
+            try:
+                entry["request_body"] = json.dumps(event, default=str)[:10240]
+            except Exception:
+                pass
+        if result is not None:
+            import json
+
+            try:
+                entry["response_body"] = json.dumps(result, default=str)[:10240]
+            except Exception:
+                pass
+        if error is not None:
+            entry["error"] = error
+        _emit_to_ws(entry)
+
     # ------------------------------------------------------------------
     # Standard log methods
     # ------------------------------------------------------------------
