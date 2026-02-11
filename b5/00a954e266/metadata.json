@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "b500a954e266",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/b5/00a954e266/0/metadata.json",
+      "transcript": "/b5/00a954e266/0/full.jsonl",
+      "context": "",
+      "content_hash": "/b5/00a954e266/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
