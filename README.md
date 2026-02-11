@@ -98,7 +98,7 @@ Both sample projects include a full end-to-end test script (`test-orders.sh`) th
 
 ## Installation
 
-local-web-services requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
+local-web-services requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and [Docker](https://docs.docker.com/get-docker/).
 
 ```bash
 uvx --from local-web-services ldk
@@ -112,6 +112,18 @@ cd local-web-services
 uv sync
 ```
 
+### Lambda Runtime Images
+
+Lambda functions run inside official AWS Lambda Docker images which include the AWS SDK pre-installed (`boto3` for Python, `@aws-sdk/*` for Node.js). Pull them once before first use:
+
+```bash
+# Pull all supported Lambda runtime images
+uvx --from local-web-services ldk setup lambda
+
+# Or pull a specific runtime only
+uvx --from local-web-services ldk setup lambda --runtime python3.12
+```
+
 ## Quick Start (Your Own Project)
 
 ### CDK Projects
@@ -123,7 +135,13 @@ cd your-cdk-project
 npx cdk synth
 ```
 
-2. Start local-web-services:
+2. Pull the Lambda runtime images (one-time setup):
+
+```bash
+uvx --from local-web-services ldk setup lambda
+```
+
+3. Start local-web-services:
 
 ```bash
 uvx --from local-web-services ldk dev --project-dir /path/to/your-cdk-project --port 3000
@@ -140,7 +158,13 @@ cd your-terraform-project
 terraform init
 ```
 
-2. Start local-web-services:
+2. Pull the Lambda runtime images (one-time setup):
+
+```bash
+uvx --from local-web-services ldk setup lambda
+```
+
+3. Start local-web-services:
 
 ```bash
 uvx --from local-web-services ldk dev --project-dir /path/to/your-terraform-project
@@ -148,7 +172,7 @@ uvx --from local-web-services ldk dev --project-dir /path/to/your-terraform-proj
 
 `ldk` auto-detects `.tf` files and starts all service providers in always-on mode. A `_lws_override.tf` file is generated to redirect the AWS provider to local endpoints.
 
-3. Apply your Terraform configuration:
+4. Apply your Terraform configuration:
 
 ```bash
 terraform apply
@@ -404,7 +428,7 @@ Backed by SQLite. Supports JWT token generation (ID, access, refresh), user attr
 | UntagResource | Yes |
 | ListEventSourceMappings | Yes |
 
-Runs functions locally using Python or Node.js runtimes. Supports timeout enforcement, realistic context objects, and environment variable injection. In CDK mode, functions are discovered from the cloud assembly. In Terraform mode, functions are created dynamically via the management API.
+Runs functions inside official AWS Lambda Docker images (with AWS SDK pre-installed). Run `ldk setup lambda` once to pull the images. Supports timeout enforcement, realistic context objects, and environment variable injection. In CDK mode, functions are discovered from the cloud assembly. In Terraform mode, functions are created dynamically via the management API.
 
 ### API Gateway
 
