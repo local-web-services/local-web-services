@@ -100,9 +100,7 @@ class DockerCompute(ICompute):
             self._client.ping()
         except Exception as exc:
             self._status = ProviderStatus.ERROR
-            raise ProviderStartError(
-                f"Cannot connect to Docker daemon: {exc}"
-            ) from exc
+            raise ProviderStartError(f"Cannot connect to Docker daemon: {exc}") from exc
 
         self._status = ProviderStatus.RUNNING
 
@@ -300,12 +298,20 @@ class DockerCompute(ICompute):
         timeout_secs = int(self._config.timeout)
         if runtime.startswith("python"):
             return [
-                "timeout", "-s", "KILL", str(timeout_secs),
-                "python3", "/var/bootstrap/python_bootstrap.py",
+                "timeout",
+                "-s",
+                "KILL",
+                str(timeout_secs),
+                "python3",
+                "/var/bootstrap/python_bootstrap.py",
             ]
         return [
-            "timeout", "-s", "KILL", str(timeout_secs),
-            "node", "/var/bootstrap/invoker.js",
+            "timeout",
+            "-s",
+            "KILL",
+            str(timeout_secs),
+            "node",
+            "/var/bootstrap/invoker.js",
         ]
 
     @staticmethod
@@ -320,9 +326,41 @@ class DockerCompute(ICompute):
     ) -> tuple[str, bool]:
         """Run ``docker exec`` via the CLI and return (stdout, timed_out)."""
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(
-            None, self._run_exec_sync, cmd, env_vars, event_json
-        )
+        return await loop.run_in_executor(None, self._run_exec_sync, cmd, env_vars, event_json)
+
+    @staticmethod
+    def _read_json_from_fd(fd: int, timeout: float) -> tuple[bytes, bool]:
+        """Read from *fd* using non-blocking I/O until a complete JSON object
+        is received or *timeout* seconds elapse.
+
+        Returns ``(data, timed_out)``.
+        """
+        os.set_blocking(fd, False)
+        output = b""
+        deadline = time.monotonic() + timeout
+
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return output, True
+
+            ready, _, _ = select.select([fd], [], [], min(remaining, 1.0))
+            if not ready:
+                continue
+            try:
+                chunk = os.read(fd, 65536)
+            except BlockingIOError:
+                continue
+            if not chunk:
+                break  # EOF — process closed stdout or exited
+            output += chunk
+            try:
+                json.loads(output)
+                break  # Complete JSON object received
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                continue  # incomplete — keep reading
+
+        return output, False
 
     def _run_exec_sync(
         self, cmd: list[str], env_vars: list[str], event_json: str
@@ -357,49 +395,18 @@ class DockerCompute(ICompute):
         except BrokenPipeError:
             pass
 
-        # Read stdout with non-blocking I/O.  Return as soon as a complete
-        # JSON object has been received rather than waiting for the process
-        # to exit (which may never happen without process.exit()).
-        stdout_fd = proc.stdout.fileno()
-        os.set_blocking(stdout_fd, False)
-
-        output = b""
-        deadline = time.monotonic() + self._config.timeout
-        timed_out = False
-
-        while True:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                timed_out = True
-                break
-
-            ready, _, _ = select.select([stdout_fd], [], [], min(remaining, 1.0))
-            if ready:
-                try:
-                    chunk = os.read(stdout_fd, 65536)
-                except BlockingIOError:
-                    continue
-                if not chunk:
-                    break  # EOF — process closed stdout or exited
-                output += chunk
-                # Check if we've received a complete JSON response.
-                try:
-                    json.loads(output)
-                    break  # Complete JSON object received
-                except (json.JSONDecodeError, UnicodeDecodeError):
-                    continue  # incomplete — keep reading
+        output, timed_out = self._read_json_from_fd(proc.stdout.fileno(), self._config.timeout)
 
         # Collect stderr (best-effort, non-blocking).
         stderr = b""
         try:
-            stderr_fd = proc.stderr.fileno()
-            os.set_blocking(stderr_fd, False)
-            stderr = os.read(stderr_fd, 65536)
+            os.set_blocking(proc.stderr.fileno(), False)
+            stderr = os.read(proc.stderr.fileno(), 65536)
         except (BlockingIOError, OSError):
             pass
 
-        # Kill the docker-exec client process.  The warm container itself
-        # stays alive; only the exec session is terminated.
+        # Kill the docker-exec client process.  The container itself is
+        # cleaned up separately by the caller.
         try:
             proc.kill()
         except OSError:
@@ -433,9 +440,7 @@ class DockerCompute(ICompute):
 
         if "error" in data:
             err = data["error"]
-            error_message = (
-                err.get("errorMessage", str(err)) if isinstance(err, dict) else str(err)
-            )
+            error_message = err.get("errorMessage", str(err)) if isinstance(err, dict) else str(err)
             return InvocationResult(
                 payload=None,
                 error=error_message,
