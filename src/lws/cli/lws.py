@@ -14,10 +14,19 @@ import typer
 from lws.cli.services.apigateway import app as apigateway_app
 from lws.cli.services.client import exit_with_error, output_json
 from lws.cli.services.cognito import app as cognito_app
+from lws.cli.services.docdb import app as docdb_app
 from lws.cli.services.dynamodb import app as dynamodb_app
+from lws.cli.services.elasticache import app as elasticache_app
+from lws.cli.services.es import app as es_app
 from lws.cli.services.events import app as events_app
+from lws.cli.services.glacier import app as glacier_app
 from lws.cli.services.lambda_service import app as lambda_app
+from lws.cli.services.memorydb import app as memorydb_app
+from lws.cli.services.neptune import app as neptune_app
+from lws.cli.services.opensearch import app as opensearch_app
+from lws.cli.services.rds import app as rds_app
 from lws.cli.services.s3 import app as s3_app
+from lws.cli.services.s3tables import app as s3tables_app
 from lws.cli.services.secretsmanager import app as secretsmanager_app
 from lws.cli.services.sns import app as sns_app
 from lws.cli.services.sqs import app as sqs_app
@@ -40,6 +49,15 @@ app.add_typer(lambda_app, name="lambda")
 app.add_typer(cognito_app, name="cognito-idp")
 app.add_typer(ssm_app, name="ssm")
 app.add_typer(secretsmanager_app, name="secretsmanager")
+app.add_typer(elasticache_app, name="elasticache")
+app.add_typer(memorydb_app, name="memorydb")
+app.add_typer(docdb_app, name="docdb")
+app.add_typer(neptune_app, name="neptune")
+app.add_typer(es_app, name="es")
+app.add_typer(opensearch_app, name="opensearch")
+app.add_typer(rds_app, name="rds")
+app.add_typer(glacier_app, name="glacier")
+app.add_typer(s3tables_app, name="s3tables")
 
 
 @app.command("status")

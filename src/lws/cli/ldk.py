@@ -187,6 +187,19 @@ async def _try_management_reset(port: int) -> None:
         pass  # Server not running, that's fine
 
 
+_SERVICE_IMAGES: dict[str, list[str]] = {
+    "elasticache": ["redis:7-alpine"],
+    "memorydb": ["redis:7-alpine"],
+    "docdb": ["mongo:7"],
+    "neptune": ["neo4j:5-community"],
+    "es": ["opensearchproject/opensearch:2"],
+    "opensearch": ["opensearchproject/opensearch:2"],
+    "rds": ["postgres:16-alpine", "mysql:8"],
+}
+
+_SUPPORTED_SERVICES = {"lambda"} | set(_SERVICE_IMAGES)
+
+
 @app.command()
 def setup(
     service: str = typer.Argument(..., help="Service to set up (e.g. 'lambda')"),
@@ -195,11 +208,21 @@ def setup(
     ),
 ) -> None:
     """Pull Docker images required for local service emulation."""
-    if service != "lambda":
-        print_error("Unknown service", f"'{service}' is not a supported service. Try 'lambda'.")
+    if service == "all":
+        _setup_all_services()
+        return
+    if service not in _SUPPORTED_SERVICES:
+        print_error(
+            "Unknown service",
+            f"'{service}' is not supported. "
+            f"Supported: {', '.join(sorted(_SUPPORTED_SERVICES))}, all",
+        )
         raise typer.Exit(1)
 
-    _setup_lambda(runtime)
+    if service == "lambda":
+        _setup_lambda(runtime)
+    else:
+        _setup_service_images(service)
 
 
 def _setup_lambda(runtime_filter: str | None) -> None:
@@ -243,6 +266,43 @@ def _setup_lambda(runtime_filter: str | None) -> None:
             _console.print(f"  [red]Failed:[/red] {exc}")
 
     _console.print("[bold green]Done.[/bold green]")
+
+
+def _setup_service_images(service: str) -> None:
+    """Pull Docker images for a specific service."""
+    from lws.providers._shared.docker_client import (  # pylint: disable=import-outside-toplevel
+        create_docker_client,
+    )
+
+    try:
+        client = create_docker_client()
+    except ImportError as exc:
+        print_error(
+            "Docker SDK not installed",
+            "Install with: pip install local-web-services[docker]",
+        )
+        raise typer.Exit(1) from exc
+    except Exception as exc:
+        print_error("Cannot connect to Docker daemon", str(exc))
+        raise typer.Exit(1)
+
+    images = _SERVICE_IMAGES.get(service, [])
+    for image in images:
+        _console.print(f"[bold]Pulling[/bold] {image} [dim]({service})[/dim]")
+        try:
+            client.images.pull(*image.rsplit(":", 1))
+            _console.print("  [green]OK[/green]")
+        except Exception as exc:
+            _console.print(f"  [red]Failed:[/red] {exc}")
+
+    _console.print("[bold green]Done.[/bold green]")
+
+
+def _setup_all_services() -> None:
+    """Pull Docker images for all services."""
+    _setup_lambda(None)
+    for service in sorted(_SERVICE_IMAGES):
+        _setup_service_images(service)
 
 
 def _load_config_quiet(project_dir: Path) -> LdkConfig:
@@ -509,6 +569,15 @@ def _create_terraform_providers(
         "sts": port + 11,
         "ssm": port + 12,
         "secretsmanager": port + 13,
+        "elasticache": port + 14,
+        "memorydb": port + 15,
+        "docdb": port + 16,
+        "neptune": port + 17,
+        "es": port + 18,
+        "opensearch": port + 19,
+        "rds": port + 20,
+        "glacier": port + 21,
+        "s3tables": port + 22,
     }
 
     dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
@@ -603,6 +672,87 @@ def _create_terraform_providers(
 
     providers["__secretsmanager_http__"] = _HttpServiceProvider(
         "secretsmanager-http", create_secretsmanager_app, ports["secretsmanager"]
+    )
+
+    # ElastiCache
+    from lws.providers.elasticache.routes import (  # pylint: disable=import-outside-toplevel
+        create_elasticache_app,
+    )
+
+    providers["__elasticache_http__"] = _HttpServiceProvider(
+        "elasticache-http", create_elasticache_app, ports["elasticache"]
+    )
+
+    # MemoryDB
+    from lws.providers.memorydb.routes import (  # pylint: disable=import-outside-toplevel
+        create_memorydb_app,
+    )
+
+    providers["__memorydb_http__"] = _HttpServiceProvider(
+        "memorydb-http", create_memorydb_app, ports["memorydb"]
+    )
+
+    # DocumentDB
+    from lws.providers.docdb.routes import (  # pylint: disable=import-outside-toplevel
+        create_docdb_app,
+    )
+
+    providers["__docdb_http__"] = _HttpServiceProvider(
+        "docdb-http", create_docdb_app, ports["docdb"]
+    )
+
+    # Neptune
+    from lws.providers.neptune.routes import (  # pylint: disable=import-outside-toplevel
+        create_neptune_app,
+    )
+
+    providers["__neptune_http__"] = _HttpServiceProvider(
+        "neptune-http", create_neptune_app, ports["neptune"]
+    )
+
+    # Elasticsearch
+    from lws.providers.elasticsearch.routes import (  # pylint: disable=import-outside-toplevel
+        create_elasticsearch_app,
+    )
+
+    providers["__es_http__"] = _HttpServiceProvider(
+        "es-http", create_elasticsearch_app, ports["es"]
+    )
+
+    # OpenSearch
+    from lws.providers.opensearch.routes import (  # pylint: disable=import-outside-toplevel
+        create_opensearch_app,
+    )
+
+    providers["__opensearch_http__"] = _HttpServiceProvider(
+        "opensearch-http", create_opensearch_app, ports["opensearch"]
+    )
+
+    # RDS
+    from lws.providers.rds.routes import (  # pylint: disable=import-outside-toplevel
+        create_rds_app,
+    )
+
+    providers["__rds_http__"] = _HttpServiceProvider(
+        "rds-http", create_rds_app, ports["rds"]
+    )
+
+    # Glacier
+    from lws.providers.glacier.routes import (  # pylint: disable=import-outside-toplevel
+        create_glacier_app,
+    )
+
+    providers["__glacier_http__"] = _HttpServiceProvider(
+        "glacier-http", create_glacier_app, ports["glacier"]
+    )
+
+    # S3 Tables
+    from lws.providers.s3tables.routes import (  # pylint: disable=import-outside-toplevel
+        create_s3tables_app,
+    )
+
+    providers["__s3tables_http__"] = _HttpServiceProvider(
+        "s3tables-http", create_s3tables_app, ports["s3tables"]
     )
 
     return providers, ports
@@ -1330,6 +1480,15 @@ def _service_ports(port: int) -> dict[str, int]:
         "lambda": port + 9,
         "ssm": port + 12,
         "secretsmanager": port + 13,
+        "elasticache": port + 14,
+        "memorydb": port + 15,
+        "docdb": port + 16,
+        "neptune": port + 17,
+        "es": port + 18,
+        "opensearch": port + 19,
+        "rds": port + 20,
+        "glacier": port + 21,
+        "s3tables": port + 22,
     }
 
 
