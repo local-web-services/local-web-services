@@ -36,10 +36,12 @@ async def _create_vault(vault_name: str, port: int) -> None:
     client = _client(port)
     try:
         resp = await client.rest_request(_SERVICE, "PUT", f"-/vaults/{vault_name}")
-        result = resp.json()
     except Exception as exc:
         exit_with_error(str(exc))
-    output_json(result)
+    if resp.content:
+        output_json(resp.json())
+    else:
+        output_json({"VaultName": vault_name, "Location": resp.headers.get("location", "")})
 
 
 @app.command("describe-vault")
@@ -74,10 +76,12 @@ async def _delete_vault(vault_name: str, port: int) -> None:
     client = _client(port)
     try:
         resp = await client.rest_request(_SERVICE, "DELETE", f"-/vaults/{vault_name}")
-        result = resp.json()
     except Exception as exc:
         exit_with_error(str(exc))
-    output_json(result)
+    if resp.content:
+        output_json(resp.json())
+    else:
+        output_json({"VaultName": vault_name})
 
 
 @app.command("list-vaults")

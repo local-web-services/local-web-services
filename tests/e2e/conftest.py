@@ -2,11 +2,35 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
 import time
 
 import httpx
 import pytest
+
+
+def parse_json_output(text: str):
+    """Extract JSON from CLI output that may contain stderr warnings.
+
+    Typer's CliRunner mixes stderr into stdout.  Experimental service
+    warnings (e.g. ``Warning: 'docdb' is experimental …``) may appear
+    before or after the JSON payload.  This helper uses ``raw_decode``
+    to extract the first valid JSON object regardless of surrounding text.
+    """
+    try:
+        return json.loads(text)
+    except (json.JSONDecodeError, ValueError):
+        pass
+    decoder = json.JSONDecoder()
+    for i, ch in enumerate(text):
+        if ch in ("{", "["):
+            try:
+                obj, _ = decoder.raw_decode(text, i)
+                return obj
+            except (json.JSONDecodeError, ValueError):
+                continue
+    return text
 
 E2E_PORT = 19300
 
@@ -69,8 +93,6 @@ def ldk_server(tmp_path_factory, e2e_port):
 @pytest.fixture(scope="session")
 def lws_invoke(e2e_port):
     """Return a helper that invokes lws CLI commands. Use in arrange phases."""
-    import json
-
     from typer.testing import CliRunner
 
     from lws.cli.lws import app
@@ -82,19 +104,20 @@ def lws_invoke(e2e_port):
         if result.exit_code != 0:
             cmd = " ".join(args)
             raise RuntimeError(f"Arrange failed (lws {cmd}): {result.output}")
-        try:
-            return json.loads(result.output)
-        except (json.JSONDecodeError, ValueError):
-            return result.output
+        return parse_json_output(result.output)
 
     return _invoke
 
 
 @pytest.fixture(scope="session")
+def parse_output():
+    """Return a helper to parse JSON from CLI output that may contain stderr warnings."""
+    return parse_json_output
+
+
+@pytest.fixture(scope="session")
 def assert_invoke(e2e_port):
     """Return a helper that invokes lws CLI commands. Use in assert phases."""
-    import json
-
     from typer.testing import CliRunner
 
     from lws.cli.lws import app
@@ -106,9 +129,6 @@ def assert_invoke(e2e_port):
         if result.exit_code != 0:
             cmd = " ".join(args)
             raise AssertionError(f"Assert failed (lws {cmd}): {result.output}")
-        try:
-            return json.loads(result.output)
-        except (json.JSONDecodeError, ValueError):
-            return result.output
+        return parse_json_output(result.output)
 
     return _invoke

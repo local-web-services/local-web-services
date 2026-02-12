@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import json
-
 from typer.testing import CliRunner
 
 from lws.cli.lws import app
@@ -40,7 +38,7 @@ class TestCreateDBCluster:
         actual_ids = [c["DBClusterIdentifier"] for c in verify["DBClusters"]]
         assert cluster_id in actual_ids
 
-    def test_create_and_describe_by_id(self, e2e_port, lws_invoke, assert_invoke):
+    def test_create_and_describe_by_id(self, e2e_port, lws_invoke, assert_invoke, parse_output):
         # Arrange
         cluster_id = "e2e-docdb-desc-id"
         lws_invoke(
@@ -69,7 +67,7 @@ class TestCreateDBCluster:
 
         # Assert
         assert result.exit_code == 0, result.output
-        body = json.loads(result.output)
+        body = parse_output(result.output)
         assert len(body["DBClusters"]) == 1
         actual_identifier = body["DBClusters"][0]["DBClusterIdentifier"]
         assert actual_identifier == cluster_id
