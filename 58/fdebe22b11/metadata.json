@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "58fdebe22b11",
+  "strategy": "auto-commit",
+  "branch": "feat/new-database-services",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/58/fdebe22b11/0/metadata.json",
+      "transcript": "/58/fdebe22b11/0/full.jsonl",
+      "context": "",
+      "content_hash": "/58/fdebe22b11/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
