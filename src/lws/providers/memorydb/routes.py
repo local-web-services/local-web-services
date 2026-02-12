@@ -64,9 +64,9 @@ class _MemoryDBCluster:
 class _MemoryDBState:
     """In-memory store for MemoryDB resources."""
 
-    def __init__(self, *, data_plane_endpoint: str | None = None) -> None:
+    def __init__(self, *, container_manager: ResourceContainerManager | None = None) -> None:
         self._clusters: dict[str, _MemoryDBCluster] = {}
-        self.data_plane_endpoint = data_plane_endpoint
+        self.container_manager = container_manager
 
     @property
     def clusters(self) -> dict[str, _MemoryDBCluster]:
@@ -98,12 +98,15 @@ async def _handle_create_cluster(state: _MemoryDBState, body: dict) -> Response:
     tags_list = body.get("Tags", [])
     tags = {t["Key"]: t["Value"] for t in tags_list} if tags_list else {}
 
+    endpoint = None
+    if state.container_manager:
+        endpoint = await state.container_manager.start_container(cluster_name)
     cluster = _MemoryDBCluster(
         cluster_name=cluster_name,
         node_type=node_type,
         num_shards=num_shards,
         tags=tags,
-        data_plane_endpoint=state.data_plane_endpoint,
+        data_plane_endpoint=endpoint,
     )
     state.clusters[cluster_name] = cluster
 

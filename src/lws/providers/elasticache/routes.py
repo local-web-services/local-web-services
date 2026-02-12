@@ -87,10 +87,10 @@ class _ReplicationGroup:
 class _ElastiCacheState:
     """In-memory store for ElastiCache resources."""
 
-    def __init__(self, *, data_plane_endpoint: str | None = None) -> None:
+    def __init__(self, *, container_manager: ResourceContainerManager | None = None) -> None:
         self._clusters: dict[str, _CacheCluster] = {}
         self._replication_groups: dict[str, _ReplicationGroup] = {}
-        self.data_plane_endpoint = data_plane_endpoint
+        self.container_manager = container_manager
 
     @property
     def clusters(self) -> dict[str, _CacheCluster]:
@@ -128,13 +128,16 @@ async def _handle_create_cache_cluster(state: _ElastiCacheState, body: dict) -> 
     tags_list = body.get("Tags", [])
     tags = {t["Key"]: t["Value"] for t in tags_list} if tags_list else {}
 
+    endpoint = None
+    if state.container_manager:
+        endpoint = await state.container_manager.start_container(cluster_id)
     cluster = _CacheCluster(
         cache_cluster_id=cluster_id,
         engine=engine,
         num_cache_nodes=num_cache_nodes,
         cache_node_type=cache_node_type,
         tags=tags,
-        data_plane_endpoint=state.data_plane_endpoint,
+        data_plane_endpoint=endpoint,
     )
     state.clusters[cluster_id] = cluster
 

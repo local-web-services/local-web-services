@@ -234,6 +234,8 @@ async def _handle_delete_db_cluster(
             f"Cluster {cid} not found.",
         )
     cluster.status = "deleting"
+    if config.container_manager:
+        await config.container_manager.stop_container(cid)
     return _json_response({"DBCluster": _describe_cluster(cluster, config)})
 
 
@@ -247,12 +249,17 @@ async def _handle_create_db_instance(
             f"Instance {iid} already exists.",
         )
 
+    cid = body.get("DBClusterIdentifier", "")
+    endpoint = None
+    if cid and cid in state.clusters:
+        endpoint = state.clusters[cid].endpoint
     instance = _DBInstance(
         db_instance_identifier=iid,
         db_instance_class=body.get("DBInstanceClass", config.default_instance_class),
         engine=body.get("Engine", config.default_engine),
-        db_cluster_identifier=body.get("DBClusterIdentifier", ""),
+        db_cluster_identifier=cid,
         config=config,
+        data_plane_endpoint=endpoint,
     )
     _apply_tags(instance.tags, body.get("Tags", []))
     state.instances[iid] = instance
