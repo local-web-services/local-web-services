@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "9884dac56fbf",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/neptune/data_plane.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/98/84dac56fbf/0/metadata.json",
+      "transcript": "/98/84dac56fbf/0/full.jsonl",
+      "context": "",
+      "content_hash": "/98/84dac56fbf/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 17,
+    "cache_creation_tokens": 118211,
+    "cache_read_tokens": 1746241,
+    "output_tokens": 819,
+    "api_call_count": 15
+  }
+}

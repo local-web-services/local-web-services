@@ -1,0 +1,13 @@
+All 26 tests pass. Here's what changed:
+
+**`src/lws/providers/neptune/data_plane.py`** — `start()` catches exceptions silently (debug log only) so `ldk dev` doesn't crash when Docker is unavailable. The `available` property tracks whether the container actually started.
+
+**`src/lws/cli/ldk.py`** — New `_print_data_plane_warnings()` function prints a clear Rich-formatted message after startup when the JanusGraph container didn't start:
+
+```
+Warning: Neptune data-plane (JanusGraph) is not available. Docker may not be running or the image is not pulled.
+  Run lws ldk setup neptune to pull the JanusGraph image.
+  Neptune control-plane will still work but clusters will have synthetic endpoints.
+```
+
+The control-plane endpoint conditionally uses `neptune_data.endpoint if neptune_data.available else None`, so without Docker it falls back to synthetic endpoints instead of crashing.

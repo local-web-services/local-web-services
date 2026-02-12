@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "9884dac56fbf",
+  "session_id": "f7436bbb-ae80-4d39-be8c-74e1d982092c",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-12T02:28:06.224709Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/neptune/data_plane.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "53eddff9-33ea-4178-91f8-5a0507bf9b15",
+  "checkpoint_transcript_start": 553,
+  "transcript_lines_at_start": 553,
+  "token_usage": {
+    "input_tokens": 17,
+    "cache_creation_tokens": 118211,
+    "cache_read_tokens": 1746241,
+    "output_tokens": 819,
+    "api_call_count": 15
+  }
+}

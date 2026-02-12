@@ -1,0 +1,1 @@
+If docker is unavailable I want to surface a message to the user explaining what the problem is
