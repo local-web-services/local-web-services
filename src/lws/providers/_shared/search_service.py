@@ -64,6 +64,7 @@ class _Domain:
         cluster_config: dict[str, Any] | None,
         *,
         config: SearchServiceConfig,
+        data_plane_endpoint: str | None = None,
     ) -> None:
         self.domain_name = domain_name
         self.version = version
@@ -73,8 +74,8 @@ class _Domain:
         }
         self.status = "active"
         self.arn = f"arn:aws:{config.arn_service}:{_REGION}:{_ACCOUNT_ID}:domain/{domain_name}"
-        if config.data_plane_endpoint:
-            self.endpoint = config.data_plane_endpoint
+        if data_plane_endpoint:
+            self.endpoint = data_plane_endpoint
         else:
             self.endpoint = f"search-{domain_name}-local.{_REGION}.{config.endpoint_suffix}"
         self.tags: dict[str, str] = {}
@@ -150,11 +151,15 @@ async def _handle_create_domain(
     version = body.get(config.version_field, config.default_version)
     cluster_config = body.get(config.cluster_config_field, {})
 
+    endpoint = None
+    if config.container_manager:
+        endpoint = await config.container_manager.start_container(domain_name)
     domain = _Domain(
         domain_name=domain_name,
         version=version,
         cluster_config=cluster_config if cluster_config else None,
         config=config,
+        data_plane_endpoint=endpoint,
     )
 
     tags_list = body.get("TagList", [])
@@ -203,6 +208,8 @@ async def _handle_delete_domain(
             status_code=409,
         )
     domain.processing = True
+    if config.container_manager:
+        await config.container_manager.stop_container(domain_name)
     return _json_response({"DomainStatus": _format_domain_status(domain, config)})
 
 

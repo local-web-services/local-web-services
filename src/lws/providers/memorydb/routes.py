@@ -23,6 +23,7 @@ from lws.providers._shared.response_helpers import (
 from lws.providers._shared.response_helpers import (
     parse_endpoint as _parse_endpoint,
 )
+from lws.providers._shared.resource_container import ResourceContainerManager
 
 _logger = get_logger("ldk.memorydb")
 

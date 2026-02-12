@@ -64,6 +64,7 @@ class _DBCluster:
         master_username: str,
         *,
         config: ClusterDBConfig,
+        data_plane_endpoint: str | None = None,
     ) -> None:
         self.db_cluster_identifier = db_cluster_identifier
         self.engine = engine
@@ -74,8 +75,8 @@ class _DBCluster:
             f"arn:aws:{config.arn_service}:{_REGION}:{_ACCOUNT_ID}"
             f":cluster:{db_cluster_identifier}"
         )
-        if config.data_plane_endpoint:
-            self.endpoint = config.data_plane_endpoint
+        if data_plane_endpoint:
+            self.endpoint = data_plane_endpoint
         else:
             self.endpoint = (
                 f"{db_cluster_identifier}.cluster-local" f".{_REGION}.{config.endpoint_suffix}"
@@ -94,6 +95,7 @@ class _DBInstance:
         db_cluster_identifier: str,
         *,
         config: ClusterDBConfig,
+        data_plane_endpoint: str | None = None,
     ) -> None:
         self.db_instance_identifier = db_instance_identifier
         self.db_instance_class = db_instance_class
@@ -103,8 +105,8 @@ class _DBInstance:
         self.arn = (
             f"arn:aws:{config.arn_service}:{_REGION}:{_ACCOUNT_ID}" f":db:{db_instance_identifier}"
         )
-        if config.data_plane_endpoint:
-            self.endpoint = config.data_plane_endpoint
+        if data_plane_endpoint:
+            self.endpoint = data_plane_endpoint
         else:
             self.endpoint = (
                 f"{db_instance_identifier}.cluster-local" f".{_REGION}.{config.endpoint_suffix}"
@@ -190,11 +192,15 @@ async def _handle_create_db_cluster(
             f"Cluster {cid} already exists.",
         )
 
+    endpoint = None
+    if config.container_manager:
+        endpoint = await config.container_manager.start_container(cid)
     cluster = _DBCluster(
         db_cluster_identifier=cid,
         engine=body.get("Engine", config.default_engine),
         master_username=body.get("MasterUsername", ""),
         config=config,
+        data_plane_endpoint=endpoint,
     )
     _apply_tags(cluster.tags, body.get("Tags", []))
     state.clusters[cid] = cluster
