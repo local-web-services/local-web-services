@@ -45,17 +45,12 @@ class NeptuneDataPlaneProvider(Provider):
         return self._started
 
     async def start(self) -> None:
-        """Start the JanusGraph container, or log a warning if Docker is unavailable."""
+        """Start the JanusGraph container, or skip if Docker is unavailable."""
         try:
             await self._docker.start()
             self._started = True
-        except Exception as exc:
-            _logger.warning(
-                "Neptune data-plane unavailable (Docker not running or image not pulled): %s. "
-                "Control-plane will use synthetic endpoints. "
-                "Run 'lws ldk setup neptune' to pull the JanusGraph image.",
-                exc,
-            )
+        except Exception:
+            _logger.debug("Neptune data-plane container did not start")
 
     async def stop(self) -> None:
         """Stop the JanusGraph container if it was started."""

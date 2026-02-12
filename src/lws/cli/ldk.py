@@ -430,6 +430,25 @@ def _display_summary(app_model: AppModel, port: int) -> None:
     )
 
 
+def _print_data_plane_warnings(providers: dict[str, Provider]) -> None:
+    """Print user-facing warnings for data-plane providers that failed to start."""
+    from lws.providers.neptune.data_plane import (  # pylint: disable=import-outside-toplevel
+        NeptuneDataPlaneProvider,
+    )
+
+    neptune_data = providers.get("__neptune_data__")
+    if isinstance(neptune_data, NeptuneDataPlaneProvider) and not neptune_data.available:
+        _console.print(
+            "[bold yellow]Warning:[/bold yellow] Neptune data-plane (JanusGraph) "
+            "is not available. Docker may not be running or the image is not pulled."
+        )
+        _console.print("  Run [bold]lws ldk setup neptune[/bold] to pull the JanusGraph image.")
+        _console.print(
+            "  Neptune control-plane will still work but clusters will have synthetic endpoints."
+        )
+        _console.print()
+
+
 def _resolve_mode(project_dir: Path, config: LdkConfig, mode_override: str | None) -> str:
     """Resolve the project mode from CLI flag, config, or auto-detection.
 
@@ -536,6 +555,8 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     _console.print("[dim]Run 'terraform init && terraform apply' to create resources.[/dim]")
     _console.print(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
     _console.print()
+
+    _print_data_plane_warnings(providers)
 
     try:
         await orchestrator.wait_for_shutdown()
