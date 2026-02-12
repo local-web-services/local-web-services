@@ -11,13 +11,23 @@ import asyncio
 import httpx
 import typer
 
+from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.cli.services.apigateway import app as apigateway_app
 from lws.cli.services.client import exit_with_error, output_json
 from lws.cli.services.cognito import app as cognito_app
+from lws.cli.services.docdb import app as docdb_app
 from lws.cli.services.dynamodb import app as dynamodb_app
+from lws.cli.services.elasticache import app as elasticache_app
+from lws.cli.services.es import app as es_app
 from lws.cli.services.events import app as events_app
+from lws.cli.services.glacier import app as glacier_app
 from lws.cli.services.lambda_service import app as lambda_app
+from lws.cli.services.memorydb import app as memorydb_app
+from lws.cli.services.neptune import app as neptune_app
+from lws.cli.services.opensearch import app as opensearch_app
+from lws.cli.services.rds import app as rds_app
 from lws.cli.services.s3 import app as s3_app
+from lws.cli.services.s3tables import app as s3tables_app
 from lws.cli.services.secretsmanager import app as secretsmanager_app
 from lws.cli.services.sns import app as sns_app
 from lws.cli.services.sqs import app as sqs_app
@@ -29,17 +39,36 @@ app = typer.Typer(
     help="AWS CLI-style commands for local LDK resources. Requires a running 'ldk dev' instance.",
 )
 
-app.add_typer(apigateway_app, name="apigateway")
-app.add_typer(stepfunctions_app, name="stepfunctions")
-app.add_typer(sqs_app, name="sqs")
-app.add_typer(sns_app, name="sns")
-app.add_typer(s3_app, name="s3api")
-app.add_typer(dynamodb_app, name="dynamodb")
-app.add_typer(events_app, name="events")
-app.add_typer(lambda_app, name="lambda")
-app.add_typer(cognito_app, name="cognito-idp")
-app.add_typer(ssm_app, name="ssm")
-app.add_typer(secretsmanager_app, name="secretsmanager")
+
+def _add_service(typer_app: typer.Typer, name: str) -> None:
+    """Register a service typer, appending [experimental] to help when appropriate."""
+    if name in EXPERIMENTAL_SERVICES:
+        original_help = typer_app.info.help or ""
+        app.add_typer(typer_app, name=name, help=f"{original_help} [experimental]")
+    else:
+        app.add_typer(typer_app, name=name)
+
+
+_add_service(apigateway_app, "apigateway")
+_add_service(stepfunctions_app, "stepfunctions")
+_add_service(sqs_app, "sqs")
+_add_service(sns_app, "sns")
+_add_service(s3_app, "s3api")
+_add_service(dynamodb_app, "dynamodb")
+_add_service(events_app, "events")
+_add_service(lambda_app, "lambda")
+_add_service(cognito_app, "cognito-idp")
+_add_service(ssm_app, "ssm")
+_add_service(secretsmanager_app, "secretsmanager")
+_add_service(elasticache_app, "elasticache")
+_add_service(memorydb_app, "memorydb")
+_add_service(docdb_app, "docdb")
+_add_service(neptune_app, "neptune")
+_add_service(es_app, "es")
+_add_service(opensearch_app, "opensearch")
+_add_service(rds_app, "rds")
+_add_service(glacier_app, "glacier")
+_add_service(s3tables_app, "s3tables")
 
 
 @app.command("status")

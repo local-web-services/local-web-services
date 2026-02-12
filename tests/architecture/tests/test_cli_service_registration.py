@@ -10,7 +10,7 @@ LWS_CLI_ENTRY = REPO_ROOT / "src" / "lws" / "cli" / "lws.py"
 CLI_SERVICES_DIR = REPO_ROOT / "src" / "lws" / "cli" / "services"
 
 # Modules that are shared utilities, not service registrations.
-EXCLUDED_MODULES = {"__init__", "client"}
+EXCLUDED_MODULES = {"__init__", "client", "_shared_commands"}
 
 
 def _service_module_names() -> list[str]:

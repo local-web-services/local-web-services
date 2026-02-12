@@ -32,6 +32,11 @@ from lws.interfaces import (
     ProviderStatus,
 )
 from lws.logging.logger import get_logger
+from lws.providers._shared.docker_client import (  # noqa: F401  # pylint: disable=unused-import
+    _socket_candidates,  # re-exported for test patching
+    create_docker_client,
+)
+from lws.providers._shared.docker_service import destroy_container
 from lws.providers.lambda_runtime.result_parser import parse_invocation_output
 
 _logger = get_logger("ldk.docker-compute")
@@ -58,51 +63,6 @@ _RUNTIME_IMAGES: dict[str, str] = {
 
 # EOL runtimes that are no longer supported.
 _EOL_RUNTIMES: set[str] = {"nodejs14.x", "nodejs16.x", "python3.8"}
-
-
-def _socket_candidates() -> list[Path]:
-    """Return well-known Docker socket paths to probe."""
-    home = Path.home()
-    return [
-        home / ".colima" / "default" / "docker.sock",
-        home / ".colima" / "docker.sock",
-        home / ".rd" / "docker.sock",
-        Path("/var/run/docker.sock"),
-        home / ".docker" / "run" / "docker.sock",
-    ]
-
-
-def create_docker_client():
-    """Create a Docker client, discovering the socket if necessary.
-
-    Tries ``docker.from_env()`` first (which honours ``DOCKER_HOST``).
-    If that fails, probes well-known socket paths for Colima, Rancher
-    Desktop, and Docker Desktop before giving up.
-    """
-    import docker  # pylint: disable=import-outside-toplevel
-
-    # Fast path: DOCKER_HOST is set or the default socket works.
-    try:
-        client = docker.from_env()
-        client.ping()
-        return client
-    except Exception:
-        pass
-
-    # Probe well-known alternative socket paths.
-    for sock in _socket_candidates():
-        if sock.exists():
-            try:
-                client = docker.DockerClient(base_url=f"unix://{sock}")
-                client.ping()
-                return client
-            except Exception:
-                continue
-
-    raise docker.errors.DockerException(
-        "Cannot connect to Docker daemon. Is Docker or Colima running? "
-        "You can also set the DOCKER_HOST environment variable."
-    )
 
 
 class DockerCompute(ICompute):
@@ -138,29 +98,49 @@ class DockerCompute(ICompute):
         return f"lambda:{self._config.function_name}"
 
     async def start(self) -> None:
-        """Validate that the Docker daemon is reachable.
+        """Validate that the Docker SDK is importable.
 
-        Container creation is deferred to the first ``invoke()`` call.
+        The actual Docker daemon connection is deferred to the first
+        ``invoke()`` call so it runs in a thread and never blocks the
+        event loop.
         """
         try:
-            self._client = create_docker_client()
+            import docker  # noqa: F401  # pylint: disable=import-outside-toplevel,unused-import
         except ImportError as exc:
             self._status = ProviderStatus.ERROR
             raise ProviderStartError(
                 "Docker backend requires 'pip install local-web-services[docker]' "
                 "and a running Docker daemon."
             ) from exc
-        except Exception as exc:
-            self._status = ProviderStatus.ERROR
-            raise ProviderStartError(f"Cannot connect to Docker daemon: {exc}") from exc
 
         self._status = ProviderStatus.RUNNING
 
     def _ensure_container(self) -> None:
-        """Create the warm container if it doesn't exist yet (lazy init)."""
+        """Create the warm container if it doesn't exist yet (lazy init).
+
+        Creates a fresh Docker client on each attempt to avoid stale HTTP
+        connections.  Retries up to 3 times with a brief backoff to handle
+        transient Docker daemon connection issues (e.g. when many containers
+        are running).  All calls should run in a thread via
+        ``asyncio.to_thread``.
+        """
         if self._container is not None:
             return
 
+        last_exc: Exception | None = None
+        for attempt in range(3):
+            try:
+                self._client = create_docker_client()
+                self._create_container()
+                return
+            except Exception as exc:
+                last_exc = exc
+                if attempt < 2:
+                    time.sleep(1.0 * (attempt + 1))
+        raise last_exc  # type: ignore[misc]
+
+    def _create_container(self) -> None:
+        """Low-level container creation used by ``_ensure_container``."""
         image = self._resolve_image()
         container_name = f"ldk-{self._config.function_name}"
 
@@ -224,14 +204,7 @@ class DockerCompute(ICompute):
             return
         container_id = self._container.id[:12]
         container_name = f"ldk-{self._config.function_name}"
-        try:
-            self._container.stop(timeout=2)
-        except Exception:
-            pass
-        try:
-            self._container.remove(force=True)
-        except Exception:
-            pass
+        destroy_container(self._container)
         self._container = None
         _logger.log_docker_operation("stop", container_name, details={"id": container_id})
 
@@ -241,16 +214,8 @@ class DockerCompute(ICompute):
     # -- Invocation -----------------------------------------------------------
 
     async def invoke(self, event: dict, context: LambdaContext) -> InvocationResult:
-        if self._client is None:
-            return InvocationResult(
-                payload=None,
-                error="Docker client not initialized — call start() first",
-                duration_ms=0.0,
-                request_id=context.aws_request_id,
-            )
-
         try:
-            self._ensure_container()
+            await asyncio.to_thread(self._ensure_container)
         except Exception as exc:
             return InvocationResult(
                 payload=None,

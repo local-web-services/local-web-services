@@ -83,6 +83,15 @@ provider "aws" {{
     sts              = "http://localhost:{port + 11}"
     ssm              = "http://localhost:{port + 12}"
     secretsmanager   = "http://localhost:{port + 13}"
+    elasticache      = "http://localhost:{port + 14}"
+    memorydb         = "http://localhost:{port + 15}"
+    docdb            = "http://localhost:{port + 16}"
+    neptune          = "http://localhost:{port + 17}"
+    elasticsearch    = "http://localhost:{port + 18}"
+    opensearch       = "http://localhost:{port + 19}"
+    rds              = "http://localhost:{port + 20}"
+    glacier          = "http://localhost:{port + 21}"
+    s3tables         = "http://localhost:{port + 22}"
   }}
 }}
 """

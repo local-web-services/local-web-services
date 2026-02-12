@@ -24,6 +24,7 @@ from lws.cli.display import (
     print_resource_summary,
     print_startup_complete,
 )
+from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.config.loader import ConfigError, LdkConfig, load_config
 from lws.graph.builder import AppGraph, NodeType, build_graph
 from lws.interfaces import (
@@ -187,6 +188,19 @@ async def _try_management_reset(port: int) -> None:
         pass  # Server not running, that's fine
 
 
+_SERVICE_IMAGES: dict[str, list[str]] = {
+    "elasticache": ["redis:7-alpine"],
+    "memorydb": ["redis:7-alpine"],
+    "docdb": ["mongo:7"],
+    "neptune": ["janusgraph/janusgraph:1.0"],
+    "es": ["opensearchproject/opensearch:2"],
+    "opensearch": ["opensearchproject/opensearch:2"],
+    "rds": ["postgres:16-alpine", "mysql:8"],
+}
+
+_SUPPORTED_SERVICES = {"lambda"} | set(_SERVICE_IMAGES)
+
+
 @app.command()
 def setup(
     service: str = typer.Argument(..., help="Service to set up (e.g. 'lambda')"),
@@ -195,11 +209,21 @@ def setup(
     ),
 ) -> None:
     """Pull Docker images required for local service emulation."""
-    if service != "lambda":
-        print_error("Unknown service", f"'{service}' is not a supported service. Try 'lambda'.")
+    if service == "all":
+        _setup_all_services()
+        return
+    if service not in _SUPPORTED_SERVICES:
+        print_error(
+            "Unknown service",
+            f"'{service}' is not supported. "
+            f"Supported: {', '.join(sorted(_SUPPORTED_SERVICES))}, all",
+        )
         raise typer.Exit(1)
 
-    _setup_lambda(runtime)
+    if service == "lambda":
+        _setup_lambda(runtime)
+    else:
+        _setup_service_images(service)
 
 
 def _setup_lambda(runtime_filter: str | None) -> None:
@@ -243,6 +267,43 @@ def _setup_lambda(runtime_filter: str | None) -> None:
             _console.print(f"  [red]Failed:[/red] {exc}")
 
     _console.print("[bold green]Done.[/bold green]")
+
+
+def _setup_service_images(service: str) -> None:
+    """Pull Docker images for a specific service."""
+    from lws.providers._shared.docker_client import (  # pylint: disable=import-outside-toplevel
+        create_docker_client,
+    )
+
+    try:
+        client = create_docker_client()
+    except ImportError as exc:
+        print_error(
+            "Docker SDK not installed",
+            "Install with: pip install local-web-services[docker]",
+        )
+        raise typer.Exit(1) from exc
+    except Exception as exc:
+        print_error("Cannot connect to Docker daemon", str(exc))
+        raise typer.Exit(1)
+
+    images = _SERVICE_IMAGES.get(service, [])
+    for image in images:
+        _console.print(f"[bold]Pulling[/bold] {image} [dim]({service})[/dim]")
+        try:
+            client.images.pull(*image.rsplit(":", 1))
+            _console.print("  [green]OK[/green]")
+        except Exception as exc:
+            _console.print(f"  [red]Failed:[/red] {exc}")
+
+    _console.print("[bold green]Done.[/bold green]")
+
+
+def _setup_all_services() -> None:
+    """Pull Docker images for all services."""
+    _setup_lambda(None)
+    for service in sorted(_SERVICE_IMAGES):
+        _setup_service_images(service)
 
 
 def _load_config_quiet(project_dir: Path) -> LdkConfig:
@@ -402,6 +463,17 @@ def _resolve_mode(project_dir: Path, config: LdkConfig, mode_override: str | Non
     return detected
 
 
+def _print_experimental_banner(ports: dict[str, int]) -> None:
+    """Print a banner listing active experimental services."""
+    active = sorted(s for s in EXPERIMENTAL_SERVICES if s in ports)
+    if not active:
+        return
+    _console.print("[bold yellow]Experimental services:[/bold yellow]")
+    _console.print(f"  {', '.join(active)}")
+    _console.print("[dim]  These services may change or be removed in future releases.[/dim]")
+    _console.print()
+
+
 async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     """Run the dev server in Terraform mode.
 
@@ -477,6 +549,7 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     _console.print(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
     _console.print()
 
+    _print_experimental_banner(ports)
     try:
         await orchestrator.wait_for_shutdown()
     finally:
@@ -509,6 +582,15 @@ def _create_terraform_providers(
         "sts": port + 11,
         "ssm": port + 12,
         "secretsmanager": port + 13,
+        "elasticache": port + 14,
+        "memorydb": port + 15,
+        "docdb": port + 16,
+        "neptune": port + 17,
+        "es": port + 18,
+        "opensearch": port + 19,
+        "rds": port + 20,
+        "glacier": port + 21,
+        "s3tables": port + 22,
     }
 
     dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
@@ -605,7 +687,172 @@ def _create_terraform_providers(
         "secretsmanager-http", create_secretsmanager_app, ports["secretsmanager"]
     )
 
+    _register_experimental_providers(providers, ports)
+
     return providers, ports
+
+
+def _register_experimental_providers(
+    providers: dict[str, Provider],
+    ports: dict[str, int],
+) -> None:
+    """Register all experimental-service providers (HTTP with per-resource containers)."""
+    from lws.providers._shared.resource_container import (  # pylint: disable=import-outside-toplevel
+        ResourceContainerConfig,
+        ResourceContainerManager,
+    )
+    from lws.providers.docdb.routes import (  # pylint: disable=import-outside-toplevel
+        create_docdb_app,
+    )
+    from lws.providers.elasticache.routes import (  # pylint: disable=import-outside-toplevel
+        create_elasticache_app,
+    )
+    from lws.providers.elasticsearch.routes import (  # pylint: disable=import-outside-toplevel
+        create_elasticsearch_app,
+    )
+    from lws.providers.glacier.routes import (  # pylint: disable=import-outside-toplevel
+        create_glacier_app,
+    )
+    from lws.providers.memorydb.routes import (  # pylint: disable=import-outside-toplevel
+        create_memorydb_app,
+    )
+    from lws.providers.neptune.routes import (  # pylint: disable=import-outside-toplevel
+        create_neptune_app,
+    )
+    from lws.providers.opensearch.routes import (  # pylint: disable=import-outside-toplevel
+        create_opensearch_app,
+    )
+    from lws.providers.rds.routes import (  # pylint: disable=import-outside-toplevel
+        create_rds_app,
+    )
+    from lws.providers.s3tables.routes import (  # pylint: disable=import-outside-toplevel
+        create_s3tables_app,
+    )
+
+    # Per-resource container managers
+    elasticache_cm = ResourceContainerManager(
+        "elasticache", ResourceContainerConfig(image="redis:7-alpine", internal_port=6379)
+    )
+    memorydb_cm = ResourceContainerManager(
+        "memorydb", ResourceContainerConfig(image="redis:7-alpine", internal_port=6379)
+    )
+    docdb_cm = ResourceContainerManager(
+        "docdb", ResourceContainerConfig(image="mongo:7", internal_port=27017)
+    )
+    neptune_cm = ResourceContainerManager(
+        "neptune",
+        ResourceContainerConfig(image="janusgraph/janusgraph:1.0", internal_port=8182),
+    )
+    opensearch_env = {
+        "discovery.type": "single-node",
+        "DISABLE_SECURITY_PLUGIN": "true",
+    }
+    es_cm = ResourceContainerManager(
+        "elasticsearch",
+        ResourceContainerConfig(
+            image="opensearchproject/opensearch:2",
+            internal_port=9200,
+            environment=opensearch_env,
+        ),
+    )
+    opensearch_cm = ResourceContainerManager(
+        "opensearch",
+        ResourceContainerConfig(
+            image="opensearchproject/opensearch:2",
+            internal_port=9200,
+            environment=opensearch_env,
+        ),
+    )
+    rds_pg_cm = ResourceContainerManager(
+        "rds",
+        ResourceContainerConfig(
+            image="postgres:16-alpine",
+            internal_port=5432,
+            environment={"POSTGRES_PASSWORD": "lws-local"},
+        ),
+    )
+    rds_mysql_cm = ResourceContainerManager(
+        "rds",
+        ResourceContainerConfig(
+            image="mysql:8",
+            internal_port=3306,
+            environment={"MYSQL_ROOT_PASSWORD": "lws-local"},
+        ),
+    )
+
+    # ElastiCache
+    providers["__elasticache_http__"] = _HttpServiceProvider(
+        "elasticache-http",
+        lambda cm=elasticache_cm: create_elasticache_app(container_manager=cm),
+        ports["elasticache"],
+    )
+
+    # MemoryDB
+    providers["__memorydb_http__"] = _HttpServiceProvider(
+        "memorydb-http",
+        lambda cm=memorydb_cm: create_memorydb_app(container_manager=cm),
+        ports["memorydb"],
+    )
+
+    # DocumentDB
+    providers["__docdb_http__"] = _HttpServiceProvider(
+        "docdb-http",
+        lambda cm=docdb_cm: create_docdb_app(container_manager=cm),
+        ports["docdb"],
+    )
+
+    # Neptune
+    providers["__neptune_http__"] = _HttpServiceProvider(
+        "neptune-http",
+        lambda cm=neptune_cm: create_neptune_app(container_manager=cm),
+        ports["neptune"],
+    )
+
+    # Elasticsearch
+    providers["__es_http__"] = _HttpServiceProvider(
+        "es-http",
+        lambda cm=es_cm: create_elasticsearch_app(container_manager=cm),
+        ports["es"],
+    )
+
+    # OpenSearch
+    providers["__opensearch_http__"] = _HttpServiceProvider(
+        "opensearch-http",
+        lambda cm=opensearch_cm: create_opensearch_app(container_manager=cm),
+        ports["opensearch"],
+    )
+
+    # RDS
+    providers["__rds_http__"] = _HttpServiceProvider(
+        "rds-http",
+        lambda pg=rds_pg_cm, my=rds_mysql_cm: create_rds_app(
+            postgres_container_manager=pg, mysql_container_manager=my
+        ),
+        ports["rds"],
+    )
+
+    # Glacier
+    providers["__glacier_http__"] = _HttpServiceProvider(
+        "glacier-http", create_glacier_app, ports["glacier"]
+    )
+
+    # S3 Tables
+    providers["__s3tables_http__"] = _HttpServiceProvider(
+        "s3tables-http", create_s3tables_app, ports["s3tables"]
+    )
+
+    # Container cleanup provider for graceful shutdown
+    all_managers = [
+        elasticache_cm,
+        memorydb_cm,
+        docdb_cm,
+        neptune_cm,
+        es_cm,
+        opensearch_cm,
+        rds_pg_cm,
+        rds_mysql_cm,
+    ]
+    providers["__container_cleanup__"] = _ContainerCleanupProvider(all_managers)
 
 
 def _has_any_resources(app_model: AppModel) -> bool:
@@ -696,6 +943,8 @@ async def _run_dev(
 
     _display_summary(app_model, config.port)
     typer.echo(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
+
+    _print_experimental_banner(_service_ports(config.port))
 
     watcher = FileWatcher(
         watch_dir=project_dir,
@@ -1261,6 +1510,28 @@ def _register_http_providers(
         providers[f"__{svc_name}_http__"] = _HttpServiceProvider(f"{svc_name}-http", factory, port)
 
 
+class _ContainerCleanupProvider(Provider):
+    """Provider that stops all per-resource containers on shutdown."""
+
+    def __init__(self, managers: list) -> None:
+        self._managers = managers
+
+    @property
+    def name(self) -> str:
+        return "container-cleanup"
+
+    async def start(self) -> None:
+        """Nothing to start."""
+
+    async def stop(self) -> None:
+        """Stop all per-resource containers."""
+        for manager in self._managers:
+            await manager.stop_all()
+
+    async def health_check(self) -> bool:
+        return True
+
+
 class _HttpServiceProvider(Provider):
     """Generic wrapper that runs any FastAPI app as a uvicorn-served Provider."""
 
@@ -1330,6 +1601,15 @@ def _service_ports(port: int) -> dict[str, int]:
         "lambda": port + 9,
         "ssm": port + 12,
         "secretsmanager": port + 13,
+        "elasticache": port + 14,
+        "memorydb": port + 15,
+        "docdb": port + 16,
+        "neptune": port + 17,
+        "es": port + 18,
+        "opensearch": port + 19,
+        "rds": port + 20,
+        "glacier": port + 21,
+        "s3tables": port + 22,
     }
 
 

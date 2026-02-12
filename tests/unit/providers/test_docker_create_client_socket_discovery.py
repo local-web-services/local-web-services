@@ -27,7 +27,7 @@ class TestCreateDockerClientSocketDiscovery:
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
             patch(
-                "lws.providers.lambda_runtime.docker._socket_candidates",
+                "lws.providers._shared.docker_client._socket_candidates",
                 return_value=[expected_sock],
             ),
         ):
@@ -59,7 +59,7 @@ class TestCreateDockerClientSocketDiscovery:
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
             patch(
-                "lws.providers.lambda_runtime.docker._socket_candidates",
+                "lws.providers._shared.docker_client._socket_candidates",
                 return_value=[expected_sock],
             ),
         ):
@@ -91,7 +91,7 @@ class TestCreateDockerClientSocketDiscovery:
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
             patch(
-                "lws.providers.lambda_runtime.docker._socket_candidates",
+                "lws.providers._shared.docker_client._socket_candidates",
                 return_value=[expected_sock],
             ),
         ):
@@ -128,7 +128,7 @@ class TestCreateDockerClientSocketDiscovery:
         with (
             patch.dict("sys.modules", {"docker": mock_docker}),
             patch(
-                "lws.providers.lambda_runtime.docker._socket_candidates",
+                "lws.providers._shared.docker_client._socket_candidates",
                 return_value=[bad_sock, good_sock],
             ),
         ):

@@ -1,0 +1,87 @@
+"""``lws es`` sub-commands."""
+
+from __future__ import annotations
+
+import asyncio
+
+import typer
+
+from lws.cli.experimental import warn_if_experimental
+from lws.cli.services._shared_commands import (
+    delete_domain_cmd,
+    describe_domain_cmd,
+    list_domain_names_cmd,
+)
+from lws.cli.services.client import LwsClient, exit_with_error, output_json
+
+app = typer.Typer(help="Elasticsearch Service commands")
+
+_SERVICE = "es"
+
+
+@app.callback(invoke_without_command=True)
+def _callback() -> None:
+    warn_if_experimental(_SERVICE)
+
+
+_TARGET_PREFIX = "ElasticsearchService_20150101"
+
+
+@app.command("create-elasticsearch-domain")
+def create_elasticsearch_domain(
+    domain_name: str = typer.Option(..., "--domain-name", help="Domain name"),
+    elasticsearch_version: str = typer.Option(
+        "7.10", "--elasticsearch-version", help="Elasticsearch version"
+    ),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create an Elasticsearch domain."""
+    asyncio.run(_create_domain(domain_name, elasticsearch_version, port))
+
+
+async def _create_domain(domain_name: str, elasticsearch_version: str, port: int) -> None:
+    client = LwsClient(port=port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.CreateElasticsearchDomain",
+            {
+                "DomainName": domain_name,
+                "ElasticsearchVersion": elasticsearch_version,
+            },
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("describe-elasticsearch-domain")
+def describe_elasticsearch_domain(
+    domain_name: str = typer.Option(..., "--domain-name", help="Domain name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Describe an Elasticsearch domain."""
+    asyncio.run(
+        describe_domain_cmd(
+            _SERVICE, _TARGET_PREFIX, "DescribeElasticsearchDomain", domain_name, port
+        )
+    )
+
+
+@app.command("delete-elasticsearch-domain")
+def delete_elasticsearch_domain(
+    domain_name: str = typer.Option(..., "--domain-name", help="Domain name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete an Elasticsearch domain."""
+    asyncio.run(
+        delete_domain_cmd(_SERVICE, _TARGET_PREFIX, "DeleteElasticsearchDomain", domain_name, port)
+    )
+
+
+@app.command("list-domain-names")
+def list_domain_names(
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List all Elasticsearch domain names."""
+    asyncio.run(list_domain_names_cmd(_SERVICE, _TARGET_PREFIX, port))
