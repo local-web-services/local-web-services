@@ -21,6 +21,7 @@ from lws.providers._shared.response_helpers import (
 from lws.providers._shared.response_helpers import (
     json_response as _json_response,
 )
+from lws.providers._shared.resource_container import ResourceContainerManager
 
 _ACCOUNT_ID = "000000000000"
 _REGION = "us-east-1"
@@ -45,7 +46,7 @@ class ClusterDBConfig:
     endpoint_suffix: str
     include_master_username: bool = False
     include_remove_tags: bool = True
-    data_plane_endpoint: str | None = None
+    container_manager: ResourceContainerManager | None = None
 
 
 # ------------------------------------------------------------------
