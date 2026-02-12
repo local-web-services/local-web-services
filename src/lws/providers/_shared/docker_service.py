@@ -62,12 +62,14 @@ class DockerServiceManager:
         self._client = create_docker_client()
         cfg = self._config
 
-        # Pull image if not present
+        # Require image to be pre-pulled (via ``lws ldk setup <service>``)
         try:
             self._client.images.get(cfg.image)
-        except Exception:
-            _logger.info("Pulling image %s ...", cfg.image)
-            self._client.images.pull(*cfg.image.rsplit(":", 1))
+        except Exception as exc:
+            raise RuntimeError(
+                f"Image {cfg.image} not found locally. "
+                f"Pull it first with: lws ldk setup <service>"
+            ) from exc
 
         # Remove stale container
         try:
