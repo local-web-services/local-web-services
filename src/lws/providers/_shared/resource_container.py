@@ -44,8 +44,13 @@ class ResourceContainerManager:
         """Start a container for *resource_id*.
 
         Returns ``"localhost:{port}"`` on success or ``None`` when Docker
-        is unavailable or the image has not been pulled.
+        is unavailable or the image has not been pulled.  All blocking
+        Docker SDK calls run in a thread to avoid stalling the event loop.
         """
+        return await asyncio.to_thread(self._start_container_sync, resource_id)
+
+    def _start_container_sync(self, resource_id: str) -> str | None:
+        """Synchronous implementation of container startup."""
         try:
             client = create_docker_client()
         except Exception:
@@ -102,7 +107,7 @@ class ResourceContainerManager:
                     break
             except Exception:
                 pass
-            await asyncio.sleep(0.5)
+            time.sleep(0.5)
 
         endpoint = f"localhost:{host_port}"
         _logger.info("Started container %s on %s", name, endpoint)
@@ -114,7 +119,7 @@ class ResourceContainerManager:
         if container is None:
             return
         name = self._container_name(resource_id)
-        destroy_container(container)
+        await asyncio.to_thread(destroy_container, container)
         _logger.info("Stopped container %s", name)
 
     async def stop_all(self) -> None:
