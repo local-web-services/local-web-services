@@ -64,7 +64,7 @@ class TestLambdaS3Integration:
 
         lws_invoke(["s3api", "create-bucket", "--bucket", bucket_name, "--port", str(e2e_port)])
 
-        with tempfile.TemporaryDirectory() as handler_dir:
+        with tempfile.TemporaryDirectory(dir=str(Path.home())) as handler_dir:
             handler_file = Path(handler_dir) / "handler.py"
             handler_file.write_text(_HANDLER_CODE)
 

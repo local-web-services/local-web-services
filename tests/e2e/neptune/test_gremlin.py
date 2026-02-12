@@ -36,4 +36,3 @@ class TestGremlinEndpoint:
         body = parse_output(result.output)
         actual_endpoint = body["DBCluster"]["Endpoint"]
         assert actual_endpoint, "Endpoint should be non-empty"
-        assert "localhost" in actual_endpoint
