@@ -6,12 +6,20 @@ import asyncio
 
 import typer
 
+from lws.cli.experimental import warn_if_experimental
 from lws.cli.services._shared_commands import create_db_cluster_cmd, describe_db_clusters_cmd
 from lws.cli.services.client import LwsClient, exit_with_error, output_json
 
 app = typer.Typer(help="RDS commands")
 
 _SERVICE = "rds"
+
+
+@app.callback(invoke_without_command=True)
+def _callback() -> None:
+    warn_if_experimental(_SERVICE)
+
+
 _TARGET_PREFIX = "AmazonRDSv19"
 
 

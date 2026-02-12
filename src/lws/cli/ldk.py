@@ -24,6 +24,7 @@ from lws.cli.display import (
     print_resource_summary,
     print_startup_complete,
 )
+from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.config.loader import ConfigError, LdkConfig, load_config
 from lws.graph.builder import AppGraph, NodeType, build_graph
 from lws.interfaces import (
@@ -481,6 +482,17 @@ def _resolve_mode(project_dir: Path, config: LdkConfig, mode_override: str | Non
     return detected
 
 
+def _print_experimental_banner(ports: dict[str, int]) -> None:
+    """Print a banner listing active experimental services."""
+    active = sorted(s for s in EXPERIMENTAL_SERVICES if s in ports)
+    if not active:
+        return
+    _console.print("[bold yellow]Experimental services:[/bold yellow]")
+    _console.print(f"  {', '.join(active)}")
+    _console.print("[dim]  These services may change or be removed in future releases.[/dim]")
+    _console.print()
+
+
 async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     """Run the dev server in Terraform mode.
 
@@ -556,6 +568,7 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     _console.print(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
     _console.print()
 
+    _print_experimental_banner(ports)
     _print_data_plane_warnings(providers)
 
     try:
@@ -874,6 +887,8 @@ async def _run_dev(
 
     _display_summary(app_model, config.port)
     typer.echo(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
+
+    _print_experimental_banner(_service_ports(config.port))
 
     watcher = FileWatcher(
         watch_dir=project_dir,

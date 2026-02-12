@@ -6,6 +6,7 @@ import asyncio
 
 import typer
 
+from lws.cli.experimental import warn_if_experimental
 from lws.cli.services._shared_commands import (
     create_db_cluster_cmd,
     delete_db_cluster_cmd,
@@ -15,6 +16,13 @@ from lws.cli.services._shared_commands import (
 app = typer.Typer(help="Neptune commands")
 
 _SERVICE = "neptune"
+
+
+@app.callback(invoke_without_command=True)
+def _callback() -> None:
+    warn_if_experimental(_SERVICE)
+
+
 _TARGET_PREFIX = "AmazonNeptune"
 
 

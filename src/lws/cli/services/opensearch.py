@@ -6,6 +6,7 @@ import asyncio
 
 import typer
 
+from lws.cli.experimental import warn_if_experimental
 from lws.cli.services._shared_commands import (
     delete_domain_cmd,
     describe_domain_cmd,
@@ -16,6 +17,13 @@ from lws.cli.services.client import LwsClient, exit_with_error, output_json
 app = typer.Typer(help="OpenSearch Service commands")
 
 _SERVICE = "opensearch"
+
+
+@app.callback(invoke_without_command=True)
+def _callback() -> None:
+    warn_if_experimental(_SERVICE)
+
+
 _TARGET_PREFIX = "OpenSearchService_20210101"
 
 

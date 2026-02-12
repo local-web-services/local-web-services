@@ -6,11 +6,19 @@ import asyncio
 
 import typer
 
+from lws.cli.experimental import warn_if_experimental
 from lws.cli.services.client import LwsClient, exit_with_error, output_json
 
 app = typer.Typer(help="MemoryDB commands")
 
 _SERVICE = "memorydb"
+
+
+@app.callback(invoke_without_command=True)
+def _callback() -> None:
+    warn_if_experimental(_SERVICE)
+
+
 _TARGET_PREFIX = "AmazonMemoryDB"
 
 

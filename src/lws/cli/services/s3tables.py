@@ -7,11 +7,17 @@ import json
 
 import typer
 
+from lws.cli.experimental import warn_if_experimental
 from lws.cli.services.client import LwsClient, exit_with_error, output_json
 
 app = typer.Typer(help="S3 Tables commands")
 
 _SERVICE = "s3tables"
+
+
+@app.callback(invoke_without_command=True)
+def _callback() -> None:
+    warn_if_experimental(_SERVICE)
 
 
 def _client(port: int) -> LwsClient:
