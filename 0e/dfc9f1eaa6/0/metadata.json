@@ -1,0 +1,46 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "0edfc9f1eaa6",
+  "session_id": "41c74e72-4905-41fb-90e2-39e5d5b24d33",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-12T03:52:21.448429Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/_shared/docker_service.py",
+    "src/lws/providers/_shared/opensearch_config.py",
+    "src/lws/providers/docdb/data_plane.py",
+    "src/lws/providers/elasticache/data_plane.py",
+    "src/lws/providers/elasticsearch/data_plane.py",
+    "src/lws/providers/memorydb/data_plane.py",
+    "src/lws/providers/neptune/data_plane.py",
+    "src/lws/providers/opensearch/data_plane.py",
+    "src/lws/providers/rds/data_plane.py",
+    "src/lws/providers/rds/routes.py",
+    "tests/unit/providers/test_docdb_data_plane.py",
+    "tests/unit/providers/test_elasticache_data_plane.py",
+    "tests/unit/providers/test_elasticsearch_data_plane.py",
+    "tests/unit/providers/test_memorydb_data_plane.py",
+    "tests/unit/providers/test_opensearch_data_plane.py",
+    "tests/unit/providers/test_rds_data_plane.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "a598761d-31f3-425a-b131-eca4b4543bc6",
+  "checkpoint_transcript_start": 527,
+  "transcript_lines_at_start": 527,
+  "token_usage": {
+    "input_tokens": 41,
+    "cache_creation_tokens": 207845,
+    "cache_read_tokens": 2800565,
+    "output_tokens": 570,
+    "api_call_count": 35,
+    "subagent_tokens": {
+      "input_tokens": 49,
+      "cache_creation_tokens": 85012,
+      "cache_read_tokens": 653700,
+      "output_tokens": 510,
+      "api_call_count": 39
+    }
+  }
+}

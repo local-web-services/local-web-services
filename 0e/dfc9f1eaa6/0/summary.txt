@@ -1,0 +1,19 @@
+All 7 failures are pre-existing and unrelated to our changes:
+- 4 docker socket tests — system-level Docker config (colima vs Docker Desktop)
+- `test_all_provider_routes_have_logging_middleware` — thin wrapper routes delegate middleware to shared factories
+- `test_all_service_modules_are_registered` — `_shared_commands.py` not registered
+- `test_unit_test_files_have_at_most_one_class` — multi-class test files from earlier work
+
+All 2050 passing tests include our 21 updated data-plane container wiring tests. The migration is complete.
+
+**Summary of changes:**
+
+1. **Removed `DataPlaneProvider`** from `docker_service.py` — containers no longer start at `ldk dev` startup
+2. **Updated 6 unit test files** to use `AsyncMock` container managers instead of static `data_plane_endpoint` strings, with added delete/stop tests
+3. **Fixed lint issues** — import sorting (ruff auto-fix), line length in `rds/routes.py`, and black formatting in `ldk.py`
+
+Combined with the previous session's work, the full migration from startup-time shared containers to per-resource on-demand containers is now complete:
+- `ldk dev` no longer starts DB containers at startup
+- Containers are created per-resource when users call create APIs (e.g., `lws docdb create-db-cluster --db-cluster-identifier foo` → Docker container `lws-docdb-foo`)
+- Containers are stopped when resources are deleted
+- All containers are cleaned up on shutdown via `_ContainerCleanupProvider`
