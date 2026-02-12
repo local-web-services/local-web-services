@@ -1,0 +1,41 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "3aaaecf22615",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/experimental.py",
+    "src/lws/cli/ldk.py",
+    "src/lws/cli/lws.py",
+    "src/lws/cli/services/docdb.py",
+    "src/lws/cli/services/elasticache.py",
+    "src/lws/cli/services/es.py",
+    "src/lws/cli/services/glacier.py",
+    "src/lws/cli/services/memorydb.py",
+    "src/lws/cli/services/neptune.py",
+    "src/lws/cli/services/opensearch.py",
+    "src/lws/cli/services/rds.py",
+    "src/lws/cli/services/s3tables.py",
+    "tests/architecture/tests/test_experimental_registry.py",
+    "tests/unit/cli/test_experimental.py",
+    "tests/unit/cli/test_experimental_command.py",
+    "tests/unit/cli/test_experimental_warn.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3a/aaecf22615/0/metadata.json",
+      "transcript": "/3a/aaecf22615/0/full.jsonl",
+      "context": "",
+      "content_hash": "/3a/aaecf22615/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 54,
+    "cache_creation_tokens": 84474,
+    "cache_read_tokens": 3966715,
+    "output_tokens": 2355,
+    "api_call_count": 52
+  }
+}

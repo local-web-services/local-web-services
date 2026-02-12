@@ -1,0 +1,29 @@
+All done. Here's a summary of what was implemented:
+
+## Changes Made
+
+### New files
+| File | Purpose |
+|------|---------|
+| `src/lws/cli/experimental.py` | Central registry with `EXPERIMENTAL_SERVICES`, `EXPERIMENTAL_COMMANDS`, `is_experimental_service()`, `is_experimental_command()`, and `warn_if_experimental()` |
+| `tests/architecture/tests/test_experimental_registry.py` | Validates registry entries match real services registered in `lws.py` |
+| `tests/unit/cli/test_experimental.py` | Tests for `is_experimental_service` |
+| `tests/unit/cli/test_experimental_command.py` | Tests for `is_experimental_command` |
+| `tests/unit/cli/test_experimental_warn.py` | Tests for `warn_if_experimental` |
+
+### Modified files
+| File | Change |
+|------|--------|
+| `src/lws/cli/lws.py` | Added `_add_service()` helper that appends `[experimental]` to help text for services in `EXPERIMENTAL_SERVICES` |
+| `src/lws/cli/ldk.py` | Added `_print_experimental_banner()` called in both Terraform and CDK startup paths |
+| 9 service modules (`neptune`, `docdb`, `elasticache`, `es`, `glacier`, `memorydb`, `opensearch`, `rds`, `s3tables`) | Added `@app.callback` that calls `warn_if_experimental()` on invocation |
+
+### Three visibility surfaces
+1. **CLI help text** — `lws --help` shows `[experimental]` next to experimental services
+2. **Runtime warning** — Invoking any experimental service prints `Warning: '<service>' is experimental and may change.` to stderr
+3. **Startup banner** — `ldk dev` prints a yellow "Experimental services" banner listing active experimental services
+
+### Test results
+- 21/21 tests pass (12 new + 9 existing `test_lws.py` tests confirming no regressions)
+- Linting and formatting clean
+- 7 pre-existing failures unrelated to this change (docker socket tests, `_shared_commands` registration, multi-class test files from recent service additions)
