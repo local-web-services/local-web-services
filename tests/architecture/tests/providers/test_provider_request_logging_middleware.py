@@ -23,7 +23,9 @@ class TestProviderRequestLoggingMiddleware:
             service_name = routes_file.parent.name
 
             # Skip ECS - it uses ServiceManager pattern, not HTTP routes
-            if service_name == "ecs":
+            # Skip thin wrappers that delegate to shared factories
+            # (cluster_db_service, search_service) which add middleware
+            if service_name in ("ecs", "docdb", "neptune", "elasticsearch", "opensearch"):
                 continue
 
             content = routes_file.read_text()
