@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "20c764ae92ce",
+  "session_id": "ea66a7bf-fd2d-4f55-9989-d4d4f88c260d",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-12T03:09:23.453461Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/providers/_shared/docker_service.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "14d348b2-204f-45ef-8239-efe67e2e17aa",
+  "checkpoint_transcript_start": 541,
+  "transcript_lines_at_start": 541,
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 1340,
+    "cache_read_tokens": 587637,
+    "output_tokens": 131,
+    "api_call_count": 4
+  }
+}

@@ -1,0 +1,1 @@
+ldk dev pulls images. I want them to only pull when I run the setup commands
