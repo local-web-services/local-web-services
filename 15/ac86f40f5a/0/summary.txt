@@ -1,0 +1,5 @@
+All 2018 unit and integration tests pass. Both changes are complete:
+
+1. **`src/lws/providers/lambda_runtime/docker.py`** — Added `NODE_PATH=/var/runtime/node_modules` to the container environment for Node.js runtimes, so user code can `require('@aws-sdk/...')` without bundling it.
+
+2. **`tests/e2e/lambda_/test_lambda_s3_nodejs_integration.py`** — Removed the `_PACKAGE_JSON` constant, `package.json` write, and `npm install` step, since the runtime SDK should now be accessible directly.
