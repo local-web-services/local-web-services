@@ -25,10 +25,10 @@ _NEPTUNE_CONFIG = ClusterDBConfig(
 )
 
 
-def create_neptune_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
+def create_neptune_app(*, container_manager=None) -> FastAPI:
     """Create a FastAPI app that speaks the Neptune wire protocol."""
-    if data_plane_endpoint:
-        config = replace(_NEPTUNE_CONFIG, data_plane_endpoint=data_plane_endpoint)
+    if container_manager:
+        config = replace(_NEPTUNE_CONFIG, container_manager=container_manager)
     else:
         config = _NEPTUNE_CONFIG
     return create_cluster_db_app(config)

@@ -33,10 +33,10 @@ _ES_CONFIG = SearchServiceConfig(
 )
 
 
-def create_elasticsearch_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
+def create_elasticsearch_app(*, container_manager=None) -> FastAPI:
     """Create a FastAPI application that speaks the Elasticsearch Service wire protocol."""
-    if data_plane_endpoint:
-        config = replace(_ES_CONFIG, data_plane_endpoint=data_plane_endpoint)
+    if container_manager:
+        config = replace(_ES_CONFIG, container_manager=container_manager)
     else:
         config = _ES_CONFIG
     return create_search_service_app(config)

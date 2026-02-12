@@ -26,10 +26,10 @@ _DOCDB_CONFIG = ClusterDBConfig(
 )
 
 
-def create_docdb_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
+def create_docdb_app(*, container_manager=None) -> FastAPI:
     """Create a FastAPI app that speaks the DocumentDB wire protocol."""
-    if data_plane_endpoint:
-        config = replace(_DOCDB_CONFIG, data_plane_endpoint=data_plane_endpoint)
+    if container_manager:
+        config = replace(_DOCDB_CONFIG, container_manager=container_manager)
     else:
         config = _DOCDB_CONFIG
     return create_cluster_db_app(config)

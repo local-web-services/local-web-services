@@ -14,6 +14,7 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
+from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
     error_response as _error_response_base,
 )
@@ -23,7 +24,6 @@ from lws.providers._shared.response_helpers import (
 from lws.providers._shared.response_helpers import (
     parse_endpoint as _parse_endpoint,
 )
-from lws.providers._shared.resource_container import ResourceContainerManager
 
 _logger = get_logger("ldk.memorydb")
 
@@ -139,6 +139,8 @@ async def _handle_delete_cluster(state: _MemoryDBState, body: dict) -> Response:
         )
 
     del state.clusters[cluster_name]
+    if state.container_manager:
+        await state.container_manager.stop_container(cluster_name)
     cluster.status = "deleted"
     return _json_response({"Cluster": _format_cluster(cluster)})
 
@@ -266,11 +268,11 @@ _ACTION_HANDLERS: dict[str, Any] = {
 # ------------------------------------------------------------------
 
 
-def create_memorydb_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
+def create_memorydb_app(*, container_manager: ResourceContainerManager | None = None) -> FastAPI:
     """Create a FastAPI application that speaks the MemoryDB wire protocol."""
     app = FastAPI(title="LDK MemoryDB")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="memorydb")
-    state = _MemoryDBState(data_plane_endpoint=data_plane_endpoint)
+    state = _MemoryDBState(container_manager=container_manager)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

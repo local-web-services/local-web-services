@@ -34,10 +34,10 @@ _OPENSEARCH_CONFIG = SearchServiceConfig(
 )
 
 
-def create_opensearch_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
+def create_opensearch_app(*, container_manager=None) -> FastAPI:
     """Create a FastAPI application that speaks the OpenSearch Service wire protocol."""
-    if data_plane_endpoint:
-        config = replace(_OPENSEARCH_CONFIG, data_plane_endpoint=data_plane_endpoint)
+    if container_manager:
+        config = replace(_OPENSEARCH_CONFIG, container_manager=container_manager)
     else:
         config = _OPENSEARCH_CONFIG
     return create_search_service_app(config)

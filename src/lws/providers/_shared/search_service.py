@@ -15,13 +15,13 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
+from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
     error_response as _error_response,
 )
 from lws.providers._shared.response_helpers import (
     json_response as _json_response,
 )
-from lws.providers._shared.resource_container import ResourceContainerManager
 
 _ACCOUNT_ID = "000000000000"
 _REGION = "us-east-1"
