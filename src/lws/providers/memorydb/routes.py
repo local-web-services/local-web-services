@@ -20,6 +20,9 @@ from lws.providers._shared.response_helpers import (
 from lws.providers._shared.response_helpers import (
     json_response as _json_response,
 )
+from lws.providers._shared.response_helpers import (
+    parse_endpoint as _parse_endpoint,
+)
 
 _logger = get_logger("ldk.memorydb")
 
@@ -41,16 +44,18 @@ class _MemoryDBCluster:
         node_type: str = "db.t4g.small",
         num_shards: int = 1,
         tags: dict[str, str] | None = None,
+        data_plane_endpoint: str | None = None,
     ) -> None:
         self.cluster_name = cluster_name
         self.node_type = node_type
         self.num_shards = num_shards
         self.status = "available"
         self.arn = f"arn:aws:memorydb:{_REGION}:{_ACCOUNT_ID}:cluster/{cluster_name}"
-        self.endpoint: dict[str, Any] = {
-            "Address": f"{cluster_name}.memorydb.localhost",
-            "Port": 6379,
-        }
+        if data_plane_endpoint:
+            addr, pt = _parse_endpoint(data_plane_endpoint)
+            self.endpoint: dict[str, Any] = {"Address": addr, "Port": pt}
+        else:
+            self.endpoint = {"Address": f"{cluster_name}.memorydb.localhost", "Port": 6379}
         self.tags: dict[str, str] = tags or {}
         self.created_date: float = time.time()
 
@@ -58,8 +63,9 @@ class _MemoryDBCluster:
 class _MemoryDBState:
     """In-memory store for MemoryDB resources."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, data_plane_endpoint: str | None = None) -> None:
         self._clusters: dict[str, _MemoryDBCluster] = {}
+        self.data_plane_endpoint = data_plane_endpoint
 
     @property
     def clusters(self) -> dict[str, _MemoryDBCluster]:
@@ -96,6 +102,7 @@ async def _handle_create_cluster(state: _MemoryDBState, body: dict) -> Response:
         node_type=node_type,
         num_shards=num_shards,
         tags=tags,
+        data_plane_endpoint=state.data_plane_endpoint,
     )
     state.clusters[cluster_name] = cluster
 
@@ -255,11 +262,11 @@ _ACTION_HANDLERS: dict[str, Any] = {
 # ------------------------------------------------------------------
 
 
-def create_memorydb_app() -> FastAPI:
+def create_memorydb_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
     """Create a FastAPI application that speaks the MemoryDB wire protocol."""
     app = FastAPI(title="LDK MemoryDB")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="memorydb")
-    state = _MemoryDBState()
+    state = _MemoryDBState(data_plane_endpoint=data_plane_endpoint)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

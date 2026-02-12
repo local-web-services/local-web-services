@@ -20,6 +20,9 @@ from lws.providers._shared.response_helpers import (
 from lws.providers._shared.response_helpers import (
     json_response as _json_response,
 )
+from lws.providers._shared.response_helpers import (
+    parse_endpoint as _parse_endpoint,
+)
 
 _logger = get_logger("ldk.elasticache")
 
@@ -42,6 +45,7 @@ class _CacheCluster:
         num_cache_nodes: int = 1,
         cache_node_type: str = "cache.t3.micro",
         tags: dict[str, str] | None = None,
+        data_plane_endpoint: str | None = None,
     ) -> None:
         self.cache_cluster_id = cache_cluster_id
         self.engine = engine
@@ -49,10 +53,11 @@ class _CacheCluster:
         self.cache_node_type = cache_node_type
         self.status = "available"
         self.arn = f"arn:aws:elasticache:{_REGION}:{_ACCOUNT_ID}:cluster:{cache_cluster_id}"
-        self.endpoint: dict[str, Any] = {
-            "Address": f"{cache_cluster_id}.cache.localhost",
-            "Port": 6379,
-        }
+        if data_plane_endpoint:
+            addr, pt = _parse_endpoint(data_plane_endpoint)
+            self.endpoint: dict[str, Any] = {"Address": addr, "Port": pt}
+        else:
+            self.endpoint = {"Address": f"{cache_cluster_id}.cache.localhost", "Port": 6379}
         self.tags: dict[str, str] = tags or {}
         self.created_date: float = time.time()
 
@@ -81,9 +86,10 @@ class _ReplicationGroup:
 class _ElastiCacheState:
     """In-memory store for ElastiCache resources."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, data_plane_endpoint: str | None = None) -> None:
         self._clusters: dict[str, _CacheCluster] = {}
         self._replication_groups: dict[str, _ReplicationGroup] = {}
+        self.data_plane_endpoint = data_plane_endpoint
 
     @property
     def clusters(self) -> dict[str, _CacheCluster]:
@@ -127,6 +133,7 @@ async def _handle_create_cache_cluster(state: _ElastiCacheState, body: dict) -> 
         num_cache_nodes=num_cache_nodes,
         cache_node_type=cache_node_type,
         tags=tags,
+        data_plane_endpoint=state.data_plane_endpoint,
     )
     state.clusters[cluster_id] = cluster
 
@@ -370,11 +377,11 @@ _ACTION_HANDLERS: dict[str, Any] = {
 # ------------------------------------------------------------------
 
 
-def create_elasticache_app() -> FastAPI:
+def create_elasticache_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
     """Create a FastAPI application that speaks the ElastiCache wire protocol."""
     app = FastAPI(title="LDK ElastiCache")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="elasticache")
-    state = _ElastiCacheState()
+    state = _ElastiCacheState(data_plane_endpoint=data_plane_endpoint)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

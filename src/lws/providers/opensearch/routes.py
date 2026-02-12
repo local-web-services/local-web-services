@@ -5,6 +5,8 @@ Thin wrapper around the shared search-service factory.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from fastapi import FastAPI
 
 from lws.providers._shared.search_service import SearchServiceConfig, create_search_service_app
@@ -32,6 +34,10 @@ _OPENSEARCH_CONFIG = SearchServiceConfig(
 )
 
 
-def create_opensearch_app() -> FastAPI:
+def create_opensearch_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
     """Create a FastAPI application that speaks the OpenSearch Service wire protocol."""
-    return create_search_service_app(_OPENSEARCH_CONFIG)
+    if data_plane_endpoint:
+        config = replace(_OPENSEARCH_CONFIG, data_plane_endpoint=data_plane_endpoint)
+    else:
+        config = _OPENSEARCH_CONFIG
+    return create_search_service_app(config)

@@ -6,6 +6,8 @@ Target prefix: AmazonRDSv19.{Action}
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from fastapi import FastAPI
 
 from lws.providers._shared.cluster_db_service import ClusterDBConfig, create_cluster_db_app
@@ -24,6 +26,10 @@ _DOCDB_CONFIG = ClusterDBConfig(
 )
 
 
-def create_docdb_app() -> FastAPI:
+def create_docdb_app(*, data_plane_endpoint: str | None = None) -> FastAPI:
     """Create a FastAPI app that speaks the DocumentDB wire protocol."""
-    return create_cluster_db_app(_DOCDB_CONFIG)
+    if data_plane_endpoint:
+        config = replace(_DOCDB_CONFIG, data_plane_endpoint=data_plane_endpoint)
+    else:
+        config = _DOCDB_CONFIG
+    return create_cluster_db_app(config)

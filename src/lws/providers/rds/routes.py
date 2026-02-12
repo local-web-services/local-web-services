@@ -22,6 +22,9 @@ from lws.providers._shared.response_helpers import (
 from lws.providers._shared.response_helpers import (
     json_response as _json_response,
 )
+from lws.providers._shared.response_helpers import (
+    parse_endpoint as _parse_endpoint,
+)
 
 _logger = get_logger("ldk.rds")
 
@@ -45,6 +48,7 @@ class _DBInstance:
         master_username: str,
         allocated_storage: int,
         db_cluster_identifier: str | None = None,
+        data_plane_endpoint: str | None = None,
     ) -> None:
         self.db_instance_identifier = db_instance_identifier
         self.db_instance_class = db_instance_class
@@ -53,10 +57,14 @@ class _DBInstance:
         self.allocated_storage = allocated_storage
         self.status = "available"
         self.arn = f"arn:aws:rds:{_REGION}:{_ACCOUNT_ID}:db:{db_instance_identifier}"
-        self.endpoint = {
-            "Address": f"{db_instance_identifier}.local.{_REGION}.rds.amazonaws.com",
-            "Port": 5432 if engine == "postgres" else 3306,
-        }
+        if data_plane_endpoint:
+            addr, pt = _parse_endpoint(data_plane_endpoint)
+            self.endpoint = {"Address": addr, "Port": pt}
+        else:
+            self.endpoint = {
+                "Address": f"{db_instance_identifier}.local.{_REGION}.rds.amazonaws.com",
+                "Port": 5432 if engine == "postgres" else 3306,
+            }
         self.db_cluster_identifier = db_cluster_identifier
         self.tags: dict[str, str] = {}
         self.created_date = _iso_now()
@@ -70,14 +78,18 @@ class _DBCluster:
         db_cluster_identifier: str,
         engine: str,
         master_username: str,
+        data_plane_endpoint: str | None = None,
     ) -> None:
         self.db_cluster_identifier = db_cluster_identifier
         self.engine = engine
         self.master_username = master_username
         self.status = "available"
         self.arn = f"arn:aws:rds:{_REGION}:{_ACCOUNT_ID}:cluster:{db_cluster_identifier}"
-        self.endpoint = f"{db_cluster_identifier}.cluster-local.{_REGION}.rds.amazonaws.com"
-        self.port = 5432 if engine == "postgres" else 3306
+        if data_plane_endpoint:
+            self.endpoint, self.port = _parse_endpoint(data_plane_endpoint)
+        else:
+            self.endpoint = f"{db_cluster_identifier}.cluster-local.{_REGION}.rds.amazonaws.com"
+            self.port = 5432 if engine == "postgres" else 3306
         self.tags: dict[str, str] = {}
         self.created_date = _iso_now()
 
@@ -85,9 +97,16 @@ class _DBCluster:
 class _RdsState:
     """In-memory store for RDS instances and clusters."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        postgres_endpoint: str | None = None,
+        mysql_endpoint: str | None = None,
+    ) -> None:
         self._instances: dict[str, _DBInstance] = {}
         self._clusters: dict[str, _DBCluster] = {}
+        self.postgres_endpoint = postgres_endpoint
+        self.mysql_endpoint = mysql_endpoint
 
     @property
     def instances(self) -> dict[str, _DBInstance]:
@@ -225,13 +244,16 @@ async def _handle_create_db_instance(state: _RdsState, body: dict) -> Response:
             f"DB instance already exists: {db_instance_id}",
         )
 
+    engine = body.get("Engine", "postgres")
+    endpoint = state.postgres_endpoint if engine == "postgres" else state.mysql_endpoint
     instance = _DBInstance(
         db_instance_identifier=db_instance_id,
         db_instance_class=body.get("DBInstanceClass", "db.t3.micro"),
-        engine=body.get("Engine", "postgres"),
+        engine=engine,
         master_username=body.get("MasterUsername", "admin"),
         allocated_storage=body.get("AllocatedStorage", 20),
         db_cluster_identifier=body.get("DBClusterIdentifier"),
+        data_plane_endpoint=endpoint,
     )
     state.instances[db_instance_id] = instance
 
@@ -313,10 +335,13 @@ async def _handle_create_db_cluster(state: _RdsState, body: dict) -> Response:
             f"DB cluster already exists: {db_cluster_id}",
         )
 
+    engine = body.get("Engine", "postgres")
+    endpoint = state.postgres_endpoint if engine == "postgres" else state.mysql_endpoint
     cluster = _DBCluster(
         db_cluster_identifier=db_cluster_id,
-        engine=body.get("Engine", "postgres"),
+        engine=engine,
         master_username=body.get("MasterUsername", "admin"),
+        data_plane_endpoint=endpoint,
     )
     state.clusters[db_cluster_id] = cluster
 
@@ -451,11 +476,15 @@ _ACTION_HANDLERS: dict[str, Any] = {
 # ------------------------------------------------------------------
 
 
-def create_rds_app() -> FastAPI:
+def create_rds_app(
+    *,
+    postgres_endpoint: str | None = None,
+    mysql_endpoint: str | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the RDS wire protocol."""
     app = FastAPI(title="LDK RDS")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="rds")
-    state = _RdsState()
+    state = _RdsState(postgres_endpoint=postgres_endpoint, mysql_endpoint=mysql_endpoint)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

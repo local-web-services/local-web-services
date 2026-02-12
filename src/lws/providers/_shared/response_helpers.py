@@ -32,3 +32,9 @@ def error_response(
 def iso_now() -> str:
     """Return the current UTC time in ISO 8601 format."""
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+
+def parse_endpoint(endpoint: str) -> tuple[str, int]:
+    """Split a ``host:port`` endpoint string into ``(host, port)``."""
+    host, port_str = endpoint.rsplit(":", 1)
+    return host, int(port_str)

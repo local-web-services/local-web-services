@@ -45,6 +45,7 @@ class SearchServiceConfig:
     cluster_config_field: str
     action_map: dict[str, str]
     list_domain_extra: dict[str, str] = field(default_factory=dict)
+    data_plane_endpoint: str | None = None
 
 
 # ------------------------------------------------------------------
@@ -71,7 +72,10 @@ class _Domain:
         }
         self.status = "active"
         self.arn = f"arn:aws:{config.arn_service}:{_REGION}:{_ACCOUNT_ID}:domain/{domain_name}"
-        self.endpoint = f"search-{domain_name}-local.{_REGION}.{config.endpoint_suffix}"
+        if config.data_plane_endpoint:
+            self.endpoint = config.data_plane_endpoint
+        else:
+            self.endpoint = f"search-{domain_name}-local.{_REGION}.{config.endpoint_suffix}"
         self.tags: dict[str, str] = {}
         self.created = True
         self.processing = False
