@@ -1,0 +1,26 @@
+The **Per-Resource Docker Containers** implementation is complete. Here's a summary of everything that was done:
+
+### What was implemented
+
+1. **`src/lws/providers/_shared/resource_container.py`** (NEW) — `ResourceContainerManager` class that starts/stops Docker containers per resource with dynamic port allocation
+
+2. **Modified shared service factories** — `cluster_db_service.py` and `search_service.py` now accept `container_manager` instead of `data_plane_endpoint`, calling `start_container`/`stop_container` in create/delete handlers
+
+3. **Modified inline route files** — `elasticache`, `memorydb`, and `rds` routes updated with container manager wiring (RDS supports separate postgres/mysql managers)
+
+4. **Updated wrapper route files** — `docdb`, `neptune`, `elasticsearch`, `opensearch` routes pass `container_manager` through to shared configs
+
+5. **Updated `ldk.py`** — Removed all data-plane ports/providers/warnings, replaced with `ResourceContainerManager` instances and a `_ContainerCleanupProvider` for shutdown
+
+6. **Deleted 8 files** — All `data_plane.py` files and `opensearch_config.py` removed
+
+7. **Cleaned up `docker_service.py`** — Removed `DataPlaneProvider` class
+
+8. **Updated 6 test files** — All data-plane tests now use `AsyncMock` for `ResourceContainerManager`
+
+### Test results
+
+- All **23 data-plane unit tests pass**
+- Pylint: **10.00/10**
+- Black/Ruff formatting: **clean**
+- `make check`: 7 failures, all **pre-existing** (confirmed by testing against stashed changes)
