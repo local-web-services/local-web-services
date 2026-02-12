@@ -13,6 +13,7 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
+from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
     error_response as _error_response,
 )
@@ -25,7 +26,6 @@ from lws.providers._shared.response_helpers import (
 from lws.providers._shared.response_helpers import (
     parse_endpoint as _parse_endpoint,
 )
-from lws.providers._shared.resource_container import ResourceContainerManager
 
 _logger = get_logger("ldk.rds")
 
@@ -101,13 +101,13 @@ class _RdsState:
     def __init__(
         self,
         *,
-        postgres_endpoint: str | None = None,
-        mysql_endpoint: str | None = None,
+        postgres_container_manager: ResourceContainerManager | None = None,
+        mysql_container_manager: ResourceContainerManager | None = None,
     ) -> None:
         self._instances: dict[str, _DBInstance] = {}
         self._clusters: dict[str, _DBCluster] = {}
-        self.postgres_endpoint = postgres_endpoint
-        self.mysql_endpoint = mysql_endpoint
+        self.postgres_container_manager = postgres_container_manager
+        self.mysql_container_manager = mysql_container_manager
 
     @property
     def instances(self) -> dict[str, _DBInstance]:
@@ -246,14 +246,25 @@ async def _handle_create_db_instance(state: _RdsState, body: dict) -> Response:
         )
 
     engine = body.get("Engine", "postgres")
-    endpoint = state.postgres_endpoint if engine == "postgres" else state.mysql_endpoint
+    cluster_id = body.get("DBClusterIdentifier")
+    endpoint = None
+    if cluster_id and cluster_id in state.clusters:
+        cluster = state.clusters[cluster_id]
+        endpoint = f"{cluster.endpoint}:{cluster.port}"
+    else:
+        if engine == "postgres":
+            cm = state.postgres_container_manager
+        else:
+            cm = state.mysql_container_manager
+        if cm:
+            endpoint = await cm.start_container(db_instance_id)
     instance = _DBInstance(
         db_instance_identifier=db_instance_id,
         db_instance_class=body.get("DBInstanceClass", "db.t3.micro"),
         engine=engine,
         master_username=body.get("MasterUsername", "admin"),
         allocated_storage=body.get("AllocatedStorage", 20),
-        db_cluster_identifier=body.get("DBClusterIdentifier"),
+        db_cluster_identifier=cluster_id,
         data_plane_endpoint=endpoint,
     )
     state.instances[db_instance_id] = instance
@@ -292,6 +303,13 @@ async def _handle_delete_db_instance(state: _RdsState, body: dict) -> Response:
         )
 
     del state.instances[db_instance_id]
+    if not instance.db_cluster_identifier:
+        if instance.engine == "postgres":
+            cm = state.postgres_container_manager
+        else:
+            cm = state.mysql_container_manager
+        if cm:
+            await cm.stop_container(db_instance_id)
     instance.status = "deleting"
     return _json_response({"DBInstance": _format_db_instance(instance)})
 
@@ -337,7 +355,10 @@ async def _handle_create_db_cluster(state: _RdsState, body: dict) -> Response:
         )
 
     engine = body.get("Engine", "postgres")
-    endpoint = state.postgres_endpoint if engine == "postgres" else state.mysql_endpoint
+    cm = state.postgres_container_manager if engine == "postgres" else state.mysql_container_manager
+    endpoint = None
+    if cm:
+        endpoint = await cm.start_container(db_cluster_id)
     cluster = _DBCluster(
         db_cluster_identifier=db_cluster_id,
         engine=engine,
@@ -380,6 +401,12 @@ async def _handle_delete_db_cluster(state: _RdsState, body: dict) -> Response:
         )
 
     del state.clusters[db_cluster_id]
+    if cluster.engine == "postgres":
+        cm = state.postgres_container_manager
+    else:
+        cm = state.mysql_container_manager
+    if cm:
+        await cm.stop_container(db_cluster_id)
     cluster.status = "deleting"
     return _json_response({"DBCluster": _format_db_cluster(cluster)})
 
@@ -479,13 +506,16 @@ _ACTION_HANDLERS: dict[str, Any] = {
 
 def create_rds_app(
     *,
-    postgres_endpoint: str | None = None,
-    mysql_endpoint: str | None = None,
+    postgres_container_manager: ResourceContainerManager | None = None,
+    mysql_container_manager: ResourceContainerManager | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the RDS wire protocol."""
     app = FastAPI(title="LDK RDS")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="rds")
-    state = _RdsState(postgres_endpoint=postgres_endpoint, mysql_endpoint=mysql_endpoint)
+    state = _RdsState(
+        postgres_container_manager=postgres_container_manager,
+        mysql_container_manager=mysql_container_manager,
+    )
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

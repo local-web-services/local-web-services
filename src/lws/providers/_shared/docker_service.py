@@ -11,7 +11,6 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from lws.interfaces import Provider
 from lws.logging.logger import get_logger
 from lws.providers._shared.docker_client import create_docker_client
 
@@ -142,51 +141,3 @@ class DockerServiceManager:
                 return False
 
         return True
-
-
-class DataPlaneProvider(Provider):
-    """Reusable data-plane provider that wraps a single Docker container.
-
-    Subclass this or use directly with a ``DockerServiceConfig`` to get
-    ``start`` / ``stop`` / ``health_check`` / ``endpoint`` / ``available``
-    semantics identical to ``NeptuneDataPlaneProvider``.
-    """
-
-    def __init__(self, provider_name: str, config: DockerServiceConfig) -> None:
-        self._provider_name = provider_name
-        self._docker = DockerServiceManager(config)
-        self._started = False
-
-    @property
-    def name(self) -> str:
-        """Return provider name."""
-        return self._provider_name
-
-    @property
-    def endpoint(self) -> str:
-        """Return the host endpoint for the backing container."""
-        return self._docker.endpoint
-
-    @property
-    def available(self) -> bool:
-        """Return True if the backing container started successfully."""
-        return self._started
-
-    async def start(self) -> None:
-        """Start the container, or skip if Docker is unavailable."""
-        try:
-            await self._docker.start()
-            self._started = True
-        except Exception:
-            _logger.debug("%s data-plane container did not start", self._provider_name)
-
-    async def stop(self) -> None:
-        """Stop the container if it was started."""
-        if self._started:
-            await self._docker.stop()
-
-    async def health_check(self) -> bool:
-        """Check container health."""
-        if not self._started:
-            return True  # Not a failure — just not available
-        return await self._docker.health_check()

@@ -1,8 +1,9 @@
-"""Tests for DocumentDB data-plane endpoint wiring."""
+"""Tests for DocumentDB per-resource container wiring."""
 
 from __future__ import annotations
 
 import json
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
@@ -22,10 +23,12 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 
 class TestDocDBDataPlaneEndpoint:
-    def test_with_data_plane_endpoint_uses_real_endpoint(self) -> None:
+    def test_with_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
         expected_endpoint = "localhost:27017"
-        app = create_docdb_app(data_plane_endpoint="localhost:27017")
+        mock_cm = AsyncMock()
+        mock_cm.start_container.return_value = expected_endpoint
+        app = create_docdb_app(container_manager=mock_cm)
         client = TestClient(app)
 
         # Act
@@ -38,8 +41,9 @@ class TestDocDBDataPlaneEndpoint:
         # Assert
         actual_endpoint = result["DBCluster"]["Endpoint"]
         assert actual_endpoint == expected_endpoint
+        mock_cm.start_container.assert_called_once_with("test-cluster")
 
-    def test_without_data_plane_endpoint_uses_synthetic_endpoint(self) -> None:
+    def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
         expected_suffix = "docdb.amazonaws.com"
         app = create_docdb_app()
@@ -55,3 +59,21 @@ class TestDocDBDataPlaneEndpoint:
         # Assert
         actual_endpoint = result["DBCluster"]["Endpoint"]
         assert expected_suffix in actual_endpoint
+
+    def test_delete_cluster_stops_container(self) -> None:
+        # Arrange
+        mock_cm = AsyncMock()
+        mock_cm.start_container.return_value = "localhost:27017"
+        app = create_docdb_app(container_manager=mock_cm)
+        client = TestClient(app)
+        _post(
+            client,
+            "CreateDBCluster",
+            {"DBClusterIdentifier": "test-cluster", "Engine": "docdb"},
+        )
+
+        # Act
+        _post(client, "DeleteDBCluster", {"DBClusterIdentifier": "test-cluster"})
+
+        # Assert
+        mock_cm.stop_container.assert_called_once_with("test-cluster")

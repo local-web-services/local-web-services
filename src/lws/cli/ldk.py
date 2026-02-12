@@ -431,37 +431,6 @@ def _display_summary(app_model: AppModel, port: int) -> None:
     )
 
 
-_DATA_PLANE_WARNINGS: list[tuple[str, str, str, str]] = [
-    ("__neptune_data__", "Neptune", "JanusGraph", "neptune"),
-    ("__elasticache_data__", "ElastiCache", "Redis", "elasticache"),
-    ("__memorydb_data__", "MemoryDB", "Redis", "memorydb"),
-    ("__docdb_data__", "DocumentDB", "MongoDB", "docdb"),
-    ("__es_data__", "Elasticsearch", "OpenSearch", "es"),
-    ("__opensearch_data__", "OpenSearch", "OpenSearch", "opensearch"),
-    ("__rds_postgres_data__", "RDS PostgreSQL", "PostgreSQL", "rds"),
-    ("__rds_mysql_data__", "RDS MySQL", "MySQL", "rds"),
-]
-
-
-def _print_data_plane_warnings(providers: dict[str, Provider]) -> None:
-    """Print user-facing warnings for data-plane providers that failed to start."""
-    for key, service_name, backing_name, setup_cmd in _DATA_PLANE_WARNINGS:
-        prov = providers.get(key)
-        if prov is not None and hasattr(prov, "available") and not prov.available:
-            _console.print(
-                f"[bold yellow]Warning:[/bold yellow] {service_name} data-plane ({backing_name}) "
-                "is not available. Docker may not be running or the image is not pulled."
-            )
-            _console.print(
-                f"  Run [bold]lws ldk setup {setup_cmd}[/bold] to pull the {backing_name} image."
-            )
-            _console.print(
-                f"  {service_name} control-plane will still work but "
-                "resources will have synthetic endpoints."
-            )
-            _console.print()
-
-
 def _resolve_mode(project_dir: Path, config: LdkConfig, mode_override: str | None) -> str:
     """Resolve the project mode from CLI flag, config, or auto-detection.
 
@@ -581,8 +550,6 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     _console.print()
 
     _print_experimental_banner(ports)
-    _print_data_plane_warnings(providers)
-
     try:
         await orchestrator.wait_for_shutdown()
     finally:
@@ -624,14 +591,6 @@ def _create_terraform_providers(
         "rds": port + 20,
         "glacier": port + 21,
         "s3tables": port + 22,
-        "neptune-data": port + 23,
-        "elasticache-data": port + 24,
-        "memorydb-data": port + 25,
-        "docdb-data": port + 26,
-        "es-data": port + 27,
-        "opensearch-data": port + 28,
-        "rds-postgres-data": port + 29,
-        "rds-mysql-data": port + 30,
     }
 
     dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
@@ -737,154 +696,163 @@ def _register_experimental_providers(
     providers: dict[str, Provider],
     ports: dict[str, int],
 ) -> None:
-    """Register all experimental-service providers (data-plane + HTTP)."""
-    # ElastiCache
-    from lws.providers.elasticache.data_plane import (  # pylint: disable=import-outside-toplevel
-        ElastiCacheDataPlaneProvider,
-    )
-    from lws.providers.elasticache.routes import (  # pylint: disable=import-outside-toplevel
-        create_elasticache_app,
-    )
-
-    providers["__elasticache_data__"] = elasticache_data = ElastiCacheDataPlaneProvider(
-        ports["elasticache-data"]
-    )
-    providers["__elasticache_http__"] = _HttpServiceProvider(
-        "elasticache-http",
-        lambda: create_elasticache_app(
-            data_plane_endpoint=elasticache_data.endpoint if elasticache_data.available else None,
-        ),
-        ports["elasticache"],
-    )
-
-    # MemoryDB
-    from lws.providers.memorydb.data_plane import (  # pylint: disable=import-outside-toplevel
-        MemoryDBDataPlaneProvider,
-    )
-    from lws.providers.memorydb.routes import (  # pylint: disable=import-outside-toplevel
-        create_memorydb_app,
-    )
-
-    providers["__memorydb_data__"] = memorydb_data = MemoryDBDataPlaneProvider(
-        ports["memorydb-data"]
-    )
-    providers["__memorydb_http__"] = _HttpServiceProvider(
-        "memorydb-http",
-        lambda: create_memorydb_app(
-            data_plane_endpoint=memorydb_data.endpoint if memorydb_data.available else None,
-        ),
-        ports["memorydb"],
-    )
-
-    # DocumentDB
-    from lws.providers.docdb.data_plane import (  # pylint: disable=import-outside-toplevel
-        DocDBDataPlaneProvider,
+    """Register all experimental-service providers (HTTP with per-resource containers)."""
+    from lws.providers._shared.resource_container import (  # pylint: disable=import-outside-toplevel
+        ResourceContainerConfig,
+        ResourceContainerManager,
     )
     from lws.providers.docdb.routes import (  # pylint: disable=import-outside-toplevel
         create_docdb_app,
     )
-
-    providers["__docdb_data__"] = docdb_data = DocDBDataPlaneProvider(ports["docdb-data"])
-    providers["__docdb_http__"] = _HttpServiceProvider(
-        "docdb-http",
-        lambda: create_docdb_app(
-            data_plane_endpoint=docdb_data.endpoint if docdb_data.available else None,
-        ),
-        ports["docdb"],
-    )
-
-    # Neptune data-plane (JanusGraph) + control-plane
-    from lws.providers.neptune.data_plane import (  # pylint: disable=import-outside-toplevel
-        NeptuneDataPlaneProvider,
-    )
-    from lws.providers.neptune.routes import (  # pylint: disable=import-outside-toplevel
-        create_neptune_app,
-    )
-
-    providers["__neptune_data__"] = neptune_data = NeptuneDataPlaneProvider(ports["neptune-data"])
-    providers["__neptune_http__"] = _HttpServiceProvider(
-        "neptune-http",
-        lambda: create_neptune_app(
-            data_plane_endpoint=neptune_data.endpoint if neptune_data.available else None,
-        ),
-        ports["neptune"],
-    )
-
-    # Elasticsearch
-    from lws.providers.elasticsearch.data_plane import (  # pylint: disable=import-outside-toplevel
-        ElasticsearchDataPlaneProvider,
+    from lws.providers.elasticache.routes import (  # pylint: disable=import-outside-toplevel
+        create_elasticache_app,
     )
     from lws.providers.elasticsearch.routes import (  # pylint: disable=import-outside-toplevel
         create_elasticsearch_app,
     )
-
-    providers["__es_data__"] = es_data = ElasticsearchDataPlaneProvider(ports["es-data"])
-    providers["__es_http__"] = _HttpServiceProvider(
-        "es-http",
-        lambda: create_elasticsearch_app(
-            data_plane_endpoint=es_data.endpoint if es_data.available else None,
-        ),
-        ports["es"],
+    from lws.providers.glacier.routes import (  # pylint: disable=import-outside-toplevel
+        create_glacier_app,
     )
-
-    # OpenSearch
-    from lws.providers.opensearch.data_plane import (  # pylint: disable=import-outside-toplevel
-        OpenSearchDataPlaneProvider,
+    from lws.providers.memorydb.routes import (  # pylint: disable=import-outside-toplevel
+        create_memorydb_app,
+    )
+    from lws.providers.neptune.routes import (  # pylint: disable=import-outside-toplevel
+        create_neptune_app,
     )
     from lws.providers.opensearch.routes import (  # pylint: disable=import-outside-toplevel
         create_opensearch_app,
     )
-
-    providers["__opensearch_data__"] = opensearch_data = OpenSearchDataPlaneProvider(
-        ports["opensearch-data"]
+    from lws.providers.rds.routes import (  # pylint: disable=import-outside-toplevel
+        create_rds_app,
     )
+    from lws.providers.s3tables.routes import (  # pylint: disable=import-outside-toplevel
+        create_s3tables_app,
+    )
+
+    # Per-resource container managers
+    elasticache_cm = ResourceContainerManager(
+        "elasticache", ResourceContainerConfig(image="redis:7-alpine", internal_port=6379)
+    )
+    memorydb_cm = ResourceContainerManager(
+        "memorydb", ResourceContainerConfig(image="redis:7-alpine", internal_port=6379)
+    )
+    docdb_cm = ResourceContainerManager(
+        "docdb", ResourceContainerConfig(image="mongo:7", internal_port=27017)
+    )
+    neptune_cm = ResourceContainerManager(
+        "neptune",
+        ResourceContainerConfig(image="janusgraph/janusgraph:1.0", internal_port=8182),
+    )
+    opensearch_env = {
+        "discovery.type": "single-node",
+        "DISABLE_SECURITY_PLUGIN": "true",
+    }
+    es_cm = ResourceContainerManager(
+        "elasticsearch",
+        ResourceContainerConfig(
+            image="opensearchproject/opensearch:2",
+            internal_port=9200,
+            environment=opensearch_env,
+        ),
+    )
+    opensearch_cm = ResourceContainerManager(
+        "opensearch",
+        ResourceContainerConfig(
+            image="opensearchproject/opensearch:2",
+            internal_port=9200,
+            environment=opensearch_env,
+        ),
+    )
+    rds_pg_cm = ResourceContainerManager(
+        "rds",
+        ResourceContainerConfig(
+            image="postgres:16-alpine",
+            internal_port=5432,
+            environment={"POSTGRES_PASSWORD": "lws-local"},
+        ),
+    )
+    rds_mysql_cm = ResourceContainerManager(
+        "rds",
+        ResourceContainerConfig(
+            image="mysql:8",
+            internal_port=3306,
+            environment={"MYSQL_ROOT_PASSWORD": "lws-local"},
+        ),
+    )
+
+    # ElastiCache
+    providers["__elasticache_http__"] = _HttpServiceProvider(
+        "elasticache-http",
+        lambda cm=elasticache_cm: create_elasticache_app(container_manager=cm),
+        ports["elasticache"],
+    )
+
+    # MemoryDB
+    providers["__memorydb_http__"] = _HttpServiceProvider(
+        "memorydb-http",
+        lambda cm=memorydb_cm: create_memorydb_app(container_manager=cm),
+        ports["memorydb"],
+    )
+
+    # DocumentDB
+    providers["__docdb_http__"] = _HttpServiceProvider(
+        "docdb-http",
+        lambda cm=docdb_cm: create_docdb_app(container_manager=cm),
+        ports["docdb"],
+    )
+
+    # Neptune
+    providers["__neptune_http__"] = _HttpServiceProvider(
+        "neptune-http",
+        lambda cm=neptune_cm: create_neptune_app(container_manager=cm),
+        ports["neptune"],
+    )
+
+    # Elasticsearch
+    providers["__es_http__"] = _HttpServiceProvider(
+        "es-http",
+        lambda cm=es_cm: create_elasticsearch_app(container_manager=cm),
+        ports["es"],
+    )
+
+    # OpenSearch
     providers["__opensearch_http__"] = _HttpServiceProvider(
         "opensearch-http",
-        lambda: create_opensearch_app(
-            data_plane_endpoint=opensearch_data.endpoint if opensearch_data.available else None,
-        ),
+        lambda cm=opensearch_cm: create_opensearch_app(container_manager=cm),
         ports["opensearch"],
     )
 
     # RDS
-    from lws.providers.rds.data_plane import (  # pylint: disable=import-outside-toplevel
-        RdsMysqlDataPlaneProvider,
-        RdsPostgresDataPlaneProvider,
-    )
-    from lws.providers.rds.routes import (  # pylint: disable=import-outside-toplevel
-        create_rds_app,
-    )
-
-    providers["__rds_postgres_data__"] = rds_pg = RdsPostgresDataPlaneProvider(
-        ports["rds-postgres-data"]
-    )
-    providers["__rds_mysql_data__"] = rds_my = RdsMysqlDataPlaneProvider(ports["rds-mysql-data"])
     providers["__rds_http__"] = _HttpServiceProvider(
         "rds-http",
-        lambda: create_rds_app(
-            postgres_endpoint=rds_pg.endpoint if rds_pg.available else None,
-            mysql_endpoint=rds_my.endpoint if rds_my.available else None,
+        lambda pg=rds_pg_cm, my=rds_mysql_cm: create_rds_app(
+            postgres_container_manager=pg, mysql_container_manager=my
         ),
         ports["rds"],
     )
 
     # Glacier
-    from lws.providers.glacier.routes import (  # pylint: disable=import-outside-toplevel
-        create_glacier_app,
-    )
-
     providers["__glacier_http__"] = _HttpServiceProvider(
         "glacier-http", create_glacier_app, ports["glacier"]
     )
 
     # S3 Tables
-    from lws.providers.s3tables.routes import (  # pylint: disable=import-outside-toplevel
-        create_s3tables_app,
-    )
-
     providers["__s3tables_http__"] = _HttpServiceProvider(
         "s3tables-http", create_s3tables_app, ports["s3tables"]
     )
+
+    # Container cleanup provider for graceful shutdown
+    all_managers = [
+        elasticache_cm,
+        memorydb_cm,
+        docdb_cm,
+        neptune_cm,
+        es_cm,
+        opensearch_cm,
+        rds_pg_cm,
+        rds_mysql_cm,
+    ]
+    providers["__container_cleanup__"] = _ContainerCleanupProvider(all_managers)
 
 
 def _has_any_resources(app_model: AppModel) -> bool:
@@ -1542,6 +1510,28 @@ def _register_http_providers(
         providers[f"__{svc_name}_http__"] = _HttpServiceProvider(f"{svc_name}-http", factory, port)
 
 
+class _ContainerCleanupProvider(Provider):
+    """Provider that stops all per-resource containers on shutdown."""
+
+    def __init__(self, managers: list) -> None:
+        self._managers = managers
+
+    @property
+    def name(self) -> str:
+        return "container-cleanup"
+
+    async def start(self) -> None:
+        """Nothing to start."""
+
+    async def stop(self) -> None:
+        """Stop all per-resource containers."""
+        for manager in self._managers:
+            await manager.stop_all()
+
+    async def health_check(self) -> bool:
+        return True
+
+
 class _HttpServiceProvider(Provider):
     """Generic wrapper that runs any FastAPI app as a uvicorn-served Provider."""
 
@@ -1620,14 +1610,6 @@ def _service_ports(port: int) -> dict[str, int]:
         "rds": port + 20,
         "glacier": port + 21,
         "s3tables": port + 22,
-        "neptune-data": port + 23,
-        "elasticache-data": port + 24,
-        "memorydb-data": port + 25,
-        "docdb-data": port + 26,
-        "es-data": port + 27,
-        "opensearch-data": port + 28,
-        "rds-postgres-data": port + 29,
-        "rds-mysql-data": port + 30,
     }
 
 

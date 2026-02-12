@@ -1,8 +1,9 @@
-"""Tests for ElastiCache data-plane endpoint wiring."""
+"""Tests for ElastiCache per-resource container wiring."""
 
 from __future__ import annotations
 
 import json
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
@@ -22,11 +23,13 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 
 class TestElastiCacheDataPlaneEndpoint:
-    def test_with_data_plane_endpoint_uses_real_endpoint(self) -> None:
+    def test_with_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
         expected_address = "localhost"
         expected_port = 16379
-        app = create_elasticache_app(data_plane_endpoint="localhost:16379")
+        mock_cm = AsyncMock()
+        mock_cm.start_container.return_value = "localhost:16379"
+        app = create_elasticache_app(container_manager=mock_cm)
         client = TestClient(app)
 
         # Act
@@ -42,8 +45,9 @@ class TestElastiCacheDataPlaneEndpoint:
         actual_port = actual_endpoint["Port"]
         assert actual_address == expected_address
         assert actual_port == expected_port
+        mock_cm.start_container.assert_called_once_with("test-cluster")
 
-    def test_without_data_plane_endpoint_uses_synthetic_endpoint(self) -> None:
+    def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
         expected_address = "test-cluster.cache.localhost"
         expected_port = 6379
@@ -63,3 +67,21 @@ class TestElastiCacheDataPlaneEndpoint:
         actual_port = actual_endpoint["Port"]
         assert actual_address == expected_address
         assert actual_port == expected_port
+
+    def test_delete_cluster_stops_container(self) -> None:
+        # Arrange
+        mock_cm = AsyncMock()
+        mock_cm.start_container.return_value = "localhost:16379"
+        app = create_elasticache_app(container_manager=mock_cm)
+        client = TestClient(app)
+        _post(
+            client,
+            "CreateCacheCluster",
+            {"CacheClusterId": "test-cluster", "Engine": "redis"},
+        )
+
+        # Act
+        _post(client, "DeleteCacheCluster", {"CacheClusterId": "test-cluster"})
+
+        # Assert
+        mock_cm.stop_container.assert_called_once_with("test-cluster")

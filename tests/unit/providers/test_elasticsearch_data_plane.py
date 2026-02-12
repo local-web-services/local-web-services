@@ -1,8 +1,9 @@
-"""Tests for Elasticsearch data-plane endpoint wiring."""
+"""Tests for Elasticsearch per-resource container wiring."""
 
 from __future__ import annotations
 
 import json
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
@@ -22,10 +23,12 @@ def _post(client: TestClient, action: str, body: dict | None = None) -> dict:
 
 
 class TestElasticsearchDataPlaneEndpoint:
-    def test_with_data_plane_endpoint_uses_real_endpoint(self) -> None:
+    def test_with_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
         expected_endpoint = "localhost:9200"
-        app = create_elasticsearch_app(data_plane_endpoint="localhost:9200")
+        mock_cm = AsyncMock()
+        mock_cm.start_container.return_value = expected_endpoint
+        app = create_elasticsearch_app(container_manager=mock_cm)
         client = TestClient(app)
 
         # Act
@@ -38,8 +41,9 @@ class TestElasticsearchDataPlaneEndpoint:
         # Assert
         actual_endpoint = result["DomainStatus"]["Endpoint"]
         assert actual_endpoint == expected_endpoint
+        mock_cm.start_container.assert_called_once_with("test-domain")
 
-    def test_without_data_plane_endpoint_uses_synthetic_endpoint(self) -> None:
+    def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
         expected_suffix = "es.amazonaws.com"
         app = create_elasticsearch_app()
@@ -55,3 +59,17 @@ class TestElasticsearchDataPlaneEndpoint:
         # Assert
         actual_endpoint = result["DomainStatus"]["Endpoint"]
         assert expected_suffix in actual_endpoint
+
+    def test_delete_domain_stops_container(self) -> None:
+        # Arrange
+        mock_cm = AsyncMock()
+        mock_cm.start_container.return_value = "localhost:9200"
+        app = create_elasticsearch_app(container_manager=mock_cm)
+        client = TestClient(app)
+        _post(client, "CreateElasticsearchDomain", {"DomainName": "test-domain"})
+
+        # Act
+        _post(client, "DeleteElasticsearchDomain", {"DomainName": "test-domain"})
+
+        # Assert
+        mock_cm.stop_container.assert_called_once_with("test-domain")
