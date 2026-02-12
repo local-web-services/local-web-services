@@ -1,0 +1,32 @@
+All done. Here's a summary of what was implemented:
+
+## Summary
+
+### 6 new data plane providers (using shared `DataPlaneProvider` base class)
+- `src/lws/providers/elasticache/data_plane.py` — Redis (`redis:7-alpine`, port 6379)
+- `src/lws/providers/memorydb/data_plane.py` — Redis (`redis:7-alpine`, port 6379)
+- `src/lws/providers/docdb/data_plane.py` — MongoDB (`mongo:7`, port 27017)
+- `src/lws/providers/elasticsearch/data_plane.py` — OpenSearch (`opensearchproject/opensearch:2`, port 9200)
+- `src/lws/providers/opensearch/data_plane.py` — OpenSearch (`opensearchproject/opensearch:2`, port 9200)
+- `src/lws/providers/rds/data_plane.py` — PostgreSQL (`postgres:16-alpine`, port 5432) + MySQL (`mysql:8`, port 3306)
+
+### Shared infrastructure
+- **`DataPlaneProvider`** base class added to `docker_service.py` — eliminates duplication across all 8 data plane providers (Neptune refactored to use it too)
+- **`opensearch_docker_config()`** factory in `_shared/opensearch_config.py` — shared by ES and OpenSearch
+- **`parse_endpoint()`** helper in `response_helpers.py` — shared by ElastiCache, MemoryDB, and RDS
+
+### Control-plane endpoint wiring
+- `elasticache/routes.py`, `memorydb/routes.py` — `data_plane_endpoint` kwarg, parsed into `{Address, Port}` dicts
+- `docdb/routes.py`, `elasticsearch/routes.py`, `opensearch/routes.py` — `data_plane_endpoint` kwarg via `dataclasses.replace()`
+- `rds/routes.py` — `postgres_endpoint` + `mysql_endpoint` kwargs, routed by engine type
+- `_shared/search_service.py` — `data_plane_endpoint` field on `SearchServiceConfig`
+
+### CLI wiring (`ldk.py`)
+- 7 new data-plane ports (offsets +24 through +30)
+- 8 data plane providers registered before their HTTP providers
+- Data-driven `_print_data_plane_warnings()` for all 8 services
+- Extracted `_register_experimental_providers()` to keep function complexity under limits
+
+### 14 new unit tests (6 files, all passing)
+- Verify real endpoints when `data_plane_endpoint` is set
+- Verify synthetic endpoints when it's `None`

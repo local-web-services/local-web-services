@@ -1,0 +1,164 @@
+Implement the following plan:
+
+# Plan: Docker Data Planes for Experimental Services
+
+## Context
+
+Neptune already starts a JanusGraph Docker container as a data plane — if Docker is available, created clusters get real endpoints pointing to the container; if not, they get synthetic endpoints. The other 6 Docker-backed services (ElastiCache, MemoryDB, DocDB, Elasticsearch, OpenSearch, RDS) currently only have control-plane stubs with synthetic endpoints. We want to apply the same pattern so each service optionally starts its backing Docker container at `ldk dev` startup.
+
+Glacier and S3 Tables are out of scope (no backing Docker image).
+
+## Approach
+
+### 1. Create data plane providers (6 new files)
+
+Each follows the exact `NeptuneDataPlaneProvider` pattern from `src/lws/providers/neptune/data_plane.py` — wraps `DockerServiceManager` from `src/lws/providers/_shared/docker_service.py`.
+
+| New file | Class | Image | Internal port | Container name |
+|----------|-------|-------|--------------|----------------|
+| `src/lws/providers/elasticache/data_plane.py` | `ElastiCacheDataPlaneProvider` | `redis:7-alpine` | 6379 | `lws-elasticache-redis` |
+| `src/lws/providers/memorydb/data_plane.py` | `MemoryDBDataPlaneProvider` | `redis:7-alpine` | 6379 | `lws-memorydb-redis` |
+| `src/lws/providers/docdb/data_plane.py` | `DocDBDataPlaneProvider` | `mongo:7` | 27017 | `lws-docdb-mongo` |
+| `src/lws/providers/elasticsearch/data_plane.py` | `ElasticsearchDataPlaneProvider` | `opensearchproject/opensearch:2` | 9200 | `lws-elasticsearch-opensearch` |
+| `src/lws/providers/opensearch/data_plane.py` | `OpenSearchDataPlaneProvider` | `opensearchproject/opensearch:2` | 9200 | `lws-opensearch` |
+| `src/lws/providers/rds/data_plane.py` | `RdsPostgresDataPlaneProvider` + `RdsMysqlDataPlaneProvider` | `postgres:16-alpine` / `mysql:8` | 5432 / 3306 | `lws-rds-postgres` / `lws-rds-mysql` |
+
+Environment variables needed:
+- ES/OpenSearch: `discovery.type=single-node`, `DISABLE_SECURITY_PLUGIN=true`
+- PostgreSQL: `POSTGRES_PASSWORD=lws-local`
+- MySQL: `MYSQL_ROOT_PASSWORD=lws-local`
+- Redis/MongoDB: none
+
+Startup timeouts: 60s for ES/OpenSearch/MySQL (slow to start), 30s for others.
+
+### 2. Add `data_plane_endpoint` to control-plane factories (5 files modified)
+
+**`src/lws/providers/docdb/routes.py`** — Add `data_plane_endpoint` kwarg to `create_docdb_app()`, use `dataclasses.replace()` to override in config (identical to Neptune's pattern since DocDB uses `cluster_db_service.py` which already supports `data_plane_endpoint`).
+
+**`src/lws/providers/_shared/search_service.py`** — Add `data_plane_endpoint: str | None = None` field to `SearchServiceConfig`. In `_Domain.__init__`, use it to override `self.endpoint` when set.
+
+**`src/lws/providers/elasticsearch/routes.py`** — Add `data_plane_endpoint` kwarg to `create_elasticsearch_app()`, use `dataclasses.replace()`.
+
+**`src/lws/providers/opensearch/routes.py`** — Same pattern as elasticsearch.
+
+**`src/lws/providers/elasticache/routes.py`** — Add `data_plane_endpoint` kwarg to `create_elasticache_app()`. Store on `_ElastiCacheState`. In `_CacheCluster.__init__`, accept optional `data_plane_endpoint` param; when set, parse `host:port` and use as endpoint instead of synthetic `{id}.cache.localhost:6379`. Pass through from handler.
+
+**`src/lws/providers/memorydb/routes.py`** — Same pattern as ElastiCache. `_MemoryDBCluster.__init__` accepts optional endpoint override.
+
+**`src/lws/providers/rds/routes.py`** — Add `postgres_endpoint` and `mysql_endpoint` kwargs to `create_rds_app()`. Store on `_RdsState`. In `_DBInstance.__init__` and `_DBCluster.__init__`, accept optional endpoint override. Handlers select the right endpoint based on `Engine` field.
+
+### 3. Wire data planes into `src/lws/cli/ldk.py`
+
+**Port allocation** — Add 7 new data-plane ports to the `ports` dict in `_create_terraform_providers()` and `_service_ports()`:
+
+| Key | Offset |
+|-----|--------|
+| `elasticache-data` | port + 24 |
+| `memorydb-data` | port + 25 |
+| `docdb-data` | port + 26 |
+| `es-data` | port + 27 |
+| `opensearch-data` | port + 28 |
+| `rds-postgres-data` | port + 29 |
+| `rds-mysql-data` | port + 30 |
+
+**Provider registration** — For each service in `_create_terraform_providers()`, create the data plane provider BEFORE the HTTP provider (startup order matters). Example pattern:
+
+```python
+providers["__elasticache_data__"] = elasticache_data = ElastiCacheDataPlaneProvider(ports["elasticache-data"])
+providers["__elasticache_http__"] = _HttpServiceProvider(
+    "elasticache-http",
+    lambda: create_elasticache_app(
+        data_plane_endpoint=elasticache_data.endpoint if elasticache_data.available else None,
+    ),
+    ports["elasticache"],
+)
+```
+
+For RDS (two containers):
+```python
+providers["__rds_postgres_data__"] = rds_pg = RdsPostgresDataPlaneProvider(ports["rds-postgres-data"])
+providers["__rds_mysql_data__"] = rds_my = RdsMysqlDataPlaneProvider(ports["rds-mysql-data"])
+providers["__rds_http__"] = _HttpServiceProvider(
+    "rds-http",
+    lambda: create_rds_app(
+        postgres_endpoint=rds_pg.endpoint if rds_pg.available else None,
+        mysql_endpoint=rds_my.endpoint if rds_my.available else None,
+    ),
+    ports["rds"],
+)
+```
+
+**Warnings** — Replace the Neptune-specific `_print_data_plane_warnings()` with a data-driven version that checks all data plane providers:
+
+```python
+_DATA_PLANE_WARNINGS = [
+    ("__neptune_data__", "Neptune", "JanusGraph", "neptune"),
+    ("__elasticache_data__", "ElastiCache", "Redis", "elasticache"),
+    ("__memorydb_data__", "MemoryDB", "Redis", "memorydb"),
+    ("__docdb_data__", "DocumentDB", "MongoDB", "docdb"),
+    ("__es_data__", "Elasticsearch", "OpenSearch", "es"),
+    ("__opensearch_data__", "OpenSearch", "OpenSearch", "opensearch"),
+    ("__rds_postgres_data__", "RDS PostgreSQL", "PostgreSQL", "rds"),
+    ("__rds_mysql_data__", "RDS MySQL", "MySQL", "rds"),
+]
+```
+
+For each entry, check `hasattr(prov, 'available') and not prov.available` and print the warning with setup instructions.
+
+### 4. Unit tests
+
+One test file per service verifying that the `data_plane_endpoint` parameter correctly overrides synthetic endpoints (one class per file per architecture rule):
+
+| Test file | What it tests |
+|-----------|--------------|
+| `tests/unit/providers/test_elasticache_data_plane.py` | `create_elasticache_app(data_plane_endpoint=...)` sets real endpoint on clusters |
+| `tests/unit/providers/test_memorydb_data_plane.py` | `create_memorydb_app(data_plane_endpoint=...)` sets real endpoint on clusters |
+| `tests/unit/providers/test_docdb_data_plane.py` | `create_docdb_app(data_plane_endpoint=...)` sets real endpoint |
+| `tests/unit/providers/test_elasticsearch_data_plane.py` | `create_elasticsearch_app(data_plane_endpoint=...)` sets real endpoint on domains |
+| `tests/unit/providers/test_opensearch_data_plane.py` | `create_opensearch_app(data_plane_endpoint=...)` sets real endpoint on domains |
+| `tests/unit/providers/test_rds_data_plane.py` | `create_rds_app(postgres_endpoint=..., mysql_endpoint=...)` routes by engine |
+
+Each test file has one class with two tests: one with data_plane_endpoint set (assert real endpoint), one without (assert synthetic endpoint).
+
+## Files Modified
+
+| File | Change |
+|------|--------|
+| `src/lws/providers/elasticache/data_plane.py` | **NEW** — ElastiCacheDataPlaneProvider |
+| `src/lws/providers/memorydb/data_plane.py` | **NEW** — MemoryDBDataPlaneProvider |
+| `src/lws/providers/docdb/data_plane.py` | **NEW** — DocDBDataPlaneProvider |
+| `src/lws/providers/elasticsearch/data_plane.py` | **NEW** — ElasticsearchDataPlaneProvider |
+| `src/lws/providers/opensearch/data_plane.py` | **NEW** — OpenSearchDataPlaneProvider |
+| `src/lws/providers/rds/data_plane.py` | **NEW** — RdsPostgresDataPlaneProvider + RdsMysqlDataPlaneProvider |
+| `src/lws/providers/_shared/search_service.py` | Add `data_plane_endpoint` field to `SearchServiceConfig`, override in `_Domain.__init__` |
+| `src/lws/providers/docdb/routes.py` | Add `data_plane_endpoint` kwarg to `create_docdb_app()` |
+| `src/lws/providers/elasticsearch/routes.py` | Add `data_plane_endpoint` kwarg to `create_elasticsearch_app()` |
+| `src/lws/providers/opensearch/routes.py` | Add `data_plane_endpoint` kwarg to `create_opensearch_app()` |
+| `src/lws/providers/elasticache/routes.py` | Add `data_plane_endpoint` kwarg to factory + state + endpoint override in `_CacheCluster` |
+| `src/lws/providers/memorydb/routes.py` | Add `data_plane_endpoint` kwarg to factory + state + endpoint override in `_MemoryDBCluster` |
+| `src/lws/providers/rds/routes.py` | Add `postgres_endpoint`/`mysql_endpoint` kwargs, route by engine |
+| `src/lws/cli/ldk.py` | Add 7 ports, register 8 data plane providers, update warnings |
+| `tests/unit/providers/test_elasticache_data_plane.py` | **NEW** |
+| `tests/unit/providers/test_memorydb_data_plane.py` | **NEW** |
+| `tests/unit/providers/test_docdb_data_plane.py` | **NEW** |
+| `tests/unit/providers/test_elasticsearch_data_plane.py` | **NEW** |
+| `tests/unit/providers/test_opensearch_data_plane.py` | **NEW** |
+| `tests/unit/providers/test_rds_data_plane.py` | **NEW** |
+
+## Verification
+
+```bash
+# Unit tests for new data plane endpoint wiring:
+uv run pytest tests/unit/providers/test_elasticache_data_plane.py tests/unit/providers/test_memorydb_data_plane.py tests/unit/providers/test_docdb_data_plane.py tests/unit/providers/test_elasticsearch_data_plane.py tests/unit/providers/test_opensearch_data_plane.py tests/unit/providers/test_rds_data_plane.py -v
+
+# Full test suite:
+make check
+
+# Manual (requires Docker):
+lws ldk dev                  # Shows warnings for any unavailable data planes
+lws elasticache create-cache-cluster --cache-cluster-id test-1
+  # Endpoint should point to localhost:<port+24> if Docker is running
+```
+
+
+If you need specific details from before exiting plan mode (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/eamonnfaherty/.REDACTED.jsonl

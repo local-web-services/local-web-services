@@ -1,0 +1,43 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "0c759b4d7c4e",
+  "session_id": "ea66a7bf-fd2d-4f55-9989-d4d4f88c260d",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-12T03:05:26.653434Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/ldk.py",
+    "src/lws/providers/_shared/docker_service.py",
+    "src/lws/providers/_shared/opensearch_config.py",
+    "src/lws/providers/_shared/response_helpers.py",
+    "src/lws/providers/_shared/search_service.py",
+    "src/lws/providers/docdb/data_plane.py",
+    "src/lws/providers/docdb/routes.py",
+    "src/lws/providers/elasticache/data_plane.py",
+    "src/lws/providers/elasticache/routes.py",
+    "src/lws/providers/elasticsearch/data_plane.py",
+    "src/lws/providers/elasticsearch/routes.py",
+    "src/lws/providers/memorydb/data_plane.py",
+    "src/lws/providers/memorydb/routes.py",
+    "src/lws/providers/neptune/data_plane.py",
+    "src/lws/providers/opensearch/data_plane.py",
+    "src/lws/providers/opensearch/routes.py",
+    "src/lws/providers/rds/data_plane.py",
+    "src/lws/providers/rds/routes.py",
+    "tests/unit/providers/test_docdb_data_plane.py",
+    "tests/unit/providers/test_elasticache_data_plane.py",
+    "tests/unit/providers/test_elasticsearch_data_plane.py",
+    "tests/unit/providers/test_memorydb_data_plane.py",
+    "tests/unit/providers/test_opensearch_data_plane.py",
+    "tests/unit/providers/test_rds_data_plane.py"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 62,
+    "cache_creation_tokens": 130561,
+    "cache_read_tokens": 6261783,
+    "output_tokens": 11723,
+    "api_call_count": 60
+  }
+}
