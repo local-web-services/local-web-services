@@ -1,0 +1,11 @@
+All 2035 tests pass (17 new). Here's what was added:
+
+**`tests/unit/providers/test_dynamodb_provider_ensure_dynamo_json.py`** — 13 tests for the helper functions:
+- `TestEnsureDynamoJsonValue` (9 tests): plain string/int/bool/None get wrapped; already-typed S/N/BOOL/L/M values are preserved
+- `TestEnsureDynamoJson` (4 tests): fully typed items unchanged, fully plain items wrapped, mixed items normalised, empty item
+
+**`tests/unit/providers/test_dynamodb_provider_update_item.py`** — 4 new tests in `TestUpdateItemDynamoJson`:
+- SET on existing attribute preserves DynamoDB JSON format
+- SET on new attribute stays in DynamoDB JSON
+- GET after UPDATE returns consistent DynamoDB JSON (verifies storage isn't corrupted)
+- Numeric attribute update preserves DynamoDB JSON

@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "436afc2e9d55",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "tests/unit/providers/test_dynamodb_provider_ensure_dynamo_json.py",
+    "tests/unit/providers/test_dynamodb_provider_update_item.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/43/6afc2e9d55/0/metadata.json",
+      "transcript": "/43/6afc2e9d55/0/full.jsonl",
+      "context": "",
+      "content_hash": "/43/6afc2e9d55/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 10747,
+    "cache_read_tokens": 716226,
+    "output_tokens": 1363,
+    "api_call_count": 8
+  }
+}
