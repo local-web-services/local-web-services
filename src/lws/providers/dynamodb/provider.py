@@ -83,6 +83,30 @@ def _to_dynamo_json_value(val: object) -> dict:
     return {"S": str(val)}
 
 
+_DYNAMO_TYPE_KEYS = {"S", "N", "B", "BOOL", "NULL", "L", "M", "SS", "NS", "BS"}
+
+
+def _ensure_dynamo_json_value(val: object) -> dict:
+    """Ensure a single value is in DynamoDB JSON format.
+
+    If *val* is already a DynamoDB type descriptor dict, return as-is.
+    Otherwise wrap it via ``_to_dynamo_json_value``.
+    """
+    if isinstance(val, dict) and val and set(val.keys()).intersection(_DYNAMO_TYPE_KEYS):
+        return val
+    return _to_dynamo_json_value(val)
+
+
+def _ensure_dynamo_json(item: dict) -> dict:
+    """Ensure every top-level value in *item* is DynamoDB-typed.
+
+    Handles mixed items where some values are already typed descriptors
+    and others are plain Python values (e.g. after update-expression
+    evaluation unwraps ``:value`` refs).
+    """
+    return {key: _ensure_dynamo_json_value(val) for key, val in item.items()}
+
+
 def _from_dynamo_json(item: dict) -> dict:
     """Convert DynamoDB JSON to a plain dict."""
     if not _is_dynamo_json(item):
@@ -584,8 +608,19 @@ class SqliteDynamoProvider(IKeyValueStore):
         if existing is None:
             existing = dict(key)
 
+        # Remember whether the item was stored in DynamoDB JSON format so
+        # we can restore it after the evaluator runs.
+        needs_rewrap = _is_dynamo_json(existing)
+
         # Use the enhanced update expression evaluator (P1-24)
         apply_update_expression(existing, update_expression, expression_names, expression_values)
+
+        if needs_rewrap:
+            # The evaluator unwraps DynamoDB-typed expression values to
+            # plain Python values, producing a mixed-format item.  Re-wrap
+            # so the stored item and any returned Attributes stay in
+            # DynamoDB JSON.
+            existing = _ensure_dynamo_json(existing)
 
         await self.put_item(table_name, existing)
         return existing

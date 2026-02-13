@@ -344,6 +344,10 @@ class DockerCompute(ICompute):
             existing = env.get("NODE_OPTIONS", "")
             preload = "--require /var/bootstrap/dns_rewrite.js"
             env["NODE_OPTIONS"] = f"{existing} {preload}".strip()
+            # Make the runtime's pre-installed AWS SDK accessible to user code,
+            # matching real AWS Lambda behavior where the SDK is available
+            # without bundling.
+            env["NODE_PATH"] = "/var/runtime/node_modules"
         return env
 
     def _build_exec_env(self, context: LambdaContext) -> list[str]:
