@@ -1,0 +1,5 @@
+All 2018 tests pass. Here's a summary of both fixes:
+
+**1. `src/lws/providers/lambda_runtime/docker.py`** — Added `NODE_PATH=/var/runtime/node_modules` so Node.js Lambdas can `require('@aws-sdk/...')` without bundling.
+
+**2. `src/lws/providers/dynamodb/provider.py`** — Fixed the DynamoDB `update_item` response format. The update expression evaluator unwraps DynamoDB-typed values (e.g., `{"S": "PROCESSED"}` → `"PROCESSED"`) when applying SET actions, creating a mixed-format item. Added `_ensure_dynamo_json` / `_ensure_dynamo_json_value` helpers that re-wrap any plain values back to DynamoDB JSON after the evaluator runs. This fixes both the HTTP response (so SDK v3 can deserialize it) and the stored data (so subsequent GetItem/Query calls also return correct format).

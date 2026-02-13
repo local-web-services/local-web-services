@@ -1,0 +1,11 @@
+this uncovered another issue: Workflow failed:
+{
+    "executionArn": "arn:aws:states:us-east-1:000000000000:execution:OrderWorkflow:e6d67eab-735e-46b2-8fd3-65e503906554",
+    "stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:OrderWorkflow",
+    "name": "e6d67eab-735e-46b2-8fd3-65e503906554",
+    "status": "FAILED",
+    "startDate": 1771000290.4843771,
+    "stopDate": 1771000294.849938,
+    "error": "States.TaskFailed",
+    "cause": "Expected object, got string: PROCESSED\n  Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object."
+}
