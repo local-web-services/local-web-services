@@ -1,0 +1,1 @@
+Done. Added `NODE_PATH=/var/runtime/node_modules` to the container environment for Node.js runtimes in `src/lws/providers/lambda_runtime/docker.py:349`. This lets `require('@aws-sdk/...')` resolve from the runtime's pre-installed SDK, matching real AWS Lambda behavior.
