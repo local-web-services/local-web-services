@@ -1,0 +1,24 @@
+Here's a summary of everything that was implemented across all 4 PRs:
+
+## PR 1: DynamoDB ConditionCheck in TransactWriteItems (completed earlier)
+- Modified `src/lws/providers/dynamodb/routes.py` — two-pass approach for TransactWriteItems: evaluate all conditions first, then execute writes
+- Tests: `test_dynamodb_routes_transact_condition_check.py` (unit), `test_dynamodb_transact_condition_check.py` (E2E)
+
+## PR 2: S3 Multipart Upload (completed earlier)
+- Modified `src/lws/providers/s3/provider.py` — added `MultipartUpload` dataclass and 5 multipart methods
+- Modified `src/lws/providers/s3/routes.py` — added multipart route handlers for CreateMultipartUpload, UploadPart, CompleteMultipartUpload, AbortMultipartUpload, ListParts
+- Tests: `test_s3_provider_multipart.py` (unit), `test_multipart_upload.py` (E2E)
+
+## PR 3: Cognito Missing Operations
+- Modified `src/lws/providers/cognito/user_store.py` — added `password_reset_codes` table, `create_password_reset_code()`, `confirm_password_reset()`, `change_password()`, `revoke_refresh_tokens()`, plus `ExpiredCodeException` and `CodeMismatchException`
+- Modified `src/lws/providers/cognito/provider.py` — added `forgot_password()`, `confirm_forgot_password()`, `change_password()`, `global_sign_out()`
+- Modified `src/lws/providers/cognito/routes.py` — added 4 handlers: ForgotPassword, ConfirmForgotPassword, ChangePassword, GlobalSignOut
+- Tests: 6 unit test files + 3 E2E test files
+
+## PR 4: Lambda Event Source Mappings
+- Fixed `src/lws/providers/lambda_runtime/routes.py` — `_list_event_source_mappings` now returns actual stored mappings
+- Created `src/lws/providers/lambda_runtime/event_source_manager.py` — `EventSourceManager` with activate/deactivate for SQS and DynamoDB Streams mappings
+- Modified `src/lws/parser/template_parser.py` — added `EventSourceMappingProps` dataclass and `extract_event_source_mappings()` extractor
+- Tests: `test_lambda_routes_event_source_mappings.py`, `test_event_source_manager.py`, `test_template_parser_event_source_mappings.py` (unit), `test_lambda_event_source_mapping.py` (E2E)
+
+**Final test count: 2111 tests passing, `make check` green** (up from 2083 at start — 28 new tests added).
