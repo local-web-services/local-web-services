@@ -1,0 +1,24 @@
+All done. Here's a summary of what was implemented:
+
+**Step 1 — 13 CLI Commands Added:**
+- **DynamoDB**: `transact-write-items`
+- **S3**: `create-multipart-upload`, `upload-part`, `complete-multipart-upload`, `abort-multipart-upload`
+- **Cognito**: `forgot-password`, `confirm-forgot-password`, `change-password`, `global-sign-out`
+- **Lambda**: `create-function`, `create-event-source-mapping`, `list-event-source-mappings`, `delete-event-source-mapping`
+
+**Step 2 — 8 E2E Test Files Rewritten** (all `httpx` removed, now use `CliRunner`):
+- `test_transact_write_items.py` (renamed from `test_dynamodb_transact_condition_check.py`)
+- `test_create_multipart_upload.py` (renamed from `test_multipart_upload.py`)
+- `test_forgot_password.py`, `test_change_password.py`, `test_global_sign_out.py`
+- `test_create_event_source_mapping.py` (renamed from `test_lambda_event_source_mapping.py`)
+- `test_lambda_s3_integration.py`, `test_lambda_s3_nodejs_integration.py`
+
+**Step 3 — New Test Files:**
+- 7 new E2E test files (per-command coverage)
+- 13 new integration test stubs
+- 3 old files deleted (replaced by renamed versions)
+
+**Step 4 — Architecture Test:**
+- `tests/architecture/tests/e2e/test_no_httpx_imports.py` — scans all E2E `test_*.py` files for `httpx` imports
+
+**Verification:** `make check` passes — ruff, black, pylint 10/10, all 2125 tests green.

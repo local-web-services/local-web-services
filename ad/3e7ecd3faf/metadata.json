@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "ad3e7ecd3faf",
+  "strategy": "auto-commit",
+  "branch": "feat/improve-existing-service-coverage",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/services/cognito.py",
+    "src/lws/cli/services/dynamodb.py",
+    "src/lws/cli/services/lambda_service.py",
+    "src/lws/cli/services/s3.py",
+    "tests/architecture/tests/e2e/test_no_httpx_imports.py",
+    "tests/e2e/cognito_idp/test_change_password.py",
+    "tests/e2e/cognito_idp/test_confirm_forgot_password.py",
+    "tests/e2e/cognito_idp/test_forgot_password.py",
+    "tests/e2e/cognito_idp/test_global_sign_out.py",
+    "tests/e2e/dynamodb/test_dynamodb_transact_condition_check.py",
+    "tests/e2e/dynamodb/test_transact_write_items.py",
+    "tests/e2e/lambda_/test_create_event_source_mapping.py",
+    "tests/e2e/lambda_/test_create_function.py",
+    "tests/e2e/lambda_/test_delete_event_source_mapping.py",
+    "tests/e2e/lambda_/test_lambda_event_source_mapping.py",
+    "tests/e2e/lambda_/test_lambda_s3_integration.py",
+    "tests/e2e/lambda_/test_lambda_s3_nodejs_integration.py",
+    "tests/e2e/lambda_/test_list_event_source_mappings.py",
+    "tests/e2e/s3api/test_abort_multipart_upload.py",
+    "tests/e2e/s3api/test_complete_multipart_upload.py",
+    "tests/e2e/s3api/test_create_multipart_upload.py",
+    "tests/e2e/s3api/test_multipart_upload.py",
+    "tests/e2e/s3api/test_upload_part.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ad/3e7ecd3faf/0/metadata.json",
+      "transcript": "/ad/3e7ecd3faf/0/full.jsonl",
+      "context": "",
+      "content_hash": "/ad/3e7ecd3faf/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1221,
+    "cache_creation_tokens": 192855,
+    "cache_read_tokens": 4936464,
+    "output_tokens": 3319,
+    "api_call_count": 62
+  }
+}
