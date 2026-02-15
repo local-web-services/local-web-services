@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "462b44c7e277",
+  "strategy": "auto-commit",
+  "branch": "feat/improve-existing-service-coverage",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/46/2b44c7e277/0/metadata.json",
+      "transcript": "/46/2b44c7e277/0/full.jsonl",
+      "context": "",
+      "content_hash": "/46/2b44c7e277/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
