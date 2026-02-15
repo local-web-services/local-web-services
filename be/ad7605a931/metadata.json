@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "bead7605a931",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/be/ad7605a931/0/metadata.json",
+      "transcript": "/be/ad7605a931/0/full.jsonl",
+      "context": "",
+      "content_hash": "/be/ad7605a931/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
