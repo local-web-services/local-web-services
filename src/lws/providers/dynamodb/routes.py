@@ -20,6 +20,7 @@ from lws.interfaces.key_value_store import (
 )
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers.dynamodb.expressions import evaluate_filter_expression
 
 _logger = get_logger("ldk.dynamodb")
 
@@ -245,6 +246,13 @@ class DynamoDbRouter:
 
     async def _transact_write_items(self, body: dict) -> Response:
         transact_items = body.get("TransactItems", [])
+
+        # Pass 1: evaluate all condition expressions
+        failure = await self._check_transact_conditions(transact_items)
+        if failure is not None:
+            return failure
+
+        # Pass 2: execute writes
         for transact_item in transact_items:
             if "Put" in transact_item:
                 put = transact_item["Put"]
@@ -261,8 +269,51 @@ class DynamoDbRouter:
                     expression_values=update.get("ExpressionAttributeValues"),
                     expression_names=update.get("ExpressionAttributeNames"),
                 )
-            # ConditionCheck is a no-op for local dev
         return _json_response({})
+
+    async def _check_transact_conditions(self, transact_items: list) -> Response | None:
+        """Evaluate ConditionExpressions across all transact items.
+
+        Returns an error Response if any condition fails, or None if all pass.
+        """
+        reasons: list[dict] = []
+        any_failed = False
+
+        for transact_item in transact_items:
+            condition_expr, names, values, table_name, key = _extract_condition_params(
+                transact_item
+            )
+
+            if condition_expr is None:
+                reasons.append({"Code": "None"})
+                continue
+
+            item = await self.store.get_item(table_name, key)
+            target = _unwrap_item(item) if item is not None else {}
+            passed = evaluate_filter_expression(target, condition_expr, names, values)
+            if passed:
+                reasons.append({"Code": "None"})
+            else:
+                reasons.append(
+                    {
+                        "Code": "ConditionalCheckFailed",
+                        "Message": "The conditional request failed",
+                    }
+                )
+                any_failed = True
+
+        if any_failed:
+            return _json_response(
+                {
+                    "__type": "com.amazonaws.dynamodb.v20120810" "#TransactionCanceledException",
+                    "Message": "Transaction cancelled, please refer "
+                    "cancellation reasons for specific reasons "
+                    "[ConditionalCheckFailed]",
+                    "CancellationReasons": reasons,
+                },
+                status_code=400,
+            )
+        return None
 
     async def _transact_get_items(self, body: dict) -> Response:
         transact_items = body.get("TransactItems", [])
@@ -362,6 +413,51 @@ def _parse_table_config(body: dict) -> TableConfig:
         )
 
     return TableConfig(table_name=table_name, key_schema=key_schema, gsi_definitions=gsi_defs)
+
+
+_DYNAMO_TYPE_KEYS = {"S", "N", "B", "BOOL", "NULL", "L", "M", "SS", "NS", "BS"}
+
+
+def _unwrap_item(item: dict) -> dict:
+    """Convert a DynamoDB JSON item to plain Python values for expression evaluation.
+
+    For example ``{"status": {"S": "active"}}`` becomes ``{"status": "active"}``.
+    If the item is already in plain format it is returned unchanged.
+    """
+    result: dict = {}
+    for key, val in item.items():
+        if isinstance(val, dict) and len(val) == 1:
+            type_key = next(iter(val))
+            if type_key in _DYNAMO_TYPE_KEYS:
+                result[key] = val[type_key]
+                continue
+        result[key] = val
+    return result
+
+
+def _extract_condition_params(
+    transact_item: dict,
+) -> tuple[str | None, dict | None, dict | None, str, dict]:
+    """Extract condition expression parameters from a transact item.
+
+    Returns (condition_expression, names, values, table_name, key).
+    If the item has no ConditionExpression, condition_expression is None.
+    """
+    for op_type in ("ConditionCheck", "Put", "Delete", "Update"):
+        if op_type not in transact_item:
+            continue
+        op = transact_item[op_type]
+        condition = op.get("ConditionExpression")
+        if condition is None and op_type != "ConditionCheck":
+            return None, None, None, "", {}
+        table = op.get("TableName", "")
+        key = op.get("Key", {})
+        if op_type == "Put" and "Key" not in op:
+            key = {}
+        names = op.get("ExpressionAttributeNames")
+        values = op.get("ExpressionAttributeValues")
+        return condition, names, values, table, key
+    return None, None, None, "", {}
 
 
 def _error_response(error_type: str, message: str) -> Response:

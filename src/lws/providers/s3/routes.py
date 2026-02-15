@@ -388,6 +388,98 @@ async def _get_bucket_notification_configuration(bucket: str, provider: S3Provid
 
 
 # ------------------------------------------------------------------
+# Multipart upload
+# ------------------------------------------------------------------
+
+
+async def _create_multipart_upload(bucket: str, key: str, provider: S3Provider) -> Response:
+    """Handle CreateMultipartUpload (POST /{bucket}/{key}?uploads)."""
+    upload_id = provider.create_multipart_upload(bucket, key)
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<InitiateMultipartUploadResult>"
+        f"<Bucket>{_xml_escape(bucket)}</Bucket>"
+        f"<Key>{_xml_escape(key)}</Key>"
+        f"<UploadId>{_xml_escape(upload_id)}</UploadId>"
+        "</InitiateMultipartUploadResult>"
+    )
+    return _xml_response(body)
+
+
+async def _upload_part(bucket: str, key: str, request: Request, provider: S3Provider) -> Response:
+    """Handle UploadPart (PUT /{bucket}/{key}?partNumber=N&uploadId=X)."""
+    part_number = int(request.query_params.get("partNumber", "0"))
+    upload_id = request.query_params.get("uploadId", "")
+    data = await request.body()
+    try:
+        etag = provider.upload_part(bucket, key, upload_id, part_number, data)
+    except KeyError:
+        return _error_xml("NoSuchUpload", f"Upload not found: {upload_id}", 404)
+    return Response(status_code=200, headers={"ETag": f'"{etag}"'})
+
+
+async def _complete_multipart_upload(
+    bucket: str, key: str, request: Request, provider: S3Provider
+) -> Response:
+    """Handle CompleteMultipartUpload (POST /{bucket}/{key}?uploadId=X)."""
+    upload_id = request.query_params.get("uploadId", "")
+    try:
+        result = await provider.complete_multipart_upload(bucket, key, upload_id)
+    except KeyError:
+        return _error_xml("NoSuchUpload", f"Upload not found: {upload_id}", 404)
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<CompleteMultipartUploadResult>"
+        f"<Location>{_xml_escape(result['Location'])}</Location>"
+        f"<Bucket>{_xml_escape(result['Bucket'])}</Bucket>"
+        f"<Key>{_xml_escape(result['Key'])}</Key>"
+        f"<ETag>{_xml_escape(result['ETag'])}</ETag>"
+        "</CompleteMultipartUploadResult>"
+    )
+    return _xml_response(body)
+
+
+async def _abort_multipart_upload(
+    _bucket: str, _key: str, request: Request, provider: S3Provider
+) -> Response:
+    """Handle AbortMultipartUpload (DELETE /{bucket}/{key}?uploadId=X)."""
+    upload_id = request.query_params.get("uploadId", "")
+    provider.abort_multipart_upload(upload_id)
+    return Response(status_code=204)
+
+
+async def _list_parts_handler(
+    bucket: str, key: str, request: Request, provider: S3Provider
+) -> Response:
+    """Handle ListParts (GET /{bucket}/{key}?uploadId=X)."""
+    upload_id = request.query_params.get("uploadId", "")
+    try:
+        parts = provider.list_parts(upload_id)
+    except KeyError:
+        return _error_xml("NoSuchUpload", f"Upload not found: {upload_id}", 404)
+
+    parts_xml = ""
+    for part in parts:
+        parts_xml += (
+            "<Part>"
+            f"<PartNumber>{part['PartNumber']}</PartNumber>"
+            f"<Size>{part['Size']}</Size>"
+            f"<ETag>{_xml_escape(part['ETag'])}</ETag>"
+            "</Part>"
+        )
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<ListPartsResult>"
+        f"<Bucket>{_xml_escape(bucket)}</Bucket>"
+        f"<Key>{_xml_escape(key)}</Key>"
+        f"<UploadId>{_xml_escape(upload_id)}</UploadId>"
+        f"{parts_xml}"
+        "</ListPartsResult>"
+    )
+    return _xml_response(body)
+
+
+# ------------------------------------------------------------------
 # Virtual-hosted-style middleware
 # ------------------------------------------------------------------
 
@@ -531,21 +623,49 @@ async def _list_all_buckets(provider: S3Provider) -> Response:
     return _xml_response(body)
 
 
+async def _dispatch_put_object(
+    bucket: str, key: str, request: Request, provider: S3Provider
+) -> Response:
+    """Dispatch PUT /{bucket}/{key} based on query params and headers."""
+    if "partNumber" in request.query_params and "uploadId" in request.query_params:
+        return await _upload_part(bucket, key, request, provider)
+    if "x-amz-copy-source" in request.headers:
+        return await _copy_object(bucket, key, request, provider)
+    return await _put_object(bucket, key, request, provider)
+
+
+async def _dispatch_post_object(
+    bucket: str, key: str, request: Request, provider: S3Provider
+) -> Response:
+    """Dispatch POST /{bucket}/{key} based on query params."""
+    if "uploads" in request.query_params:
+        return await _create_multipart_upload(bucket, key, provider)
+    if "uploadId" in request.query_params:
+        return await _complete_multipart_upload(bucket, key, request, provider)
+    return _error_xml("InvalidRequest", "Unsupported POST operation", 400)
+
+
 def _register_object_routes(app: FastAPI, provider: S3Provider) -> None:
     """Register object-level S3 routes on *app*."""
 
+    @app.api_route("/{bucket}/{key:path}", methods=["POST"])
+    async def post_object(bucket: str, key: str, request: Request) -> Response:
+        return await _dispatch_post_object(bucket, key, request, provider)
+
     @app.api_route("/{bucket}/{key:path}", methods=["PUT"])
     async def put_object(bucket: str, key: str, request: Request) -> Response:
-        if "x-amz-copy-source" in request.headers:
-            return await _copy_object(bucket, key, request, provider)
-        return await _put_object(bucket, key, request, provider)
+        return await _dispatch_put_object(bucket, key, request, provider)
 
     @app.api_route("/{bucket}/{key:path}", methods=["GET"])
-    async def get_object(bucket: str, key: str) -> Response:
+    async def get_object(bucket: str, key: str, request: Request) -> Response:
+        if "uploadId" in request.query_params:
+            return await _list_parts_handler(bucket, key, request, provider)
         return await _get_object(bucket, key, provider)
 
     @app.api_route("/{bucket}/{key:path}", methods=["DELETE"])
-    async def delete_object(bucket: str, key: str) -> Response:
+    async def delete_object(bucket: str, key: str, request: Request) -> Response:
+        if "uploadId" in request.query_params:
+            return await _abort_multipart_upload(bucket, key, request, provider)
         return await _delete_object(bucket, key, provider)
 
     @app.api_route("/{bucket}/{key:path}", methods=["HEAD"])

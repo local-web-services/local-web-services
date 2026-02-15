@@ -282,3 +282,168 @@ async def _query(
     except Exception as exc:
         exit_with_error(str(exc))
     output_json(result)
+
+
+@app.command("transact-write-items")
+def transact_write_items(
+    transact_items: str = typer.Option(..., "--transact-items", help="JSON transact items"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Execute a transactional write."""
+    asyncio.run(_transact_write_items(transact_items, port))
+
+
+async def _transact_write_items(transact_items_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(transact_items_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --transact-items: {exc}")
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.TransactWriteItems",
+            {"TransactItems": parsed},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("update-item")
+def update_item(
+    table_name: str = typer.Option(..., "--table-name", help="Table name"),
+    key: str = typer.Option(..., "--key", help="JSON key"),
+    update_expression: str = typer.Option(..., "--update-expression", help="Update expression"),
+    expression_attribute_values: str = typer.Option(
+        None, "--expression-attribute-values", help="JSON expression attribute values"
+    ),
+    expression_attribute_names: str = typer.Option(
+        None, "--expression-attribute-names", help="JSON expression attribute names"
+    ),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Update an item in a table."""
+    asyncio.run(
+        _update_item(
+            table_name,
+            key,
+            update_expression,
+            expression_attribute_values,
+            expression_attribute_names,
+            port,
+        )
+    )
+
+
+async def _update_item(
+    table_name: str,
+    key_json: str,
+    update_expression: str,
+    expression_attribute_values: str | None,
+    expression_attribute_names: str | None,
+    port: int,
+) -> None:
+    client = _client(port)
+    try:
+        parsed_key = json.loads(key_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --key: {exc}")
+    body: dict = {
+        "TableName": table_name,
+        "Key": parsed_key,
+        "UpdateExpression": update_expression,
+    }
+    if expression_attribute_values:
+        try:
+            body["ExpressionAttributeValues"] = json.loads(expression_attribute_values)
+        except json.JSONDecodeError as exc:
+            exit_with_error(f"Invalid JSON in --expression-attribute-values: {exc}")
+    if expression_attribute_names:
+        try:
+            body["ExpressionAttributeNames"] = json.loads(expression_attribute_names)
+        except json.JSONDecodeError as exc:
+            exit_with_error(f"Invalid JSON in --expression-attribute-names: {exc}")
+    try:
+        result = await client.json_target_request(_SERVICE, f"{_TARGET_PREFIX}.UpdateItem", body)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("batch-write-item")
+def batch_write_item(
+    request_items: str = typer.Option(..., "--request-items", help="JSON request items"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Execute a batch write."""
+    asyncio.run(_batch_write_item(request_items, port))
+
+
+async def _batch_write_item(request_items_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(request_items_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --request-items: {exc}")
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.BatchWriteItem",
+            {"RequestItems": parsed},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("batch-get-item")
+def batch_get_item(
+    request_items: str = typer.Option(..., "--request-items", help="JSON request items"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Execute a batch get."""
+    asyncio.run(_batch_get_item(request_items, port))
+
+
+async def _batch_get_item(request_items_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(request_items_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --request-items: {exc}")
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.BatchGetItem",
+            {"RequestItems": parsed},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("transact-get-items")
+def transact_get_items(
+    transact_items: str = typer.Option(..., "--transact-items", help="JSON transact items"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Execute a transactional read."""
+    asyncio.run(_transact_get_items(transact_items, port))
+
+
+async def _transact_get_items(transact_items_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(transact_items_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --transact-items: {exc}")
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.TransactGetItems",
+            {"TransactItems": parsed},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)

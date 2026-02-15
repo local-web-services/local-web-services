@@ -147,6 +147,7 @@ class TestTransactWriteItems:
         self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
     ) -> None:
         # Arrange
+        mock_store.get_item.return_value = {"pk": {"S": "user#3"}}
         payload = {
             "TransactItems": [
                 {

@@ -1,12 +1,12 @@
-"""E2E test for Lambda → S3 path-style addressing integration."""
+"""E2E test for Lambda -> S3 path-style addressing integration."""
 
 from __future__ import annotations
 
+import json
 import subprocess
 import tempfile
 from pathlib import Path
 
-import httpx
 import pytest
 from typer.testing import CliRunner
 
@@ -54,13 +54,12 @@ def handler(event, context):
     reason="public.ecr.aws/lambda/python:3.12 image not available locally",
 )
 class TestLambdaS3Integration:
-    def test_lambda_writes_to_s3(self, e2e_port, lws_invoke, assert_invoke):
+    def test_lambda_writes_to_s3(self, e2e_port, lws_invoke, assert_invoke, parse_output):
         # Arrange
         bucket_name = "e2e-lambda-s3-bucket"
         object_key = "e2e-lambda-output.txt"
         expected_body = "hello from lambda"
         function_name = "e2e-s3-writer"
-        lambda_port = e2e_port + 9
 
         lws_invoke(["s3api", "create-bucket", "--bucket", bucket_name, "--port", str(e2e_port)])
 
@@ -68,30 +67,48 @@ class TestLambdaS3Integration:
             handler_file = Path(handler_dir) / "handler.py"
             handler_file.write_text(_HANDLER_CODE)
 
-            resp = httpx.post(
-                f"http://localhost:{lambda_port}/2015-03-31/functions",
-                json={
-                    "FunctionName": function_name,
-                    "Runtime": "python3.12",
-                    "Handler": "handler.handler",
-                    "Code": {"Filename": handler_dir},
-                    "Timeout": 30,
-                },
-                timeout=30.0,
+            create_result = runner.invoke(
+                app,
+                [
+                    "lambda",
+                    "create-function",
+                    "--function-name",
+                    function_name,
+                    "--runtime",
+                    "python3.12",
+                    "--handler",
+                    "handler.handler",
+                    "--code",
+                    json.dumps({"Filename": handler_dir}),
+                    "--timeout",
+                    "30",
+                    "--port",
+                    str(e2e_port),
+                ],
             )
-            assert resp.status_code == 201, f"CreateFunction failed: {resp.text}"
+            assert create_result.exit_code == 0, create_result.output
 
             # Act
-            event_payload = {"bucket": bucket_name, "key": object_key, "body": expected_body}
-            invoke_resp = httpx.post(
-                f"http://localhost:{lambda_port}/2015-03-31/functions/{function_name}/invocations",
-                json=event_payload,
-                timeout=60.0,
+            event_payload = json.dumps(
+                {"bucket": bucket_name, "key": object_key, "body": expected_body}
+            )
+            invoke_result = runner.invoke(
+                app,
+                [
+                    "lambda",
+                    "invoke",
+                    "--function-name",
+                    function_name,
+                    "--event",
+                    event_payload,
+                    "--port",
+                    str(e2e_port),
+                ],
             )
 
         # Assert
-        assert invoke_resp.status_code == 200, invoke_resp.text
-        actual_result = invoke_resp.json()
+        assert invoke_result.exit_code == 0, invoke_result.output
+        actual_result = parse_output(invoke_result.output)
         assert actual_result.get("statusCode") == 200
 
         outfile = Path(tempfile.mktemp(suffix=".txt"))

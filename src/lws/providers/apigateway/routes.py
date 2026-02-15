@@ -462,11 +462,11 @@ class ApiGatewayManagementRouter:
 
     # -- Integration responses -----------------------------------------------
 
-    async def _put_integration_response(
+    async def _put_integration_response(  # pylint: disable=unused-argument
         self,
-        _rest_api_id: str,
-        _resource_id: str,
-        _http_method: str,
+        rest_api_id: str,
+        resource_id: str,
+        http_method: str,
         status_code: str,
         request: Request,
     ) -> Response:
@@ -478,22 +478,22 @@ class ApiGatewayManagementRouter:
         }
         return _json_response(resp_data, 201)
 
-    async def _get_integration_response(
+    async def _get_integration_response(  # pylint: disable=unused-argument
         self,
-        _rest_api_id: str,
-        _resource_id: str,
-        _http_method: str,
+        rest_api_id: str,
+        resource_id: str,
+        http_method: str,
         status_code: str,
     ) -> Response:
         return _json_response({"statusCode": status_code})
 
     # -- Method responses ----------------------------------------------------
 
-    async def _put_method_response(
+    async def _put_method_response(  # pylint: disable=unused-argument
         self,
-        _rest_api_id: str,
-        _resource_id: str,
-        _http_method: str,
+        rest_api_id: str,
+        resource_id: str,
+        http_method: str,
         status_code: str,
         request: Request,
     ) -> Response:
@@ -505,11 +505,11 @@ class ApiGatewayManagementRouter:
         }
         return _json_response(resp_data, 201)
 
-    async def _get_method_response(
+    async def _get_method_response(  # pylint: disable=unused-argument
         self,
-        _rest_api_id: str,
-        _resource_id: str,
-        _http_method: str,
+        rest_api_id: str,
+        resource_id: str,
+        http_method: str,
         status_code: str,
     ) -> Response:
         return _json_response({"statusCode": status_code})

@@ -5,7 +5,9 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import random
 import re
+import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -96,6 +98,20 @@ class UserNotFoundException(CognitoError):
 
     def __init__(self, username: str) -> None:
         super().__init__("UserNotFoundException", f"User does not exist: {username}")
+
+
+class ExpiredCodeException(CognitoError):
+    """Raised when a confirmation code has expired."""
+
+    def __init__(self) -> None:
+        super().__init__("ExpiredCodeException", "Confirmation code has expired.")
+
+
+class CodeMismatchException(CognitoError):
+    """Raised when a confirmation code does not match."""
+
+    def __init__(self) -> None:
+        super().__init__("CodeMismatchException", "Invalid verification code provided.")
 
 
 # ---------------------------------------------------------------------------
@@ -209,6 +225,13 @@ class UserStore:
             "  token TEXT PRIMARY KEY,"
             "  username TEXT NOT NULL,"
             "  created_at REAL NOT NULL"
+            ")"
+        )
+        await self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS password_reset_codes ("
+            "  username TEXT PRIMARY KEY,"
+            "  code TEXT NOT NULL,"
+            "  expires_at REAL NOT NULL"
             ")"
         )
         await self._conn.commit()
@@ -401,6 +424,83 @@ class UserStore:
             }
             for row in rows
         ]
+
+    # -- Password reset --------------------------------------------------------
+
+    async def create_password_reset_code(self, username: str) -> str:
+        """Generate and store a 6-digit password reset code.
+
+        Returns the code. Raises UserNotFoundException if user does not exist.
+        """
+        assert self._conn is not None
+        user = await self._get_user_row(username)
+        if user is None:
+            raise UserNotFoundException(username)
+        code = f"{random.randint(0, 999999):06d}"  # noqa: S311
+        expires_at = time.time() + 300  # 5 minutes
+        await self._conn.execute(
+            "INSERT OR REPLACE INTO password_reset_codes (username, code, expires_at)"
+            " VALUES (?, ?, ?)",
+            (username, code, expires_at),
+        )
+        await self._conn.commit()
+        return code
+
+    async def confirm_password_reset(self, username: str, code: str, new_password: str) -> None:
+        """Validate reset code and update password.
+
+        Raises ExpiredCodeException or CodeMismatchException on failure.
+        """
+        assert self._conn is not None
+        cursor = await self._conn.execute(
+            "SELECT code, expires_at FROM password_reset_codes WHERE username = ?",
+            (username,),
+        )
+        row = await cursor.fetchone()
+        if row is None:
+            raise CodeMismatchException()
+        stored_code, expires_at = row[0], row[1]
+        if time.time() > expires_at:
+            await self._conn.execute(
+                "DELETE FROM password_reset_codes WHERE username = ?", (username,)
+            )
+            await self._conn.commit()
+            raise ExpiredCodeException()
+        if stored_code != code:
+            raise CodeMismatchException()
+        validate_password(new_password, self._config.password_policy)
+        pw_hash, pw_salt = _hash_password(new_password)
+        await self._conn.execute(
+            "UPDATE users SET password_hash = ?, password_salt = ? WHERE username = ?",
+            (pw_hash, pw_salt, username),
+        )
+        await self._conn.execute("DELETE FROM password_reset_codes WHERE username = ?", (username,))
+        await self._conn.commit()
+
+    async def change_password(self, username: str, old_password: str, new_password: str) -> None:
+        """Change a user's password after verifying the old password.
+
+        Raises NotAuthorizedException if old password is wrong.
+        """
+        assert self._conn is not None
+        user = await self._get_user_row(username)
+        if user is None:
+            raise NotAuthorizedException("User not found.")
+        if not _verify_password(old_password, user["password_hash"], user["password_salt"]):
+            raise NotAuthorizedException("Incorrect username or password.")
+        validate_password(new_password, self._config.password_policy)
+        pw_hash, pw_salt = _hash_password(new_password)
+        await self._conn.execute(
+            "UPDATE users SET password_hash = ?, password_salt = ? WHERE username = ?",
+            (pw_hash, pw_salt, username),
+        )
+        await self._conn.commit()
+
+    async def revoke_refresh_tokens(self, username: str) -> None:
+        """Delete all refresh tokens for a user."""
+        assert self._conn is not None
+        await self._conn.execute("DELETE FROM refresh_tokens WHERE username = ?", (username,))
+        await self._conn.commit()
 
     # -- Private helpers -------------------------------------------------------
 

@@ -2,14 +2,28 @@
 
 from __future__ import annotations
 
+import hashlib
 import shutil
 import time
+import uuid
 from collections.abc import Callable
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from lws.interfaces.object_store import IObjectStore
 from lws.providers.s3.notifications import NotificationDispatcher
 from lws.providers.s3.storage import LocalBucketStorage
+
+
+@dataclass
+class MultipartUpload:
+    """Tracks an in-progress multipart upload."""
+
+    upload_id: str
+    bucket: str
+    key: str
+    parts: dict[int, bytes] = field(default_factory=dict)
+    created_at: float = field(default_factory=time.time)
 
 
 class S3Provider(IObjectStore):
@@ -28,6 +42,7 @@ class S3Provider(IObjectStore):
         self._bucket_tagging: dict[str, dict[str, str]] = {}
         self._bucket_policies: dict[str, str] = {}
         self._bucket_notification_configs: dict[str, str] = {}
+        self._multipart_uploads: dict[str, MultipartUpload] = {}
 
     # -- Provider lifecycle ---------------------------------------------------
 
@@ -178,6 +193,60 @@ class S3Provider(IObjectStore):
             bucket_name,
             '<?xml version="1.0" encoding="UTF-8"?><NotificationConfiguration/>',
         )
+
+    # -- Multipart upload -----------------------------------------------------
+
+    def create_multipart_upload(self, bucket_name: str, key: str) -> str:
+        """Create a multipart upload. Returns the upload_id."""
+        upload_id = str(uuid.uuid4())
+        self._multipart_uploads[upload_id] = MultipartUpload(
+            upload_id=upload_id, bucket=bucket_name, key=key
+        )
+        return upload_id
+
+    def upload_part(
+        self, _bucket_name: str, _key: str, upload_id: str, part_number: int, data: bytes
+    ) -> str:
+        """Store a part. Returns the ETag (md5 hex)."""
+        upload = self._multipart_uploads.get(upload_id)
+        if upload is None:
+            raise KeyError(f"Upload not found: {upload_id}")
+        upload.parts[part_number] = data
+        return hashlib.md5(data).hexdigest()  # noqa: S324
+
+    async def complete_multipart_upload(self, bucket_name: str, key: str, upload_id: str) -> dict:
+        """Concatenate parts, store the final object, and clean up."""
+        upload = self._multipart_uploads.get(upload_id)
+        if upload is None:
+            raise KeyError(f"Upload not found: {upload_id}")
+        merged = b"".join(upload.parts[n] for n in sorted(upload.parts))
+        etag = hashlib.md5(merged).hexdigest()  # noqa: S324
+        await self.put_object(bucket_name, key, merged)
+        del self._multipart_uploads[upload_id]
+        return {
+            "Location": f"/{bucket_name}/{key}",
+            "Bucket": bucket_name,
+            "Key": key,
+            "ETag": etag,
+        }
+
+    def abort_multipart_upload(self, upload_id: str) -> None:
+        """Remove tracking entry for a multipart upload."""
+        self._multipart_uploads.pop(upload_id, None)
+
+    def list_parts(self, upload_id: str) -> list[dict]:
+        """Return part info list for a multipart upload."""
+        upload = self._multipart_uploads.get(upload_id)
+        if upload is None:
+            raise KeyError(f"Upload not found: {upload_id}")
+        return [
+            {
+                "PartNumber": part_num,
+                "Size": len(data),
+                "ETag": hashlib.md5(data).hexdigest(),  # noqa: S324
+            }
+            for part_num, data in sorted(upload.parts.items())
+        ]
 
     # -- Notification support -------------------------------------------------
 

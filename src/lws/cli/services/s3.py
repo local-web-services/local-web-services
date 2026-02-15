@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from pathlib import Path
 
 import typer
@@ -241,3 +242,126 @@ async def _list_buckets(port: int) -> None:
         exit_with_error(str(exc))
     resp = await client.rest_request(_SERVICE, "GET", "")
     output_json(xml_to_dict(resp.text))
+
+
+@app.command("create-multipart-upload")
+def create_multipart_upload(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    key: str = typer.Option(..., "--key", help="Object key"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Initiate a multipart upload."""
+    asyncio.run(_create_multipart_upload(bucket, key, port))
+
+
+async def _create_multipart_upload(bucket: str, key: str, port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    resp = await client.rest_request(_SERVICE, "POST", f"{bucket}/{key}", params={"uploads": ""})
+    output_json(xml_to_dict(resp.text))
+
+
+@app.command("upload-part")
+def upload_part(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    key: str = typer.Option(..., "--key", help="Object key"),
+    upload_id: str = typer.Option(..., "--upload-id", help="Upload ID"),
+    part_number: int = typer.Option(..., "--part-number", help="Part number"),
+    body: str = typer.Option(..., "--body", help="File path for part body"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Upload a part in a multipart upload."""
+    asyncio.run(_upload_part(bucket, key, upload_id, part_number, body, port))
+
+
+async def _upload_part(
+    bucket: str, key: str, upload_id: str, part_number: int, body_path: str, port: int
+) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    path = Path(body_path)
+    if not path.exists():
+        exit_with_error(f"File not found: {body_path}")
+    file_bytes = path.read_bytes()
+    resp = await client.rest_request(
+        _SERVICE,
+        "PUT",
+        f"{bucket}/{key}",
+        body=file_bytes,
+        params={"partNumber": str(part_number), "uploadId": upload_id},
+    )
+    output_json({"ETag": resp.headers.get("etag", "")})
+
+
+@app.command("complete-multipart-upload")
+def complete_multipart_upload(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    key: str = typer.Option(..., "--key", help="Object key"),
+    upload_id: str = typer.Option(..., "--upload-id", help="Upload ID"),
+    multipart_upload: str = typer.Option(
+        ..., "--multipart-upload", help='JSON with Parts array, e.g. {"Parts": [...]}'
+    ),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Complete a multipart upload."""
+    asyncio.run(_complete_multipart_upload(bucket, key, upload_id, multipart_upload, port))
+
+
+async def _complete_multipart_upload(
+    bucket: str, key: str, upload_id: str, multipart_upload_json: str, port: int
+) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    try:
+        parsed = json.loads(multipart_upload_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --multipart-upload: {exc}")
+    parts = parsed.get("Parts", [])
+    xml_parts = "".join(
+        f"<Part><PartNumber>{p['PartNumber']}</PartNumber><ETag>{p['ETag']}</ETag></Part>"
+        for p in parts
+    )
+    xml_body = f"<CompleteMultipartUpload>{xml_parts}</CompleteMultipartUpload>"
+    resp = await client.rest_request(
+        _SERVICE,
+        "POST",
+        f"{bucket}/{key}",
+        body=xml_body.encode(),
+        params={"uploadId": upload_id},
+    )
+    output_json(xml_to_dict(resp.text))
+
+
+@app.command("abort-multipart-upload")
+def abort_multipart_upload(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    key: str = typer.Option(..., "--key", help="Object key"),
+    upload_id: str = typer.Option(..., "--upload-id", help="Upload ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Abort a multipart upload."""
+    asyncio.run(_abort_multipart_upload(bucket, key, upload_id, port))
+
+
+async def _abort_multipart_upload(bucket: str, key: str, upload_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    await client.rest_request(
+        _SERVICE,
+        "DELETE",
+        f"{bucket}/{key}",
+        params={"uploadId": upload_id},
+    )
+    output_json({})

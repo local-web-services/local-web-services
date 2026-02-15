@@ -9,7 +9,7 @@ class TestConfirmSignUp:
     def test_confirm_sign_up(self, e2e_port, lws_invoke):
         # Arrange
         pool_name = "e2e-confirm-pool"
-        username = "confirmuser"
+        username = "e2e-confirmuser"
         lws_invoke(
             ["cognito-idp", "create-user-pool", "--pool-name", pool_name, "--port", str(e2e_port)]
         )
