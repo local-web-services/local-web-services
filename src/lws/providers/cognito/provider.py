@@ -9,13 +9,17 @@ from pathlib import Path
 from typing import Any
 
 from lws.interfaces.provider import Provider
+from lws.logging.logger import get_logger
 from lws.providers.cognito.tokens import TokenIssuer
 from lws.providers.cognito.user_store import (
     CognitoError,
     NotAuthorizedException,
     UserPoolConfig,
     UserStore,
+    validate_password,
 )
+
+_logger = get_logger("ldk.cognito")
 
 # Type alias for Lambda trigger callables
 TriggerFunc = Callable[[dict], Coroutine[Any, Any, dict]]
@@ -286,6 +290,58 @@ class CognitoProvider(Provider):
                 }
             )
         return {"Users": result}
+
+    # -- Password recovery and sign-out ---------------------------------------
+
+    async def forgot_password(
+        self,
+        _client_id: str,
+        username: str,
+    ) -> dict[str, Any]:
+        """Initiate a password reset. Returns CodeDeliveryDetails."""
+        code = await self._store.create_password_reset_code(username)
+        # In a local environment, we log the code so the developer can use it.
+        _logger.info("Password reset code for %s: %s", username, code)
+        return {
+            "CodeDeliveryDetails": {
+                "Destination": "***",
+                "DeliveryMedium": "EMAIL",
+                "AttributeName": "email",
+            }
+        }
+
+    async def confirm_forgot_password(
+        self,
+        _client_id: str,
+        username: str,
+        confirmation_code: str,
+        password: str,
+    ) -> None:
+        """Confirm a password reset with the code and new password."""
+        validate_password(password, self._config.password_policy)
+        await self._store.confirm_password_reset(username, confirmation_code, password)
+
+    async def change_password(
+        self,
+        access_token: str,
+        previous_password: str,
+        proposed_password: str,
+    ) -> None:
+        """Change a user's password using an access token."""
+        claims = self._token_issuer.decode_token(access_token, token_use="access")
+        username = claims.get("cognito:username", "")
+        if not username:
+            raise NotAuthorizedException("Invalid access token.")
+        validate_password(proposed_password, self._config.password_policy)
+        await self._store.change_password(username, previous_password, proposed_password)
+
+    async def global_sign_out(self, access_token: str) -> None:
+        """Sign out a user by revoking all refresh tokens."""
+        claims = self._token_issuer.decode_token(access_token, token_use="access")
+        username = claims.get("cognito:username", "")
+        if not username:
+            raise NotAuthorizedException("Invalid access token.")
+        await self._store.revoke_refresh_tokens(username)
 
     # -- Validation helpers ---------------------------------------------------
 

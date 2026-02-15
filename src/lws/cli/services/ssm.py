@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 
 import typer
 
@@ -132,6 +133,134 @@ async def _describe_parameters(port: int) -> None:
             _SERVICE,
             f"{_TARGET_PREFIX}.DescribeParameters",
             {},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("get-parameters")
+def get_parameters(
+    names: str = typer.Option(..., "--names", help="JSON array of parameter names"),
+    with_decryption: bool = typer.Option(False, "--with-decryption", help="Decrypt SecureString"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Get multiple parameters by name."""
+    asyncio.run(_get_parameters(names, with_decryption, port))
+
+
+async def _get_parameters(names: str, with_decryption: bool, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed_names = json.loads(names)
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.GetParameters",
+            {"Names": parsed_names, "WithDecryption": with_decryption},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("delete-parameters")
+def delete_parameters(
+    names: str = typer.Option(..., "--names", help="JSON array of parameter names"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete multiple parameters."""
+    asyncio.run(_delete_parameters(names, port))
+
+
+async def _delete_parameters(names: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed_names = json.loads(names)
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DeleteParameters",
+            {"Names": parsed_names},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("add-tags-to-resource")
+def add_tags_to_resource(
+    resource_type: str = typer.Option(
+        ..., "--resource-type", help="Resource type (e.g. Parameter)"
+    ),
+    resource_id: str = typer.Option(..., "--resource-id", help="Resource ID"),
+    tags: str = typer.Option(..., "--tags", help='JSON array of {"Key":"k","Value":"v"}'),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Add tags to a resource."""
+    asyncio.run(_add_tags_to_resource(resource_type, resource_id, tags, port))
+
+
+async def _add_tags_to_resource(resource_type: str, resource_id: str, tags: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed_tags = json.loads(tags)
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.AddTagsToResource",
+            {"ResourceType": resource_type, "ResourceId": resource_id, "Tags": parsed_tags},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("remove-tags-from-resource")
+def remove_tags_from_resource(
+    resource_type: str = typer.Option(
+        ..., "--resource-type", help="Resource type (e.g. Parameter)"
+    ),
+    resource_id: str = typer.Option(..., "--resource-id", help="Resource ID"),
+    tag_keys: str = typer.Option(..., "--tag-keys", help="JSON array of tag keys"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Remove tags from a resource."""
+    asyncio.run(_remove_tags_from_resource(resource_type, resource_id, tag_keys, port))
+
+
+async def _remove_tags_from_resource(
+    resource_type: str, resource_id: str, tag_keys: str, port: int
+) -> None:
+    client = _client(port)
+    try:
+        parsed_keys = json.loads(tag_keys)
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.RemoveTagsFromResource",
+            {"ResourceType": resource_type, "ResourceId": resource_id, "TagKeys": parsed_keys},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("list-tags-for-resource")
+def list_tags_for_resource(
+    resource_type: str = typer.Option(
+        ..., "--resource-type", help="Resource type (e.g. Parameter)"
+    ),
+    resource_id: str = typer.Option(..., "--resource-id", help="Resource ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List tags for a resource."""
+    asyncio.run(_list_tags_for_resource(resource_type, resource_id, port))
+
+
+async def _list_tags_for_resource(resource_type: str, resource_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.ListTagsForResource",
+            {"ResourceType": resource_type, "ResourceId": resource_id},
         )
     except Exception as exc:
         exit_with_error(str(exc))

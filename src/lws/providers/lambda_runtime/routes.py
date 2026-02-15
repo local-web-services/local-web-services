@@ -596,7 +596,8 @@ class LambdaManagementRouter:
         return _json_response(mapping, 202)
 
     async def _list_event_source_mappings(self, _request: Request) -> Response:
-        return _json_response({"EventSourceMappings": []})
+        mappings = list(self._state.event_source_mappings.values())
+        return _json_response({"EventSourceMappings": mappings})
 
     # -- Other stubs ---------------------------------------------------------
 

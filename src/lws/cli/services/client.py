@@ -126,6 +126,25 @@ class LwsClient:
         return resp
 
 
+def parse_json_option(value: str, option_name: str) -> Any:
+    """Parse a JSON CLI option, exiting with a friendly error on failure."""
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in {option_name}: {exc}")
+        return None  # unreachable; satisfies pylint R1710
+
+
+async def json_request_output(port: int, service: str, target: str, body: dict[str, Any]) -> None:
+    """Make a JSON-target request and print the result. Shared by tag helpers."""
+    client = LwsClient(port=port)
+    try:
+        result = await client.json_target_request(service, target, body)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
 def output_json(data: Any) -> None:
     """Print *data* as formatted JSON to stdout."""
     print(json.dumps(data, indent=2, default=str))

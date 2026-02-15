@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+import jwt
 from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
@@ -67,6 +68,10 @@ class CognitoRouter:
             "AdminGetUser": self._admin_get_user,
             "UpdateUserPool": self._update_user_pool,
             "ListUsers": self._list_users,
+            "ForgotPassword": self._forgot_password,
+            "ConfirmForgotPassword": self._confirm_forgot_password,
+            "ChangePassword": self._change_password,
+            "GlobalSignOut": self._global_sign_out,
         }
 
     async def _jwks(self) -> Response:
@@ -221,6 +226,44 @@ class CognitoRouter:
         user_pool_id = body.get("UserPoolId", "")
         result = await self._provider.list_users(user_pool_id)
         return _json_response(result)
+
+    async def _forgot_password(self, body: dict) -> Response:
+        """Handle ForgotPassword operation."""
+        client_id = body.get("ClientId", "")
+        username = body.get("Username", "")
+        result = await self._provider.forgot_password(client_id, username)
+        return _json_response(result)
+
+    async def _confirm_forgot_password(self, body: dict) -> Response:
+        """Handle ConfirmForgotPassword operation."""
+        client_id = body.get("ClientId", "")
+        username = body.get("Username", "")
+        confirmation_code = body.get("ConfirmationCode", "")
+        password = body.get("Password", "")
+        await self._provider.confirm_forgot_password(
+            client_id, username, confirmation_code, password
+        )
+        return _json_response({})
+
+    async def _change_password(self, body: dict) -> Response:
+        """Handle ChangePassword operation."""
+        access_token = body.get("AccessToken", "")
+        previous_password = body.get("PreviousPassword", "")
+        proposed_password = body.get("ProposedPassword", "")
+        try:
+            await self._provider.change_password(access_token, previous_password, proposed_password)
+        except jwt.InvalidTokenError:
+            return _error_response("NotAuthorizedException", "Invalid access token.")
+        return _json_response({})
+
+    async def _global_sign_out(self, body: dict) -> Response:
+        """Handle GlobalSignOut operation."""
+        access_token = body.get("AccessToken", "")
+        try:
+            await self._provider.global_sign_out(access_token)
+        except jwt.InvalidTokenError:
+            return _error_response("NotAuthorizedException", "Invalid access token.")
+        return _json_response({})
 
 
 # ---------------------------------------------------------------------------

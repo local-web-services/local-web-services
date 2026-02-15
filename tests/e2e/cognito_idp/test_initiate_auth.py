@@ -11,7 +11,7 @@ class TestInitiateAuth:
     def test_initiate_auth(self, e2e_port, lws_invoke):
         # Arrange
         pool_name = "e2e-auth-pool"
-        username = "authuser"
+        username = "e2e-authuser"
         password = "P@ssw0rd!123"
         lws_invoke(
             ["cognito-idp", "create-user-pool", "--pool-name", pool_name, "--port", str(e2e_port)]

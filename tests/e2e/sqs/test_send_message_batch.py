@@ -1,0 +1,30 @@
+from typer.testing import CliRunner
+
+from lws.cli.lws import app
+
+runner = CliRunner()
+
+
+class TestSendMessageBatch:
+    def test_send_message_batch(self, e2e_port, lws_invoke):
+        # Arrange
+        queue_name = "e2e-send-msg-batch"
+        lws_invoke(["sqs", "create-queue", "--queue-name", queue_name, "--port", str(e2e_port)])
+
+        # Act
+        result = runner.invoke(
+            app,
+            [
+                "sqs",
+                "send-message-batch",
+                "--queue-name",
+                queue_name,
+                "--entries",
+                '[{"Id":"1","MessageBody":"msg1"}]',
+                "--port",
+                str(e2e_port),
+            ],
+        )
+
+        # Assert
+        assert result.exit_code == 0, result.output

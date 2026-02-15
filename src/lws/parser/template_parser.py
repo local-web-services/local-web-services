@@ -56,6 +56,16 @@ class DynamoTableProps:
 
 
 @dataclass
+class EventSourceMappingProps:
+    """Subset of ``AWS::Lambda::EventSourceMapping`` properties."""
+
+    function_name: Any = None
+    event_source_arn: Any = None
+    batch_size: int = 10
+    enabled: bool = True
+
+
+@dataclass
 class ApiGatewayRouteProps:
     """A single API Gateway route (v1 or v2)."""
 
@@ -138,6 +148,27 @@ def extract_dynamo_tables(resources: list[CfnResource]) -> list[DynamoTableProps
                 key_schema=props.get("KeySchema", []),
                 attribute_definitions=props.get("AttributeDefinitions", []),
                 gsi_definitions=props.get("GlobalSecondaryIndexes", []),
+            )
+        )
+    return results
+
+
+def extract_event_source_mappings(
+    resources: list[CfnResource],
+) -> list[EventSourceMappingProps]:
+    """Pull Lambda event source mappings out of the resource list."""
+    results: list[EventSourceMappingProps] = []
+    for r in resources:
+        if r.resource_type != "AWS::Lambda::EventSourceMapping":
+            continue
+        props = r.properties
+        enabled = props.get("Enabled", True)
+        results.append(
+            EventSourceMappingProps(
+                function_name=props.get("FunctionName"),
+                event_source_arn=props.get("EventSourceArn"),
+                batch_size=props.get("BatchSize", 10),
+                enabled=enabled if isinstance(enabled, bool) else True,
             )
         )
     return results
