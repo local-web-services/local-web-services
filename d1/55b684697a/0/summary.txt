@@ -1,0 +1,13 @@
+`make check` passes. Here's what was changed to enforce Gherkin-only E2E tests:
+
+**Architecture tests updated:**
+- `test_aaa_comments.py` — removed `tests/e2e` from scan (AAA only applies to unit/integration now)
+- `test_no_magic_strings_in_assertions.py` — same, removed `tests/e2e` from scan
+- `test_one_class_per_file.py` (E2E) — **deleted** (irrelevant for BDD)
+- `test_resource_naming.py` — now scans all `*.py` files including `conftest.py` (resource names moved there)
+- **New: `test_bdd_pattern.py`** — enforces that every E2E `test_*.py` uses `scenarios()`, has no `Test*` classes, and references an existing `.feature` file
+
+**Docs updated:**
+- `CLAUDE.md` — E2E tests now require Gherkin feature files, not AAA
+- `contributing/testing/COMMON.md` — AAA section scoped to unit/integration only, checklist updated
+- `contributing/testing/END_TO_END.md` — already documented BDD pattern (from earlier)
