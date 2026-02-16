@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "10d86c5ce5f9",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "tests/e2e/dynamodb/conftest.py",
+    "tests/e2e/ssm/conftest.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/10/d86c5ce5f9/0/metadata.json",
+      "transcript": "/10/d86c5ce5f9/0/full.jsonl",
+      "context": "",
+      "content_hash": "/10/d86c5ce5f9/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 75,
+    "cache_creation_tokens": 116974,
+    "cache_read_tokens": 6637925,
+    "output_tokens": 6206,
+    "api_call_count": 71
+  }
+}

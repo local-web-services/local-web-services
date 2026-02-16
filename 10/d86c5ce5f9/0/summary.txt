@@ -1,0 +1,9 @@
+All tests pass:
+- **`make check`**: 2240 passed
+- **`make test-e2e`**: 219 passed, 7 skipped (Docker-dependent Lambda tests)
+
+The 5 failures were caused by two bugs:
+
+1. **DynamoDB `parsers.parse` ambiguity** (4 failures): The step patterns `an item was put with key "{key}" into table "{table_name}"` and `an item was put with key "{key}" and data/status "..." into table "..."` overlapped because `parsers.parse`'s `{key}` greedily captured text beyond the intended quotes. Fixed by switching to `parsers.re` with `(?P<key>[^"]+)` to constrain matches to non-quote characters. Also fixed `body["Item"]["val"]["S"]` → `body["Item"]["data"]["S"]` (wrong attribute name).
+
+2. **SSM `parsers.parse` ambiguity** (1 failure): The step pattern `I get parameters {names_json}` matched `I get parameters by path "/e2e/path-test"`, capturing `names_json` as `by path "/e2e/path-test"` instead of letting the more specific `I get parameters by path "{path}"` pattern match. Fixed by switching to `parsers.re(r"I get parameters (?P<names_json>\[.+\])")` to only match JSON arrays.
