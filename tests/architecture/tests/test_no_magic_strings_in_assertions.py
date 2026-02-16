@@ -1,9 +1,11 @@
 """Architecture test: no magic strings in assertion comparisons.
 
-Scans test methods in ``tests/unit/``, ``tests/integration/``, and ``tests/e2e/``
-and flags ``assert x == "literal"`` or ``assert "literal" == x`` patterns where a
-string constant is used directly as a comparator.  This encourages extracting expected
+Scans test methods in ``tests/unit/`` and ``tests/integration/`` and flags
+``assert x == "literal"`` or ``assert "literal" == x`` patterns where a string
+constant is used directly as a comparator.  This encourages extracting expected
 values into named variables (e.g. ``expected_name = "literal"``).
+
+E2E tests are excluded because they use Gherkin / pytest-bdd.
 
 Because the codebase has existing violations, a ratchet threshold is used so the test
 passes today but prevents new magic strings from being added.
@@ -18,7 +20,6 @@ REPO_ROOT = Path(__file__).parent.parent.parent.parent
 TEST_DIRS = [
     REPO_ROOT / "tests" / "unit",
     REPO_ROOT / "tests" / "integration",
-    REPO_ROOT / "tests" / "e2e",
 ]
 ARCHITECTURE_DIR = REPO_ROOT / "tests" / "architecture"
 SKIP_FILENAMES = {"conftest.py", "__init__.py"}
@@ -128,7 +129,7 @@ class TestNoMagicStringsInAssertions:
                     )
 
         # Ratchet: reduce this number as magic strings are eliminated
-        CURRENT_COUNT = 82
+        CURRENT_COUNT = 81
 
         # Assert
         assert len(violations) <= CURRENT_COUNT, (

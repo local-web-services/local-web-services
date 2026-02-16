@@ -66,13 +66,15 @@ def _check_resource_names(filepath: Path) -> list[str]:
 
 # Ratchet: number of known violations. Lower this as violations are fixed.
 # Do NOT increase this number -- fix new violations instead.
-_RATCHET_THRESHOLD = 7
+_RATCHET_THRESHOLD = 0
 
 
 class TestResourceNaming:
     def test_e2e_resource_names_have_prefix(self):
         violations = []
-        for path in sorted(E2E_DIR.rglob("test_*.py")):
+        for path in sorted(E2E_DIR.rglob("*.py")):
+            if path.name == "__init__.py":
+                continue
             violations.extend(_check_resource_names(path))
 
         assert len(violations) <= _RATCHET_THRESHOLD, (

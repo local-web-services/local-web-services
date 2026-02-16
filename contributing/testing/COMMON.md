@@ -18,9 +18,9 @@ Every new feature must include tests at the appropriate levels:
 - **Integration tests** — required when the feature involves API routing, request parsing, or provider orchestration.
 - **E2E tests** — required for every new `lws` CLI command. One test file per CLI command.
 
-## Test Structure — Arrange / Act / Assert
+## Test Structure — Arrange / Act / Assert (Unit and Integration Only)
 
-All tests must follow the **Arrange / Act / Assert** (AAA) pattern with explicit section comments.
+Unit and integration tests must follow the **Arrange / Act / Assert** (AAA) pattern with explicit section comments. E2E tests use Gherkin / pytest-bdd instead — see [END_TO_END.md](END_TO_END.md).
 
 ```python
 def test_example(self):
@@ -114,8 +114,9 @@ Before submitting a pull request, verify:
 
 - [ ] Unit tests cover every new public function or method
 - [ ] Integration tests cover any new API routing or request handling
-- [ ] E2E tests cover every new `lws` CLI command (one file per command)
-- [ ] All tests follow the Arrange / Act / Assert pattern with section comments
+- [ ] E2E tests cover every new `lws` CLI command (one feature file + wiring file per command)
+- [ ] Unit and integration tests follow the Arrange / Act / Assert pattern with section comments
+- [ ] E2E tests use Gherkin / pytest-bdd (see [END_TO_END.md](END_TO_END.md))
 - [ ] No magic strings in assertions — all extracted to `expected_*` / `actual_*` variables
 - [ ] No repeated strings — all stored in named variables
 - [ ] Resource names in E2E tests are unique and descriptive
