@@ -29,10 +29,10 @@ def _find_httpx_imports(filepath: Path) -> list[int]:
 
 
 class TestNoHttpxImports:
-    def test_e2e_test_files_do_not_import_httpx(self):
+    def test_e2e_files_do_not_import_httpx(self):
         # Arrange
         violations = []
-        for path in sorted(E2E_DIR.rglob("test_*.py")):
+        for path in sorted(E2E_DIR.rglob("*.py")):
             lines = _find_httpx_imports(path)
             if lines:
                 rel = path.relative_to(E2E_DIR)
@@ -40,6 +40,6 @@ class TestNoHttpxImports:
 
         # Assert
         assert violations == [], (
-            "E2E test files must not import httpx. "
+            "E2E files must not import httpx. "
             "Use the lws CLI (via CliRunner) instead.\n" + "\n".join(f"  - {v}" for v in violations)
         )

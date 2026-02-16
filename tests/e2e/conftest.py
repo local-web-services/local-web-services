@@ -6,8 +6,11 @@ import json
 import subprocess
 import time
 
-import httpx
 import pytest
+from pytest_bdd import then
+from typer.testing import CliRunner
+
+from lws.cli.lws import app
 
 
 def parse_json_output(text: str):
@@ -63,14 +66,17 @@ def ldk_server(tmp_path_factory, e2e_port):
         stderr=subprocess.PIPE,
     )
 
-    # Poll /_ldk/status until running=true (timeout after 30s)
+    # Poll via lws status --json until running=true (timeout after 30s)
+    _status_runner = CliRunner()
     deadline = time.monotonic() + 30
     while time.monotonic() < deadline:
         try:
-            resp = httpx.get(f"http://localhost:{e2e_port}/_ldk/status", timeout=2.0)
-            if resp.status_code == 200 and resp.json().get("running"):
-                break
-        except (httpx.ConnectError, httpx.ConnectTimeout):
+            result = _status_runner.invoke(app, ["status", "--json", "--port", str(e2e_port)])
+            if result.exit_code == 0:
+                data = parse_json_output(result.output)
+                if isinstance(data, dict) and data.get("running"):
+                    break
+        except Exception:
             pass
         time.sleep(0.5)
     else:
@@ -133,3 +139,11 @@ def assert_invoke(e2e_port):
         return parse_json_output(result.output)
 
     return _invoke
+
+
+# ── Shared BDD steps ────────────────────────────────────────────────
+
+
+@then("the command will succeed")
+def the_command_will_succeed(command_result):
+    assert command_result.exit_code == 0, command_result.output

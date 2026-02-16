@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install lint format format-check complexity cpd pylint test test-e2e check
+.PHONY: help install lint format format-check complexity cpd pylint test test-e2e allure-report check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
@@ -32,6 +32,10 @@ test: ## Run test suite (excludes e2e)
 	uv run pytest --ignore=tests/e2e
 
 test-e2e: ## Run e2e tests (no Docker required)
-	uv run pytest tests/e2e/ -v
+	uv run pytest tests/e2e/ -v --alluredir=allure-results
+
+allure-report: ## Generate and open Allure HTML report (requires allure CLI)
+	allure generate allure-results -o allure-report --clean
+	allure open allure-report
 
 check: lint format-check complexity cpd pylint test ## Run all checks (what CI runs)

@@ -1,9 +1,11 @@
 """Architecture test: every test method must use AAA (Arrange-Act-Assert) comments.
 
 Scans test methods (functions named ``test_*`` inside classes named ``Test*``)
-in ``tests/unit/``, ``tests/integration/``, and ``tests/e2e/`` and verifies that
-each contains at minimum ``# Act`` and ``# Assert`` comments.  ``# Arrange`` is
-recommended but not enforced because some tests legitimately have no setup phase.
+in ``tests/unit/`` and ``tests/integration/`` and verifies that each contains at
+minimum ``# Act`` and ``# Assert`` comments.  ``# Arrange`` is recommended but not
+enforced because some tests legitimately have no setup phase.
+
+E2E tests are excluded because they use Gherkin / pytest-bdd instead of AAA.
 
 Because the codebase has existing violations, a ratchet threshold is used so the test
 passes today but prevents new violations from being added.
@@ -18,7 +20,6 @@ REPO_ROOT = Path(__file__).parent.parent.parent.parent
 TEST_DIRS = [
     REPO_ROOT / "tests" / "unit",
     REPO_ROOT / "tests" / "integration",
-    REPO_ROOT / "tests" / "e2e",
 ]
 ARCHITECTURE_DIR = REPO_ROOT / "tests" / "architecture"
 SKIP_FILENAMES = {"conftest.py", "__init__.py"}
@@ -98,7 +99,7 @@ class TestAaaComments:
                     )
 
         # Ratchet: reduce this number as AAA comments are added to existing tests
-        CURRENT_COUNT = 828
+        CURRENT_COUNT = 825
 
         # Assert
         assert len(violations) <= CURRENT_COUNT, (

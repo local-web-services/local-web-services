@@ -115,26 +115,34 @@ def _command_to_filename(command: str) -> str:
     return f"test_{command.replace('-', '_')}.py"
 
 
+def _command_to_feature(command: str) -> str:
+    """Convert a CLI command name to its expected feature filename.
+
+    Example: "put-parameter" -> "put_parameter.feature"
+    """
+    return f"{command.replace('-', '_')}.feature"
+
+
 ALL_COMMANDS = _discover_all_commands()
 
 
 class TestE2eTestCoverage:
-    """Verify every CLI command has an e2e test file."""
+    """Verify every CLI command has an e2e feature file."""
 
-    def test_every_command_has_e2e_test(self):
+    def test_every_command_has_e2e_feature(self):
         # Arrange
         missing = []
         for cli_name, commands in ALL_COMMANDS.items():
             test_dir = _test_dir_for_cli(cli_name)
             for command in commands:
-                expected_file = E2E_DIR / test_dir / _command_to_filename(command)
+                expected_file = E2E_DIR / test_dir / "features" / _command_to_feature(command)
                 if not expected_file.exists():
-                    missing.append(f"tests/e2e/{test_dir}/{_command_to_filename(command)}")
+                    missing.append(f"tests/e2e/{test_dir}/features/{_command_to_feature(command)}")
 
         # Assert
         assert (
             missing == []
-        ), f"Missing e2e test files for {len(missing)} CLI commands:\n" + "\n".join(
+        ), f"Missing e2e feature files for {len(missing)} CLI commands:\n" + "\n".join(
             f"  - {m}" for m in sorted(missing)
         )
 
