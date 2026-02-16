@@ -62,7 +62,7 @@ jobs:
       - run: make test-e2e
       - name: Generate and publish Allure report
         if: always()
-        uses: allure-framework/allure-report@v0
+        uses: allure-framework/allure-action@v0
         with:
-          report-directory: allure-report
+          report-directory: allure-results
           github-token: ${{ secrets.GITHUB_TOKEN }}
