@@ -1,0 +1,18 @@
+All 2240 tests pass. Here's what changed:
+
+**Removed ~195 thin wiring files** (`test_<command>.py`) across all 20 services, replaced each service with a single `test_scenarios.py`:
+
+```python
+"""E2E scenarios — all feature files are loaded automatically by pytest-bdd."""
+
+from pytest_bdd import scenarios
+
+scenarios("features/")
+```
+
+**Architecture tests updated:**
+- `test_cli_command_test_coverage.py` — now checks for `.feature` files instead of `test_*.py` files
+- `test_bdd_pattern.py` — simplified to check for `scenarios()`, no `Test*` classes, and `features/` directory per service
+- `test_one_class_per_file.py` (E2E) — already deleted earlier
+
+**Docs updated** to reflect the single-file approach.

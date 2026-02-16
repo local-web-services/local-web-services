@@ -1,0 +1,6 @@
+there are lots of e2e test files with little content. eg """E2E tests for apigateway delete-integration."""
+
+from pytest_bdd import scenarios
+
+scenarios("features/delete_integration.feature")
+. this seems like too much effort
