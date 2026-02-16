@@ -1,0 +1,26 @@
+All tasks are complete. Here's a summary of what was done:
+
+## Summary
+
+**All 5 tasks completed successfully:**
+
+1. **Replaced httpx** in root `tests/e2e/conftest.py` with `CliRunner` + `lws status --json` for server readiness polling.
+
+2. **Migrated all 20 services** to the `steps/` directory pattern:
+   - ~396 individual step files created (one per step function)
+   - 20 `steps/__init__.py` files with `runner`, `app`, shared state, and explicit imports
+   - 20 `conftest.py` files updated to inject pytest-bdd step fixtures
+   - Special handling for `lambda_` (Docker fixtures), `sns` (shared state dicts), `stepfunctions` (constants)
+
+3. **Updated architecture tests** (3 files):
+   - `test_no_httpx_imports.py` — scans ALL `*.py` files
+   - `test_file_naming.py` — exempts files in `steps/` directories
+   - `test_bdd_pattern.py` — 4 new tests (steps dir, no decorators in conftest, steps import, explicit imports)
+
+4. **Updated documentation** (`contributing/testing/END_TO_END.md`) with the new file structure, conftest pattern, and step file patterns.
+
+5. **Verification passed:**
+   - `make check`: **2244 passed**, 4 warnings
+   - `make test-e2e`: **226 passed**, 0 skipped
+
+**Key technical discovery:** pytest-bdd 8.x injects step fixtures into the caller module's locals via `sys._getframe`. Steps defined in separate files need their `pytestbdd_*` fixtures re-injected into `conftest.py` for pytest to discover them. This is handled by the fixture injection loop in each service's `conftest.py`.

@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "704873b05af4",
+  "session_id": "38e358ca-d907-4781-89ce-e5bdfce15b47",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-16T16:43:47.132729Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "contributing/testing/END_TO_END.md",
+    "scripts/migrate_steps.py",
+    "tests/architecture/tests/e2e/test_bdd_pattern.py",
+    "tests/architecture/tests/e2e/test_no_httpx_imports.py",
+    "tests/architecture/tests/test_file_naming.py",
+    "tests/e2e/conftest.py",
+    "tests/e2e/dynamodb/conftest.py",
+    "tests/e2e/lambda_/conftest.py",
+    "tests/e2e/sns/steps/__init__.py",
+    "tests/e2e/stepfunctions/steps/__init__.py"
+  ],
+  "agent": "Claude Code",
+  "token_usage": {
+    "input_tokens": 108,
+    "cache_creation_tokens": 347989,
+    "cache_read_tokens": 9849130,
+    "output_tokens": 12340,
+    "api_call_count": 100,
+    "subagent_tokens": {
+      "input_tokens": 44,
+      "cache_creation_tokens": 119939,
+      "cache_read_tokens": 338907,
+      "output_tokens": 25,
+      "api_call_count": 14
+    }
+  }
+}

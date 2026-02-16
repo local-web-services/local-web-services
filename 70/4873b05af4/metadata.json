@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "704873b05af4",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "contributing/testing/END_TO_END.md",
+    "scripts/migrate_steps.py",
+    "tests/architecture/tests/e2e/test_bdd_pattern.py",
+    "tests/architecture/tests/e2e/test_no_httpx_imports.py",
+    "tests/architecture/tests/test_file_naming.py",
+    "tests/e2e/conftest.py",
+    "tests/e2e/dynamodb/conftest.py",
+    "tests/e2e/lambda_/conftest.py",
+    "tests/e2e/sns/steps/__init__.py",
+    "tests/e2e/stepfunctions/steps/__init__.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/70/4873b05af4/0/metadata.json",
+      "transcript": "/70/4873b05af4/0/full.jsonl",
+      "context": "",
+      "content_hash": "/70/4873b05af4/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 108,
+    "cache_creation_tokens": 347989,
+    "cache_read_tokens": 9849130,
+    "output_tokens": 12340,
+    "api_call_count": 100
+  }
+}
