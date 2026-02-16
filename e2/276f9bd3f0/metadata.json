@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "e2276f9bd3f0",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "contributing/testing/END_TO_END.md",
+    "tests/architecture/tests/e2e/test_bdd_pattern.py",
+    "tests/architecture/tests/test_file_naming.py",
+    "tests/e2e/lambda_/conftest.py",
+    "tests/e2e/sns/steps/__init__.py",
+    "tests/e2e/stepfunctions/conftest.py",
+    "tests/e2e/stepfunctions/steps/__init__.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e2/276f9bd3f0/0/metadata.json",
+      "transcript": "/e2/276f9bd3f0/0/full.jsonl",
+      "context": "",
+      "content_hash": "/e2/276f9bd3f0/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 69,
+    "cache_creation_tokens": 79999,
+    "cache_read_tokens": 4011946,
+    "output_tokens": 5861,
+    "api_call_count": 67
+  }
+}

@@ -1,0 +1,15 @@
+Migration complete. Here's a summary:
+
+**What was done:**
+- Merged step definitions from `steps/*.py` back into `conftest.py` for all 20 services
+- Deleted all 20 `steps/` directories
+- Removed 4 architecture tests from `test_bdd_pattern.py` that enforced the steps/ pattern
+- Removed the steps/ exemption from `test_file_naming.py`
+- Updated `contributing/testing/END_TO_END.md` to document the simpler conftest.py pattern
+- Fixed special cases: lambda_ (subprocess/pytest imports, Docker checks, fixtures), SNS (helper functions, shared dicts), stepfunctions (JSON constants)
+
+**Verification:** `make check` (2240 passed), `make test-e2e` (226 passed)
+
+---
+
+Regarding your Allure Report request — that's a separate feature. Would you like me to plan an implementation for adding Allure Report support to the project? I can look into what's needed (pytest-allure plugin, configuration, CI integration, etc.).
