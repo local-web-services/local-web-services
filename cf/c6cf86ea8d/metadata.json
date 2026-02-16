@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "cfc6cf86ea8d",
+  "strategy": "auto-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".github/workflows/ci.yml",
+    "Makefile",
+    "pyproject.toml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/cf/c6cf86ea8d/0/metadata.json",
+      "transcript": "/cf/c6cf86ea8d/0/full.jsonl",
+      "context": "",
+      "content_hash": "/cf/c6cf86ea8d/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 7245,
+    "cache_read_tokens": 1272073,
+    "output_tokens": 2166,
+    "api_call_count": 10
+  }
+}

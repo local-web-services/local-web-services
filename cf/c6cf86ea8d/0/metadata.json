@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "cfc6cf86ea8d",
+  "session_id": "7f740c94-9c39-47ea-a878-612782fb9aa0",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-16T17:31:02.610683Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".github/workflows/ci.yml",
+    "Makefile",
+    "pyproject.toml"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "5d575ead-1508-44d4-bdee-c7667b62fcaf",
+  "checkpoint_transcript_start": 874,
+  "transcript_lines_at_start": 874,
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 7245,
+    "cache_read_tokens": 1272073,
+    "output_tokens": 2166,
+    "api_call_count": 10
+  }
+}
