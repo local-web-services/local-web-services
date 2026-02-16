@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "68bce663c05a",
+  "session_id": "0cfd2a28-e8a9-48e2-ac27-b5abe9ba4430",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-16T00:09:54.631021Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "contributing/testing/END_TO_END.md",
+    "pyproject.toml",
+    "tests/e2e/cognito_idp/conftest.py",
+    "tests/e2e/sqs/conftest.py",
+    "tests/e2e/ssm/conftest.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "10024d82-e07e-4008-a2b1-424793c82b09",
+  "checkpoint_transcript_start": 667,
+  "transcript_lines_at_start": 667,
+  "token_usage": {
+    "input_tokens": 17,
+    "cache_creation_tokens": 80381,
+    "cache_read_tokens": 1167005,
+    "output_tokens": 555,
+    "api_call_count": 15
+  }
+}

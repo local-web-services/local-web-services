@@ -1,0 +1,26 @@
+All tasks are complete. Here's a summary of everything that was done:
+
+## Migration Complete: All E2E Tests to Gherkin/pytest-bdd
+
+### What was done
+
+**22 services migrated** (205+ test files) from class-based AAA pattern to Gherkin BDD:
+- SSM (10), S3API (13), DynamoDB (14), Lambda (12), SQS (18), SNS (16), EventBridge (17), Step Functions (16), Cognito (20), Secrets Manager (12), API Gateway (44), RDS (2), DocDB (1), Neptune (2), ElastiCache (1), MemoryDB (1), Elasticsearch (1), OpenSearch (1), Glacier (2), S3Tables (2)
+
+**Files created/modified:**
+- ~195 `.feature` files in `tests/e2e/<service>/features/`
+- 22 `conftest.py` files with service-specific step definitions
+- ~195 `test_*.py` files rewritten as thin 3-line wiring files
+- Shared `the command will succeed` step in `tests/e2e/conftest.py`
+
+**Architecture tests updated:**
+- AAA ratchet: 828 → 825
+- Magic strings ratchet: 82 → 81
+- Resource naming ratchet: 7 → 0
+
+**Other changes:**
+- Added `pytest-bdd>=8.1.0` dependency to `pyproject.toml`
+- Updated `contributing/testing/END_TO_END.md` to document BDD pattern
+- Bumped version: 0.8.0 → 0.9.0
+
+**Verification:** `make check` passes — 2238 tests, all green, lint/format clean.
