@@ -1207,3 +1207,210 @@ def the_output_will_match_integration_id(command_result, v2_integration, parse_o
     expected_id = v2_integration["integrationId"]
     actual_id = body["integrationId"]
     assert actual_id == expected_id
+
+
+# ── Authorizer step definitions ──────────────────────────────────────
+
+
+@given(
+    parsers.parse('an authorizer "{name}" of type "{auth_type}" was created for the REST API'),
+    target_fixture="authorizer",
+)
+def an_authorizer_was_created(name, auth_type, rest_api, lws_invoke, e2e_port):
+    result = lws_invoke(
+        [
+            "apigateway",
+            "create-authorizer",
+            "--rest-api-id",
+            rest_api["id"],
+            "--name",
+            name,
+            "--type",
+            auth_type,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"id": result["id"], "name": name}
+
+
+@given(
+    parsers.parse('a V2 authorizer "{name}" of type "{auth_type}" was created for the HTTP API'),
+    target_fixture="v2_authorizer",
+)
+def a_v2_authorizer_was_created(name, auth_type, v2_api, lws_invoke, e2e_port):
+    result = lws_invoke(
+        [
+            "apigateway",
+            "v2-create-authorizer",
+            "--api-id",
+            v2_api["apiId"],
+            "--name",
+            name,
+            "--authorizer-type",
+            auth_type,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"authorizerId": result["authorizerId"], "name": name}
+
+
+@when(
+    parsers.parse('I create an authorizer named "{name}" of type "{auth_type}" for the REST API'),
+    target_fixture="command_result",
+)
+def i_create_authorizer(name, auth_type, rest_api, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "create-authorizer",
+            "--rest-api-id",
+            rest_api["id"],
+            "--name",
+            name,
+            "--type",
+            auth_type,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I get the authorizer",
+    target_fixture="command_result",
+)
+def i_get_authorizer(rest_api, authorizer, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "get-authorizer",
+            "--rest-api-id",
+            rest_api["id"],
+            "--authorizer-id",
+            authorizer["id"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I list authorizers for the REST API",
+    target_fixture="command_result",
+)
+def i_list_authorizers(rest_api, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "get-authorizers",
+            "--rest-api-id",
+            rest_api["id"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I delete the authorizer",
+    target_fixture="command_result",
+)
+def i_delete_authorizer(rest_api, authorizer, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "delete-authorizer",
+            "--rest-api-id",
+            rest_api["id"],
+            "--authorizer-id",
+            authorizer["id"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I create a V2 authorizer named "{name}" of type "{auth_type}" for the HTTP API'),
+    target_fixture="command_result",
+)
+def i_create_v2_authorizer(name, auth_type, v2_api, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-create-authorizer",
+            "--api-id",
+            v2_api["apiId"],
+            "--name",
+            name,
+            "--authorizer-type",
+            auth_type,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I get the V2 authorizer",
+    target_fixture="command_result",
+)
+def i_get_v2_authorizer(v2_api, v2_authorizer, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-get-authorizer",
+            "--api-id",
+            v2_api["apiId"],
+            "--authorizer-id",
+            v2_authorizer["authorizerId"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I list V2 authorizers",
+    target_fixture="command_result",
+)
+def i_list_v2_authorizers(v2_api, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-get-authorizers",
+            "--api-id",
+            v2_api["apiId"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I delete the V2 authorizer",
+    target_fixture="command_result",
+)
+def i_delete_v2_authorizer(v2_api, v2_authorizer, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-delete-authorizer",
+            "--api-id",
+            v2_api["apiId"],
+            "--authorizer-id",
+            v2_authorizer["authorizerId"],
+            "--port",
+            str(e2e_port),
+        ],
+    )

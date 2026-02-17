@@ -1203,3 +1203,245 @@ async def _v2_delete_route(api_id: str, route_id: str, port: int) -> None:
     except Exception as exc:
         exit_with_error(str(exc))
     output_json(resp.json() if resp.content else {})
+
+
+# ---------------------------------------------------------------------------
+# REST API (V1) Authorizer commands
+# ---------------------------------------------------------------------------
+
+
+@app.command("create-authorizer")
+def create_authorizer(
+    rest_api_id: str = typer.Option(..., "--rest-api-id", help="REST API ID"),
+    name: str = typer.Option(..., "--name", help="Authorizer name"),
+    authorizer_type: str = typer.Option(..., "--type", help="Authorizer type"),
+    provider_arns: str = typer.Option(None, "--provider-arns", help="JSON array of provider ARNs"),
+    authorizer_uri: str = typer.Option(None, "--authorizer-uri", help="Authorizer URI"),
+    identity_source: str = typer.Option(None, "--identity-source", help="Identity source"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create an authorizer for a REST API."""
+    asyncio.run(
+        _create_authorizer(
+            rest_api_id, name, authorizer_type, provider_arns, authorizer_uri, identity_source, port
+        )
+    )
+
+
+async def _create_authorizer(
+    rest_api_id: str,
+    name: str,
+    authorizer_type: str,
+    provider_arns: str | None,
+    authorizer_uri: str | None,
+    identity_source: str | None,
+    port: int,
+) -> None:
+    client = _client(port)
+    body: dict = {"name": name, "type": authorizer_type}
+    if provider_arns:
+        body["providerARNs"] = json.loads(provider_arns)
+    if authorizer_uri:
+        body["authorizerUri"] = authorizer_uri
+    if identity_source:
+        body["identitySource"] = identity_source
+    json_body = json.dumps(body).encode()
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "POST",
+            f"/restapis/{rest_api_id}/authorizers",
+            body=json_body,
+            headers={"Content-Type": "application/json"},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("get-authorizers")
+def get_authorizers(
+    rest_api_id: str = typer.Option(..., "--rest-api-id", help="REST API ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List authorizers for a REST API."""
+    asyncio.run(_get_authorizers(rest_api_id, port))
+
+
+async def _get_authorizers(rest_api_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "GET",
+            f"/restapis/{rest_api_id}/authorizers",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("get-authorizer")
+def get_authorizer(
+    rest_api_id: str = typer.Option(..., "--rest-api-id", help="REST API ID"),
+    authorizer_id: str = typer.Option(..., "--authorizer-id", help="Authorizer ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Get an authorizer by ID."""
+    asyncio.run(_get_authorizer(rest_api_id, authorizer_id, port))
+
+
+async def _get_authorizer(rest_api_id: str, authorizer_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "GET",
+            f"/restapis/{rest_api_id}/authorizers/{authorizer_id}",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("delete-authorizer")
+def delete_authorizer(
+    rest_api_id: str = typer.Option(..., "--rest-api-id", help="REST API ID"),
+    authorizer_id: str = typer.Option(..., "--authorizer-id", help="Authorizer ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete an authorizer."""
+    asyncio.run(_delete_authorizer(rest_api_id, authorizer_id, port))
+
+
+async def _delete_authorizer(rest_api_id: str, authorizer_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "DELETE",
+            f"/restapis/{rest_api_id}/authorizers/{authorizer_id}",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json() if resp.content else {})
+
+
+# ---------------------------------------------------------------------------
+# HTTP API (V2) Authorizer commands
+# ---------------------------------------------------------------------------
+
+
+@app.command("v2-create-authorizer")
+def v2_create_authorizer(
+    api_id: str = typer.Option(..., "--api-id", help="API ID"),
+    name: str = typer.Option(..., "--name", help="Authorizer name"),
+    authorizer_type: str = typer.Option(..., "--authorizer-type", help="Authorizer type"),
+    identity_source: str = typer.Option(None, "--identity-source", help="Identity source"),
+    jwt_configuration: str = typer.Option(
+        None, "--jwt-configuration", help="JSON JWT configuration"
+    ),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create an authorizer for an HTTP API (V2)."""
+    asyncio.run(
+        _v2_create_authorizer(
+            api_id, name, authorizer_type, identity_source, jwt_configuration, port
+        )
+    )
+
+
+async def _v2_create_authorizer(
+    api_id: str,
+    name: str,
+    authorizer_type: str,
+    identity_source: str | None,
+    jwt_configuration: str | None,
+    port: int,
+) -> None:
+    client = _client(port)
+    body: dict = {"Name": name, "AuthorizerType": authorizer_type}
+    if identity_source:
+        body["IdentitySource"] = identity_source
+    if jwt_configuration:
+        body["JwtConfiguration"] = json.loads(jwt_configuration)
+    json_body = json.dumps(body).encode()
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "POST",
+            f"/v2/apis/{api_id}/authorizers",
+            body=json_body,
+            headers={"Content-Type": "application/json"},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("v2-get-authorizers")
+def v2_get_authorizers(
+    api_id: str = typer.Option(..., "--api-id", help="API ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List authorizers for an HTTP API (V2)."""
+    asyncio.run(_v2_get_authorizers(api_id, port))
+
+
+async def _v2_get_authorizers(api_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "GET",
+            f"/v2/apis/{api_id}/authorizers",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("v2-get-authorizer")
+def v2_get_authorizer(
+    api_id: str = typer.Option(..., "--api-id", help="API ID"),
+    authorizer_id: str = typer.Option(..., "--authorizer-id", help="Authorizer ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Get an authorizer for an HTTP API (V2)."""
+    asyncio.run(_v2_get_authorizer(api_id, authorizer_id, port))
+
+
+async def _v2_get_authorizer(api_id: str, authorizer_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "GET",
+            f"/v2/apis/{api_id}/authorizers/{authorizer_id}",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("v2-delete-authorizer")
+def v2_delete_authorizer(
+    api_id: str = typer.Option(..., "--api-id", help="API ID"),
+    authorizer_id: str = typer.Option(..., "--authorizer-id", help="Authorizer ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete an authorizer for an HTTP API (V2)."""
+    asyncio.run(_v2_delete_authorizer(api_id, authorizer_id, port))
+
+
+async def _v2_delete_authorizer(api_id: str, authorizer_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "DELETE",
+            f"/v2/apis/{api_id}/authorizers/{authorizer_id}",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json() if resp.content else {})

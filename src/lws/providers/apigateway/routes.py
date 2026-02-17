@@ -11,6 +11,7 @@ the shared ``LambdaRegistry``.
 
 from __future__ import annotations
 
+import base64
 import json
 import re
 import time
@@ -23,7 +24,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.lambda_helpers import build_default_lambda_context
-from lws.providers._shared.request_helpers import parse_json_body
+from lws.providers._shared.request_helpers import is_binary_content_type, parse_json_body
 
 if TYPE_CHECKING:
     from lws.providers.lambda_runtime.routes import LambdaRegistry
@@ -46,6 +47,7 @@ class _RestApi:
     resources: dict[str, dict[str, Any]] = field(default_factory=dict)
     deployments: dict[str, dict[str, Any]] = field(default_factory=dict)
     stages: dict[str, dict[str, Any]] = field(default_factory=dict)
+    authorizers: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         # Every REST API has a root resource "/"
@@ -100,6 +102,8 @@ class _HttpApi:
     routes: dict[str, dict[str, Any]] = field(default_factory=dict)
     integrations: dict[str, dict[str, Any]] = field(default_factory=dict)
     stages: dict[str, dict[str, Any]] = field(default_factory=dict)
+    cors_configuration: dict[str, Any] | None = None
+    authorizers: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
 class _ApiGatewayV2State:
@@ -273,6 +277,28 @@ class ApiGatewayManagementRouter:
         r.add_api_route(
             "/restapis/{rest_api_id}/stages/{stage_name}",
             self._delete_stage,
+            methods=["DELETE"],
+        )
+
+        # Authorizers
+        r.add_api_route(
+            "/restapis/{rest_api_id}/authorizers",
+            self._create_authorizer,
+            methods=["POST"],
+        )
+        r.add_api_route(
+            "/restapis/{rest_api_id}/authorizers",
+            self._list_authorizers,
+            methods=["GET"],
+        )
+        r.add_api_route(
+            "/restapis/{rest_api_id}/authorizers/{authorizer_id}",
+            self._get_authorizer,
+            methods=["GET"],
+        )
+        r.add_api_route(
+            "/restapis/{rest_api_id}/authorizers/{authorizer_id}",
+            self._delete_authorizer,
             methods=["DELETE"],
         )
 
@@ -591,6 +617,46 @@ class ApiGatewayManagementRouter:
             api.stages.pop(stage_name, None)
         return Response(status_code=202)
 
+    # -- Authorizers ---------------------------------------------------------
+
+    async def _create_authorizer(self, rest_api_id: str, request: Request) -> Response:
+        api = self._state.get_rest_api(rest_api_id)
+        if api is None:
+            return _not_found("RestApi", rest_api_id)
+        body = await parse_json_body(request)
+        authorizer_id = str(uuid.uuid4())[:10]
+        authorizer = {
+            "id": authorizer_id,
+            "name": body.get("name", ""),
+            "type": body.get("type", "TOKEN"),
+            "providerARNs": body.get("providerARNs", []),
+            "authorizerUri": body.get("authorizerUri", ""),
+            "identitySource": body.get("identitySource", ""),
+        }
+        api.authorizers[authorizer_id] = authorizer
+        return _json_response(authorizer, 201)
+
+    async def _list_authorizers(self, rest_api_id: str) -> Response:
+        api = self._state.get_rest_api(rest_api_id)
+        if api is None:
+            return _not_found("RestApi", rest_api_id)
+        return _json_response({"item": list(api.authorizers.values())})
+
+    async def _get_authorizer(self, rest_api_id: str, authorizer_id: str) -> Response:
+        api = self._state.get_rest_api(rest_api_id)
+        if api is None:
+            return _not_found("RestApi", rest_api_id)
+        authorizer = api.authorizers.get(authorizer_id)
+        if authorizer is None:
+            return _not_found("Authorizer", authorizer_id)
+        return _json_response(authorizer)
+
+    async def _delete_authorizer(self, rest_api_id: str, authorizer_id: str) -> Response:
+        api = self._state.get_rest_api(rest_api_id)
+        if api is not None:
+            api.authorizers.pop(authorizer_id, None)
+        return Response(status_code=202)
+
 
 # ---------------------------------------------------------------------------
 # V2 Router
@@ -655,6 +721,20 @@ class ApiGatewayV2Router:
             "/v2/apis/{api_id}/routes/{route_id}", self._delete_route, methods=["DELETE"]
         )
 
+        # Authorizers
+        r.add_api_route("/v2/apis/{api_id}/authorizers", self._create_authorizer, methods=["POST"])
+        r.add_api_route("/v2/apis/{api_id}/authorizers", self._list_authorizers, methods=["GET"])
+        r.add_api_route(
+            "/v2/apis/{api_id}/authorizers/{authorizer_id}",
+            self._get_authorizer,
+            methods=["GET"],
+        )
+        r.add_api_route(
+            "/v2/apis/{api_id}/authorizers/{authorizer_id}",
+            self._delete_authorizer,
+            methods=["DELETE"],
+        )
+
         # Stages (list) - registered before the stage name GET
         r.add_api_route("/v2/apis/{api_id}/stages", self._list_stages, methods=["GET"])
 
@@ -666,6 +746,9 @@ class ApiGatewayV2Router:
         protocol_type = body.get("protocolType", body.get("ProtocolType", "HTTP"))
         description = body.get("description", body.get("Description", ""))
         api = self._state.create_api(name, protocol_type, description)
+        cors = body.get("corsConfiguration", body.get("CorsConfiguration"))
+        if cors:
+            api.cors_configuration = cors
         _logger.info("V2 CreateApi: name=%s id=%s", name, api.api_id)
         return _json_response(_format_http_api(api), 201)
 
@@ -688,6 +771,9 @@ class ApiGatewayV2Router:
             api.name = body.get("name", body.get("Name", api.name))
         if "description" in body or "Description" in body:
             api.description = body.get("description", body.get("Description", api.description))
+        cors = body.get("corsConfiguration", body.get("CorsConfiguration"))
+        if cors:
+            api.cors_configuration = cors
         return _json_response(_format_http_api(api))
 
     async def _delete_api(self, api_id: str) -> Response:
@@ -799,11 +885,15 @@ class ApiGatewayV2Router:
         route_id = str(uuid.uuid4())[:7]
         route_key = body.get("routeKey", body.get("RouteKey", ""))
         target = body.get("target", body.get("Target", ""))
+        auth_type = body.get("authorizationType", body.get("AuthorizationType", "NONE"))
+        auth_id = body.get("authorizerId", body.get("AuthorizerId", ""))
         route = {
             "routeId": route_id,
             "routeKey": route_key,
             "target": target,
             "apiId": api_id,
+            "authorizationType": auth_type,
+            "authorizerId": auth_id,
         }
         api.routes[route_id] = route
         _logger.debug("V2 created route: key=%r target=%r api=%s", route_key, target, api_id)
@@ -835,6 +925,46 @@ class ApiGatewayV2Router:
         if api is None:
             return _not_found("Api", api_id)
         return _json_response({"items": list(api.stages.values())})
+
+    # -- Authorizers ---------------------------------------------------------
+
+    async def _create_authorizer(self, api_id: str, request: Request) -> Response:
+        api = self._state.get_api(api_id)
+        if api is None:
+            return _not_found("Api", api_id)
+        body = await parse_json_body(request)
+        authorizer_id = str(uuid.uuid4())[:7]
+        authorizer = {
+            "authorizerId": authorizer_id,
+            "name": body.get("name", body.get("Name", "")),
+            "authorizerType": body.get("authorizerType", body.get("AuthorizerType", "JWT")),
+            "identitySource": body.get("identitySource", body.get("IdentitySource", "")),
+            "jwtConfiguration": body.get("jwtConfiguration", body.get("JwtConfiguration", {})),
+            "apiId": api_id,
+        }
+        api.authorizers[authorizer_id] = authorizer
+        return _json_response(authorizer, 201)
+
+    async def _list_authorizers(self, api_id: str) -> Response:
+        api = self._state.get_api(api_id)
+        if api is None:
+            return _not_found("Api", api_id)
+        return _json_response({"items": list(api.authorizers.values())})
+
+    async def _get_authorizer(self, api_id: str, authorizer_id: str) -> Response:
+        api = self._state.get_api(api_id)
+        if api is None:
+            return _not_found("Api", api_id)
+        authorizer = api.authorizers.get(authorizer_id)
+        if authorizer is None:
+            return _not_found("Authorizer", authorizer_id)
+        return _json_response(authorizer)
+
+    async def _delete_authorizer(self, api_id: str, authorizer_id: str) -> Response:
+        api = self._state.get_api(api_id)
+        if api is not None:
+            api.authorizers.pop(authorizer_id, None)
+        return Response(status_code=204)
 
     # -- Proxy ---------------------------------------------------------------
 
@@ -872,51 +1002,73 @@ class ApiGatewayV2Router:
         # Fall back to $default route if no specific match
         return default_match
 
+    def _find_api_for_path(self, _path: str) -> _HttpApi | None:
+        """Find any V2 API that has routes potentially matching this path."""
+        for api in self._state.list_apis():
+            if api.routes:
+                return api
+        return None
+
+    async def handle_cors_preflight(self, request: Request, path: str) -> Response | None:
+        """Handle OPTIONS preflight if a V2 API has CORS configured."""
+        request_path = f"/{path}" if not path.startswith("/") else path
+        api = self._find_api_for_path(request_path)
+        if api is None or api.cors_configuration is None:
+            return None
+        origin = request.headers.get("origin", "*")
+        cors_headers = _build_cors_headers(api.cors_configuration, origin)
+        return Response(status_code=204, headers=cors_headers)
+
+    def _resolve_compute(self, integration: dict[str, Any]):
+        """Resolve the ICompute from an integration, or return None."""
+        integration_uri = integration.get("integrationUri", "")
+        function_name = _extract_function_name(integration_uri)
+        if not function_name or self._lambda_registry is None:
+            return None, None
+        compute = self._lambda_registry.get_compute(function_name)
+        return function_name, compute
+
     async def proxy_request(self, request: Request, path: str) -> Response | None:
         """Try to proxy a request through V2 routes. Returns None if no match."""
         method = request.method
         request_path = f"/{path}" if not path.startswith("/") else path
 
-        api_count = len(self._state.list_apis())
-        _logger.info("V2 proxy: trying %s %s (apis=%d)", method, request_path, api_count)
+        _logger.info(
+            "V2 proxy: trying %s %s (apis=%d)",
+            method,
+            request_path,
+            len(self._state.list_apis()),
+        )
+
+        if method == "OPTIONS":
+            return await self.handle_cors_preflight(request, path)
 
         match = self._find_matching_route(method, request_path)
         if match is None:
             return None
 
         _api, route, integration = match
-        integration_uri = integration.get("integrationUri", "")
-
-        # Extract Lambda function name from the integration URI
-        # Format: arn:aws:lambda:region:account:function:name or
-        # arn:aws:apigateway:region:lambda:path/2015-03-31/functions/arn:aws:.../invocations
-        function_name = _extract_function_name(integration_uri)
-        if not function_name or self._lambda_registry is None:
-            return None
-
-        compute = self._lambda_registry.get_compute(function_name)
+        function_name, compute = self._resolve_compute(integration)
         if compute is None:
             return None
 
-        # Build API Gateway V2 event
-        body_bytes = await request.body()
-        body_str = body_bytes.decode("utf-8") if body_bytes else ""
-
+        body_str, is_base64 = await _encode_request_body(request)
         route_key = route.get("routeKey", "")
-        # Extract path parameters from the route pattern
         route_path = route_key.split(" ", 1)[-1] if " " in route_key else ""
         path_params = _extract_path_parameters(route_path, request_path)
 
-        event = _build_apigw_v2_event(request, request_path, body_str, route_key, path_params)
-
+        event = _build_apigw_v2_event(
+            request, request_path, body_str, route_key, path_params, is_base64
+        )
         context = build_default_lambda_context(function_name)
-
         result = await compute.invoke(event, context)
 
         if result.error:
             return _json_response({"message": result.error}, 502)
 
-        return _build_proxy_response(result.payload)
+        response = _build_proxy_response(result.payload)
+        _inject_cors_headers(response, _api, request)
+        return response
 
 
 def _route_path_matches(route_path: str, request_path: str) -> bool:
@@ -998,10 +1150,25 @@ def _build_apigw_v2_event(
     body: str,
     route_key: str,
     path_parameters: dict[str, str] | None = None,
+    is_base64_encoded: bool = False,
 ) -> dict[str, Any]:
     """Build an API Gateway V2 HTTP API event."""
-    headers = dict(request.headers)
-    query_params = dict(request.query_params)
+    # V2 uses comma-joined values for duplicate header names
+    headers: dict[str, str] = {}
+    for k, v in request.headers.raw:
+        key = k.decode("latin-1")
+        if key in headers:
+            headers[key] += f",{v.decode('latin-1')}"
+        else:
+            headers[key] = v.decode("latin-1")
+
+    # V2 uses comma-joined values for duplicate query string params
+    query_params: dict[str, str] = {}
+    for k, v in request.query_params.multi_items():
+        if k in query_params:
+            query_params[k] += f",{v}"
+        else:
+            query_params[k] = v
 
     event: dict[str, Any] = {
         "version": "2.0",
@@ -1011,7 +1178,7 @@ def _build_apigw_v2_event(
         "headers": headers,
         "queryStringParameters": query_params if query_params else None,
         "body": body or None,
-        "isBase64Encoded": False,
+        "isBase64Encoded": is_base64_encoded,
         "requestContext": {
             "accountId": _ACCOUNT_ID,
             "apiId": "local",
@@ -1043,8 +1210,15 @@ def _build_proxy_response(payload: dict | None) -> Response:
     resp_headers = payload.get("headers", {})
     resp_body = payload.get("body", "")
 
+    # Decode base64 response body
+    is_base64 = payload.get("isBase64Encoded", False)
+    if is_base64 and resp_body:
+        content = base64.b64decode(resp_body)
+    else:
+        content = resp_body if isinstance(resp_body, str) else json.dumps(resp_body)
+
     response = Response(
-        content=resp_body if isinstance(resp_body, str) else json.dumps(resp_body),
+        content=content,
         status_code=status_code,
         media_type=resp_headers.get(
             "content-type", resp_headers.get("Content-Type", "application/json")
@@ -1053,6 +1227,12 @@ def _build_proxy_response(payload: dict | None) -> Response:
     for k, v in resp_headers.items():
         if k.lower() != "content-type":
             response.headers[k] = str(v)
+
+    # Support cookies field in V2 Lambda response (set-cookie headers)
+    cookies = payload.get("cookies") or []
+    for cookie in cookies:
+        response.headers.append("set-cookie", cookie)
+
     return response
 
 
@@ -1074,7 +1254,7 @@ def _format_rest_api(api: _RestApi) -> dict[str, Any]:
 
 
 def _format_http_api(api: _HttpApi) -> dict[str, Any]:
-    return {
+    result: dict[str, Any] = {
         "apiId": api.api_id,
         "name": api.name,
         "protocolType": api.protocol_type,
@@ -1082,6 +1262,45 @@ def _format_http_api(api: _HttpApi) -> dict[str, Any]:
         "createdDate": api.created_date,
         "apiEndpoint": f"http://localhost/{api.api_id}",
     }
+    if api.cors_configuration:
+        result["corsConfiguration"] = api.cors_configuration
+    return result
+
+
+async def _encode_request_body(request: Request) -> tuple[str, bool]:
+    """Read the request body and return (encoded_str, is_base64)."""
+    body_bytes = await request.body()
+    content_type = request.headers.get("content-type", "")
+    if body_bytes and is_binary_content_type(content_type):
+        return base64.b64encode(body_bytes).decode("ascii"), True
+    return (body_bytes.decode("utf-8") if body_bytes else ""), False
+
+
+def _inject_cors_headers(response: Response, api: _HttpApi, request: Request) -> None:
+    """Add CORS headers to a proxy response if the API has CORS configured."""
+    if api.cors_configuration:
+        origin = request.headers.get("origin", "*")
+        for k, v in _build_cors_headers(api.cors_configuration, origin).items():
+            response.headers[k] = v
+
+
+def _build_cors_headers(cors: dict[str, Any], origin: str) -> dict[str, str]:
+    """Build CORS response headers from a CORS configuration dict."""
+    headers: dict[str, str] = {}
+    allowed = cors.get("allowOrigins", ["*"])
+    if "*" in allowed or origin in allowed:
+        headers["access-control-allow-origin"] = origin if "*" not in allowed else "*"
+    if cors.get("allowMethods"):
+        headers["access-control-allow-methods"] = ",".join(cors["allowMethods"])
+    if cors.get("allowHeaders"):
+        headers["access-control-allow-headers"] = ",".join(cors["allowHeaders"])
+    if cors.get("exposeHeaders"):
+        headers["access-control-expose-headers"] = ",".join(cors["exposeHeaders"])
+    if cors.get("maxAge") is not None:
+        headers["access-control-max-age"] = str(cors["maxAge"])
+    if cors.get("allowCredentials"):
+        headers["access-control-allow-credentials"] = "true"
+    return headers
 
 
 def _json_response(data: dict, status_code: int = 200) -> Response:
@@ -1127,7 +1346,7 @@ def create_apigateway_management_app(
     app.include_router(v1_router.router)
 
     # Wire V2 proxy into the catch-all: override the V1 stub to also try V2 proxy
-    @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
+    @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
     async def _catch_all_with_proxy(request: Request, path: str) -> Response:
         # Try V2 proxy first
         if lambda_registry is not None:
