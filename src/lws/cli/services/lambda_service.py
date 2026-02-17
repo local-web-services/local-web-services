@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
+from urllib.parse import quote
 
 import httpx
 import typer
@@ -325,6 +326,193 @@ async def _update_function_code(function_name: str, code_json: str, port: int) -
             f"/2015-03-31/functions/{function_name}/code",
             body=json_body,
             headers={"Content-Type": "application/json"},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("tag-resource")
+def tag_resource(
+    resource: str = typer.Option(..., "--resource", help="Function ARN"),
+    tags: str = typer.Option(..., "--tags", help="JSON tag map"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Tag a Lambda function."""
+    asyncio.run(_tag_resource(resource, tags, port))
+
+
+async def _tag_resource(resource_arn: str, tags_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(tags_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --tags: {exc}")
+    encoded_arn = quote(resource_arn, safe="")
+    json_body = json.dumps({"Tags": parsed}).encode()
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "POST",
+            f"/2015-03-31/tags/{encoded_arn}",
+            body=json_body,
+            headers={"Content-Type": "application/json"},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json() if resp.content else {})
+
+
+@app.command("untag-resource")
+def untag_resource(
+    resource: str = typer.Option(..., "--resource", help="Function ARN"),
+    tag_keys: str = typer.Option(..., "--tag-keys", help="JSON array of tag keys"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Remove tags from a Lambda function."""
+    asyncio.run(_untag_resource(resource, tag_keys, port))
+
+
+async def _untag_resource(resource_arn: str, tag_keys_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(tag_keys_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --tag-keys: {exc}")
+    encoded_arn = quote(resource_arn, safe="")
+    query = "&".join(f"tagKeys={quote(k, safe='')}" for k in parsed)
+    try:
+        port_num = await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    async with httpx.AsyncClient() as http_client:
+        resp = await http_client.delete(
+            f"http://localhost:{port_num}/2015-03-31/tags/{encoded_arn}?{query}",
+            timeout=30.0,
+        )
+    output_json(resp.json() if resp.content else {})
+
+
+@app.command("list-tags")
+def list_tags(
+    resource: str = typer.Option(..., "--resource", help="Function ARN"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List tags for a Lambda function."""
+    asyncio.run(_list_tags(resource, port))
+
+
+async def _list_tags(resource_arn: str, port: int) -> None:
+    client = _client(port)
+    encoded_arn = quote(resource_arn, safe="")
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "GET",
+            f"/2015-03-31/tags/{encoded_arn}",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("add-permission")
+def add_permission(
+    function_name: str = typer.Option(..., "--function-name", help="Function name"),
+    statement_id: str = typer.Option(..., "--statement-id", help="Statement ID"),
+    action: str = typer.Option(..., "--action", help="Action"),
+    principal: str = typer.Option(..., "--principal", help="Principal"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Add a permission to a Lambda function policy."""
+    asyncio.run(_add_permission(function_name, statement_id, action, principal, port))
+
+
+async def _add_permission(
+    function_name: str, statement_id: str, action: str, principal: str, port: int
+) -> None:
+    client = _client(port)
+    json_body = json.dumps(
+        {
+            "StatementId": statement_id,
+            "Action": action,
+            "Principal": principal,
+        }
+    ).encode()
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "POST",
+            f"/2015-03-31/functions/{function_name}/policy",
+            body=json_body,
+            headers={"Content-Type": "application/json"},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("remove-permission")
+def remove_permission(
+    function_name: str = typer.Option(..., "--function-name", help="Function name"),
+    statement_id: str = typer.Option(..., "--statement-id", help="Statement ID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Remove a permission from a Lambda function policy."""
+    asyncio.run(_remove_permission(function_name, statement_id, port))
+
+
+async def _remove_permission(function_name: str, statement_id: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "DELETE",
+            f"/2015-03-31/functions/{function_name}/policy/{statement_id}",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json() if resp.content else {})
+
+
+@app.command("get-policy")
+def get_policy(
+    function_name: str = typer.Option(..., "--function-name", help="Function name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Get a Lambda function policy."""
+    asyncio.run(_get_policy(function_name, port))
+
+
+async def _get_policy(function_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "GET",
+            f"/2015-03-31/functions/{function_name}/policy",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("get-event-source-mapping")
+def get_event_source_mapping(
+    uuid: str = typer.Option(..., "--uuid", help="Event source mapping UUID"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Get an event source mapping by UUID."""
+    asyncio.run(_get_event_source_mapping(uuid, port))
+
+
+async def _get_event_source_mapping(uuid: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "GET",
+            f"/2015-03-31/event-source-mappings/{uuid}",
         )
     except Exception as exc:
         exit_with_error(str(exc))

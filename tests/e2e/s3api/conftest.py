@@ -478,3 +478,299 @@ def the_output_will_contain_upload_id(command_result, parse_output):
     data = parse_output(command_result.output)
     upload_id = data["InitiateMultipartUploadResult"]["UploadId"]
     assert upload_id
+
+
+# ── Step definitions for new commands ────────────────────────────────
+
+
+@given(
+    parsers.parse(
+        'tags were set on bucket "{bucket}" with key "{tag_key}" and value "{tag_value}"'
+    ),
+)
+def tags_were_set_on_bucket(bucket, tag_key, tag_value, lws_invoke, e2e_port):
+    tagging_json = json.dumps({"TagSet": [{"Key": tag_key, "Value": tag_value}]})
+    lws_invoke(
+        [
+            "s3api",
+            "put-bucket-tagging",
+            "--bucket",
+            bucket,
+            "--tagging",
+            tagging_json,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+
+
+@given(
+    parsers.parse('a policy was set on bucket "{bucket}"'),
+)
+def a_policy_was_set_on_bucket(bucket, lws_invoke, e2e_port):
+    policy = json.dumps(
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "AllowGetObject",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": f"arn:aws:s3:::{bucket}/*",
+                }
+            ],
+        }
+    )
+    lws_invoke(
+        [
+            "s3api",
+            "put-bucket-policy",
+            "--bucket",
+            bucket,
+            "--policy",
+            policy,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+
+
+@when(
+    parsers.parse('I copy object "{key}" in bucket "{bucket}" from source "{copy_source}"'),
+    target_fixture="command_result",
+)
+def i_copy_object(key, bucket, copy_source, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "copy-object",
+            "--bucket",
+            bucket,
+            "--key",
+            key,
+            "--copy-source",
+            copy_source,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I delete objects "{key1}" and "{key2}" from bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_delete_objects(key1, key2, bucket, e2e_port):
+    delete_json = json.dumps({"Objects": [{"Key": key1}, {"Key": key2}]})
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "delete-objects",
+            "--bucket",
+            bucket,
+            "--delete",
+            delete_json,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I put tags on bucket "{bucket}" with key "{tag_key}" and value "{tag_value}"'),
+    target_fixture="command_result",
+)
+def i_put_bucket_tagging(bucket, tag_key, tag_value, e2e_port):
+    tagging_json = json.dumps({"TagSet": [{"Key": tag_key, "Value": tag_value}]})
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "put-bucket-tagging",
+            "--bucket",
+            bucket,
+            "--tagging",
+            tagging_json,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I get tags from bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_get_bucket_tagging(bucket, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "get-bucket-tagging",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I delete tags from bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_delete_bucket_tagging(bucket, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "delete-bucket-tagging",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I get the location of bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_get_bucket_location(bucket, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "get-bucket-location",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I put a policy on bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_put_bucket_policy(bucket, e2e_port):
+    policy = json.dumps(
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "AllowGetObject",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": f"arn:aws:s3:::{bucket}/*",
+                }
+            ],
+        }
+    )
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "put-bucket-policy",
+            "--bucket",
+            bucket,
+            "--policy",
+            policy,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I get the policy of bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_get_bucket_policy(bucket, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "get-bucket-policy",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I put a notification configuration on bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_put_bucket_notification_configuration(bucket, e2e_port):
+    config = json.dumps(
+        {
+            "LambdaFunctionConfigurations": [
+                {
+                    "LambdaFunctionArn": "arn:aws:lambda:us-east-1:000000000000:function:test",
+                    "Events": ["s3:ObjectCreated:*"],
+                }
+            ]
+        }
+    )
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "put-bucket-notification-configuration",
+            "--bucket",
+            bucket,
+            "--notification-configuration",
+            config,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I get the notification configuration of bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_get_bucket_notification_configuration(bucket, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "get-bucket-notification-configuration",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I list parts of the multipart upload",
+    target_fixture="command_result",
+)
+def i_list_parts(multipart_context, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "list-parts",
+            "--bucket",
+            multipart_context["bucket"],
+            "--key",
+            multipart_context["key"],
+            "--upload-id",
+            multipart_context["upload_id"],
+            "--port",
+            str(e2e_port),
+        ],
+    )

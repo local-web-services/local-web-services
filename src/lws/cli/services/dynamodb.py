@@ -447,3 +447,174 @@ async def _transact_get_items(transact_items_json: str, port: int) -> None:
     except Exception as exc:
         exit_with_error(str(exc))
     output_json(result)
+
+
+@app.command("update-table")
+def update_table(
+    table_name: str = typer.Option(..., "--table-name", help="Table name"),
+    billing_mode: str = typer.Option(None, "--billing-mode", help="Billing mode"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Update a table."""
+    asyncio.run(_update_table(table_name, billing_mode, port))
+
+
+async def _update_table(table_name: str, billing_mode: str | None, port: int) -> None:
+    client = _client(port)
+    body: dict = {"TableName": table_name}
+    if billing_mode:
+        body["BillingMode"] = billing_mode
+    try:
+        result = await client.json_target_request(_SERVICE, f"{_TARGET_PREFIX}.UpdateTable", body)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("describe-time-to-live")
+def describe_time_to_live(
+    table_name: str = typer.Option(..., "--table-name", help="Table name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Describe TTL settings for a table."""
+    asyncio.run(_describe_time_to_live(table_name, port))
+
+
+async def _describe_time_to_live(table_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DescribeTimeToLive",
+            {"TableName": table_name},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("update-time-to-live")
+def update_time_to_live(
+    table_name: str = typer.Option(..., "--table-name", help="Table name"),
+    time_to_live_specification: str = typer.Option(
+        ..., "--time-to-live-specification", help="JSON TTL specification"
+    ),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Update TTL settings for a table."""
+    asyncio.run(_update_time_to_live(table_name, time_to_live_specification, port))
+
+
+async def _update_time_to_live(table_name: str, ttl_spec_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(ttl_spec_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --time-to-live-specification: {exc}")
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.UpdateTimeToLive",
+            {"TableName": table_name, "TimeToLiveSpecification": parsed},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("describe-continuous-backups")
+def describe_continuous_backups(
+    table_name: str = typer.Option(..., "--table-name", help="Table name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Describe continuous backups for a table."""
+    asyncio.run(_describe_continuous_backups(table_name, port))
+
+
+async def _describe_continuous_backups(table_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.DescribeContinuousBackups",
+            {"TableName": table_name},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("tag-resource")
+def tag_resource(
+    resource_arn: str = typer.Option(..., "--resource-arn", help="Resource ARN"),
+    tags: str = typer.Option(..., "--tags", help="JSON tags"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Tag a DynamoDB resource."""
+    asyncio.run(_tag_resource(resource_arn, tags, port))
+
+
+async def _tag_resource(resource_arn: str, tags_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(tags_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --tags: {exc}")
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.TagResource",
+            {"ResourceArn": resource_arn, "Tags": parsed},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("untag-resource")
+def untag_resource(
+    resource_arn: str = typer.Option(..., "--resource-arn", help="Resource ARN"),
+    tag_keys: str = typer.Option(..., "--tag-keys", help="JSON array of tag keys"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Remove tags from a DynamoDB resource."""
+    asyncio.run(_untag_resource(resource_arn, tag_keys, port))
+
+
+async def _untag_resource(resource_arn: str, tag_keys_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        parsed = json.loads(tag_keys_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --tag-keys: {exc}")
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.UntagResource",
+            {"ResourceArn": resource_arn, "TagKeys": parsed},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
+
+
+@app.command("list-tags-of-resource")
+def list_tags_of_resource(
+    resource_arn: str = typer.Option(..., "--resource-arn", help="Resource ARN"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List tags for a DynamoDB resource."""
+    asyncio.run(_list_tags_of_resource(resource_arn, port))
+
+
+async def _list_tags_of_resource(resource_arn: str, port: int) -> None:
+    client = _client(port)
+    try:
+        result = await client.json_target_request(
+            _SERVICE,
+            f"{_TARGET_PREFIX}.ListTagsOfResource",
+            {"ResourceArn": resource_arn},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(result)
