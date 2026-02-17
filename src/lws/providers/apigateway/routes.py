@@ -1002,11 +1002,18 @@ class ApiGatewayV2Router:
         # Fall back to $default route if no specific match
         return default_match
 
-    def _find_api_for_path(self, _path: str) -> _HttpApi | None:
-        """Find any V2 API that has routes potentially matching this path."""
+    def _find_api_for_path(self, path: str) -> _HttpApi | None:
+        """Find a V2 API with CORS config whose routes match *path*."""
         for api in self._state.list_apis():
-            if api.routes:
-                return api
+            if not api.cors_configuration:
+                continue
+            for route in api.routes.values():
+                route_key = route.get("routeKey", "")
+                if route_key == "$default":
+                    return api
+                parts = route_key.split(" ", 1)
+                if len(parts) == 2 and _route_path_matches(parts[1], path):
+                    return api
         return None
 
     async def handle_cors_preflight(self, request: Request, path: str) -> Response | None:

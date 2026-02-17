@@ -1548,6 +1548,32 @@ def a_v2_proxy_integration_was_created(func_name, v2_api, lws_invoke, e2e_port):
     return {"integrationId": result["integrationId"]}
 
 
+@given(
+    parsers.parse(
+        'a V2 route with key "{route_key}" targeting the integration was created'
+    ),
+    target_fixture="v2_route",
+)
+def a_v2_route_targeting_integration_was_created(
+    route_key, v2_api, v2_integration, lws_invoke, e2e_port
+):
+    result = lws_invoke(
+        [
+            "apigateway",
+            "v2-create-route",
+            "--api-id",
+            v2_api["apiId"],
+            "--route-key",
+            route_key,
+            "--target",
+            f"integrations/{v2_integration['integrationId']}",
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"routeId": result["routeId"]}
+
+
 @when(
     parsers.parse('I create a V2 API named "{name}" with CORS allowing all origins'),
     target_fixture="command_result",
@@ -1690,4 +1716,5 @@ def the_invoke_response_body_field_will_be(
     current = resp_body
     for part in parts:
         current = current[part]
-    assert str(current) == expected_value
+    actual_value = json.dumps(current) if isinstance(current, bool) else str(current)
+    assert actual_value == expected_value

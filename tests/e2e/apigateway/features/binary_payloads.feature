@@ -5,7 +5,7 @@ Feature: API Gateway V2 Binary Payloads
     Given an echo Lambda "e2e-bin-echo" was created
     And a V2 API "e2e-bin-payload" was created
     And a V2 proxy integration for Lambda "e2e-bin-echo" was created
-    And a V2 route with key "POST /e2e-bin-upload" was created
+    And a V2 route with key "POST /e2e-bin-upload" targeting the integration was created
     When I test invoke POST on "/e2e-bin-upload" with binary content type
     Then the command will succeed
     And the invoke response status will be 200
