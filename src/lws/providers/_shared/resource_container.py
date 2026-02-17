@@ -123,6 +123,7 @@ class ResourceContainerManager:
         _logger.info("Stopped container %s", name)
 
     async def stop_all(self) -> None:
-        """Stop all containers managed by this instance."""
-        for resource_id in list(self._containers):
-            await self.stop_container(resource_id)
+        """Stop all containers managed by this instance (in parallel)."""
+        if not self._containers:
+            return
+        await asyncio.gather(*(self.stop_container(rid) for rid in list(self._containers)))

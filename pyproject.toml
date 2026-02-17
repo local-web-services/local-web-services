@@ -1,6 +1,6 @@
 [project]
 name = "local-web-services"
-version = "0.10.0"
+version = "0.11.0"
 description = "Run AWS CDK applications locally - accelerate development with agentic code editors"
 readme = "README.md"
 license = "MIT"

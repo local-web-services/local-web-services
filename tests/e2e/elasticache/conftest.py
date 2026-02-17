@@ -28,7 +28,18 @@ def a_cache_cluster_was_created(cluster_id, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
-    return {"cluster_id": cluster_id}
+    yield {"cluster_id": cluster_id}
+    runner.invoke(
+        app,
+        [
+            "elasticache",
+            "delete-cache-cluster",
+            "--cache-cluster-id",
+            cluster_id,
+            "--port",
+            str(e2e_port),
+        ],
+    )
 
 
 @then(parsers.parse('cache cluster "{cluster_id}" will appear in the list'))
@@ -80,11 +91,23 @@ def cache_cluster_will_not_appear_in_list(cluster_id, assert_invoke, e2e_port):
     target_fixture="command_result",
 )
 def i_create_a_cache_cluster(cluster_id, e2e_port):
-    return runner.invoke(
+    result = runner.invoke(
         app,
         [
             "elasticache",
             "create-cache-cluster",
+            "--cache-cluster-id",
+            cluster_id,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    yield result
+    runner.invoke(
+        app,
+        [
+            "elasticache",
+            "delete-cache-cluster",
             "--cache-cluster-id",
             cluster_id,
             "--port",

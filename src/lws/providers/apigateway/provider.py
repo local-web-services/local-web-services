@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import uuid
 from dataclasses import dataclass
@@ -15,6 +16,7 @@ from lws.interfaces import ICompute, InvocationResult, LambdaContext, ProviderSt
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.request_helpers import is_binary_content_type
 
 _logger = get_logger("ldk.apigateway")
 
@@ -49,12 +51,25 @@ def build_proxy_event(request: Request, route: RouteConfig) -> dict:
     query_params = dict(request.query_params) if request.query_params else None
     headers = dict(request.headers) if request.headers else {}
 
+    # Build multi-value headers from raw header pairs
+    raw_headers: dict[str, list[str]] = {}
+    for k, v in request.headers.raw:
+        key = k.decode("latin-1")
+        raw_headers.setdefault(key, []).append(v.decode("latin-1"))
+
+    # Build multi-value query string parameters
+    multi_value_qsp: dict[str, list[str]] = {}
+    for k, v in request.query_params.multi_items():
+        multi_value_qsp.setdefault(k, []).append(v)
+
     return {
         "httpMethod": request.method,
         "path": request.url.path,
         "pathParameters": path_params,
         "queryStringParameters": query_params,
+        "multiValueQueryStringParameters": multi_value_qsp if multi_value_qsp else None,
         "headers": headers,
+        "multiValueHeaders": raw_headers,
         "body": None,  # will be set by caller after awaiting body
         "isBase64Encoded": False,
         "requestContext": {
@@ -92,11 +107,23 @@ def build_http_response(invocation_result: InvocationResult) -> Response:
     resp_headers = payload.get("headers") or {}
     body = payload.get("body", "")
 
-    return Response(
-        content=body,
+    # Decode base64 body when isBase64Encoded is true
+    is_base64 = payload.get("isBase64Encoded", False)
+    content = base64.b64decode(body) if is_base64 and body else body
+
+    response = Response(
+        content=content,
         status_code=status_code,
         headers=resp_headers,
     )
+
+    # Support multiValueHeaders in Lambda response
+    multi_headers = payload.get("multiValueHeaders") or {}
+    for k, values in multi_headers.items():
+        for v in values:
+            response.headers.append(k, v)
+
+    return response
 
 
 class ApiGatewayProvider(Provider):
@@ -193,7 +220,12 @@ class ApiGatewayProvider(Provider):
 
             # Read the body (if any) and attach it to the event.
             raw_body = await request.body()
-            event["body"] = raw_body.decode("utf-8") if raw_body else None
+            content_type = request.headers.get("content-type", "")
+            if raw_body and is_binary_content_type(content_type):
+                event["body"] = base64.b64encode(raw_body).decode("ascii")
+                event["isBase64Encoded"] = True
+            else:
+                event["body"] = raw_body.decode("utf-8") if raw_body else None
 
             context = LambdaContext(
                 function_name=route.handler_name,

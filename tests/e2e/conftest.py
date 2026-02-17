@@ -88,13 +88,31 @@ def ldk_server(tmp_path_factory, e2e_port):
     # Teardown via ldk stop
     subprocess.run(
         ["uv", "run", "ldk", "stop", "--port", str(e2e_port)],
-        timeout=10,
+        timeout=30,
     )
     try:
-        proc.wait(timeout=15)
+        proc.wait(timeout=30)
     except subprocess.TimeoutExpired:
         proc.kill()
         proc.wait(timeout=5)
+
+    # Safety net: remove any leftover lws-{service}-e2e-* containers
+    try:
+        result = subprocess.run(
+            ["docker", "ps", "-a", "-q", "--filter", "name=^lws-.*-e2e-"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        container_ids = result.stdout.strip()
+        if container_ids:
+            subprocess.run(
+                ["docker", "rm", "-f"] + container_ids.split(),
+                capture_output=True,
+                timeout=30,
+            )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        pass
 
 
 @pytest.fixture(scope="session")

@@ -28,7 +28,18 @@ def a_neptune_db_cluster_was_created(cluster_id, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
-    return {"cluster_id": cluster_id}
+    yield {"cluster_id": cluster_id}
+    runner.invoke(
+        app,
+        [
+            "neptune",
+            "delete-db-cluster",
+            "--db-cluster-identifier",
+            cluster_id,
+            "--port",
+            str(e2e_port),
+        ],
+    )
 
 
 @then(parsers.parse('cluster "{cluster_id}" will appear in describe-db-clusters'))
@@ -64,11 +75,23 @@ def cluster_will_not_appear_in_describe(cluster_id, assert_invoke, e2e_port):
     target_fixture="command_result",
 )
 def i_create_a_neptune_db_cluster(cluster_id, e2e_port):
-    return runner.invoke(
+    result = runner.invoke(
         app,
         [
             "neptune",
             "create-db-cluster",
+            "--db-cluster-identifier",
+            cluster_id,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    yield result
+    runner.invoke(
+        app,
+        [
+            "neptune",
+            "delete-db-cluster",
             "--db-cluster-identifier",
             cluster_id,
             "--port",

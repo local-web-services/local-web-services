@@ -3,13 +3,90 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import tempfile
+from pathlib import Path
 
+import pytest
 from pytest_bdd import given, parsers, then, when
 from typer.testing import CliRunner
 
 from lws.cli.lws import app
 
 runner = CliRunner()
+
+# ── Docker / image availability checks ────────────────────────────────
+
+
+def _check_docker_available() -> bool:
+    for _ in range(3):
+        try:
+            subprocess.run(["docker", "info"], capture_output=True, timeout=10, check=True)
+            return True
+        except (
+            subprocess.CalledProcessError,
+            FileNotFoundError,
+            subprocess.TimeoutExpired,
+        ):
+            import time
+
+            time.sleep(1)
+    return False
+
+
+def _check_python_image_available() -> bool:
+    try:
+        result = subprocess.run(
+            ["docker", "images", "-q", "public.ecr.aws/lambda/python:3.12"],
+            capture_output=True,
+            timeout=10,
+            text=True,
+        )
+        return bool(result.stdout.strip())
+    except (
+        subprocess.CalledProcessError,
+        FileNotFoundError,
+        subprocess.TimeoutExpired,
+    ):
+        return False
+
+
+_DOCKER_AVAILABLE = _check_docker_available()
+_PYTHON_IMAGE_AVAILABLE = _check_python_image_available() if _DOCKER_AVAILABLE else False
+
+
+def pytest_collection_modifyitems(config, items):
+    for item in items:
+        if "requires_docker" in item.keywords:
+            if not _DOCKER_AVAILABLE:
+                item.add_marker(pytest.mark.skip(reason="Docker daemon not reachable"))
+            elif not _PYTHON_IMAGE_AVAILABLE:
+                item.add_marker(
+                    pytest.mark.skip(reason="public.ecr.aws/lambda/python:3.12 image not available")
+                )
+
+
+# ── Echo Lambda handler ──────────────────────────────────────────────
+
+_ECHO_HANDLER_CODE = """\
+import json
+
+def handler(event, context):
+    return {
+        "statusCode": 200,
+        "body": json.dumps(event, default=str),
+        "headers": {"content-type": "application/json"},
+    }
+"""
+
+
+@pytest.fixture()
+def echo_handler_dir():
+    """Create a temporary directory with a Python echo handler."""
+    with tempfile.TemporaryDirectory(dir=str(Path.home())) as d:
+        handler_file = Path(d) / "handler.py"
+        handler_file.write_text(_ECHO_HANDLER_CODE)
+        yield d
 
 
 # ── Step definitions ──────────────────────────────────────────────────
@@ -1207,3 +1284,453 @@ def the_output_will_match_integration_id(command_result, v2_integration, parse_o
     expected_id = v2_integration["integrationId"]
     actual_id = body["integrationId"]
     assert actual_id == expected_id
+
+
+# ── Authorizer step definitions ──────────────────────────────────────
+
+
+@given(
+    parsers.parse('an authorizer "{name}" of type "{auth_type}" was created for the REST API'),
+    target_fixture="authorizer",
+)
+def an_authorizer_was_created(name, auth_type, rest_api, lws_invoke, e2e_port):
+    result = lws_invoke(
+        [
+            "apigateway",
+            "create-authorizer",
+            "--rest-api-id",
+            rest_api["id"],
+            "--name",
+            name,
+            "--type",
+            auth_type,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"id": result["id"], "name": name}
+
+
+@given(
+    parsers.parse('a V2 authorizer "{name}" of type "{auth_type}" was created for the HTTP API'),
+    target_fixture="v2_authorizer",
+)
+def a_v2_authorizer_was_created(name, auth_type, v2_api, lws_invoke, e2e_port):
+    result = lws_invoke(
+        [
+            "apigateway",
+            "v2-create-authorizer",
+            "--api-id",
+            v2_api["apiId"],
+            "--name",
+            name,
+            "--authorizer-type",
+            auth_type,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"authorizerId": result["authorizerId"], "name": name}
+
+
+@when(
+    parsers.parse('I create an authorizer named "{name}" of type "{auth_type}" for the REST API'),
+    target_fixture="command_result",
+)
+def i_create_authorizer(name, auth_type, rest_api, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "create-authorizer",
+            "--rest-api-id",
+            rest_api["id"],
+            "--name",
+            name,
+            "--type",
+            auth_type,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I get the authorizer",
+    target_fixture="command_result",
+)
+def i_get_authorizer(rest_api, authorizer, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "get-authorizer",
+            "--rest-api-id",
+            rest_api["id"],
+            "--authorizer-id",
+            authorizer["id"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I list authorizers for the REST API",
+    target_fixture="command_result",
+)
+def i_list_authorizers(rest_api, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "get-authorizers",
+            "--rest-api-id",
+            rest_api["id"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I delete the authorizer",
+    target_fixture="command_result",
+)
+def i_delete_authorizer(rest_api, authorizer, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "delete-authorizer",
+            "--rest-api-id",
+            rest_api["id"],
+            "--authorizer-id",
+            authorizer["id"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I create a V2 authorizer named "{name}" of type "{auth_type}" for the HTTP API'),
+    target_fixture="command_result",
+)
+def i_create_v2_authorizer(name, auth_type, v2_api, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-create-authorizer",
+            "--api-id",
+            v2_api["apiId"],
+            "--name",
+            name,
+            "--authorizer-type",
+            auth_type,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I get the V2 authorizer",
+    target_fixture="command_result",
+)
+def i_get_v2_authorizer(v2_api, v2_authorizer, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-get-authorizer",
+            "--api-id",
+            v2_api["apiId"],
+            "--authorizer-id",
+            v2_authorizer["authorizerId"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I list V2 authorizers",
+    target_fixture="command_result",
+)
+def i_list_v2_authorizers(v2_api, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-get-authorizers",
+            "--api-id",
+            v2_api["apiId"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I delete the V2 authorizer",
+    target_fixture="command_result",
+)
+def i_delete_v2_authorizer(v2_api, v2_authorizer, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-delete-authorizer",
+            "--api-id",
+            v2_api["apiId"],
+            "--authorizer-id",
+            v2_authorizer["authorizerId"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+# ── CORS, multi-value, binary step definitions ──────────────────────
+
+
+@given(
+    parsers.parse('an echo Lambda "{name}" was created'),
+    target_fixture="echo_lambda",
+)
+def an_echo_lambda_was_created(name, echo_handler_dir, lws_invoke, e2e_port):
+    lws_invoke(
+        [
+            "lambda",
+            "create-function",
+            "--function-name",
+            name,
+            "--runtime",
+            "python3.12",
+            "--handler",
+            "handler.handler",
+            "--code",
+            json.dumps({"Filename": echo_handler_dir}),
+            "--timeout",
+            "30",
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"name": name}
+
+
+@given(
+    parsers.parse('a V2 API "{name}" was created with CORS allowing all origins'),
+    target_fixture="v2_api",
+)
+def a_v2_api_with_cors_was_created(name, lws_invoke, e2e_port):
+    cors = json.dumps({"allowOrigins": ["*"], "allowMethods": ["GET", "POST"]})
+    result = lws_invoke(
+        [
+            "apigateway",
+            "v2-create-api",
+            "--name",
+            name,
+            "--cors-configuration",
+            cors,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"apiId": result["apiId"], "name": name}
+
+
+@given(
+    parsers.parse('a V2 proxy integration for Lambda "{func_name}" was created'),
+    target_fixture="v2_integration",
+)
+def a_v2_proxy_integration_was_created(func_name, v2_api, lws_invoke, e2e_port):
+    uri = f"arn:aws:lambda:us-east-1:000:function:{func_name}"
+    result = lws_invoke(
+        [
+            "apigateway",
+            "v2-create-integration",
+            "--api-id",
+            v2_api["apiId"],
+            "--integration-type",
+            "AWS_PROXY",
+            "--integration-uri",
+            uri,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"integrationId": result["integrationId"]}
+
+
+@given(
+    parsers.parse('a V2 route with key "{route_key}" targeting the integration was created'),
+    target_fixture="v2_route",
+)
+def a_v2_route_targeting_integration_was_created(
+    route_key, v2_api, v2_integration, lws_invoke, e2e_port
+):
+    result = lws_invoke(
+        [
+            "apigateway",
+            "v2-create-route",
+            "--api-id",
+            v2_api["apiId"],
+            "--route-key",
+            route_key,
+            "--target",
+            f"integrations/{v2_integration['integrationId']}",
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    return {"routeId": result["routeId"]}
+
+
+@when(
+    parsers.parse('I create a V2 API named "{name}" with CORS allowing all origins'),
+    target_fixture="command_result",
+)
+def i_create_v2_api_with_cors(name, e2e_port):
+    cors = json.dumps({"allowOrigins": ["*"], "allowMethods": ["GET", "POST"]})
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "v2-create-api",
+            "--name",
+            name,
+            "--cors-configuration",
+            cors,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I test invoke OPTIONS on "{resource}" with origin "{origin}"'),
+    target_fixture="command_result",
+)
+def i_test_invoke_options(resource, origin, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "test-invoke-method",
+            "--resource",
+            resource,
+            "--http-method",
+            "OPTIONS",
+            "--header",
+            f"Origin:{origin}",
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I test invoke GET on "{resource}"'),
+    target_fixture="command_result",
+)
+def i_test_invoke_get(resource, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "test-invoke-method",
+            "--resource",
+            resource,
+            "--http-method",
+            "GET",
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I test invoke GET on "{resource}" with header "{hdr}"'),
+    target_fixture="command_result",
+)
+def i_test_invoke_get_with_header(resource, hdr, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "test-invoke-method",
+            "--resource",
+            resource,
+            "--http-method",
+            "GET",
+            "--header",
+            hdr,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I test invoke POST on "{resource}" with binary content type'),
+    target_fixture="command_result",
+)
+def i_test_invoke_post_binary(resource, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "apigateway",
+            "test-invoke-method",
+            "--resource",
+            resource,
+            "--http-method",
+            "POST",
+            "--body",
+            "binarydata",
+            "--content-type",
+            "application/octet-stream",
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@then(
+    parsers.parse("the invoke response status will be {expected_status:d}"),
+)
+def the_invoke_response_status_will_be(expected_status, command_result, parse_output):
+    body = parse_output(command_result.output)
+    actual_status = body["status"]
+    assert actual_status == expected_status
+
+
+@then(
+    parsers.parse('the invoke response header "{header}" will contain "{expected_value}"'),
+)
+def the_invoke_response_header_will_contain(header, expected_value, command_result, parse_output):
+    body = parse_output(command_result.output)
+    actual_headers = body["headers"]
+    header_values = actual_headers.get(header, [])
+    assert expected_value in header_values or expected_value in str(header_values)
+
+
+@then(
+    parsers.parse('the invoke response body field "{field_path}" will be "{expected_value}"'),
+)
+def the_invoke_response_body_field_will_be(
+    field_path, expected_value, command_result, parse_output
+):
+    body = parse_output(command_result.output)
+    resp_body = body["body"]
+    if isinstance(resp_body, str):
+        resp_body = json.loads(resp_body)
+    parts = field_path.split(".")
+    current = resp_body
+    for part in parts:
+        current = current[part]
+    actual_value = json.dumps(current) if isinstance(current, bool) else str(current)
+    assert actual_value == expected_value

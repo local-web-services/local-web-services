@@ -6,12 +6,17 @@ provides per-protocol HTTP helpers for calling provider wire protocols.
 
 from __future__ import annotations
 
+import asyncio as _asyncio
 import json
 import sys
 from typing import Any
 from xml.etree import ElementTree
 
 import httpx
+
+_TRANSIENT_ERRORS = (httpx.ConnectError, httpx.ReadError, httpx.WriteError, httpx.PoolTimeout)
+_MAX_RETRIES = 3
+_RETRY_DELAY = 0.5
 
 
 class DiscoveryError(Exception):
@@ -82,25 +87,39 @@ class LwsClient:
             "Content-Type": content_type,
             "X-Amz-Target": target,
         }
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                f"http://localhost:{port}/",
-                headers=headers,
-                content=json.dumps(body or {}),
-                timeout=30.0,
-            )
-        return resp.json()
+        for attempt in range(_MAX_RETRIES):
+            try:
+                async with httpx.AsyncClient() as client:
+                    resp = await client.post(
+                        f"http://localhost:{port}/",
+                        headers=headers,
+                        content=json.dumps(body or {}),
+                        timeout=30.0,
+                    )
+                return resp.json()
+            except _TRANSIENT_ERRORS:
+                if attempt == _MAX_RETRIES - 1:
+                    raise
+                await _asyncio.sleep(_RETRY_DELAY)
+        raise RuntimeError("unreachable")  # pragma: no cover
 
     async def form_request(self, service: str, params: dict[str, str]) -> str:
         """Send a form-encoded request and return the XML response body."""
         port = await self.service_port(service)
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                f"http://localhost:{port}/",
-                data=params,
-                timeout=30.0,
-            )
-        return resp.text
+        for attempt in range(_MAX_RETRIES):
+            try:
+                async with httpx.AsyncClient() as client:
+                    resp = await client.post(
+                        f"http://localhost:{port}/",
+                        data=params,
+                        timeout=30.0,
+                    )
+                return resp.text
+            except _TRANSIENT_ERRORS:
+                if attempt == _MAX_RETRIES - 1:
+                    raise
+                await _asyncio.sleep(_RETRY_DELAY)
+        raise RuntimeError("unreachable")  # pragma: no cover
 
     async def rest_request(
         self,
@@ -114,16 +133,23 @@ class LwsClient:
     ) -> httpx.Response:
         """Send a REST-style request (method + path) and return the raw response."""
         port = await self.service_port(service)
-        async with httpx.AsyncClient() as client:
-            resp = await client.request(
-                method,
-                f"http://localhost:{port}/{path.lstrip('/')}",
-                content=body,
-                params=params,
-                headers=headers,
-                timeout=30.0,
-            )
-        return resp
+        for attempt in range(_MAX_RETRIES):
+            try:
+                async with httpx.AsyncClient() as client:
+                    resp = await client.request(
+                        method,
+                        f"http://localhost:{port}/{path.lstrip('/')}",
+                        content=body,
+                        params=params,
+                        headers=headers,
+                        timeout=30.0,
+                    )
+                return resp
+            except _TRANSIENT_ERRORS:
+                if attempt == _MAX_RETRIES - 1:
+                    raise
+                await _asyncio.sleep(_RETRY_DELAY)
+        raise RuntimeError("unreachable")  # pragma: no cover
 
 
 def parse_json_option(value: str, option_name: str) -> Any:
