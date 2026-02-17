@@ -1,0 +1,23 @@
+All done. Here's a summary of what was implemented:
+
+## Summary
+
+### CLI Commands (25 total)
+
+**S3 — 11 new commands** in `src/lws/cli/services/s3.py`:
+- `copy-object`, `delete-objects`, `put-bucket-tagging`, `get-bucket-tagging`, `delete-bucket-tagging`, `get-bucket-location`, `put-bucket-policy`, `get-bucket-policy`, `put-bucket-notification-configuration`, `get-bucket-notification-configuration`, `list-parts`
+
+**DynamoDB — 7 new commands** in `src/lws/cli/services/dynamodb.py`:
+- `update-table`, `describe-time-to-live`, `update-time-to-live`, `describe-continuous-backups`, `tag-resource`, `untag-resource`, `list-tags-of-resource`
+
+**Lambda — 7 new commands** in `src/lws/cli/services/lambda_service.py`:
+- `tag-resource`, `untag-resource`, `list-tags`, `add-permission`, `remove-permission`, `get-policy`, `get-event-source-mapping`
+
+### E2E Tests (25 feature files + step definitions)
+- 11 feature files in `tests/e2e/s3api/features/` with step definitions in `conftest.py`
+- 7 feature files in `tests/e2e/dynamodb/features/` with step definitions in `conftest.py`
+- 7 feature files in `tests/e2e/lambda_/features/` with step definitions in `conftest.py`
+
+### Verification
+- `make lint` — passes (ruff clean)
+- `make check` — passes (all 2240 unit/integration tests pass, pylint 10/10, black formatted)
