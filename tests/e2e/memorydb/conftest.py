@@ -28,7 +28,11 @@ def a_memorydb_cluster_was_created(cluster_name, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
-    return {"cluster_name": cluster_name}
+    yield {"cluster_name": cluster_name}
+    runner.invoke(
+        app,
+        ["memorydb", "delete-cluster", "--cluster-name", cluster_name, "--port", str(e2e_port)],
+    )
 
 
 @when(
@@ -36,7 +40,7 @@ def a_memorydb_cluster_was_created(cluster_name, lws_invoke, e2e_port):
     target_fixture="command_result",
 )
 def i_create_a_memorydb_cluster(cluster_name, e2e_port):
-    return runner.invoke(
+    result = runner.invoke(
         app,
         [
             "memorydb",
@@ -46,6 +50,11 @@ def i_create_a_memorydb_cluster(cluster_name, e2e_port):
             "--port",
             str(e2e_port),
         ],
+    )
+    yield result
+    runner.invoke(
+        app,
+        ["memorydb", "delete-cluster", "--cluster-name", cluster_name, "--port", str(e2e_port)],
     )
 
 

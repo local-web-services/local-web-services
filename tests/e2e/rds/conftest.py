@@ -28,7 +28,18 @@ def a_db_cluster_was_created(cluster_id, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
-    return {"db_cluster_identifier": cluster_id}
+    yield {"db_cluster_identifier": cluster_id}
+    runner.invoke(
+        app,
+        [
+            "rds",
+            "delete-db-cluster",
+            "--db-cluster-identifier",
+            cluster_id,
+            "--port",
+            str(e2e_port),
+        ],
+    )
 
 
 @given(
@@ -46,7 +57,11 @@ def a_db_instance_was_created(db_id, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
-    return {"db_instance_identifier": db_id}
+    yield {"db_instance_identifier": db_id}
+    runner.invoke(
+        app,
+        ["rds", "delete-db-instance", "--db-instance-identifier", db_id, "--port", str(e2e_port)],
+    )
 
 
 @then(
@@ -99,11 +114,23 @@ def db_instance_will_not_exist(db_id, assert_invoke, e2e_port):
     target_fixture="command_result",
 )
 def i_create_a_db_cluster(cluster_id, e2e_port):
-    return runner.invoke(
+    result = runner.invoke(
         app,
         [
             "rds",
             "create-db-cluster",
+            "--db-cluster-identifier",
+            cluster_id,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    yield result
+    runner.invoke(
+        app,
+        [
+            "rds",
+            "delete-db-cluster",
             "--db-cluster-identifier",
             cluster_id,
             "--port",
@@ -117,7 +144,7 @@ def i_create_a_db_cluster(cluster_id, e2e_port):
     target_fixture="command_result",
 )
 def i_create_a_db_instance(db_id, e2e_port):
-    return runner.invoke(
+    result = runner.invoke(
         app,
         [
             "rds",
@@ -127,6 +154,11 @@ def i_create_a_db_instance(db_id, e2e_port):
             "--port",
             str(e2e_port),
         ],
+    )
+    yield result
+    runner.invoke(
+        app,
+        ["rds", "delete-db-instance", "--db-instance-identifier", db_id, "--port", str(e2e_port)],
     )
 
 

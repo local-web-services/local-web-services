@@ -28,7 +28,18 @@ def an_elasticsearch_domain_was_created(domain_name, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
-    return {"domain_name": domain_name}
+    yield {"domain_name": domain_name}
+    runner.invoke(
+        app,
+        [
+            "es",
+            "delete-elasticsearch-domain",
+            "--domain-name",
+            domain_name,
+            "--port",
+            str(e2e_port),
+        ],
+    )
 
 
 @then(
@@ -54,11 +65,23 @@ def elasticsearch_domain_will_exist(domain_name, assert_invoke, e2e_port):
     target_fixture="command_result",
 )
 def i_create_elasticsearch_domain(domain_name, e2e_port):
-    return runner.invoke(
+    result = runner.invoke(
         app,
         [
             "es",
             "create-elasticsearch-domain",
+            "--domain-name",
+            domain_name,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    yield result
+    runner.invoke(
+        app,
+        [
+            "es",
+            "delete-elasticsearch-domain",
             "--domain-name",
             domain_name,
             "--port",

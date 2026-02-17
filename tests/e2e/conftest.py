@@ -96,10 +96,10 @@ def ldk_server(tmp_path_factory, e2e_port):
         proc.kill()
         proc.wait(timeout=5)
 
-    # Safety net: remove any leftover lws-* containers
+    # Safety net: remove any leftover lws-{service}-e2e-* containers
     try:
         result = subprocess.run(
-            ["docker", "ps", "-a", "-q", "--filter", "name=^lws-"],
+            ["docker", "ps", "-a", "-q", "--filter", "name=^lws-.*-e2e-"],
             capture_output=True,
             text=True,
             timeout=10,

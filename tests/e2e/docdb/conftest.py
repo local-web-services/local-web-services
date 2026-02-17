@@ -28,7 +28,18 @@ def a_docdb_cluster_was_created(cluster_id, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
-    return {"db_cluster_identifier": cluster_id}
+    yield {"db_cluster_identifier": cluster_id}
+    runner.invoke(
+        app,
+        [
+            "docdb",
+            "delete-db-cluster",
+            "--db-cluster-identifier",
+            cluster_id,
+            "--port",
+            str(e2e_port),
+        ],
+    )
 
 
 @then(
@@ -68,11 +79,23 @@ def docdb_cluster_will_not_exist(cluster_id, assert_invoke, e2e_port):
     target_fixture="command_result",
 )
 def i_create_a_docdb_cluster(cluster_id, e2e_port):
-    return runner.invoke(
+    result = runner.invoke(
         app,
         [
             "docdb",
             "create-db-cluster",
+            "--db-cluster-identifier",
+            cluster_id,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    yield result
+    runner.invoke(
+        app,
+        [
+            "docdb",
+            "delete-db-cluster",
             "--db-cluster-identifier",
             cluster_id,
             "--port",

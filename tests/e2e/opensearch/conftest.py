@@ -28,7 +28,11 @@ def an_opensearch_domain_was_created(domain_name, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
-    return {"domain_name": domain_name}
+    yield {"domain_name": domain_name}
+    runner.invoke(
+        app,
+        ["opensearch", "delete-domain", "--domain-name", domain_name, "--port", str(e2e_port)],
+    )
 
 
 @when(
@@ -36,7 +40,7 @@ def an_opensearch_domain_was_created(domain_name, lws_invoke, e2e_port):
     target_fixture="command_result",
 )
 def i_create_opensearch_domain(domain_name, e2e_port):
-    return runner.invoke(
+    result = runner.invoke(
         app,
         [
             "opensearch",
@@ -46,6 +50,11 @@ def i_create_opensearch_domain(domain_name, e2e_port):
             "--port",
             str(e2e_port),
         ],
+    )
+    yield result
+    runner.invoke(
+        app,
+        ["opensearch", "delete-domain", "--domain-name", domain_name, "--port", str(e2e_port)],
     )
 
 
