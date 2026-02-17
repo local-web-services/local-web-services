@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import shutil
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -107,6 +108,128 @@ def a_route_was_added(path, method, status, name, e2e_port):
     )
     if result.exit_code != 0:
         raise RuntimeError(f"Arrange failed (add-route): {result.output}")
+
+
+def _update_chaos_config(name: str, **chaos_overrides: Any) -> None:
+    """Update chaos section of a mock server's config.yaml."""
+    config_path = _mock_dir(name) / "config.yaml"
+    config = yaml.safe_load(config_path.read_text()) or {}
+    chaos = config.setdefault("chaos", {})
+    latency = chaos.setdefault("latency", {})
+    for key, value in chaos_overrides.items():
+        if key == "latency_min":
+            latency["min_ms"] = value
+        elif key == "latency_max":
+            latency["max_ms"] = value
+        else:
+            chaos[key] = value
+    config_path.write_text(yaml.dump(config, default_flow_style=False, sort_keys=False))
+
+
+@given(
+    parsers.parse(
+        'a mock server "{name}" was created with chaos latency min {min_ms:d} and max {max_ms:d}'
+    ),
+    target_fixture="given_mock",
+)
+def a_mock_server_was_created_with_latency(name, min_ms, max_ms, e2e_port):
+    """Create a mock server and set custom latency values."""
+    project_dir = _e2e_project_dir()
+    result = runner.invoke(
+        app,
+        ["mock", "create", name, "--project-dir", str(project_dir)],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (mock create): {result.output}")
+    _update_chaos_config(name, latency_min=min_ms, latency_max=max_ms)
+    return {"name": name, "project_dir": str(project_dir)}
+
+
+@given(
+    parsers.parse(
+        'a mock server "{name}" was created with chaos timeout rate {rate:g}'
+    ),
+    target_fixture="given_mock",
+)
+def a_mock_server_was_created_with_timeout_rate(name, rate, e2e_port):
+    """Create a mock server and set custom timeout rate."""
+    project_dir = _e2e_project_dir()
+    result = runner.invoke(
+        app,
+        ["mock", "create", name, "--project-dir", str(project_dir)],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (mock create): {result.output}")
+    _update_chaos_config(name, timeout_rate=rate)
+    return {"name": name, "project_dir": str(project_dir)}
+
+
+@given(
+    parsers.parse(
+        'a mock server "{name}" was created with chaos error rate {rate:g}'
+    ),
+    target_fixture="given_mock",
+)
+def a_mock_server_was_created_with_error_rate(name, rate, e2e_port):
+    """Create a mock server and set custom error rate."""
+    project_dir = _e2e_project_dir()
+    result = runner.invoke(
+        app,
+        ["mock", "create", name, "--project-dir", str(project_dir)],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (mock create): {result.output}")
+    _update_chaos_config(name, error_rate=rate)
+    return {"name": name, "project_dir": str(project_dir)}
+
+
+@given(
+    parsers.parse(
+        'a mock server "{name}" was created with chaos connection reset rate {rate:g}'
+    ),
+    target_fixture="given_mock",
+)
+def a_mock_server_was_created_with_conn_reset_rate(name, rate, e2e_port):
+    """Create a mock server and set custom connection reset rate."""
+    project_dir = _e2e_project_dir()
+    result = runner.invoke(
+        app,
+        ["mock", "create", name, "--project-dir", str(project_dir)],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (mock create): {result.output}")
+    _update_chaos_config(name, connection_reset_rate=rate)
+    return {"name": name, "project_dir": str(project_dir)}
+
+
+@given(
+    parsers.parse(
+        'a mock server "{name}" was created with chaos'
+        " latency min {min_ms:d} and max {max_ms:d}"
+        " and error rate {error_rate:g}"
+        " and timeout rate {timeout_rate:g}"
+    ),
+    target_fixture="given_mock",
+)
+def a_mock_server_was_created_with_all_chaos(  # pylint: disable=unused-argument
+    name, min_ms, max_ms, error_rate, timeout_rate, e2e_port
+):
+    """Create a mock server and set all chaos values."""
+    project_dir = _e2e_project_dir()
+    result = runner.invoke(
+        app,
+        ["mock", "create", name, "--project-dir", str(project_dir)],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (mock create): {result.output}")
+    _update_chaos_config(
+        name,
+        latency_min=min_ms,
+        latency_max=max_ms,
+        error_rate=error_rate,
+        timeout_rate=timeout_rate,
+    )
+    return {"name": name, "project_dir": str(project_dir)}
 
 
 @given(
