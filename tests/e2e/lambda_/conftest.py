@@ -17,37 +17,47 @@ runner = CliRunner()
 
 # ── Docker / image availability checks ────────────────────────────────
 
-_DOCKER_AVAILABLE = True
-try:
-    subprocess.run(["docker", "info"], capture_output=True, timeout=5, check=True)
-except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-    _DOCKER_AVAILABLE = False
 
-_PYTHON_IMAGE_AVAILABLE = False
-if _DOCKER_AVAILABLE:
+def _check_docker_available() -> bool:
+    for _ in range(3):
+        try:
+            subprocess.run(["docker", "info"], capture_output=True, timeout=10, check=True)
+            return True
+        except (
+            subprocess.CalledProcessError,
+            FileNotFoundError,
+            subprocess.TimeoutExpired,
+        ):
+            import time
+
+            time.sleep(1)
+    return False
+
+
+def _check_image_available(image: str) -> bool:
     try:
         result = subprocess.run(
-            ["docker", "images", "-q", "public.ecr.aws/lambda/python:3.12"],
+            ["docker", "images", "-q", image],
             capture_output=True,
-            timeout=5,
+            timeout=10,
             text=True,
         )
-        _PYTHON_IMAGE_AVAILABLE = bool(result.stdout.strip())
-    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-        pass
+        return bool(result.stdout.strip())
+    except (
+        subprocess.CalledProcessError,
+        FileNotFoundError,
+        subprocess.TimeoutExpired,
+    ):
+        return False
 
-_NODEJS_IMAGE_AVAILABLE = False
-if _DOCKER_AVAILABLE:
-    try:
-        result = subprocess.run(
-            ["docker", "images", "-q", "public.ecr.aws/lambda/nodejs:20"],
-            capture_output=True,
-            timeout=5,
-            text=True,
-        )
-        _NODEJS_IMAGE_AVAILABLE = bool(result.stdout.strip())
-    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-        pass
+
+_DOCKER_AVAILABLE = _check_docker_available()
+_PYTHON_IMAGE_AVAILABLE = (
+    _check_image_available("public.ecr.aws/lambda/python:3.12") if _DOCKER_AVAILABLE else False
+)
+_NODEJS_IMAGE_AVAILABLE = (
+    _check_image_available("public.ecr.aws/lambda/nodejs:20") if _DOCKER_AVAILABLE else False
+)
 
 
 def pytest_collection_modifyitems(config, items):

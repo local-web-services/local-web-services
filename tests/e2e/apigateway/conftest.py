@@ -17,24 +17,42 @@ runner = CliRunner()
 
 # ── Docker / image availability checks ────────────────────────────────
 
-_DOCKER_AVAILABLE = True
-try:
-    subprocess.run(["docker", "info"], capture_output=True, timeout=5, check=True)
-except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-    _DOCKER_AVAILABLE = False
 
-_PYTHON_IMAGE_AVAILABLE = False
-if _DOCKER_AVAILABLE:
+def _check_docker_available() -> bool:
+    for _ in range(3):
+        try:
+            subprocess.run(["docker", "info"], capture_output=True, timeout=10, check=True)
+            return True
+        except (
+            subprocess.CalledProcessError,
+            FileNotFoundError,
+            subprocess.TimeoutExpired,
+        ):
+            import time
+
+            time.sleep(1)
+    return False
+
+
+def _check_python_image_available() -> bool:
     try:
         result = subprocess.run(
             ["docker", "images", "-q", "public.ecr.aws/lambda/python:3.12"],
             capture_output=True,
-            timeout=5,
+            timeout=10,
             text=True,
         )
-        _PYTHON_IMAGE_AVAILABLE = bool(result.stdout.strip())
-    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-        pass
+        return bool(result.stdout.strip())
+    except (
+        subprocess.CalledProcessError,
+        FileNotFoundError,
+        subprocess.TimeoutExpired,
+    ):
+        return False
+
+
+_DOCKER_AVAILABLE = _check_docker_available()
+_PYTHON_IMAGE_AVAILABLE = _check_python_image_available() if _DOCKER_AVAILABLE else False
 
 
 def pytest_collection_modifyitems(config, items):
@@ -1549,9 +1567,7 @@ def a_v2_proxy_integration_was_created(func_name, v2_api, lws_invoke, e2e_port):
 
 
 @given(
-    parsers.parse(
-        'a V2 route with key "{route_key}" targeting the integration was created'
-    ),
+    parsers.parse('a V2 route with key "{route_key}" targeting the integration was created'),
     target_fixture="v2_route",
 )
 def a_v2_route_targeting_integration_was_created(
