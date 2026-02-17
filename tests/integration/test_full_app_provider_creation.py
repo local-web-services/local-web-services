@@ -23,7 +23,7 @@ class TestFullAppProviderCreation:
         config = LdkConfig(port=9300)
 
         # Act
-        providers = _create_providers(app_model, graph, config, tmp_path)
+        providers, _chaos_configs = _create_providers(app_model, graph, config, tmp_path)
 
         # Assert
         actual_provider_names = {p.name for p in providers.values()}

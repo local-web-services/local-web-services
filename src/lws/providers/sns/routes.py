@@ -13,6 +13,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers.sns.provider import SnsProvider
 
 _logger = get_logger("ldk.sns")
@@ -467,9 +468,14 @@ def _parse_message_attributes(params: dict[str, str]) -> dict:
 # ------------------------------------------------------------------
 
 
-def create_sns_app(provider: SnsProvider) -> FastAPI:
+def create_sns_app(
+    provider: SnsProvider,
+    chaos: AwsChaosConfig | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the SNS wire protocol."""
     app = FastAPI(title="LDK SNS")
+    if chaos is not None:
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sns")
 
     @app.post("/")

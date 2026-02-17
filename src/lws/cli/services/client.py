@@ -171,6 +171,26 @@ async def json_request_output(port: int, service: str, target: str, body: dict[s
     output_json(result)
 
 
+def build_chaos_body(
+    error_rate: float | None = None,
+    latency_min: int | None = None,
+    latency_max: int | None = None,
+    **extras: Any,
+) -> dict[str, Any]:
+    """Build a chaos config update body from optional CLI parameters."""
+    body: dict[str, Any] = {}
+    if error_rate is not None:
+        body["error_rate"] = error_rate
+    if latency_min is not None:
+        body["latency_min_ms"] = latency_min
+    if latency_max is not None:
+        body["latency_max_ms"] = latency_max
+    for key, val in extras.items():
+        if val is not None:
+            body[key] = val
+    return body
+
+
 def output_json(data: Any) -> None:
     """Print *data* as formatted JSON to stdout."""
     print(json.dumps(data, indent=2, default=str))

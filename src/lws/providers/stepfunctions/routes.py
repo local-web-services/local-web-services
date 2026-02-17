@@ -14,6 +14,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.stepfunctions.provider import StepFunctionsProvider
 
@@ -336,9 +337,14 @@ def _error_response(code: str, message: str, status_code: int = 400) -> Response
 # ------------------------------------------------------------------
 
 
-def create_stepfunctions_app(provider: StepFunctionsProvider) -> FastAPI:
+def create_stepfunctions_app(
+    provider: StepFunctionsProvider,
+    chaos: AwsChaosConfig | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol."""
     app = FastAPI()
+    if chaos is not None:
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions")
     sfn_router = StepFunctionsRouter(provider)
     app.include_router(sfn_router.router)

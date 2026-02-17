@@ -12,6 +12,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from lws.providers._shared.chaos_helpers import apply_chaos_latency, should_inject_error
 from lws.providers.mockserver.models import ChaosConfig
 
 
@@ -42,12 +43,10 @@ class ChaosMiddleware(BaseHTTPMiddleware):
             return JSONResponse(status_code=504, content={"error": "chaos_timeout"})
 
         # Latency injection
-        if self.chaos.latency_max_ms > 0:
-            delay = random.uniform(self.chaos.latency_min_ms, self.chaos.latency_max_ms)
-            await asyncio.sleep(delay / 1000.0)
+        await apply_chaos_latency(self.chaos.latency_min_ms, self.chaos.latency_max_ms)
 
         # Error rate injection
-        if self.chaos.error_rate > 0 and random.random() < self.chaos.error_rate:
+        if should_inject_error(self.chaos.error_rate):
             status = _pick_error_status(self.chaos)
             return JSONResponse(
                 status_code=status,

@@ -9,6 +9,7 @@ from fastapi.responses import StreamingResponse
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers.s3.provider import S3Provider
 
 _logger = get_logger("ldk.s3")
@@ -712,9 +713,14 @@ def _register_bucket_routes(app: FastAPI, provider: S3Provider) -> None:
         return await _get_bucket(bucket, request, provider)
 
 
-def create_s3_app(provider: S3Provider) -> FastAPI:
+def create_s3_app(
+    provider: S3Provider,
+    chaos: AwsChaosConfig | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     app = FastAPI()
+    if chaos is not None:
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_S3)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="s3")
 
     @app.api_route("/", methods=["GET"])
