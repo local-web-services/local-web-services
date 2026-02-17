@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "7033a1494768",
+  "strategy": "auto-commit",
+  "branch": "apigateway-features-e2e-coverage",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/70/33a1494768/0/metadata.json",
+      "transcript": "/70/33a1494768/0/full.jsonl",
+      "context": "",
+      "content_hash": "/70/33a1494768/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
