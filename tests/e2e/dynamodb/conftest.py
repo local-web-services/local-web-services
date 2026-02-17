@@ -562,3 +562,168 @@ def the_output_will_contain_transaction_cancelled(command_result, parse_output):
 def the_table_list_will_include(table_name, command_result, parse_output):
     actual_tables = parse_output(command_result.output)["TableNames"]
     assert table_name in actual_tables
+
+
+# ── Step definitions for new commands ────────────────────────────────
+
+_DDB_ARN_PREFIX = "arn:aws:dynamodb:us-east-1:000000000000:table"
+
+
+@given(
+    parsers.parse('table "{table_name}" was tagged with key "{tag_key}" and value "{tag_value}"'),
+)
+def table_was_tagged(table_name, tag_key, tag_value, lws_invoke, e2e_port):
+    arn = f"{_DDB_ARN_PREFIX}/{table_name}"
+    tags_json = json.dumps([{"Key": tag_key, "Value": tag_value}])
+    lws_invoke(
+        [
+            "dynamodb",
+            "tag-resource",
+            "--resource-arn",
+            arn,
+            "--tags",
+            tags_json,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+
+
+@when(
+    parsers.parse('I update table "{table_name}" with billing mode "{billing_mode}"'),
+    target_fixture="command_result",
+)
+def i_update_table(table_name, billing_mode, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "dynamodb",
+            "update-table",
+            "--table-name",
+            table_name,
+            "--billing-mode",
+            billing_mode,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I describe time to live for table "{table_name}"'),
+    target_fixture="command_result",
+)
+def i_describe_time_to_live(table_name, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "dynamodb",
+            "describe-time-to-live",
+            "--table-name",
+            table_name,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I update time to live for table "{table_name}"'),
+    target_fixture="command_result",
+)
+def i_update_time_to_live(table_name, e2e_port):
+    ttl_spec = json.dumps({"Enabled": True, "AttributeName": "ttl"})
+    return runner.invoke(
+        app,
+        [
+            "dynamodb",
+            "update-time-to-live",
+            "--table-name",
+            table_name,
+            "--time-to-live-specification",
+            ttl_spec,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I describe continuous backups for table "{table_name}"'),
+    target_fixture="command_result",
+)
+def i_describe_continuous_backups(table_name, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "dynamodb",
+            "describe-continuous-backups",
+            "--table-name",
+            table_name,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I tag table "{table_name}" with key "{tag_key}" and value "{tag_value}"'),
+    target_fixture="command_result",
+)
+def i_tag_resource(table_name, tag_key, tag_value, e2e_port):
+    arn = f"{_DDB_ARN_PREFIX}/{table_name}"
+    tags_json = json.dumps([{"Key": tag_key, "Value": tag_value}])
+    return runner.invoke(
+        app,
+        [
+            "dynamodb",
+            "tag-resource",
+            "--resource-arn",
+            arn,
+            "--tags",
+            tags_json,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I untag table "{table_name}" removing key "{tag_key}"'),
+    target_fixture="command_result",
+)
+def i_untag_resource(table_name, tag_key, e2e_port):
+    arn = f"{_DDB_ARN_PREFIX}/{table_name}"
+    tag_keys_json = json.dumps([tag_key])
+    return runner.invoke(
+        app,
+        [
+            "dynamodb",
+            "untag-resource",
+            "--resource-arn",
+            arn,
+            "--tag-keys",
+            tag_keys_json,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I list tags of table "{table_name}"'),
+    target_fixture="command_result",
+)
+def i_list_tags_of_resource(table_name, e2e_port):
+    arn = f"{_DDB_ARN_PREFIX}/{table_name}"
+    return runner.invoke(
+        app,
+        [
+            "dynamodb",
+            "list-tags-of-resource",
+            "--resource-arn",
+            arn,
+            "--port",
+            str(e2e_port),
+        ],
+    )

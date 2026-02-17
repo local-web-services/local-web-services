@@ -541,3 +541,196 @@ def the_output_will_contain_a_uuid(command_result, parse_output):
 def the_output_will_contain_an_error_message(command_result, parse_output):
     actual_body = parse_output(command_result.output)
     assert "Message" in actual_body
+
+
+# ── Step definitions for new commands ────────────────────────────────
+
+_LAMBDA_ARN_PREFIX = "arn:aws:lambda:us-east-1:000000000000:function"
+
+
+@given(
+    parsers.parse('function "{name}" was tagged with key "{tag_key}" and value "{tag_value}"'),
+)
+def function_was_tagged(name, tag_key, tag_value, lws_invoke, e2e_port):
+    arn = f"{_LAMBDA_ARN_PREFIX}:{name}"
+    tags_json = json.dumps({tag_key: tag_value})
+    lws_invoke(
+        [
+            "lambda",
+            "tag-resource",
+            "--resource",
+            arn,
+            "--tags",
+            tags_json,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+
+
+@given(
+    parsers.parse('permission "{sid}" was added to function "{name}"'),
+)
+def permission_was_added(sid, name, lws_invoke, e2e_port):
+    lws_invoke(
+        [
+            "lambda",
+            "add-permission",
+            "--function-name",
+            name,
+            "--statement-id",
+            sid,
+            "--action",
+            "lambda:InvokeFunction",
+            "--principal",
+            "s3.amazonaws.com",
+            "--port",
+            str(e2e_port),
+        ]
+    )
+
+
+@when(
+    parsers.parse('I tag function "{name}" with key "{tag_key}" and value "{tag_value}"'),
+    target_fixture="command_result",
+)
+def i_tag_lambda_function(name, tag_key, tag_value, e2e_port):
+    arn = f"{_LAMBDA_ARN_PREFIX}:{name}"
+    tags_json = json.dumps({tag_key: tag_value})
+    return runner.invoke(
+        app,
+        [
+            "lambda",
+            "tag-resource",
+            "--resource",
+            arn,
+            "--tags",
+            tags_json,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I untag function "{name}" removing key "{tag_key}"'),
+    target_fixture="command_result",
+)
+def i_untag_lambda_function(name, tag_key, e2e_port):
+    arn = f"{_LAMBDA_ARN_PREFIX}:{name}"
+    tag_keys_json = json.dumps([tag_key])
+    return runner.invoke(
+        app,
+        [
+            "lambda",
+            "untag-resource",
+            "--resource",
+            arn,
+            "--tag-keys",
+            tag_keys_json,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I list tags for function "{name}"'),
+    target_fixture="command_result",
+)
+def i_list_tags_lambda(name, e2e_port):
+    arn = f"{_LAMBDA_ARN_PREFIX}:{name}"
+    return runner.invoke(
+        app,
+        [
+            "lambda",
+            "list-tags",
+            "--resource",
+            arn,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse(
+        'I add permission "{sid}" to function "{name}"'
+        ' with action "{action}" and principal "{principal}"'
+    ),
+    target_fixture="command_result",
+)
+def i_add_permission(sid, name, action, principal, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "lambda",
+            "add-permission",
+            "--function-name",
+            name,
+            "--statement-id",
+            sid,
+            "--action",
+            action,
+            "--principal",
+            principal,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I remove permission "{sid}" from function "{name}"'),
+    target_fixture="command_result",
+)
+def i_remove_permission(sid, name, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "lambda",
+            "remove-permission",
+            "--function-name",
+            name,
+            "--statement-id",
+            sid,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I get the policy of function "{name}"'),
+    target_fixture="command_result",
+)
+def i_get_policy(name, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "lambda",
+            "get-policy",
+            "--function-name",
+            name,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    "I get the event source mapping",
+    target_fixture="command_result",
+)
+def i_get_event_source_mapping(created_esm, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "lambda",
+            "get-event-source-mapping",
+            "--uuid",
+            created_esm["uuid"],
+            "--port",
+            str(e2e_port),
+        ],
+    )
