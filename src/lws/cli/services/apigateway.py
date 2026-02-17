@@ -29,10 +29,18 @@ def test_invoke_method(
     resource: str = typer.Option(..., "--resource", help="Resource path (e.g. /orders)"),
     http_method: str = typer.Option(..., "--http-method", help="HTTP method (GET, POST, etc.)"),
     body: str = typer.Option(None, "--body", help="Request body (JSON string)"),
+    header: list[str] = typer.Option(
+        None, "--header", help="Request header as Key:Value (repeatable)"
+    ),
+    content_type: str = typer.Option(None, "--content-type", help="Content-Type header"),
     port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
 ) -> None:
     """Invoke an API Gateway route."""
-    asyncio.run(_test_invoke_method(rest_api_name, resource, http_method, body, port))
+    asyncio.run(
+        _test_invoke_method(
+            rest_api_name, resource, http_method, body, header or [], content_type, port
+        )
+    )
 
 
 async def _test_invoke_method(
@@ -40,6 +48,8 @@ async def _test_invoke_method(
     resource: str,
     http_method: str,
     body: str | None,
+    extra_headers: list[str],
+    content_type: str | None,
     port: int,
 ) -> None:
     client = _client(port)
@@ -51,9 +61,14 @@ async def _test_invoke_method(
     import httpx  # pylint: disable=import-outside-toplevel
 
     request_body = body.encode() if body else None
-    headers: dict[str, str] = {}
-    if body:
-        headers["Content-Type"] = "application/json"
+    headers: list[tuple[str, str]] = []
+    if content_type:
+        headers.append(("Content-Type", content_type))
+    elif body:
+        headers.append(("Content-Type", "application/json"))
+    for h in extra_headers:
+        key, _, value = h.partition(":")
+        headers.append((key.strip(), value.strip()))
 
     async with httpx.AsyncClient() as http_client:
         resp = await http_client.request(
@@ -70,9 +85,14 @@ async def _test_invoke_method(
     except Exception:
         resp_body = resp.text
 
+    # Collect all response header values (preserving multi-value)
+    resp_headers: dict[str, list[str]] = {}
+    for key, value in resp.headers.multi_items():
+        resp_headers.setdefault(key, []).append(value)
+
     result = {
         "status": resp.status_code,
-        "headers": dict(resp.headers),
+        "headers": resp_headers,
         "body": resp_body,
     }
     output_json(result)
@@ -780,15 +800,23 @@ async def _delete_stage(rest_api_id: str, stage_name: str, port: int) -> None:
 def v2_create_api(
     name: str = typer.Option(..., "--name", help="API name"),
     protocol_type: str = typer.Option("HTTP", "--protocol-type", help="Protocol type"),
+    cors_configuration: str = typer.Option(
+        None, "--cors-configuration", help="JSON CORS configuration"
+    ),
     port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
 ) -> None:
     """Create a new HTTP API (V2)."""
-    asyncio.run(_v2_create_api(name, protocol_type, port))
+    asyncio.run(_v2_create_api(name, protocol_type, cors_configuration, port))
 
 
-async def _v2_create_api(name: str, protocol_type: str, port: int) -> None:
+async def _v2_create_api(
+    name: str, protocol_type: str, cors_configuration: str | None, port: int
+) -> None:
     client = _client(port)
-    json_body = json.dumps({"Name": name, "ProtocolType": protocol_type}).encode()
+    body: dict = {"Name": name, "ProtocolType": protocol_type}
+    if cors_configuration:
+        body["CorsConfiguration"] = json.loads(cors_configuration)
+    json_body = json.dumps(body).encode()
     try:
         resp = await client.rest_request(
             _SERVICE,
