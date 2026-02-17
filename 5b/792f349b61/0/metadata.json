@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "5b792f349b61",
+  "session_id": "fa72858c-823a-45f0-99b7-1486a05da1d1",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-17T13:58:33.498322Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/lws/cli/services/apigateway.py",
+    "tests/architecture/tests/e2e/test_provider_feature_e2e_coverage.py",
+    "tests/e2e/apigateway/conftest.py",
+    "tests/e2e/apigateway/features/binary_payloads.feature",
+    "tests/e2e/apigateway/features/cors_preflight.feature",
+    "tests/e2e/apigateway/features/multivalue_headers.feature",
+    "tests/e2e/apigateway/features/multivalue_query_params.feature",
+    "tests/e2e/apigateway/features/v2_cors_configuration.feature"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "f2ec9eb2-d5d4-40d3-ad86-90f2608e3fa1",
+  "checkpoint_transcript_start": 754,
+  "transcript_lines_at_start": 754,
+  "token_usage": {
+    "input_tokens": 65,
+    "cache_creation_tokens": 125844,
+    "cache_read_tokens": 5959897,
+    "output_tokens": 17949,
+    "api_call_count": 61
+  }
+}
