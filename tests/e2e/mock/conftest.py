@@ -146,9 +146,7 @@ def a_mock_server_was_created_with_latency(name, min_ms, max_ms, e2e_port):
 
 
 @given(
-    parsers.parse(
-        'a mock server "{name}" was created with chaos timeout rate {rate:g}'
-    ),
+    parsers.parse('a mock server "{name}" was created with chaos timeout rate {rate:g}'),
     target_fixture="given_mock",
 )
 def a_mock_server_was_created_with_timeout_rate(name, rate, e2e_port):
@@ -165,9 +163,7 @@ def a_mock_server_was_created_with_timeout_rate(name, rate, e2e_port):
 
 
 @given(
-    parsers.parse(
-        'a mock server "{name}" was created with chaos error rate {rate:g}'
-    ),
+    parsers.parse('a mock server "{name}" was created with chaos error rate {rate:g}'),
     target_fixture="given_mock",
 )
 def a_mock_server_was_created_with_error_rate(name, rate, e2e_port):
@@ -184,9 +180,7 @@ def a_mock_server_was_created_with_error_rate(name, rate, e2e_port):
 
 
 @given(
-    parsers.parse(
-        'a mock server "{name}" was created with chaos connection reset rate {rate:g}'
-    ),
+    parsers.parse('a mock server "{name}" was created with chaos connection reset rate {rate:g}'),
     target_fixture="given_mock",
 )
 def a_mock_server_was_created_with_conn_reset_rate(name, rate, e2e_port):
