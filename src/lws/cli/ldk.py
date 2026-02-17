@@ -689,6 +689,9 @@ def _create_terraform_providers(
 
     _register_experimental_providers(providers, ports)
 
+    # Mock server provider
+    _register_mock_provider(providers, port, project_dir)
+
     return providers, ports
 
 
@@ -853,6 +856,27 @@ def _register_experimental_providers(
         rds_mysql_cm,
     ]
     providers["__container_cleanup__"] = _ContainerCleanupProvider(all_managers)
+
+
+def _register_mock_provider(
+    providers: dict[str, Provider],
+    base_port: int,
+    project_dir: Path | None = None,
+) -> None:
+    """Register the MockServerProvider if .lws/mocks/ exists."""
+    if project_dir is None:
+        return
+    mocks_dir = project_dir / ".lws" / "mocks"
+    if not mocks_dir.exists():
+        return
+
+    from lws.providers.mockserver.provider import (  # pylint: disable=import-outside-toplevel
+        MockServerProvider,
+    )
+
+    mock_port = base_port + 100
+    mock_provider = MockServerProvider(project_dir, base_port=mock_port)
+    providers["__mock_server__"] = mock_provider
 
 
 def _has_any_resources(app_model: AppModel) -> bool:
@@ -1457,6 +1481,9 @@ def _create_providers(
         "secretsmanager-http", lambda: create_secretsmanager_app(sm_secrets), secretsmanager_port
     )
 
+    # Mock server provider
+    _register_mock_provider(providers, config.port, data_dir.parent)
+
     return providers
 
 
@@ -1563,15 +1590,12 @@ class _HttpServiceProvider(Provider):
             await asyncio.sleep(0.1)
 
     async def stop(self) -> None:
-        if self._server is not None:
-            self._server.should_exit = True
-        if self._task is not None:
-            try:
-                await asyncio.wait_for(self._task, timeout=3.0)
-            except (TimeoutError, asyncio.CancelledError):
-                self._task.cancel()
-            self._task = None
+        # pylint: disable=import-outside-toplevel
+        from lws.providers.mockserver.provider import stop_uvicorn_server
+
+        await stop_uvicorn_server(self._server, self._task)
         self._server = None
+        self._task = None
 
     async def health_check(self) -> bool:
         return self._server is not None

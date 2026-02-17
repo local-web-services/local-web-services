@@ -169,3 +169,16 @@ When I create table "my-table" ...
 ```
 
 Name pattern: `e2e-<operation>` or `/e2e/<operation>`.
+
+## No Skipped Tests
+
+All E2E tests must run in every environment — local development and CI. **Tests must never be skipped.**
+
+- Feature files must not use `@skip`, `@wip`, or `@xfail` tags
+- Test files must not use `@pytest.mark.skip` or `@pytest.mark.skipif` decorators
+- If a test requires an external dependency (e.g. Docker, a container image), CI must be configured to provide it rather than skipping the test
+- The `test_no_skipped_tests` architecture test enforces this policy
+
+When adding a new dependency:
+1. Add the required setup step to `.github/workflows/ci.yml` in the `test-e2e` job
+2. Document the local requirement in this file

@@ -35,3 +35,4 @@ When adding a new feature:
 - Unit and integration tests must follow Arrange / Act / Assert with `# Arrange` / `# Act` / `# Assert` comments
 - E2E tests must use Gherkin / pytest-bdd (Given/When/Then in feature files, step definitions in conftest.py)
 - No magic strings in assertions — use `expected_*` and `actual_*` variables
+- E2E tests must never be skipped — no `@skip`/`@wip`/`@xfail` tags, no `pytest.mark.skip` decorators. If a test needs Docker or other dependencies, configure CI to provide them instead of skipping.
