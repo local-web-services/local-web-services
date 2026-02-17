@@ -23,6 +23,7 @@ from lws.cli.services.events import app as events_app
 from lws.cli.services.glacier import app as glacier_app
 from lws.cli.services.lambda_service import app as lambda_app
 from lws.cli.services.memorydb import app as memorydb_app
+from lws.cli.services.mock import app as mock_app
 from lws.cli.services.neptune import app as neptune_app
 from lws.cli.services.opensearch import app as opensearch_app
 from lws.cli.services.rds import app as rds_app
@@ -69,6 +70,7 @@ _add_service(opensearch_app, "opensearch")
 _add_service(rds_app, "rds")
 _add_service(glacier_app, "glacier")
 _add_service(s3tables_app, "s3tables")
+_add_service(mock_app, "mock")
 
 
 @app.command("status")
