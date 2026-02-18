@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import time
 
 from pytest_bdd import given, parsers, then, when
 from typer.testing import CliRunner
@@ -32,12 +33,58 @@ def _disable_chaos(e2e_port: int, service: str) -> None:
     """Disable chaos and reset error rate for a service."""
     runner.invoke(
         app,
-        ["chaos", "set", service, "--error-rate", "0.0", "--port", str(e2e_port)],
+        [
+            "chaos",
+            "set",
+            service,
+            "--error-rate",
+            "0.0",
+            "--latency-min",
+            "0",
+            "--latency-max",
+            "0",
+            "--port",
+            str(e2e_port),
+        ],
     )
     runner.invoke(
         app,
         ["chaos", "disable", service, "--port", str(e2e_port)],
     )
+
+
+def _enable_chaos_latency(e2e_port: int, service: str, latency_ms: int) -> None:
+    """Enable chaos with fixed latency for a service."""
+    result = runner.invoke(
+        app,
+        ["chaos", "enable", service, "--port", str(e2e_port)],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (chaos enable): {result.output}")
+    result = runner.invoke(
+        app,
+        [
+            "chaos",
+            "set",
+            service,
+            "--latency-min",
+            str(latency_ms),
+            "--latency-max",
+            str(latency_ms),
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (chaos set latency): {result.output}")
+
+
+def _timed_invoke(args: list[str]) -> dict:
+    """Invoke a CLI command and return the result with elapsed time in ms."""
+    start = time.monotonic()
+    result = runner.invoke(app, args)
+    elapsed_ms = (time.monotonic() - start) * 1000
+    return {"result": result, "elapsed_ms": elapsed_ms}
 
 
 # ── Given steps ──────────────────────────────────────────────────
@@ -63,6 +110,15 @@ def chaos_was_enabled(service, e2e_port):
 )
 def chaos_was_configured_full_error_rate(service, e2e_port):
     _enable_chaos_full_error_rate(e2e_port, service)
+    return {"service": service}
+
+
+@given(
+    parsers.parse('chaos was configured for "{service}" with {latency_ms:d}ms latency'),
+    target_fixture="given_chaos",
+)
+def chaos_was_configured_with_latency(service, latency_ms, e2e_port):
+    _enable_chaos_latency(e2e_port, service, latency_ms)
     return {"service": service}
 
 
@@ -211,6 +267,51 @@ def i_list_secretsmanager_secrets(e2e_port):
     )
 
 
+@when("I list DynamoDB tables with timing", target_fixture="timed_result")
+def i_list_dynamodb_tables_timed(e2e_port):
+    return _timed_invoke(["dynamodb", "list-tables", "--port", str(e2e_port)])
+
+
+@when("I list SQS queues with timing", target_fixture="timed_result")
+def i_list_sqs_queues_timed(e2e_port):
+    return _timed_invoke(["sqs", "list-queues", "--port", str(e2e_port)])
+
+
+@when("I list S3 buckets with timing", target_fixture="timed_result")
+def i_list_s3_buckets_timed(e2e_port):
+    return _timed_invoke(["s3api", "list-buckets", "--port", str(e2e_port)])
+
+
+@when("I list SNS topics with timing", target_fixture="timed_result")
+def i_list_sns_topics_timed(e2e_port):
+    return _timed_invoke(["sns", "list-topics", "--port", str(e2e_port)])
+
+
+@when("I list Step Functions state machines with timing", target_fixture="timed_result")
+def i_list_stepfunctions_state_machines_timed(e2e_port):
+    return _timed_invoke(["stepfunctions", "list-state-machines", "--port", str(e2e_port)])
+
+
+@when("I list EventBridge event buses with timing", target_fixture="timed_result")
+def i_list_eventbridge_event_buses_timed(e2e_port):
+    return _timed_invoke(["events", "list-event-buses", "--port", str(e2e_port)])
+
+
+@when("I list Cognito user pools with timing", target_fixture="timed_result")
+def i_list_cognito_user_pools_timed(e2e_port):
+    return _timed_invoke(["cognito", "list-user-pools", "--port", str(e2e_port)])
+
+
+@when("I describe SSM parameters with timing", target_fixture="timed_result")
+def i_describe_ssm_parameters_timed(e2e_port):
+    return _timed_invoke(["ssm", "describe-parameters", "--port", str(e2e_port)])
+
+
+@when("I list Secrets Manager secrets with timing", target_fixture="timed_result")
+def i_list_secretsmanager_secrets_timed(e2e_port):
+    return _timed_invoke(["secretsmanager", "list-secrets", "--port", str(e2e_port)])
+
+
 # ── Then steps ──────────────────────────────────────────────────
 
 
@@ -310,6 +411,14 @@ def output_will_contain_s3_xml_chaos_error(command_result, parse_output):
     actual_error = output["Error"]
     assert "Code" in actual_error, f"Missing Code in: {actual_error}"
     assert "Message" in actual_error, f"Missing Message in: {actual_error}"
+
+
+@then(
+    parsers.parse("the call will have taken at least {min_ms:d} milliseconds"),
+)
+def call_will_have_taken_at_least(min_ms, timed_result):
+    actual_ms = timed_result["elapsed_ms"]
+    assert actual_ms >= min_ms, f"Expected >= {min_ms}ms but took {actual_ms:.1f}ms"
 
 
 @then(
