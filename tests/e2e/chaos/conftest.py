@@ -247,7 +247,7 @@ def i_list_eventbridge_event_buses(e2e_port):
 def i_list_cognito_user_pools(e2e_port):
     return runner.invoke(
         app,
-        ["cognito", "list-user-pools", "--port", str(e2e_port)],
+        ["cognito-idp", "list-user-pools", "--port", str(e2e_port)],
     )
 
 
@@ -299,7 +299,7 @@ def i_list_eventbridge_event_buses_timed(e2e_port):
 
 @when("I list Cognito user pools with timing", target_fixture="timed_result")
 def i_list_cognito_user_pools_timed(e2e_port):
-    return _timed_invoke(["cognito", "list-user-pools", "--port", str(e2e_port)])
+    return _timed_invoke(["cognito-idp", "list-user-pools", "--port", str(e2e_port)])
 
 
 @when("I describe SSM parameters with timing", target_fixture="timed_result")
