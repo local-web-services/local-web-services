@@ -10,7 +10,7 @@ from typing import Any
 
 import typer
 
-from lws.cli.services.client import LwsClient, exit_with_error, output_json
+from lws.cli.services.client import LwsClient, build_chaos_body, exit_with_error, output_json
 
 app = typer.Typer(help="Mock server commands")
 
@@ -302,13 +302,8 @@ async def _chaos(
     except Exception as exc:
         exit_with_error(str(exc))
 
-    body: dict[str, Any] = {"enabled": action == "enable"}
-    if error_rate is not None:
-        body["error_rate"] = error_rate
-    if latency_min is not None:
-        body["latency_min_ms"] = latency_min
-    if latency_max is not None:
-        body["latency_max_ms"] = latency_max
+    body = build_chaos_body(error_rate=error_rate, latency_min=latency_min, latency_max=latency_max)
+    body["enabled"] = action == "enable"
 
     try:
         async with __import__("httpx").AsyncClient() as http:

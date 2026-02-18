@@ -9,6 +9,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import CognitoError
 
@@ -298,9 +299,14 @@ def _error_response(error_type: str, message: str) -> Response:
 # ---------------------------------------------------------------------------
 
 
-def create_cognito_app(provider: CognitoProvider) -> FastAPI:
+def create_cognito_app(
+    provider: CognitoProvider,
+    chaos: AwsChaosConfig | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the Cognito wire protocol."""
     app = FastAPI(title="LDK Cognito")
+    if chaos is not None:
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="cognito")
     cognito_router = CognitoRouter(provider)
     app.include_router(cognito_router.router)

@@ -13,6 +13,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers.eventbridge.provider import EventBridgeProvider, RuleTarget
 
 _logger = get_logger("ldk.eventbridge")
@@ -353,9 +354,14 @@ _TARGET_HANDLERS = {
 # ------------------------------------------------------------------
 
 
-def create_eventbridge_app(provider: EventBridgeProvider) -> FastAPI:
+def create_eventbridge_app(
+    provider: EventBridgeProvider,
+    chaos: AwsChaosConfig | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the EventBridge wire protocol."""
     app = FastAPI(title="LDK EventBridge")
+    if chaos is not None:
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="eventbridge")
 
     @app.post("/")

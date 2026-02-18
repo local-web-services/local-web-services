@@ -17,6 +17,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers.sqs.provider import QueueConfig, SqsProvider, build_queue_config
 
 _logger = get_logger("ldk.sqs")
@@ -1103,11 +1104,17 @@ def _error_xml(code: str, message: str, status_code: int = 400) -> Response:
 # ------------------------------------------------------------------
 
 
-def create_sqs_app(provider: SqsProvider, port: int = 4566) -> FastAPI:
+def create_sqs_app(
+    provider: SqsProvider,
+    port: int = 4566,
+    chaos: AwsChaosConfig | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the SQS wire protocol."""
     global _sqs_port  # noqa: PLW0603
     _sqs_port = port
     app = FastAPI()
+    if chaos is not None:
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sqs")
     sqs_router = SqsRouter(provider)
     app.include_router(sqs_router.router)

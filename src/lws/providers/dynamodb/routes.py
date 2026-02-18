@@ -20,6 +20,7 @@ from lws.interfaces.key_value_store import (
 )
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers.dynamodb.expressions import evaluate_filter_expression
 
 _logger = get_logger("ldk.dynamodb")
@@ -472,9 +473,14 @@ def _error_response(error_type: str, message: str) -> Response:
 # ------------------------------------------------------------------
 
 
-def create_dynamodb_app(store: IKeyValueStore) -> FastAPI:
+def create_dynamodb_app(
+    store: IKeyValueStore,
+    chaos: AwsChaosConfig | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the DynamoDB wire protocol."""
     app = FastAPI()
+    if chaos is not None:
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="dynamodb")
     dynamo_router = DynamoDbRouter(store)
     app.include_router(dynamo_router.router)
