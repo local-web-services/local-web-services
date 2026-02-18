@@ -12,6 +12,7 @@ import httpx
 import typer
 
 from lws.cli.experimental import EXPERIMENTAL_SERVICES
+from lws.cli.init import init_command
 from lws.cli.services.apigateway import app as apigateway_app
 from lws.cli.services.aws_mock import app as aws_mock_app
 from lws.cli.services.chaos import app as chaos_app
@@ -75,6 +76,8 @@ _add_service(s3tables_app, "s3tables")
 _add_service(mock_app, "mock")
 _add_service(aws_mock_app, "aws-mock")
 _add_service(chaos_app, "chaos")
+
+app.command("init")(init_command)
 
 
 @app.command("status")

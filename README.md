@@ -516,6 +516,62 @@ In-memory parameter store supporting String, StringList, and SecureString types.
 
 In-memory secret store supporting version staging (AWSCURRENT/AWSPREVIOUS), soft delete with optional recovery, and tags. In CDK mode, secrets defined in the CloudFormation template are pre-seeded on startup.
 
+## Agent Setup
+
+If you use a coding agent (Claude Code, etc.), run `lws init` to scaffold agent configuration into your project:
+
+```bash
+uvx --from local-web-services lws init --project-dir /path/to/your-project
+```
+
+This creates:
+- **CLAUDE.md** snippet with lws quick reference and common commands
+- **Custom slash commands** (`/lws:mock` and `/lws:chaos`) that guide your agent through mock and chaos workflows
+
+## AWS Operation Mocking
+
+Mock specific AWS operations to return canned responses during local development. This lets you control exactly what your Lambda functions or application receives — useful for testing error handling, edge cases, or complex multi-service flows.
+
+```bash
+# Create a persistent mock definition
+uvx --from local-web-services lws aws-mock create my-s3-mock --service s3
+
+# Add an operation rule (returns custom response for get-object)
+uvx --from local-web-services lws aws-mock add-operation my-s3-mock \
+  --operation get-object --body-string "mocked file content"
+
+# Or configure at runtime (requires ldk dev running)
+uvx --from local-web-services lws aws-mock set-rules dynamodb \
+  --operation get-item --status 200 --body '{"Item": {"id": {"S": "mock-123"}}}'
+
+# Check mock status
+uvx --from local-web-services lws aws-mock status
+```
+
+Supported services: dynamodb, sqs, s3, sns, events, stepfunctions, cognito-idp, ssm, secretsmanager. Supports header-based filtering to mock only specific request patterns.
+
+## Chaos Engineering
+
+Inject failures into AWS service calls to test application resilience:
+
+```bash
+# Enable chaos for DynamoDB with 50% error rate
+uvx --from local-web-services lws chaos enable dynamodb
+uvx --from local-web-services lws chaos set dynamodb --error-rate 0.5
+
+# Add latency to S3 calls
+uvx --from local-web-services lws chaos enable s3
+uvx --from local-web-services lws chaos set s3 --latency-min 200 --latency-max 500
+
+# Check chaos status
+uvx --from local-web-services lws chaos status
+
+# Disable when done
+uvx --from local-web-services lws chaos disable dynamodb
+```
+
+Chaos parameters: `--error-rate`, `--latency-min`, `--latency-max`, `--timeout-rate`, `--connection-reset-rate`.
+
 ## Development
 
 All development tasks are available through `make`:
