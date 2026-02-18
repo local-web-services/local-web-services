@@ -14,6 +14,7 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
 
 _logger = get_logger("ldk.iam")
 
@@ -517,9 +518,14 @@ _ACTION_HANDLERS = {
 # ------------------------------------------------------------------
 
 
-def create_iam_app(chaos: AwsChaosConfig | None = None) -> FastAPI:
+def create_iam_app(
+    chaos: AwsChaosConfig | None = None,
+    aws_mock: AwsMockConfig | None = None,
+) -> FastAPI:
     """Create a FastAPI application that speaks the IAM wire protocol."""
     app = FastAPI(title="LDK IAM")
+    if aws_mock is not None:
+        app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="iam")
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="iam")

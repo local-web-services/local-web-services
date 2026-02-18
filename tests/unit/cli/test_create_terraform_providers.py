@@ -10,7 +10,7 @@ class TestCreateTerraformProviders:
         from lws.cli.ldk import _create_terraform_providers
 
         config = LdkConfig(port=3000)
-        providers, ports, _chaos_configs = _create_terraform_providers(config, tmp_path)
+        providers, ports, _chaos_configs, _ = _create_terraform_providers(config, tmp_path)
 
         assert "__dynamodb_http__" in providers
         assert "__sqs_http__" in providers
@@ -42,7 +42,7 @@ class TestCreateTerraformProviders:
         config = LdkConfig(port=4000)
 
         # Act
-        _, ports, _chaos_configs = _create_terraform_providers(config, tmp_path)
+        _, ports, _chaos_configs, _ = _create_terraform_providers(config, tmp_path)
 
         # Assert
         assert ports["dynamodb"] == expected_dynamodb_port
