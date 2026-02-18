@@ -1114,7 +1114,7 @@ def create_sqs_app(
     _sqs_port = port
     app = FastAPI()
     if chaos is not None:
-        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sqs")
     sqs_router = SqsRouter(provider)
     app.include_router(sqs_router.router)

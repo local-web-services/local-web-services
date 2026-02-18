@@ -12,6 +12,34 @@ from lws.cli.lws import app
 runner = CliRunner()
 
 
+def _enable_chaos_full_error_rate(e2e_port: int, service: str) -> None:
+    """Enable chaos with 100% error rate for a service."""
+    result = runner.invoke(
+        app,
+        ["chaos", "enable", service, "--port", str(e2e_port)],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (chaos enable): {result.output}")
+    result = runner.invoke(
+        app,
+        ["chaos", "set", service, "--error-rate", "1.0", "--port", str(e2e_port)],
+    )
+    if result.exit_code != 0:
+        raise RuntimeError(f"Arrange failed (chaos set): {result.output}")
+
+
+def _disable_chaos(e2e_port: int, service: str) -> None:
+    """Disable chaos and reset error rate for a service."""
+    runner.invoke(
+        app,
+        ["chaos", "set", service, "--error-rate", "0.0", "--port", str(e2e_port)],
+    )
+    runner.invoke(
+        app,
+        ["chaos", "disable", service, "--port", str(e2e_port)],
+    )
+
+
 # ── Given steps ──────────────────────────────────────────────────
 
 
@@ -26,6 +54,15 @@ def chaos_was_enabled(service, e2e_port):
     )
     if result.exit_code != 0:
         raise RuntimeError(f"Arrange failed (chaos enable): {result.output}")
+    return {"service": service}
+
+
+@given(
+    parsers.parse('chaos was configured for "{service}" with full error rate'),
+    target_fixture="given_chaos",
+)
+def chaos_was_configured_full_error_rate(service, e2e_port):
+    _enable_chaos_full_error_rate(e2e_port, service)
     return {"service": service}
 
 
@@ -99,6 +136,38 @@ def i_set_chaos_latency(service, min_ms, max_ms, e2e_port):
             "--port",
             str(e2e_port),
         ],
+    )
+
+
+@when("I list DynamoDB tables", target_fixture="command_result")
+def i_list_dynamodb_tables(e2e_port):
+    return runner.invoke(
+        app,
+        ["dynamodb", "list-tables", "--port", str(e2e_port)],
+    )
+
+
+@when("I list SQS queues", target_fixture="command_result")
+def i_list_sqs_queues(e2e_port):
+    return runner.invoke(
+        app,
+        ["sqs", "list-queues", "--port", str(e2e_port)],
+    )
+
+
+@when("I list S3 buckets", target_fixture="command_result")
+def i_list_s3_buckets(e2e_port):
+    return runner.invoke(
+        app,
+        ["s3api", "list-buckets", "--port", str(e2e_port)],
+    )
+
+
+@when("I list SNS topics", target_fixture="command_result")
+def i_list_sns_topics(e2e_port):
+    return runner.invoke(
+        app,
+        ["sns", "list-topics", "--port", str(e2e_port)],
     )
 
 
@@ -176,3 +245,44 @@ def chaos_will_have_latency_max(service, value, e2e_port):
     output = json.loads(result.output)
     actual_max = output[service]["latency_max_ms"]
     assert actual_max == value
+
+
+@then("the output will contain a DynamoDB chaos error")
+def output_will_contain_dynamodb_chaos_error(command_result, parse_output):
+    output = parse_output(command_result.output)
+    assert "__type" in output, f"Missing __type in: {output}"
+    assert "message" in output, f"Missing message in: {output}"
+
+
+@then("the output will contain an SQS chaos error")
+def output_will_contain_sqs_chaos_error(command_result, parse_output):
+    output = parse_output(command_result.output)
+    assert "ErrorResponse" in output, f"Missing ErrorResponse in: {output}"
+    actual_error = output["ErrorResponse"]["Error"]
+    assert "Code" in actual_error, f"Missing Code in: {actual_error}"
+    assert "Message" in actual_error, f"Missing Message in: {actual_error}"
+
+
+@then("the output will contain an S3 chaos error")
+def output_will_contain_s3_chaos_error(command_result, parse_output):
+    output = parse_output(command_result.output)
+    assert "Error" in output, f"Missing Error in: {output}"
+    actual_error = output["Error"]
+    assert "Code" in actual_error, f"Missing Code in: {actual_error}"
+    assert "Message" in actual_error, f"Missing Message in: {actual_error}"
+
+
+@then("the output will contain an SNS chaos error")
+def output_will_contain_sns_chaos_error(command_result, parse_output):
+    output = parse_output(command_result.output)
+    assert "ErrorResponse" in output, f"Missing ErrorResponse in: {output}"
+    actual_error = output["ErrorResponse"]["Error"]
+    assert "Code" in actual_error, f"Missing Code in: {actual_error}"
+    assert "Message" in actual_error, f"Missing Message in: {actual_error}"
+
+
+@then(
+    parsers.parse('chaos was cleaned up for "{service}"'),
+)
+def chaos_was_cleaned_up(service, e2e_port):
+    _disable_chaos(e2e_port, service)
