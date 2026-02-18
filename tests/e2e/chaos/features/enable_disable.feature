@@ -54,6 +54,71 @@ Feature: Chaos enable and disable
     And chaos for "sns" will be disabled
 
   @happy
+  Scenario: Enable chaos for stepfunctions
+    When I enable chaos for "stepfunctions"
+    Then the command will succeed
+    And chaos for "stepfunctions" will be enabled
+
+  @happy
+  Scenario: Disable chaos for stepfunctions
+    Given chaos was enabled for "stepfunctions"
+    When I disable chaos for "stepfunctions"
+    Then the command will succeed
+    And chaos for "stepfunctions" will be disabled
+
+  @happy
+  Scenario: Enable chaos for events
+    When I enable chaos for "events"
+    Then the command will succeed
+    And chaos for "events" will be enabled
+
+  @happy
+  Scenario: Disable chaos for events
+    Given chaos was enabled for "events"
+    When I disable chaos for "events"
+    Then the command will succeed
+    And chaos for "events" will be disabled
+
+  @happy
+  Scenario: Enable chaos for cognito-idp
+    When I enable chaos for "cognito-idp"
+    Then the command will succeed
+    And chaos for "cognito-idp" will be enabled
+
+  @happy
+  Scenario: Disable chaos for cognito-idp
+    Given chaos was enabled for "cognito-idp"
+    When I disable chaos for "cognito-idp"
+    Then the command will succeed
+    And chaos for "cognito-idp" will be disabled
+
+  @happy
+  Scenario: Enable chaos for ssm
+    When I enable chaos for "ssm"
+    Then the command will succeed
+    And chaos for "ssm" will be enabled
+
+  @happy
+  Scenario: Disable chaos for ssm
+    Given chaos was enabled for "ssm"
+    When I disable chaos for "ssm"
+    Then the command will succeed
+    And chaos for "ssm" will be disabled
+
+  @happy
+  Scenario: Enable chaos for secretsmanager
+    When I enable chaos for "secretsmanager"
+    Then the command will succeed
+    And chaos for "secretsmanager" will be enabled
+
+  @happy
+  Scenario: Disable chaos for secretsmanager
+    Given chaos was enabled for "secretsmanager"
+    When I disable chaos for "secretsmanager"
+    Then the command will succeed
+    And chaos for "secretsmanager" will be disabled
+
+  @happy
   Scenario: Show chaos status for all services
     When I request chaos status
     Then the command will succeed
@@ -61,3 +126,8 @@ Feature: Chaos enable and disable
     And the chaos status will contain "s3"
     And the chaos status will contain "sqs"
     And the chaos status will contain "sns"
+    And the chaos status will contain "stepfunctions"
+    And the chaos status will contain "events"
+    And the chaos status will contain "cognito-idp"
+    And the chaos status will contain "ssm"
+    And the chaos status will contain "secretsmanager"

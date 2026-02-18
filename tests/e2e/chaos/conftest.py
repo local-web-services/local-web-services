@@ -171,6 +171,46 @@ def i_list_sns_topics(e2e_port):
     )
 
 
+@when("I list Step Functions state machines", target_fixture="command_result")
+def i_list_stepfunctions_state_machines(e2e_port):
+    return runner.invoke(
+        app,
+        ["stepfunctions", "list-state-machines", "--port", str(e2e_port)],
+    )
+
+
+@when("I list EventBridge event buses", target_fixture="command_result")
+def i_list_eventbridge_event_buses(e2e_port):
+    return runner.invoke(
+        app,
+        ["events", "list-event-buses", "--port", str(e2e_port)],
+    )
+
+
+@when("I list Cognito user pools", target_fixture="command_result")
+def i_list_cognito_user_pools(e2e_port):
+    return runner.invoke(
+        app,
+        ["cognito", "list-user-pools", "--port", str(e2e_port)],
+    )
+
+
+@when("I describe SSM parameters", target_fixture="command_result")
+def i_describe_ssm_parameters(e2e_port):
+    return runner.invoke(
+        app,
+        ["ssm", "describe-parameters", "--port", str(e2e_port)],
+    )
+
+
+@when("I list Secrets Manager secrets", target_fixture="command_result")
+def i_list_secretsmanager_secrets(e2e_port):
+    return runner.invoke(
+        app,
+        ["secretsmanager", "list-secrets", "--port", str(e2e_port)],
+    )
+
+
 # ── Then steps ──────────────────────────────────────────────────
 
 
@@ -247,15 +287,15 @@ def chaos_will_have_latency_max(service, value, e2e_port):
     assert actual_max == value
 
 
-@then("the output will contain a DynamoDB chaos error")
-def output_will_contain_dynamodb_chaos_error(command_result, parse_output):
+@then("the output will contain a JSON chaos error")
+def output_will_contain_json_chaos_error(command_result, parse_output):
     output = parse_output(command_result.output)
     assert "__type" in output, f"Missing __type in: {output}"
     assert "message" in output, f"Missing message in: {output}"
 
 
-@then("the output will contain an SQS chaos error")
-def output_will_contain_sqs_chaos_error(command_result, parse_output):
+@then("the output will contain an XML chaos error")
+def output_will_contain_xml_chaos_error(command_result, parse_output):
     output = parse_output(command_result.output)
     assert "ErrorResponse" in output, f"Missing ErrorResponse in: {output}"
     actual_error = output["ErrorResponse"]["Error"]
@@ -263,20 +303,11 @@ def output_will_contain_sqs_chaos_error(command_result, parse_output):
     assert "Message" in actual_error, f"Missing Message in: {actual_error}"
 
 
-@then("the output will contain an S3 chaos error")
-def output_will_contain_s3_chaos_error(command_result, parse_output):
+@then("the output will contain an S3 XML chaos error")
+def output_will_contain_s3_xml_chaos_error(command_result, parse_output):
     output = parse_output(command_result.output)
     assert "Error" in output, f"Missing Error in: {output}"
     actual_error = output["Error"]
-    assert "Code" in actual_error, f"Missing Code in: {actual_error}"
-    assert "Message" in actual_error, f"Missing Message in: {actual_error}"
-
-
-@then("the output will contain an SNS chaos error")
-def output_will_contain_sns_chaos_error(command_result, parse_output):
-    output = parse_output(command_result.output)
-    assert "ErrorResponse" in output, f"Missing ErrorResponse in: {output}"
-    actual_error = output["ErrorResponse"]["Error"]
     assert "Code" in actual_error, f"Missing Code in: {actual_error}"
     assert "Message" in actual_error, f"Missing Message in: {actual_error}"
 

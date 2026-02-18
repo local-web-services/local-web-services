@@ -38,3 +38,40 @@ Feature: Chaos set configuration
     Then the command will succeed
     And chaos for "sqs" will have latency min 100
     And chaos for "sqs" will have latency max 500
+
+  @happy
+  Scenario: Set error rate for stepfunctions
+    When I set chaos for "stepfunctions" with error rate 0.2
+    Then the command will succeed
+    And chaos for "stepfunctions" will have error rate 0.2
+
+  @happy
+  Scenario: Set error rate for events
+    When I set chaos for "events" with error rate 0.6
+    Then the command will succeed
+    And chaos for "events" will have error rate 0.6
+
+  @happy
+  Scenario: Set error rate for cognito-idp
+    When I set chaos for "cognito-idp" with error rate 0.15
+    Then the command will succeed
+    And chaos for "cognito-idp" will have error rate 0.15
+
+  @happy
+  Scenario: Set error rate for ssm
+    When I set chaos for "ssm" with error rate 0.25
+    Then the command will succeed
+    And chaos for "ssm" will have error rate 0.25
+
+  @happy
+  Scenario: Set error rate for secretsmanager
+    When I set chaos for "secretsmanager" with error rate 0.35
+    Then the command will succeed
+    And chaos for "secretsmanager" will have error rate 0.35
+
+  @happy
+  Scenario: Set latency for stepfunctions
+    When I set chaos for "stepfunctions" with latency min 25 and max 150
+    Then the command will succeed
+    And chaos for "stepfunctions" will have latency min 25
+    And chaos for "stepfunctions" will have latency max 150
