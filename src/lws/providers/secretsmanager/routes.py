@@ -16,6 +16,7 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 
 _logger = get_logger("ldk.secretsmanager")
@@ -460,9 +461,14 @@ _ACTION_HANDLERS: dict[str, Any] = {
 def create_secretsmanager_app(
     initial_secrets: list[dict] | None = None,
     chaos: AwsChaosConfig | None = None,
+    aws_mock: AwsMockConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Secrets Manager wire protocol."""
     app = FastAPI(title="LDK Secrets Manager")
+    if aws_mock is not None:
+        app.add_middleware(
+            AwsOperationMockMiddleware, mock_config=aws_mock, service="secretsmanager"
+        )
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="secretsmanager")

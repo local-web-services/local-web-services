@@ -10,6 +10,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import CognitoError
 
@@ -302,9 +303,12 @@ def _error_response(error_type: str, message: str) -> Response:
 def create_cognito_app(
     provider: CognitoProvider,
     chaos: AwsChaosConfig | None = None,
+    aws_mock: AwsMockConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Cognito wire protocol."""
     app = FastAPI(title="LDK Cognito")
+    if aws_mock is not None:
+        app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="cognito-idp")
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="cognito")

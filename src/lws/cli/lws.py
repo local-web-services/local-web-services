@@ -13,6 +13,7 @@ import typer
 
 from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.cli.services.apigateway import app as apigateway_app
+from lws.cli.services.aws_mock import app as aws_mock_app
 from lws.cli.services.chaos import app as chaos_app
 from lws.cli.services.client import exit_with_error, output_json
 from lws.cli.services.cognito import app as cognito_app
@@ -72,6 +73,7 @@ _add_service(rds_app, "rds")
 _add_service(glacier_app, "glacier")
 _add_service(s3tables_app, "s3tables")
 _add_service(mock_app, "mock")
+_add_service(aws_mock_app, "aws-mock")
 _add_service(chaos_app, "chaos")
 
 

@@ -19,6 +19,7 @@ from lws.api.gui import get_dashboard_html
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger, get_ws_handler
 from lws.providers._shared.aws_chaos import AwsChaosConfig, parse_chaos_config
+from lws.providers._shared.aws_operation_mock import AwsMockConfig
 from lws.runtime.orchestrator import Orchestrator
 
 _logger = get_logger("ldk.management")
@@ -123,6 +124,7 @@ def create_management_router(
     providers: dict[str, Provider] | None = None,
     resource_metadata: dict[str, Any] | None = None,
     chaos_configs: dict[str, AwsChaosConfig] | None = None,
+    aws_mock_configs: dict[str, AwsMockConfig] | None = None,
 ) -> APIRouter:
     """Create a management API router.
 
@@ -131,6 +133,7 @@ def create_management_router(
         providers: Optional map of all providers for status reporting.
         resource_metadata: Pre-built resource metadata for the ``/_ldk/resources`` endpoint.
         chaos_configs: Map of service name to mutable ``AwsChaosConfig`` for runtime updates.
+        aws_mock_configs: Map of service name to mutable ``AwsMockConfig`` for runtime updates.
 
     Returns:
         A FastAPI ``APIRouter`` to be included in the main application.
@@ -139,6 +142,7 @@ def create_management_router(
     all_providers = providers or orchestrator.providers
     _resource_metadata = resource_metadata or {}
     _chaos_configs = chaos_configs or {}
+    _aws_mock_configs = aws_mock_configs or {}
 
     @router.post("/reset")
     async def reset_state() -> JSONResponse:
@@ -177,7 +181,24 @@ def create_management_router(
     async def set_chaos(request: Request) -> JSONResponse:
         return await _handle_set_chaos(request, _chaos_configs)
 
+    _register_aws_mock_routes(router, _aws_mock_configs)
+
     return router
+
+
+def _register_aws_mock_routes(
+    router: APIRouter,
+    aws_mock_configs: dict[str, AwsMockConfig],
+) -> None:
+    """Register AWS mock management routes on the router."""
+
+    @router.get("/aws-mock")
+    async def get_aws_mock() -> JSONResponse:
+        return _handle_get_aws_mock(aws_mock_configs)
+
+    @router.post("/aws-mock")
+    async def set_aws_mock(request: Request) -> JSONResponse:
+        return await _handle_set_aws_mock(request, aws_mock_configs)
 
 
 def _handle_get_chaos(chaos_configs: dict[str, AwsChaosConfig]) -> JSONResponse:
@@ -230,3 +251,61 @@ def _apply_chaos_overrides(cfg: AwsChaosConfig, overrides: dict[str, Any]) -> No
         cfg.timeout_rate = float(overrides["timeout_rate"])
     if "errors" in overrides:
         cfg.errors = parse_chaos_config({"errors": overrides["errors"]}).errors
+
+
+# ---------------------------------------------------------------------------
+# AWS Mock helpers
+# ---------------------------------------------------------------------------
+
+
+def _handle_get_aws_mock(mock_configs: dict[str, AwsMockConfig]) -> JSONResponse:
+    """Return current AWS mock config for all services."""
+    result = {svc: _serialize_aws_mock(cfg) for svc, cfg in mock_configs.items()}
+    return JSONResponse(content=result)
+
+
+async def _handle_set_aws_mock(
+    request: Request, mock_configs: dict[str, AwsMockConfig]
+) -> JSONResponse:
+    """Update AWS mock config for one or more services."""
+    body = await request.json()
+    updated: list[str] = []
+    for svc, overrides in body.items():
+        if svc not in mock_configs:
+            continue
+        _apply_aws_mock_overrides(mock_configs[svc], overrides)
+        updated.append(svc)
+    result = {svc: _serialize_aws_mock(mock_configs[svc]) for svc in updated}
+    return JSONResponse(content={"updated": updated, "aws_mock": result})
+
+
+def _serialize_aws_mock(cfg: AwsMockConfig) -> dict[str, Any]:
+    """Serialize an AwsMockConfig to a JSON-safe dict."""
+    return {
+        "service": cfg.service,
+        "enabled": cfg.enabled,
+        "rules": [
+            {
+                "operation": r.operation,
+                "match_headers": r.match_headers,
+                "response": {
+                    "status": r.response.status,
+                    "content_type": r.response.content_type,
+                    "delay_ms": r.response.delay_ms,
+                },
+            }
+            for r in cfg.rules
+        ],
+    }
+
+
+def _apply_aws_mock_overrides(cfg: AwsMockConfig, overrides: dict[str, Any]) -> None:
+    """Apply partial overrides to an existing AwsMockConfig in place."""
+    from lws.providers._shared.aws_operation_mock import (  # pylint: disable=import-outside-toplevel
+        parse_mock_rule,
+    )
+
+    if "enabled" in overrides:
+        cfg.enabled = bool(overrides["enabled"])
+    if "rules" in overrides:
+        cfg.rules = [parse_mock_rule(r) for r in overrides["rules"]]

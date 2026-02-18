@@ -27,7 +27,7 @@ class TestOrchestratorIntegration:
         graph = build_graph(app_model)
         config = LdkConfig(port=9200)
 
-        providers, _chaos_configs = _create_providers(app_model, graph, config, tmp_path)
+        providers, _chaos_configs, _ = _create_providers(app_model, graph, config, tmp_path)
 
         # Only keep the dynamo provider (not HTTP or Lambda, which need node/port)
         dynamo_providers = {k: v for k, v in providers.items() if v.name == expected_provider_name}
