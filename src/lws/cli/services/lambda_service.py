@@ -517,3 +517,108 @@ async def _get_event_source_mapping(uuid: str, port: int) -> None:
     except Exception as exc:
         exit_with_error(str(exc))
     output_json(resp.json())
+
+
+# -- Function URL commands ---------------------------------------------------
+
+
+@app.command("create-function-url-config")
+def create_function_url_config(
+    function_name: str = typer.Option(..., "--function-name", help="Function name"),
+    auth_type: str = typer.Option("NONE", "--auth-type", help="Auth type (NONE or AWS_IAM)"),
+    cors: str = typer.Option(None, "--cors", help="JSON CORS configuration"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Create a Function URL configuration for a Lambda function."""
+    asyncio.run(_create_function_url_config(function_name, auth_type, cors, port))
+
+
+async def _create_function_url_config(
+    function_name: str, auth_type: str, cors_json: str | None, port: int
+) -> None:
+    client = _client(port)
+    body: dict = {"AuthType": auth_type}
+    if cors_json is not None:
+        try:
+            body["Cors"] = json.loads(cors_json)
+        except json.JSONDecodeError as exc:
+            exit_with_error(f"Invalid JSON in --cors: {exc}")
+    json_body = json.dumps(body).encode()
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "POST",
+            f"/2021-10-31/functions/{function_name}/url",
+            body=json_body,
+            headers={"Content-Type": "application/json"},
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("get-function-url-config")
+def get_function_url_config(
+    function_name: str = typer.Option(..., "--function-name", help="Function name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Get the Function URL configuration for a Lambda function."""
+    asyncio.run(_get_function_url_config(function_name, port))
+
+
+async def _get_function_url_config(function_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "GET",
+            f"/2021-10-31/functions/{function_name}/url",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json())
+
+
+@app.command("delete-function-url-config")
+def delete_function_url_config(
+    function_name: str = typer.Option(..., "--function-name", help="Function name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete the Function URL configuration for a Lambda function."""
+    asyncio.run(_delete_function_url_config(function_name, port))
+
+
+async def _delete_function_url_config(function_name: str, port: int) -> None:
+    client = _client(port)
+    try:
+        resp = await client.rest_request(
+            _SERVICE,
+            "DELETE",
+            f"/2021-10-31/functions/{function_name}/url",
+        )
+    except Exception as exc:
+        exit_with_error(str(exc))
+    output_json(resp.json() if resp.content else {})
+
+
+@app.command("list-function-url-configs")
+def list_function_url_configs(
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """List all Function URL configurations."""
+    asyncio.run(_list_function_url_configs(port))
+
+
+async def _list_function_url_configs(port: int) -> None:
+    # Use the management API to list function URLs
+    try:
+        async with httpx.AsyncClient() as http_client:
+            resp = await http_client.get(
+                f"http://localhost:{port}/_ldk/function-urls",
+                timeout=10.0,
+            )
+        output_json(resp.json())
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        exit_with_error(f"Cannot reach ldk dev on port {port}. Is it running?")
+    except Exception as exc:
+        exit_with_error(str(exc))

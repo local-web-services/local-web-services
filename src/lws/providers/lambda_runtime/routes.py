@@ -46,6 +46,8 @@ class LambdaRegistry:
         self._functions: dict[str, dict[str, Any]] = {}
         self._compute: dict[str, Any] = {}  # name -> ICompute
         self._tags: dict[str, dict[str, str]] = {}  # arn -> {key: value}
+        self._function_urls: dict[str, dict[str, Any]] = {}  # name -> url config
+        self._function_url_providers: dict[str, Any] = {}  # name -> provider
 
     @property
     def functions(self) -> dict[str, dict[str, Any]]:
@@ -102,6 +104,41 @@ class LambdaRegistry:
         if arn in self._tags:
             for key in tag_keys:
                 self._tags[arn].pop(key, None)
+
+    # -- Function URL management ---------------------------------------------
+
+    @property
+    def function_urls(self) -> dict[str, dict[str, Any]]:
+        """Return the function URL config store."""
+        return self._function_urls
+
+    @property
+    def function_url_providers(self) -> dict[str, Any]:
+        """Return the function URL provider store."""
+        return self._function_url_providers
+
+    def register_function_url(
+        self, function_name: str, url_config: dict[str, Any], provider: Any = None
+    ) -> None:
+        """Register a Function URL configuration and optional provider."""
+        self._function_urls[function_name] = url_config
+        if provider is not None:
+            self._function_url_providers[function_name] = provider
+
+    def get_function_url(self, function_name: str) -> dict[str, Any] | None:
+        """Return the Function URL config for a function, or None."""
+        return self._function_urls.get(function_name)
+
+    def delete_function_url(self, function_name: str) -> bool:
+        """Remove a Function URL config and provider. Returns True if existed."""
+        removed = function_name in self._function_urls
+        self._function_urls.pop(function_name, None)
+        self._function_url_providers.pop(function_name, None)
+        return removed
+
+    def list_function_urls(self) -> list[dict[str, Any]]:
+        """Return all Function URL configurations."""
+        return list(self._function_urls.values())
 
 
 # ---------------------------------------------------------------------------
@@ -359,6 +396,28 @@ class LambdaManagementRouter:
             "/2020-06-30/functions/{function_name}/code-signing-config",
             self._get_code_signing_config,
             methods=["GET"],
+        )
+
+        # Function URLs
+        r.add_api_route(
+            "/2021-10-31/functions/{function_name}/url",
+            self._create_function_url_config,
+            methods=["POST"],
+        )
+        r.add_api_route(
+            "/2021-10-31/functions/{function_name}/url",
+            self._get_function_url_config,
+            methods=["GET"],
+        )
+        r.add_api_route(
+            "/2021-10-31/functions/{function_name}/url",
+            self._update_function_url_config,
+            methods=["PUT"],
+        )
+        r.add_api_route(
+            "/2021-10-31/functions/{function_name}/url",
+            self._delete_function_url_config,
+            methods=["DELETE"],
         )
 
         # Tags
@@ -633,6 +692,114 @@ class LambdaManagementRouter:
     async def _list_tags(self, arn: str) -> Response:
         tags = self._registry.get_tags(arn)
         return _json_response({"Tags": tags})
+
+    # -- Function URLs -------------------------------------------------------
+
+    async def _create_function_url_config(self, function_name: str, request: Request) -> Response:
+        body = await parse_json_body(request)
+        if self._registry.get_function_url(function_name) is not None:
+            return _json_response(
+                {
+                    "Message": f"Function URL already exists for: {function_name}",
+                    "Type": "ResourceConflictException",
+                },
+                409,
+            )
+        auth_type = body.get("AuthType", "NONE")
+        cors = body.get("Cors")
+        invoke_mode = body.get("InvokeMode", "BUFFERED")
+
+        url_config: dict[str, Any] = {
+            "FunctionName": function_name,
+            "FunctionArn": _function_arn(function_name),
+            "AuthType": auth_type,
+            "Cors": cors,
+            "InvokeMode": invoke_mode,
+            "FunctionUrl": "",
+            "CreationTime": "",
+        }
+
+        # Try to start a Function URL provider on a dynamic port
+        compute = self._registry.get_compute(function_name)
+        if compute is not None:
+            port = self._allocate_function_url_port()
+            url_config["FunctionUrl"] = f"http://localhost:{port}/"
+            url_config["_port"] = port
+
+            from lws.providers.lambda_function_url.provider import (  # pylint: disable=import-outside-toplevel
+                LambdaFunctionUrlProvider,
+            )
+
+            provider = LambdaFunctionUrlProvider(
+                function_name=function_name,
+                compute=compute,
+                port=port,
+                cors_config=cors,
+            )
+            try:
+                await provider.start()
+                self._registry.register_function_url(function_name, url_config, provider)
+            except Exception as exc:
+                _logger.error("Failed to start Function URL for %s: %s", function_name, exc)
+                self._registry.register_function_url(function_name, url_config)
+        else:
+            self._registry.register_function_url(function_name, url_config)
+
+        _logger.info("Created Function URL for %s", function_name)
+        return _json_response(url_config, 201)
+
+    async def _get_function_url_config(self, function_name: str) -> Response:
+        url_config = self._registry.get_function_url(function_name)
+        if url_config is None:
+            return _json_response(
+                {
+                    "Message": f"Function URL config not found for: {function_name}",
+                    "Type": "ResourceNotFoundException",
+                },
+                404,
+            )
+        return _json_response(url_config)
+
+    async def _update_function_url_config(self, function_name: str, request: Request) -> Response:
+        body = await parse_json_body(request)
+        url_config = self._registry.get_function_url(function_name)
+        if url_config is None:
+            return _json_response(
+                {
+                    "Message": f"Function URL config not found for: {function_name}",
+                    "Type": "ResourceNotFoundException",
+                },
+                404,
+            )
+        if "AuthType" in body:
+            url_config["AuthType"] = body["AuthType"]
+        if "Cors" in body:
+            url_config["Cors"] = body["Cors"]
+        if "InvokeMode" in body:
+            url_config["InvokeMode"] = body["InvokeMode"]
+        _logger.info("Updated Function URL config for %s", function_name)
+        return _json_response(url_config)
+
+    async def _delete_function_url_config(self, function_name: str) -> Response:
+        provider = self._registry.function_url_providers.get(function_name)
+        if provider is not None:
+            try:
+                await provider.stop()
+            except Exception as exc:
+                _logger.warning(
+                    "Error stopping Function URL provider for %s: %s", function_name, exc
+                )
+        self._registry.delete_function_url(function_name)
+        return Response(status_code=204)
+
+    def _allocate_function_url_port(self) -> int:
+        """Allocate a dynamic port for a new Function URL provider."""
+        base = 19100  # Default dynamic range for Function URLs
+        used = {cfg.get("_port", 0) for cfg in self._registry.function_urls.values()}
+        port = base
+        while port in used:
+            port += 1
+        return port
 
     async def _stub_handler(self, request: Request, path: str) -> Response:
         _logger.warning("Unknown Lambda path: %s %s", request.method, path)

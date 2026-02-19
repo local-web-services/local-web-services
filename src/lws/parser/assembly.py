@@ -21,6 +21,7 @@ from lws.parser.template_parser import (
     extract_api_routes,
     extract_dynamo_tables,
     extract_lambda_functions,
+    extract_lambda_urls,
     parse_template,
 )
 from lws.parser.tree_parser import parse_tree
@@ -108,6 +109,7 @@ class S3Bucket:
     """Parsed S3 bucket definition."""
 
     name: str
+    website_configuration: dict[str, Any] | None = None
 
 
 @dataclass
@@ -181,6 +183,17 @@ class SmSecret:
 
 
 @dataclass
+class LambdaFunctionUrl:
+    """Parsed Lambda Function URL definition."""
+
+    logical_id: str
+    function_name: str
+    auth_type: str = "NONE"
+    cors: dict[str, Any] | None = None
+    invoke_mode: str = "BUFFERED"
+
+
+@dataclass
 class AppModel:
     """Complete parsed representation of a CDK application."""
 
@@ -197,6 +210,7 @@ class AppModel:
     ecs_services: list[Any] = field(default_factory=list)
     ssm_parameters: list[SsmParameter] = field(default_factory=list)
     secrets: list[SmSecret] = field(default_factory=list)
+    function_urls: list[LambdaFunctionUrl] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -279,6 +293,7 @@ def _process_stack(
     model.user_pools.extend(_collect_user_pools(resources, resolver))
     model.ssm_parameters.extend(_collect_ssm_parameters(resources, resolver))
     model.secrets.extend(_collect_secrets(resources, resolver))
+    model.function_urls.extend(_collect_lambda_urls(resources, resolver))
 
     # ECS needs the raw template dict
     with open(template_path, encoding="utf-8") as fh:
@@ -558,8 +573,24 @@ def _collect_buckets(resources: list[CfnResource]) -> list[S3Bucket]:
         name = r.properties.get("BucketName", r.logical_id)
         if isinstance(name, dict):
             name = r.logical_id  # Can't resolve intrinsics for bucket names easily
-        buckets.append(S3Bucket(name=name))
+        website_config = _extract_website_configuration(r.properties)
+        buckets.append(S3Bucket(name=name, website_configuration=website_config))
     return buckets
+
+
+def _extract_website_configuration(properties: dict[str, Any]) -> dict[str, Any] | None:
+    """Extract WebsiteConfiguration from CloudFormation S3 bucket properties."""
+    raw = properties.get("WebsiteConfiguration")
+    if not raw or not isinstance(raw, dict):
+        return None
+    config: dict[str, Any] = {}
+    index_doc = raw.get("IndexDocument")
+    if isinstance(index_doc, str):
+        config["index_document"] = index_doc
+    error_doc = raw.get("ErrorDocument")
+    if isinstance(error_doc, str):
+        config["error_document"] = error_doc
+    return config if config else None
 
 
 def _collect_topics(
@@ -780,6 +811,40 @@ def _collect_secrets(
             secret_string = str(resolver.resolve(secret_string))
         secrets.append(SmSecret(name=name, description=description, secret_string=secret_string))
     return secrets
+
+
+def _collect_lambda_urls(
+    resources: list[CfnResource],
+    resolver: RefResolver,
+) -> list[LambdaFunctionUrl]:
+    """Extract Lambda Function URLs from parsed CloudFormation resources."""
+    url_props_list = extract_lambda_urls(resources)
+    url_resources = [r for r in resources if r.resource_type == "AWS::Lambda::Url"]
+    urls: list[LambdaFunctionUrl] = []
+    for r, props in zip(url_resources, url_props_list):
+        # Resolve TargetFunctionArn to extract the function name
+        target = props.target_function_arn
+        if isinstance(target, dict):
+            target = str(resolver.resolve(target))
+        # Extract function name from ARN or use directly
+        function_name = target or r.logical_id
+        if isinstance(function_name, str):
+            # Strip .Arn suffix from Fn::GetAtt resolution
+            if function_name.endswith(".Arn"):
+                function_name = function_name[:-4]
+            # Extract name from ARN like arn:aws:lambda:...:function:name
+            if ":function:" in function_name:
+                function_name = function_name.rsplit(":", 1)[-1]
+        urls.append(
+            LambdaFunctionUrl(
+                logical_id=r.logical_id,
+                function_name=function_name,
+                auth_type=props.auth_type,
+                cors=props.cors,
+                invoke_mode=props.invoke_mode,
+            )
+        )
+    return urls
 
 
 def _collect_ecs_services(template: dict) -> list:

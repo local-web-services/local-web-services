@@ -754,6 +754,116 @@ def i_get_bucket_notification_configuration(bucket, e2e_port):
     )
 
 
+@given(
+    parsers.parse('website configuration was set on bucket "{bucket}" with index "{index_doc}"'),
+)
+def website_configuration_was_set(bucket, index_doc, lws_invoke, e2e_port):
+    config = json.dumps({"IndexDocument": {"Suffix": index_doc}})
+    lws_invoke(
+        [
+            "s3api",
+            "put-bucket-website",
+            "--bucket",
+            bucket,
+            "--website-configuration",
+            config,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+
+
+@when(
+    parsers.parse('I put website configuration on bucket "{bucket}" with index "{index_doc}"'),
+    target_fixture="command_result",
+)
+def i_put_bucket_website(bucket, index_doc, e2e_port):
+    config = json.dumps({"IndexDocument": {"Suffix": index_doc}})
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "put-bucket-website",
+            "--bucket",
+            bucket,
+            "--website-configuration",
+            config,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I get website configuration from bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_get_bucket_website(bucket, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "get-bucket-website",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@when(
+    parsers.parse('I delete website configuration from bucket "{bucket}"'),
+    target_fixture="command_result",
+)
+def i_delete_bucket_website(bucket, e2e_port):
+    return runner.invoke(
+        app,
+        [
+            "s3api",
+            "delete-bucket-website",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+
+
+@then(
+    parsers.parse('bucket "{bucket}" will have website index document "{expected_suffix}"'),
+)
+def bucket_will_have_website_index_document(
+    bucket, expected_suffix, assert_invoke, parse_output, e2e_port
+):
+    data = assert_invoke(
+        ["s3api", "get-bucket-website", "--bucket", bucket, "--port", str(e2e_port)]
+    )
+    actual_suffix = data["WebsiteConfiguration"]["IndexDocument"]["Suffix"]
+    assert actual_suffix == expected_suffix
+
+
+@then(
+    parsers.parse('bucket "{bucket}" will have no website configuration'),
+)
+def bucket_will_have_no_website_configuration(bucket, e2e_port):
+    result = runner.invoke(
+        app,
+        ["s3api", "get-bucket-website", "--bucket", bucket, "--port", str(e2e_port)],
+    )
+    # Expect a non-zero exit code or error indicating no website config
+    assert result.exit_code != 0 or "NoSuchWebsiteConfiguration" in result.output
+
+
+@then(
+    parsers.parse('the output will contain website index document "{expected_suffix}"'),
+)
+def the_output_will_contain_website_index_document(expected_suffix, command_result, parse_output):
+    data = parse_output(command_result.output)
+    actual_suffix = data["WebsiteConfiguration"]["IndexDocument"]["Suffix"]
+    assert actual_suffix == expected_suffix
+
+
 @when(
     "I list parts of the multipart upload",
     target_fixture="command_result",

@@ -181,9 +181,36 @@ def create_management_router(
     async def set_chaos(request: Request) -> JSONResponse:
         return await _handle_set_chaos(request, _chaos_configs)
 
+    _register_function_url_routes(router, all_providers)
     _register_aws_mock_routes(router, _aws_mock_configs)
 
     return router
+
+
+def _register_function_url_routes(
+    router: APIRouter,
+    providers_map: dict[str, Any],
+) -> None:
+    """Register Function URL discovery routes on the router."""
+
+    @router.get("/function-urls")
+    async def get_function_urls() -> JSONResponse:
+        return _handle_get_function_urls(providers_map)
+
+
+def _handle_get_function_urls(providers_map: dict[str, Any]) -> JSONResponse:
+    """Return current Function URL port mappings from any Lambda registry."""
+    result: dict[str, Any] = {"FunctionUrls": []}
+    for prov in providers_map.values():
+        if hasattr(prov, "function_name") and hasattr(prov, "port"):
+            result["FunctionUrls"].append(
+                {
+                    "FunctionName": prov.function_name,
+                    "FunctionUrl": f"http://localhost:{prov.port}/",
+                    "Port": prov.port,
+                }
+            )
+    return JSONResponse(content=result)
 
 
 def _register_aws_mock_routes(

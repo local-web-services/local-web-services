@@ -1,33 +1,43 @@
-"""Session-scoped fixtures: start ldk dev, tear down via ldk stop."""
+"""Session-scoped fixtures: start ldk dev in-process, tear down gracefully."""
 
 from __future__ import annotations
 
 import json
-import subprocess
+import threading
 import time
+import urllib.error
+import urllib.request
 
 import pytest
 from pytest_bdd import then
-from typer.testing import CliRunner
-
-from lws.cli.lws import app
 
 
 def parse_json_output(text: str):
     """Extract JSON from CLI output that may contain stderr warnings.
 
     Typer's CliRunner mixes stderr into stdout.  Experimental service
-    warnings (e.g. ``Warning: 'docdb' is experimental …``) may appear
-    before or after the JSON payload.  This helper uses ``raw_decode``
-    to extract the first valid JSON object regardless of surrounding text.
+    warnings (e.g. ``Warning: 'docdb' is experimental …``) and in-process
+    server log lines may appear before or after the JSON payload.  This
+    helper uses ``raw_decode`` to find JSON, preferring ``{`` objects over
+    ``[`` arrays to avoid matching fragments like ``lambda_funcs=[]`` in
+    log lines.
     """
     try:
         return json.loads(text)
     except (json.JSONDecodeError, ValueError):
         pass
     decoder = json.JSONDecoder()
+    # First pass: look for JSON objects (most CLI commands output dicts)
     for i, ch in enumerate(text):
-        if ch in ("{", "["):
+        if ch == "{":
+            try:
+                obj, _ = decoder.raw_decode(text, i)
+                return obj
+            except (json.JSONDecodeError, ValueError):
+                continue
+    # Second pass: fall back to JSON arrays
+    for i, ch in enumerate(text):
+        if ch == "[":
             try:
                 obj, _ = decoder.raw_decode(text, i)
                 return obj
@@ -46,57 +56,63 @@ def e2e_port():
 
 @pytest.fixture(scope="session", autouse=True)
 def ldk_server(tmp_path_factory, e2e_port):
-    """Start ldk dev as a subprocess, wait for readiness, yield, stop."""
-    project_dir = tmp_path_factory.mktemp("e2e_project")
-    proc = subprocess.Popen(
-        [
-            "uv",
-            "run",
-            "ldk",
-            "dev",
-            "--mode",
-            "terraform",
-            "--port",
-            str(e2e_port),
-            "--project-dir",
-            str(project_dir),
-            "--no-persist",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    """Start ldk dev in-process on a background thread, wait for readiness."""
+    import asyncio
 
-    # Poll via lws status --json until running=true (timeout after 30s)
-    _status_runner = CliRunner()
-    deadline = time.monotonic() + 30
-    while time.monotonic() < deadline:
+    from lws.cli.ldk import _run_dev
+
+    project_dir = tmp_path_factory.mktemp("e2e_project")
+    error_holder: list[Exception] = []
+
+    def _run():
         try:
-            result = _status_runner.invoke(app, ["status", "--json", "--port", str(e2e_port)])
-            if result.exit_code == 0:
-                data = parse_json_output(result.output)
-                if isinstance(data, dict) and data.get("running"):
+            asyncio.run(
+                _run_dev(
+                    project_dir,
+                    e2e_port,
+                    no_persist=True,
+                    force_synth=False,
+                    log_level_override=None,
+                    mode_override="terraform",
+                )
+            )
+        except Exception as exc:
+            error_holder.append(exc)
+
+    thread = threading.Thread(target=_run, daemon=True)
+    thread.start()
+
+    status_url = f"http://localhost:{e2e_port}/_ldk/status"
+    deadline = time.monotonic() + 60
+    last_error = None
+    while time.monotonic() < deadline:
+        if error_holder:
+            raise RuntimeError(f"ldk dev failed to start: {error_holder[0]}") from error_holder[0]
+        try:
+            with urllib.request.urlopen(status_url, timeout=2) as resp:
+                data = json.loads(resp.read())
+                if data.get("running"):
                     break
-        except Exception:
-            pass
+        except Exception as exc:
+            last_error = exc
         time.sleep(0.5)
     else:
-        proc.kill()
-        raise RuntimeError("ldk dev failed to start within 30 seconds")
+        raise RuntimeError(f"ldk dev failed to start within 60 seconds. Last error: {last_error}")
 
     yield e2e_port
 
-    # Teardown via ldk stop
-    subprocess.run(
-        ["uv", "run", "ldk", "stop", "--port", str(e2e_port)],
-        timeout=30,
-    )
+    # Teardown via shutdown endpoint
     try:
-        proc.wait(timeout=30)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        proc.wait(timeout=5)
+        shutdown_url = f"http://localhost:{e2e_port}/_ldk/shutdown"
+        req = urllib.request.Request(shutdown_url, method="POST", data=b"")
+        urllib.request.urlopen(req, timeout=5)
+    except Exception:
+        pass
+    thread.join(timeout=30)
 
     # Safety net: remove any leftover lws-{service}-e2e-* containers
+    import subprocess
+
     try:
         result = subprocess.run(
             ["docker", "ps", "-a", "-q", "--filter", "name=^lws-.*-e2e-"],

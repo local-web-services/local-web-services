@@ -74,6 +74,16 @@ class ApiGatewayRouteProps:
     integration_uri: Any | None = None
 
 
+@dataclass
+class LambdaUrlProps:
+    """Subset of ``AWS::Lambda::Url`` properties."""
+
+    target_function_arn: Any = None
+    auth_type: str = "NONE"
+    cors: dict[str, Any] | None = None
+    invoke_mode: str = "BUFFERED"
+
+
 # ---------------------------------------------------------------------------
 # Template parsing
 # ---------------------------------------------------------------------------
@@ -231,6 +241,28 @@ def _resolve_v2_integration_uri(target: Any, resources: list[CfnResource]) -> An
             return res.properties.get("IntegrationUri", target)
 
     return target
+
+
+def extract_lambda_urls(resources: list[CfnResource]) -> list[LambdaUrlProps]:
+    """Pull Lambda Function URL definitions out of the resource list."""
+    results: list[LambdaUrlProps] = []
+    for r in resources:
+        if r.resource_type != "AWS::Lambda::Url":
+            continue
+        props = r.properties
+        cors_raw = props.get("Cors")
+        cors: dict[str, Any] | None = None
+        if isinstance(cors_raw, dict):
+            cors = cors_raw
+        results.append(
+            LambdaUrlProps(
+                target_function_arn=props.get("TargetFunctionArn"),
+                auth_type=props.get("AuthType", "NONE"),
+                cors=cors,
+                invoke_mode=props.get("InvokeMode", "BUFFERED"),
+            )
+        )
+    return results
 
 
 def extract_api_routes(resources: list[CfnResource]) -> list[ApiGatewayRouteProps]:

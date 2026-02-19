@@ -6,3 +6,4 @@ __pycache__
 .claude
 allure-results
 allure-report
+_lws_override.tf
