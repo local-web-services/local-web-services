@@ -96,6 +96,17 @@ def build_function_url_event(request: Request, body: bytes) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
+def _encode_response_body(body: Any, is_base64: bool, resp_headers: dict[str, str]) -> bytes:
+    """Encode the response body to bytes, updating headers if needed."""
+    if is_base64 and isinstance(body, str):
+        return base64.b64decode(body)
+    if isinstance(body, (dict, list)):
+        if "content-type" not in {k.lower() for k in resp_headers}:
+            resp_headers["content-type"] = "application/json"
+        return json.dumps(body).encode("utf-8")
+    return body.encode("utf-8") if isinstance(body, str) else body
+
+
 def build_http_response(lambda_result: dict[str, Any] | str | None) -> Response:
     """Convert a Lambda response to an HTTP response.
 
@@ -105,36 +116,18 @@ def build_http_response(lambda_result: dict[str, Any] | str | None) -> Response:
     if lambda_result is None:
         return Response(status_code=200, content="")
 
-    # Simple string response
     if isinstance(lambda_result, str):
-        return Response(
-            status_code=200,
-            content=lambda_result,
-            media_type="application/json",
-        )
+        return Response(status_code=200, content=lambda_result, media_type="application/json")
 
-    # Structured response
     status_code = int(lambda_result.get("statusCode", 200))
     resp_headers = lambda_result.get("headers") or {}
     body = lambda_result.get("body", "")
-    is_base64 = lambda_result.get("isBase64Encoded", False)
-
-    if is_base64 and isinstance(body, str):
-        content = base64.b64decode(body)
-    elif isinstance(body, (dict, list)):
-        content = json.dumps(body).encode("utf-8")
-        if "content-type" not in {k.lower() for k in resp_headers}:
-            resp_headers["content-type"] = "application/json"
-    else:
-        content = body.encode("utf-8") if isinstance(body, str) else body
-
-    # Handle cookies
-    cookies = lambda_result.get("cookies") or []
+    content = _encode_response_body(body, lambda_result.get("isBase64Encoded", False), resp_headers)
 
     response = Response(status_code=status_code, content=content)
     for key, value in resp_headers.items():
         response.headers[key] = str(value)
-    for cookie in cookies:
+    for cookie in lambda_result.get("cookies") or []:
         response.headers.append("set-cookie", cookie)
 
     return response
@@ -145,36 +138,41 @@ def build_http_response(lambda_result: dict[str, Any] | str | None) -> Response:
 # ---------------------------------------------------------------------------
 
 
+def _resolve_allow_origin(allow_origins: list[str], origin: str | None) -> str | None:
+    """Determine the Access-Control-Allow-Origin value."""
+    if not allow_origins:
+        return None
+    if "*" in allow_origins:
+        return "*"
+    if origin and origin in allow_origins:
+        return origin
+    return allow_origins[0]
+
+
 def apply_cors_headers(
     response: Response,
     cors_config: dict[str, Any],
     origin: str | None = None,
 ) -> None:
     """Apply CORS headers to a response based on the Function URL CORS config."""
-    allow_origins = cors_config.get("AllowOrigins", [])
-    allow_methods = cors_config.get("AllowMethods", [])
-    allow_headers = cors_config.get("AllowHeaders", [])
-    expose_headers = cors_config.get("ExposeHeaders", [])
+    allow_origin = _resolve_allow_origin(cors_config.get("AllowOrigins", []), origin)
+    if allow_origin:
+        response.headers["access-control-allow-origin"] = allow_origin
+
+    join_headers = {
+        "access-control-allow-methods": "AllowMethods",
+        "access-control-allow-headers": "AllowHeaders",
+        "access-control-expose-headers": "ExposeHeaders",
+    }
+    for header_name, config_key in join_headers.items():
+        values = cors_config.get(config_key, [])
+        if values:
+            response.headers[header_name] = ", ".join(values)
+
     max_age = cors_config.get("MaxAge")
-    allow_credentials = cors_config.get("AllowCredentials", False)
-
-    if allow_origins:
-        if "*" in allow_origins:
-            response.headers["access-control-allow-origin"] = "*"
-        elif origin and origin in allow_origins:
-            response.headers["access-control-allow-origin"] = origin
-        elif allow_origins:
-            response.headers["access-control-allow-origin"] = allow_origins[0]
-
-    if allow_methods:
-        response.headers["access-control-allow-methods"] = ", ".join(allow_methods)
-    if allow_headers:
-        response.headers["access-control-allow-headers"] = ", ".join(allow_headers)
-    if expose_headers:
-        response.headers["access-control-expose-headers"] = ", ".join(expose_headers)
     if max_age is not None:
         response.headers["access-control-max-age"] = str(max_age)
-    if allow_credentials:
+    if cors_config.get("AllowCredentials", False):
         response.headers["access-control-allow-credentials"] = "true"
 
 

@@ -54,6 +54,29 @@ def _resolve_body_token(token: str, body: Any, prefix_len: int) -> str:
     return str(val) if val is not None else ""
 
 
+def _resolve_random_token(token: str) -> str | None:
+    """Try to resolve random_int or random_choice tokens. Returns None if no match."""
+    m = _RANDOM_INT_RE.match(token)
+    if m:
+        return str(random.randint(int(m.group(1)), int(m.group(2))))
+    m = _RANDOM_CHOICE_RE.match(token)
+    if m:
+        choices = [c.strip() for c in m.group(1).split(",")]
+        return random.choice(choices)  # noqa: S311
+    return None
+
+
+def _resolve_prefix_token(token: str, ctx: dict[str, Any], body: Any) -> str | None:
+    """Try to resolve a prefixed token (path., query., header., body., etc.)."""
+    for prefix, resolver in _PREFIX_SOURCES.items():
+        if token.startswith(prefix):
+            return resolver(token, ctx)
+    for body_prefix in ("body.", "request."):
+        if token.startswith(body_prefix) and body is not None:
+            return _resolve_body_token(token, body, len(body_prefix))
+    return None
+
+
 def _resolve_token(
     token: str,
     *,
@@ -69,14 +92,9 @@ def _resolve_token(
     if token in _STATIC_TOKENS:
         return _STATIC_TOKENS[token]()
 
-    m = _RANDOM_INT_RE.match(token)
-    if m:
-        return str(random.randint(int(m.group(1)), int(m.group(2))))
-
-    m = _RANDOM_CHOICE_RE.match(token)
-    if m:
-        choices = [c.strip() for c in m.group(1).split(",")]
-        return random.choice(choices)  # noqa: S311
+    random_result = _resolve_random_token(token)
+    if random_result is not None:
+        return random_result
 
     ctx = {
         "path_params": path_params or {},
@@ -84,13 +102,9 @@ def _resolve_token(
         "headers": headers or {},
         "variables": variables or {},
     }
-    for prefix, resolver in _PREFIX_SOURCES.items():
-        if token.startswith(prefix):
-            return resolver(token, ctx)
-
-    for body_prefix in ("body.", "request."):
-        if token.startswith(body_prefix) and body is not None:
-            return _resolve_body_token(token, body, len(body_prefix))
+    prefix_result = _resolve_prefix_token(token, ctx, body)
+    if prefix_result is not None:
+        return prefix_result
 
     return f"{{{{{token}}}}}"
 
