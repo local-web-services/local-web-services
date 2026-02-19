@@ -7,3 +7,4 @@ Feature: StepFunctions UntagResource
     And state machine "e2e-untag-sm" was tagged with tags [{"key": "env", "value": "test"}]
     When I untag state machine "e2e-untag-sm" with tag keys ["env"]
     Then the command will succeed
+    And state machine "e2e-untag-sm" will not have tag "env"

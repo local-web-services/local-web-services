@@ -80,8 +80,16 @@ async def _put_object(bucket: str, key: str, request: Request, provider: S3Provi
 
 async def _get_object(bucket: str, key: str, provider: S3Provider) -> Response:
     """Handle GetObject requests."""
-    result = await provider.storage.get_object(bucket, key)
+    try:
+        result = await provider.storage.get_object(bucket, key)
+    except IsADirectoryError:
+        result = None
     if result is None:
+        # Try website-aware resolution
+        buckets = await provider.list_buckets()
+        website = provider.get_bucket_website(bucket) if bucket in buckets else None
+        if website:
+            return await _serve_website_fallback(bucket, key, website, provider)
         return _error_xml("NoSuchKey", f"The specified key does not exist: {key}", 404)
 
     return StreamingResponse(
@@ -93,6 +101,55 @@ async def _get_object(bucket: str, key: str, provider: S3Provider) -> Response:
             "Last-Modified": result["last_modified"],
         },
     )
+
+
+def _streaming_object_response(result: dict) -> StreamingResponse:
+    """Build a StreamingResponse from a storage result dict."""
+    return StreamingResponse(
+        iter([result["body"]]),
+        media_type=result["content_type"],
+        headers={
+            "ETag": f'"{result["etag"]}"',
+            "Content-Length": str(result["size"]),
+            "Last-Modified": result["last_modified"],
+        },
+    )
+
+
+def _website_index_candidates(key: str, index_doc: str) -> list[str]:
+    """Return candidate index keys to try for website resolution."""
+    candidates: list[str] = []
+    if not index_doc:
+        return candidates
+    if key.endswith("/") or key == "":
+        candidates.append(f"{key}{index_doc}" if key else index_doc)
+    elif "." not in key.split("/")[-1]:
+        candidates.append(f"{key}/{index_doc}")
+    return candidates
+
+
+async def _serve_website_fallback(
+    bucket: str, key: str, website: dict[str, str], provider: S3Provider
+) -> Response:
+    """Try index document and error document resolution for website-enabled buckets."""
+    candidates = _website_index_candidates(key, website.get("index_document", ""))
+    for candidate_key in candidates:
+        result = await provider.storage.get_object(bucket, candidate_key)
+        if result is not None:
+            return _streaming_object_response(result)
+
+    # Serve error document with 404 status
+    error_doc = website.get("error_document", "")
+    if error_doc:
+        result = await provider.storage.get_object(bucket, error_doc)
+        if result is not None:
+            return Response(
+                content=result["body"],
+                status_code=404,
+                media_type=result["content_type"],
+            )
+
+    return _error_xml("NoSuchKey", f"The specified key does not exist: {key}", 404)
 
 
 async def _delete_object(bucket: str, key: str, provider: S3Provider) -> Response:
@@ -390,6 +447,99 @@ async def _get_bucket_notification_configuration(bucket: str, provider: S3Provid
 
 
 # ------------------------------------------------------------------
+# Bucket website configuration
+# ------------------------------------------------------------------
+
+
+def _parse_website_config_xml(root: ET.Element) -> dict[str, str]:
+    """Extract website configuration fields from a parsed XML element."""
+    ns = ""
+    if root.tag.startswith("{"):
+        ns = root.tag.split("}")[0] + "}"
+
+    config: dict[str, str] = {}
+    _xml_nested_text(root, f"{ns}IndexDocument", f"{ns}Suffix", config, "index_document")
+    _xml_nested_text(root, f"{ns}ErrorDocument", f"{ns}Key", config, "error_document")
+    return config
+
+
+def _xml_nested_text(
+    root: ET.Element, parent_tag: str, child_tag: str, out: dict[str, str], key: str
+) -> None:
+    """Extract text from a nested XML element into *out* if present."""
+    parent = root.find(parent_tag)
+    if parent is not None:
+        child = parent.find(child_tag)
+        if child is not None and child.text:
+            out[key] = child.text
+
+
+async def _put_bucket_website(bucket: str, request: Request, provider: S3Provider) -> Response:
+    """Handle PutBucketWebsite (PUT /{bucket}?website)."""
+    body = await request.body()
+    try:
+        root = ET.fromstring(body)  # noqa: S314
+    except ET.ParseError:
+        return _error_xml("MalformedXML", "The XML you provided was not well-formed.", 400)
+
+    config = _parse_website_config_xml(root)
+    if "index_document" not in config:
+        return _error_xml(
+            "InvalidArgument",
+            "A value for IndexDocument Suffix must be provided.",
+            400,
+        )
+
+    try:
+        provider.put_bucket_website(bucket, config)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return Response(status_code=200)
+
+
+async def _get_bucket_website(bucket: str, provider: S3Provider) -> Response:
+    """Handle GetBucketWebsite (GET /{bucket}?website)."""
+    try:
+        config = provider.get_bucket_website(bucket)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+
+    if config is None:
+        return _error_xml(
+            "NoSuchWebsiteConfiguration",
+            "The specified bucket does not have a website configuration",
+            404,
+        )
+
+    index_xml = ""
+    if "index_document" in config:
+        index_xml = (
+            f"<IndexDocument><Suffix>{_xml_escape(config['index_document'])}</Suffix>"
+            "</IndexDocument>"
+        )
+    error_xml = ""
+    if "error_document" in config:
+        error_xml = (
+            f"<ErrorDocument><Key>{_xml_escape(config['error_document'])}</Key></ErrorDocument>"
+        )
+
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        f"<WebsiteConfiguration>{index_xml}{error_xml}</WebsiteConfiguration>"
+    )
+    return _xml_response(body)
+
+
+async def _delete_bucket_website(bucket: str, provider: S3Provider) -> Response:
+    """Handle DeleteBucketWebsite (DELETE /{bucket}?website)."""
+    try:
+        provider.delete_bucket_website(bucket)
+    except KeyError:
+        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
+    return Response(status_code=204)
+
+
+# ------------------------------------------------------------------
 # Multipart upload
 # ------------------------------------------------------------------
 
@@ -539,6 +689,8 @@ class _VirtualHostRewriteMiddleware:
 
 async def _get_bucket(bucket: str, request: Request, provider: S3Provider) -> Response:
     """Handle GET /{bucket} — dispatches based on query params."""
+    if "website" in request.query_params:
+        return await _get_bucket_website(bucket, provider)
     if "policy" in request.query_params:
         return await _get_bucket_policy(bucket, provider)
     if "tagging" in request.query_params:
@@ -677,6 +829,8 @@ def _register_object_routes(app: FastAPI, provider: S3Provider) -> None:
 
 async def _dispatch_put_bucket(bucket: str, request: Request, provider: S3Provider) -> Response:
     """Dispatch PUT /{bucket} based on query parameters."""
+    if "website" in request.query_params:
+        return await _put_bucket_website(bucket, request, provider)
     if "tagging" in request.query_params:
         return await _put_bucket_tagging(bucket, request, provider)
     if "policy" in request.query_params:
@@ -701,6 +855,8 @@ def _register_bucket_routes(app: FastAPI, provider: S3Provider) -> None:
 
     @app.api_route("/{bucket}", methods=["DELETE"])
     async def delete_bucket(bucket: str, request: Request) -> Response:
+        if "website" in request.query_params:
+            return await _delete_bucket_website(bucket, provider)
         if "tagging" in request.query_params:
             return await _delete_bucket_tagging(bucket, provider)
         return await _delete_bucket(bucket, provider)

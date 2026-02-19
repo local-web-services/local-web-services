@@ -288,3 +288,45 @@ def the_output_will_contain_parameter_value(expected_value, command_result, pars
 def the_parameter_list_will_include(name, command_result, parse_output):
     actual_names = [p["Name"] for p in parse_output(command_result.output)["Parameters"]]
     assert name in actual_names
+
+
+@then(
+    parsers.parse('parameter "{name}" will have tag "{key}" with value "{value}"'),
+)
+def parameter_will_have_tag(name, key, value, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "ssm",
+            "list-tags-for-resource",
+            "--resource-type",
+            "Parameter",
+            "--resource-id",
+            name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("TagList", [])
+    expected_tag = {"Key": key, "Value": value}
+    assert expected_tag in tags
+
+
+@then(
+    parsers.parse('parameter "{name}" will not have tag "{key}"'),
+)
+def parameter_will_not_have_tag(name, key, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "ssm",
+            "list-tags-for-resource",
+            "--resource-type",
+            "Parameter",
+            "--resource-id",
+            name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("TagList", [])
+    actual_keys = [t["Key"] for t in tags]
+    assert key not in actual_keys

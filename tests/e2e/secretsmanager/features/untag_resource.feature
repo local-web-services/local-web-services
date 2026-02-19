@@ -7,3 +7,4 @@ Feature: SecretsManager UntagResource
     And tags [{"Key": "env", "Value": "test"}] were added to secret "e2e-untag-resource"
     When I untag secret "e2e-untag-resource" with tag keys ["env"]
     Then the command will succeed
+    And secret "e2e-untag-resource" will not have tag "env"

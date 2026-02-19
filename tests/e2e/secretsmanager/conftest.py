@@ -373,3 +373,44 @@ def the_secret_was_deleted(name, lws_invoke, e2e_port):
             str(e2e_port),
         ]
     )
+
+
+@then(
+    parsers.parse('secret "{name}" will have tag "{key}" with value "{value}"'),
+)
+def secret_will_have_tag(name, key, value, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "secretsmanager",
+            "describe-secret",
+            "--secret-id",
+            name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("Tags", [])
+    actual_value = next(
+        (t["Value"] for t in tags if t.get("Key") == key),
+        None,
+    )
+    assert actual_value == value
+
+
+@then(
+    parsers.parse('secret "{name}" will not have tag "{key}"'),
+)
+def secret_will_not_have_tag(name, key, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "secretsmanager",
+            "describe-secret",
+            "--secret-id",
+            name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("Tags", [])
+    actual_keys = [t["Key"] for t in tags]
+    assert key not in actual_keys

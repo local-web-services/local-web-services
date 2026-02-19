@@ -18,7 +18,9 @@ format-check: ## Check formatting without changing files
 	uvx black --check src tests
 
 complexity: ## Check cyclomatic complexity (all functions must be grade B or better)
-	uvx radon cc src -a -nc
+	@output=$$(uvx radon cc src -a -nc); \
+	echo "$$output"; \
+	echo "$$output" | grep -qE '^ +[A-Z]' && { echo "FAIL: complexity grade C or worse detected"; exit 1; } || true
 
 cpd: ## Check for copy-pasted code (5+ similar lines)
 	@output=$$(uvx --from pylint symilar -d 5 --ignore-imports --ignore-docstrings --ignore-signatures $$(find src -name "*.py")); \

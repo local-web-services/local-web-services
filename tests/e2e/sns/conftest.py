@@ -440,3 +440,140 @@ def the_topic_will_not_appear(topic_name, assert_invoke, e2e_port):
         topics = [topics]
     actual_arns = [t.get("TopicArn", "") for t in topics]
     assert not any(topic_name in a for a in actual_arns)
+
+
+@then(
+    parsers.parse('the topic "{topic_name}" will not have a subscription in the subscription list'),
+)
+def the_topic_will_not_have_subscription(topic_name, assert_invoke, e2e_port):
+    topic_arn = _topic_arns[topic_name]
+    data = assert_invoke(["sns", "list-subscriptions", "--port", str(e2e_port)])
+    subs = (
+        data.get("ListSubscriptionsResponse", {})
+        .get("ListSubscriptionsResult", {})
+        .get("Subscriptions", {})
+        .get("member", [])
+    )
+    if isinstance(subs, dict):
+        subs = [subs]
+    actual_topic_arns = [s.get("TopicArn", "") for s in subs]
+    assert topic_arn not in actual_topic_arns
+
+
+@then(
+    parsers.parse('the topic "{topic_name}" will have display name "{expected_display_name}"'),
+)
+def the_topic_will_have_display_name(topic_name, expected_display_name, assert_invoke, e2e_port):
+    topic_arn = _topic_arns[topic_name]
+    data = assert_invoke(
+        [
+            "sns",
+            "get-topic-attributes",
+            "--topic-arn",
+            topic_arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    entries = (
+        data.get("GetTopicAttributesResponse", {})
+        .get("GetTopicAttributesResult", {})
+        .get("Attributes", {})
+        .get("entry", [])
+    )
+    if isinstance(entries, dict):
+        entries = [entries]
+    actual_display_name = next(
+        (e["value"] for e in entries if e.get("key") == "DisplayName"),
+        None,
+    )
+    assert actual_display_name == expected_display_name
+
+
+@then(
+    parsers.parse(
+        'the subscription on topic "{topic_name}" will have attribute'
+        ' "{attr}" equal to "{expected_value}"'
+    ),
+)
+def the_subscription_will_have_attribute(topic_name, attr, expected_value, assert_invoke, e2e_port):
+    subscription_arn = _subscription_arns[topic_name]
+    data = assert_invoke(
+        [
+            "sns",
+            "get-subscription-attributes",
+            "--subscription-arn",
+            subscription_arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    entries = (
+        data.get("GetSubscriptionAttributesResponse", {})
+        .get("GetSubscriptionAttributesResult", {})
+        .get("Attributes", {})
+        .get("entry", [])
+    )
+    if isinstance(entries, dict):
+        entries = [entries]
+    actual_value = next(
+        (e["value"] for e in entries if e.get("key") == attr),
+        None,
+    )
+    assert actual_value == expected_value
+
+
+@then(
+    parsers.parse('topic "{topic_name}" will have tag "{key}" with value "{value}"'),
+)
+def topic_will_have_tag(topic_name, key, value, assert_invoke, e2e_port):
+    topic_arn = _topic_arns[topic_name]
+    data = assert_invoke(
+        [
+            "sns",
+            "list-tags-for-resource",
+            "--resource-arn",
+            topic_arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = (
+        data.get("ListTagsForResourceResponse", {})
+        .get("ListTagsForResourceResult", {})
+        .get("Tags", {})
+        .get("member", [])
+    )
+    if isinstance(tags, dict):
+        tags = [tags]
+    actual_value = next(
+        (t["Value"] for t in tags if t.get("Key") == key),
+        None,
+    )
+    assert actual_value == value
+
+
+@then(
+    parsers.parse('topic "{topic_name}" will not have tag "{key}"'),
+)
+def topic_will_not_have_tag(topic_name, key, assert_invoke, e2e_port):
+    topic_arn = _topic_arns[topic_name]
+    data = assert_invoke(
+        [
+            "sns",
+            "list-tags-for-resource",
+            "--resource-arn",
+            topic_arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    result = data.get("ListTagsForResourceResponse", {}).get("ListTagsForResourceResult", {})
+    tags_container = result.get("Tags", {})
+    if not isinstance(tags_container, dict):
+        tags_container = {}
+    tags = tags_container.get("member", [])
+    if isinstance(tags, dict):
+        tags = [tags]
+    actual_keys = [t["Key"] for t in tags]
+    assert key not in actual_keys

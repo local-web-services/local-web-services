@@ -8,3 +8,4 @@ Feature: SQS DeleteMessage
     And a message was received from queue "e2e-delmsg"
     When I delete the received message from queue "e2e-delmsg"
     Then the command will succeed
+    And queue "e2e-delmsg" will have approximate message count "0"

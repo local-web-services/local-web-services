@@ -17,6 +17,22 @@ from lws.providers.mockserver.routes import create_mockserver_app
 logger = logging.getLogger(__name__)
 
 
+async def start_uvicorn_server(
+    app: object,
+    port: int,
+    host: str = "0.0.0.0",
+) -> tuple[uvicorn.Server, asyncio.Task]:  # type: ignore[type-arg]
+    """Start a uvicorn server and wait for it to bind."""
+    uvi_config = uvicorn.Config(app=app, host=host, port=port, log_level="warning")
+    server = uvicorn.Server(uvi_config)
+    task = asyncio.create_task(server.serve())
+    for _ in range(50):
+        if server.started:
+            break
+        await asyncio.sleep(0.1)
+    return server, task
+
+
 async def stop_uvicorn_server(
     server: uvicorn.Server | None,
     task: asyncio.Task | None,  # type: ignore[type-arg]
@@ -43,18 +59,7 @@ class _MockChildServer:
     async def start(self) -> None:
         """Start the mock server on its configured port."""
         app = create_mockserver_app(self.config)
-        uvi_config = uvicorn.Config(
-            app=app,
-            host="0.0.0.0",
-            port=self.port,
-            log_level="warning",
-        )
-        self._server = uvicorn.Server(uvi_config)
-        self._task = asyncio.create_task(self._server.serve())
-        for _ in range(50):
-            if self._server.started:
-                break
-            await asyncio.sleep(0.1)
+        self._server, self._task = await start_uvicorn_server(app, self.port)
         logger.info("Mock server '%s' started on port %d", self.config.name, self.port)
 
     async def stop(self) -> None:

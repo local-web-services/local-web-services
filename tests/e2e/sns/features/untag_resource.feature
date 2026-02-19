@@ -7,3 +7,4 @@ Feature: SNS UntagResource
     And tags '[{"Key":"env","Value":"test"}]' were added to topic "e2e-untag-res"
     When I untag resource "e2e-untag-res" with tag keys '["env"]'
     Then the command will succeed
+    And topic "e2e-untag-res" will not have tag "env"

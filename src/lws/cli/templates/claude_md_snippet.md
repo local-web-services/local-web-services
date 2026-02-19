@@ -6,7 +6,16 @@ This project uses [local-web-services](https://github.com/local-web-services/loc
 
 ### Starting the local environment
 ```bash
+# Foreground (logs to terminal)
 ldk dev
+
+# Background (detached process, logs to .lws/ldk-dev.log)
+ldk dev --background
+```
+
+### Stopping a background instance
+```bash
+ldk stop --port <port>
 ```
 
 ### Checking status
@@ -57,3 +66,21 @@ lws chaos disable dynamodb
 ```
 
 Chaos parameters: `--error-rate`, `--latency-min`, `--latency-max`, `--timeout-rate`, `--connection-reset-rate`.
+
+### Lambda Function URLs
+
+Manage Lambda Function URL endpoints (each gets its own localhost port):
+
+```bash
+# Create a Function URL for a Lambda function
+lws lambda create-function-url-config --function-name <name>
+
+# Get Function URL config
+lws lambda get-function-url-config --function-name <name>
+
+# List all Function URLs
+lws lambda list-function-url-configs
+
+# Delete a Function URL
+lws lambda delete-function-url-config --function-name <name>
+```

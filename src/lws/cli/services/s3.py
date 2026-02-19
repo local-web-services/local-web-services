@@ -629,6 +629,85 @@ async def _get_bucket_notification_configuration(bucket: str, port: int) -> None
     output_json(xml_to_dict(resp.text))
 
 
+@app.command("put-bucket-website")
+def put_bucket_website(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    website_configuration: str = typer.Option(
+        ..., "--website-configuration", help="JSON website configuration"
+    ),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Set bucket website configuration."""
+    asyncio.run(_put_bucket_website(bucket, website_configuration, port))
+
+
+async def _put_bucket_website(bucket: str, config_json: str, port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    try:
+        parsed = json.loads(config_json)
+    except json.JSONDecodeError as exc:
+        exit_with_error(f"Invalid JSON in --website-configuration: {exc}")
+    xml_parts = ["<WebsiteConfiguration>"]
+    index_doc = parsed.get("IndexDocument", {})
+    if index_doc:
+        suffix = index_doc.get("Suffix", "")
+        xml_parts.append(f"<IndexDocument><Suffix>{suffix}</Suffix></IndexDocument>")
+    error_doc = parsed.get("ErrorDocument", {})
+    if error_doc:
+        key = error_doc.get("Key", "")
+        xml_parts.append(f"<ErrorDocument><Key>{key}</Key></ErrorDocument>")
+    xml_parts.append("</WebsiteConfiguration>")
+    xml_body = "".join(xml_parts)
+    await client.rest_request(
+        _SERVICE, "PUT", bucket, body=xml_body.encode(), params={"website": ""}
+    )
+    output_json({})
+
+
+@app.command("get-bucket-website")
+def get_bucket_website(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Get bucket website configuration."""
+    asyncio.run(_get_bucket_website(bucket, port))
+
+
+async def _get_bucket_website(bucket: str, port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    resp = await client.rest_request(_SERVICE, "GET", bucket, params={"website": ""})
+    if resp.status_code == 404:
+        exit_with_error("No website configuration found")
+    output_json(xml_to_dict(resp.text))
+
+
+@app.command("delete-bucket-website")
+def delete_bucket_website(
+    bucket: str = typer.Option(..., "--bucket", help="Bucket name"),
+    port: int = typer.Option(3000, "--port", "-p", help="LDK port"),
+) -> None:
+    """Delete bucket website configuration."""
+    asyncio.run(_delete_bucket_website(bucket, port))
+
+
+async def _delete_bucket_website(bucket: str, port: int) -> None:
+    client = _client(port)
+    try:
+        await client.service_port(_SERVICE)
+    except Exception as exc:
+        exit_with_error(str(exc))
+    await client.rest_request(_SERVICE, "DELETE", bucket, params={"website": ""})
+    output_json({})
+
+
 @app.command("list-parts")
 def list_parts(
     bucket: str = typer.Option(..., "--bucket", help="Bucket name"),

@@ -12,6 +12,7 @@ import asyncio
 import logging
 import os
 import signal
+import threading
 
 from rich.console import Console
 
@@ -156,6 +157,8 @@ class Orchestrator:
     # ------------------------------------------------------------------
 
     def _install_signal_handlers(self) -> None:
+        if threading.current_thread() is not threading.main_thread():
+            return
         loop = asyncio.get_running_loop()
         for sig in (signal.SIGINT, signal.SIGTERM):
             loop.add_signal_handler(sig, self._handle_signal, sig)

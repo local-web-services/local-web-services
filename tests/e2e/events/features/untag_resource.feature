@@ -7,3 +7,4 @@ Feature: Events UntagResource
     And resource "arn:aws:events:us-east-1:000000000000:event-bus/e2e-untag-bus" was tagged
     When I untag resource "arn:aws:events:us-east-1:000000000000:event-bus/e2e-untag-bus"
     Then the command will succeed
+    And event bus "e2e-untag-bus" will not have tag "env"

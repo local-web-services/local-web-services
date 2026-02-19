@@ -7,3 +7,4 @@ Feature: SecretsManager RestoreSecret
     And the secret "e2e-restore-secret" was deleted
     When I restore secret "e2e-restore-secret"
     Then the command will succeed
+    And secret "e2e-restore-secret" will appear in describe-secret

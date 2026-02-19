@@ -118,6 +118,7 @@ class StepFunctionsProvider(IStateMachine):
         self._workflow_types: dict[str, WorkflowType] = {}
         self._executions: dict[str, ExecutionHistory] = {}
         self._compute_providers: dict[str, ICompute] = {}
+        self._tags: dict[str, dict[str, str]] = {}
         self._max_wait_seconds = max_wait_seconds
         self._running = False
 
@@ -256,9 +257,14 @@ class StepFunctionsProvider(IStateMachine):
             raise KeyError(f"State machine not found: {name}")
         config = self._configs.get(name)
         wf_type = self._workflow_types.get(name, WorkflowType.STANDARD)
+        definition = ""
+        if config:
+            raw = config.definition
+            definition = json.dumps(raw) if isinstance(raw, dict) else str(raw)
         return {
             "name": name,
             "stateMachineArn": f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}",
+            "definition": definition,
             "type": wf_type.value,
             "roleArn": config.role_arn if config else "",
             "status": "ACTIVE",
@@ -311,6 +317,24 @@ class StepFunctionsProvider(IStateMachine):
             config.role_arn = role_arn
 
         return time.time()
+
+    def tag_resource(self, resource_arn: str, tags: list[dict[str, str]]) -> None:
+        """Add tags to a resource identified by ARN."""
+        if resource_arn not in self._tags:
+            self._tags[resource_arn] = {}
+        for tag in tags:
+            self._tags[resource_arn][tag["key"]] = tag["value"]
+
+    def untag_resource(self, resource_arn: str, tag_keys: list[str]) -> None:
+        """Remove tags from a resource identified by ARN."""
+        if resource_arn in self._tags:
+            for key in tag_keys:
+                self._tags[resource_arn].pop(key, None)
+
+    def list_tags_for_resource(self, resource_arn: str) -> list[dict[str, str]]:
+        """Return tags for a resource as a list of {key, value} dicts."""
+        tags = self._tags.get(resource_arn, {})
+        return [{"key": k, "value": v} for k, v in tags.items()]
 
     def get_execution_history(
         self,

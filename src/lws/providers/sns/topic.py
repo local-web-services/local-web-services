@@ -53,6 +53,7 @@ class LocalTopic:
         self.topic_arn = topic_arn
         self.subscribers: list[Subscription] = []
         self.custom_attrs: dict[str, str] = {}
+        self.tags: dict[str, str] = {}
         self._lock = asyncio.Lock()
 
     async def add_subscription(

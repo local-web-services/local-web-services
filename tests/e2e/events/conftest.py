@@ -461,3 +461,109 @@ def the_output_will_contain_event_bus(name, command_result, parse_output):
 @then("the output will contain a Rules key")
 def the_output_will_contain_rules_key(command_result, parse_output):
     assert "Rules" in parse_output(command_result.output)
+
+
+@then(
+    parsers.parse('rule "{name}" will have a target in list-targets-by-rule'),
+)
+def rule_will_have_target(name, given_rule, assert_invoke, e2e_port):
+    bus_name = given_rule["bus_name"]
+    verify = assert_invoke(
+        [
+            "events",
+            "list-targets-by-rule",
+            "--rule",
+            name,
+            "--event-bus-name",
+            bus_name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    targets = verify.get("Targets", [])
+    assert len(targets) > 0
+
+
+@then(
+    parsers.parse('rule "{name}" will have no targets'),
+)
+def rule_will_have_no_targets(name, given_rule, assert_invoke, e2e_port):
+    bus_name = given_rule["bus_name"]
+    verify = assert_invoke(
+        [
+            "events",
+            "list-targets-by-rule",
+            "--rule",
+            name,
+            "--event-bus-name",
+            bus_name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    targets = verify.get("Targets", [])
+    assert len(targets) == 0
+
+
+@then(
+    parsers.parse('rule "{name}" will have state "{expected_state}"'),
+)
+def rule_will_have_state(name, expected_state, given_rule, assert_invoke, e2e_port):
+    bus_name = given_rule["bus_name"]
+    verify = assert_invoke(
+        [
+            "events",
+            "describe-rule",
+            "--name",
+            name,
+            "--event-bus-name",
+            bus_name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_state = verify["State"]
+    assert actual_state == expected_state
+
+
+@then(
+    parsers.parse('event bus "{name}" will have tag "{key}" with value "{value}"'),
+)
+def event_bus_will_have_tag(name, key, value, assert_invoke, e2e_port):
+    arn = f"arn:aws:events:us-east-1:000000000000:event-bus/{name}"
+    verify = assert_invoke(
+        [
+            "events",
+            "list-tags-for-resource",
+            "--resource-arn",
+            arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("Tags", [])
+    actual_value = next(
+        (t["Value"] for t in tags if t.get("Key") == key),
+        None,
+    )
+    assert actual_value == value
+
+
+@then(
+    parsers.parse('event bus "{name}" will not have tag "{key}"'),
+)
+def event_bus_will_not_have_tag(name, key, assert_invoke, e2e_port):
+    arn = f"arn:aws:events:us-east-1:000000000000:event-bus/{name}"
+    verify = assert_invoke(
+        [
+            "events",
+            "list-tags-for-resource",
+            "--resource-arn",
+            arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("Tags", [])
+    actual_keys = [t["Key"] for t in tags]
+    assert key not in actual_keys

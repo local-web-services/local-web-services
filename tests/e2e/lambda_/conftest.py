@@ -744,3 +744,85 @@ def i_get_event_source_mapping(created_esm, e2e_port):
             str(e2e_port),
         ],
     )
+
+
+@then(
+    parsers.parse('function "{name}" will appear in list-functions'),
+)
+def function_will_appear_in_list(name, assert_invoke, e2e_port):
+    verify = assert_invoke(["lambda", "list-functions", "--port", str(e2e_port)])
+    actual_names = [f["FunctionName"] for f in verify.get("Functions", [])]
+    assert name in actual_names
+
+
+@then(
+    parsers.parse('function "{name}" will not appear in list-functions'),
+)
+def function_will_not_appear_in_list(name, assert_invoke, e2e_port):
+    verify = assert_invoke(["lambda", "list-functions", "--port", str(e2e_port)])
+    actual_names = [f["FunctionName"] for f in verify.get("Functions", [])]
+    assert name not in actual_names
+
+
+@then(
+    parsers.parse('function "{name}" will have timeout {expected_timeout:d}'),
+)
+def function_will_have_timeout(name, expected_timeout, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        ["lambda", "get-function", "--function-name", name, "--port", str(e2e_port)]
+    )
+    actual_timeout = verify["Configuration"]["Timeout"]
+    assert actual_timeout == expected_timeout
+
+
+@then("the event source mapping will not appear in the list")
+def the_event_source_mapping_will_not_appear_in_list(created_esm, assert_invoke, e2e_port):
+    expected_uuid = created_esm["uuid"]
+    list_body = assert_invoke(["lambda", "list-event-source-mappings", "--port", str(e2e_port)])
+    actual_uuids = [m["UUID"] for m in list_body["EventSourceMappings"]]
+    assert expected_uuid not in actual_uuids
+
+
+@then(
+    parsers.parse('function "{name}" will have tag "{key}" with value "{value}"'),
+)
+def function_will_have_tag(name, key, value, assert_invoke, e2e_port):
+    arn = f"{_LAMBDA_ARN_PREFIX}:{name}"
+    verify = assert_invoke(["lambda", "list-tags", "--resource", arn, "--port", str(e2e_port)])
+    tags = verify.get("Tags", {})
+    actual_value = tags.get(key)
+    assert actual_value == value
+
+
+@then(
+    parsers.parse('function "{name}" will not have tag "{key}"'),
+)
+def function_will_not_have_tag(name, key, assert_invoke, e2e_port):
+    arn = f"{_LAMBDA_ARN_PREFIX}:{name}"
+    verify = assert_invoke(["lambda", "list-tags", "--resource", arn, "--port", str(e2e_port)])
+    tags = verify.get("Tags", {})
+    assert key not in tags
+
+
+@then(
+    parsers.parse('function "{name}" will have permission "{sid}" in its policy'),
+)
+def function_will_have_permission(name, sid, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        ["lambda", "get-policy", "--function-name", name, "--port", str(e2e_port)]
+    )
+    policy = json.loads(verify["Policy"])
+    actual_sids = [s["Sid"] for s in policy.get("Statement", [])]
+    assert sid in actual_sids
+
+
+@then(
+    parsers.parse('function "{name}" will not have permission "{sid}" in its policy'),
+)
+def function_will_not_have_permission(name, sid, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        ["lambda", "get-policy", "--function-name", name, "--port", str(e2e_port)]
+    )
+    policy = json.loads(verify["Policy"])
+    actual_sids = [s["Sid"] for s in policy.get("Statement", [])]
+    assert sid not in actual_sids

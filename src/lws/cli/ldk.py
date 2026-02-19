@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any
 
 import typer
-import uvicorn
 from rich.console import Console
 
 from lws.cli.display import (
@@ -73,7 +72,12 @@ _console = Console()
 
 app = typer.Typer(name="ldk", help="Local Development Kit - Run AWS CDK applications locally")
 
-__version__ = "0.6.2"
+try:
+    from importlib.metadata import version as _pkg_version
+
+    __version__ = _pkg_version("local-web-services")
+except Exception:
+    __version__ = "0.0.0"
 
 
 @app.callback()
@@ -91,12 +95,106 @@ def dev(
     ),
     project_dir: Path = typer.Option(".", "--project-dir", "-d", help="Project root directory"),
     mode: str = typer.Option(None, "--mode", "-m", help="Project mode (cdk or terraform)"),
+    background: bool = typer.Option(
+        False, "--background", "-b", help="Run in the background (detached)"
+    ),
 ) -> None:
     """Start the local development environment."""
+    if background:
+        _start_background(project_dir, port, no_persist, force_synth, log_level, mode)
+        return
     try:
         asyncio.run(_run_dev(project_dir, port, no_persist, force_synth, log_level, mode))
     except KeyboardInterrupt:
         pass
+
+
+def _build_background_cmd(
+    project_dir: Path,
+    port: int | None,
+    no_persist: bool,
+    force_synth: bool,
+    log_level: str | None,
+    mode: str | None,
+) -> list[str]:
+    """Build the command-line args for a background ldk dev process."""
+    import sys  # pylint: disable=import-outside-toplevel
+
+    cmd = [sys.executable, "-m", "lws.cli.ldk", "dev", "--project-dir", str(project_dir)]
+    if port is not None:
+        cmd.extend(["--port", str(port)])
+    if no_persist:
+        cmd.append("--no-persist")
+    if force_synth:
+        cmd.append("--force-synth")
+    if log_level:
+        cmd.extend(["--log-level", log_level])
+    if mode:
+        cmd.extend(["--mode", mode])
+    return cmd
+
+
+def _start_background(
+    project_dir: Path,
+    port: int | None,
+    no_persist: bool,
+    force_synth: bool,
+    log_level: str | None,
+    mode: str | None,
+) -> None:
+    """Start ldk dev as a detached background process."""
+    import subprocess  # pylint: disable=import-outside-toplevel
+
+    project_dir = project_dir.resolve()
+    config = _load_config_quiet(project_dir)
+    actual_port = port if port is not None else config.port
+
+    cmd = _build_background_cmd(project_dir, port, no_persist, force_synth, log_level, mode)
+
+    log_dir = project_dir / ".lws"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_file = log_dir / "ldk-dev.log"
+
+    with open(log_file, "w", encoding="utf-8") as fh:
+        proc = subprocess.Popen(  # pylint: disable=consider-using-with
+            cmd,
+            stdout=fh,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+
+    _console.print(f"[bold]Starting ldk dev in background (PID {proc.pid})...[/bold]")
+    _console.print(f"  Log file: {log_file}")
+
+    _wait_for_background_ready(proc, actual_port, log_file)
+
+
+def _wait_for_background_ready(proc: Any, port: int, log_file: Path) -> None:
+    """Poll until the background ldk dev is ready or times out."""
+    import time  # pylint: disable=import-outside-toplevel
+
+    import httpx  # pylint: disable=import-outside-toplevel
+
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        try:
+            resp = httpx.get(f"http://localhost:{port}/_ldk/status", timeout=2.0)
+            if resp.status_code == 200 and resp.json().get("running"):
+                _console.print(f"[green]ldk dev is running on port {port}[/green]")
+                _console.print(f"  Dashboard: http://localhost:{port}/_ldk/gui")
+                _console.print(f"  Stop with: ldk stop --port {port}")
+                return
+        except (httpx.ConnectError, httpx.ConnectTimeout):
+            pass
+        time.sleep(0.5)
+
+    if proc.poll() is not None:
+        _console.print(f"[red]ldk dev exited with code {proc.returncode}[/red]")
+        _console.print(f"  Check {log_file} for details")
+        raise typer.Exit(1)
+
+    _console.print("[yellow]ldk dev is starting but not yet ready (timed out waiting)[/yellow]")
+    _console.print(f"  Check {log_file} for status")
 
 
 @app.command()
@@ -363,16 +461,24 @@ def _collect_extra_resources(app_model: AppModel) -> dict[str, list[str]]:
     return extras
 
 
-def _build_local_details(app_model: AppModel, _port: int) -> dict[str, str]:
+def _build_local_details(
+    app_model: AppModel,
+    _port: int,
+    function_url_ports: dict[str, int] | None = None,
+) -> dict[str, str]:
     """Build a mapping of ``"Type:Name"`` to local detail strings."""
     details: dict[str, str] = {}
 
-    _add_api_details(details, app_model)
+    _add_api_details(details, app_model, function_url_ports)
     _add_resource_details(details, app_model)
     return details
 
 
-def _add_api_details(details: dict[str, str], app_model: AppModel) -> None:
+def _add_api_details(
+    details: dict[str, str],
+    app_model: AppModel,
+    function_url_ports: dict[str, int] | None = None,
+) -> None:
     """Add API route and Lambda function details."""
     for api_def in app_model.apis:
         for r in api_def.routes:
@@ -381,6 +487,11 @@ def _add_api_details(details: dict[str, str], app_model: AppModel) -> None:
             )
     for f in app_model.functions:
         details[f"Function:{f.name}"] = f"lws lambda invoke --function-name {f.name}"
+    if function_url_ports:
+        for furl in app_model.function_urls:
+            port = function_url_ports.get(furl.function_name)
+            if port:
+                details[f"Function URL:{furl.function_name}"] = f"http://localhost:{port}/"
 
 
 def _add_resource_details(details: dict[str, str], app_model: AppModel) -> None:
@@ -407,7 +518,11 @@ def _add_resource_details(details: dict[str, str], app_model: AppModel) -> None:
         details[f"Secret:{s.name}"] = f"lws secretsmanager get-secret-value --secret-id {s.name}"
 
 
-def _display_summary(app_model: AppModel, port: int) -> None:
+def _display_summary(
+    app_model: AppModel,
+    port: int,
+    function_url_ports: dict[str, int] | None = None,
+) -> None:
     """Print resource summary and startup-complete banner."""
     routes_info = [
         {"method": r.method, "path": r.path, "handler": r.handler_name or ""}
@@ -418,7 +533,7 @@ def _display_summary(app_model: AppModel, port: int) -> None:
     functions_info = [f"{f.name} ({f.runtime})" for f in app_model.functions]
 
     extra_resources = _collect_extra_resources(app_model)
-    local_details = _build_local_details(app_model, port)
+    local_details = _build_local_details(app_model, port, function_url_ports)
     print_resource_summary(
         routes_info, tables_info, functions_info, local_details=local_details, **extra_resources
     )
@@ -929,6 +1044,7 @@ def _has_any_resources(app_model: AppModel) -> bool:
             "user_pools",
             "ssm_parameters",
             "secrets",
+            "function_urls",
         )
     )
 
@@ -1002,7 +1118,16 @@ async def _run_dev(
         print_error("Failed to start providers", str(exc))
         raise typer.Exit(1)
 
-    _display_summary(app_model, config.port)
+    # Build function URL port mapping for display
+    furl_ports: dict[str, int] = {}
+    for furl in app_model.function_urls:
+        furl_port = (
+            config.port
+            + 23
+            + list(f.function_name for f in app_model.function_urls).index(furl.function_name)
+        )
+        furl_ports[furl.function_name] = furl_port
+    _display_summary(app_model, config.port, furl_ports if furl_ports else None)
     typer.echo(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
 
     _print_experimental_banner(_service_ports(config.port))
@@ -1157,6 +1282,8 @@ def _create_s3_providers(
     bucket_names = [b.name for b in app_model.buckets]
     s3_provider = S3Provider(data_dir=data_dir, buckets=bucket_names if bucket_names else None)
     for b in app_model.buckets:
+        if b.website_configuration:
+            s3_provider.put_bucket_website(b.name, b.website_configuration)
         node_id = _find_node_id(graph, NodeType.S3_BUCKET, b.name)
         if node_id:
             providers[node_id] = s3_provider
@@ -1375,6 +1502,43 @@ def _wire_remaining_providers(
     return sns_provider, eb_provider, sf_provider, cognito_provider
 
 
+def _create_function_url_providers(
+    app_model: AppModel,
+    base_port: int,
+    compute_providers: dict[str, Any],
+    providers: dict[str, Provider],
+    lambda_registry: Any,
+) -> None:
+    """Create Function URL providers for each configured URL."""
+    from lws.providers.lambda_function_url.provider import (  # pylint: disable=import-outside-toplevel
+        LambdaFunctionUrlProvider,
+    )
+
+    function_url_base_port = base_port + 23
+    for i, furl in enumerate(app_model.function_urls):
+        furl_port = function_url_base_port + i
+        compute = compute_providers.get(furl.function_name)
+        if compute is None:
+            continue
+        furl_provider = LambdaFunctionUrlProvider(
+            function_name=furl.function_name,
+            compute=compute,
+            port=furl_port,
+            cors_config=furl.cors,
+        )
+        providers[f"__function_url_{furl.function_name}__"] = furl_provider
+        url_config = {
+            "FunctionName": furl.function_name,
+            "FunctionArn": (f"arn:aws:lambda:us-east-1:000000000000:function:{furl.function_name}"),
+            "AuthType": furl.auth_type,
+            "Cors": furl.cors,
+            "InvokeMode": furl.invoke_mode,
+            "FunctionUrl": f"http://localhost:{furl_port}/",
+            "_port": furl_port,
+        }
+        lambda_registry.register_function_url(furl.function_name, url_config, furl_provider)
+
+
 def _create_providers(
     app_model: AppModel,
     graph: AppGraph,
@@ -1474,6 +1638,11 @@ def _create_providers(
         "lambda-http",
         lambda: create_lambda_management_app(lambda_registry, None, sdk_env),
         lambda_port,
+    )
+
+    # 9b. Function URL providers
+    _create_function_url_providers(
+        app_model, config.port, compute_providers, providers, lambda_registry
     )
 
     # 10. Create HTTP servers for each active service
@@ -1706,7 +1875,7 @@ class _HttpServiceProvider(Provider):
         self._service_name = service_name
         self._app_factory = app_factory
         self._port = port
-        self._server: uvicorn.Server | None = None
+        self._server: Any = None
         self._task: asyncio.Task | None = None  # type: ignore[type-arg]
 
     @property
@@ -1714,20 +1883,11 @@ class _HttpServiceProvider(Provider):
         return self._service_name
 
     async def start(self) -> None:
+        # pylint: disable=import-outside-toplevel
+        from lws.providers.mockserver.provider import start_uvicorn_server
+
         http_app = self._app_factory()
-        uvi_config = uvicorn.Config(
-            app=http_app,
-            host="0.0.0.0",
-            port=self._port,
-            log_level="warning",
-        )
-        self._server = uvicorn.Server(uvi_config)
-        self._task = asyncio.create_task(self._server.serve())
-        # Wait for the server to actually bind before reporting as started
-        for _ in range(50):
-            if self._server.started:
-                break
-            await asyncio.sleep(0.1)
+        self._server, self._task = await start_uvicorn_server(http_app, self._port)
 
     async def stop(self) -> None:
         # pylint: disable=import-outside-toplevel

@@ -91,6 +91,29 @@ def _build_route_from_operation(
     }
 
 
+def _extract_swagger_example(resp_def: dict[str, Any], spec: dict[str, Any]) -> Any:
+    """Extract or synthesize a response body from a Swagger 2.x definition."""
+    schema = resp_def.get("schema", {})
+    if "$ref" in schema:
+        schema = _resolve_ref(schema["$ref"], spec)
+    example = schema.get("example")
+    return example if example is not None else _synthesize_from_schema(schema, spec)
+
+
+def _extract_openapi3_media_example(media: dict[str, Any], spec: dict[str, Any]) -> Any:
+    """Extract or synthesize a response body from an OpenAPI 3.x media type."""
+    if "example" in media:
+        return media["example"]
+    if "examples" in media:
+        first = next(iter(media["examples"].values()), {})
+        if isinstance(first, dict) and "value" in first:
+            return first["value"]
+    schema = media.get("schema", {})
+    if "$ref" in schema:
+        schema = _resolve_ref(schema["$ref"], spec)
+    return _synthesize_from_schema(schema, spec)
+
+
 def _extract_example(
     resp_def: dict[str, Any],
     spec: dict[str, Any],
@@ -99,30 +122,12 @@ def _extract_example(
 ) -> Any:
     """Extract or synthesize a response body from a response definition."""
     if is_swagger:
-        schema = resp_def.get("schema", {})
-        if "$ref" in schema:
-            schema = _resolve_ref(schema["$ref"], spec)
-        example = schema.get("example")
-        if example is not None:
-            return example
-        return _synthesize_from_schema(schema, spec)
+        return _extract_swagger_example(resp_def, spec)
 
-    # OpenAPI 3.x
     content = resp_def.get("content", {})
     for media_type in ("application/json", "application/*", "*/*"):
         if media_type in content:
-            media = content[media_type]
-            if "example" in media:
-                return media["example"]
-            if "examples" in media:
-                examples = media["examples"]
-                first = next(iter(examples.values()), {})
-                if isinstance(first, dict) and "value" in first:
-                    return first["value"]
-            schema = media.get("schema", {})
-            if "$ref" in schema:
-                schema = _resolve_ref(schema["$ref"], spec)
-            return _synthesize_from_schema(schema, spec)
+            return _extract_openapi3_media_example(content[media_type], spec)
     return {}
 
 
@@ -138,6 +143,13 @@ def _resolve_ref(ref: str, spec: dict[str, Any]) -> dict[str, Any]:
     return current if isinstance(current, dict) else {}
 
 
+_SCALAR_DEFAULTS: dict[str, Any] = {
+    "integer": 0,
+    "number": 0.0,
+    "boolean": False,
+}
+
+
 def _synthesize_from_schema(schema: dict[str, Any], spec: dict[str, Any]) -> Any:
     """Generate a synthetic value from an OpenAPI schema."""
     if "$ref" in schema:
@@ -149,18 +161,13 @@ def _synthesize_from_schema(schema: dict[str, Any], spec: dict[str, Any]) -> Any
 
     if schema_type == "string":
         return schema.get("enum", ["string"])[0] if "enum" in schema else "string"
-    if schema_type == "integer":
-        return 0
-    if schema_type == "number":
-        return 0.0
-    if schema_type == "boolean":
-        return False
+    if schema_type in _SCALAR_DEFAULTS:
+        return _SCALAR_DEFAULTS[schema_type]
     if schema_type == "array":
-        items = schema.get("items", {})
-        return [_synthesize_from_schema(items, spec)]
+        return [_synthesize_from_schema(schema.get("items", {}), spec)]
     if schema_type == "object":
-        properties = schema.get("properties", {})
-        return {k: _synthesize_from_schema(v, spec) for k, v in properties.items()}
+        props = schema.get("properties", {})
+        return {k: _synthesize_from_schema(v, spec) for k, v in props.items()}
     return {}
 
 

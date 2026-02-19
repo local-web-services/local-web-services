@@ -232,14 +232,17 @@ async def _handle_set_topic_attributes(provider: SnsProvider, params: dict[str, 
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_list_tags_for_resource(
-    _provider: SnsProvider, _params: dict[str, str]
-) -> Response:
+async def _handle_list_tags_for_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
     """Handle the ``ListTagsForResource`` action."""
+    resource_arn = params.get("ResourceArn", "")
+    topic_name = resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
+    topic = provider.get_topic(topic_name)
+    tags = topic.tags if topic else {}
+    members = "".join(f"<member><Key>{k}</Key><Value>{v}</Value></member>" for k, v in tags.items())
     xml = (
         "<ListTagsForResourceResponse>"
         "<ListTagsForResourceResult>"
-        "<Tags/>"
+        f"<Tags>{members}</Tags>"
         "</ListTagsForResourceResult>"
         f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
         "</ListTagsForResourceResponse>"
@@ -247,8 +250,20 @@ async def _handle_list_tags_for_resource(
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_tag_resource(_provider: SnsProvider, _params: dict[str, str]) -> Response:
+async def _handle_tag_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
     """Handle the ``TagResource`` action."""
+    resource_arn = params.get("ResourceArn", "")
+    topic_name = resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
+    topic = provider.get_topic(topic_name)
+    if topic:
+        n = 1
+        while True:
+            key = params.get(f"Tags.member.{n}.Key")
+            if key is None:
+                break
+            value = params.get(f"Tags.member.{n}.Value", "")
+            topic.tags[key] = value
+            n += 1
     xml = (
         "<TagResourceResponse>"
         f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
@@ -257,8 +272,19 @@ async def _handle_tag_resource(_provider: SnsProvider, _params: dict[str, str]) 
     return Response(content=xml, media_type="text/xml")
 
 
-async def _handle_untag_resource(_provider: SnsProvider, _params: dict[str, str]) -> Response:
+async def _handle_untag_resource(provider: SnsProvider, params: dict[str, str]) -> Response:
     """Handle the ``UntagResource`` action."""
+    resource_arn = params.get("ResourceArn", "")
+    topic_name = resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
+    topic = provider.get_topic(topic_name)
+    if topic:
+        n = 1
+        while True:
+            key = params.get(f"TagKeys.member.{n}")
+            if key is None:
+                break
+            topic.tags.pop(key, None)
+            n += 1
     xml = (
         "<UntagResourceResponse>"
         f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"

@@ -43,6 +43,7 @@ class S3Provider(IObjectStore):
         self._bucket_policies: dict[str, str] = {}
         self._bucket_notification_configs: dict[str, str] = {}
         self._multipart_uploads: dict[str, MultipartUpload] = {}
+        self._bucket_websites: dict[str, dict[str, str]] = {}
 
     # -- Provider lifecycle ---------------------------------------------------
 
@@ -116,6 +117,7 @@ class S3Provider(IObjectStore):
         self._bucket_tagging.pop(bucket_name, None)
         self._bucket_policies.pop(bucket_name, None)
         self._bucket_notification_configs.pop(bucket_name, None)
+        self._bucket_websites.pop(bucket_name, None)
 
     async def head_bucket(self, bucket_name: str) -> dict:
         """Return bucket metadata. Raises KeyError if not found."""
@@ -193,6 +195,29 @@ class S3Provider(IObjectStore):
             bucket_name,
             '<?xml version="1.0" encoding="UTF-8"?><NotificationConfiguration/>',
         )
+
+    # -- Bucket website configuration -----------------------------------------
+
+    def put_bucket_website(self, bucket_name: str, config: dict[str, str]) -> None:
+        """Store website configuration for a bucket. Raises KeyError if not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        self._bucket_websites[bucket_name] = dict(config)
+
+    def get_bucket_website(self, bucket_name: str) -> dict[str, str] | None:
+        """Return website configuration for a bucket, or None if not configured.
+
+        Raises KeyError if bucket not found.
+        """
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        return self._bucket_websites.get(bucket_name)
+
+    def delete_bucket_website(self, bucket_name: str) -> None:
+        """Remove website configuration for a bucket. Raises KeyError if not found."""
+        if bucket_name not in self._buckets:
+            raise KeyError(f"Bucket not found: {bucket_name}")
+        self._bucket_websites.pop(bucket_name, None)
 
     # -- Multipart upload -----------------------------------------------------
 

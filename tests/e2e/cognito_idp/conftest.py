@@ -664,3 +664,78 @@ def user_will_authenticate(username, pool_name, password, assert_invoke, e2e_por
         ]
     )
     assert "AuthenticationResult" in new_auth
+
+
+@then(
+    parsers.parse("the user pool client will not appear in list-user-pool-clients"),
+)
+def the_user_pool_client_will_not_appear(created_pool, created_client, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "cognito-idp",
+            "list-user-pool-clients",
+            "--user-pool-id",
+            created_pool["pool_id"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_ids = [c["ClientId"] for c in verify.get("UserPoolClients", [])]
+    expected_id = created_client["client_id"]
+    assert expected_id not in actual_ids
+
+
+@then(
+    parsers.parse('user "{username}" will appear in list-users'),
+)
+def user_will_appear_in_list(username, created_pool, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "cognito-idp",
+            "list-users",
+            "--user-pool-id",
+            created_pool["pool_id"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_usernames = [u["Username"] for u in verify.get("Users", [])]
+    assert username in actual_usernames
+
+
+@then(
+    parsers.parse('user "{username}" will not appear in list-users'),
+)
+def user_will_not_appear_in_list(username, created_pool, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "cognito-idp",
+            "list-users",
+            "--user-pool-id",
+            created_pool["pool_id"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_usernames = [u["Username"] for u in verify.get("Users", [])]
+    assert username not in actual_usernames
+
+
+@then(
+    parsers.parse('user "{username}" will have status "{expected_status}"'),
+)
+def user_will_have_status(username, expected_status, created_pool, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "cognito-idp",
+            "admin-get-user",
+            "--user-pool-id",
+            created_pool["pool_id"],
+            "--username",
+            username,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_status = verify["UserStatus"]
+    assert actual_status == expected_status

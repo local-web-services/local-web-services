@@ -7,3 +7,4 @@ Feature: SQS UntagQueue
     And queue "e2e-untag-q" was tagged with '{"env":"test"}'
     When I untag queue "e2e-untag-q" with tag keys '["env"]'
     Then the command will succeed
+    And queue "e2e-untag-q" will not have tag "env"

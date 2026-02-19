@@ -328,6 +328,26 @@ def invoke(
     asyncio.run(_invoke(name, path, method, body, header, port))
 
 
+async def _discover_mock_port(client: LwsClient, name: str) -> int:
+    """Discover the port for a named mock server via the LWS discover endpoint."""
+    meta = await client.discover()
+    servers = meta.get("services", {}).get("mockserver", {}).get("resources", [])
+    server = next((s for s in servers if s.get("name") == name), None)
+    if not server:
+        exit_with_error(f"Mock server '{name}' not found in running instance")
+    return server.get("port")
+
+
+def _parse_headers(header: list[str] | None) -> dict[str, str]:
+    """Parse CLI header arguments into a dict."""
+    headers: dict[str, str] = {}
+    for h in header or []:
+        if ":" in h:
+            key, val = h.split(":", 1)
+            headers[key.strip()] = val.strip()
+    return headers
+
+
 async def _invoke(
     name: str,
     path: str,
@@ -336,28 +356,15 @@ async def _invoke(
     header: list[str] | None,
     port: int,
 ) -> None:
+    import httpx  # pylint: disable=import-outside-toplevel
+
     client = LwsClient(port=port)
     try:
-        meta = await client.discover()
-        services = meta.get("services", {})
-        mock_info = services.get("mockserver", {})
-        servers = mock_info.get("resources", [])
-        server = next((s for s in servers if s.get("name") == name), None)
-        if not server:
-            exit_with_error(f"Mock server '{name}' not found in running instance")
-        mock_port = server.get("port")
+        mock_port = await _discover_mock_port(client, name)
     except Exception as exc:
         exit_with_error(str(exc))
 
-    headers: dict[str, str] = {}
-    if header:
-        for h in header:
-            if ":" in h:
-                key, val = h.split(":", 1)
-                headers[key.strip()] = val.strip()
-
-    import httpx  # pylint: disable=import-outside-toplevel
-
+    headers = _parse_headers(header)
     try:
         async with httpx.AsyncClient() as http:
             resp = await http.request(
@@ -367,16 +374,13 @@ async def _invoke(
                 headers=headers,
                 timeout=30.0,
             )
+            resp_body = (
+                resp.json()
+                if resp.headers.get("content-type", "").startswith("application/json")
+                else resp.text
+            )
             output_json(
-                {
-                    "status": resp.status_code,
-                    "headers": dict(resp.headers),
-                    "body": (
-                        resp.json()
-                        if resp.headers.get("content-type", "").startswith("application/json")
-                        else resp.text
-                    ),
-                }
+                {"status": resp.status_code, "headers": dict(resp.headers), "body": resp_body}
             )
     except Exception as exc:
         exit_with_error(str(exc))

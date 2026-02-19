@@ -6,3 +6,4 @@ Feature: Events EnableRule
     Given a rule "e2e-enable-rule" was created on event bus "default"
     When I enable rule "e2e-enable-rule" on event bus "default"
     Then the command will succeed
+    And rule "e2e-enable-rule" will have state "ENABLED"

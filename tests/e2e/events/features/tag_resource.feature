@@ -6,3 +6,4 @@ Feature: Events TagResource
     Given an event bus "e2e-tag-bus" was created
     When I tag resource "arn:aws:events:us-east-1:000000000000:event-bus/e2e-tag-bus"
     Then the command will succeed
+    And event bus "e2e-tag-bus" will have tag "env" with value "test"
