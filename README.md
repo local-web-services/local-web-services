@@ -98,6 +98,47 @@ Both sample projects include a full end-to-end test script (`test-orders.sh`) th
 
 ## Installation
 
+### Docker (recommended for CI and teams)
+
+Images are published to the GitHub Container Registry for `linux/amd64` and `linux/arm64`:
+
+```bash
+docker pull ghcr.io/local-web-services/local-web-services:latest
+```
+
+Mount your project directory and the Docker socket (required for Lambda execution):
+
+```bash
+# Linux — use --network=host so all service ports are reachable
+docker run --rm \
+  -v $(pwd):/workspace \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --network=host \
+  ghcr.io/local-web-services/local-web-services:latest
+
+# Mac / Windows — publish the port range explicitly
+docker run --rm \
+  -v $(pwd):/workspace \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -p 3000-3025:3000-3025 \
+  ghcr.io/local-web-services/local-web-services:latest
+```
+
+Persist state across container restarts with a named volume:
+
+```bash
+docker run --rm \
+  -v $(pwd)/cdk.out:/workspace/cdk.out \
+  -v lws-state:/workspace/.ldk \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --network=host \
+  ghcr.io/local-web-services/local-web-services:latest
+```
+
+> **Note:** The image expects a pre-synthesised `cdk.out/` directory (run `npx cdk synth` first) or a Terraform project. Node.js and the CDK CLI are not included in the image.
+
+### pip / uv
+
 local-web-services requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and [Docker](https://docs.docker.com/get-docker/).
 
 ```bash
