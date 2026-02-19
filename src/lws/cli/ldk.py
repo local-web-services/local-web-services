@@ -1817,7 +1817,7 @@ def _create_iam_auth_bundle(
 
     iam_config = config.iam_auth
 
-    iam_dir = Path(project_dir / ".lws" / "iam") if project_dir else None
+    iam_dir = Path(project_dir / config.data_dir / "iam") if project_dir else None
     identities_path = iam_dir / "identities.yaml" if iam_dir else None
     permissions_path = iam_dir / "permissions.yaml" if iam_dir else None
     resource_policies_path = iam_dir / "resource_policies.yaml" if iam_dir else None

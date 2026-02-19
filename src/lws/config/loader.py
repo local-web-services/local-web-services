@@ -261,8 +261,10 @@ def load_config(project_dir: Path) -> LdkConfig:
             if hasattr(module, name):
                 overrides[name] = getattr(module, name)
     else:
-        # 2. Try ldk.yaml
+        # 2. Try ldk.yaml at project root, then inside default data dir (.ldk/)
         yaml_config_path = project_dir / YAML_CONFIG_FILE_NAME
+        if not yaml_config_path.exists():
+            yaml_config_path = project_dir / ".ldk" / YAML_CONFIG_FILE_NAME
         if yaml_config_path.exists():
             yaml_data = _load_yaml_config(yaml_config_path)
             overrides = _flatten_yaml_to_config(yaml_data)
@@ -275,6 +277,8 @@ def load_config(project_dir: Path) -> LdkConfig:
 
     # 4. Parse iam_auth section from ldk.yaml (requires full YAML parser)
     yaml_config_path = project_dir / YAML_CONFIG_FILE_NAME
+    if not yaml_config_path.exists():
+        yaml_config_path = project_dir / ".ldk" / YAML_CONFIG_FILE_NAME
     if yaml_config_path.exists():
         config.iam_auth = _load_iam_auth_config(yaml_config_path)
 
