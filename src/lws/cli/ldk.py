@@ -72,7 +72,12 @@ _console = Console()
 
 app = typer.Typer(name="ldk", help="Local Development Kit - Run AWS CDK applications locally")
 
-__version__ = "0.7.0"
+try:
+    from importlib.metadata import version as _pkg_version
+
+    __version__ = _pkg_version("local-web-services")
+except Exception:
+    __version__ = "0.0.0"
 
 
 @app.callback()
