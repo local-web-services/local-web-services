@@ -146,6 +146,9 @@ def _load_yaml_config(config_path: Path) -> dict[str, Any]:
 
     result: dict[str, Any] = {}
     for line in text.splitlines():
+        # Skip indented lines — they are nested keys handled by the full YAML parser
+        if line and line[0] in (" ", "\t"):
+            continue
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
