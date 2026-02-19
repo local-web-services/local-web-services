@@ -107,9 +107,12 @@ main { flex:1; overflow:hidden; position:relative; display:flex; flex-direction:
   background:rgba(247,118,142,.15); padding:0 3px; border-radius:2px; }
 
 /* ── Detail panel ── */
-#detail-panel { flex-shrink:0; height:340px; border-top:2px solid var(--border);
+#detail-panel { flex-shrink:0; height:480px; border-top:2px solid var(--border);
   overflow-y:auto; display:none; flex-direction:column; background:var(--bg); }
 #detail-panel.open { display:flex; }
+.detail-resize { height:5px; cursor:ns-resize; background:transparent; flex-shrink:0;
+  position:relative; z-index:10; }
+.detail-resize:hover, .detail-resize.dragging { background:var(--accent); opacity:.5; }
 .detail-hdr { display:flex; align-items:center; gap:8px; padding:8px 16px;
   background:var(--bg2); border-bottom:1px solid var(--border);
   position:sticky; top:0; z-index:2; flex-shrink:0; }
@@ -220,6 +223,7 @@ main { flex:1; overflow:hidden; position:relative; display:flex; flex-direction:
     </div>
     <div id="event-list"></div>
     <div id="detail-panel">
+      <div class="detail-resize" id="detail-resize" title="Drag to resize"></div>
       <div class="detail-hdr">
         <div class="detail-hdr-title" id="detail-title"></div>
         <button class="detail-close" id="btn-detail-close" title="Close">✕</button>
@@ -787,6 +791,38 @@ function buildReq(ctx) {
   }
   return {method:'GET', url:base+'/', headers:{}, body:''};
 }
+
+// ── Detail panel resize ───────────────────────────────────────────────────────
+(function() {
+  const handle = document.getElementById('detail-resize');
+  const panel  = document.getElementById('detail-panel');
+  let startY = 0, startH = 0, dragging = false;
+
+  handle.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    dragging = true;
+    startY = e.clientY;
+    startH = panel.offsetHeight;
+    handle.classList.add('dragging');
+    document.body.style.cursor = 'ns-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    const delta = startY - e.clientY;   // drag up → taller
+    const newH = Math.min(Math.max(startH + delta, 150), window.innerHeight * 0.85);
+    panel.style.height = newH + 'px';
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+})();
 
 })();
 </script>
