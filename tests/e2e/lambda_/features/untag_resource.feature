@@ -7,3 +7,4 @@ Feature: Lambda UntagResource
     And function "e2e-untag-fn" was tagged with key "env" and value "test"
     When I untag function "e2e-untag-fn" removing key "env"
     Then the command will succeed
+    And function "e2e-untag-fn" will not have tag "env"

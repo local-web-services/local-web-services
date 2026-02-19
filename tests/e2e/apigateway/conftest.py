@@ -1734,3 +1734,149 @@ def the_invoke_response_body_field_will_be(
         current = current[part]
     actual_value = json.dumps(current) if isinstance(current, bool) else str(current)
     assert actual_value == expected_value
+
+
+@then("the REST API will not appear in get-rest-apis")
+def the_rest_api_will_not_appear(rest_api, assert_invoke, e2e_port):
+    verify = assert_invoke(["apigateway", "list-rest-apis", "--port", str(e2e_port)])
+    actual_ids = [a["id"] for a in verify.get("items", [])]
+    assert rest_api["id"] not in actual_ids
+
+
+@then(
+    parsers.parse('the resource "{path_part}" will not appear in get-resources'),
+)
+def the_resource_will_not_appear(path_part, rest_api, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "apigateway",
+            "get-resources",
+            "--rest-api-id",
+            rest_api["id"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_paths = [r.get("pathPart", "") for r in verify.get("items", [])]
+    assert path_part not in actual_paths
+
+
+@then(
+    parsers.parse('stage "{stage_name}" will not appear in get-stages'),
+)
+def the_stage_will_not_appear(stage_name, rest_api, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "apigateway",
+            "get-stages",
+            "--rest-api-id",
+            rest_api["id"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_names = [s["stageName"] for s in verify.get("item", [])]
+    assert stage_name not in actual_names
+
+
+@then(
+    parsers.parse('method "{http_method}" will not exist on the resource'),
+)
+def the_method_will_not_exist(http_method, rest_api, resource, e2e_port):
+    result = runner.invoke(
+        app,
+        [
+            "apigateway",
+            "get-method",
+            "--rest-api-id",
+            rest_api["id"],
+            "--resource-id",
+            resource["id"],
+            "--http-method",
+            http_method,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    assert result.exit_code != 0 or "NotFoundException" in result.output
+
+
+@then(
+    parsers.parse('method "{http_method}" will not have an integration'),
+)
+def the_method_will_not_have_integration(http_method, rest_api, resource, e2e_port):
+    result = runner.invoke(
+        app,
+        [
+            "apigateway",
+            "get-integration",
+            "--rest-api-id",
+            rest_api["id"],
+            "--resource-id",
+            resource["id"],
+            "--http-method",
+            http_method,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    assert result.exit_code != 0 or "NotFoundException" in result.output
+
+
+@then("the V2 API will not appear in get-apis")
+def the_v2_api_will_not_appear(v2_api, assert_invoke, e2e_port):
+    verify = assert_invoke(["apigateway", "v2-list-apis", "--port", str(e2e_port)])
+    actual_ids = [a["apiId"] for a in verify.get("items", [])]
+    assert v2_api["apiId"] not in actual_ids
+
+
+@then("the V2 integration will not appear in get-integrations")
+def the_v2_integration_will_not_appear(v2_api, v2_integration, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "apigateway",
+            "v2-list-integrations",
+            "--api-id",
+            v2_api["apiId"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_ids = [i["integrationId"] for i in verify.get("items", [])]
+    assert v2_integration["integrationId"] not in actual_ids
+
+
+@then(
+    parsers.parse('route "{route_key}" will not appear in get-routes'),
+)
+def the_v2_route_will_not_appear(route_key, v2_api, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "apigateway",
+            "v2-list-routes",
+            "--api-id",
+            v2_api["apiId"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_keys = [r.get("routeKey", "") for r in verify.get("items", [])]
+    assert route_key not in actual_keys
+
+
+@then(
+    parsers.parse('V2 stage "{stage_name}" will not appear in get-stages'),
+)
+def the_v2_stage_will_not_appear(stage_name, v2_api, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "apigateway",
+            "v2-list-stages",
+            "--api-id",
+            v2_api["apiId"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_names = [s["stageName"] for s in verify.get("items", [])]
+    assert stage_name not in actual_names

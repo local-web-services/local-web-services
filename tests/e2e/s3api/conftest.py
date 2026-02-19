@@ -864,6 +864,101 @@ def the_output_will_contain_website_index_document(expected_suffix, command_resu
     assert actual_suffix == expected_suffix
 
 
+@then(
+    parsers.parse('bucket "{bucket}" will have tag "{key}" with value "{value}"'),
+)
+def bucket_will_have_tag(bucket, key, value, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        ["s3api", "get-bucket-tagging", "--bucket", bucket, "--port", str(e2e_port)]
+    )
+    tags = verify.get("Tagging", {}).get("TagSet", {}).get("Tag", [])
+    if isinstance(tags, dict):
+        tags = [tags]
+    actual_value = next(
+        (t["Value"] for t in tags if t.get("Key") == key),
+        None,
+    )
+    assert actual_value == value
+
+
+@then(
+    parsers.parse('bucket "{bucket}" will have no tags'),
+)
+def bucket_will_have_no_tags(bucket, e2e_port):
+    result = runner.invoke(
+        app,
+        ["s3api", "get-bucket-tagging", "--bucket", bucket, "--port", str(e2e_port)],
+    )
+    assert result.exit_code != 0 or "NoSuchTagSet" in result.output
+
+
+@then(
+    parsers.parse('bucket "{bucket}" will have a policy'),
+)
+def bucket_will_have_policy(bucket, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        ["s3api", "get-bucket-policy", "--bucket", bucket, "--port", str(e2e_port)]
+    )
+    assert verify.get("Policy") is not None
+
+
+@then(
+    parsers.parse('bucket "{bucket}" will have a notification configuration'),
+)
+def bucket_will_have_notification_configuration(bucket, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "s3api",
+            "get-bucket-notification-configuration",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    assert verify.get("NotificationConfiguration") is not None
+
+
+@then(
+    parsers.parse('object "{key}" in bucket "{bucket}" will exist'),
+)
+def object_will_exist(key, bucket, e2e_port):
+    result = runner.invoke(
+        app,
+        [
+            "s3api",
+            "head-object",
+            "--bucket",
+            bucket,
+            "--key",
+            key,
+            "--port",
+            str(e2e_port),
+        ],
+    )
+    assert result.exit_code == 0
+
+
+@then(
+    parsers.parse('bucket "{bucket}" will have no in-progress multipart uploads'),
+)
+def bucket_will_have_no_multipart_uploads(bucket, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "s3api",
+            "list-multipart-uploads",
+            "--bucket",
+            bucket,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    uploads = verify.get("ListMultipartUploadsResult", {}).get("Upload", [])
+    if isinstance(uploads, dict):
+        uploads = [uploads]
+    assert len(uploads) == 0
+
+
 @when(
     "I list parts of the multipart upload",
     target_fixture="command_result",

@@ -548,3 +548,82 @@ def the_queue_will_not_appear(queue_name, assert_invoke, e2e_port):
     if isinstance(urls, str):
         urls = [urls]
     assert not any(queue_name in u for u in urls)
+
+
+@then(
+    parsers.parse('queue "{queue_name}" will have attribute "{attr}" equal to "{expected_value}"'),
+)
+def queue_will_have_attribute(queue_name, attr, expected_value, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "sqs",
+            "get-queue-attributes",
+            "--queue-name",
+            queue_name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    attrs = (
+        verify.get("GetQueueAttributesResponse", {})
+        .get("GetQueueAttributesResult", {})
+        .get("Attribute", [])
+    )
+    if isinstance(attrs, dict):
+        attrs = [attrs]
+    actual_value = next(
+        (a["Value"] for a in attrs if a.get("Name") == attr),
+        None,
+    )
+    assert actual_value == expected_value
+
+
+@then(
+    parsers.parse('queue "{queue_name}" will have tag "{key}" with value "{value}"'),
+)
+def queue_will_have_tag(queue_name, key, value, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "sqs",
+            "list-queue-tags",
+            "--queue-name",
+            queue_name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    result = verify.get("ListQueueTagsResponse", {}).get("ListQueueTagsResult", {})
+    if isinstance(result, str):
+        result = {}
+    entries = result.get("entry", [])
+    if isinstance(entries, dict):
+        entries = [entries]
+    actual_value = next(
+        (e["value"] for e in entries if e.get("key") == key),
+        None,
+    )
+    assert actual_value == value
+
+
+@then(
+    parsers.parse('queue "{queue_name}" will not have tag "{key}"'),
+)
+def queue_will_not_have_tag(queue_name, key, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "sqs",
+            "list-queue-tags",
+            "--queue-name",
+            queue_name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    result = verify.get("ListQueueTagsResponse", {}).get("ListQueueTagsResult", {})
+    if isinstance(result, str):
+        result = {}
+    entries = result.get("entry", [])
+    if isinstance(entries, dict):
+        entries = [entries]
+    actual_keys = [e["key"] for e in entries]
+    assert key not in actual_keys

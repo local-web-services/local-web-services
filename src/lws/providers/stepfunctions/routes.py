@@ -190,14 +190,22 @@ class StepFunctionsRouter:
     async def _list_state_machine_versions(self, _body: dict) -> Response:
         return _json_response({"stateMachineVersions": []})
 
-    async def _tag_resource(self, _body: dict) -> Response:
+    async def _tag_resource(self, body: dict) -> Response:
+        resource_arn = body.get("resourceArn", "")
+        tags = body.get("tags", [])
+        self.provider.tag_resource(resource_arn, tags)
         return _json_response({})
 
-    async def _untag_resource(self, _body: dict) -> Response:
+    async def _untag_resource(self, body: dict) -> Response:
+        resource_arn = body.get("resourceArn", "")
+        tag_keys = body.get("tagKeys", [])
+        self.provider.untag_resource(resource_arn, tag_keys)
         return _json_response({})
 
-    async def _list_tags_for_resource(self, _body: dict) -> Response:
-        return _json_response({"tags": []})
+    async def _list_tags_for_resource(self, body: dict) -> Response:
+        resource_arn = body.get("resourceArn", "")
+        tags = self.provider.list_tags_for_resource(resource_arn)
+        return _json_response({"tags": tags})
 
     async def _stop_execution(self, body: dict) -> Response:
         """Handle StopExecution API action."""

@@ -7,3 +7,4 @@ Feature: Lambda RemovePermission
     And permission "s3-invoke" was added to function "e2e-rmperm-fn"
     When I remove permission "s3-invoke" from function "e2e-rmperm-fn"
     Then the command will succeed
+    And function "e2e-rmperm-fn" will not have permission "s3-invoke" in its policy

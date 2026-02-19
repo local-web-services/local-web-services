@@ -7,3 +7,4 @@ Feature: StepFunctions StopExecution
     And an execution was started on state machine "e2e-stop-exec" with input "{}"
     When I stop the started execution
     Then the command will succeed
+    And the stopped execution will have status "ABORTED"

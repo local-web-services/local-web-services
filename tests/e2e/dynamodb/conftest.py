@@ -727,3 +727,82 @@ def i_list_tags_of_resource(table_name, e2e_port):
             str(e2e_port),
         ],
     )
+
+
+@then(
+    parsers.parse('table "{table_name}" will have billing mode "{expected_mode}"'),
+)
+def table_will_have_billing_mode(table_name, expected_mode, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "dynamodb",
+            "describe-table",
+            "--table-name",
+            table_name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_mode = verify["Table"]["BillingModeSummary"]["BillingMode"]
+    assert actual_mode == expected_mode
+
+
+@then(
+    parsers.parse('table "{table_name}" will have TTL enabled on attribute "{attr}"'),
+)
+def table_will_have_ttl_enabled(table_name, attr, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        [
+            "dynamodb",
+            "describe-time-to-live",
+            "--table-name",
+            table_name,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    ttl = verify["TimeToLiveDescription"]
+    actual_status = ttl["TimeToLiveStatus"]
+    actual_attr = ttl["AttributeName"]
+    assert actual_status == "ENABLED"
+    assert actual_attr == attr
+
+
+@then(
+    parsers.parse('table "{table_name}" will have tag "{key}" with value "{value}"'),
+)
+def table_will_have_tag(table_name, key, value, assert_invoke, e2e_port):
+    arn = f"{_DDB_ARN_PREFIX}/{table_name}"
+    verify = assert_invoke(
+        [
+            "dynamodb",
+            "list-tags-of-resource",
+            "--resource-arn",
+            arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("Tags", [])
+    expected_tag = {"Key": key, "Value": value}
+    assert expected_tag in tags
+
+
+@then(
+    parsers.parse('table "{table_name}" will not have tag "{key}"'),
+)
+def table_will_not_have_tag(table_name, key, assert_invoke, e2e_port):
+    arn = f"{_DDB_ARN_PREFIX}/{table_name}"
+    verify = assert_invoke(
+        [
+            "dynamodb",
+            "list-tags-of-resource",
+            "--resource-arn",
+            arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("Tags", [])
+    actual_keys = [t["Key"] for t in tags]
+    assert key not in actual_keys

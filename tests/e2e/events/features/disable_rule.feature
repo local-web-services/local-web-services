@@ -6,3 +6,4 @@ Feature: Events DisableRule
     Given a rule "e2e-disable-rule" was created on event bus "default"
     When I disable rule "e2e-disable-rule" on event bus "default"
     Then the command will succeed
+    And rule "e2e-disable-rule" will have state "DISABLED"

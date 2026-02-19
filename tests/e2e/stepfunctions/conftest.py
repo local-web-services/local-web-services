@@ -471,3 +471,76 @@ def the_started_execution_will_have_status(command_result, parse_output, assert_
 def the_state_machine_list_will_include(expected_name, command_result, parse_output):
     actual_names = [sm["name"] for sm in parse_output(command_result.output)["stateMachines"]]
     assert expected_name in actual_names
+
+
+@then(parsers.parse('state machine "{name}" will have the updated definition'))
+def state_machine_will_have_updated_definition(name, assert_invoke, e2e_port):
+    verify = assert_invoke(
+        ["stepfunctions", "describe-state-machine", "--name", name, "--port", str(e2e_port)]
+    )
+    actual_definition = json.loads(verify["definition"])
+    expected_definition = json.loads(UPDATED_DEFINITION)
+    assert actual_definition == expected_definition
+
+
+@then(
+    parsers.parse('state machine "{name}" will have tag "{key}" with value "{value}"'),
+)
+def state_machine_will_have_tag(name, key, value, assert_invoke, e2e_port):
+    resource_arn = f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
+    verify = assert_invoke(
+        [
+            "stepfunctions",
+            "list-tags-for-resource",
+            "--resource-arn",
+            resource_arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("tags", [])
+    actual_value = next(
+        (t["value"] for t in tags if t.get("key") == key),
+        None,
+    )
+    assert actual_value == value
+
+
+@then(
+    parsers.parse('state machine "{name}" will not have tag "{key}"'),
+)
+def state_machine_will_not_have_tag(name, key, assert_invoke, e2e_port):
+    resource_arn = f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
+    verify = assert_invoke(
+        [
+            "stepfunctions",
+            "list-tags-for-resource",
+            "--resource-arn",
+            resource_arn,
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    tags = verify.get("tags", [])
+    actual_keys = [t["key"] for t in tags]
+    assert key not in actual_keys
+
+
+@then(
+    parsers.parse('the stopped execution will have status "{expected_status}"'),
+)
+def the_stopped_execution_will_have_status(
+    expected_status, started_execution, assert_invoke, e2e_port
+):
+    verify = assert_invoke(
+        [
+            "stepfunctions",
+            "describe-execution",
+            "--execution-arn",
+            started_execution["executionArn"],
+            "--port",
+            str(e2e_port),
+        ]
+    )
+    actual_status = verify["status"]
+    assert actual_status == expected_status

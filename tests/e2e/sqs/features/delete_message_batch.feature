@@ -8,3 +8,4 @@ Feature: SQS DeleteMessageBatch
     And a message was received from queue "e2e-delmsg-batch"
     When I delete messages in batch for the received message in queue "e2e-delmsg-batch"
     Then the command will succeed
+    And queue "e2e-delmsg-batch" will have approximate message count "0"

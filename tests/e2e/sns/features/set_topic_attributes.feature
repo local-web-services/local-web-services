@@ -6,3 +6,4 @@ Feature: SNS SetTopicAttributes
     Given a topic "e2e-set-topic-attrs" was created
     When I set topic attribute "DisplayName" to "E2E Test Topic" for topic "e2e-set-topic-attrs"
     Then the command will succeed
+    And the topic "e2e-set-topic-attrs" will have display name "E2E Test Topic"
