@@ -26,9 +26,19 @@ class TestWriteSlashCommands:
         # Assert
         assert expected_file.exists()
 
+    def test_creates_iam_auth_command(self, tmp_path):
+        # Arrange
+        expected_file = tmp_path / ".claude" / "commands" / "lws" / "iam-auth.md"
+
+        # Act
+        _write_slash_commands(tmp_path)
+
+        # Assert
+        assert expected_file.exists()
+
     def test_returns_written_paths(self, tmp_path):
         # Arrange
-        expected_count = 2
+        expected_count = 3
 
         # Act
         actual_paths = _write_slash_commands(tmp_path)

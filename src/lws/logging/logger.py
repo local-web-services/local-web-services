@@ -124,6 +124,20 @@ def _build_lambda_request_body(event: dict | None, context: dict | None) -> str 
     return _safe_json_truncate(request_data)
 
 
+def _iam_console_suffix(iam_eval: dict[str, Any] | None) -> str:
+    """Return a short Rich-formatted IAM suffix for console log lines."""
+    if not iam_eval:
+        return ""
+    decision = iam_eval.get("decision", "")
+    identity = iam_eval.get("identity", "")
+    mode = iam_eval.get("mode", "")
+    if decision == "DENY" and mode == "enforce":
+        return f" [red]IAM DENY: {identity}[/red]"
+    if decision == "DENY":
+        return f" [yellow]IAM \u26a0 {identity}[/yellow]"
+    return ""
+
+
 class LdkLogger:
     """Structured logger wrapping Python's ``logging.Logger``.
 
@@ -160,6 +174,7 @@ class LdkLogger:
         service: str | None = None,
         request_body: str | None = None,
         response_body: str | None = None,
+        iam_eval: dict[str, Any] | None = None,
     ) -> None:
         """Log an HTTP/API Gateway request.
 
@@ -171,16 +186,17 @@ class LdkLogger:
         style = _status_style(status_str)
         ts = _timestamp()
 
-        # CLI output with service prefix
+        # CLI output with service prefix and optional IAM suffix
         service_prefix = f"[bold cyan]{service.upper()}[/bold cyan] " if service else ""
+        iam_suffix = _iam_console_suffix(iam_eval)
         _console.print(
             f"[dim][{ts}][/dim] {service_prefix}"
             f"[bold]{method}[/bold] {path} -> {handler_name} "
-            f"({duration_ms:.0f}ms) -> [{style}]{status_code}[/{style}]"
+            f"({duration_ms:.0f}ms) -> [{style}]{status_code}[/{style}]{iam_suffix}"
         )
 
         # WebSocket output with full details
-        entry = {
+        entry: dict[str, Any] = {
             "timestamp": ts,
             "level": "INFO",
             "message": (
@@ -201,6 +217,53 @@ class LdkLogger:
             entry["request_body"] = request_body
         if response_body is not None:
             entry["response_body"] = response_body
+        if iam_eval is not None:
+            entry["iam_eval"] = iam_eval
+        _emit_to_ws(entry)
+
+    def log_iam_deny(
+        self,
+        method: str,
+        path: str,
+        operation: str,
+        service: str,
+        duration_ms: float,
+        iam_eval: dict[str, Any],
+        request_body: str | None = None,
+    ) -> None:
+        """Log an IAM-denied request (enforce mode, before handler runs).
+
+        Called when IAM middleware short-circuits with 403 so the denied
+        request still appears in the console and web UI.
+        """
+        if not self._logger.isEnabledFor(logging.WARNING):
+            return
+        identity = iam_eval.get("identity", "")
+        ts = _timestamp()
+        svc_prefix = f"[bold cyan]{service.upper()}[/bold cyan] "
+        _console.print(
+            f"[dim][{ts}][/dim] {svc_prefix}"
+            f"[bold]{method}[/bold] {path} -> {operation} "
+            f"({duration_ms:.0f}ms) -> [yellow]403[/yellow] "
+            f"[red]IAM DENY: {identity}[/red]"
+        )
+        entry: dict[str, Any] = {
+            "timestamp": ts,
+            "level": "WARNING",
+            "message": (
+                f"{service.upper()} {method} {path} -> {operation}"
+                f" ({duration_ms:.0f}ms) -> 403 IAM DENY: {identity}"
+            ),
+            "method": method,
+            "path": path,
+            "handler": operation,
+            "duration_ms": duration_ms,
+            "status_code": 403,
+            "service": service,
+            "iam_eval": iam_eval,
+        }
+        if request_body is not None:
+            entry["request_body"] = request_body
         _emit_to_ws(entry)
 
     def log_sqs_invocation(

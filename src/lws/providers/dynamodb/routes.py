@@ -21,6 +21,7 @@ from lws.interfaces.key_value_store import (
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
 from lws.providers.dynamodb.expressions import evaluate_filter_expression
 
@@ -478,11 +479,13 @@ def create_dynamodb_app(
     store: IKeyValueStore,
     chaos: AwsChaosConfig | None = None,
     aws_mock: AwsMockConfig | None = None,
+    iam_auth: IamAuthBundle | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the DynamoDB wire protocol."""
     app = FastAPI()
     if aws_mock is not None:
         app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="dynamodb")
+    add_iam_auth_middleware(app, "dynamodb", iam_auth, ErrorFormat.JSON)
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="dynamodb")

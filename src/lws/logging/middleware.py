@@ -83,6 +83,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         # Extract operation name from path or headers (service-specific)
         operation = self._extract_operation(request, request_body)
 
+        iam_eval = getattr(request.state, "iam_eval", None)
         self._logger.log_http_request(
             method=request.method,
             path=request.url.path,
@@ -92,6 +93,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             service=self._service_name,
             request_body=request_body,
             response_body=response_body,
+            iam_eval=iam_eval,
         )
 
         return response

@@ -516,6 +516,48 @@ In-memory parameter store supporting String, StringList, and SecureString types.
 
 In-memory secret store supporting version staging (AWSCURRENT/AWSPREVIOUS), soft delete with optional recovery, and tags. In CDK mode, secrets defined in the CloudFormation template are pre-seeded on startup.
 
+## IAM Authorization
+
+Test IAM authorization locally by configuring identities, permissions, and enforcement modes per service. When IAM auth is enabled, every request is evaluated against identity policies before reaching the service handler.
+
+```bash
+# Check current IAM auth configuration
+uvx --from local-web-services lws iam-auth status
+
+# Enable enforce mode for a service (requests without permission are denied)
+uvx --from local-web-services lws iam-auth enable dynamodb
+
+# Enable audit mode (requests pass through but violations are logged)
+uvx --from local-web-services lws iam-auth set dynamodb --mode audit
+
+# Disable IAM auth for a service
+uvx --from local-web-services lws iam-auth disable dynamodb
+
+# Switch the active identity (useful for testing different roles)
+uvx --from local-web-services lws iam-auth set-identity readonly-role
+```
+
+Identities and permissions are defined in YAML files under `.lws/iam/`:
+
+- **`.lws/iam/identities.yaml`** — named identities with inline policies and optional boundary policies
+- **`.lws/iam/permissions.yaml`** — maps service operations to required IAM actions (merged on top of built-in defaults)
+- **`.lws/iam/resource_policies.yaml`** — per-resource policies (e.g., bucket policies for S3)
+
+Configure IAM auth globally or per-service in `ldk.yaml`:
+
+```yaml
+iam_auth:
+  mode: enforce             # enforce | audit | disabled (default: disabled)
+  default_identity: admin-user
+  services:
+    dynamodb:
+      mode: enforce
+    s3:
+      mode: audit
+```
+
+Supported services: dynamodb, sqs, s3, sns, events, stepfunctions, cognito-idp, ssm, secretsmanager. IAM and STS are excluded from auth middleware to avoid bootstrap issues.
+
 ## Agent Setup
 
 If you use a coding agent (Claude Code, etc.), run `lws init` to scaffold agent configuration into your project:
@@ -526,7 +568,7 @@ uvx --from local-web-services lws init --project-dir /path/to/your-project
 
 This creates:
 - **CLAUDE.md** snippet with lws quick reference and common commands
-- **Custom slash commands** (`/lws:mock` and `/lws:chaos`) that guide your agent through mock and chaos workflows
+- **Custom slash commands** (`/lws:mock`, `/lws:chaos`, and `/lws:iam-auth`) that guide your agent through mock, chaos, and IAM auth workflows
 
 ## AWS Operation Mocking
 

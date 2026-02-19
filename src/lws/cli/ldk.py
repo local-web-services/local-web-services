@@ -37,6 +37,7 @@ from lws.interfaces import (
 )
 from lws.parser.assembly import AppModel, parse_assembly
 from lws.providers._shared.aws_chaos import AwsChaosConfig
+from lws.providers._shared.aws_iam_auth import IamAuthBundle
 from lws.providers._shared.aws_operation_mock import AwsMockConfig
 from lws.providers.apigateway.provider import ApiGatewayProvider, RouteConfig
 from lws.providers.cognito.provider import CognitoProvider
@@ -617,8 +618,9 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     ensure_gitignore(project_dir)
 
     # Create all providers in always-on mode (no app model)
+    iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
     providers, ports, chaos_configs, aws_mock_configs = _create_terraform_providers(
-        config, data_dir, project_dir
+        config, data_dir, project_dir, iam_auth_bundle=iam_auth_bundle
     )
 
     orchestrator = Orchestrator()
@@ -642,7 +644,13 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
 
     # Mount management API
     _mount_management_api(
-        providers, orchestrator, port, resource_metadata, chaos_configs, aws_mock_configs
+        providers,
+        orchestrator,
+        port,
+        resource_metadata,
+        chaos_configs,
+        aws_mock_configs,
+        iam_auth_bundle=iam_auth_bundle,
     )
 
     for _key in providers:
@@ -684,6 +692,7 @@ def _create_terraform_providers(
     config: LdkConfig,
     data_dir: Path,
     project_dir: Path | None = None,
+    iam_auth_bundle: IamAuthBundle | None = None,
 ) -> tuple[
     dict[str, Provider],
     dict[str, int],
@@ -735,6 +744,8 @@ def _create_terraform_providers(
 
     chaos_configs = _create_chaos_configs()
     aws_mock_configs = _load_aws_mock_configs(project_dir)
+    if iam_auth_bundle is None:
+        iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
 
     _register_http_providers(
         providers,
@@ -748,6 +759,7 @@ def _create_terraform_providers(
         ports=ports,
         chaos_configs=chaos_configs,
         aws_mock_configs=aws_mock_configs,
+        iam_auth=iam_auth_bundle,
     )
 
     # Shared Lambda registry for Lambda management and API Gateway V2 proxy
@@ -815,8 +827,10 @@ def _create_terraform_providers(
 
     providers["__ssm_http__"] = _HttpServiceProvider(
         "ssm-http",
-        lambda: create_ssm_app(
-            chaos=chaos_configs.get("ssm"), aws_mock=aws_mock_configs.get("ssm")
+        lambda ia=iam_auth_bundle: create_ssm_app(
+            chaos=chaos_configs.get("ssm"),
+            aws_mock=aws_mock_configs.get("ssm"),
+            iam_auth=ia,
         ),
         ports["ssm"],
     )
@@ -828,9 +842,10 @@ def _create_terraform_providers(
 
     providers["__secretsmanager_http__"] = _HttpServiceProvider(
         "secretsmanager-http",
-        lambda: create_secretsmanager_app(
+        lambda ia=iam_auth_bundle: create_secretsmanager_app(
             chaos=chaos_configs.get("secretsmanager"),
             aws_mock=aws_mock_configs.get("secretsmanager"),
+            iam_auth=ia,
         ),
         ports["secretsmanager"],
     )
@@ -1084,8 +1099,9 @@ async def _run_dev(
 
     data_dir = project_dir / config.data_dir
     data_dir.mkdir(parents=True, exist_ok=True)
+    iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
     providers, chaos_configs, aws_mock_configs = _create_providers(
-        app_model, graph, config, data_dir
+        app_model, graph, config, data_dir, iam_auth_bundle=iam_auth_bundle
     )
 
     orchestrator = Orchestrator()
@@ -1102,7 +1118,13 @@ async def _run_dev(
     # Mount management API
     resource_metadata = _build_resource_metadata(app_model, config.port)
     _mount_management_api(
-        providers, orchestrator, config.port, resource_metadata, chaos_configs, aws_mock_configs
+        providers,
+        orchestrator,
+        config.port,
+        resource_metadata,
+        chaos_configs,
+        aws_mock_configs,
+        iam_auth_bundle=iam_auth_bundle,
     )
 
     # Append non-graph provider keys (HTTP servers, management) to startup order.
@@ -1539,11 +1561,58 @@ def _create_function_url_providers(
         lambda_registry.register_function_url(furl.function_name, url_config, furl_provider)
 
 
+def _register_ssm_secretsmanager_providers(
+    providers: dict,
+    *,
+    app_model: AppModel,
+    chaos_configs: dict,
+    aws_mock_configs: dict,
+    iam_auth_bundle: IamAuthBundle | None,
+    ssm_port: int,
+    secretsmanager_port: int,
+) -> None:
+    """Register SSM and Secrets Manager HTTP providers."""
+    from lws.providers.secretsmanager.routes import (  # pylint: disable=import-outside-toplevel
+        create_secretsmanager_app,
+    )
+    from lws.providers.ssm.routes import create_ssm_app  # pylint: disable=import-outside-toplevel
+
+    ssm_params = [
+        {"name": p.name, "type": p.type, "value": p.value, "description": p.description}
+        for p in app_model.ssm_parameters
+    ]
+    sm_secrets = [
+        {"name": s.name, "description": s.description, "secret_string": s.secret_string}
+        for s in app_model.secrets
+    ]
+    providers["__ssm_http__"] = _HttpServiceProvider(
+        "ssm-http",
+        lambda ia=iam_auth_bundle: create_ssm_app(
+            ssm_params,
+            chaos=chaos_configs.get("ssm"),
+            aws_mock=aws_mock_configs.get("ssm"),
+            iam_auth=ia,
+        ),
+        ssm_port,
+    )
+    providers["__secretsmanager_http__"] = _HttpServiceProvider(
+        "secretsmanager-http",
+        lambda ia=iam_auth_bundle: create_secretsmanager_app(
+            sm_secrets,
+            chaos=chaos_configs.get("secretsmanager"),
+            aws_mock=aws_mock_configs.get("secretsmanager"),
+            iam_auth=ia,
+        ),
+        secretsmanager_port,
+    )
+
+
 def _create_providers(
     app_model: AppModel,
     graph: AppGraph,
     config: LdkConfig,
     data_dir: Path,
+    iam_auth_bundle: IamAuthBundle | None = None,
 ) -> tuple[dict[str, Provider], dict[str, AwsChaosConfig], dict[str, AwsMockConfig]]:
     """Instantiate providers from the parsed app model.
 
@@ -1648,6 +1717,8 @@ def _create_providers(
     # 10. Create HTTP servers for each active service
     chaos_configs = _create_chaos_configs()
     aws_mock_configs = _load_aws_mock_configs(data_dir.parent)
+    if iam_auth_bundle is None:
+        iam_auth_bundle = _create_iam_auth_bundle(config, data_dir.parent)
 
     _register_http_providers(
         providers,
@@ -1669,38 +1740,18 @@ def _create_providers(
         },
         chaos_configs=chaos_configs,
         aws_mock_configs=aws_mock_configs,
+        iam_auth=iam_auth_bundle,
     )
 
     # 11. SSM Parameter Store and Secrets Manager (pre-seeded from CloudFormation)
-    from lws.providers.secretsmanager.routes import (  # pylint: disable=import-outside-toplevel
-        create_secretsmanager_app,
-    )
-    from lws.providers.ssm.routes import create_ssm_app  # pylint: disable=import-outside-toplevel
-
-    ssm_params = [
-        {"name": p.name, "type": p.type, "value": p.value, "description": p.description}
-        for p in app_model.ssm_parameters
-    ]
-    sm_secrets = [
-        {"name": s.name, "description": s.description, "secret_string": s.secret_string}
-        for s in app_model.secrets
-    ]
-
-    providers["__ssm_http__"] = _HttpServiceProvider(
-        "ssm-http",
-        lambda: create_ssm_app(
-            ssm_params, chaos=chaos_configs.get("ssm"), aws_mock=aws_mock_configs.get("ssm")
-        ),
-        ssm_port,
-    )
-    providers["__secretsmanager_http__"] = _HttpServiceProvider(
-        "secretsmanager-http",
-        lambda: create_secretsmanager_app(
-            sm_secrets,
-            chaos=chaos_configs.get("secretsmanager"),
-            aws_mock=aws_mock_configs.get("secretsmanager"),
-        ),
-        secretsmanager_port,
+    _register_ssm_secretsmanager_providers(
+        providers,
+        app_model=app_model,
+        chaos_configs=chaos_configs,
+        aws_mock_configs=aws_mock_configs,
+        iam_auth_bundle=iam_auth_bundle,
+        ssm_port=ssm_port,
+        secretsmanager_port=secretsmanager_port,
     )
 
     # Mock server provider
@@ -1749,6 +1800,36 @@ def _load_aws_mock_configs(project_dir: Path | None) -> dict[str, AwsMockConfig]
     return configs
 
 
+def _create_iam_auth_bundle(
+    config: LdkConfig,
+    project_dir: Path | None = None,
+) -> IamAuthBundle:
+    """Create an IamAuthBundle from config."""
+    from lws.providers._shared.iam_identity_store import (  # pylint: disable=import-outside-toplevel
+        IdentityStore,
+    )
+    from lws.providers._shared.iam_permissions_map import (  # pylint: disable=import-outside-toplevel
+        PermissionsMap,
+    )
+    from lws.providers._shared.iam_resource_policies import (  # pylint: disable=import-outside-toplevel
+        ResourcePolicyStore,
+    )
+
+    iam_config = config.iam_auth
+
+    iam_dir = Path(project_dir / ".lws" / "iam") if project_dir else None
+    identities_path = iam_dir / "identities.yaml" if iam_dir else None
+    permissions_path = iam_dir / "permissions.yaml" if iam_dir else None
+    resource_policies_path = iam_dir / "resource_policies.yaml" if iam_dir else None
+
+    return IamAuthBundle(
+        config=iam_config,
+        identity_store=IdentityStore(identities_path),
+        permissions_map=PermissionsMap(permissions_path),
+        resource_policy_store=ResourcePolicyStore(resource_policies_path),
+    )
+
+
 def _register_http_providers(
     providers: dict[str, Provider],
     *,
@@ -1762,6 +1843,7 @@ def _register_http_providers(
     ports: dict[str, int],
     chaos_configs: dict[str, Any] | None = None,
     aws_mock_configs: dict[str, AwsMockConfig] | None = None,
+    iam_auth: IamAuthBundle | None = None,
 ) -> None:
     """Register HTTP service providers for each active backend."""
     from lws.providers.cognito.routes import (  # pylint: disable=import-outside-toplevel
@@ -1776,6 +1858,7 @@ def _register_http_providers(
 
     cc = chaos_configs or {}
     mc = aws_mock_configs or {}
+    ia = iam_auth
 
     http_services: list[tuple[str, Any, Callable[[], Any]]] = []
     http_services.append(
@@ -1784,7 +1867,7 @@ def _register_http_providers(
             ports["dynamodb"],
             lambda p=dynamo_provider, c=cc.get("dynamodb"), m=mc.get(
                 "dynamodb"
-            ): create_dynamodb_app(p, chaos=c, aws_mock=m),
+            ), i=ia: create_dynamodb_app(p, chaos=c, aws_mock=m, iam_auth=i),
         )
     )
     http_services.append(
@@ -1793,15 +1876,15 @@ def _register_http_providers(
             ports["sqs"],
             lambda p=sqs_provider, pt=ports["sqs"], c=cc.get("sqs"), m=mc.get(
                 "sqs"
-            ): create_sqs_app(p, pt, chaos=c, aws_mock=m),
+            ), i=ia: create_sqs_app(p, pt, chaos=c, aws_mock=m, iam_auth=i),
         )
     )
     http_services.append(
         (
             "s3",
             ports["s3"],
-            lambda p=s3_provider, c=cc.get("s3"), m=mc.get("s3"): create_s3_app(
-                p, chaos=c, aws_mock=m
+            lambda p=s3_provider, c=cc.get("s3"), m=mc.get("s3"), i=ia: create_s3_app(
+                p, chaos=c, aws_mock=m, iam_auth=i
             ),
         )
     )
@@ -1809,8 +1892,8 @@ def _register_http_providers(
         (
             "sns",
             ports["sns"],
-            lambda p=sns_provider, c=cc.get("sns"), m=mc.get("sns"): create_sns_app(
-                p, chaos=c, aws_mock=m
+            lambda p=sns_provider, c=cc.get("sns"), m=mc.get("sns"), i=ia: create_sns_app(
+                p, chaos=c, aws_mock=m, iam_auth=i
             ),
         )
     )
@@ -1818,9 +1901,9 @@ def _register_http_providers(
         (
             "events",
             ports["events"],
-            lambda p=eb_provider, c=cc.get("events"), m=mc.get("events"): create_eventbridge_app(
-                p, chaos=c, aws_mock=m
-            ),
+            lambda p=eb_provider, c=cc.get("events"), m=mc.get(
+                "events"
+            ), i=ia: create_eventbridge_app(p, chaos=c, aws_mock=m, iam_auth=i),
         )
     )
     http_services.append(
@@ -1829,7 +1912,7 @@ def _register_http_providers(
             ports["stepfunctions"],
             lambda p=sf_provider, c=cc.get("stepfunctions"), m=mc.get(
                 "stepfunctions"
-            ): create_stepfunctions_app(p, chaos=c, aws_mock=m),
+            ), i=ia: create_stepfunctions_app(p, chaos=c, aws_mock=m, iam_auth=i),
         )
     )
     http_services.append(
@@ -1838,7 +1921,7 @@ def _register_http_providers(
             ports["cognito-idp"],
             lambda p=cognito_provider, c=cc.get("cognito-idp"), m=mc.get(
                 "cognito-idp"
-            ): create_cognito_app(p, chaos=c, aws_mock=m),
+            ), i=ia: create_cognito_app(p, chaos=c, aws_mock=m, iam_auth=i),
         )
     )
 
@@ -2049,6 +2132,7 @@ def _mount_management_api(
     resource_metadata: dict[str, Any] | None = None,
     chaos_configs: dict[str, AwsChaosConfig] | None = None,
     aws_mock_configs: dict[str, AwsMockConfig] | None = None,
+    iam_auth_bundle: IamAuthBundle | None = None,
 ) -> None:
     """Mount the management API router on the API Gateway app or create a standalone one."""
     from fastapi import FastAPI  # pylint: disable=import-outside-toplevel
@@ -2063,6 +2147,7 @@ def _mount_management_api(
         resource_metadata=resource_metadata,
         chaos_configs=chaos_configs,
         aws_mock_configs=aws_mock_configs,
+        iam_auth_bundle=iam_auth_bundle,
     )
 
     # Try to find an existing API Gateway provider to mount on

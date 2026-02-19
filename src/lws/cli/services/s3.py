@@ -41,6 +41,11 @@ async def _put_object(bucket: str, key: str, body_path: str, port: int) -> None:
         exit_with_error(f"File not found: {body_path}")
     file_bytes = path.read_bytes()
     resp = await client.rest_request(_SERVICE, "PUT", f"{bucket}/{key}", body=file_bytes)
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     result: dict = {"ETag": resp.headers.get("etag", "")}
     output_json(result)
 
@@ -63,8 +68,11 @@ async def _get_object(bucket: str, key: str, outfile: str | None, port: int) -> 
     except Exception as exc:
         exit_with_error(str(exc))
     resp = await client.rest_request(_SERVICE, "GET", f"{bucket}/{key}")
-    if resp.status_code == 404:
-        exit_with_error(f"Object not found: {key}")
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     if outfile:
         Path(outfile).write_bytes(resp.content)
         output_json(
@@ -101,7 +109,12 @@ async def _delete_object(bucket: str, key: str, port: int) -> None:
         await client.service_port(_SERVICE)
     except Exception as exc:
         exit_with_error(str(exc))
-    await client.rest_request(_SERVICE, "DELETE", f"{bucket}/{key}")
+    resp = await client.rest_request(_SERVICE, "DELETE", f"{bucket}/{key}")
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({"DeleteMarker": True})
 
 
@@ -145,8 +158,10 @@ async def _head_object(bucket: str, key: str, port: int) -> None:
     except Exception as exc:
         exit_with_error(str(exc))
     resp = await client.rest_request(_SERVICE, "HEAD", f"{bucket}/{key}")
-    if resp.status_code == 404:
-        exit_with_error(f"Object not found: {key}")
+    if resp.status_code >= 400:
+        code = "AccessDenied" if resp.status_code == 403 else str(resp.status_code)
+        output_json({"Error": {"Code": code, "Message": "Access Denied"}})
+        return
     output_json(
         {
             "ContentLength": resp.headers.get("content-length", "0"),
@@ -217,8 +232,10 @@ async def _head_bucket(bucket: str, port: int) -> None:
     except Exception as exc:
         exit_with_error(str(exc))
     resp = await client.rest_request(_SERVICE, "HEAD", bucket)
-    if resp.status_code == 404:
-        exit_with_error(f"Bucket not found: {bucket}")
+    if resp.status_code >= 400:
+        code = "AccessDenied" if resp.status_code == 403 else str(resp.status_code)
+        output_json({"Error": {"Code": code, "Message": "Access Denied"}})
+        return
     output_json(
         {
             "BucketRegion": resp.headers.get("x-amz-bucket-region", "us-east-1"),
@@ -296,6 +313,11 @@ async def _upload_part(
         body=file_bytes,
         params={"partNumber": str(part_number), "uploadId": upload_id},
     )
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({"ETag": resp.headers.get("etag", "")})
 
 
@@ -358,12 +380,17 @@ async def _abort_multipart_upload(bucket: str, key: str, upload_id: str, port: i
         await client.service_port(_SERVICE)
     except Exception as exc:
         exit_with_error(str(exc))
-    await client.rest_request(
+    resp = await client.rest_request(
         _SERVICE,
         "DELETE",
         f"{bucket}/{key}",
         params={"uploadId": upload_id},
     )
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({})
 
 
@@ -448,9 +475,14 @@ async def _put_bucket_tagging(bucket: str, tagging_json: str, port: int) -> None
         f"<Tag><Key>{t['Key']}</Key><Value>{t['Value']}</Value></Tag>" for t in tag_set
     )
     xml_body = f"<Tagging><TagSet>{xml_tags}</TagSet></Tagging>"
-    await client.rest_request(
+    resp = await client.rest_request(
         _SERVICE, "PUT", bucket, body=xml_body.encode(), params={"tagging": ""}
     )
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({})
 
 
@@ -488,7 +520,12 @@ async def _delete_bucket_tagging(bucket: str, port: int) -> None:
         await client.service_port(_SERVICE)
     except Exception as exc:
         exit_with_error(str(exc))
-    await client.rest_request(_SERVICE, "DELETE", bucket, params={"tagging": ""})
+    resp = await client.rest_request(_SERVICE, "DELETE", bucket, params={"tagging": ""})
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({})
 
 
@@ -531,7 +568,7 @@ async def _put_bucket_policy(bucket: str, policy_json: str, port: int) -> None:
         json.loads(policy_json)
     except json.JSONDecodeError as exc:
         exit_with_error(f"Invalid JSON in --policy: {exc}")
-    await client.rest_request(
+    resp = await client.rest_request(
         _SERVICE,
         "PUT",
         bucket,
@@ -539,6 +576,11 @@ async def _put_bucket_policy(bucket: str, policy_json: str, port: int) -> None:
         params={"policy": ""},
         headers={"Content-Type": "application/json"},
     )
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({})
 
 
@@ -558,6 +600,11 @@ async def _get_bucket_policy(bucket: str, port: int) -> None:
     except Exception as exc:
         exit_with_error(str(exc))
     resp = await client.rest_request(_SERVICE, "GET", bucket, params={"policy": ""})
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json(json.loads(resp.text))
 
 
@@ -573,6 +620,28 @@ def put_bucket_notification_configuration(
     asyncio.run(_put_bucket_notification_configuration(bucket, notification_configuration, port))
 
 
+def _build_notification_xml(parsed: dict) -> str:
+    """Build the XML body for a PutBucketNotificationConfiguration request."""
+    parts = ["<NotificationConfiguration>"]
+    for cfg in parsed.get("LambdaFunctionConfigurations", []):
+        parts.append("<CloudFunctionConfiguration>")
+        parts.append(f"<CloudFunction>{cfg['LambdaFunctionArn']}</CloudFunction>")
+        parts.extend(f"<Event>{e}</Event>" for e in cfg.get("Events", []))
+        parts.append("</CloudFunctionConfiguration>")
+    for cfg in parsed.get("QueueConfigurations", []):
+        parts.append("<QueueConfiguration>")
+        parts.append(f"<Queue>{cfg['QueueArn']}</Queue>")
+        parts.extend(f"<Event>{e}</Event>" for e in cfg.get("Events", []))
+        parts.append("</QueueConfiguration>")
+    for cfg in parsed.get("TopicConfigurations", []):
+        parts.append("<TopicConfiguration>")
+        parts.append(f"<Topic>{cfg['TopicArn']}</Topic>")
+        parts.extend(f"<Event>{e}</Event>" for e in cfg.get("Events", []))
+        parts.append("</TopicConfiguration>")
+    parts.append("</NotificationConfiguration>")
+    return "".join(parts)
+
+
 async def _put_bucket_notification_configuration(bucket: str, config_json: str, port: int) -> None:
     client = _client(port)
     try:
@@ -583,30 +652,15 @@ async def _put_bucket_notification_configuration(bucket: str, config_json: str, 
         parsed = json.loads(config_json)
     except json.JSONDecodeError as exc:
         exit_with_error(f"Invalid JSON in --notification-configuration: {exc}")
-    xml_parts = ["<NotificationConfiguration>"]
-    for config in parsed.get("LambdaFunctionConfigurations", []):
-        xml_parts.append("<CloudFunctionConfiguration>")
-        xml_parts.append(f"<CloudFunction>{config['LambdaFunctionArn']}</CloudFunction>")
-        for event in config.get("Events", []):
-            xml_parts.append(f"<Event>{event}</Event>")
-        xml_parts.append("</CloudFunctionConfiguration>")
-    for config in parsed.get("QueueConfigurations", []):
-        xml_parts.append("<QueueConfiguration>")
-        xml_parts.append(f"<Queue>{config['QueueArn']}</Queue>")
-        for event in config.get("Events", []):
-            xml_parts.append(f"<Event>{event}</Event>")
-        xml_parts.append("</QueueConfiguration>")
-    for config in parsed.get("TopicConfigurations", []):
-        xml_parts.append("<TopicConfiguration>")
-        xml_parts.append(f"<Topic>{config['TopicArn']}</Topic>")
-        for event in config.get("Events", []):
-            xml_parts.append(f"<Event>{event}</Event>")
-        xml_parts.append("</TopicConfiguration>")
-    xml_parts.append("</NotificationConfiguration>")
-    xml_body = "".join(xml_parts)
-    await client.rest_request(
+    xml_body = _build_notification_xml(parsed)
+    resp = await client.rest_request(
         _SERVICE, "PUT", bucket, body=xml_body.encode(), params={"notification": ""}
     )
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({})
 
 
@@ -662,9 +716,14 @@ async def _put_bucket_website(bucket: str, config_json: str, port: int) -> None:
         xml_parts.append(f"<ErrorDocument><Key>{key}</Key></ErrorDocument>")
     xml_parts.append("</WebsiteConfiguration>")
     xml_body = "".join(xml_parts)
-    await client.rest_request(
+    resp = await client.rest_request(
         _SERVICE, "PUT", bucket, body=xml_body.encode(), params={"website": ""}
     )
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({})
 
 
@@ -704,7 +763,12 @@ async def _delete_bucket_website(bucket: str, port: int) -> None:
         await client.service_port(_SERVICE)
     except Exception as exc:
         exit_with_error(str(exc))
-    await client.rest_request(_SERVICE, "DELETE", bucket, params={"website": ""})
+    resp = await client.rest_request(_SERVICE, "DELETE", bucket, params={"website": ""})
+    if resp.status_code >= 400:
+        output_json(
+            xml_to_dict(resp.text) if resp.text else {"Error": {"Code": str(resp.status_code)}}
+        )
+        return
     output_json({})
 
 

@@ -202,6 +202,30 @@ def exit_with_error(message: str) -> None:
     raise SystemExit(1)
 
 
+async def ldk_get(port: int, path: str) -> None:
+    """GET a management API endpoint and print the JSON response."""
+    base = f"http://localhost:{port}"
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(f"{base}{path}", timeout=5.0)
+            resp.raise_for_status()
+            output_json(resp.json())
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        exit_with_error(f"Cannot reach ldk dev on port {port}. Is it running?")
+
+
+async def ldk_post(port: int, path: str, body: dict[str, Any]) -> None:
+    """POST to a management API endpoint and print the JSON response."""
+    base = f"http://localhost:{port}"
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(f"{base}{path}", json=body, timeout=5.0)
+            resp.raise_for_status()
+            output_json(resp.json())
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        exit_with_error(f"Cannot reach ldk dev on port {port}. Is it running?")
+
+
 def xml_to_dict(xml_text: str) -> dict[str, Any]:
     """Convert a simple XML response to a dict (single-level)."""
     root = ElementTree.fromstring(xml_text)

@@ -72,6 +72,7 @@ src/lws/
       ssm.py         lws ssm put-parameter, get-parameter, ...
       secretsmanager lws secretsmanager create-secret, get-secret-value, ...
       apigateway.py  lws apigateway get-rest-apis, ...
+      iam_auth.py    lws iam-auth status/enable/disable/set/set-identity
 
   parser/            CDK CloudFormation parsing
     assembly.py      Top-level orchestrator, produces AppModel
@@ -95,6 +96,13 @@ src/lws/
     secretsmanager/  Secrets storage and retrieval
     iam/             Stub IAM routes
     sts/             Stub STS routes (GetCallerIdentity)
+    _shared/         Shared middleware and utilities
+      aws_iam_auth.py        AwsIamAuthMiddleware + IamAuthConfig dataclasses
+      iam_policy_engine.py   Pure-function IAM policy evaluation (Allow/Deny)
+      iam_identity_store.py  Load identities from .lws/iam/identities.yaml
+      iam_permissions_map.py Map operations to required IAM actions
+      iam_resource_policies.py  Load resource policies from .lws/iam/resource_policies.yaml
+      iam_default_permissions.yaml  Bundled operation-to-action defaults
 
   interfaces/        Abstract base classes
     provider.py      Provider lifecycle (start/stop/health_check)
@@ -242,6 +250,20 @@ POST http://localhost:3001/   (X-Amz-Target: DynamoDB_20120810.Scan)
 SqliteDynamoProvider handles request
 ```
 
+## Middleware Chain
+
+Each AWS service provider mounts middleware in this order (outermost first):
+
+```
+AwsOperationMockMiddleware   — intercept and return canned responses
+AwsIamAuthMiddleware         — evaluate IAM identity/resource policies (enforce/audit/disabled)
+AwsChaosMiddleware           — inject errors, latency, connection resets
+RequestLoggingMiddleware     — capture method, path, status, duration
+Route Handler
+```
+
+Middleware is added via `app.add_middleware()` in reverse order (Starlette applies them inside-out). IAM and STS providers are excluded from `AwsIamAuthMiddleware` to avoid bootstrap issues.
+
 ## Request Flow
 
 ```
@@ -304,7 +326,7 @@ Configuration is resolved in priority order (highest wins):
 3. Config file (`ldk.config.py` or `ldk.yaml`)
 4. Defaults
 
-Key options: `port`, `persist`, `data_dir`, `log_level`, `cdk_out_dir`, `watch_include`, `watch_exclude`, `mode`.
+Key options: `port`, `persist`, `data_dir`, `log_level`, `cdk_out_dir`, `watch_include`, `watch_exclude`, `mode`, `iam_auth` (mode, default_identity, identity_header, per-service overrides).
 
 ## Startup Sequence
 

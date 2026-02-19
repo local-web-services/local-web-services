@@ -26,6 +26,7 @@ lws status
 ### Available slash commands
 - `/lws:mock` — Create or configure AWS operation mocks (return canned responses for specific operations)
 - `/lws:chaos` — Enable chaos engineering (inject errors, latency, timeouts into AWS service calls)
+- `/lws:iam-auth` — Configure IAM authorization (enforce/audit/disabled modes, identities, permissions)
 
 ### AWS Operation Mocking
 
@@ -66,6 +67,29 @@ lws chaos disable dynamodb
 ```
 
 Chaos parameters: `--error-rate`, `--latency-min`, `--latency-max`, `--timeout-rate`, `--connection-reset-rate`.
+
+### IAM Authorization
+
+Test IAM authorization locally to verify that your application's IAM permissions are correct:
+
+```bash
+# Check current IAM auth configuration
+lws iam-auth status
+
+# Enable enforce mode (denied requests return 403)
+lws iam-auth enable dynamodb
+
+# Enable audit mode (denied requests pass through but are logged)
+lws iam-auth set dynamodb --mode audit
+
+# Switch the active identity (e.g. to test a restricted role)
+lws iam-auth set-identity readonly-role
+
+# Disable IAM auth for a service
+lws iam-auth disable dynamodb
+```
+
+Identities and permissions are configured in `.lws/iam/identities.yaml`, `.lws/iam/permissions.yaml`, and `.lws/iam/resource_policies.yaml`.
 
 ### Lambda Function URLs
 

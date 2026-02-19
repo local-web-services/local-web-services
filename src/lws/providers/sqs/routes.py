@@ -18,6 +18,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
 from lws.providers.sqs.provider import QueueConfig, SqsProvider, build_queue_config
 
@@ -1110,6 +1111,7 @@ def create_sqs_app(
     port: int = 4566,
     chaos: AwsChaosConfig | None = None,
     aws_mock: AwsMockConfig | None = None,
+    iam_auth: IamAuthBundle | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the SQS wire protocol."""
     global _sqs_port  # noqa: PLW0603
@@ -1117,6 +1119,7 @@ def create_sqs_app(
     app = FastAPI()
     if aws_mock is not None:
         app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="sqs")
+    add_iam_auth_middleware(app, "sqs", iam_auth, ErrorFormat.XML_IAM)
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sqs")

@@ -213,6 +213,30 @@ SERVICE_EXTRACTORS: dict[str, OperationExtractor] = {
 
 
 # ------------------------------------------------------------------
+# Shared operation extraction
+# ------------------------------------------------------------------
+
+
+async def extract_operation_from_request(
+    request: Request,
+    service: str,
+) -> str | None:
+    """Extract the AWS operation name from a request, or None if not possible.
+
+    Skips internal ``/_ldk/`` paths and returns None when no extractor
+    is registered for the service or the extractor cannot determine the
+    operation.
+    """
+    if request.url.path.startswith("/_ldk/"):
+        return None
+    extractor = SERVICE_EXTRACTORS.get(service)
+    if extractor is None:
+        return None
+    body = await request.body()
+    return extractor(request, body)
+
+
+# ------------------------------------------------------------------
 # Middleware
 # ------------------------------------------------------------------
 
@@ -229,7 +253,6 @@ class AwsOperationMockMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.mock_config = mock_config
         self.service = service
-        self._extractor = SERVICE_EXTRACTORS.get(service)
 
     async def dispatch(  # pylint: disable=missing-function-docstring
         self, request: Request, call_next: RequestResponseEndpoint
@@ -237,14 +260,7 @@ class AwsOperationMockMiddleware(BaseHTTPMiddleware):
         if not self.mock_config.enabled:
             return await call_next(request)
 
-        if request.url.path.startswith("/_ldk/"):
-            return await call_next(request)
-
-        if self._extractor is None:
-            return await call_next(request)
-
-        body = await request.body()
-        operation = self._extractor(request, body)
+        operation = await extract_operation_from_request(request, self.service)
         if operation is None:
             return await call_next(request)
 

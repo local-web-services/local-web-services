@@ -125,6 +125,7 @@ def create_management_router(
     resource_metadata: dict[str, Any] | None = None,
     chaos_configs: dict[str, AwsChaosConfig] | None = None,
     aws_mock_configs: dict[str, AwsMockConfig] | None = None,
+    iam_auth_bundle: Any | None = None,
 ) -> APIRouter:
     """Create a management API router.
 
@@ -134,6 +135,7 @@ def create_management_router(
         resource_metadata: Pre-built resource metadata for the ``/_ldk/resources`` endpoint.
         chaos_configs: Map of service name to mutable ``AwsChaosConfig`` for runtime updates.
         aws_mock_configs: Map of service name to mutable ``AwsMockConfig`` for runtime updates.
+        iam_auth_bundle: Optional IAM auth bundle for runtime IAM auth management.
 
     Returns:
         A FastAPI ``APIRouter`` to be included in the main application.
@@ -143,6 +145,23 @@ def create_management_router(
     _resource_metadata = resource_metadata or {}
     _chaos_configs = chaos_configs or {}
     _aws_mock_configs = aws_mock_configs or {}
+
+    _register_core_routes(router, orchestrator, all_providers, _resource_metadata)
+    _register_chaos_routes(router, _chaos_configs)
+    _register_iam_auth_routes(router, iam_auth_bundle)
+    _register_function_url_routes(router, all_providers)
+    _register_aws_mock_routes(router, _aws_mock_configs)
+
+    return router
+
+
+def _register_core_routes(
+    router: APIRouter,
+    orchestrator: Orchestrator,
+    all_providers: dict[str, Any],
+    resource_metadata: dict[str, Any],
+) -> None:
+    """Register core management routes (reset, status, resources, gui, ws, shutdown, proxy)."""
 
     @router.post("/reset")
     async def reset_state() -> JSONResponse:
@@ -154,7 +173,7 @@ def create_management_router(
 
     @router.get("/resources")
     async def get_resources() -> JSONResponse:
-        return JSONResponse(content=_resource_metadata)
+        return JSONResponse(content=resource_metadata)
 
     @router.get("/gui")
     async def dashboard() -> HTMLResponse:
@@ -173,18 +192,36 @@ def create_management_router(
     async def service_proxy(request: Request) -> JSONResponse:
         return await _handle_service_proxy(request)
 
+
+def _register_chaos_routes(
+    router: APIRouter,
+    chaos_configs: dict[str, AwsChaosConfig],
+) -> None:
+    """Register chaos management routes."""
+
     @router.get("/chaos")
     async def get_chaos() -> JSONResponse:
-        return _handle_get_chaos(_chaos_configs)
+        return _handle_get_chaos(chaos_configs)
 
     @router.post("/chaos")
     async def set_chaos(request: Request) -> JSONResponse:
-        return await _handle_set_chaos(request, _chaos_configs)
+        return await _handle_set_chaos(request, chaos_configs)
 
-    _register_function_url_routes(router, all_providers)
-    _register_aws_mock_routes(router, _aws_mock_configs)
 
-    return router
+def _register_iam_auth_routes(
+    router: APIRouter,
+    iam_auth_bundle: Any | None,
+) -> None:
+    """Register IAM auth management routes."""
+    _iam_auth = iam_auth_bundle
+
+    @router.get("/iam-auth")
+    async def get_iam_auth() -> JSONResponse:
+        return _handle_get_iam_auth(_iam_auth)
+
+    @router.post("/iam-auth")
+    async def post_iam_auth(request: Request) -> JSONResponse:
+        return await _handle_set_iam_auth(request, _iam_auth)
 
 
 def _register_function_url_routes(
@@ -336,3 +373,57 @@ def _apply_aws_mock_overrides(cfg: AwsMockConfig, overrides: dict[str, Any]) -> 
         cfg.enabled = bool(overrides["enabled"])
     if "rules" in overrides:
         cfg.rules = [parse_mock_rule(r) for r in overrides["rules"]]
+
+
+# ---------------------------------------------------------------------------
+# IAM auth helpers
+# ---------------------------------------------------------------------------
+
+
+def _handle_get_iam_auth(iam_auth_bundle: Any) -> JSONResponse:
+    """Return current IAM auth config."""
+    if iam_auth_bundle is None:
+        return JSONResponse(content={"enabled": False})
+    return JSONResponse(content=_serialize_iam_auth_config(iam_auth_bundle.config))
+
+
+async def _handle_set_iam_auth(request: Request, iam_auth_bundle: Any) -> JSONResponse:
+    """Update IAM auth config at runtime."""
+    if iam_auth_bundle is None:
+        return JSONResponse(content={"error": "IAM auth not configured"}, status_code=400)
+    body = await request.json()
+    config = iam_auth_bundle.config
+    if "mode" in body:
+        config.mode = body["mode"]
+    if "default_identity" in body:
+        config.default_identity = body["default_identity"]
+    from lws.config.loader import IamAuthServiceConfig  # pylint: disable=import-outside-toplevel
+
+    for svc, overrides in body.get("services", {}).items():
+        if svc not in config.services:
+            config.services[svc] = IamAuthServiceConfig()
+        svc_cfg = config.services[svc]
+        if "mode" in overrides:
+            svc_cfg.mode = overrides["mode"]
+        if "enabled" in overrides:
+            svc_cfg.enabled = overrides["enabled"]
+    for name, identity_def in body.get("identities", {}).items():
+        iam_auth_bundle.identity_store.register_identity(
+            name=name,
+            inline_policies=identity_def.get("inline_policies", []),
+            boundary_policy=identity_def.get("boundary_policy"),
+        )
+    return JSONResponse(content={"config": _serialize_iam_auth_config(config)})
+
+
+def _serialize_iam_auth_config(config: Any) -> dict[str, Any]:
+    """Serialize an IamAuthConfig to a JSON-safe dict."""
+    return {
+        "mode": config.mode,
+        "default_identity": config.default_identity,
+        "identity_header": config.identity_header,
+        "services": {
+            svc: {"mode": svc_cfg.mode, "enabled": svc_cfg.enabled}
+            for svc, svc_cfg in config.services.items()
+        },
+    }

@@ -1,0 +1,342 @@
+permissions:
+  dynamodb:
+    get-item:
+      actions: ["dynamodb:GetItem"]
+    put-item:
+      actions: ["dynamodb:PutItem"]
+    delete-item:
+      actions: ["dynamodb:DeleteItem"]
+    update-item:
+      actions: ["dynamodb:UpdateItem"]
+    query:
+      actions: ["dynamodb:Query"]
+    scan:
+      actions: ["dynamodb:Scan"]
+    batch-get-item:
+      actions: ["dynamodb:BatchGetItem"]
+    batch-write-item:
+      actions: ["dynamodb:BatchWriteItem"]
+    create-table:
+      actions: ["dynamodb:CreateTable"]
+    delete-table:
+      actions: ["dynamodb:DeleteTable"]
+    describe-table:
+      actions: ["dynamodb:DescribeTable"]
+    list-tables:
+      actions: ["dynamodb:ListTables"]
+    update-table:
+      actions: ["dynamodb:UpdateTable"]
+    describe-time-to-live:
+      actions: ["dynamodb:DescribeTimeToLive"]
+    update-time-to-live:
+      actions: ["dynamodb:UpdateTimeToLive"]
+    transact-write-items:
+      actions: ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"]
+    transact-get-items:
+      actions: ["dynamodb:GetItem"]
+    describe-continuous-backups:
+      actions: ["dynamodb:DescribeContinuousBackups"]
+    list-tags-of-resource:
+      actions: ["dynamodb:ListTagsOfResource"]
+    tag-resource:
+      actions: ["dynamodb:TagResource"]
+    untag-resource:
+      actions: ["dynamodb:UntagResource"]
+
+  sqs:
+    send-message:
+      actions: ["sqs:SendMessage"]
+    receive-message:
+      actions: ["sqs:ReceiveMessage"]
+    delete-message:
+      actions: ["sqs:DeleteMessage"]
+    create-queue:
+      actions: ["sqs:CreateQueue"]
+    delete-queue:
+      actions: ["sqs:DeleteQueue"]
+    get-queue-url:
+      actions: ["sqs:GetQueueUrl"]
+    get-queue-attributes:
+      actions: ["sqs:GetQueueAttributes"]
+    set-queue-attributes:
+      actions: ["sqs:SetQueueAttributes"]
+    list-queues:
+      actions: ["sqs:ListQueues"]
+    purge-queue:
+      actions: ["sqs:PurgeQueue"]
+    change-message-visibility:
+      actions: ["sqs:ChangeMessageVisibility"]
+    change-message-visibility-batch:
+      actions: ["sqs:ChangeMessageVisibility"]
+    send-message-batch:
+      actions: ["sqs:SendMessage"]
+    delete-message-batch:
+      actions: ["sqs:DeleteMessage"]
+    list-queue-tags:
+      actions: ["sqs:ListQueueTags"]
+    tag-queue:
+      actions: ["sqs:TagQueue"]
+    untag-queue:
+      actions: ["sqs:UntagQueue"]
+    list-dead-letter-source-queues:
+      actions: ["sqs:ListDeadLetterSourceQueues"]
+
+  s3:
+    get-object:
+      actions: ["s3:GetObject"]
+    put-object:
+      actions: ["s3:PutObject"]
+    delete-object:
+      actions: ["s3:DeleteObject"]
+    head-object:
+      actions: ["s3:GetObject"]
+    list-objects-v2:
+      actions: ["s3:ListBucket"]
+    list-buckets:
+      actions: ["s3:ListAllMyBuckets"]
+    create-bucket:
+      actions: ["s3:CreateBucket"]
+    delete-bucket:
+      actions: ["s3:DeleteBucket"]
+    head-bucket:
+      actions: ["s3:ListBucket"]
+    copy-object:
+      actions: ["s3:PutObject", "s3:GetObject"]
+    delete-objects:
+      actions: ["s3:DeleteObject"]
+    get-bucket-location:
+      actions: ["s3:GetBucketLocation"]
+    get-bucket-tagging:
+      actions: ["s3:GetBucketTagging"]
+    put-bucket-tagging:
+      actions: ["s3:PutBucketTagging"]
+    delete-bucket-tagging:
+      actions: ["s3:PutBucketTagging"]
+    get-bucket-policy:
+      actions: ["s3:GetBucketPolicy"]
+    put-bucket-policy:
+      actions: ["s3:PutBucketPolicy"]
+    get-bucket-notification-configuration:
+      actions: ["s3:GetBucketNotification"]
+    put-bucket-notification-configuration:
+      actions: ["s3:PutBucketNotification"]
+    get-bucket-website:
+      actions: ["s3:GetBucketWebsite"]
+    put-bucket-website:
+      actions: ["s3:PutBucketWebsite"]
+    delete-bucket-website:
+      actions: ["s3:DeleteBucketWebsite"]
+    get-bucket-versioning:
+      actions: ["s3:GetBucketVersioning"]
+    get-bucket-acl:
+      actions: ["s3:GetBucketAcl"]
+    create-multipart-upload:
+      actions: ["s3:PutObject"]
+    upload-part:
+      actions: ["s3:PutObject"]
+    complete-multipart-upload:
+      actions: ["s3:PutObject"]
+    abort-multipart-upload:
+      actions: ["s3:AbortMultipartUpload"]
+    list-parts:
+      actions: ["s3:ListMultipartUploadParts"]
+
+  sns:
+    publish:
+      actions: ["sns:Publish"]
+    create-topic:
+      actions: ["sns:CreateTopic"]
+    delete-topic:
+      actions: ["sns:DeleteTopic"]
+    subscribe:
+      actions: ["sns:Subscribe"]
+    unsubscribe:
+      actions: ["sns:Unsubscribe"]
+    list-topics:
+      actions: ["sns:ListTopics"]
+    list-subscriptions:
+      actions: ["sns:ListSubscriptions"]
+    list-subscriptions-by-topic:
+      actions: ["sns:ListSubscriptionsByTopic"]
+    get-topic-attributes:
+      actions: ["sns:GetTopicAttributes"]
+    set-topic-attributes:
+      actions: ["sns:SetTopicAttributes"]
+    get-subscription-attributes:
+      actions: ["sns:GetSubscriptionAttributes"]
+    set-subscription-attributes:
+      actions: ["sns:SetSubscriptionAttributes"]
+    confirm-subscription:
+      actions: ["sns:ConfirmSubscription"]
+    list-tags-for-resource:
+      actions: ["sns:ListTagsForResource"]
+    tag-resource:
+      actions: ["sns:TagResource"]
+    untag-resource:
+      actions: ["sns:UntagResource"]
+
+  events:
+    put-events:
+      actions: ["events:PutEvents"]
+    put-rule:
+      actions: ["events:PutRule"]
+    delete-rule:
+      actions: ["events:DeleteRule"]
+    describe-rule:
+      actions: ["events:DescribeRule"]
+    list-rules:
+      actions: ["events:ListRules"]
+    put-targets:
+      actions: ["events:PutTargets"]
+    remove-targets:
+      actions: ["events:RemoveTargets"]
+    list-targets-by-rule:
+      actions: ["events:ListTargetsByRule"]
+    create-event-bus:
+      actions: ["events:CreateEventBus"]
+    delete-event-bus:
+      actions: ["events:DeleteEventBus"]
+    describe-event-bus:
+      actions: ["events:DescribeEventBus"]
+    list-event-buses:
+      actions: ["events:ListEventBuses"]
+    enable-rule:
+      actions: ["events:EnableRule"]
+    disable-rule:
+      actions: ["events:DisableRule"]
+    list-tags-for-resource:
+      actions: ["events:ListTagsForResource"]
+    tag-resource:
+      actions: ["events:TagResource"]
+    untag-resource:
+      actions: ["events:UntagResource"]
+
+  stepfunctions:
+    create-state-machine:
+      actions: ["states:CreateStateMachine"]
+    delete-state-machine:
+      actions: ["states:DeleteStateMachine"]
+    describe-state-machine:
+      actions: ["states:DescribeStateMachine"]
+    list-state-machines:
+      actions: ["states:ListStateMachines"]
+    start-execution:
+      actions: ["states:StartExecution"]
+    start-sync-execution:
+      actions: ["states:StartSyncExecution"]
+    stop-execution:
+      actions: ["states:StopExecution"]
+    describe-execution:
+      actions: ["states:DescribeExecution"]
+    list-executions:
+      actions: ["states:ListExecutions"]
+    get-execution-history:
+      actions: ["states:GetExecutionHistory"]
+    update-state-machine:
+      actions: ["states:UpdateStateMachine"]
+    validate-state-machine-definition:
+      actions: ["states:ValidateStateMachineDefinition"]
+    list-state-machine-versions:
+      actions: ["states:ListStateMachineVersions"]
+    tag-resource:
+      actions: ["states:TagResource"]
+    untag-resource:
+      actions: ["states:UntagResource"]
+    list-tags-for-resource:
+      actions: ["states:ListTagsForResource"]
+
+  cognito-idp:
+    sign-up:
+      actions: ["cognito-idp:SignUp"]
+    confirm-sign-up:
+      actions: ["cognito-idp:ConfirmSignUp"]
+    initiate-auth:
+      actions: ["cognito-idp:InitiateAuth"]
+    respond-to-auth-challenge:
+      actions: ["cognito-idp:RespondToAuthChallenge"]
+    forgot-password:
+      actions: ["cognito-idp:ForgotPassword"]
+    confirm-forgot-password:
+      actions: ["cognito-idp:ConfirmForgotPassword"]
+    change-password:
+      actions: ["cognito-idp:ChangePassword"]
+    global-sign-out:
+      actions: ["cognito-idp:GlobalSignOut"]
+    admin-get-user:
+      actions: ["cognito-idp:AdminGetUser"]
+    list-users:
+      actions: ["cognito-idp:ListUsers"]
+    create-user-pool:
+      actions: ["cognito-idp:CreateUserPool"]
+    delete-user-pool:
+      actions: ["cognito-idp:DeleteUserPool"]
+    describe-user-pool:
+      actions: ["cognito-idp:DescribeUserPool"]
+    update-user-pool:
+      actions: ["cognito-idp:UpdateUserPool"]
+    list-user-pools:
+      actions: ["cognito-idp:ListUserPools"]
+    describe-user-pool-client:
+      actions: ["cognito-idp:DescribeUserPoolClient"]
+    list-user-pool-clients:
+      actions: ["cognito-idp:ListUserPoolClients"]
+    create-user-pool-client:
+      actions: ["cognito-idp:CreateUserPoolClient"]
+    delete-user-pool-client:
+      actions: ["cognito-idp:DeleteUserPoolClient"]
+    admin-create-user:
+      actions: ["cognito-idp:AdminCreateUser"]
+    admin-delete-user:
+      actions: ["cognito-idp:AdminDeleteUser"]
+
+  ssm:
+    get-parameter:
+      actions: ["ssm:GetParameter"]
+    get-parameters:
+      actions: ["ssm:GetParameters"]
+    get-parameters-by-path:
+      actions: ["ssm:GetParametersByPath"]
+    put-parameter:
+      actions: ["ssm:PutParameter"]
+    delete-parameter:
+      actions: ["ssm:DeleteParameter"]
+    delete-parameters:
+      actions: ["ssm:DeleteParameter"]
+    describe-parameters:
+      actions: ["ssm:DescribeParameters"]
+    list-tags-for-resource:
+      actions: ["ssm:ListTagsForResource"]
+    add-tags-to-resource:
+      actions: ["ssm:AddTagsToResource"]
+    remove-tags-from-resource:
+      actions: ["ssm:RemoveTagsFromResource"]
+
+  secretsmanager:
+    create-secret:
+      actions: ["secretsmanager:CreateSecret"]
+    delete-secret:
+      actions: ["secretsmanager:DeleteSecret"]
+    describe-secret:
+      actions: ["secretsmanager:DescribeSecret"]
+    get-secret-value:
+      actions: ["secretsmanager:GetSecretValue"]
+    put-secret-value:
+      actions: ["secretsmanager:PutSecretValue"]
+    update-secret:
+      actions: ["secretsmanager:UpdateSecret"]
+    list-secrets:
+      actions: ["secretsmanager:ListSecrets"]
+    tag-resource:
+      actions: ["secretsmanager:TagResource"]
+    untag-resource:
+      actions: ["secretsmanager:UntagResource"]
+    rotate-secret:
+      actions: ["secretsmanager:RotateSecret"]
+    get-resource-policy:
+      actions: ["secretsmanager:GetResourcePolicy"]
+    put-resource-policy:
+      actions: ["secretsmanager:PutResourcePolicy"]
+    restore-secret:
+      actions: ["secretsmanager:RestoreSecret"]
+    list-secret-version-ids:
+      actions: ["secretsmanager:ListSecretVersionIds"]

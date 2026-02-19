@@ -10,6 +10,7 @@ from fastapi.responses import StreamingResponse
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
 from lws.providers.s3.provider import S3Provider
 
@@ -874,11 +875,13 @@ def create_s3_app(
     provider: S3Provider,
     chaos: AwsChaosConfig | None = None,
     aws_mock: AwsMockConfig | None = None,
+    iam_auth: IamAuthBundle | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     app = FastAPI()
     if aws_mock is not None:
         app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="s3")
+    add_iam_auth_middleware(app, "s3", iam_auth, ErrorFormat.XML_S3)
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_S3)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="s3")

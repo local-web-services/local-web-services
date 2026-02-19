@@ -81,6 +81,7 @@ def init_command(
 
     typer.echo(
         "\nDone! Your coding agent now has access to:"
-        "\n  /lws:mock  — Create or configure AWS operation mocks"
-        "\n  /lws:chaos — Enable chaos engineering"
+        "\n  /lws:mock     — Create or configure AWS operation mocks"
+        "\n  /lws:chaos    — Enable chaos engineering"
+        "\n  /lws:iam-auth — Configure IAM authorization"
     )

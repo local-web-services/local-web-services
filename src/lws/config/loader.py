@@ -30,6 +30,24 @@ class ConfigError(Exception):
 
 
 @dataclass
+class IamAuthServiceConfig:
+    """Per-service IAM auth configuration."""
+
+    enabled: bool = False
+    mode: str | None = None
+
+
+@dataclass
+class IamAuthConfig:
+    """IAM authorization middleware configuration."""
+
+    mode: str = "disabled"
+    default_identity: str = "admin-user"
+    identity_header: str = "X-Lws-Identity"
+    services: dict[str, IamAuthServiceConfig] = field(default_factory=dict)
+
+
+@dataclass
 class LdkConfig:
     """LDK project configuration with sensible defaults.
 
@@ -49,6 +67,7 @@ class LdkConfig:
     )
     eventual_consistency_delay_ms: int = 200
     mode: str | None = None
+    iam_auth: IamAuthConfig = field(default_factory=IamAuthConfig)
 
 
 def _validate_config(config: LdkConfig) -> None:
@@ -253,4 +272,50 @@ def load_config(project_dir: Path) -> LdkConfig:
 
     config = LdkConfig(**overrides)
     _validate_config(config)
+
+    # 4. Parse iam_auth section from ldk.yaml (requires full YAML parser)
+    yaml_config_path = project_dir / YAML_CONFIG_FILE_NAME
+    if yaml_config_path.exists():
+        config.iam_auth = _load_iam_auth_config(yaml_config_path)
+
     return config
+
+
+def _load_iam_auth_config(yaml_path: Path) -> IamAuthConfig:
+    """Parse the ``iam_auth`` section from a ldk.yaml file.
+
+    Uses PyYAML for full nested YAML support.  Returns the default
+    config if PyYAML is not installed or the section is absent.
+    """
+    try:
+        import yaml  # pylint: disable=import-outside-toplevel
+    except ImportError:
+        return IamAuthConfig()
+
+    try:
+        with open(yaml_path, encoding="utf-8") as fh:
+            data = yaml.safe_load(fh)
+    except Exception:
+        return IamAuthConfig()
+
+    if not isinstance(data, dict):
+        return IamAuthConfig()
+
+    raw = data.get("iam_auth")
+    if not isinstance(raw, dict):
+        return IamAuthConfig()
+
+    services: dict[str, IamAuthServiceConfig] = {}
+    for svc_name, svc_raw in raw.get("services", {}).items():
+        if isinstance(svc_raw, dict):
+            services[svc_name] = IamAuthServiceConfig(
+                enabled=svc_raw.get("enabled", False),
+                mode=svc_raw.get("mode"),
+            )
+
+    return IamAuthConfig(
+        mode=raw.get("mode", "disabled"),
+        default_identity=raw.get("default_identity", "admin-user"),
+        identity_header=raw.get("identity_header", "X-Lws-Identity"),
+        services=services,
+    )
