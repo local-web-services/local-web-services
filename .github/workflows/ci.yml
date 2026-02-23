@@ -60,12 +60,6 @@ jobs:
         working-directory: core
       - run: make test-e2e
         working-directory: core
-      - name: Generate and publish Allure report
-        if: always()
-        uses: allure-framework/allure-action@v0
-        with:
-          report-directory: core/allure-results
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   # ── Python SDK ─────────────────────────────────────────────────────────────
   python-sdk-test:
