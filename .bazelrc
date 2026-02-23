@@ -3,6 +3,9 @@
 # Use Bzlmod
 common --enable_bzlmod
 
+# Use uv as the Python package resolver
+common --@rules_python//python/config_settings:pip_resolver=uv
+
 # Show test output on failure
 test --test_output=errors
 

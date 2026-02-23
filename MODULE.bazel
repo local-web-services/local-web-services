@@ -10,12 +10,16 @@ python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.12")
 use_repo(python, "python_3_12")
 
+# uv is used as the resolver for all pip.parse calls.
+# requirements.txt files are generated from uv.lock via:
+#   uv export --no-hashes --output-file requirements.txt
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 
 pip.parse(
     hub_name = "pip_core",
     python_version = "3.12",
     requirements_lock = "//core:requirements.txt",
+    experimental_resolver = "uv",
 )
 use_repo(pip, "pip_core")
 
@@ -23,6 +27,7 @@ pip.parse(
     hub_name = "pip_python_sdk",
     python_version = "3.12",
     requirements_lock = "//lang/python/sdk:requirements.txt",
+    experimental_resolver = "uv",
 )
 use_repo(pip, "pip_python_sdk")
 
