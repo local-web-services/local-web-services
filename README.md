@@ -671,7 +671,7 @@ Run `make` with no arguments to see all available targets.
 
 ## Documentation
 
-Visit [https://local-web-services.github.io/www/](https://local-web-services.github.io/www/) for full documentation.
+Visit [https://local-web-services.github.io/](https://local-web-services.github.io/) for full documentation.
 
 ## Contributing
 

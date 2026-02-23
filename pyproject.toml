@@ -33,7 +33,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://local-web-services.github.io/www"
+Homepage = "https://local-web-services.github.io"
 Repository = "https://github.com/local-web-services/local-web-services"
 Issues = "https://github.com/local-web-services/local-web-services/issues"
 
