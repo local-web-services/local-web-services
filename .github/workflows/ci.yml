@@ -164,8 +164,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install ldk
-        run: uv pip install --system -e core
+      - name: Install ldk and Python SDK
+        run: |
+          uv pip install --system -e core
+          uv pip install --system -e lang/python/sdk
       - name: Test
         working-directory: lang/python/example
         run: uv run --extra test pytest
@@ -224,6 +226,9 @@ jobs:
           distribution: "temurin"
       - name: Install ldk
         run: uv pip install --system -e core
+      - name: Publish SDK to mavenLocal
+        working-directory: lang/java/sdk
+        run: ./gradlew publishToMavenLocal
       - name: Test
         working-directory: lang/java/example
         run: ./gradlew test

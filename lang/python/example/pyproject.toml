@@ -10,7 +10,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "local-web-services",
-    "lws-testing",
+    "local-web-services-python-sdk",
     "pytest",
     "pytest-timeout",
 ]
