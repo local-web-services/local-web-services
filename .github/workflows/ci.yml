@@ -69,6 +69,7 @@ jobs:
 
   # ── Python SDK ─────────────────────────────────────────────────────────────
   python-sdk-test:
+    needs: [core-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -84,6 +85,7 @@ jobs:
 
   # ── TypeScript SDK ─────────────────────────────────────────────────────────
   typescript-sdk-test:
+    needs: [core-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -102,6 +104,7 @@ jobs:
 
   # ── JavaScript SDK ─────────────────────────────────────────────────────────
   javascript-sdk-test:
+    needs: [core-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -120,6 +123,7 @@ jobs:
 
   # ── Java SDK ───────────────────────────────────────────────────────────────
   java-sdk-test:
+    needs: [core-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -139,6 +143,7 @@ jobs:
 
   # ── Go SDK ─────────────────────────────────────────────────────────────────
   go-sdk-test:
+    needs: [core-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
