@@ -7,6 +7,8 @@ require (
 	github.com/local-web-services/local-web-services-go-sdk v0.2.2
 )
 
+replace github.com/local-web-services/local-web-services-go-sdk => ../sdk
+
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.3 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 // indirect

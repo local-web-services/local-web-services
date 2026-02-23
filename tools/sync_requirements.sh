@@ -11,7 +11,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 sync() {
   local dir="$1"
   echo "Syncing $dir/requirements.txt from uv.lock..."
-  (cd "$ROOT/$dir" && uv export --no-hashes --output-file requirements.txt)
+  (cd "$ROOT/$dir" && uv export --no-hashes --no-editable --output-file requirements.txt)
 }
 
 sync core

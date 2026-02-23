@@ -14,14 +14,4 @@ py_library(
     visibility = ["//visibility:public"],
 )
 
-py_test(
-    name = "tests",
-    srcs = glob(["tests/**/*.py"]),
-    imports = ["src"],
-    data = ["//core:ldk"],
-    deps = [
-        ":lws_testing",
-        requirement("pytest"),
-        requirement("boto3"),
-    ],
-)
+# Tests live in //lang/python/sdk/tests:tests to avoid output-path prefix conflicts.

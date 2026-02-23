@@ -1,10 +1,23 @@
-java_test(
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+# Java example project.
+# Tests use JUnit 5 and are integration tests requiring `ldk dev` and Docker.
+# Delegates to the Gradle wrapper (handles JUnit 5 discovery correctly).
+
+sh_test(
     name = "tests",
-    srcs = glob(["src/test/java/**/*.java"]),
-    test_class = "com.example.AllTests",
-    deps = [
-        "//lang/java/sdk:lws_java_sdk",
-        "@maven//:org_junit_jupiter_junit_jupiter_api",
-        "@maven//:org_junit_jupiter_junit_jupiter_engine",
+    srcs = ["run_tests.sh"],
+    data = glob(
+        [
+            "src/**",
+            "gradle/**",
+        ],
+    ) + [
+        "build.gradle",
+        "settings.gradle",
+        "gradlew",
+        "gradlew.bat",
+        "//core:ldk",
     ],
+    tags = ["local"],
 )

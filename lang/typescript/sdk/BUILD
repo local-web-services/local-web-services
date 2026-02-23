@@ -1,24 +1,23 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
-load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@npm_typescript_sdk//:defs.bzl", "npm_link_all_packages")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
-npm_link_all_packages(name = "node_modules")
+# TypeScript SDK
+# Tests are integration tests that require `ldk dev` (a subprocess) and Docker.
+# Full Bazel TS compilation (aspect_rules_ts) needs pnpm-lock.yaml; this project
+# uses package-lock.json, so we use sh_test and delegate to npm instead.
 
-ts_project(
-    name = "lws_typescript_sdk",
-    srcs = glob(["src/**/*.ts"]),
-    tsconfig = "tsconfig.json",
-    declaration = True,
-    deps = [":node_modules"],
-    visibility = ["//visibility:public"],
-)
-
-# Tests use jest via npm script: bazel run :test
-js_library(
-    name = "test_lib",
-    srcs = glob(["tests/**/*.ts"]),
-    deps = [
-        ":lws_typescript_sdk",
-        ":node_modules",
+sh_test(
+    name = "tests",
+    srcs = ["run_tests.sh"],
+    data = glob(
+        [
+            "src/**",
+            "tests/**",
+            "tsconfig*.json",
+        ],
+    ) + [
+        "package.json",
+        "package-lock.json",
+        "//core:ldk",
     ],
+    tags = ["local"],
 )

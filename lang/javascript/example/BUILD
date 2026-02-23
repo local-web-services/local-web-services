@@ -1,13 +1,20 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
-load("@npm_javascript_sdk//:defs.bzl", "npm_link_all_packages")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
-npm_link_all_packages(name = "node_modules")
+# JavaScript example project.
+# Tests are integration tests that require `ldk dev` (a subprocess) and Docker.
 
-js_library(
-    name = "example",
-    srcs = glob(["src/**/*.js", "tests/**/*.js"]),
-    deps = [
-        "//lang/javascript/sdk:lws_javascript_sdk",
-        ":node_modules",
+sh_test(
+    name = "tests",
+    srcs = ["run_tests.sh"],
+    data = glob(
+        [
+            "src/**",
+            "tests/**",
+        ],
+    ) + [
+        "package.json",
+        "package-lock.json",
+        "//core:ldk",
     ],
+    tags = ["local"],
 )

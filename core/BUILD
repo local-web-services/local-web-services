@@ -40,14 +40,4 @@ py_binary(
     visibility = ["//visibility:public"],
 )
 
-py_test(
-    name = "tests",
-    srcs = glob(["tests/**/*.py"]),
-    imports = ["src"],
-    deps = [
-        ":lws",
-        requirement("pytest"),
-        requirement("pytest-asyncio"),
-        requirement("httpx"),
-    ],
-)
+# Tests live in //core/tests:tests to avoid output-path prefix conflicts.

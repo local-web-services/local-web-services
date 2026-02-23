@@ -1,20 +1,22 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
-load("@npm_javascript_sdk//:defs.bzl", "npm_link_all_packages")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
-npm_link_all_packages(name = "node_modules")
+# JavaScript SDK
+# Tests are integration tests that require `ldk dev` (a subprocess) and Docker.
+# Full Bazel JS compilation (aspect_rules_js) needs pnpm-lock.yaml; this project
+# uses package-lock.json, so we use sh_test and delegate to npm instead.
 
-js_library(
-    name = "lws_javascript_sdk",
-    srcs = glob(["src/**/*.js"]),
-    deps = [":node_modules"],
-    visibility = ["//visibility:public"],
-)
-
-js_library(
-    name = "test_lib",
-    srcs = glob(["tests/**/*.js"]),
-    deps = [
-        ":lws_javascript_sdk",
-        ":node_modules",
+sh_test(
+    name = "tests",
+    srcs = ["run_tests.sh"],
+    data = glob(
+        [
+            "src/**",
+            "tests/**",
+        ],
+    ) + [
+        "package.json",
+        "package-lock.json",
+        "//core:ldk",
     ],
+    tags = ["local"],
 )

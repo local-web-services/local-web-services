@@ -4,22 +4,20 @@ module(
 )
 
 # ── Python ────────────────────────────────────────────────────────────────────
-bazel_dep(name = "rules_python", version = "1.1.0")
+bazel_dep(name = "rules_python", version = "1.8.5")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(python_version = "3.12")
 use_repo(python, "python_3_12")
 
 # uv is used as the resolver for all pip.parse calls.
-# requirements.txt files are generated from uv.lock via:
-#   uv export --no-hashes --output-file requirements.txt
+# requirements.txt files are generated from uv.lock via tools/sync_requirements.sh
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 
 pip.parse(
     hub_name = "pip_core",
     python_version = "3.12",
     requirements_lock = "//core:requirements.txt",
-    experimental_resolver = "uv",
 )
 use_repo(pip, "pip_core")
 
@@ -27,28 +25,51 @@ pip.parse(
     hub_name = "pip_python_sdk",
     python_version = "3.12",
     requirements_lock = "//lang/python/sdk:requirements.txt",
-    experimental_resolver = "uv",
 )
 use_repo(pip, "pip_python_sdk")
 
 # ── Go ────────────────────────────────────────────────────────────────────────
-bazel_dep(name = "rules_go", version = "0.50.1")
-bazel_dep(name = "gazelle", version = "0.40.0")
+bazel_dep(name = "rules_go", version = "0.60.0")
+bazel_dep(name = "gazelle", version = "0.47.0")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.23.0")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+# One go_deps.from_file per Bazel module is the Gazelle Bzlmod limit.
+# The SDK go.mod covers all external AWS deps used by both SDK and example.
 go_deps.from_file(go_mod = "//lang/go/sdk:go.mod")
-use_repo(go_deps, "com_github_aws_aws_sdk_go_v2")
+use_repo(go_deps,
+    "com_github_aws_aws_sdk_go_v2",
+    "com_github_aws_aws_sdk_go_v2_config",
+    "com_github_aws_aws_sdk_go_v2_credentials",
+    "com_github_aws_aws_sdk_go_v2_service_dynamodb",
+    "com_github_aws_aws_sdk_go_v2_service_s3",
+    "com_github_aws_aws_sdk_go_v2_service_secretsmanager",
+    "com_github_aws_aws_sdk_go_v2_service_sfn",
+    "com_github_aws_aws_sdk_go_v2_service_sns",
+    "com_github_aws_aws_sdk_go_v2_service_sqs",
+    "com_github_aws_aws_sdk_go_v2_service_ssm",
+    "com_github_gorilla_websocket",
+)
 
 # ── Java ──────────────────────────────────────────────────────────────────────
-bazel_dep(name = "rules_jvm_external", version = "6.6")
+bazel_dep(name = "rules_java", version = "9.0.3")
+bazel_dep(name = "rules_jvm_external", version = "6.10")
+# Override rules_android to fix Bazel 9 compatibility (pulled in by rules_jvm_external).
+single_version_override(
+    module_name = "rules_android",
+    version = "0.7.1",
+)
 
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
 maven.install(
     name = "maven",
+    known_contributing_modules = ["protobuf"],
     artifacts = [
+        "software.amazon.awssdk:bom:2.26.0",
+        "software.amazon.awssdk:auth:2.26.0",
+        "software.amazon.awssdk:regions:2.26.0",
         "software.amazon.awssdk:dynamodb:2.26.0",
         "software.amazon.awssdk:sqs:2.26.0",
         "software.amazon.awssdk:s3:2.26.0",
@@ -56,8 +77,10 @@ maven.install(
         "software.amazon.awssdk:sfn:2.26.0",
         "software.amazon.awssdk:ssm:2.26.0",
         "software.amazon.awssdk:secretsmanager:2.26.0",
+        "org.junit.jupiter:junit-jupiter:5.10.2",
         "org.junit.jupiter:junit-jupiter-api:5.10.2",
         "org.junit.jupiter:junit-jupiter-engine:5.10.2",
+        "org.junit.platform:junit-platform-launcher:1.10.2",
     ],
     repositories = [
         "https://repo1.maven.org/maven2",
@@ -65,23 +88,11 @@ maven.install(
 )
 use_repo(maven, "maven")
 
+# ── Shell ─────────────────────────────────────────────────────────────────────
+# sh_test / sh_binary rules (Bazel 9 removed them from native; load from rules_shell).
+bazel_dep(name = "rules_shell", version = "0.6.1")
+
 # ── JavaScript / TypeScript ───────────────────────────────────────────────────
-bazel_dep(name = "aspect_rules_js", version = "2.3.0")
-bazel_dep(name = "aspect_rules_ts", version = "3.3.0")
-bazel_dep(name = "aspect_bazel_lib", version = "2.9.4")
-
-npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
-
-npm.npm_translate_lock(
-    name = "npm_typescript_sdk",
-    pnpm_lock = "//lang/typescript/sdk:pnpm-lock.yaml",
-    npmrc = "//lang/typescript/sdk:.npmrc",
-)
-use_repo(npm, "npm_typescript_sdk")
-
-npm.npm_translate_lock(
-    name = "npm_javascript_sdk",
-    pnpm_lock = "//lang/javascript/sdk:pnpm-lock.yaml",
-    npmrc = "//lang/javascript/sdk:.npmrc",
-)
-use_repo(npm, "npm_javascript_sdk")
+# JS/TS tests are integration tests that require ldk dev as a subprocess.
+# They run via sh_test using npm ci && npm test rather than full Bazel JS rules.
+bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
