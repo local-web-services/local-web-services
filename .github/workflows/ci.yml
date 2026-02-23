@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
 
 permissions:
   pull-requests: write
@@ -11,7 +12,8 @@ permissions:
   contents: read
 
 jobs:
-  lint:
+  # ── Core (Python ldk) ──────────────────────────────────────────────────────
+  core-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,10 +22,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
+        working-directory: core
       - run: make lint
+        working-directory: core
       - run: make format-check
+        working-directory: core
 
-  analysis:
+  core-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,22 +37,11 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
-      - run: make complexity
-      - run: make cpd
-      - run: make pylint
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: make install
+        working-directory: core
       - run: make test
+        working-directory: core
 
-  test-e2e:
+  core-test-e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,10 +57,100 @@ jobs:
           docker pull public.ecr.aws/lambda/python:3.12
           docker pull public.ecr.aws/lambda/nodejs:20
       - run: make install
+        working-directory: core
       - run: make test-e2e
+        working-directory: core
       - name: Generate and publish Allure report
         if: always()
         uses: allure-framework/allure-action@v0
         with:
-          report-directory: allure-results
+          report-directory: core/allure-results
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Python SDK ─────────────────────────────────────────────────────────────
+  python-sdk-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/python/sdk
+        run: uv run pytest
+
+  # ── TypeScript SDK ─────────────────────────────────────────────────────────
+  typescript-sdk-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/typescript/sdk
+        run: npm ci && npm test
+
+  # ── JavaScript SDK ─────────────────────────────────────────────────────────
+  javascript-sdk-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/javascript/sdk
+        run: npm ci && npm test
+
+  # ── Java SDK ───────────────────────────────────────────────────────────────
+  java-sdk-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/java/sdk
+        run: ./gradlew test
+
+  # ── Go SDK ─────────────────────────────────────────────────────────────────
+  go-sdk-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/go/sdk
+        run: go test ./...

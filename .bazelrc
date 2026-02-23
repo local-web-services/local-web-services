@@ -1,0 +1,17 @@
+# Common Bazel settings
+
+# Use Bzlmod
+common --enable_bzlmod
+
+# Show test output on failure
+test --test_output=errors
+
+# Cache test results
+test --cache_test_results=yes
+
+# Stamp builds with version info
+build --stamp
+
+# Java toolchain
+build --java_language_version=17
+build --tool_java_language_version=17

@@ -1,0 +1,329 @@
+"""In-process service transport — starts all LWS services within the test process."""
+
+from __future__ import annotations
+
+import socket
+from pathlib import Path
+from typing import Any
+
+
+def _free_port() -> int:
+    """Return a free ephemeral TCP port on localhost."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+def _make_table_config(spec: dict[str, Any]) -> Any:
+    """Convert a table spec dict to a TableConfig."""
+    from lws.interfaces.key_value_store import KeyAttribute, KeySchema, TableConfig
+
+    pk = KeyAttribute(
+        name=spec["partition_key"],
+        type=spec.get("partition_key_type", "S"),
+    )
+    sk = None
+    if "sort_key" in spec:
+        sk = KeyAttribute(
+            name=spec["sort_key"],
+            type=spec.get("sort_key_type", "S"),
+        )
+    return TableConfig(
+        table_name=spec["name"],
+        key_schema=KeySchema(partition_key=pk, sort_key=sk),
+    )
+
+
+def _make_queue_config(spec: str | dict[str, Any]) -> Any:
+    """Convert a queue spec (str or dict) to a QueueConfig."""
+    from lws.providers.sqs.provider import QueueConfig
+
+    if isinstance(spec, str):
+        return QueueConfig(queue_name=spec)
+    return QueueConfig(
+        queue_name=spec["name"],
+        visibility_timeout=spec.get("visibility_timeout", 30),
+        is_fifo=spec.get("is_fifo", False),
+        content_based_dedup=spec.get("content_based_dedup", False),
+    )
+
+
+def _make_topic_config(spec: str | dict[str, Any]) -> Any:
+    """Convert a topic spec (str or dict) to a TopicConfig."""
+    from lws.providers.sns.provider import TopicConfig
+
+    if isinstance(spec, str):
+        name = spec
+        arn = f"arn:aws:sns:us-east-1:000000000000:{name}"
+    else:
+        name = spec["name"]
+        arn = spec.get("arn", f"arn:aws:sns:us-east-1:000000000000:{name}")
+    return TopicConfig(topic_name=name, topic_arn=arn)
+
+
+def _make_state_machine_config(spec: dict[str, Any]) -> Any:
+    """Convert a state machine spec dict to a StateMachineConfig."""
+    from lws.providers.stepfunctions.provider import StateMachineConfig
+
+    return StateMachineConfig(
+        name=spec["name"],
+        definition=spec.get("definition", "{}"),
+        role_arn=spec.get("role_arn", ""),
+    )
+
+
+def _make_initial_parameter(spec: str | dict[str, Any]) -> dict[str, Any]:
+    """Convert a parameter spec to the dict format expected by create_ssm_app."""
+    if isinstance(spec, str):
+        return {"name": spec, "value": "", "type": "String"}
+    return spec
+
+
+def _make_initial_secret(spec: str | dict[str, Any]) -> dict[str, Any]:
+    """Convert a secret spec to the dict format expected by create_secretsmanager_app."""
+    if isinstance(spec, str):
+        return {"name": spec, "secret_string": ""}
+    return spec
+
+
+class _StubOrchestrator:
+    """Minimal Orchestrator stub for the management API."""
+
+    def __init__(self, providers: dict[str, Any]) -> None:
+        self._providers = providers
+        self._running = True
+
+    @property
+    def providers(self) -> dict[str, Any]:
+        return self._providers
+
+    @property
+    def running(self) -> bool:
+        return self._running
+
+    def request_shutdown(self) -> None:
+        self._running = False
+
+
+def _create_management_app(
+    providers: dict[str, Any],
+    chaos_configs: dict[str, Any],
+    mock_configs: dict[str, Any],
+) -> Any:
+    """Build a FastAPI management app with reset, mock, and chaos endpoints."""
+    from fastapi import FastAPI
+    from fastapi.responses import JSONResponse
+    from lws.api.management import _handle_reset, create_management_router
+
+    orchestrator = _StubOrchestrator(providers)
+    app = FastAPI(title="LWS Testing Management")
+
+    router = create_management_router(
+        orchestrator=orchestrator,
+        providers=providers,
+        chaos_configs=chaos_configs,
+        aws_mock_configs=mock_configs,
+    )
+    app.include_router(router)
+
+    # Alias endpoint used by LwsSession.reset()
+    @app.post("/_ldk/state/clear")
+    async def state_clear() -> JSONResponse:
+        return await _handle_reset(providers)
+
+    return app
+
+
+def _setup_logging() -> Any:
+    """Initialise WebSocketLogHandler and install it globally."""
+    from lws.logging.logger import WebSocketLogHandler, set_ws_handler
+
+    log_handler = WebSocketLogHandler()
+    set_ws_handler(log_handler)
+    return log_handler
+
+
+def _convert_spec(spec: dict[str, Any]) -> dict[str, list[Any]]:
+    """Convert raw spec dict to typed provider config lists."""
+    return {
+        "tables": [_make_table_config(t) for t in spec.get("tables", [])],
+        "queues": [_make_queue_config(q) for q in spec.get("queues", [])],
+        "buckets": [b if isinstance(b, str) else b["name"] for b in spec.get("buckets", [])],
+        "topics": [_make_topic_config(t) for t in spec.get("topics", [])],
+        "state_machines": [_make_state_machine_config(sm) for sm in spec.get("state_machines", [])],
+        "parameters": [_make_initial_parameter(p) for p in spec.get("parameters", [])],
+        "secrets": [_make_initial_secret(s) for s in spec.get("secrets", [])],
+    }
+
+
+def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, Any]:
+    """Instantiate all service providers."""
+    from lws.providers.dynamodb.provider import SqliteDynamoProvider
+    from lws.providers.s3.provider import S3Provider
+    from lws.providers.sns.provider import SnsProvider
+    from lws.providers.sqs.provider import SqsProvider
+    from lws.providers.stepfunctions.provider import StepFunctionsProvider
+
+    dynamo_data = data_dir / "dynamodb"
+    dynamo_data.mkdir(parents=True, exist_ok=True)
+    s3_data = data_dir / "s3"
+    s3_data.mkdir(parents=True, exist_ok=True)
+
+    return {
+        "dynamodb": SqliteDynamoProvider(data_dir=dynamo_data, tables=cfg["tables"]),
+        "sqs": SqsProvider(queues=cfg["queues"]),
+        "s3": S3Provider(data_dir=s3_data, buckets=cfg["buckets"]),
+        "sns": SnsProvider(topics=cfg["topics"]),
+        "stepfunctions": StepFunctionsProvider(state_machines=cfg["state_machines"]),
+    }
+
+
+def _build_service_apps(
+    providers: dict[str, Any],
+    ports: dict[str, int],
+    chaos_configs: dict[str, Any],
+    mock_configs: dict[str, Any],
+    cfg: dict[str, list[Any]],
+) -> list[tuple[str, Any]]:
+    """Build FastAPI apps for all services; return as (service_name, app) pairs."""
+    from lws.providers.dynamodb.routes import create_dynamodb_app
+    from lws.providers.s3.routes import create_s3_app
+    from lws.providers.secretsmanager.routes import create_secretsmanager_app
+    from lws.providers.sns.routes import create_sns_app
+    from lws.providers.sqs.routes import create_sqs_app
+    from lws.providers.ssm.routes import create_ssm_app
+    from lws.providers.stepfunctions.routes import create_stepfunctions_app
+
+    return [
+        (
+            "dynamodb",
+            create_dynamodb_app(
+                providers["dynamodb"],
+                chaos=chaos_configs["dynamodb"],
+                aws_mock=mock_configs["dynamodb"],
+            ),
+        ),
+        (
+            "sqs",
+            create_sqs_app(
+                providers["sqs"],
+                port=ports["sqs"],
+                chaos=chaos_configs["sqs"],
+                aws_mock=mock_configs["sqs"],
+            ),
+        ),
+        (
+            "s3",
+            create_s3_app(
+                providers["s3"],
+                chaos=chaos_configs["s3"],
+                aws_mock=mock_configs["s3"],
+            ),
+        ),
+        (
+            "sns",
+            create_sns_app(
+                providers["sns"],
+                chaos=chaos_configs["sns"],
+                aws_mock=mock_configs["sns"],
+            ),
+        ),
+        (
+            "stepfunctions",
+            create_stepfunctions_app(
+                providers["stepfunctions"],
+                chaos=chaos_configs["stepfunctions"],
+                aws_mock=mock_configs["stepfunctions"],
+            ),
+        ),
+        (
+            "ssm",
+            create_ssm_app(
+                initial_parameters=cfg["parameters"] or None,
+                chaos=chaos_configs["ssm"],
+                aws_mock=mock_configs["ssm"],
+            ),
+        ),
+        (
+            "secretsmanager",
+            create_secretsmanager_app(
+                initial_secrets=cfg["secrets"] or None,
+                chaos=chaos_configs["secretsmanager"],
+                aws_mock=mock_configs["secretsmanager"],
+            ),
+        ),
+    ]
+
+
+async def _start_providers(providers: dict[str, Any]) -> None:
+    """Start the lifecycle of all service providers."""
+    for provider in providers.values():
+        await provider.start()
+
+
+async def _start_all_servers(
+    service_apps: list[tuple[str, Any]],
+    ports: dict[str, int],
+    mgmt_app: Any,
+    mgmt_port: int,
+) -> list[Any]:
+    """Start uvicorn servers for every service app plus the management app."""
+    from lws.providers.mockserver.provider import start_uvicorn_server
+
+    servers: list[Any] = []
+    for svc, app in service_apps:
+        server, task = await start_uvicorn_server(app, ports[svc], host="127.0.0.1")
+        servers.append((server, task))
+    mgmt_server, mgmt_task = await start_uvicorn_server(mgmt_app, mgmt_port, host="127.0.0.1")
+    servers.append((mgmt_server, mgmt_task))
+    return servers
+
+
+_SERVICE_NAMES = [
+    "dynamodb",
+    "sqs",
+    "s3",
+    "sns",
+    "stepfunctions",
+    "ssm",
+    "secretsmanager",
+]
+
+
+async def start_services(
+    spec: dict[str, Any],
+    data_dir: Path,
+) -> tuple[Any, dict[str, int], int, list[Any]]:
+    """Start all LWS services in-process.
+
+    Returns:
+        Tuple of (log_handler, service_ports, management_port, servers_list).
+        ``servers_list`` is a list of ``(Server, Task)`` pairs that can be
+        passed directly to :func:`stop_services`.
+    """
+    from lws.providers._shared.aws_chaos import AwsChaosConfig
+    from lws.providers._shared.aws_operation_mock import AwsMockConfig
+
+    log_handler = _setup_logging()
+    cfg = _convert_spec(spec)
+    providers = _create_providers(cfg, data_dir)
+
+    chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}
+    mock_configs: dict[str, Any] = {s: AwsMockConfig(service=s) for s in _SERVICE_NAMES}
+    ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
+    mgmt_port = _free_port()
+
+    service_apps = _build_service_apps(providers, ports, chaos_configs, mock_configs, cfg)
+    await _start_providers(providers)
+    mgmt_app = _create_management_app(providers, chaos_configs, mock_configs)
+    servers = await _start_all_servers(service_apps, ports, mgmt_app, mgmt_port)
+
+    return log_handler, ports, mgmt_port, servers
+
+
+async def stop_services(servers: list[Any]) -> None:
+    """Gracefully stop all servers started by :func:`start_services`."""
+    from lws.providers.mockserver.provider import stop_uvicorn_server
+
+    for server, task in reversed(servers):
+        await stop_uvicorn_server(server, task)
