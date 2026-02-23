@@ -42,6 +42,7 @@ jobs:
         working-directory: core
 
   core-test-e2e:
+    needs: [core-lint, core-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
