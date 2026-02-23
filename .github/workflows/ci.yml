@@ -156,7 +156,7 @@ jobs:
 
   # ── Python Example ─────────────────────────────────────────────────────────
   python-example-test:
-    needs: [python-sdk-test]
+    needs: [core-test-e2e, python-sdk-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -174,7 +174,7 @@ jobs:
 
   # ── TypeScript Example ──────────────────────────────────────────────────────
   typescript-example-test:
-    needs: [typescript-sdk-test]
+    needs: [core-test-e2e, typescript-sdk-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -193,7 +193,7 @@ jobs:
 
   # ── JavaScript Example ──────────────────────────────────────────────────────
   javascript-example-test:
-    needs: [javascript-sdk-test]
+    needs: [core-test-e2e, javascript-sdk-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -212,7 +212,7 @@ jobs:
 
   # ── Java Example ────────────────────────────────────────────────────────────
   java-example-test:
-    needs: [java-sdk-test]
+    needs: [core-test-e2e, java-sdk-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -235,7 +235,7 @@ jobs:
 
   # ── Go Example ──────────────────────────────────────────────────────────────
   go-example-test:
-    needs: [go-sdk-test]
+    needs: [core-test-e2e, go-sdk-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
