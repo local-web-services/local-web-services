@@ -7,3 +7,4 @@ __pycache__
 allure-results
 allure-report
 _lws_override.tf
+.ldk
