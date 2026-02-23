@@ -14,9 +14,9 @@ sh_test(
         ],
     ) + [
         "build.gradle",
-        "settings.gradle",
         "gradlew",
         "gradlew.bat",
+        "settings.gradle",
         "//core:ldk",
     ],
     tags = ["local"],

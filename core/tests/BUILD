@@ -1,11 +1,11 @@
-load("@rules_python//python:defs.bzl", "py_test")
 load("@pip_core//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_test")
 
 py_test(
     name = "tests",
     srcs = glob(["**/*.py"]),
-    main = "pytest_runner.py",
     imports = ["../src"],
+    main = "pytest_runner.py",
     deps = [
         "//core:lws",
         requirement("pytest"),
