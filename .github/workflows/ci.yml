@@ -153,3 +153,96 @@ jobs:
       - name: Test
         working-directory: lang/go/sdk
         run: go test ./...
+
+  # ── Python Example ─────────────────────────────────────────────────────────
+  python-example-test:
+    needs: [python-sdk-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/python/example
+        run: uv run --extra test pytest
+
+  # ── TypeScript Example ──────────────────────────────────────────────────────
+  typescript-example-test:
+    needs: [typescript-sdk-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/typescript/example
+        run: npm ci && npm test
+
+  # ── JavaScript Example ──────────────────────────────────────────────────────
+  javascript-example-test:
+    needs: [javascript-sdk-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/javascript/example
+        run: npm ci && npm test
+
+  # ── Java Example ────────────────────────────────────────────────────────────
+  java-example-test:
+    needs: [java-sdk-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/java/example
+        run: ./gradlew test
+
+  # ── Go Example ──────────────────────────────────────────────────────────────
+  go-example-test:
+    needs: [go-sdk-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - name: Install ldk
+        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/go/example
+        run: go test ./...
