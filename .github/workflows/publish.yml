@@ -14,8 +14,11 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
+        working-directory: core
       - run: make lint
+        working-directory: core
       - run: make format-check
+        working-directory: core
 
   analysis:
     runs-on: ubuntu-latest
@@ -26,9 +29,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
+        working-directory: core
       - run: make complexity
+        working-directory: core
       - run: make cpd
+        working-directory: core
       - run: make pylint
+        working-directory: core
 
   test:
     runs-on: ubuntu-latest
@@ -39,7 +46,9 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
+        working-directory: core
       - run: make test
+        working-directory: core
 
   test-e2e:
     runs-on: ubuntu-latest
@@ -49,29 +58,35 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+          docker pull public.ecr.aws/lambda/nodejs:20
       - run: make install
+        working-directory: core
       - run: make test-e2e
+        working-directory: core
 
   build:
     needs: [lint, analysis, test, test-e2e]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: astral-sh/setup-uv@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - run: make install
-
+        working-directory: core
       - run: uv build
-
+        working-directory: core
       - uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist/
+          path: core/dist/
 
   publish:
     needs: build
