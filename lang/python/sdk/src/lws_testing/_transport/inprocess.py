@@ -302,7 +302,7 @@ async def start_services(
         passed directly to :func:`stop_services`.
     """
     from lws.providers._shared.aws_chaos import AwsChaosConfig
-    from lws.providers._shared.aws_operation_fake import AwsFakeConfig
+    from lws.providers._shared.aws_operation_mock import AwsFakeConfig
 
     log_handler = _setup_logging()
     cfg = _convert_spec(spec)

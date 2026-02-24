@@ -7,7 +7,7 @@ describe("IamBuilder", () => {
   let fakeFetch: jest.Mock;
 
   beforeEach(() => {
-    fakeFetch = jest.fn().fakeResolvedValue({ ok: true });
+    fakeFetch = jest.fn().mockResolvedValue({ ok: true });
     global.fetch = fakeFetch;
   });
 
@@ -21,7 +21,7 @@ describe("IamBuilder", () => {
       await builder.mode(expectedMode).apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.mode).toBe(expectedMode);
     });
   });
@@ -36,7 +36,7 @@ describe("IamBuilder", () => {
       await builder.defaultIdentity(expectedIdentity).apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.default_identity).toBe(expectedIdentity);
     });
   });
@@ -69,7 +69,7 @@ describe("IamBuilder", () => {
       await builder.apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.mode).toBeUndefined();
     });
 
@@ -85,7 +85,7 @@ describe("IamBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.identities).toBeDefined();
       expect(actualBody.identities["read-only"]).toBeDefined();
     });
@@ -109,7 +109,7 @@ describe("IdentityBuilder", () => {
   let fakeFetch: jest.Mock;
 
   beforeEach(() => {
-    fakeFetch = jest.fn().fakeResolvedValue({ ok: true });
+    fakeFetch = jest.fn().mockResolvedValue({ ok: true });
     global.fetch = fakeFetch;
   });
 
@@ -128,7 +128,7 @@ describe("IdentityBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualPolicy = actualBody.identities["dev-user"].inline_policies[0];
       expect(actualPolicy.document.Statement[0].Effect).toBe("Allow");
       expect(actualPolicy.document.Statement[0].Action).toEqual(expectedActions);
@@ -147,7 +147,7 @@ describe("IdentityBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualStatement =
         actualBody.identities["dev-user"].inline_policies[0].document.Statement[0];
       expect(actualStatement.Resource).toBe("*");
@@ -166,7 +166,7 @@ describe("IdentityBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualPolicies = actualBody.identities["dev-user"].inline_policies;
       expect(actualPolicies).toHaveLength(2);
     });
@@ -186,7 +186,7 @@ describe("IdentityBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualStatement =
         actualBody.identities["readonly-user"].inline_policies[0].document.Statement[0];
       expect(actualStatement.Effect).toBe("Deny");

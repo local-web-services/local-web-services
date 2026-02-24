@@ -19,14 +19,14 @@ describe("DynamoDBHelper", () => {
         id: { S: "1" },
         status: { S: "pending" },
       };
-      send.fakeResolvedValue({});
+      send.mockResolvedValue({});
 
       // Act
       await helper.put(expectedItem);
 
       // Assert
       expect(send).toHaveBeenCalledTimes(1);
-      const actualCommand = send.fake.calls[0][0];
+      const actualCommand = send.mock.calls[0][0];
       expect(actualCommand.input.TableName).toBe("Orders");
       expect(actualCommand.input.Item).toEqual(expectedItem);
     });
@@ -41,7 +41,7 @@ describe("DynamoDBHelper", () => {
         id: { S: "1" },
         status: { S: "complete" },
       };
-      send.fakeResolvedValue({ Item: expectedItem });
+      send.mockResolvedValue({ Item: expectedItem });
 
       // Act
       const actual = await helper.get({ id: { S: "1" } });
@@ -54,7 +54,7 @@ describe("DynamoDBHelper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
-      send.fakeResolvedValue({});
+      send.mockResolvedValue({});
 
       // Act
       const actual = await helper.get({ id: { S: "missing" } });
@@ -70,14 +70,14 @@ describe("DynamoDBHelper", () => {
       const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       const expectedKey: Record<string, AttributeValue> = { id: { S: "1" } };
-      send.fakeResolvedValue({});
+      send.mockResolvedValue({});
 
       // Act
       await helper.delete(expectedKey);
 
       // Assert
       expect(send).toHaveBeenCalledTimes(1);
-      const actualCommand = send.fake.calls[0][0];
+      const actualCommand = send.mock.calls[0][0];
       expect(actualCommand.input.TableName).toBe("Orders");
       expect(actualCommand.input.Key).toEqual(expectedKey);
     });
@@ -92,7 +92,7 @@ describe("DynamoDBHelper", () => {
         { id: { S: "1" } },
         { id: { S: "2" } },
       ];
-      send.fakeResolvedValue({ Items: expectedItems, LastEvaluatedKey: undefined });
+      send.mockResolvedValue({ Items: expectedItems, LastEvaluatedKey: undefined });
 
       // Act
       const actual = await helper.scan();
@@ -107,11 +107,11 @@ describe("DynamoDBHelper", () => {
       const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       send
-        .fakeResolvedValueOnce({
+        .mockResolvedValueOnce({
           Items: [{ id: { S: "1" } }],
           LastEvaluatedKey: { id: { S: "1" } },
         })
-        .fakeResolvedValueOnce({
+        .mockResolvedValueOnce({
           Items: [{ id: { S: "2" } }],
           LastEvaluatedKey: undefined,
         });
@@ -131,7 +131,7 @@ describe("DynamoDBHelper", () => {
       const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       const expectedItem: Record<string, AttributeValue> = { id: { S: "1" } };
-      send.fakeResolvedValue({ Item: expectedItem });
+      send.mockResolvedValue({ Item: expectedItem });
 
       // Act
       const actual = await helper.assertItemExists({ id: { S: "1" } });
@@ -144,7 +144,7 @@ describe("DynamoDBHelper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
-      send.fakeResolvedValue({});
+      send.mockResolvedValue({});
       const expectedKey = { id: { S: "missing" } };
 
       // Act & Assert
@@ -159,7 +159,7 @@ describe("DynamoDBHelper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
-      send.fakeResolvedValue({ Items: [{ id: { S: "1" } }] });
+      send.mockResolvedValue({ Items: [{ id: { S: "1" } }] });
       const expectedCount = 1;
 
       // Act & Assert
@@ -170,7 +170,7 @@ describe("DynamoDBHelper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
-      send.fakeResolvedValue({
+      send.mockResolvedValue({
         Items: [{ id: { S: "1" } }, { id: { S: "2" } }],
       });
       const expectedCount = 1;

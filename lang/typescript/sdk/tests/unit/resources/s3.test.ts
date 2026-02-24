@@ -22,7 +22,7 @@ describe("S3Helper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
-      send.fakeResolvedValue({});
+      send.mockResolvedValue({});
       const expectedKey = "uploads/file.txt";
       const expectedContent = "hello world";
 
@@ -31,7 +31,7 @@ describe("S3Helper", () => {
 
       // Assert
       expect(send).toHaveBeenCalledTimes(1);
-      const actualCommand = send.fake.calls[0][0];
+      const actualCommand = send.mock.calls[0][0];
       expect(actualCommand.input.Bucket).toBe(EXPECTED_BUCKET);
       expect(actualCommand.input.Key).toBe(expectedKey);
       expect(actualCommand.input.ContentType).toBe("text/plain");
@@ -44,7 +44,7 @@ describe("S3Helper", () => {
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
       const expectedContent = "file content";
-      send.fakeResolvedValue({ Body: makeAsyncBody(expectedContent) });
+      send.mockResolvedValue({ Body: makeAsyncBody(expectedContent) });
 
       // Act
       const actual = await helper.get("some-key");
@@ -60,7 +60,7 @@ describe("S3Helper", () => {
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
       const expectedText = "hello from s3";
-      send.fakeResolvedValue({ Body: makeAsyncBody(expectedText) });
+      send.mockResolvedValue({ Body: makeAsyncBody(expectedText) });
 
       // Act
       const actual = await helper.getText("some-key");
@@ -75,14 +75,14 @@ describe("S3Helper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
-      send.fakeResolvedValue({});
+      send.mockResolvedValue({});
       const expectedKey = "to-delete.txt";
 
       // Act
       await helper.delete(expectedKey);
 
       // Assert
-      const actualCommand = send.fake.calls[0][0];
+      const actualCommand = send.mock.calls[0][0];
       expect(actualCommand.input.Bucket).toBe(EXPECTED_BUCKET);
       expect(actualCommand.input.Key).toBe(expectedKey);
     });
@@ -93,7 +93,7 @@ describe("S3Helper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
-      send.fakeResolvedValue({
+      send.mockResolvedValue({
         Contents: [{ Key: "a.txt" }, { Key: "b.txt" }],
         NextContinuationToken: undefined,
       });
@@ -111,11 +111,11 @@ describe("S3Helper", () => {
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
       send
-        .fakeResolvedValueOnce({
+        .mockResolvedValueOnce({
           Contents: [{ Key: "a.txt" }],
           NextContinuationToken: "token-1",
         })
-        .fakeResolvedValueOnce({
+        .mockResolvedValueOnce({
           Contents: [{ Key: "b.txt" }],
           NextContinuationToken: undefined,
         });
@@ -132,14 +132,14 @@ describe("S3Helper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
-      send.fakeResolvedValue({ Contents: [], NextContinuationToken: undefined });
+      send.mockResolvedValue({ Contents: [], NextContinuationToken: undefined });
       const expectedPrefix = "uploads/";
 
       // Act
       await helper.listKeys(expectedPrefix);
 
       // Assert
-      const actualCommand = send.fake.calls[0][0];
+      const actualCommand = send.mock.calls[0][0];
       expect(actualCommand.input.Prefix).toBe(expectedPrefix);
     });
   });
@@ -149,7 +149,7 @@ describe("S3Helper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
-      send.fakeResolvedValue({
+      send.mockResolvedValue({
         Contents: [{ Key: "target.txt" }],
         NextContinuationToken: undefined,
       });
@@ -162,7 +162,7 @@ describe("S3Helper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
-      send.fakeResolvedValue({ Contents: [], NextContinuationToken: undefined });
+      send.mockResolvedValue({ Contents: [], NextContinuationToken: undefined });
 
       // Act & Assert
       await expect(helper.assertObjectExists("missing.txt")).rejects.toThrow(
@@ -176,7 +176,7 @@ describe("S3Helper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
-      send.fakeResolvedValue({
+      send.mockResolvedValue({
         Contents: [{ Key: "a.txt" }, { Key: "b.txt" }],
         NextContinuationToken: undefined,
       });
@@ -190,7 +190,7 @@ describe("S3Helper", () => {
       // Arrange
       const { send, client } = makeFakeClient();
       const helper = new S3Helper(EXPECTED_BUCKET, client);
-      send.fakeResolvedValue({
+      send.mockResolvedValue({
         Contents: [{ Key: "a.txt" }],
         NextContinuationToken: undefined,
       });

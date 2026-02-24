@@ -7,7 +7,7 @@ describe("FakeBuilder", () => {
   let fakeFetch: jest.Mock;
 
   beforeEach(() => {
-    fakeFetch = jest.fn().fakeResolvedValue({ ok: true });
+    fakeFetch = jest.fn().mockResolvedValue({ ok: true });
     global.fetch = fakeFetch;
   });
 
@@ -27,7 +27,7 @@ describe("FakeBuilder", () => {
           headers: { "Content-Type": "application/json" },
         })
       );
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.enabled).toBe(false);
       expect(actualBody.dynamodb.rules).toEqual([]);
     });
@@ -51,7 +51,7 @@ describe("FakeRuleBuilder", () => {
   let fakeFetch: jest.Mock;
 
   beforeEach(() => {
-    fakeFetch = jest.fn().fakeResolvedValue({ ok: true });
+    fakeFetch = jest.fn().mockResolvedValue({ ok: true });
     global.fetch = fakeFetch;
   });
 
@@ -69,7 +69,7 @@ describe("FakeRuleBuilder", () => {
         .respond({ status: expectedStatus, body: expectedBody });
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualRule = actualBody.dynamodb.rules[0];
       expect(actualRule.operation).toBe(expectedOperation);
       expect(actualRule.response.status).toBe(expectedStatus);
@@ -85,7 +85,7 @@ describe("FakeRuleBuilder", () => {
       await builder.operation("Scan").respond({ body: expectedPayload });
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.rules[0].response.body).toBe(
         JSON.stringify(expectedPayload)
       );
@@ -99,7 +99,7 @@ describe("FakeRuleBuilder", () => {
       await builder.operation("GetItem").respond({});
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.rules[0].response.status).toBe(200);
     });
 
@@ -129,7 +129,7 @@ describe("FakeRuleBuilder", () => {
         .error(expectedErrorType, expectedMessage, expectedStatus);
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualRule = actualBody.dynamodb.rules[0];
       expect(actualRule.response.status).toBe(expectedStatus);
       const parsedRuleBody = JSON.parse(actualRule.response.body);
@@ -152,7 +152,7 @@ describe("FakeRuleBuilder", () => {
         .respond({});
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualMatchHeaders =
         actualBody.dynamodb.rules[0].match_headers;
       expect(actualMatchHeaders[expectedHeaderName]).toBe(expectedHeaderValue);

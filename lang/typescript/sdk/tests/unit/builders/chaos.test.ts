@@ -7,7 +7,7 @@ describe("ChaosBuilder", () => {
   let fakeFetch: jest.Mock;
 
   beforeEach(() => {
-    fakeFetch = jest.fn().fakeResolvedValue({ ok: true });
+    fakeFetch = jest.fn().mockResolvedValue({ ok: true });
     global.fetch = fakeFetch;
   });
 
@@ -21,7 +21,7 @@ describe("ChaosBuilder", () => {
       await builder.errorRate(expectedRate).apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.error_rate).toBe(expectedRate);
     });
   });
@@ -37,7 +37,7 @@ describe("ChaosBuilder", () => {
       await builder.latency(expectedMin, expectedMax).apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.sqs.latency_min_ms).toBe(expectedMin);
       expect(actualBody.sqs.latency_max_ms).toBe(expectedMax);
     });
@@ -53,7 +53,7 @@ describe("ChaosBuilder", () => {
       await builder.connectionResetRate(expectedRate).apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.s3.connection_reset_rate).toBe(expectedRate);
     });
   });
@@ -68,7 +68,7 @@ describe("ChaosBuilder", () => {
       await builder.timeoutRate(expectedRate).apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.timeout_rate).toBe(expectedRate);
     });
   });
@@ -89,7 +89,7 @@ describe("ChaosBuilder", () => {
           headers: { "Content-Type": "application/json" },
         })
       );
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.enabled).toBe(true);
     });
 
@@ -101,7 +101,7 @@ describe("ChaosBuilder", () => {
       await builder.errorRate(0.1).latency(50, 200).timeoutRate(0.05).apply();
 
       // Assert
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.error_rate).toBe(0.1);
       expect(actualBody.dynamodb.latency_min_ms).toBe(50);
       expect(actualBody.dynamodb.latency_max_ms).toBe(200);
@@ -122,7 +122,7 @@ describe("ChaosBuilder", () => {
         EXPECTED_CHAOS_URL,
         expect.objectContaining({ method: "POST" })
       );
-      const actualBody = JSON.parse(fakeFetch.fake.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.enabled).toBe(false);
       expect(actualBody.dynamodb.error_rate).toBe(0.0);
     });

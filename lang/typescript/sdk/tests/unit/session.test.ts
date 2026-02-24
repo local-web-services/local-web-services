@@ -26,13 +26,13 @@ describe("LwsSession", () => {
   beforeEach(() => {
     jest.useFakeTimers();
     fakeProcess = makeFakeProcess();
-    fakeSpawn.fakeReturnValue(fakeProcess);
-    global.fetch = jest.fn().fakeResolvedValue({ ok: true });
+    fakeSpawn.mockReturnValue(fakeProcess);
+    global.fetch = jest.fn().mockResolvedValue({ ok: true });
   });
 
   afterEach(() => {
     jest.useRealTimers();
-    jest.clearAllFakes();
+    jest.clearAllMocks();
   });
 
   describe("create", () => {
@@ -61,7 +61,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Assert
-      const actualArgs: string[] = fakeSpawn.fake.calls[0][1];
+      const actualArgs: string[] = fakeSpawn.mock.calls[0][1];
       expect(actualArgs).not.toContain("--mode");
 
       await session.close();
@@ -74,7 +74,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.fromCdk("/some/project");
 
       // Assert
-      const actualArgs: string[] = fakeSpawn.fake.calls[0][1];
+      const actualArgs: string[] = fakeSpawn.mock.calls[0][1];
       expect(actualArgs).toContain("--mode");
       expect(actualArgs).toContain("cdk");
 
@@ -96,7 +96,7 @@ describe("LwsSession", () => {
         const session = await LwsSession.fromHcl(expectedTmpDir);
 
         // Assert — ldk is spawned without --mode terraform (mode is auto-detected)
-        const actualArgs: string[] = fakeSpawn.fake.calls[0][1];
+        const actualArgs: string[] = fakeSpawn.mock.calls[0][1];
         expect(actualArgs).toContain("dev");
         expect(actualArgs).not.toContain("terraform");
 
@@ -130,7 +130,7 @@ describe("LwsSession", () => {
         const session = await LwsSession.fromHcl(expectedTmpDir);
 
         // Assert — fetch was called to create the state machine
-        const fetchCalls = (global.fetch as jest.Mock).fake.calls;
+        const fetchCalls = (global.fetch as jest.Mock).mock.calls;
         const sfnCall = fetchCalls.find(
           (call: unknown[]) =>
             typeof call[1] === "object" &&
