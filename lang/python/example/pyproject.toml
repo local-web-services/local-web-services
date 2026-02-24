@@ -1,0 +1,20 @@
+[project]
+name = "lws-python-example"
+version = "0.1.0"
+description = "Example project showing how to test Step Functions with the local-web-services Python SDK"
+requires-python = ">=3.11"
+dependencies = [
+    "boto3",
+]
+
+[project.optional-dependencies]
+test = [
+    "local-web-services",
+    "local-web-services-python-sdk",
+    "pytest",
+    "pytest-timeout",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 120

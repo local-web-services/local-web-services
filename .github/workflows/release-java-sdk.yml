@@ -1,0 +1,25 @@
+name: Release Java SDK
+
+on:
+  push:
+    tags:
+      - 'java-sdk/v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Publish to GitHub Packages
+        working-directory: lang/java/sdk
+        run: ./gradlew publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

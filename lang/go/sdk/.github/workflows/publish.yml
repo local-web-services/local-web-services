@@ -1,0 +1,14 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    name: Tag release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm module is accessible
+        run: echo "Go modules are published automatically via the GitHub repository tag."

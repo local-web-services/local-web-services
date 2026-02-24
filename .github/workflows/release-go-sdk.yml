@@ -1,0 +1,30 @@
+name: Release Go SDK
+
+on:
+  push:
+    tags:
+      - 'go-sdk/v*'
+
+jobs:
+  verify-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Verify module
+        working-directory: lang/go/sdk
+        run: go mod verify
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Go modules are fetched directly from the tag by the Go toolchain.
+      # Users: go get github.com/local-web-services/local-web-services/lang/go/sdk@go-sdk/v0.x.y
