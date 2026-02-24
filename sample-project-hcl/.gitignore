@@ -1,0 +1,10 @@
+.ldk
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+.terraform-build/
+_lws_override.tf
+node_modules
+.claude
+.entire

@@ -1,0 +1,9 @@
+{
+  "name": "create-order",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.967.0",
+    "@aws-sdk/client-sqs": "^3.967.0"
+  }
+}
