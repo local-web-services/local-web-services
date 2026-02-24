@@ -3,7 +3,7 @@ name: Release Java SDK
 on:
   push:
     tags:
-      - 'java-sdk/v*'
+      - 'java-sdk-v*'
 
 jobs:
   publish:

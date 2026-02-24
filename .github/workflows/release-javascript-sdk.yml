@@ -3,7 +3,7 @@ name: Release JavaScript SDK
 on:
   push:
     tags:
-      - 'javascript-sdk/v*'
+      - 'javascript-sdk-v*'
 
 jobs:
   publish:

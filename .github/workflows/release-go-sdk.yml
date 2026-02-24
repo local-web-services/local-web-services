@@ -3,7 +3,7 @@ name: Release Go SDK
 on:
   push:
     tags:
-      - 'go-sdk/v*'
+      - 'go-sdk-v*'
 
 jobs:
   verify-and-release:
