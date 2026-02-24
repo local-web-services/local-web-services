@@ -327,15 +327,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install dependencies
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/nodejs:20
+      - name: Install ldk and lws
+        run: uv pip install --system -e core
+      - name: Install CDK dependencies
         working-directory: sample-project-cdk
         run: npm ci
       - name: CDK Synth
         working-directory: sample-project-cdk
         run: npx cdk synth
+      - name: Start ldk dev
+        working-directory: sample-project-cdk
+        run: ldk dev &
+      - name: Wait for ldk to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+              echo "ldk is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ldk failed to start" && exit 1
+      - name: Run test-orders.sh
+        working-directory: sample-project-cdk
+        run: ./test-orders.sh
 
   # ── Sample Project HCL ──────────────────────────────────────────────────────
   sample-project-hcl-build:
@@ -347,13 +372,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
-      - name: Terraform Init
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: opentofu/setup-opentofu@v1
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/nodejs:20
+      - name: Install ldk and lws
+        run: uv pip install --system -e core
+      - name: Start ldk dev
         working-directory: sample-project-hcl
-        run: terraform init
-      - name: Terraform Validate
+        run: ldk dev &
+      - name: Wait for ldk to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+              echo "ldk is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ldk failed to start" && exit 1
+      - name: OpenTofu Init
         working-directory: sample-project-hcl
-        run: terraform validate
+        run: tofu init
+      - name: OpenTofu Apply
+        working-directory: sample-project-hcl
+        run: tofu apply -auto-approve
+      - name: Run test-orders.sh
+        working-directory: sample-project-hcl
+        run: ./test-orders.sh
 
   # ── Go Example ──────────────────────────────────────────────────────────────
   go-example-test:
