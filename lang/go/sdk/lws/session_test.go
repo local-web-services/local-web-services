@@ -291,6 +291,253 @@ func TestLogCapture_assertNoErrors_passesWhenAllSuccessful(t *testing.T) {
 	lc.AssertNoErrors(t)
 }
 
+func TestLogCapture_forService_filtersToMatchingEntries(t *testing.T) {
+	// Arrange
+	lc := &LogCapture{
+		entries: []LogEntry{
+			{Service: "stepfunctions", Operation: "start-execution", StatusCode: 200},
+			{Service: "dynamodb", Operation: "put-item", StatusCode: 200},
+			{Service: "stepfunctions", Operation: "describe-execution", StatusCode: 200},
+		},
+		done: make(chan struct{}),
+	}
+	expectedService := "stepfunctions"
+	expectedCount := 2
+
+	// Act
+	actualEntries := lc.ForService(expectedService)
+
+	// Assert
+	if len(actualEntries) != expectedCount {
+		t.Errorf("ForService(%q) returned %d entries, want %d", expectedService, len(actualEntries), expectedCount)
+	}
+	for _, e := range actualEntries {
+		if e.Service != expectedService {
+			t.Errorf("ForService(%q) returned entry with service %q", expectedService, e.Service)
+		}
+	}
+}
+
+func TestLogCapture_forOperation_filtersToMatchingEntries(t *testing.T) {
+	// Arrange
+	lc := &LogCapture{
+		entries: []LogEntry{
+			{Service: "stepfunctions", Operation: "start-execution", StatusCode: 200},
+			{Service: "dynamodb", Operation: "put-item", StatusCode: 200},
+			{Service: "stepfunctions", Operation: "start-execution", StatusCode: 200},
+		},
+		done: make(chan struct{}),
+	}
+	expectedOperation := "start-execution"
+	expectedCount := 2
+
+	// Act
+	actualEntries := lc.ForOperation(expectedOperation)
+
+	// Assert
+	if len(actualEntries) != expectedCount {
+		t.Errorf("ForOperation(%q) returned %d entries, want %d", expectedOperation, len(actualEntries), expectedCount)
+	}
+	for _, e := range actualEntries {
+		if e.Operation != expectedOperation {
+			t.Errorf("ForOperation(%q) returned entry with operation %q", expectedOperation, e.Operation)
+		}
+	}
+}
+
+func TestSession_recentLogs_returnsNilWhenNoBackgroundCapture(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualLogs := session.RecentLogs()
+
+	// Assert
+	if actualLogs != nil {
+		t.Errorf("RecentLogs() = %v, want nil when no background capture", actualLogs)
+	}
+}
+
+func TestSession_iam_returnsBuilderWithSessionRef(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	builder := session.Iam().Mode("enforce").DefaultIdentity("test-user")
+
+	// Assert
+	if builder.updates["mode"] != "enforce" {
+		t.Errorf("IamBuilder mode = %v, want enforce", builder.updates["mode"])
+	}
+	if builder.updates["default_identity"] != "test-user" {
+		t.Errorf("IamBuilder default_identity = %v, want test-user", builder.updates["default_identity"])
+	}
+}
+
+func TestIamBuilder_identityStoresPolicies(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+	expectedActions := []string{"sfn:*"}
+	expectedResource := "*"
+
+	// Act
+	builder := session.Iam().
+		Identity("test-user").
+		Allow(expectedActions, expectedResource).
+		Apply()
+
+	// Assert
+	ib, ok := builder.identities["test-user"]
+	if !ok {
+		t.Fatal("expected identity 'test-user' to be registered")
+	}
+	if len(ib.policies) != 1 {
+		t.Fatalf("expected 1 policy, got %d", len(ib.policies))
+	}
+	actualPolicy := ib.policies[0]
+	if actualPolicy.Effect != "Allow" {
+		t.Errorf("policy Effect = %q, want Allow", actualPolicy.Effect)
+	}
+	if actualPolicy.Resource != expectedResource {
+		t.Errorf("policy Resource = %q, want %q", actualPolicy.Resource, expectedResource)
+	}
+}
+
+func TestSession_dynamoDB_returnsHelperWithTableName(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+	expectedTableName := "Orders"
+
+	// Act
+	helper := session.DynamoDB(expectedTableName)
+
+	// Assert
+	if helper.tableName != expectedTableName {
+		t.Errorf("DynamoDBHelper.tableName = %q, want %q", helper.tableName, expectedTableName)
+	}
+}
+
+func TestSession_sqs_urlContainsPortAndQueueName(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+	expectedQueueName := "OrderQueue"
+
+	// Act
+	helper := session.SQS(expectedQueueName)
+
+	// Assert
+	if helper.queueName != expectedQueueName {
+		t.Errorf("SQSHelper.queueName = %q, want %q", helper.queueName, expectedQueueName)
+	}
+	if !strings.Contains(helper.URL(), expectedQueueName) {
+		t.Errorf("SQSHelper.URL() = %q, does not contain %q", helper.URL(), expectedQueueName)
+	}
+	if !strings.Contains(helper.URL(), "10002") {
+		t.Errorf("SQSHelper.URL() = %q, does not contain expected SQS port 10002", helper.URL())
+	}
+}
+
+func TestSession_s3_returnsHelperWithBucket(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+	expectedBucket := "my-bucket"
+
+	// Act
+	helper := session.S3(expectedBucket)
+
+	// Assert
+	if helper.bucket != expectedBucket {
+		t.Errorf("S3Helper.bucket = %q, want %q", helper.bucket, expectedBucket)
+	}
+}
+
+func TestDiscoverCdk_parsesAllResourceTypesFromFixture(t *testing.T) {
+	// Arrange
+	fixtureDir := filepath.Join("testdata", "cdk-fixture")
+
+	// Act
+	spec, err := DiscoverCdk(fixtureDir)
+
+	// Assert
+	if err != nil {
+		t.Fatalf("DiscoverCdk returned error: %v", err)
+	}
+	if len(spec.Tables) != 1 {
+		t.Fatalf("expected 1 table, got %d", len(spec.Tables))
+	}
+	if spec.Tables[0].Name != "CdkTestTable" {
+		t.Errorf("Table Name = %q, want CdkTestTable", spec.Tables[0].Name)
+	}
+	if spec.Tables[0].PartitionKey != "pk" {
+		t.Errorf("Table PartitionKey = %q, want pk", spec.Tables[0].PartitionKey)
+	}
+	if spec.Tables[0].SortKey != "sk" {
+		t.Errorf("Table SortKey = %q, want sk", spec.Tables[0].SortKey)
+	}
+	if len(spec.Queues) != 1 || spec.Queues[0] != "CdkTestQueue" {
+		t.Errorf("Queues = %v, want [CdkTestQueue]", spec.Queues)
+	}
+	if len(spec.Buckets) != 1 || spec.Buckets[0] != "cdk-test-bucket" {
+		t.Errorf("Buckets = %v, want [cdk-test-bucket]", spec.Buckets)
+	}
+	if len(spec.Topics) != 1 || spec.Topics[0] != "CdkTestTopic" {
+		t.Errorf("Topics = %v, want [CdkTestTopic]", spec.Topics)
+	}
+	if len(spec.StateMachines) != 1 || spec.StateMachines[0].Name != "CdkTestStateMachine" {
+		t.Errorf("StateMachines = %v, want [{CdkTestStateMachine ...}]", spec.StateMachines)
+	}
+	if len(spec.Parameters) != 1 || spec.Parameters[0] != "/cdk/test/param" {
+		t.Errorf("Parameters = %v, want [/cdk/test/param]", spec.Parameters)
+	}
+	if len(spec.Secrets) != 1 || spec.Secrets[0] != "cdk-test-secret" {
+		t.Errorf("Secrets = %v, want [cdk-test-secret]", spec.Secrets)
+	}
+}
+
+func TestDiscoverCdk_skipsResourcesWithIntrinsicNameProperties(t *testing.T) {
+	// Arrange — a template where names are CloudFormation intrinsic functions
+	tempDir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(tempDir, "cdk.out"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	manifestContent := `{
+		"version": "17.0.0",
+		"artifacts": {
+			"Stack": {
+				"type": "aws:cloudformation:stack",
+				"properties": {"templateFile": "Stack.template.json"}
+			}
+		}
+	}`
+	templateContent := `{
+		"Resources": {
+			"MyQueue": {
+				"Type": "AWS::SQS::Queue",
+				"Properties": {
+					"QueueName": {"Ref": "AWS::StackName"}
+				}
+			}
+		}
+	}`
+	if err := os.WriteFile(filepath.Join(tempDir, "cdk.out", "manifest.json"), []byte(manifestContent), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(tempDir, "cdk.out", "Stack.template.json"), []byte(templateContent), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Act
+	spec, err := DiscoverCdk(tempDir)
+
+	// Assert
+	if err != nil {
+		t.Fatalf("DiscoverCdk returned error: %v", err)
+	}
+	if len(spec.Queues) != 0 {
+		t.Errorf("expected 0 queues (intrinsic name skipped), got %v", spec.Queues)
+	}
+}
+
 func TestChaosBuilder_storesConfig(t *testing.T) {
 	// Arrange
 	session := &Session{basePort: 10000}

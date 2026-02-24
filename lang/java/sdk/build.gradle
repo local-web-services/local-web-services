@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'io.localwebservices'
-version = '0.1.7'
+version = '0.2.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -26,6 +26,7 @@ dependencies {
     api 'software.amazon.awssdk:sfn'
     api 'software.amazon.awssdk:ssm'
     api 'software.amazon.awssdk:secretsmanager'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
 
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'

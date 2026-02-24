@@ -65,6 +65,7 @@ public class LwsSession implements AutoCloseable {
 
     private final int basePort;
     private final Process process;
+    private LogCapture bgLogs;
 
     LwsSession(int basePort, Process process) {
         this.basePort = basePort;
@@ -106,6 +107,10 @@ public class LwsSession implements AutoCloseable {
         LwsSession session = new LwsSession(basePort, proc);
         session.awaitReady();
         session.preCreateResources(spec);
+        try {
+            session.bgLogs = LogCapture.start(session);
+        } catch (Exception ignored) {
+        }
         return session;
     }
 
@@ -229,8 +234,62 @@ public class LwsSession implements AutoCloseable {
         return LogCapture.start(this);
     }
 
+    /**
+     * Creates a session by discovering resources from a synthesised CDK cloud assembly at
+     * {@code projectDir/cdk.out}.
+     *
+     * @param projectDir path to the CDK project root
+     * @return a ready session
+     */
+    public static LwsSession fromCdk(String projectDir) throws Exception {
+        java.nio.file.Path resolved = java.nio.file.Path.of(projectDir).toAbsolutePath();
+        SessionSpec spec = CdkDiscovery.discover(resolved);
+        return create(spec);
+    }
+
+    /**
+     * Returns an {@link IamBuilder} for configuring IAM authentication mode.
+     */
+    public IamBuilder iam() {
+        return new IamBuilder(this);
+    }
+
+    /**
+     * Returns a {@link DynamoDbHelper} bound to the given table name.
+     */
+    public DynamoDbHelper dynamoDb(String tableName) {
+        return new DynamoDbHelper(tableName, dynamoDbClient());
+    }
+
+    /**
+     * Returns an {@link SqsHelper} bound to the given queue name.
+     */
+    public SqsHelper sqs(String queueName) {
+        return new SqsHelper(queueName, queueUrl(queueName), sqsClient());
+    }
+
+    /**
+     * Returns an {@link S3Helper} bound to the given bucket name.
+     */
+    public S3Helper s3(String bucketName) {
+        return new S3Helper(bucketName, s3Client());
+    }
+
+    /**
+     * Returns a snapshot of all log entries recorded since session start.
+     * Returns an empty list if the background log capture is not running.
+     */
+    public List<LogCapture.LogEntry> recentLogs() {
+        if (bgLogs == null) return new ArrayList<>();
+        return bgLogs.getEntries();
+    }
+
     @Override
     public void close() {
+        if (bgLogs != null) {
+            bgLogs.stop();
+            bgLogs = null;
+        }
         if (process != null && process.isAlive()) {
             process.destroy();
             try {

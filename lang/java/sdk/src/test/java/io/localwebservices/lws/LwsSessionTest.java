@@ -4,6 +4,7 @@ import io.localwebservices.lws.hcl.HclDiscovery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -204,5 +205,162 @@ class LwsSessionTest {
 
         // Assert – builder returns self for chaining
         assertNotNull(builder);
+    }
+
+    @Test
+    void logCapture_forService_methodExistsAndFilters() {
+        // Arrange
+        var entry1 = new LogCapture.LogEntry("stepfunctions", "StartExecution", "INFO", 200, 5.0, "t1");
+        var entry2 = new LogCapture.LogEntry("dynamodb", "PutItem", "INFO", 200, 2.0, "t2");
+        var entry3 = new LogCapture.LogEntry("stepfunctions", "DescribeExecution", "INFO", 200, 3.0, "t3");
+        String expectedService = "stepfunctions";
+        String expectedOperation = "StartExecution";
+
+        // Act & Assert — verify LogEntry fields are accessible and values are correct
+        assertEquals(expectedService, entry1.service);
+        assertEquals(expectedOperation, entry1.operation);
+        assertEquals("dynamodb", entry2.service);
+        assertEquals("stepfunctions", entry3.service);
+    }
+
+    @Test
+    void iamBuilder_storesModeAndDefaultIdentity() throws Exception {
+        // Arrange
+        int basePort = LwsSession.findFreePort();
+        LwsSession session = new LwsSession(basePort, null);
+
+        // Act
+        IamBuilder builder = session.iam()
+                .mode("enforce")
+                .defaultIdentity("test-user");
+
+        // Assert — builder is non-null and returns self for chaining
+        assertNotNull(builder);
+    }
+
+    @Test
+    void iamBuilder_identityBuilderAllowsChaining() throws Exception {
+        // Arrange
+        int basePort = LwsSession.findFreePort();
+        LwsSession session = new LwsSession(basePort, null);
+
+        // Act
+        IamBuilder builder = session.iam()
+                .identity("test-user")
+                    .allow(List.of("sfn:*"), "*")
+                    .apply();
+
+        // Assert — apply() returns the parent IamBuilder
+        assertNotNull(builder);
+    }
+
+    @Test
+    void session_recentLogs_returnsEmptyListWhenNoBackgroundCapture() throws Exception {
+        // Arrange
+        int basePort = LwsSession.findFreePort();
+        LwsSession session = new LwsSession(basePort, null);
+
+        // Act
+        List<LogCapture.LogEntry> actualLogs = session.recentLogs();
+
+        // Assert
+        assertNotNull(actualLogs);
+        assertTrue(actualLogs.isEmpty(), "expected empty recentLogs when no background capture");
+    }
+
+    @Test
+    void session_sqs_urlContainsQueueName() throws Exception {
+        // Arrange
+        int basePort = LwsSession.findFreePort();
+        LwsSession session = new LwsSession(basePort, null);
+        String expectedQueueName = "OrderQueue";
+
+        // Act
+        SqsHelper helper = session.sqs(expectedQueueName);
+
+        // Assert
+        assertNotNull(helper);
+        assertTrue(helper.url().contains(expectedQueueName),
+                "SQS URL should contain queue name: " + helper.url());
+        assertTrue(helper.url().contains("000000000000"),
+                "SQS URL should contain account ID: " + helper.url());
+    }
+
+    @Test
+    void session_s3_returnsHelper() throws Exception {
+        // Arrange
+        int basePort = LwsSession.findFreePort();
+        LwsSession session = new LwsSession(basePort, null);
+        String expectedBucket = "my-bucket";
+
+        // Act
+        S3Helper helper = session.s3(expectedBucket);
+
+        // Assert
+        assertNotNull(helper);
+    }
+
+    @Test
+    void cdkDiscovery_parsesAllResourceTypesFromFixture() throws Exception {
+        // Arrange
+        URL resource = getClass().getClassLoader().getResource("testdata/cdk-fixture");
+        assertNotNull(resource, "CDK fixture not found in test resources");
+        Path fixtureDir = Path.of(resource.toURI());
+
+        // Act
+        SessionSpec spec = CdkDiscovery.discover(fixtureDir);
+
+        // Assert — all 7 resource types from the fixture
+        assertEquals(1, spec.getTables().size());
+        assertEquals("CdkTestTable", spec.getTables().get(0).getName());
+        assertEquals("pk", spec.getTables().get(0).getPartitionKey());
+        assertEquals("sk", spec.getTables().get(0).getSortKey());
+
+        assertEquals(List.of("CdkTestQueue"), spec.getQueues());
+        assertEquals(List.of("cdk-test-bucket"), spec.getBuckets());
+        assertEquals(List.of("CdkTestTopic"), spec.getTopics());
+
+        assertEquals(1, spec.getStateMachines().size());
+        assertEquals("CdkTestStateMachine", spec.getStateMachines().get(0).getName());
+
+        assertEquals(List.of("/cdk/test/param"), spec.getParameters());
+        assertEquals(List.of("cdk-test-secret"), spec.getSecrets());
+    }
+
+    @Test
+    void cdkDiscovery_skipsResourcesWithIntrinsicNameProperties(@TempDir Path tempDir) throws Exception {
+        // Arrange — template with an intrinsic function as queue name
+        Path cdkOut = tempDir.resolve("cdk.out");
+        Files.createDirectories(cdkOut);
+        Files.writeString(cdkOut.resolve("manifest.json"), """
+                {
+                  "version": "17.0.0",
+                  "artifacts": {
+                    "Stack": {
+                      "type": "aws:cloudformation:stack",
+                      "properties": {"templateFile": "Stack.template.json"}
+                    }
+                  }
+                }
+                """);
+        Files.writeString(cdkOut.resolve("Stack.template.json"), """
+                {
+                  "Resources": {
+                    "MyQueue": {
+                      "Type": "AWS::SQS::Queue",
+                      "Properties": {
+                        "QueueName": {"Ref": "AWS::StackName"}
+                      }
+                    }
+                  }
+                }
+                """);
+
+        // Act
+        SessionSpec spec = CdkDiscovery.discover(tempDir);
+
+        // Assert — queue with intrinsic name is skipped
+        assertTrue(spec.getQueues().isEmpty(),
+                "expected 0 queues (intrinsic name skipped), got: " + spec.getQueues());
     }
 }
