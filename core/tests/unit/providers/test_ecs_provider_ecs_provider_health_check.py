@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.fake import AsyncFake, MagicFake, patch
 
 from lws.interfaces.provider import ProviderStatus
 from lws.providers.ecs.provider import (
@@ -42,17 +42,17 @@ def _make_service(**overrides: object) -> ServiceDefinition:
     return ServiceDefinition(**defaults)
 
 
-def _mock_process() -> AsyncMock:
-    proc = AsyncMock()
+def _fake_process() -> AsyncFake:
+    proc = AsyncFake()
     proc.pid = 1234
     proc.returncode = None
-    proc.stdout = AsyncMock()
-    proc.stderr = AsyncMock()
-    proc.stdout.readline = AsyncMock(return_value=b"")
-    proc.stderr.readline = AsyncMock(return_value=b"")
-    proc.wait = AsyncMock(return_value=0)
-    proc.send_signal = MagicMock()
-    proc.kill = MagicMock()
+    proc.stdout = AsyncFake()
+    proc.stderr = AsyncFake()
+    proc.stdout.readline = AsyncFake(return_value=b"")
+    proc.stderr.readline = AsyncFake(return_value=b"")
+    proc.wait = AsyncFake(return_value=0)
+    proc.send_signal = MagicFake()
+    proc.kill = MagicFake()
     return proc
 
 
@@ -124,8 +124,8 @@ class TestEcsProviderHealthCheck:
         assert await provider.health_check() is True
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_health_check_delegates_to_checkers(self, mock_exec: AsyncMock) -> None:
-        mock_exec.return_value = _mock_process()
+    async def test_health_check_delegates_to_checkers(self, fake_exec: AsyncFake) -> None:
+        fake_exec.return_value = _fake_process()
         container = _make_container(
             health_check={
                 "command": ["CMD-SHELL", "curl -f http://localhost:8080/health"],

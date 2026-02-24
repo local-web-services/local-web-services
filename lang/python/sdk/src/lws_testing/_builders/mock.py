@@ -1,4 +1,4 @@
-"""Fluent builder for configuring AWS operation mocks."""
+"""Fluent builder for configuring AWS operation fakes."""
 
 from __future__ import annotations
 
@@ -7,12 +7,12 @@ from typing import Any
 import httpx
 
 
-class MockBuilder:
-    """Fluent builder for AWS service mock responses.
+class FakeBuilder:
+    """Fluent builder for AWS service fake responses.
 
     Usage::
 
-        session.mock("dynamodb").operation("PutItem").respond(
+        session.fake("dynamodb").operation("PutItem").respond(
             status=500,
             body={"__type": "ProvisionedThroughputExceededException"},
         )
@@ -23,11 +23,11 @@ class MockBuilder:
         self._mgmt_port = mgmt_port
         self._rules: list[dict[str, Any]] = []
 
-    def operation(self, operation_name: str) -> _MockRuleBuilder:
-        """Start building a mock rule for *operation_name*."""
-        return _MockRuleBuilder(self, operation_name)
+    def operation(self, operation_name: str) -> _FakeRuleBuilder:
+        """Start building a fake rule for *operation_name*."""
+        return _FakeRuleBuilder(self, operation_name)
 
-    def _add_rule(self, rule: dict[str, Any]) -> MockBuilder:
+    def _add_rule(self, rule: dict[str, Any]) -> FakeBuilder:
         self._rules.append(rule)
         self._apply()
         return self
@@ -35,30 +35,30 @@ class MockBuilder:
     def _apply(self) -> None:
         """Push the current rules to the management API."""
         httpx.post(
-            f"http://127.0.0.1:{self._mgmt_port}/_ldk/aws-mock",
+            f"http://127.0.0.1:{self._mgmt_port}/_ldk/aws-fake",
             json={self._service: {"enabled": True, "rules": self._rules}},
             timeout=5.0,
         )
 
     def clear(self) -> None:
-        """Remove all mock rules for this service."""
+        """Remove all fake rules for this service."""
         self._rules = []
         httpx.post(
-            f"http://127.0.0.1:{self._mgmt_port}/_ldk/aws-mock",
+            f"http://127.0.0.1:{self._mgmt_port}/_ldk/aws-fake",
             json={self._service: {"enabled": False, "rules": []}},
             timeout=5.0,
         )
 
 
-class _MockRuleBuilder:
-    """Intermediate builder — configure a single mock rule."""
+class _FakeRuleBuilder:
+    """Intermediate builder — configure a single fake rule."""
 
-    def __init__(self, parent: MockBuilder, operation: str) -> None:
+    def __init__(self, parent: FakeBuilder, operation: str) -> None:
         self._parent = parent
         self._operation = operation
         self._match_headers: dict[str, str] = {}
 
-    def with_header(self, name: str, value: str) -> _MockRuleBuilder:
+    def with_header(self, name: str, value: str) -> _FakeRuleBuilder:
         """Add an additional header match constraint."""
         self._match_headers[name] = value
         return self
@@ -69,7 +69,7 @@ class _MockRuleBuilder:
         body: str | dict[str, Any] = "",
         content_type: str = "application/json",
         delay_ms: int = 0,
-    ) -> MockBuilder:
+    ) -> FakeBuilder:
         """Set the response and register the rule.
 
         Args:
@@ -99,7 +99,7 @@ class _MockRuleBuilder:
 
         return self._parent._add_rule(rule)
 
-    def error(self, error_type: str, message: str = "", status: int = 400) -> MockBuilder:
+    def error(self, error_type: str, message: str = "", status: int = 400) -> FakeBuilder:
         """Respond with a structured AWS error."""
         import json
 

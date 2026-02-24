@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from unittest.mock import AsyncMock, patch
+from unittest.fake import AsyncFake, patch
 
 from lws.providers.ecs.health_check import (
     HealthCheckConfig,
@@ -65,10 +65,10 @@ class TestHealthChecker:
 
     @patch(
         "lws.providers.ecs.health_check._http_get_ok",
-        new_callable=AsyncMock,
+        new_callable=AsyncFake,
         return_value=True,
     )
-    async def test_start_creates_polling_task(self, _mock_get: AsyncMock) -> None:
+    async def test_start_creates_polling_task(self, _fake_get: AsyncFake) -> None:
         cfg = HealthCheckConfig(
             endpoint="http://localhost:8080/health",
             interval=0.01,
@@ -88,10 +88,10 @@ class TestHealthChecker:
 
     @patch(
         "lws.providers.ecs.health_check._http_get_ok",
-        new_callable=AsyncMock,
+        new_callable=AsyncFake,
         return_value=False,
     )
-    async def test_poll_marks_unhealthy(self, _mock_get: AsyncMock) -> None:
+    async def test_poll_marks_unhealthy(self, _fake_get: AsyncFake) -> None:
         cfg = HealthCheckConfig(
             endpoint="http://localhost:8080/health",
             interval=0.01,

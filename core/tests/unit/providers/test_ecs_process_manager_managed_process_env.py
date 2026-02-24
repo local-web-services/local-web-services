@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import signal
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.fake import AsyncFake, MagicFake, patch
 
 from lws.providers.ecs.process_manager import ManagedProcess, ProcessConfig
 
@@ -25,22 +25,22 @@ def _make_config(**overrides: object) -> ProcessConfig:
     return ProcessConfig(**defaults)
 
 
-def _mock_process(
+def _fake_process(
     pid: int = 1234,
     returncode: int | None = None,
-) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
-    proc = AsyncMock(spec=asyncio.subprocess.Process)
+) -> AsyncFake:
+    """Create a fake asyncio.subprocess.Process."""
+    proc = AsyncFake(spec=asyncio.subprocess.Process)
     proc.pid = pid
     proc.returncode = returncode
-    proc.stdout = AsyncMock(spec=asyncio.StreamReader)
-    proc.stderr = AsyncMock(spec=asyncio.StreamReader)
+    proc.stdout = AsyncFake(spec=asyncio.StreamReader)
+    proc.stderr = AsyncFake(spec=asyncio.StreamReader)
     # readline returns empty bytes to signal EOF immediately
-    proc.stdout.readline = AsyncMock(return_value=b"")
-    proc.stderr.readline = AsyncMock(return_value=b"")
-    proc.wait = AsyncMock(return_value=0)
-    proc.send_signal = MagicMock()
-    proc.kill = MagicMock()
+    proc.stdout.readline = AsyncFake(return_value=b"")
+    proc.stderr.readline = AsyncFake(return_value=b"")
+    proc.wait = AsyncFake(return_value=0)
+    proc.send_signal = MagicFake()
+    proc.kill = MagicFake()
     return proc
 
 
@@ -66,14 +66,14 @@ def _mock_process(
 
 class TestManagedProcessEnv:
     @patch("asyncio.create_subprocess_exec")
-    async def test_env_merges_os_and_config(self, mock_exec: AsyncMock) -> None:
-        proc = _mock_process()
-        mock_exec.return_value = proc
+    async def test_env_merges_os_and_config(self, fake_exec: AsyncFake) -> None:
+        proc = _fake_process()
+        fake_exec.return_value = proc
 
         mp = ManagedProcess(_make_config(environment={"MY_VAR": "my_val"}))
         await mp.start()
 
-        call_kwargs = mock_exec.call_args.kwargs
+        call_kwargs = fake_exec.call_args.kwargs
         env = call_kwargs["env"]
         # OS env should be present
         assert "PATH" in env

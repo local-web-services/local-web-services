@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.fake import patch
 
 import pytest
 from fastapi import FastAPI

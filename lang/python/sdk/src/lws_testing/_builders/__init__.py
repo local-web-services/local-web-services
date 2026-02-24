@@ -1,1 +1,1 @@
-"""Fluent builders for mock, chaos, and IAM configuration."""
+"""Fluent builders for fake, chaos, and IAM configuration."""

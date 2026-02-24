@@ -4,33 +4,33 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class MockRoute:
+class FakeRoute:
     http_method: str
     resource_path: str
     handler_name: str
 
 
 @dataclass
-class MockFunction:
+class FakeFunction:
     logical_id: str
     handler: str
     environment: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
-class MockTable:
+class FakeTable:
     logical_id: str
     table_name: str
 
 
 @dataclass
-class MockApi:
+class FakeApi:
     logical_id: str
-    routes: list[MockRoute] = field(default_factory=list)
+    routes: list[FakeRoute] = field(default_factory=list)
 
 
 @dataclass
-class MockAppModel:
-    functions: list[MockFunction] = field(default_factory=list)
-    tables: list[MockTable] = field(default_factory=list)
-    apis: list[MockApi] = field(default_factory=list)
+class FakeAppModel:
+    functions: list[FakeFunction] = field(default_factory=list)
+    tables: list[FakeTable] = field(default_factory=list)
+    apis: list[FakeApi] = field(default_factory=list)

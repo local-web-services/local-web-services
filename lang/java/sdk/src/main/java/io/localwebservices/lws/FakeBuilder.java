@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Configures fake responses for a single AWS service via the {@code /_ldk/aws-mock} API.
+ * Configures fake responses for a single AWS service via the {@code /_ldk/aws-fake} API.
  *
  * <p>Obtain a builder via {@link LwsSession#fake(String)}:
  * <pre>{@code
@@ -78,7 +78,7 @@ public class FakeBuilder {
         rulesJson.append("]");
 
         String body = "{\"" + service + "\":{\"enabled\":" + enabled + ",\"rules\":" + rulesJson + "}}";
-        URI uri = URI.create("http://127.0.0.1:" + session.getBasePort() + "/_ldk/aws-mock");
+        URI uri = URI.create("http://127.0.0.1:" + session.getBasePort() + "/_ldk/aws-fake");
         HttpRequest request = HttpRequest.newBuilder(uri)
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .header("Content-Type", "application/json")

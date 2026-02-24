@@ -24,7 +24,7 @@ class TestGetIntegrationResponse:
         )
         await client.put(
             f"/restapis/{api_id}/resources/{resource_id}/methods/GET/integration",
-            json={"type": "MOCK"},
+            json={"type": "FAKE"},
         )
         await client.put(
             f"/restapis/{api_id}/resources/{resource_id}/methods/GET" "/integration/responses/200",

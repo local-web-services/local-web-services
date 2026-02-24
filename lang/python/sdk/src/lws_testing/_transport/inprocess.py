@@ -108,9 +108,9 @@ class _StubOrchestrator:
 def _create_management_app(
     providers: dict[str, Any],
     chaos_configs: dict[str, Any],
-    mock_configs: dict[str, Any],
+    fake_configs: dict[str, Any],
 ) -> Any:
-    """Build a FastAPI management app with reset, mock, and chaos endpoints."""
+    """Build a FastAPI management app with reset, fake, and chaos endpoints."""
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     from lws.api.management import _handle_reset, create_management_router
@@ -122,7 +122,7 @@ def _create_management_app(
         orchestrator=orchestrator,
         providers=providers,
         chaos_configs=chaos_configs,
-        aws_mock_configs=mock_configs,
+        aws_fake_configs=fake_configs,
     )
     app.include_router(router)
 
@@ -182,7 +182,7 @@ def _build_service_apps(
     providers: dict[str, Any],
     ports: dict[str, int],
     chaos_configs: dict[str, Any],
-    mock_configs: dict[str, Any],
+    fake_configs: dict[str, Any],
     cfg: dict[str, list[Any]],
 ) -> list[tuple[str, Any]]:
     """Build FastAPI apps for all services; return as (service_name, app) pairs."""
@@ -200,7 +200,7 @@ def _build_service_apps(
             create_dynamodb_app(
                 providers["dynamodb"],
                 chaos=chaos_configs["dynamodb"],
-                aws_mock=mock_configs["dynamodb"],
+                aws_fake=fake_configs["dynamodb"],
             ),
         ),
         (
@@ -209,7 +209,7 @@ def _build_service_apps(
                 providers["sqs"],
                 port=ports["sqs"],
                 chaos=chaos_configs["sqs"],
-                aws_mock=mock_configs["sqs"],
+                aws_fake=fake_configs["sqs"],
             ),
         ),
         (
@@ -217,7 +217,7 @@ def _build_service_apps(
             create_s3_app(
                 providers["s3"],
                 chaos=chaos_configs["s3"],
-                aws_mock=mock_configs["s3"],
+                aws_fake=fake_configs["s3"],
             ),
         ),
         (
@@ -225,7 +225,7 @@ def _build_service_apps(
             create_sns_app(
                 providers["sns"],
                 chaos=chaos_configs["sns"],
-                aws_mock=mock_configs["sns"],
+                aws_fake=fake_configs["sns"],
             ),
         ),
         (
@@ -233,7 +233,7 @@ def _build_service_apps(
             create_stepfunctions_app(
                 providers["stepfunctions"],
                 chaos=chaos_configs["stepfunctions"],
-                aws_mock=mock_configs["stepfunctions"],
+                aws_fake=fake_configs["stepfunctions"],
             ),
         ),
         (
@@ -241,7 +241,7 @@ def _build_service_apps(
             create_ssm_app(
                 initial_parameters=cfg["parameters"] or None,
                 chaos=chaos_configs["ssm"],
-                aws_mock=mock_configs["ssm"],
+                aws_fake=fake_configs["ssm"],
             ),
         ),
         (
@@ -249,7 +249,7 @@ def _build_service_apps(
             create_secretsmanager_app(
                 initial_secrets=cfg["secrets"] or None,
                 chaos=chaos_configs["secretsmanager"],
-                aws_mock=mock_configs["secretsmanager"],
+                aws_fake=fake_configs["secretsmanager"],
             ),
         ),
     ]
@@ -268,7 +268,7 @@ async def _start_all_servers(
     mgmt_port: int,
 ) -> list[Any]:
     """Start uvicorn servers for every service app plus the management app."""
-    from lws.providers.mockserver.provider import start_uvicorn_server
+    from lws.providers.fakeserver.provider import start_uvicorn_server
 
     servers: list[Any] = []
     for svc, app in service_apps:
@@ -302,20 +302,20 @@ async def start_services(
         passed directly to :func:`stop_services`.
     """
     from lws.providers._shared.aws_chaos import AwsChaosConfig
-    from lws.providers._shared.aws_operation_mock import AwsMockConfig
+    from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 
     log_handler = _setup_logging()
     cfg = _convert_spec(spec)
     providers = _create_providers(cfg, data_dir)
 
     chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}
-    mock_configs: dict[str, Any] = {s: AwsMockConfig(service=s) for s in _SERVICE_NAMES}
+    fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
     ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
     mgmt_port = _free_port()
 
-    service_apps = _build_service_apps(providers, ports, chaos_configs, mock_configs, cfg)
+    service_apps = _build_service_apps(providers, ports, chaos_configs, fake_configs, cfg)
     await _start_providers(providers)
-    mgmt_app = _create_management_app(providers, chaos_configs, mock_configs)
+    mgmt_app = _create_management_app(providers, chaos_configs, fake_configs)
     servers = await _start_all_servers(service_apps, ports, mgmt_app, mgmt_port)
 
     return log_handler, ports, mgmt_port, servers
@@ -323,7 +323,7 @@ async def start_services(
 
 async def stop_services(servers: list[Any]) -> None:
     """Gracefully stop all servers started by :func:`start_services`."""
-    from lws.providers.mockserver.provider import stop_uvicorn_server
+    from lws.providers.fakeserver.provider import stop_uvicorn_server
 
     for server, task in reversed(servers):
         await stop_uvicorn_server(server, task)

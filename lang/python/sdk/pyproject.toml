@@ -5,7 +5,7 @@ description = "Python testing SDK for local-web-services — in-process pytest f
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
-keywords = ["aws", "testing", "pytest", "boto3", "local", "dynamodb", "sqs", "s3", "mocking"]
+keywords = ["aws", "testing", "pytest", "boto3", "local", "dynamodb", "sqs", "s3", "faking"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

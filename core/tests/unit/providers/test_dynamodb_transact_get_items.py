@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -19,14 +19,14 @@ def _target(operation: str) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Mock-based fixtures (for route-level unit tests)
+# Fake-based fixtures (for route-level unit tests)
 # ---------------------------------------------------------------------------
 
 
 @pytest.fixture()
-def mock_store() -> AsyncMock:
-    """Return an ``AsyncMock`` that satisfies ``IKeyValueStore``."""
-    store = AsyncMock(spec=IKeyValueStore)
+def fake_store() -> AsyncFake:
+    """Return an ``AsyncFake`` that satisfies ``IKeyValueStore``."""
+    store = AsyncFake(spec=IKeyValueStore)
     store.get_item.return_value = None
     store.put_item.return_value = None
     store.delete_item.return_value = None
@@ -50,8 +50,8 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture()
-def mock_client(mock_store: AsyncMock) -> httpx.AsyncClient:
-    app = create_dynamodb_app(mock_store)
+def fake_client(fake_store: AsyncFake) -> httpx.AsyncClient:
+    app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
 
@@ -84,10 +84,10 @@ def real_client(real_provider: SqliteDynamoProvider) -> httpx.AsyncClient:
 class TestTransactGetItems:
     @pytest.mark.asyncio
     async def test_transact_get_items_found(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
     ) -> None:
         # Arrange
-        mock_store.get_item.return_value = {
+        fake_store.get_item.return_value = {
             "pk": {"S": "user#1"},
             "name": {"S": "Alice"},
         }
@@ -106,7 +106,7 @@ class TestTransactGetItems:
         expected_pk = {"S": "user#1"}
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactGetItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
         # Assert
         assert resp.status_code == expected_status_code
@@ -118,10 +118,10 @@ class TestTransactGetItems:
 
     @pytest.mark.asyncio
     async def test_transact_get_items_not_found(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
     ) -> None:
         # Arrange
-        mock_store.get_item.return_value = None
+        fake_store.get_item.return_value = None
         payload = {
             "TransactItems": [
                 {
@@ -136,7 +136,7 @@ class TestTransactGetItems:
         expected_response_count = 1
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactGetItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
         # Assert
         assert resp.status_code == expected_status_code
@@ -146,10 +146,10 @@ class TestTransactGetItems:
 
     @pytest.mark.asyncio
     async def test_transact_get_items_multiple(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
     ) -> None:
         # Arrange
-        mock_store.get_item.side_effect = [
+        fake_store.get_item.side_effect = [
             {"pk": {"S": "user#1"}, "name": {"S": "Alice"}},
             None,
             {"pk": {"S": "user#3"}, "name": {"S": "Charlie"}},
@@ -165,7 +165,7 @@ class TestTransactGetItems:
         expected_response_count = 3
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactGetItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
         # Assert
         assert resp.status_code == expected_status_code
@@ -177,7 +177,7 @@ class TestTransactGetItems:
 
     @pytest.mark.asyncio
     async def test_transact_get_items_empty(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
     ) -> None:
         # Arrange
         payload = {"TransactItems": []}
@@ -185,7 +185,7 @@ class TestTransactGetItems:
         expected_response = {"Responses": []}
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactGetItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
         # Assert
         assert resp.status_code == expected_status_code

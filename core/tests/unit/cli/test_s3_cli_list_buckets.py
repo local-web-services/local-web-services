@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.fake import AsyncFake, MagicFake, patch
 
 from typer.testing import CliRunner
 
@@ -11,20 +11,20 @@ from lws.cli.lws import app
 runner = CliRunner()
 
 
-def _mock_client_rest(
+def _fake_client_rest(
     status_code: int = 200,
     text: str = "",
     headers: dict | None = None,
-) -> AsyncMock:
-    mock = AsyncMock()
-    mock.service_port = AsyncMock(return_value=3003)
-    resp = MagicMock()
+) -> AsyncFake:
+    fake = AsyncFake()
+    fake.service_port = AsyncFake(return_value=3003)
+    resp = MagicFake()
     resp.status_code = status_code
     resp.text = text
     resp.content = text.encode()
     resp.headers = headers or {}
-    mock.rest_request = AsyncMock(return_value=resp)
-    return mock
+    fake.rest_request = AsyncFake(return_value=resp)
+    return fake
 
 
 class TestListBuckets:
@@ -41,10 +41,10 @@ class TestListBuckets:
             "</Buckets>"
             "</ListAllMyBucketsResult>"
         )
-        mock = _mock_client_rest(200, text=xml)
+        fake = _fake_client_rest(200, text=xml)
 
         # Act
-        with patch("lws.cli.services.s3._client", return_value=mock):
+        with patch("lws.cli.services.s3._client", return_value=fake):
             result = runner.invoke(
                 app,
                 ["s3api", "list-buckets"],
@@ -52,8 +52,8 @@ class TestListBuckets:
 
         # Assert
         assert result.exit_code == expected_exit_code
-        mock.rest_request.assert_awaited_once()
-        call_args = mock.rest_request.call_args
+        fake.rest_request.assert_awaited_once()
+        call_args = fake.rest_request.call_args
         actual_method = call_args[0][1]
         actual_path = call_args[0][2]
         assert actual_method == expected_method

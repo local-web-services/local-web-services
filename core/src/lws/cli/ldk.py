@@ -38,7 +38,7 @@ from lws.interfaces import (
 from lws.parser.assembly import AppModel, parse_assembly
 from lws.providers._shared.aws_chaos import AwsChaosConfig
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
-from lws.providers._shared.aws_operation_mock import AwsMockConfig
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 from lws.providers.apigateway.provider import ApiGatewayProvider, RouteConfig
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import PasswordPolicy, UserPoolConfig
@@ -619,7 +619,7 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
 
     # Create all providers in always-on mode (no app model)
     iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
-    providers, ports, chaos_configs, aws_mock_configs = _create_terraform_providers(
+    providers, ports, chaos_configs, aws_fake_configs = _create_terraform_providers(
         config, data_dir, project_dir, iam_auth_bundle=iam_auth_bundle
     )
 
@@ -649,7 +649,7 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
         port,
         resource_metadata,
         chaos_configs,
-        aws_mock_configs,
+        aws_fake_configs,
         iam_auth_bundle=iam_auth_bundle,
     )
 
@@ -697,7 +697,7 @@ def _create_terraform_providers(
     dict[str, Provider],
     dict[str, int],
     dict[str, AwsChaosConfig],
-    dict[str, AwsMockConfig],
+    dict[str, AwsFakeConfig],
 ]:
     """Create all service providers for Terraform mode (no app model)."""
     providers: dict[str, Provider] = {}
@@ -743,7 +743,7 @@ def _create_terraform_providers(
     providers["__cognito_default__"] = cognito_provider
 
     chaos_configs = _create_chaos_configs()
-    aws_mock_configs = _load_aws_mock_configs(project_dir)
+    aws_fake_configs = _load_aws_fake_configs(project_dir)
     if iam_auth_bundle is None:
         iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
 
@@ -758,7 +758,7 @@ def _create_terraform_providers(
         cognito_provider=cognito_provider,
         ports=ports,
         chaos_configs=chaos_configs,
-        aws_mock_configs=aws_mock_configs,
+        aws_fake_configs=aws_fake_configs,
         iam_auth=iam_auth_bundle,
     )
 
@@ -812,7 +812,7 @@ def _create_terraform_providers(
     providers["__iam_http__"] = _HttpServiceProvider(
         "iam-http",
         lambda: create_iam_app(
-            chaos=chaos_configs.get("iam"), aws_mock=aws_mock_configs.get("iam")
+            chaos=chaos_configs.get("iam"), aws_fake=aws_fake_configs.get("iam")
         ),
         ports["iam"],
     )
@@ -829,7 +829,7 @@ def _create_terraform_providers(
         "ssm-http",
         lambda ia=iam_auth_bundle: create_ssm_app(
             chaos=chaos_configs.get("ssm"),
-            aws_mock=aws_mock_configs.get("ssm"),
+            aws_fake=aws_fake_configs.get("ssm"),
             iam_auth=ia,
         ),
         ports["ssm"],
@@ -844,7 +844,7 @@ def _create_terraform_providers(
         "secretsmanager-http",
         lambda ia=iam_auth_bundle: create_secretsmanager_app(
             chaos=chaos_configs.get("secretsmanager"),
-            aws_mock=aws_mock_configs.get("secretsmanager"),
+            aws_fake=aws_fake_configs.get("secretsmanager"),
             iam_auth=ia,
         ),
         ports["secretsmanager"],
@@ -852,10 +852,10 @@ def _create_terraform_providers(
 
     _register_experimental_providers(providers, ports)
 
-    # Mock server provider
-    _register_mock_provider(providers, port, project_dir)
+    # Fake server provider
+    _register_fake_provider(providers, port, project_dir)
 
-    return providers, ports, chaos_configs, aws_mock_configs
+    return providers, ports, chaos_configs, aws_fake_configs
 
 
 def _register_experimental_providers(
@@ -1021,25 +1021,25 @@ def _register_experimental_providers(
     providers["__container_cleanup__"] = _ContainerCleanupProvider(all_managers)
 
 
-def _register_mock_provider(
+def _register_fake_provider(
     providers: dict[str, Provider],
     base_port: int,
     project_dir: Path | None = None,
 ) -> None:
-    """Register the MockServerProvider if .lws/mocks/ exists."""
+    """Register the FakeServerProvider if .lws/fakes/ exists."""
     if project_dir is None:
         return
-    mocks_dir = project_dir / ".lws" / "mocks"
-    if not mocks_dir.exists():
+    fakes_dir = project_dir / ".lws" / "fakes"
+    if not fakes_dir.exists():
         return
 
-    from lws.providers.mockserver.provider import (  # pylint: disable=import-outside-toplevel
-        MockServerProvider,
+    from lws.providers.fakeserver.provider import (  # pylint: disable=import-outside-toplevel
+        FakeServerProvider,
     )
 
-    mock_port = base_port + 100
-    mock_provider = MockServerProvider(project_dir, base_port=mock_port)
-    providers["__mock_server__"] = mock_provider
+    fake_port = base_port + 100
+    fake_provider = FakeServerProvider(project_dir, base_port=fake_port)
+    providers["__fake_server__"] = fake_provider
 
 
 def _has_any_resources(app_model: AppModel) -> bool:
@@ -1100,7 +1100,7 @@ async def _run_dev(
     data_dir = project_dir / config.data_dir
     data_dir.mkdir(parents=True, exist_ok=True)
     iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
-    providers, chaos_configs, aws_mock_configs = _create_providers(
+    providers, chaos_configs, aws_fake_configs = _create_providers(
         app_model, graph, config, data_dir, iam_auth_bundle=iam_auth_bundle
     )
 
@@ -1123,7 +1123,7 @@ async def _run_dev(
         config.port,
         resource_metadata,
         chaos_configs,
-        aws_mock_configs,
+        aws_fake_configs,
         iam_auth_bundle=iam_auth_bundle,
     )
 
@@ -1566,7 +1566,7 @@ def _register_ssm_secretsmanager_providers(
     *,
     app_model: AppModel,
     chaos_configs: dict,
-    aws_mock_configs: dict,
+    aws_fake_configs: dict,
     iam_auth_bundle: IamAuthBundle | None,
     ssm_port: int,
     secretsmanager_port: int,
@@ -1590,7 +1590,7 @@ def _register_ssm_secretsmanager_providers(
         lambda ia=iam_auth_bundle: create_ssm_app(
             ssm_params,
             chaos=chaos_configs.get("ssm"),
-            aws_mock=aws_mock_configs.get("ssm"),
+            aws_fake=aws_fake_configs.get("ssm"),
             iam_auth=ia,
         ),
         ssm_port,
@@ -1600,7 +1600,7 @@ def _register_ssm_secretsmanager_providers(
         lambda ia=iam_auth_bundle: create_secretsmanager_app(
             sm_secrets,
             chaos=chaos_configs.get("secretsmanager"),
-            aws_mock=aws_mock_configs.get("secretsmanager"),
+            aws_fake=aws_fake_configs.get("secretsmanager"),
             iam_auth=ia,
         ),
         secretsmanager_port,
@@ -1613,7 +1613,7 @@ def _create_providers(
     config: LdkConfig,
     data_dir: Path,
     iam_auth_bundle: IamAuthBundle | None = None,
-) -> tuple[dict[str, Provider], dict[str, AwsChaosConfig], dict[str, AwsMockConfig]]:
+) -> tuple[dict[str, Provider], dict[str, AwsChaosConfig], dict[str, AwsFakeConfig]]:
     """Instantiate providers from the parsed app model.
 
     Returns a provider map (including the Lambda HTTP server on port+9)
@@ -1716,7 +1716,7 @@ def _create_providers(
 
     # 10. Create HTTP servers for each active service
     chaos_configs = _create_chaos_configs()
-    aws_mock_configs = _load_aws_mock_configs(data_dir.parent)
+    aws_fake_configs = _load_aws_fake_configs(data_dir.parent)
     if iam_auth_bundle is None:
         iam_auth_bundle = _create_iam_auth_bundle(config, data_dir.parent)
 
@@ -1739,7 +1739,7 @@ def _create_providers(
             "cognito-idp": cognito_port,
         },
         chaos_configs=chaos_configs,
-        aws_mock_configs=aws_mock_configs,
+        aws_fake_configs=aws_fake_configs,
         iam_auth=iam_auth_bundle,
     )
 
@@ -1748,16 +1748,16 @@ def _create_providers(
         providers,
         app_model=app_model,
         chaos_configs=chaos_configs,
-        aws_mock_configs=aws_mock_configs,
+        aws_fake_configs=aws_fake_configs,
         iam_auth_bundle=iam_auth_bundle,
         ssm_port=ssm_port,
         secretsmanager_port=secretsmanager_port,
     )
 
-    # Mock server provider
-    _register_mock_provider(providers, config.port, data_dir.parent)
+    # Fake server provider
+    _register_fake_provider(providers, config.port, data_dir.parent)
 
-    return providers, chaos_configs, aws_mock_configs
+    return providers, chaos_configs, aws_fake_configs
 
 
 _CHAOS_SERVICES = [
@@ -1779,23 +1779,23 @@ def _create_chaos_configs() -> dict[str, AwsChaosConfig]:
     return {svc: AwsChaosConfig() for svc in _CHAOS_SERVICES}
 
 
-def _load_aws_mock_configs(project_dir: Path | None) -> dict[str, AwsMockConfig]:
-    """Load AWS mock configs, defaulting to disabled for every service.
+def _load_aws_fake_configs(project_dir: Path | None) -> dict[str, AwsFakeConfig]:
+    """Load AWS fake configs, defaulting to disabled for every service.
 
-    Like chaos configs, a default disabled ``AwsMockConfig`` is created for
+    Like chaos configs, a default disabled ``AwsFakeConfig`` is created for
     every supported service so the middleware is always mounted and rules
     can be added at runtime via the management API.
     """
-    configs: dict[str, AwsMockConfig] = {
-        svc: AwsMockConfig(service=svc, enabled=False) for svc in _CHAOS_SERVICES
+    configs: dict[str, AwsFakeConfig] = {
+        svc: AwsFakeConfig(service=svc, enabled=False) for svc in _CHAOS_SERVICES
     }
     if project_dir is not None:
-        from lws.providers._shared.aws_mock_registry import (  # pylint: disable=import-outside-toplevel
-            AwsMockRegistry,
+        from lws.providers._shared.aws_fake_registry import (  # pylint: disable=import-outside-toplevel
+            AwsFakeRegistry,
         )
 
-        mocks_dir = project_dir / ".lws" / "mocks"
-        file_configs = AwsMockRegistry(mocks_dir).load_all()
+        fakes_dir = project_dir / ".lws" / "fakes"
+        file_configs = AwsFakeRegistry(fakes_dir).load_all()
         configs.update(file_configs)
     return configs
 
@@ -1842,7 +1842,7 @@ def _register_http_providers(
     cognito_provider: CognitoProvider,
     ports: dict[str, int],
     chaos_configs: dict[str, Any] | None = None,
-    aws_mock_configs: dict[str, AwsMockConfig] | None = None,
+    aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth: IamAuthBundle | None = None,
 ) -> None:
     """Register HTTP service providers for each active backend."""
@@ -1857,7 +1857,7 @@ def _register_http_providers(
     )
 
     cc = chaos_configs or {}
-    mc = aws_mock_configs or {}
+    mc = aws_fake_configs or {}
     ia = iam_auth
 
     http_services: list[tuple[str, Any, Callable[[], Any]]] = []
@@ -1867,7 +1867,7 @@ def _register_http_providers(
             ports["dynamodb"],
             lambda p=dynamo_provider, c=cc.get("dynamodb"), m=mc.get(
                 "dynamodb"
-            ), i=ia: create_dynamodb_app(p, chaos=c, aws_mock=m, iam_auth=i),
+            ), i=ia: create_dynamodb_app(p, chaos=c, aws_fake=m, iam_auth=i),
         )
     )
     http_services.append(
@@ -1876,7 +1876,7 @@ def _register_http_providers(
             ports["sqs"],
             lambda p=sqs_provider, pt=ports["sqs"], c=cc.get("sqs"), m=mc.get(
                 "sqs"
-            ), i=ia: create_sqs_app(p, pt, chaos=c, aws_mock=m, iam_auth=i),
+            ), i=ia: create_sqs_app(p, pt, chaos=c, aws_fake=m, iam_auth=i),
         )
     )
     http_services.append(
@@ -1884,7 +1884,7 @@ def _register_http_providers(
             "s3",
             ports["s3"],
             lambda p=s3_provider, c=cc.get("s3"), m=mc.get("s3"), i=ia: create_s3_app(
-                p, chaos=c, aws_mock=m, iam_auth=i
+                p, chaos=c, aws_fake=m, iam_auth=i
             ),
         )
     )
@@ -1893,7 +1893,7 @@ def _register_http_providers(
             "sns",
             ports["sns"],
             lambda p=sns_provider, c=cc.get("sns"), m=mc.get("sns"), i=ia: create_sns_app(
-                p, chaos=c, aws_mock=m, iam_auth=i
+                p, chaos=c, aws_fake=m, iam_auth=i
             ),
         )
     )
@@ -1903,7 +1903,7 @@ def _register_http_providers(
             ports["events"],
             lambda p=eb_provider, c=cc.get("events"), m=mc.get(
                 "events"
-            ), i=ia: create_eventbridge_app(p, chaos=c, aws_mock=m, iam_auth=i),
+            ), i=ia: create_eventbridge_app(p, chaos=c, aws_fake=m, iam_auth=i),
         )
     )
     http_services.append(
@@ -1912,7 +1912,7 @@ def _register_http_providers(
             ports["stepfunctions"],
             lambda p=sf_provider, c=cc.get("stepfunctions"), m=mc.get(
                 "stepfunctions"
-            ), i=ia: create_stepfunctions_app(p, chaos=c, aws_mock=m, iam_auth=i),
+            ), i=ia: create_stepfunctions_app(p, chaos=c, aws_fake=m, iam_auth=i),
         )
     )
     http_services.append(
@@ -1921,7 +1921,7 @@ def _register_http_providers(
             ports["cognito-idp"],
             lambda p=cognito_provider, c=cc.get("cognito-idp"), m=mc.get(
                 "cognito-idp"
-            ), i=ia: create_cognito_app(p, chaos=c, aws_mock=m, iam_auth=i),
+            ), i=ia: create_cognito_app(p, chaos=c, aws_fake=m, iam_auth=i),
         )
     )
 
@@ -1967,14 +1967,14 @@ class _HttpServiceProvider(Provider):
 
     async def start(self) -> None:
         # pylint: disable=import-outside-toplevel
-        from lws.providers.mockserver.provider import start_uvicorn_server
+        from lws.providers.fakeserver.provider import start_uvicorn_server
 
         http_app = self._app_factory()
         self._server, self._task = await start_uvicorn_server(http_app, self._port)
 
     async def stop(self) -> None:
         # pylint: disable=import-outside-toplevel
-        from lws.providers.mockserver.provider import stop_uvicorn_server
+        from lws.providers.fakeserver.provider import stop_uvicorn_server
 
         await stop_uvicorn_server(self._server, self._task)
         self._server = None
@@ -2131,7 +2131,7 @@ def _mount_management_api(
     port: int,
     resource_metadata: dict[str, Any] | None = None,
     chaos_configs: dict[str, AwsChaosConfig] | None = None,
-    aws_mock_configs: dict[str, AwsMockConfig] | None = None,
+    aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth_bundle: IamAuthBundle | None = None,
 ) -> None:
     """Mount the management API router on the API Gateway app or create a standalone one."""
@@ -2146,7 +2146,7 @@ def _mount_management_api(
         providers,
         resource_metadata=resource_metadata,
         chaos_configs=chaos_configs,
-        aws_mock_configs=aws_mock_configs,
+        aws_fake_configs=aws_fake_configs,
         iam_auth_bundle=iam_auth_bundle,
     )
 

@@ -18,7 +18,7 @@
     "sqs",
     "s3",
     "local",
-    "mocking"
+    "faking"
   ],
   "license": "MIT",
   "repository": {

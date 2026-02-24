@@ -64,54 +64,54 @@ def test_process_order_handles_multiple_orders(state_machine_arn, sfn_client):
         assert actual_result["orderId"] == expected_order_id
 
 
-MOCK_STATE_MACHINE_ARN = "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor"
-MOCK_EXECUTION_ARN = "arn:aws:states:us-east-1:000000000000:execution:OrderProcessor:mock-exec"
+FAKE_STATE_MACHINE_ARN = "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor"
+FAKE_EXECUTION_ARN = "arn:aws:states:us-east-1:000000000000:execution:OrderProcessor:fake-exec"
 
 
-def test_process_order_with_mocked_success(session, sfn_client):
-    # Arrange — mock both SFN calls so no real state machine is needed
-    session.mock("stepfunctions").operation("start-execution").respond(
+def test_process_order_with_faked_success(session, sfn_client):
+    # Arrange — fake both SFN calls so no real state machine is needed
+    session.fake("stepfunctions").operation("start-execution").respond(
         body={
-            "executionArn": MOCK_EXECUTION_ARN,
+            "executionArn": FAKE_EXECUTION_ARN,
             "startDate": 1704067200.0,
         }
     )
-    session.mock("stepfunctions").operation("describe-execution").respond(
+    session.fake("stepfunctions").operation("describe-execution").respond(
         body={
-            "executionArn": MOCK_EXECUTION_ARN,
-            "stateMachineArn": MOCK_STATE_MACHINE_ARN,
-            "name": "mock-exec",
+            "executionArn": FAKE_EXECUTION_ARN,
+            "stateMachineArn": FAKE_STATE_MACHINE_ARN,
+            "name": "fake-exec",
             "status": "SUCCEEDED",
             "startDate": 1704067200.0,
-            "output": json.dumps({"orderId": "order-mock"}),
+            "output": json.dumps({"orderId": "order-fake"}),
         }
     )
 
     # Act
-    actual_result = process_order("order-mock", MOCK_STATE_MACHINE_ARN, sfn_client)
+    actual_result = process_order("order-fake", FAKE_STATE_MACHINE_ARN, sfn_client)
 
     # Assert
-    assert actual_result["orderId"] == "order-mock"
+    assert actual_result["orderId"] == "order-fake"
 
-    # Cleanup — clear the mock so subsequent tests are unaffected
-    session.mock("stepfunctions").clear()
+    # Cleanup — clear the fake so subsequent tests are unaffected
+    session.fake("stepfunctions").clear()
 
 
 def test_process_order_raises_when_execution_limit_exceeded(session, sfn_client):
-    # Arrange — mock StartExecution to return an AWS error
-    session.mock("stepfunctions").operation("start-execution").error(
+    # Arrange — fake StartExecution to return an AWS error
+    session.fake("stepfunctions").operation("start-execution").error(
         error_type="ExecutionLimitExceeded",
         message="You have exceeded the maximum number of running executions.",
     )
 
     # Act + Assert — production code should propagate the AWS error
     with pytest.raises(Exception) as exc_info:
-        process_order("order-999", MOCK_STATE_MACHINE_ARN, sfn_client)
+        process_order("order-999", FAKE_STATE_MACHINE_ARN, sfn_client)
 
     assert "ExecutionLimitExceeded" in str(exc_info.value)
 
-    # Cleanup — clear the mock so subsequent tests are unaffected
-    session.mock("stepfunctions").clear()
+    # Cleanup — clear the fake so subsequent tests are unaffected
+    session.fake("stepfunctions").clear()
 
 
 def test_process_order_using_terraform_definition():

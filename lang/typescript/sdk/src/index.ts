@@ -8,7 +8,7 @@ export { LwsSession } from "./session";
 export { DynamoDBHelper } from "./resources/dynamodb";
 export { SQSHelper } from "./resources/sqs";
 export { S3Helper } from "./resources/s3";
-export { MockBuilder, MockRuleBuilder } from "./builders/mock";
+export { FakeBuilder, FakeRuleBuilder } from "./builders/fake";
 export { ChaosBuilder } from "./builders/chaos";
 export { IamBuilder, IdentityBuilder } from "./builders/iam";
 export { LogCapture } from "./logs";

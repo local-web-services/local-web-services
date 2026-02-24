@@ -3,13 +3,13 @@
 const { spawn } = require("child_process");
 const { LwsSession } = require("../../src/session");
 
-jest.mock("child_process", () => ({
+jest.fake("child_process", () => ({
   spawn: jest.fn(),
 }));
 
-const mockSpawn = spawn;
+const fakeSpawn = spawn;
 
-function makeMockProcess() {
+function makeFakeProcess() {
   return {
     on: jest.fn(),
     kill: jest.fn(),
@@ -20,18 +20,18 @@ function makeMockProcess() {
 }
 
 describe("LwsSession", () => {
-  let mockProcess;
+  let fakeProcess;
 
   beforeEach(() => {
     jest.useFakeTimers();
-    mockProcess = makeMockProcess();
-    mockSpawn.mockReturnValue(mockProcess);
-    global.fetch = jest.fn().mockResolvedValue({ ok: true });
+    fakeProcess = makeFakeProcess();
+    fakeSpawn.fakeReturnValue(fakeProcess);
+    global.fetch = jest.fn().fakeResolvedValue({ ok: true });
   });
 
   afterEach(() => {
     jest.useRealTimers();
-    jest.clearAllMocks();
+    jest.clearAllFakes();
   });
 
   describe("create", () => {
@@ -40,7 +40,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Assert
-      expect(mockSpawn).toHaveBeenCalledWith(
+      expect(fakeSpawn).toHaveBeenCalledWith(
         "ldk",
         expect.arrayContaining([
           "dev",
@@ -60,7 +60,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Assert
-      const actualArgs = mockSpawn.mock.calls[0][1];
+      const actualArgs = fakeSpawn.fake.calls[0][1];
       expect(actualArgs).not.toContain("--mode");
 
       await session.close();
@@ -73,7 +73,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.fromCdk("/some/project");
 
       // Assert
-      const actualArgs = mockSpawn.mock.calls[0][1];
+      const actualArgs = fakeSpawn.fake.calls[0][1];
       expect(actualArgs).toContain("--mode");
       expect(actualArgs).toContain("cdk");
 
@@ -98,7 +98,7 @@ describe("LwsSession", () => {
         const session = await LwsSession.fromHcl(expectedTmpDir);
 
         // Assert — ldk is spawned without --mode terraform (mode is auto-detected)
-        const actualArgs = mockSpawn.mock.calls[0][1];
+        const actualArgs = fakeSpawn.fake.calls[0][1];
         expect(actualArgs).toContain("dev");
         expect(actualArgs).not.toContain("terraform");
 
@@ -135,7 +135,7 @@ describe("LwsSession", () => {
         const session = await LwsSession.fromHcl(expectedTmpDir);
 
         // Assert — fetch was called to create the state machine
-        const fetchCalls = global.fetch.mock.calls;
+        const fetchCalls = global.fetch.fake.calls;
         const sfnCall = fetchCalls.find(
           (call) =>
             call[1] &&
@@ -217,7 +217,7 @@ describe("LwsSession", () => {
       await session.close();
 
       // Assert
-      expect(mockProcess.kill).toHaveBeenCalledWith("SIGTERM");
+      expect(fakeProcess.kill).toHaveBeenCalledWith("SIGTERM");
     });
 
     it("is idempotent — a second close does not throw", async () => {

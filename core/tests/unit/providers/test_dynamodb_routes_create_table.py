@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -18,8 +18,8 @@ def _target(operation: str) -> dict[str, str]:
 
 
 @pytest.fixture()
-def mock_store() -> AsyncMock:
-    store = AsyncMock(spec=IKeyValueStore)
+def fake_store() -> AsyncFake:
+    store = AsyncFake(spec=IKeyValueStore)
     store.get_item.return_value = None
     store.put_item.return_value = None
     store.delete_item.return_value = None
@@ -66,8 +66,8 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture()
-def client(mock_store: AsyncMock) -> httpx.AsyncClient:
-    app = create_dynamodb_app(mock_store)
+def client(fake_store: AsyncFake) -> httpx.AsyncClient:
+    app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
 
@@ -75,7 +75,7 @@ def client(mock_store: AsyncMock) -> httpx.AsyncClient:
 class TestCreateTable:
     @pytest.mark.asyncio
     async def test_create_table_success(
-        self, client: httpx.AsyncClient, mock_store: AsyncMock
+        self, client: httpx.AsyncClient, fake_store: AsyncFake
     ) -> None:
         # Arrange
         payload = {
@@ -98,14 +98,14 @@ class TestCreateTable:
         actual_table_status = data["TableDescription"]["TableStatus"]
         assert actual_table_name == expected_table_name
         assert actual_table_status == expected_table_status
-        mock_store.create_table.assert_awaited_once()
+        fake_store.create_table.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_create_table_idempotent(
-        self, client: httpx.AsyncClient, mock_store: AsyncMock
+        self, client: httpx.AsyncClient, fake_store: AsyncFake
     ) -> None:
         # Arrange
-        mock_store.create_table.return_value = {"TableName": "MyTable", "TableStatus": "ACTIVE"}
+        fake_store.create_table.return_value = {"TableName": "MyTable", "TableStatus": "ACTIVE"}
         payload = {
             "TableName": "MyTable",
             "KeySchema": [{"AttributeName": "pk", "KeyType": "HASH"}],
@@ -123,7 +123,7 @@ class TestCreateTable:
 
     @pytest.mark.asyncio
     async def test_create_table_with_gsi(
-        self, client: httpx.AsyncClient, mock_store: AsyncMock
+        self, client: httpx.AsyncClient, fake_store: AsyncFake
     ) -> None:
         # Arrange
         payload = {
@@ -151,7 +151,7 @@ class TestCreateTable:
 
         # Assert
         assert resp.status_code == expected_status_code
-        call_args = mock_store.create_table.call_args
+        call_args = fake_store.create_table.call_args
         config = call_args[0][0]
         actual_table_name = config.table_name
         actual_index_name = config.gsi_definitions[0].index_name

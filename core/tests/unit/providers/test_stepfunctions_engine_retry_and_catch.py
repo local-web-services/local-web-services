@@ -14,10 +14,10 @@ from lws.providers.stepfunctions.engine import (
     ExecutionStatus,
 )
 
-from ._helpers import MockCompute
+from ._helpers import FakeCompute
 
 # ---------------------------------------------------------------------------
-# Mock compute invoker
+# Fake compute invoker
 # ---------------------------------------------------------------------------
 
 
@@ -87,7 +87,7 @@ class TestRetryAndCatch:
     """Retry and Catch error handling."""
 
     async def test_retry_succeeds_after_failures(self) -> None:
-        compute = MockCompute({"fn": {"ok": True}})
+        compute = FakeCompute({"fn": {"ok": True}})
         compute.set_error_until("fn", 2)  # fail first 2 attempts
 
         history = await run_engine(
@@ -115,7 +115,7 @@ class TestRetryAndCatch:
         assert history.output_data == {"ok": True}
 
     async def test_retry_exhausted_falls_through(self) -> None:
-        compute = MockCompute({"fn": {"ok": True}})
+        compute = FakeCompute({"fn": {"ok": True}})
         compute.set_error_until("fn", 100)  # always fail
 
         history = await run_engine(
@@ -141,7 +141,7 @@ class TestRetryAndCatch:
         assert history.status == ExecutionStatus.FAILED
 
     async def test_catch_transitions_to_fallback(self) -> None:
-        compute = MockCompute({"fn": {"ok": True}})
+        compute = FakeCompute({"fn": {"ok": True}})
         compute.set_error_until("fn", 100)
 
         history = await run_engine(
@@ -175,7 +175,7 @@ class TestRetryAndCatch:
     async def test_catch_error_info_in_result_path(self) -> None:
         # Arrange
         expected_error_name = "States.TaskFailed"
-        compute = MockCompute({"fn": {"ok": True}})
+        compute = FakeCompute({"fn": {"ok": True}})
         compute.set_error_until("fn", 100)
 
         # Act
@@ -209,7 +209,7 @@ class TestRetryAndCatch:
         assert actual_error_name == expected_error_name
 
     async def test_retry_then_catch(self) -> None:
-        compute = MockCompute({"fn": {"ok": True}})
+        compute = FakeCompute({"fn": {"ok": True}})
         compute.set_error_until("fn", 100)
 
         history = await run_engine(
@@ -248,7 +248,7 @@ class TestRetryAndCatch:
 
     async def test_catch_specific_error(self) -> None:
         """Only catch specific error names."""
-        compute = MockCompute({"fn": {"ok": True}})
+        compute = FakeCompute({"fn": {"ok": True}})
         compute.set_error_until("fn", 100)
 
         history = await run_engine(

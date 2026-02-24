@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -21,12 +21,12 @@ from lws.providers.lambda_runtime.routes import LambdaRegistry
 _FUNC_CONFIG = {"FunctionName": "test", "Runtime": "python3.11", "Handler": "index.handler"}
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload, error=error, duration_ms=1.0, request_id="test-req"
     )
-    return mock
+    return fake
 
 
 # ---------------------------------------------------------------------------
@@ -127,7 +127,7 @@ class TestV2Cors:
             "allowMethods": ["GET", "POST"],
             "allowHeaders": ["Content-Type"],
         }
-        compute = _make_compute_mock({"statusCode": 200, "body": "{}"})
+        compute = _make_compute_fake({"statusCode": 200, "body": "{}"})
         registry.register("cors-func", {**_FUNC_CONFIG, "FunctionName": "cors-func"}, compute)
 
         await client.post(
@@ -172,7 +172,7 @@ class TestV2Cors:
         # Arrange
         expected_origin = "*"
         cors_config = {"allowOrigins": ["*"], "allowMethods": ["GET"]}
-        compute = _make_compute_mock({"statusCode": 200, "body": '{"data": 1}'})
+        compute = _make_compute_fake({"statusCode": 200, "body": '{"data": 1}'})
         registry.register(
             "cors-resp-func", {**_FUNC_CONFIG, "FunctionName": "cors-resp-func"}, compute
         )

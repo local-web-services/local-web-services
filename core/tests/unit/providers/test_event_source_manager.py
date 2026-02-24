@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.fake import AsyncFake, MagicFake, patch
 
 from lws.providers.lambda_runtime.event_source_manager import (
     EventSourceManager,
@@ -17,8 +17,8 @@ class TestEventSourceManager:
 
     async def test_activate_sqs_starts_poller(self) -> None:
         # Arrange
-        queue_provider = AsyncMock()
-        compute = AsyncMock()
+        queue_provider = AsyncFake()
+        compute = AsyncFake()
         manager = EventSourceManager(
             queue_providers={"my-queue": queue_provider},
             stream_dispatchers={},
@@ -34,18 +34,18 @@ class TestEventSourceManager:
         # Act
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
-        ) as mock_poller_cls:
-            mock_poller = AsyncMock()
-            mock_poller_cls.return_value = mock_poller
+        ) as fake_poller_cls:
+            fake_poller = AsyncFake()
+            fake_poller_cls.return_value = fake_poller
             await manager.activate(mapping)
 
         # Assert
-        mock_poller.start.assert_awaited_once()
+        fake_poller.start.assert_awaited_once()
 
     async def test_deactivate_stops_poller(self) -> None:
         # Arrange
-        queue_provider = AsyncMock()
-        compute = AsyncMock()
+        queue_provider = AsyncFake()
+        compute = AsyncFake()
         manager = EventSourceManager(
             queue_providers={"my-queue": queue_provider},
             stream_dispatchers={},
@@ -58,21 +58,21 @@ class TestEventSourceManager:
         }
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
-        ) as mock_poller_cls:
-            mock_poller = AsyncMock()
-            mock_poller_cls.return_value = mock_poller
+        ) as fake_poller_cls:
+            fake_poller = AsyncFake()
+            fake_poller_cls.return_value = fake_poller
             await manager.activate(mapping)
 
         # Act
         await manager.deactivate("test-uuid-2")
 
         # Assert
-        mock_poller.stop.assert_awaited_once()
+        fake_poller.stop.assert_awaited_once()
 
     async def test_activate_dynamodb_stream_registers_handler(self) -> None:
         # Arrange
-        dispatcher = MagicMock()
-        compute = AsyncMock()
+        dispatcher = MagicFake()
+        compute = AsyncFake()
         manager = EventSourceManager(
             queue_providers={},
             stream_dispatchers={"my-table": dispatcher},
@@ -99,8 +99,8 @@ class TestEventSourceManager:
 
     async def test_stop_all_stops_all_pollers(self) -> None:
         # Arrange
-        queue_provider = AsyncMock()
-        compute = AsyncMock()
+        queue_provider = AsyncFake()
+        compute = AsyncFake()
         manager = EventSourceManager(
             queue_providers={"q1": queue_provider, "q2": queue_provider},
             stream_dispatchers={},
@@ -108,10 +108,10 @@ class TestEventSourceManager:
         )
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
-        ) as mock_poller_cls:
-            mock_poller1 = AsyncMock()
-            mock_poller2 = AsyncMock()
-            mock_poller_cls.side_effect = [mock_poller1, mock_poller2]
+        ) as fake_poller_cls:
+            fake_poller1 = AsyncFake()
+            fake_poller2 = AsyncFake()
+            fake_poller_cls.side_effect = [fake_poller1, fake_poller2]
             await manager.activate(
                 {
                     "UUID": "u1",
@@ -131,8 +131,8 @@ class TestEventSourceManager:
         await manager.stop_all()
 
         # Assert
-        mock_poller1.stop.assert_awaited_once()
-        mock_poller2.stop.assert_awaited_once()
+        fake_poller1.stop.assert_awaited_once()
+        fake_poller2.stop.assert_awaited_once()
 
     def test_extract_function_name_from_arn(self) -> None:
         # Act

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.fake import AsyncFake, patch
 
 import httpx
 import pytest
@@ -34,18 +34,18 @@ class TestDiscovery:
         expected_status_code = 200
         client = LwsClient(port=expected_port)
 
-        mock_resp = httpx.Response(
+        fake_resp = httpx.Response(
             expected_status_code,
             json=SAMPLE_METADATA,
             request=httpx.Request("GET", f"http://localhost:{expected_port}/_ldk/resources"),
         )
 
-        with patch("httpx.AsyncClient") as mock_cls:
-            instance = AsyncMock()
-            instance.get.return_value = mock_resp
-            instance.__aenter__ = AsyncMock(return_value=instance)
-            instance.__aexit__ = AsyncMock(return_value=False)
-            mock_cls.return_value = instance
+        with patch("httpx.AsyncClient") as fake_cls:
+            instance = AsyncFake()
+            instance.get.return_value = fake_resp
+            instance.__aenter__ = AsyncFake(return_value=instance)
+            instance.__aexit__ = AsyncFake(return_value=False)
+            fake_cls.return_value = instance
 
             # Act
             result = await client.discover()
@@ -72,12 +72,12 @@ class TestDiscovery:
         # Arrange
         client = LwsClient(port=9999)
 
-        with patch("httpx.AsyncClient") as mock_cls:
-            instance = AsyncMock()
+        with patch("httpx.AsyncClient") as fake_cls:
+            instance = AsyncFake()
             instance.get.side_effect = Exception("connection refused")
-            instance.__aenter__ = AsyncMock(return_value=instance)
-            instance.__aexit__ = AsyncMock(return_value=False)
-            mock_cls.return_value = instance
+            instance.__aenter__ = AsyncFake(return_value=instance)
+            instance.__aexit__ = AsyncFake(return_value=False)
+            fake_cls.return_value = instance
 
             # Act / Assert
             with pytest.raises(DiscoveryError, match="Cannot reach"):

@@ -18,7 +18,7 @@ Feature: LWS init scaffolds agent configuration
     Given an empty project directory was created
     When I run lws init in the project directory
     Then the command will succeed
-    And ".claude/commands/lws/mock.md" will exist in the project directory
+    And ".claude/commands/lws/fake.md" will exist in the project directory
     And ".claude/commands/lws/chaos.md" will exist in the project directory
 
   @happy

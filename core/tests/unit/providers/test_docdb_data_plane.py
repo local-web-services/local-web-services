@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 from fastapi.testclient import TestClient
 
@@ -26,9 +26,9 @@ class TestDocDBDataPlaneEndpoint:
     def test_with_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
         expected_endpoint = "localhost:27017"
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = expected_endpoint
-        app = create_docdb_app(container_manager=mock_cm)
+        fake_cm = AsyncFake()
+        fake_cm.start_container.return_value = expected_endpoint
+        app = create_docdb_app(container_manager=fake_cm)
         client = TestClient(app)
 
         # Act
@@ -41,7 +41,7 @@ class TestDocDBDataPlaneEndpoint:
         # Assert
         actual_endpoint = result["DBCluster"]["Endpoint"]
         assert actual_endpoint == expected_endpoint
-        mock_cm.start_container.assert_called_once_with("test-cluster")
+        fake_cm.start_container.assert_called_once_with("test-cluster")
 
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
@@ -62,9 +62,9 @@ class TestDocDBDataPlaneEndpoint:
 
     def test_delete_cluster_stops_container(self) -> None:
         # Arrange
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:27017"
-        app = create_docdb_app(container_manager=mock_cm)
+        fake_cm = AsyncFake()
+        fake_cm.start_container.return_value = "localhost:27017"
+        app = create_docdb_app(container_manager=fake_cm)
         client = TestClient(app)
         _post(
             client,
@@ -76,4 +76,4 @@ class TestDocDBDataPlaneEndpoint:
         _post(client, "DeleteDBCluster", {"DBClusterIdentifier": "test-cluster"})
 
         # Assert
-        mock_cm.stop_container.assert_called_once_with("test-cluster")
+        fake_cm.stop_container.assert_called_once_with("test-cluster")

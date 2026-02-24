@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.fake import MagicFake, patch
 
 import pytest
 
@@ -12,15 +12,15 @@ class TestCreateDockerClientNoDocker:
 
     def test_raises_when_no_sockets_found(self, tmp_path):
         # Arrange
-        mock_env_client = MagicMock()
-        mock_env_client.ping.side_effect = Exception("no daemon")
+        fake_env_client = MagicFake()
+        fake_env_client.ping.side_effect = Exception("no daemon")
 
-        mock_docker = MagicMock()
-        mock_docker.from_env.return_value = mock_env_client
-        mock_docker.errors.DockerException = type("DockerException", (Exception,), {})
+        fake_docker = MagicFake()
+        fake_docker.from_env.return_value = fake_env_client
+        fake_docker.errors.DockerException = type("DockerException", (Exception,), {})
 
         with (
-            patch.dict("sys.modules", {"docker": mock_docker}),
+            patch.dict("sys.modules", {"docker": fake_docker}),
             patch(
                 "lws.providers._shared.docker_client._socket_candidates",
                 return_value=[tmp_path / "nonexistent.sock"],

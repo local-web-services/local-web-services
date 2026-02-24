@@ -1,6 +1,6 @@
-/** Fluent builder for configuring AWS operation mocks. */
+/** Fluent builder for configuring AWS operation fakes. */
 
-export class MockBuilder {
+export class FakeBuilder {
   private readonly rules: Array<Record<string, unknown>> = [];
 
   constructor(
@@ -8,8 +8,8 @@ export class MockBuilder {
     private readonly mgmtPort: number
   ) {}
 
-  operation(operationName: string): MockRuleBuilder {
-    return new MockRuleBuilder(this, operationName);
+  operation(operationName: string): FakeRuleBuilder {
+    return new FakeRuleBuilder(this, operationName);
   }
 
   async _addRule(rule: Record<string, unknown>): Promise<void> {
@@ -18,7 +18,7 @@ export class MockBuilder {
   }
 
   private async _apply(): Promise<void> {
-    await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/aws-mock`, {
+    await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/aws-fake`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ [this.service]: { enabled: true, rules: this.rules } }),
@@ -27,7 +27,7 @@ export class MockBuilder {
 
   async clear(): Promise<void> {
     this.rules.length = 0;
-    await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/aws-mock`, {
+    await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/aws-fake`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ [this.service]: { enabled: false, rules: [] } }),
@@ -35,15 +35,15 @@ export class MockBuilder {
   }
 }
 
-export class MockRuleBuilder {
+export class FakeRuleBuilder {
   private matchHeaders: Record<string, string> = {};
 
   constructor(
-    private readonly parent: MockBuilder,
+    private readonly parent: FakeBuilder,
     private readonly operation: string
   ) {}
 
-  withHeader(name: string, value: string): MockRuleBuilder {
+  withHeader(name: string, value: string): FakeRuleBuilder {
     this.matchHeaders[name] = value;
     return this;
   }
@@ -53,7 +53,7 @@ export class MockRuleBuilder {
     body?: string | object;
     contentType?: string;
     delayMs?: number;
-  }): Promise<MockBuilder> {
+  }): Promise<FakeBuilder> {
     const body =
       typeof opts.body === "object" ? JSON.stringify(opts.body) : opts.body ?? "";
     const rule = {
@@ -70,7 +70,7 @@ export class MockRuleBuilder {
     return this.parent;
   }
 
-  async error(errorType: string, message = "", status = 400): Promise<MockBuilder> {
+  async error(errorType: string, message = "", status = 400): Promise<FakeBuilder> {
     return this.respond({
       status,
       body: JSON.stringify({ __type: errorType, message }),

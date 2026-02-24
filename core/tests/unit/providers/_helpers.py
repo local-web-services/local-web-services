@@ -6,7 +6,7 @@ from typing import Any
 from lws.providers.stepfunctions.engine import StatesTaskFailed
 
 
-class MockLambdaHandler:
+class FakeLambdaHandler:
     """Collects stream events for assertions."""
 
     def __init__(self) -> None:
@@ -26,8 +26,8 @@ class MockLambdaHandler:
         self._event.clear()
 
 
-class MockCompute:
-    """Mock compute invoker for testing."""
+class FakeCompute:
+    """Fake compute invoker for testing."""
 
     def __init__(self, results: dict[str, Any] | None = None) -> None:
         self._results = results or {}

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import AsyncMock, patch
+from unittest.fake import AsyncFake, patch
 
 import httpx
 import pytest
@@ -32,15 +32,15 @@ SAMPLE_RESOURCES = {
 }
 
 
-def _mock_client(status_resp, resources_resp):
+def _fake_client(status_resp, resources_resp):
     """Return a patched httpx.AsyncClient context manager."""
     patcher = patch("lws.cli.lws.httpx.AsyncClient")
-    mock_cls = patcher.start()
-    instance = AsyncMock()
+    fake_cls = patcher.start()
+    instance = AsyncFake()
     instance.get.side_effect = [status_resp, resources_resp]
-    instance.__aenter__ = AsyncMock(return_value=instance)
-    instance.__aexit__ = AsyncMock(return_value=False)
-    mock_cls.return_value = instance
+    instance.__aenter__ = AsyncFake(return_value=instance)
+    instance.__aexit__ = AsyncFake(return_value=False)
+    fake_cls.return_value = instance
     return patcher
 
 
@@ -68,7 +68,7 @@ class TestLwsStatus:
         )
 
         # Act
-        patcher = _mock_client(status_resp, resources_resp)
+        patcher = _fake_client(status_resp, resources_resp)
         try:
             await _run_status(3000, json_output=True)
         finally:
@@ -106,7 +106,7 @@ class TestLwsStatus:
             request=httpx.Request("GET", "http://localhost:3000/_ldk/resources"),
         )
 
-        patcher = _mock_client(status_resp, resources_resp)
+        patcher = _fake_client(status_resp, resources_resp)
         try:
             await _run_status(3000)
         finally:
@@ -122,12 +122,12 @@ class TestLwsStatus:
 
     @pytest.mark.asyncio
     async def test_status_exits_when_not_running(self):
-        with patch("lws.cli.lws.httpx.AsyncClient") as mock_cls:
-            instance = AsyncMock()
+        with patch("lws.cli.lws.httpx.AsyncClient") as fake_cls:
+            instance = AsyncFake()
             instance.get.side_effect = httpx.ConnectError("connection refused")
-            instance.__aenter__ = AsyncMock(return_value=instance)
-            instance.__aexit__ = AsyncMock(return_value=False)
-            mock_cls.return_value = instance
+            instance.__aenter__ = AsyncFake(return_value=instance)
+            instance.__aexit__ = AsyncFake(return_value=False)
+            fake_cls.return_value = instance
 
             with pytest.raises(SystemExit):
                 await _run_status(3000)

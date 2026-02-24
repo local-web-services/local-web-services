@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -19,12 +19,12 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload, error=error, duration_ms=1.0, request_id="test-req"
     )
-    return mock
+    return fake
 
 
 def _success_payload(
@@ -64,7 +64,7 @@ class TestMultiValueHeaders:
     @pytest.mark.asyncio
     async def test_multi_value_headers_present_in_event(self) -> None:
         # Arrange
-        compute = _make_compute_mock(_success_payload())
+        compute = _make_compute_fake(_success_payload())
         route = RouteConfig(method="GET", path="/items", handler_name="fn")
         provider = _make_provider([route], {"fn": compute})
 
@@ -81,7 +81,7 @@ class TestMultiValueHeaders:
         # Arrange
         expected_key = "x-custom"
         expected_value = "value1"
-        compute = _make_compute_mock(_success_payload())
+        compute = _make_compute_fake(_success_payload())
         route = RouteConfig(method="GET", path="/items", handler_name="fn")
         provider = _make_provider([route], {"fn": compute})
 
@@ -99,7 +99,7 @@ class TestMultiValueHeaders:
         # Arrange
         expected_key = "color"
         expected_value = "red"
-        compute = _make_compute_mock(_success_payload())
+        compute = _make_compute_fake(_success_payload())
         route = RouteConfig(method="GET", path="/items", handler_name="fn")
         provider = _make_provider([route], {"fn": compute})
 
@@ -117,7 +117,7 @@ class TestMultiValueHeaders:
         # Arrange
         expected_key = "color"
         expected_values = ["red", "blue"]
-        compute = _make_compute_mock(_success_payload())
+        compute = _make_compute_fake(_success_payload())
         route = RouteConfig(method="GET", path="/items", handler_name="fn")
         provider = _make_provider([route], {"fn": compute})
 
@@ -133,7 +133,7 @@ class TestMultiValueHeaders:
     @pytest.mark.asyncio
     async def test_no_query_params_multi_value_is_none(self) -> None:
         # Arrange
-        compute = _make_compute_mock(_success_payload())
+        compute = _make_compute_fake(_success_payload())
         route = RouteConfig(method="GET", path="/items", handler_name="fn")
         provider = _make_provider([route], {"fn": compute})
 

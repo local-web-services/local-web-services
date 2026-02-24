@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
+from unittest.fake import patch
 
 import pytest
 
@@ -77,8 +77,8 @@ class TestUserStorePasswordReset:
 
         # Act
         # Assert
-        with patch("lws.providers.cognito.user_store.time") as mock_time:
-            mock_time.time.return_value = time.time() + 600
+        with patch("lws.providers.cognito.user_store.time") as fake_time:
+            fake_time.time.return_value = time.time() + 600
             with pytest.raises(ExpiredCodeException):
                 await store.confirm_password_reset(username, code, "NewPass1B")
 

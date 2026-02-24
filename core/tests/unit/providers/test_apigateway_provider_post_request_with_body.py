@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -19,16 +19,16 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given payload/error."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given payload/error."""
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 def _success_payload(
@@ -109,10 +109,10 @@ class TestPostRequestWithBody:
 
     @pytest.mark.asyncio
     async def test_post_request_with_json_body(self) -> None:
-        mock_compute = _make_compute_mock(payload=_success_payload(status_code=201))
+        fake_compute = _make_compute_fake(payload=_success_payload(status_code=201))
         provider = _make_provider(
             routes=[RouteConfig(method="POST", path="/orders", handler_name="create-order")],
-            compute_providers={"create-order": mock_compute},
+            compute_providers={"create-order": fake_compute},
         )
 
         body_dict = {"item": "widget", "qty": 3}
@@ -129,7 +129,7 @@ class TestPostRequestWithBody:
         expected_path = "/orders"
         assert response.status_code == expected_status
 
-        event: dict = mock_compute.invoke.call_args[0][0]
+        event: dict = fake_compute.invoke.call_args[0][0]
         actual_method = event["httpMethod"]
         actual_path = event["path"]
         assert actual_method == expected_method

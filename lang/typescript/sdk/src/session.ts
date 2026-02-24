@@ -15,7 +15,7 @@ import type { ResourceSpec } from "./types";
 import { DynamoDBHelper } from "./resources/dynamodb";
 import { SQSHelper } from "./resources/sqs";
 import { S3Helper } from "./resources/s3";
-import { MockBuilder } from "./builders/mock";
+import { FakeBuilder } from "./builders/fake";
 import { ChaosBuilder } from "./builders/chaos";
 import { IamBuilder } from "./builders/iam";
 import { LogCapture } from "./logs";
@@ -424,10 +424,10 @@ export class LwsSession {
     return new S3Helper(bucketName, this.client("s3"));
   }
 
-  // ── Mock / chaos / IAM builders ─────────────────────────────────────────────
+  // ── Fake / chaos / IAM builders ─────────────────────────────────────────────
 
-  mock(service: string): MockBuilder {
-    return new MockBuilder(service, this._basePort);
+  fake(service: string): FakeBuilder {
+    return new FakeBuilder(service, this._basePort);
   }
 
   chaos(service: string): ChaosBuilder {

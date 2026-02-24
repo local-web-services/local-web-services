@@ -26,7 +26,7 @@ from lws.graph.builder import (
     build_graph,
 )
 
-from ._helpers import MockApi, MockAppModel, MockFunction, MockRoute, MockTable
+from ._helpers import FakeApi, FakeAppModel, FakeFunction, FakeRoute, FakeTable
 
 
 class TestBuildGraph:
@@ -40,20 +40,20 @@ class TestBuildGraph:
         table_name = "users"
         expected_edge_count = 1
 
-        model = MockAppModel(
-            tables=[MockTable(logical_id=table_id, table_name=table_name)],
+        model = FakeAppModel(
+            tables=[FakeTable(logical_id=table_id, table_name=table_name)],
             functions=[
-                MockFunction(
+                FakeFunction(
                     logical_id=function_id,
                     handler=handler_name,
                     environment={"TABLE_NAME": table_name},
                 ),
             ],
             apis=[
-                MockApi(
+                FakeApi(
                     logical_id=api_id,
                     routes=[
-                        MockRoute(
+                        FakeRoute(
                             http_method="GET",
                             resource_path="/users/{id}",
                             handler_name=handler_name,
@@ -95,19 +95,19 @@ class TestBuildGraph:
         handler = "h"
         table_name = "t"
 
-        model = MockAppModel(
-            tables=[MockTable(logical_id=table_id, table_name=table_name)],
+        model = FakeAppModel(
+            tables=[FakeTable(logical_id=table_id, table_name=table_name)],
             functions=[
-                MockFunction(
+                FakeFunction(
                     logical_id=function_id,
                     handler=handler,
                     environment={"TBL": table_name},
                 ),
             ],
             apis=[
-                MockApi(
+                FakeApi(
                     logical_id=api_id,
-                    routes=[MockRoute("GET", "/", handler)],
+                    routes=[FakeRoute("GET", "/", handler)],
                 ),
             ],
         )
@@ -124,7 +124,7 @@ class TestBuildGraph:
         # Arrange
         expected_node_count = 0
         expected_edge_count = 0
-        model = MockAppModel()
+        model = FakeAppModel()
 
         # Act
         graph = build_graph(model)
@@ -137,10 +137,10 @@ class TestBuildGraph:
         """A function whose env vars do not reference any table should have no data edges."""
         # Arrange
         expected_data_edge_count = 0
-        model = MockAppModel(
-            tables=[MockTable(logical_id="T", table_name="mytable")],
+        model = FakeAppModel(
+            tables=[FakeTable(logical_id="T", table_name="mytable")],
             functions=[
-                MockFunction(
+                FakeFunction(
                     logical_id="F",
                     handler="handler",
                     environment={"SOME_VAR": "unrelated_value"},
@@ -164,15 +164,15 @@ class TestBuildGraph:
         expected_sources = {fn1_id, fn2_id}
         table_name = "shared"
 
-        model = MockAppModel(
-            tables=[MockTable(logical_id=table_id, table_name=table_name)],
+        model = FakeAppModel(
+            tables=[FakeTable(logical_id=table_id, table_name=table_name)],
             functions=[
-                MockFunction(
+                FakeFunction(
                     logical_id=fn1_id,
                     handler="fn1.handler",
                     environment={"TABLE": table_name},
                 ),
-                MockFunction(
+                FakeFunction(
                     logical_id=fn2_id,
                     handler="fn2.handler",
                     environment={"TABLE": table_name},
@@ -194,14 +194,14 @@ class TestBuildGraph:
         """An API route whose handler_name doesn't match any function creates no trigger edge."""
         # Arrange
         expected_trigger_edge_count = 0
-        model = MockAppModel(
+        model = FakeAppModel(
             functions=[
-                MockFunction(logical_id="F", handler="real.handler", environment={}),
+                FakeFunction(logical_id="F", handler="real.handler", environment={}),
             ],
             apis=[
-                MockApi(
+                FakeApi(
                     logical_id="A",
-                    routes=[MockRoute("GET", "/", "nonexistent.handler")],
+                    routes=[FakeRoute("GET", "/", "nonexistent.handler")],
                 ),
             ],
         )

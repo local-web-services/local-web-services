@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import base64
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -21,12 +21,12 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload, error=error, duration_ms=1.0, request_id="test-req"
     )
-    return mock
+    return fake
 
 
 def _make_provider(
@@ -104,7 +104,7 @@ class TestBinaryPayloads:
         # Arrange
         expected_body = b"\x89PNG\r\n\x1a\n\x00\x00"
         expected_encoded = base64.b64encode(expected_body).decode("ascii")
-        compute = _make_compute_mock({"statusCode": 200, "body": ""})
+        compute = _make_compute_fake({"statusCode": 200, "body": ""})
         route = RouteConfig(method="POST", path="/upload", handler_name="fn")
         provider = _make_provider([route], {"fn": compute})
 
@@ -126,7 +126,7 @@ class TestBinaryPayloads:
     async def test_text_body_is_not_encoded(self) -> None:
         # Arrange
         expected_body = '{"key": "value"}'
-        compute = _make_compute_mock({"statusCode": 200, "body": ""})
+        compute = _make_compute_fake({"statusCode": 200, "body": ""})
         route = RouteConfig(method="POST", path="/data", handler_name="fn")
         provider = _make_provider([route], {"fn": compute})
 

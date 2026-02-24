@@ -7,23 +7,23 @@ import pytest
 
 from lws.providers.lambda_function_url.routes import create_lambda_function_url_app
 
-from .conftest import MockCompute
+from .conftest import FakeCompute
 
 
 @pytest.fixture
-def cors_mock_compute():
-    return MockCompute(response={"statusCode": 200, "body": "ok"})
+def cors_fake_compute():
+    return FakeCompute(response={"statusCode": 200, "body": "ok"})
 
 
 @pytest.fixture
-def cors_app(cors_mock_compute):
+def cors_app(cors_fake_compute):
     cors_config = {
         "AllowOrigins": ["https://example.com"],
         "AllowMethods": ["GET", "POST"],
         "AllowHeaders": ["content-type", "authorization"],
         "MaxAge": 3600,
     }
-    return create_lambda_function_url_app("cors-function", cors_mock_compute, cors_config)
+    return create_lambda_function_url_app("cors-function", cors_fake_compute, cors_config)
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 "use strict";
 
-class MockBuilder {
+class FakeBuilder {
   constructor(service, mgmtPort) {
     this.service = service;
     this.mgmtPort = mgmtPort;
@@ -8,7 +8,7 @@ class MockBuilder {
   }
 
   operation(operationName) {
-    return new MockRuleBuilder(this, operationName);
+    return new FakeRuleBuilder(this, operationName);
   }
 
   async _addRule(rule) {
@@ -17,7 +17,7 @@ class MockBuilder {
   }
 
   async _apply() {
-    await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/aws-mock`, {
+    await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/aws-fake`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ [this.service]: { enabled: true, rules: this.rules } }),
@@ -26,7 +26,7 @@ class MockBuilder {
 
   async clear() {
     this.rules = [];
-    await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/aws-mock`, {
+    await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/aws-fake`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ [this.service]: { enabled: false, rules: [] } }),
@@ -34,7 +34,7 @@ class MockBuilder {
   }
 }
 
-class MockRuleBuilder {
+class FakeRuleBuilder {
   constructor(parent, operation) {
     this.parent = parent;
     this.operation = operation;
@@ -71,4 +71,4 @@ class MockRuleBuilder {
   }
 }
 
-module.exports = { MockBuilder, MockRuleBuilder };
+module.exports = { FakeBuilder, FakeRuleBuilder };

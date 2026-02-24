@@ -5,7 +5,7 @@ Feature: API Gateway GetIntegrationResponse
     Given a REST API "e2e-get-int-resp" was created
     And a resource "getresp" was created under the root
     And method "GET" was added to the resource
-    And integration type "MOCK" was added to method "GET"
+    And integration type "FAKE" was added to method "GET"
     And integration response with status "200" was added to method "GET"
     When I get integration response with status "200" for method "GET"
     Then the command will succeed

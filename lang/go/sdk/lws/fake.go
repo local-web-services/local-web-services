@@ -56,7 +56,7 @@ func (b *FakeBuilder) apply(enabled bool) error {
 	if err != nil {
 		return fmt.Errorf("fake: marshal payload: %w", err)
 	}
-	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/aws-mock", b.session.basePort)
+	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/aws-fake", b.session.basePort)
 	resp, err := http.Post(url, "application/json", bytes.NewReader(data)) //nolint:noctx
 	if err != nil {
 		return fmt.Errorf("fake: post to management API: %w", err)

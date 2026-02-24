@@ -9,7 +9,7 @@ SQS event-source poller.
 from __future__ import annotations
 
 import asyncio
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -170,8 +170,8 @@ class TestSqsEventSourcePoller:
 
         await queue_provider.send_message(queue_name, expected_body)
 
-        mock_compute = AsyncMock(spec=ICompute)
-        mock_compute.invoke.return_value = InvocationResult(
+        fake_compute = AsyncFake(spec=ICompute)
+        fake_compute.invoke.return_value = InvocationResult(
             payload={"statusCode": 200},
             error=None,
             duration_ms=50.0,
@@ -186,7 +186,7 @@ class TestSqsEventSourcePoller:
 
         poller = SqsEventSourcePoller(
             queue_provider=queue_provider,
-            compute_providers={function_name: mock_compute},
+            compute_providers={function_name: fake_compute},
             mappings=[mapping],
             poll_interval=0.1,
         )
@@ -197,8 +197,8 @@ class TestSqsEventSourcePoller:
         await poller.stop()
 
         # Assert
-        mock_compute.invoke.assert_called()
-        call_args = mock_compute.invoke.call_args
+        fake_compute.invoke.assert_called()
+        call_args = fake_compute.invoke.call_args
         event = call_args[0][0]
         assert "Records" in event
         assert len(event["Records"]) >= 1
@@ -223,8 +223,8 @@ class TestSqsEventSourcePoller:
 
         await queue_provider.send_message(queue_name, "delete-after-invoke")
 
-        mock_compute = AsyncMock(spec=ICompute)
-        mock_compute.invoke.return_value = InvocationResult(
+        fake_compute = AsyncFake(spec=ICompute)
+        fake_compute.invoke.return_value = InvocationResult(
             payload={}, error=None, duration_ms=10.0, request_id="r1"
         )
 
@@ -236,7 +236,7 @@ class TestSqsEventSourcePoller:
 
         poller = SqsEventSourcePoller(
             queue_provider=queue_provider,
-            compute_providers={function_name: mock_compute},
+            compute_providers={function_name: fake_compute},
             mappings=[mapping],
             poll_interval=0.1,
         )
@@ -266,8 +266,8 @@ class TestSqsEventSourcePoller:
 
         await queue_provider.send_message(queue_name, "keep-on-fail")
 
-        mock_compute = AsyncMock(spec=ICompute)
-        mock_compute.invoke.return_value = InvocationResult(
+        fake_compute = AsyncFake(spec=ICompute)
+        fake_compute.invoke.return_value = InvocationResult(
             payload=None, error="Lambda failed", duration_ms=10.0, request_id="r1"
         )
 
@@ -279,7 +279,7 @@ class TestSqsEventSourcePoller:
 
         poller = SqsEventSourcePoller(
             queue_provider=queue_provider,
-            compute_providers={function_name: mock_compute},
+            compute_providers={function_name: fake_compute},
             mappings=[mapping],
             poll_interval=0.1,
         )
@@ -303,7 +303,7 @@ class TestSqsEventSourcePoller:
         # Arrange
         expected_task_count_after_start = 1
         expected_task_count_after_stop = 0
-        queue_provider = AsyncMock(spec=IQueue)
+        queue_provider = AsyncFake(spec=IQueue)
         queue_provider.receive_messages.return_value = []
 
         mapping = EventSourceMapping(
@@ -335,7 +335,7 @@ class TestSqsEventSourcePoller:
         """Disabled mappings should not create polling tasks."""
         # Arrange
         expected_task_count = 0
-        queue_provider = AsyncMock(spec=IQueue)
+        queue_provider = AsyncFake(spec=IQueue)
 
         mapping = EventSourceMapping(
             queue_name="q",

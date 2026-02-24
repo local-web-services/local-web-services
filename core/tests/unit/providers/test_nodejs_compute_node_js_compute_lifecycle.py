@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.fake import AsyncFake, MagicFake, patch
 
 import pytest
 
@@ -46,12 +46,12 @@ def _make_context(**overrides) -> LambdaContext:
     return LambdaContext(**defaults)
 
 
-def _mock_process(stdout: str, returncode: int = 0) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
-    proc = AsyncMock()
-    proc.communicate = AsyncMock(return_value=(stdout.encode(), b""))
+def _fake_process(stdout: str, returncode: int = 0) -> AsyncFake:
+    """Create a fake asyncio.subprocess.Process."""
+    proc = AsyncFake()
+    proc.communicate = AsyncFake(return_value=(stdout.encode(), b""))
     proc.returncode = returncode
-    proc.kill = MagicMock()
+    proc.kill = MagicFake()
     return proc
 
 
@@ -81,13 +81,13 @@ class TestNodeJsComputeLifecycle:
         assert actual_name == expected_name
 
     @patch("shutil.which", return_value="/usr/local/bin/node")
-    async def test_start_sets_running(self, _which: MagicMock) -> None:
+    async def test_start_sets_running(self, _which: MagicFake) -> None:
         provider = NodeJsCompute(_make_config(), sdk_env={})
         await provider.start()
         assert await provider.health_check() is True
 
     @patch("shutil.which", return_value=None)
-    async def test_start_raises_when_node_missing(self, _which: MagicMock) -> None:
+    async def test_start_raises_when_node_missing(self, _which: MagicFake) -> None:
         provider = NodeJsCompute(_make_config(), sdk_env={})
         with pytest.raises(ProviderStartError, match="Node.js runtime not found"):
             await provider.start()

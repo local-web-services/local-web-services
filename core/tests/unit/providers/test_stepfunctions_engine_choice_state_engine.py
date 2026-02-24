@@ -15,7 +15,7 @@ from lws.providers.stepfunctions.engine import (
 )
 
 # ---------------------------------------------------------------------------
-# Mock compute invoker
+# Fake compute invoker
 # ---------------------------------------------------------------------------
 
 

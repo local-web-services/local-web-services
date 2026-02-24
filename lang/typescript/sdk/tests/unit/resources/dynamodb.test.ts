@@ -4,7 +4,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { DynamoDBHelper } from "../../../src/resources/dynamodb";
 
-function makeMockClient(): { send: jest.Mock; client: DynamoDBClient } {
+function makeFakeClient(): { send: jest.Fake; client: DynamoDBClient } {
   const send = jest.fn();
   return { send, client: { send } as unknown as DynamoDBClient };
 }
@@ -13,20 +13,20 @@ describe("DynamoDBHelper", () => {
   describe("put", () => {
     it("calls PutItemCommand with the correct table name and item", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       const expectedItem: Record<string, AttributeValue> = {
         id: { S: "1" },
         status: { S: "pending" },
       };
-      send.mockResolvedValue({});
+      send.fakeResolvedValue({});
 
       // Act
       await helper.put(expectedItem);
 
       // Assert
       expect(send).toHaveBeenCalledTimes(1);
-      const actualCommand = send.mock.calls[0][0];
+      const actualCommand = send.fake.calls[0][0];
       expect(actualCommand.input.TableName).toBe("Orders");
       expect(actualCommand.input.Item).toEqual(expectedItem);
     });
@@ -35,13 +35,13 @@ describe("DynamoDBHelper", () => {
   describe("get", () => {
     it("returns the item from the response", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       const expectedItem: Record<string, AttributeValue> = {
         id: { S: "1" },
         status: { S: "complete" },
       };
-      send.mockResolvedValue({ Item: expectedItem });
+      send.fakeResolvedValue({ Item: expectedItem });
 
       // Act
       const actual = await helper.get({ id: { S: "1" } });
@@ -52,9 +52,9 @@ describe("DynamoDBHelper", () => {
 
     it("returns undefined when the item is not found", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
-      send.mockResolvedValue({});
+      send.fakeResolvedValue({});
 
       // Act
       const actual = await helper.get({ id: { S: "missing" } });
@@ -67,17 +67,17 @@ describe("DynamoDBHelper", () => {
   describe("delete", () => {
     it("calls DeleteItemCommand with the correct table name and key", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       const expectedKey: Record<string, AttributeValue> = { id: { S: "1" } };
-      send.mockResolvedValue({});
+      send.fakeResolvedValue({});
 
       // Act
       await helper.delete(expectedKey);
 
       // Assert
       expect(send).toHaveBeenCalledTimes(1);
-      const actualCommand = send.mock.calls[0][0];
+      const actualCommand = send.fake.calls[0][0];
       expect(actualCommand.input.TableName).toBe("Orders");
       expect(actualCommand.input.Key).toEqual(expectedKey);
     });
@@ -86,13 +86,13 @@ describe("DynamoDBHelper", () => {
   describe("scan", () => {
     it("returns all items from a single page", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       const expectedItems: Array<Record<string, AttributeValue>> = [
         { id: { S: "1" } },
         { id: { S: "2" } },
       ];
-      send.mockResolvedValue({ Items: expectedItems, LastEvaluatedKey: undefined });
+      send.fakeResolvedValue({ Items: expectedItems, LastEvaluatedKey: undefined });
 
       // Act
       const actual = await helper.scan();
@@ -104,14 +104,14 @@ describe("DynamoDBHelper", () => {
 
     it("paginates until there is no LastEvaluatedKey", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       send
-        .mockResolvedValueOnce({
+        .fakeResolvedValueOnce({
           Items: [{ id: { S: "1" } }],
           LastEvaluatedKey: { id: { S: "1" } },
         })
-        .mockResolvedValueOnce({
+        .fakeResolvedValueOnce({
           Items: [{ id: { S: "2" } }],
           LastEvaluatedKey: undefined,
         });
@@ -128,10 +128,10 @@ describe("DynamoDBHelper", () => {
   describe("assertItemExists", () => {
     it("returns the item when it exists", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
       const expectedItem: Record<string, AttributeValue> = { id: { S: "1" } };
-      send.mockResolvedValue({ Item: expectedItem });
+      send.fakeResolvedValue({ Item: expectedItem });
 
       // Act
       const actual = await helper.assertItemExists({ id: { S: "1" } });
@@ -142,9 +142,9 @@ describe("DynamoDBHelper", () => {
 
     it("throws when the item does not exist", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
-      send.mockResolvedValue({});
+      send.fakeResolvedValue({});
       const expectedKey = { id: { S: "missing" } };
 
       // Act & Assert
@@ -157,9 +157,9 @@ describe("DynamoDBHelper", () => {
   describe("assertItemCount", () => {
     it("does not throw when the item count matches", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
-      send.mockResolvedValue({ Items: [{ id: { S: "1" } }] });
+      send.fakeResolvedValue({ Items: [{ id: { S: "1" } }] });
       const expectedCount = 1;
 
       // Act & Assert
@@ -168,9 +168,9 @@ describe("DynamoDBHelper", () => {
 
     it("throws when the item count does not match", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new DynamoDBHelper("Orders", client);
-      send.mockResolvedValue({
+      send.fakeResolvedValue({
         Items: [{ id: { S: "1" } }, { id: { S: "2" } }],
       });
       const expectedCount = 1;

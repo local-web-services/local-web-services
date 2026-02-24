@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -18,16 +18,16 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given payload/error."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given payload/error."""
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 def _success_payload(
@@ -113,10 +113,10 @@ class TestLambdaResponseTransform:
             body='{"id": "123"}',
             headers={"Content-Type": "application/json"},
         )
-        mock_compute = _make_compute_mock(payload=payload)
+        fake_compute = _make_compute_fake(payload=payload)
         provider = _make_provider(
             routes=[RouteConfig(method="GET", path="/items/{id}", handler_name="get-item")],
-            compute_providers={"get-item": mock_compute},
+            compute_providers={"get-item": fake_compute},
         )
 
         async with _client(provider) as client:
@@ -133,12 +133,12 @@ class TestLambdaResponseTransform:
     @pytest.mark.asyncio
     async def test_custom_status_code(self) -> None:
         payload = _success_payload(status_code=204, body="")
-        mock_compute = _make_compute_mock(payload=payload)
+        fake_compute = _make_compute_fake(payload=payload)
         provider = _make_provider(
             routes=[
                 RouteConfig(method="DELETE", path="/items/{id}", handler_name="delete-item"),
             ],
-            compute_providers={"delete-item": mock_compute},
+            compute_providers={"delete-item": fake_compute},
         )
 
         async with _client(provider) as client:

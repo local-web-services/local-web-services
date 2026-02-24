@@ -23,7 +23,7 @@ from lws.providers.dynamodb.streams import (
     StreamViewType,
 )
 
-from ._helpers import MockLambdaHandler
+from ._helpers import FakeLambdaHandler
 
 
 class TestStreamDispatcher:
@@ -31,7 +31,7 @@ class TestStreamDispatcher:
 
     async def test_emit_invokes_handler(self) -> None:
         # Arrange
-        handler = MockLambdaHandler()
+        handler = FakeLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         dispatcher.configure_stream(
             StreamConfiguration(
@@ -66,7 +66,7 @@ class TestStreamDispatcher:
 
     async def test_emit_without_config_is_noop(self) -> None:
         # Arrange
-        handler = MockLambdaHandler()
+        handler = FakeLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         # No stream configured for "users"
         dispatcher.register_handler("users", handler)
@@ -106,7 +106,7 @@ class TestStreamDispatcher:
 
     async def test_batching_multiple_events(self) -> None:
         # Arrange
-        handler = MockLambdaHandler()
+        handler = FakeLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=200)
         dispatcher.configure_stream(
             StreamConfiguration(
@@ -139,7 +139,7 @@ class TestStreamDispatcher:
 
     async def test_stop_flushes_pending_events(self) -> None:
         # Arrange
-        handler = MockLambdaHandler()
+        handler = FakeLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=5000)  # Long window
         dispatcher.configure_stream(
             StreamConfiguration(

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -21,23 +21,23 @@ from lws.providers.sns.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given result."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given result."""
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
-def _make_queue_mock() -> IQueue:
-    """Return a mock IQueue."""
-    mock = AsyncMock(spec=IQueue)
-    mock.send_message.return_value = "mock-sqs-message-id"
-    return mock
+def _make_queue_fake() -> IQueue:
+    """Return a fake IQueue."""
+    fake = AsyncFake(spec=IQueue)
+    fake.send_message.return_value = "fake-sqs-message-id"
+    return fake
 
 
 def _topic_configs() -> list[TopicConfig]:
@@ -118,8 +118,8 @@ class TestSqsSubscriptionDispatch:
     async def test_sqs_dispatch_sends_message(self) -> None:
         # Arrange
         provider = await _started_provider()
-        mock_queue = _make_queue_mock()
-        provider.set_queue_provider(mock_queue)
+        fake_queue = _make_queue_fake()
+        provider.set_queue_provider(fake_queue)
         expected_queue_name = "my-queue"
         expected_message = "sqs test message"
         expected_subject = "SQS Subject"
@@ -141,8 +141,8 @@ class TestSqsSubscriptionDispatch:
         await asyncio.sleep(0.05)
 
         # Assert
-        mock_queue.send_message.assert_called_once()
-        call_kwargs = mock_queue.send_message.call_args
+        fake_queue.send_message.assert_called_once()
+        call_kwargs = fake_queue.send_message.call_args
         actual_queue_name = call_kwargs[1]["queue_name"]
         assert actual_queue_name == expected_queue_name
 

@@ -15,7 +15,7 @@ from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
-from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers.eventbridge.provider import EventBridgeProvider, RuleTarget
 
 _logger = get_logger("ldk.eventbridge")
@@ -359,13 +359,13 @@ _TARGET_HANDLERS = {
 def create_eventbridge_app(
     provider: EventBridgeProvider,
     chaos: AwsChaosConfig | None = None,
-    aws_mock: AwsMockConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the EventBridge wire protocol."""
     app = FastAPI(title="LDK EventBridge")
-    if aws_mock is not None:
-        app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="events")
+    if aws_fake is not None:
+        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="events")
     add_iam_auth_middleware(app, "events", iam_auth, ErrorFormat.JSON)
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)

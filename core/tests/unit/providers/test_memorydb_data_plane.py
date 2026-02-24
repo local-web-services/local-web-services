@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 from fastapi.testclient import TestClient
 
@@ -27,9 +27,9 @@ class TestMemoryDBDataPlaneEndpoint:
         # Arrange
         expected_address = "localhost"
         expected_port = 16379
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:16379"
-        app = create_memorydb_app(container_manager=mock_cm)
+        fake_cm = AsyncFake()
+        fake_cm.start_container.return_value = "localhost:16379"
+        app = create_memorydb_app(container_manager=fake_cm)
         client = TestClient(app)
 
         # Act
@@ -45,7 +45,7 @@ class TestMemoryDBDataPlaneEndpoint:
         actual_port = actual_endpoint["Port"]
         assert actual_address == expected_address
         assert actual_port == expected_port
-        mock_cm.start_container.assert_called_once_with("test-cluster")
+        fake_cm.start_container.assert_called_once_with("test-cluster")
 
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
@@ -70,9 +70,9 @@ class TestMemoryDBDataPlaneEndpoint:
 
     def test_delete_cluster_stops_container(self) -> None:
         # Arrange
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:16379"
-        app = create_memorydb_app(container_manager=mock_cm)
+        fake_cm = AsyncFake()
+        fake_cm.start_container.return_value = "localhost:16379"
+        app = create_memorydb_app(container_manager=fake_cm)
         client = TestClient(app)
         _post(client, "CreateCluster", {"ClusterName": "test-cluster"})
 
@@ -80,4 +80,4 @@ class TestMemoryDBDataPlaneEndpoint:
         _post(client, "DeleteCluster", {"ClusterName": "test-cluster"})
 
         # Assert
-        mock_cm.stop_container.assert_called_once_with("test-cluster")
+        fake_cm.stop_container.assert_called_once_with("test-cluster")

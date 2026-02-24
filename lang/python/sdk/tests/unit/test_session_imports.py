@@ -43,7 +43,7 @@ def test_resource_helpers_importable():
 def test_builders_importable():
     from lws_testing._builders.chaos import ChaosBuilder  # noqa: F401
     from lws_testing._builders.iam import IamBuilder  # noqa: F401
-    from lws_testing._builders.mock import MockBuilder  # noqa: F401
+    from lws_testing._builders.fake import FakeBuilder  # noqa: F401
 
 
 def test_discovery_importable():

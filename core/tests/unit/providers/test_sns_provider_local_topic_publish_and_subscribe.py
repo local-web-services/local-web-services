@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -20,23 +20,23 @@ from lws.providers.sns.topic import LocalTopic
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given result."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given result."""
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
-def _make_queue_mock() -> IQueue:
-    """Return a mock IQueue."""
-    mock = AsyncMock(spec=IQueue)
-    mock.send_message.return_value = "mock-sqs-message-id"
-    return mock
+def _make_queue_fake() -> IQueue:
+    """Return a fake IQueue."""
+    fake = AsyncFake(spec=IQueue)
+    fake.send_message.return_value = "fake-sqs-message-id"
+    return fake
 
 
 def _topic_configs() -> list[TopicConfig]:

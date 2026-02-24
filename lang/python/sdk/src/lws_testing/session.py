@@ -46,7 +46,7 @@ class LwsSession:
 
     Starts all LWS service providers in background threads within the test
     process, patches boto3 clients, and provides helpers for seeding state,
-    configuring mocks, capturing logs, and asserting side effects.
+    configuring fakes, capturing logs, and asserting side effects.
 
     Use as a context manager::
 
@@ -341,13 +341,13 @@ class LwsSession:
         """
         return f"http://127.0.0.1:{self._ports['sqs']}/000000000000/{queue_name}"
 
-    # ── Mock / chaos / IAM builders ───────────────────────────────────────────
+    # ── Fake / chaos / IAM builders ───────────────────────────────────────────
 
-    def mock(self, service: str) -> Any:
-        """Return a fluent mock builder for the given service."""
-        from lws_testing._builders.mock import MockBuilder
+    def fake(self, service: str) -> Any:
+        """Return a fluent fake builder for the given service."""
+        from lws_testing._builders.fake import FakeBuilder
 
-        return MockBuilder(service, self._mgmt_port)
+        return FakeBuilder(service, self._mgmt_port)
 
     def chaos(self, service: str) -> Any:
         """Return a fluent chaos builder for the given service."""

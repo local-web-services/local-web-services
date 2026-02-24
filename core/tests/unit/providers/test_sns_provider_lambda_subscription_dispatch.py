@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -20,23 +20,23 @@ from lws.providers.sns.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given result."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given result."""
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
-def _make_queue_mock() -> IQueue:
-    """Return a mock IQueue."""
-    mock = AsyncMock(spec=IQueue)
-    mock.send_message.return_value = "mock-sqs-message-id"
-    return mock
+def _make_queue_fake() -> IQueue:
+    """Return a fake IQueue."""
+    fake = AsyncFake(spec=IQueue)
+    fake.send_message.return_value = "fake-sqs-message-id"
+    return fake
 
 
 def _topic_configs() -> list[TopicConfig]:
@@ -118,8 +118,8 @@ class TestLambdaSubscriptionDispatch:
         # Arrange
         provider = await _started_provider()
         func_name = "my-func"
-        mock_compute = _make_compute_mock(payload={"statusCode": 200})
-        provider.set_compute_providers({func_name: mock_compute})
+        fake_compute = _make_compute_fake(payload={"statusCode": 200})
+        provider.set_compute_providers({func_name: fake_compute})
         expected_message = "test message"
         expected_subject = "Test Subject"
         expected_topic_arn = "arn:aws:sns:us-east-1:000000000000:my-topic"
@@ -141,8 +141,8 @@ class TestLambdaSubscriptionDispatch:
         await asyncio.sleep(0.05)
 
         # Assert
-        mock_compute.invoke.assert_called_once()
-        call_args = mock_compute.invoke.call_args
+        fake_compute.invoke.assert_called_once()
+        call_args = fake_compute.invoke.call_args
         actual_event = call_args[0][0]
         actual_context = call_args[0][1]
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
+from unittest.fake import AsyncFake
 
 import httpx
 import pytest
@@ -18,17 +18,17 @@ from lws.providers.lambda_runtime.routes import LambdaRegistry
 _FUNC_CONFIG = {"FunctionName": "test", "Runtime": "python3.11", "Handler": "index.handler"}
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    fake = AsyncFake(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload, error=error, duration_ms=1.0, request_id="test-req"
     )
-    return mock
+    return fake
 
 
 async def _setup_v2_api_with_lambda(client, registry, function_name="my-func"):
     """Create a V2 API with an integration and $default route."""
-    compute = _make_compute_mock({"statusCode": 200, "body": '{"ok": true}'})
+    compute = _make_compute_fake({"statusCode": 200, "body": '{"ok": true}'})
     registry.register(function_name, {**_FUNC_CONFIG, "FunctionName": function_name}, compute)
 
     api_resp = await client.post("/v2/apis", json={"name": "test-api", "protocolType": "HTTP"})
@@ -119,7 +119,7 @@ class TestV2MultiValue:
     async def test_cookies_become_set_cookie_headers(self, client, registry) -> None:
         # Arrange
         expected_cookie = "session=abc123; Path=/"
-        compute = _make_compute_mock(
+        compute = _make_compute_fake(
             {"statusCode": 200, "body": "{}", "cookies": [expected_cookie]}
         )
         registry.register("cookie-func", {**_FUNC_CONFIG, "FunctionName": "cookie-func"}, compute)
