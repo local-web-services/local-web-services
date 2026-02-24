@@ -49,10 +49,10 @@ jobs:
               - 'lang/go/**'
             sample-cdk:
               - 'core/**'
-              - 'sample-project-cdk/**'
+              - 'sample-project/cdk/**'
             sample-hcl:
               - 'core/**'
-              - 'sample-project-hcl/**'
+              - 'sample-project/hcl/**'
 
   # ── Core (Python ldk) ──────────────────────────────────────────────────────
   core-lint:
@@ -340,13 +340,13 @@ jobs:
       - name: Install ldk and lws
         run: uv pip install --system -e core
       - name: Install CDK dependencies
-        working-directory: sample-project-cdk
+        working-directory: sample-project/cdk
         run: npm ci
       - name: CDK Synth
-        working-directory: sample-project-cdk
+        working-directory: sample-project/cdk
         run: npx cdk synth
       - name: Start ldk dev
-        working-directory: sample-project-cdk
+        working-directory: sample-project/cdk
         run: ldk dev &
       - name: Wait for ldk to be ready
         run: |
@@ -359,7 +359,7 @@ jobs:
           done
           echo "ldk failed to start" && exit 1
       - name: Run test-orders.sh
-        working-directory: sample-project-cdk
+        working-directory: sample-project/cdk
         run: ./test-orders.sh
 
   # ── Sample Project HCL ──────────────────────────────────────────────────────
@@ -383,7 +383,7 @@ jobs:
       - name: Install ldk and lws
         run: uv pip install --system -e core
       - name: Start ldk dev
-        working-directory: sample-project-hcl
+        working-directory: sample-project/hcl
         run: ldk dev &
       - name: Wait for ldk to be ready
         run: |
@@ -396,13 +396,13 @@ jobs:
           done
           echo "ldk failed to start" && exit 1
       - name: OpenTofu Init
-        working-directory: sample-project-hcl
+        working-directory: sample-project/hcl
         run: tofu init
       - name: OpenTofu Apply
-        working-directory: sample-project-hcl
+        working-directory: sample-project/hcl
         run: tofu apply -auto-approve
       - name: Run test-orders.sh
-        working-directory: sample-project-hcl
+        working-directory: sample-project/hcl
         run: ./test-orders.sh
 
   # ── Go Example ──────────────────────────────────────────────────────────────
