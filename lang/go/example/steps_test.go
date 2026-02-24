@@ -58,46 +58,46 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 	// Session setup steps
 	sc.Step(`an OrderProcessor state machine is running`, ctx.anOrderProcessorStateMachineIsRunning)
 	sc.Step(`no state machines are configured`, ctx.noStateMachinesConfigured)
-	sc.Step(`a session started from the {string} HCL directory`, ctx.aSessionStartedFromHCLDirectory)
-	sc.Step(`a DynamoDB table {string} with partition key {string}`, ctx.aDynamoDBTableWithPartitionKey)
-	sc.Step(`an SQS queue named {string}`, ctx.anSQSQueueNamed)
+	sc.Step(`^a session started from the "([^"]*)" HCL directory$`, ctx.aSessionStartedFromHCLDirectory)
+	sc.Step(`^a DynamoDB table "([^"]*)" with partition key "([^"]*)"$`, ctx.aDynamoDBTableWithPartitionKey)
+	sc.Step(`^an SQS queue named "([^"]*)"$`, ctx.anSQSQueueNamed)
 
 	// Fake steps
-	sc.Step(`StartExecution is faked to return execution ARN {string}`, ctx.startExecutionFakedReturnArn)
-	sc.Step(`DescribeExecution is faked to return SUCCEEDED with output containing order ID {string}`, ctx.describeExecutionFakedSucceeded)
-	sc.Step(`StartExecution is faked to return error {string}`, ctx.startExecutionFakedError)
-	sc.Step(`StartExecution is faked with a 10ms delay returning execution ARN {string}`, ctx.startExecutionFakedWithDelay)
+	sc.Step(`^StartExecution is faked to return execution ARN "([^"]*)"$`, ctx.startExecutionFakedReturnArn)
+	sc.Step(`^DescribeExecution is faked to return SUCCEEDED with output containing order ID "([^"]*)"$`, ctx.describeExecutionFakedSucceeded)
+	sc.Step(`^StartExecution is faked to return error "([^"]*)"$`, ctx.startExecutionFakedError)
+	sc.Step(`^StartExecution is faked with a 10ms delay returning execution ARN "([^"]*)"$`, ctx.startExecutionFakedWithDelay)
 
 	// IAM steps
-	sc.Step(`IAM is in enforce mode with identity {string} allowed all actions on all resources`, ctx.iamEnforceModeWithIdentity)
+	sc.Step(`^IAM is in enforce mode with identity "([^"]*)" allowed all actions on all resources$`, ctx.iamEnforceModeWithIdentity)
 
 	// Chaos steps
 	sc.Step(`stepfunctions chaos is set to 100% error rate`, ctx.stepfunctionsChaos100Percent)
 
 	// Action steps
-	sc.Step(`I process order {string}`, ctx.iProcessOrder)
-	sc.Step(`I process order {string} via ARN {string}`, ctx.iProcessOrderViaArn)
-	sc.Step(`I process orders {string}, {string}, {string}`, ctx.iProcessMultipleOrders)
-	sc.Step(`order {string} has been processed`, ctx.orderHasBeenProcessed)
+	sc.Step(`^I process order "([^"]*)"$`, ctx.iProcessOrder)
+	sc.Step(`^I process order "([^"]*)" via ARN "([^"]*)"$`, ctx.iProcessOrderViaArn)
+	sc.Step(`^I process orders "([^"]*)", "([^"]*)", "([^"]*)"$`, ctx.iProcessMultipleOrders)
+	sc.Step(`^order "([^"]*)" has been processed$`, ctx.orderHasBeenProcessed)
 	sc.Step(`I reset the session`, ctx.iResetTheSession)
 	sc.Step(`log capture is active`, ctx.logCaptureIsActive)
-	sc.Step(`I start log capture and process order {string}`, ctx.iStartLogCaptureAndProcessOrder)
-	sc.Step(`I put item with orderId {string} and status {string} into {string}`, ctx.iPutItemWithOrderIdAndStatus)
-	sc.Step(`I send message body {string} to {string}`, ctx.iSendMessageBody)
+	sc.Step(`^I start log capture and process order "([^"]*)"$`, ctx.iStartLogCaptureAndProcessOrder)
+	sc.Step(`^I put item with orderId "([^"]*)" and status "([^"]*)" into "([^"]*)"$`, ctx.iPutItemWithOrderIdAndStatus)
+	sc.Step(`^I send message body "([^"]*)" to "([^"]*)"$`, ctx.iSendMessageBody)
 
 	// Assertion steps
-	sc.Step(`the output will contain order ID {string}`, ctx.theOutputWillContainOrderID)
+	sc.Step(`^the output will contain order ID "([^"]*)"$`, ctx.theOutputWillContainOrderID)
 	sc.Step(`each output will contain the corresponding order ID`, ctx.eachOutputWillContainCorrespondingOrderID)
 	sc.Step(`an AWS error is returned`, ctx.anAWSErrorIsReturned)
 	sc.Step(`the session accepts a second reset without error`, ctx.theSessionAcceptsASecondResetWithoutError)
-	sc.Step(`the log capture will have recorded a {string} {string} call`, ctx.theLogCaptureWillHaveRecorded)
+	sc.Step(`^the log capture will have recorded a "([^"]*)" "([^"]*)" call$`, ctx.theLogCaptureWillHaveRecorded)
 	sc.Step(`no errors will appear in the log capture`, ctx.noErrorsWillAppearInLogCapture)
 	sc.Step(`recent logs will be non-empty`, ctx.recentLogsWillBeNonEmpty)
-	sc.Step(`filtering logs by service {string} will return entries`, ctx.filteringLogsByServiceWillReturnEntries)
-	sc.Step(`filtering logs by operation {string} will return entries`, ctx.filteringLogsByOperationWillReturnEntries)
-	sc.Step(`the table {string} will contain {int} item`, ctx.theTableWillContainNItems)
-	sc.Step(`the table {string} will contain an item with orderId {string}`, ctx.theTableWillContainItemWithOrderId)
-	sc.Step(`receiving {int} message from {string} will return body {string}`, ctx.receivingMessageWillReturnBody)
+	sc.Step(`^filtering logs by service "([^"]*)" will return entries$`, ctx.filteringLogsByServiceWillReturnEntries)
+	sc.Step(`^filtering logs by operation "([^"]*)" will return entries$`, ctx.filteringLogsByOperationWillReturnEntries)
+	sc.Step(`^the table "([^"]*)" will contain (\d+) items?$`, ctx.theTableWillContainNItems)
+	sc.Step(`^the table "([^"]*)" will contain an item with orderId "([^"]*)"$`, ctx.theTableWillContainItemWithOrderId)
+	sc.Step(`^receiving (\d+) messages? from "([^"]*)" will return body "([^"]*)"$`, ctx.receivingMessageWillReturnBody)
 }
 
 // --- Session setup ---

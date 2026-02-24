@@ -63,7 +63,7 @@ describe("IamBuilder", () => {
       // Arrange
       const builder = new IamBuilder(EXPECTED_MGMT_PORT);
       await builder.mode("enforce").apply();
-      fakeFetch.fakeClear();
+      fakeFetch.mockClear();
 
       // Act — apply again without setting anything new
       await builder.apply();

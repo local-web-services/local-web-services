@@ -81,3 +81,6 @@ disable = [
     "R0903", "R0902", "R0913", "R0917", "R0904", "R0911", "R0914", "C0103",
     "W0603", "W0621", "C0415", "C0116", "W0212",
 ]
+
+[tool.uv.sources]
+local-web-services = { path = "../../../core", editable = true }

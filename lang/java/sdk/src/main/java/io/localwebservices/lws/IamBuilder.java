@@ -141,9 +141,10 @@ public class IamBuilder {
                 if (!ib.policies.isEmpty()) {
                     json.append("\"inline_policies\":[");
                     boolean firstPol = true;
+                    int polIdx = 0;
                     for (PolicyDoc p : ib.policies) {
                         if (!firstPol) json.append(",");
-                        json.append(serializePolicy(p));
+                        json.append(serializePolicy(p, polIdx++));
                         firstPol = false;
                     }
                     json.append("]");
@@ -151,7 +152,7 @@ public class IamBuilder {
                 }
                 if (ib.boundary != null) {
                     if (!firstEntry) json.append(",");
-                    json.append("\"boundary_policy\":").append(serializePolicy(ib.boundary));
+                    json.append("\"boundary_policy\":").append(serializePolicy(ib.boundary, 0));
                 }
                 json.append("}");
                 firstIdent = false;
@@ -163,8 +164,13 @@ public class IamBuilder {
         return json.toString();
     }
 
-    private static String serializePolicy(PolicyDoc p) {
+    private static String serializePolicy(PolicyDoc p, int index) {
         StringBuilder sb = new StringBuilder("{");
+        String policyName = "inline-" + index;
+        sb.append("\"name\":\"").append(escape(policyName)).append("\"");
+        sb.append(",\"document\":{");
+        sb.append("\"Version\":\"2012-10-17\"");
+        sb.append(",\"Statement\":[{");
         sb.append("\"Effect\":\"").append(escape(p.effect)).append("\"");
         sb.append(",\"Action\":[");
         boolean first = true;
@@ -175,6 +181,8 @@ public class IamBuilder {
         }
         sb.append("]");
         sb.append(",\"Resource\":\"").append(escape(p.resource)).append("\"");
+        sb.append("}]");
+        sb.append("}");
         sb.append("}");
         return sb.toString();
     }
