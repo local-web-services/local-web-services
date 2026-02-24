@@ -22,6 +22,8 @@ jobs:
       javascript: ${{ steps.filter.outputs.javascript }}
       java: ${{ steps.filter.outputs.java }}
       go: ${{ steps.filter.outputs.go }}
+      sample-cdk: ${{ steps.filter.outputs.sample-cdk }}
+      sample-hcl: ${{ steps.filter.outputs.sample-hcl }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -45,6 +47,12 @@ jobs:
             go:
               - 'core/**'
               - 'lang/go/**'
+            sample-cdk:
+              - 'core/**'
+              - 'sample-project-cdk/**'
+            sample-hcl:
+              - 'core/**'
+              - 'sample-project-hcl/**'
 
   # ── Core (Python ldk) ──────────────────────────────────────────────────────
   core-lint:
@@ -308,6 +316,44 @@ jobs:
       - name: Test
         working-directory: lang/java/example
         run: ./gradlew test
+
+  # ── Sample Project CDK ──────────────────────────────────────────────────────
+  sample-project-cdk-build:
+    needs: [changes, core-test-e2e]
+    if: |
+      always() &&
+      needs.changes.outputs.sample-cdk == 'true' &&
+      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        working-directory: sample-project-cdk
+        run: npm ci
+      - name: CDK Synth
+        working-directory: sample-project-cdk
+        run: npx cdk synth
+
+  # ── Sample Project HCL ──────────────────────────────────────────────────────
+  sample-project-hcl-build:
+    needs: [changes, core-test-e2e]
+    if: |
+      always() &&
+      needs.changes.outputs.sample-hcl == 'true' &&
+      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        working-directory: sample-project-hcl
+        run: terraform init
+      - name: Terraform Validate
+        working-directory: sample-project-hcl
+        run: terraform validate
 
   # ── Go Example ──────────────────────────────────────────────────────────────
   go-example-test:
