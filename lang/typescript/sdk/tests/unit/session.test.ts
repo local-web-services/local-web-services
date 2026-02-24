@@ -4,11 +4,11 @@ import * as os from "os";
 import * as path from "path";
 import { LwsSession } from "../../src/session";
 
-jest.fake("child_process", () => ({
+jest.mock("child_process", () => ({
   spawn: jest.fn(),
 }));
 
-const fakeSpawn = spawn as jest.Fake;
+const fakeSpawn = spawn as jest.Mock;
 
 function makeFakeProcess() {
   return {
@@ -130,7 +130,7 @@ describe("LwsSession", () => {
         const session = await LwsSession.fromHcl(expectedTmpDir);
 
         // Assert — fetch was called to create the state machine
-        const fetchCalls = (global.fetch as jest.Fake).fake.calls;
+        const fetchCalls = (global.fetch as jest.Mock).fake.calls;
         const sfnCall = fetchCalls.find(
           (call: unknown[]) =>
             typeof call[1] === "object" &&

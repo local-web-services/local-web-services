@@ -1,7 +1,7 @@
 import { SQSClient } from "@aws-sdk/client-sqs";
 import { SQSHelper } from "../../../src/resources/sqs";
 
-function makeFakeClient(): { send: jest.Fake; client: SQSClient } {
+function makeFakeClient(): { send: jest.Mock; client: SQSClient } {
   const send = jest.fn();
   return { send, client: { send } as unknown as SQSClient };
 }

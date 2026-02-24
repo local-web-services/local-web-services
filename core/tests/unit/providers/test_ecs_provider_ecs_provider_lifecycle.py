@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake, MagicFake, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -45,17 +45,17 @@ def _make_service(**overrides: object) -> ServiceDefinition:
     return ServiceDefinition(**defaults)
 
 
-def _fake_process() -> AsyncFake:
-    proc = AsyncFake()
+def _fake_process() -> AsyncMock:
+    proc = AsyncMock()
     proc.pid = 1234
     proc.returncode = None
-    proc.stdout = AsyncFake()
-    proc.stderr = AsyncFake()
-    proc.stdout.readline = AsyncFake(return_value=b"")
-    proc.stderr.readline = AsyncFake(return_value=b"")
-    proc.wait = AsyncFake(return_value=0)
-    proc.send_signal = MagicFake()
-    proc.kill = MagicFake()
+    proc.stdout = AsyncMock()
+    proc.stderr = AsyncMock()
+    proc.stdout.readline = AsyncMock(return_value=b"")
+    proc.stderr.readline = AsyncMock(return_value=b"")
+    proc.wait = AsyncMock(return_value=0)
+    proc.send_signal = MagicMock()
+    proc.kill = MagicMock()
     return proc
 
 
@@ -131,7 +131,7 @@ class TestEcsProviderLifecycle:
         assert await provider.health_check() is False
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_start_sets_running(self, fake_exec: AsyncFake) -> None:
+    async def test_start_sets_running(self, fake_exec: AsyncMock) -> None:
         fake_exec.return_value = _fake_process()
         svc = _make_service()
         provider = EcsProvider(services=[svc])
@@ -140,7 +140,7 @@ class TestEcsProviderLifecycle:
         assert provider._status == ProviderStatus.RUNNING
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_stop_sets_stopped(self, fake_exec: AsyncFake) -> None:
+    async def test_stop_sets_stopped(self, fake_exec: AsyncMock) -> None:
         fake_exec.return_value = _fake_process()
         svc = _make_service()
         provider = EcsProvider(services=[svc])
@@ -150,7 +150,7 @@ class TestEcsProviderLifecycle:
         assert provider._status == ProviderStatus.STOPPED
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_start_registers_service(self, fake_exec: AsyncFake) -> None:
+    async def test_start_registers_service(self, fake_exec: AsyncMock) -> None:
         fake_exec.return_value = _fake_process()
         registry = ServiceRegistry()
         svc = _make_service()
@@ -163,7 +163,7 @@ class TestEcsProviderLifecycle:
         await provider.stop()
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_stop_deregisters_service(self, fake_exec: AsyncFake) -> None:
+    async def test_stop_deregisters_service(self, fake_exec: AsyncMock) -> None:
         fake_exec.return_value = _fake_process()
         registry = ServiceRegistry()
         svc = _make_service()
@@ -174,7 +174,7 @@ class TestEcsProviderLifecycle:
         assert registry.lookup("web-api") is None
 
     @patch("asyncio.create_subprocess_exec", side_effect=OSError("spawn failed"))
-    async def test_start_error_sets_error_status(self, fake_exec: AsyncFake) -> None:
+    async def test_start_error_sets_error_status(self, fake_exec: AsyncMock) -> None:
         svc = _make_service()
         provider = EcsProvider(services=[svc])
 

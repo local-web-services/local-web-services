@@ -1,7 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { S3Helper } from "../../../src/resources/s3";
 
-function makeFakeClient(): { send: jest.Fake; client: S3Client } {
+function makeFakeClient(): { send: jest.Mock; client: S3Client } {
   const send = jest.fn();
   return { send, client: { send } as unknown as S3Client };
 }

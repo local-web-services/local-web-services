@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake, patch
+from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
@@ -41,10 +41,10 @@ class TestDiscovery:
         )
 
         with patch("httpx.AsyncClient") as fake_cls:
-            instance = AsyncFake()
+            instance = AsyncMock()
             instance.get.return_value = fake_resp
-            instance.__aenter__ = AsyncFake(return_value=instance)
-            instance.__aexit__ = AsyncFake(return_value=False)
+            instance.__aenter__ = AsyncMock(return_value=instance)
+            instance.__aexit__ = AsyncMock(return_value=False)
             fake_cls.return_value = instance
 
             # Act
@@ -73,10 +73,10 @@ class TestDiscovery:
         client = LwsClient(port=9999)
 
         with patch("httpx.AsyncClient") as fake_cls:
-            instance = AsyncFake()
+            instance = AsyncMock()
             instance.get.side_effect = Exception("connection refused")
-            instance.__aenter__ = AsyncFake(return_value=instance)
-            instance.__aexit__ = AsyncFake(return_value=False)
+            instance.__aenter__ = AsyncMock(return_value=instance)
+            instance.__aexit__ = AsyncMock(return_value=False)
             fake_cls.return_value = instance
 
             # Act / Assert

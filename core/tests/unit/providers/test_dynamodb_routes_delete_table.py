@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -18,8 +18,8 @@ def _target(operation: str) -> dict[str, str]:
 
 
 @pytest.fixture()
-def fake_store() -> AsyncFake:
-    store = AsyncFake(spec=IKeyValueStore)
+def fake_store() -> AsyncMock:
+    store = AsyncMock(spec=IKeyValueStore)
     store.get_item.return_value = None
     store.put_item.return_value = None
     store.delete_item.return_value = None
@@ -66,7 +66,7 @@ def fake_store() -> AsyncFake:
 
 
 @pytest.fixture()
-def client(fake_store: AsyncFake) -> httpx.AsyncClient:
+def client(fake_store: AsyncMock) -> httpx.AsyncClient:
     app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
@@ -75,7 +75,7 @@ def client(fake_store: AsyncFake) -> httpx.AsyncClient:
 class TestDeleteTable:
     @pytest.mark.asyncio
     async def test_delete_table_success(
-        self, client: httpx.AsyncClient, fake_store: AsyncFake
+        self, client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         expected_status_code = 200
@@ -91,7 +91,7 @@ class TestDeleteTable:
 
     @pytest.mark.asyncio
     async def test_delete_table_not_found(
-        self, client: httpx.AsyncClient, fake_store: AsyncFake
+        self, client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         fake_store.delete_table.side_effect = KeyError("Table not found: MyTable")

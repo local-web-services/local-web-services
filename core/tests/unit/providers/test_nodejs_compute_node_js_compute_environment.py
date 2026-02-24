@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.fake import AsyncFake, MagicFake, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from lws.interfaces import (
     ComputeConfig,
@@ -44,12 +44,12 @@ def _make_context(**overrides) -> LambdaContext:
     return LambdaContext(**defaults)
 
 
-def _fake_process(stdout: str, returncode: int = 0) -> AsyncFake:
+def _fake_process(stdout: str, returncode: int = 0) -> AsyncMock:
     """Create a fake asyncio.subprocess.Process."""
-    proc = AsyncFake()
-    proc.communicate = AsyncFake(return_value=(stdout.encode(), b""))
+    proc = AsyncMock()
+    proc.communicate = AsyncMock(return_value=(stdout.encode(), b""))
     proc.returncode = returncode
-    proc.kill = MagicFake()
+    proc.kill = MagicMock()
     return proc
 
 
@@ -126,7 +126,7 @@ class TestNodeJsComputeEnvironment:
         assert env["SHARED_KEY"] == expected_value
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_passes_env_to_subprocess(self, fake_exec: AsyncFake) -> None:
+    async def test_invoke_passes_env_to_subprocess(self, fake_exec: AsyncMock) -> None:
         """The env dict built by _build_env is passed to the subprocess."""
         success_output = json.dumps({"result": None})
         fake_exec.return_value = _fake_process(success_output)

@@ -9,12 +9,12 @@ import yaml
 
 from lws.providers.fakeserver.models import (
     ChaosConfig,
-    GraphQLRoute,
-    GrpcRoute,
-    MatchCriteria,
     FakeResponse,
     FakeServerConfig,
     FakeServerDefaults,
+    GraphQLRoute,
+    GrpcRoute,
+    MatchCriteria,
     RouteRule,
 )
 

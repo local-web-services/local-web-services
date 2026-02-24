@@ -4,7 +4,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { DynamoDBHelper } from "../../../src/resources/dynamodb";
 
-function makeFakeClient(): { send: jest.Fake; client: DynamoDBClient } {
+function makeFakeClient(): { send: jest.Mock; client: DynamoDBClient } {
   const send = jest.fn();
   return { send, client: { send } as unknown as DynamoDBClient };
 }

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -24,9 +24,9 @@ def _target(operation: str) -> dict[str, str]:
 
 
 @pytest.fixture()
-def fake_store() -> AsyncFake:
-    """Return an ``AsyncFake`` that satisfies ``IKeyValueStore``."""
-    store = AsyncFake(spec=IKeyValueStore)
+def fake_store() -> AsyncMock:
+    """Return an ``AsyncMock`` that satisfies ``IKeyValueStore``."""
+    store = AsyncMock(spec=IKeyValueStore)
     store.get_item.return_value = None
     store.put_item.return_value = None
     store.delete_item.return_value = None
@@ -50,7 +50,7 @@ def fake_store() -> AsyncFake:
 
 
 @pytest.fixture()
-def fake_client(fake_store: AsyncFake) -> httpx.AsyncClient:
+def fake_client(fake_store: AsyncMock) -> httpx.AsyncClient:
     app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
@@ -84,7 +84,7 @@ def real_client(real_provider: SqliteDynamoProvider) -> httpx.AsyncClient:
 class TestTransactWriteItems:
     @pytest.mark.asyncio
     async def test_transact_write_put_items(
-        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         payload = {
@@ -120,7 +120,7 @@ class TestTransactWriteItems:
 
     @pytest.mark.asyncio
     async def test_transact_write_delete_items(
-        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         payload = {
@@ -144,7 +144,7 @@ class TestTransactWriteItems:
 
     @pytest.mark.asyncio
     async def test_transact_write_mixed_operations(
-        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         fake_store.get_item.return_value = {"pk": {"S": "user#3"}}
@@ -184,7 +184,7 @@ class TestTransactWriteItems:
 
     @pytest.mark.asyncio
     async def test_transact_write_update_item(
-        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         payload = {
@@ -217,7 +217,7 @@ class TestTransactWriteItems:
 
     @pytest.mark.asyncio
     async def test_transact_write_empty_list(
-        self, fake_client: httpx.AsyncClient, fake_store: AsyncFake
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         payload = {"TransactItems": []}

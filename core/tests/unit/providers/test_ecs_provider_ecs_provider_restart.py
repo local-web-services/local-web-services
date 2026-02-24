@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake, MagicFake, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from lws.providers.ecs.provider import (
     ContainerDefinition,
@@ -41,17 +41,17 @@ def _make_service(**overrides: object) -> ServiceDefinition:
     return ServiceDefinition(**defaults)
 
 
-def _fake_process() -> AsyncFake:
-    proc = AsyncFake()
+def _fake_process() -> AsyncMock:
+    proc = AsyncMock()
     proc.pid = 1234
     proc.returncode = None
-    proc.stdout = AsyncFake()
-    proc.stderr = AsyncFake()
-    proc.stdout.readline = AsyncFake(return_value=b"")
-    proc.stderr.readline = AsyncFake(return_value=b"")
-    proc.wait = AsyncFake(return_value=0)
-    proc.send_signal = MagicFake()
-    proc.kill = MagicFake()
+    proc.stdout = AsyncMock()
+    proc.stderr = AsyncMock()
+    proc.stdout.readline = AsyncMock(return_value=b"")
+    proc.stderr.readline = AsyncMock(return_value=b"")
+    proc.wait = AsyncMock(return_value=0)
+    proc.send_signal = MagicMock()
+    proc.kill = MagicMock()
     return proc
 
 
@@ -117,7 +117,7 @@ def _fake_process() -> AsyncFake:
 
 class TestEcsProviderRestart:
     @patch("asyncio.create_subprocess_exec")
-    async def test_restart_service(self, fake_exec: AsyncFake) -> None:
+    async def test_restart_service(self, fake_exec: AsyncMock) -> None:
         fake_exec.return_value = _fake_process()
         svc = _make_service()
         provider = EcsProvider(services=[svc])
@@ -129,7 +129,7 @@ class TestEcsProviderRestart:
         await provider.stop()
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_restart_unknown_service_is_noop(self, fake_exec: AsyncFake) -> None:
+    async def test_restart_unknown_service_is_noop(self, fake_exec: AsyncMock) -> None:
         fake_exec.return_value = _fake_process()
         provider = EcsProvider(services=[])
         await provider.start()

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from unittest.fake import patch
+from unittest.mock import patch
 
 from lws.interfaces import ComputeConfig
 from lws.runtime.lambda_context import build_lambda_context

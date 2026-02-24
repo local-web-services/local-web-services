@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import MagicFake, patch
+from unittest.mock import MagicMock, patch
 
 
 class TestCreateDockerClientFromEnv:
@@ -10,9 +10,9 @@ class TestCreateDockerClientFromEnv:
 
     def test_returns_client_when_from_env_succeeds(self):
         # Arrange
-        expected_client = MagicFake()
+        expected_client = MagicMock()
         expected_client.ping.return_value = True
-        fake_docker = MagicFake()
+        fake_docker = MagicMock()
         fake_docker.from_env.return_value = expected_client
 
         with patch.dict("sys.modules", {"docker": fake_docker}):
@@ -27,13 +27,13 @@ class TestCreateDockerClientFromEnv:
 
     def test_from_env_ping_failure_falls_through(self, tmp_path):
         # Arrange
-        fake_env_client = MagicFake()
+        fake_env_client = MagicMock()
         fake_env_client.ping.side_effect = Exception("connection refused")
 
-        fake_sock_client = MagicFake()
+        fake_sock_client = MagicMock()
         fake_sock_client.ping.return_value = True
 
-        fake_docker = MagicFake()
+        fake_docker = MagicMock()
         fake_docker.from_env.return_value = fake_env_client
         fake_docker.DockerClient.return_value = fake_sock_client
 

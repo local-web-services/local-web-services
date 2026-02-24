@@ -4,7 +4,7 @@ const EXPECTED_MGMT_PORT = 8080;
 const EXPECTED_IAM_URL = `http://127.0.0.1:${EXPECTED_MGMT_PORT}/_ldk/iam-auth`;
 
 describe("IamBuilder", () => {
-  let fakeFetch: jest.Fake;
+  let fakeFetch: jest.Mock;
 
   beforeEach(() => {
     fakeFetch = jest.fn().fakeResolvedValue({ ok: true });
@@ -106,7 +106,7 @@ describe("IamBuilder", () => {
 });
 
 describe("IdentityBuilder", () => {
-  let fakeFetch: jest.Fake;
+  let fakeFetch: jest.Mock;
 
   beforeEach(() => {
     fakeFetch = jest.fn().fakeResolvedValue({ ok: true });

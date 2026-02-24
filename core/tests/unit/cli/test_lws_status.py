@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.fake import AsyncFake, patch
+from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
@@ -36,10 +36,10 @@ def _fake_client(status_resp, resources_resp):
     """Return a patched httpx.AsyncClient context manager."""
     patcher = patch("lws.cli.lws.httpx.AsyncClient")
     fake_cls = patcher.start()
-    instance = AsyncFake()
+    instance = AsyncMock()
     instance.get.side_effect = [status_resp, resources_resp]
-    instance.__aenter__ = AsyncFake(return_value=instance)
-    instance.__aexit__ = AsyncFake(return_value=False)
+    instance.__aenter__ = AsyncMock(return_value=instance)
+    instance.__aexit__ = AsyncMock(return_value=False)
     fake_cls.return_value = instance
     return patcher
 
@@ -123,10 +123,10 @@ class TestLwsStatus:
     @pytest.mark.asyncio
     async def test_status_exits_when_not_running(self):
         with patch("lws.cli.lws.httpx.AsyncClient") as fake_cls:
-            instance = AsyncFake()
+            instance = AsyncMock()
             instance.get.side_effect = httpx.ConnectError("connection refused")
-            instance.__aenter__ = AsyncFake(return_value=instance)
-            instance.__aexit__ = AsyncFake(return_value=False)
+            instance.__aenter__ = AsyncMock(return_value=instance)
+            instance.__aexit__ = AsyncMock(return_value=False)
             fake_cls.return_value = instance
 
             with pytest.raises(SystemExit):

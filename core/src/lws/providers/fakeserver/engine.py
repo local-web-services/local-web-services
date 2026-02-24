@@ -9,7 +9,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from lws.providers.fakeserver.models import MatchCriteria, FakeResponse, RouteRule
+from lws.providers.fakeserver.models import FakeResponse, MatchCriteria, RouteRule
 from lws.providers.fakeserver.operators import match_value
 from lws.providers.fakeserver.template import render_template
 

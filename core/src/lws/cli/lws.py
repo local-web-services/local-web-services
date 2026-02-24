@@ -23,11 +23,11 @@ from lws.cli.services.dynamodb import app as dynamodb_app
 from lws.cli.services.elasticache import app as elasticache_app
 from lws.cli.services.es import app as es_app
 from lws.cli.services.events import app as events_app
+from lws.cli.services.fake import app as fake_app
 from lws.cli.services.glacier import app as glacier_app
 from lws.cli.services.iam_auth import app as iam_auth_app
 from lws.cli.services.lambda_service import app as lambda_app
 from lws.cli.services.memorydb import app as memorydb_app
-from lws.cli.services.fake import app as fake_app
 from lws.cli.services.neptune import app as neptune_app
 from lws.cli.services.opensearch import app as opensearch_app
 from lws.cli.services.rds import app as rds_app

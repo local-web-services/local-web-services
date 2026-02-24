@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 import httpx
 
@@ -21,7 +21,7 @@ from lws.providers.sns.provider import (
 
 def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
     """Return a fake ICompute whose ``invoke`` resolves to the given result."""
-    fake = AsyncFake(spec=ICompute)
+    fake = AsyncMock(spec=ICompute)
     fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
@@ -33,7 +33,7 @@ def _make_compute_fake(payload: dict | None = None, error: str | None = None) ->
 
 def _make_queue_fake() -> IQueue:
     """Return a fake IQueue."""
-    fake = AsyncFake(spec=IQueue)
+    fake = AsyncMock(spec=IQueue)
     fake.send_message.return_value = "fake-sqs-message-id"
     return fake
 

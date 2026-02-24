@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import MagicFake, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -12,10 +12,10 @@ class TestCreateDockerClientNoDocker:
 
     def test_raises_when_no_sockets_found(self, tmp_path):
         # Arrange
-        fake_env_client = MagicFake()
+        fake_env_client = MagicMock()
         fake_env_client.ping.side_effect = Exception("no daemon")
 
-        fake_docker = MagicFake()
+        fake_docker = MagicMock()
         fake_docker.from_env.return_value = fake_env_client
         fake_docker.errors.DockerException = type("DockerException", (Exception,), {})
 

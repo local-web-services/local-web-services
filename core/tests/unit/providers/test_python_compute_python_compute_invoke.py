@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
-from unittest.fake import AsyncFake, MagicFake, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from lws.interfaces import (
     ComputeConfig,
@@ -46,12 +46,12 @@ def _make_context(**overrides) -> LambdaContext:
     return LambdaContext(**defaults)
 
 
-def _fake_process(stdout: str, returncode: int = 0) -> AsyncFake:
+def _fake_process(stdout: str, returncode: int = 0) -> AsyncMock:
     """Create a fake asyncio.subprocess.Process."""
-    proc = AsyncFake()
-    proc.communicate = AsyncFake(return_value=(stdout.encode(), b""))
+    proc = AsyncMock()
+    proc.communicate = AsyncMock(return_value=(stdout.encode(), b""))
     proc.returncode = returncode
-    proc.kill = MagicFake()
+    proc.kill = MagicMock()
     return proc
 
 
@@ -74,7 +74,7 @@ class TestPythonComputeInvoke:
     """invoke() success, error, and timeout scenarios."""
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_success(self, fake_exec: AsyncFake) -> None:
+    async def test_invoke_success(self, fake_exec: AsyncMock) -> None:
         """Successful invocation returns the handler result as payload."""
         success_output = json.dumps({"result": {"statusCode": 200, "body": "ok"}})
         fake_exec.return_value = _fake_process(success_output)
@@ -94,7 +94,7 @@ class TestPythonComputeInvoke:
         assert result.duration_ms >= 0
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_handler_error(self, fake_exec: AsyncFake) -> None:
+    async def test_invoke_handler_error(self, fake_exec: AsyncMock) -> None:
         """When the handler throws, invoke returns an error InvocationResult."""
         error_output = json.dumps(
             {
@@ -119,16 +119,16 @@ class TestPythonComputeInvoke:
         assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_timeout_kills_process(self, fake_exec: AsyncFake) -> None:
+    async def test_invoke_timeout_kills_process(self, fake_exec: AsyncMock) -> None:
         """When the subprocess exceeds the timeout, the process is killed."""
 
         async def hang(*args, **kwargs):
             await asyncio.sleep(3600)
             return (b"", b"")
 
-        proc = AsyncFake()
+        proc = AsyncMock()
         proc.communicate = hang
-        proc.kill = MagicFake()
+        proc.kill = MagicMock()
         fake_exec.return_value = proc
 
         config = _make_config(timeout=0.05)
@@ -144,7 +144,7 @@ class TestPythonComputeInvoke:
         assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_bad_json_output(self, fake_exec: AsyncFake) -> None:
+    async def test_invoke_bad_json_output(self, fake_exec: AsyncMock) -> None:
         """Non-JSON stdout is treated as an error."""
         fake_exec.return_value = _fake_process("this is not json")
 
@@ -157,7 +157,7 @@ class TestPythonComputeInvoke:
         assert "Failed to parse" in result.error
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_null_result(self, fake_exec: AsyncFake) -> None:
+    async def test_invoke_null_result(self, fake_exec: AsyncMock) -> None:
         """Handler returning None should produce a result with None payload."""
         success_output = json.dumps({"result": None})
         fake_exec.return_value = _fake_process(success_output)
@@ -171,16 +171,16 @@ class TestPythonComputeInvoke:
         assert result.error is None
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_timeout_message_format(self, fake_exec: AsyncFake) -> None:
+    async def test_invoke_timeout_message_format(self, fake_exec: AsyncMock) -> None:
         """Timeout error message should include the timeout value with 2 decimal places."""
 
         async def hang(*args, **kwargs):
             await asyncio.sleep(3600)
             return (b"", b"")
 
-        proc = AsyncFake()
+        proc = AsyncMock()
         proc.communicate = hang
-        proc.kill = MagicFake()
+        proc.kill = MagicMock()
         fake_exec.return_value = proc
 
         config = _make_config(timeout=5)

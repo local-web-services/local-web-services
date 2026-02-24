@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import base64
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -20,7 +20,7 @@ _FUNC_CONFIG = {"FunctionName": "test", "Runtime": "python3.11", "Handler": "ind
 
 
 def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
-    fake = AsyncFake(spec=ICompute)
+    fake = AsyncMock(spec=ICompute)
     fake.invoke.return_value = InvocationResult(
         payload=payload, error=error, duration_ms=1.0, request_id="test-req"
     )

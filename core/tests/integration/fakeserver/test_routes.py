@@ -6,9 +6,9 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from lws.providers.fakeserver.models import (
-    MatchCriteria,
     FakeResponse,
     FakeServerConfig,
+    MatchCriteria,
     RouteRule,
 )
 from lws.providers.fakeserver.routes import create_fakeserver_app

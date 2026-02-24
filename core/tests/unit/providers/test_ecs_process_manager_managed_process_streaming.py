@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from unittest.fake import AsyncFake, MagicFake, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from lws.providers.ecs.process_manager import ManagedProcess, ProcessConfig
 
@@ -27,19 +27,19 @@ def _make_config(**overrides: object) -> ProcessConfig:
 def _fake_process(
     pid: int = 1234,
     returncode: int | None = None,
-) -> AsyncFake:
+) -> AsyncMock:
     """Create a fake asyncio.subprocess.Process."""
-    proc = AsyncFake(spec=asyncio.subprocess.Process)
+    proc = AsyncMock(spec=asyncio.subprocess.Process)
     proc.pid = pid
     proc.returncode = returncode
-    proc.stdout = AsyncFake(spec=asyncio.StreamReader)
-    proc.stderr = AsyncFake(spec=asyncio.StreamReader)
+    proc.stdout = AsyncMock(spec=asyncio.StreamReader)
+    proc.stderr = AsyncMock(spec=asyncio.StreamReader)
     # readline returns empty bytes to signal EOF immediately
-    proc.stdout.readline = AsyncFake(return_value=b"")
-    proc.stderr.readline = AsyncFake(return_value=b"")
-    proc.wait = AsyncFake(return_value=0)
-    proc.send_signal = MagicFake()
-    proc.kill = MagicFake()
+    proc.stdout.readline = AsyncMock(return_value=b"")
+    proc.stderr.readline = AsyncMock(return_value=b"")
+    proc.wait = AsyncMock(return_value=0)
+    proc.send_signal = MagicMock()
+    proc.kill = MagicMock()
     return proc
 
 
@@ -65,7 +65,7 @@ def _fake_process(
 
 class TestManagedProcessStreaming:
     @patch("asyncio.create_subprocess_exec")
-    async def test_stdout_lines_logged(self, fake_exec: AsyncFake) -> None:
+    async def test_stdout_lines_logged(self, fake_exec: AsyncMock) -> None:
         proc = _fake_process()
         lines = [b"hello\n", b"world\n", b""]
         call_count = 0
@@ -88,11 +88,11 @@ class TestManagedProcessStreaming:
         await mp.stop()
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_wait_returns_exit_code(self, fake_exec: AsyncFake) -> None:
+    async def test_wait_returns_exit_code(self, fake_exec: AsyncMock) -> None:
         # Arrange
         expected_exit_code = 42
         proc = _fake_process()
-        proc.wait = AsyncFake(return_value=expected_exit_code)
+        proc.wait = AsyncMock(return_value=expected_exit_code)
         fake_exec.return_value = proc
 
         # Act

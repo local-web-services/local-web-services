@@ -3,7 +3,7 @@
 const { spawn } = require("child_process");
 const { LwsSession } = require("../../src/session");
 
-jest.fake("child_process", () => ({
+jest.mock("child_process", () => ({
   spawn: jest.fn(),
 }));
 

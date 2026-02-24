@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from unittest.fake import AsyncFake, MagicFake
+from unittest.mock import AsyncMock, MagicMock
 
 from lws.providers.ecs.process_manager import ProcessConfig
 
@@ -27,19 +27,19 @@ def _make_config(**overrides: object) -> ProcessConfig:
 def _fake_process(
     pid: int = 1234,
     returncode: int | None = None,
-) -> AsyncFake:
+) -> AsyncMock:
     """Create a fake asyncio.subprocess.Process."""
-    proc = AsyncFake(spec=asyncio.subprocess.Process)
+    proc = AsyncMock(spec=asyncio.subprocess.Process)
     proc.pid = pid
     proc.returncode = returncode
-    proc.stdout = AsyncFake(spec=asyncio.StreamReader)
-    proc.stderr = AsyncFake(spec=asyncio.StreamReader)
+    proc.stdout = AsyncMock(spec=asyncio.StreamReader)
+    proc.stderr = AsyncMock(spec=asyncio.StreamReader)
     # readline returns empty bytes to signal EOF immediately
-    proc.stdout.readline = AsyncFake(return_value=b"")
-    proc.stderr.readline = AsyncFake(return_value=b"")
-    proc.wait = AsyncFake(return_value=0)
-    proc.send_signal = MagicFake()
-    proc.kill = MagicFake()
+    proc.stdout.readline = AsyncMock(return_value=b"")
+    proc.stderr.readline = AsyncMock(return_value=b"")
+    proc.wait = AsyncMock(return_value=0)
+    proc.send_signal = MagicMock()
+    proc.kill = MagicMock()
     return proc
 
 

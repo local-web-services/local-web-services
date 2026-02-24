@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
@@ -26,7 +26,7 @@ class TestElasticsearchDataPlaneEndpoint:
     def test_with_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
         expected_endpoint = "localhost:9200"
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = expected_endpoint
         app = create_elasticsearch_app(container_manager=fake_cm)
         client = TestClient(app)
@@ -62,7 +62,7 @@ class TestElasticsearchDataPlaneEndpoint:
 
     def test_delete_domain_stops_container(self) -> None:
         # Arrange
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:9200"
         app = create_elasticsearch_app(container_manager=fake_cm)
         client = TestClient(app)

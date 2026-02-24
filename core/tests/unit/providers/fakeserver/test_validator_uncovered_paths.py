@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from lws.providers.fakeserver.models import MatchCriteria, FakeResponse, FakeServerConfig, RouteRule
+from lws.providers.fakeserver.models import FakeResponse, FakeServerConfig, MatchCriteria, RouteRule
 from lws.providers.fakeserver.validator import validate_against_spec
 
 

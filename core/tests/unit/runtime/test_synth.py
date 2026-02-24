@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from unittest.fake import AsyncFake, MagicFake, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -78,17 +78,17 @@ def test_is_synth_stale_excludes_node_modules(tmp_path: Path) -> None:
 
 def _make_fake_process(exit_code: int = 0, stdout: bytes = b"", stderr: bytes = b""):
     """Return a fake process suitable for ``create_subprocess_exec``."""
-    proc = AsyncFake()
-    proc.stdout = AsyncFake()
-    proc.stderr = AsyncFake()
+    proc = AsyncMock()
+    proc.stdout = AsyncMock()
+    proc.stderr = AsyncMock()
 
     # readline returns bytes line-by-line then b"" to signal EOF.
     stdout_lines = [line + b"\n" for line in stdout.split(b"\n") if line] + [b""]
     stderr_lines = [line + b"\n" for line in stderr.split(b"\n") if line] + [b""]
-    proc.stdout.readline = AsyncFake(side_effect=stdout_lines)
-    proc.stderr.readline = AsyncFake(side_effect=stderr_lines)
+    proc.stdout.readline = AsyncMock(side_effect=stdout_lines)
+    proc.stderr.readline = AsyncMock(side_effect=stderr_lines)
 
-    proc.wait = AsyncFake(return_value=exit_code)
+    proc.wait = AsyncMock(return_value=exit_code)
     return proc
 
 
@@ -108,8 +108,8 @@ async def test_ensure_synth_force_always_runs(tmp_path: Path) -> None:
         patch("sys.stdout") as fake_stdout,
         patch("sys.stderr") as fake_stderr,
     ):
-        fake_stdout.buffer = MagicFake()
-        fake_stderr.buffer = MagicFake()
+        fake_stdout.buffer = MagicMock()
+        fake_stderr.buffer = MagicMock()
 
         actual_result = await ensure_synth(tmp_path, force=True)
 
@@ -132,8 +132,8 @@ async def test_ensure_synth_raises_synth_error(tmp_path: Path) -> None:
         patch("sys.stdout") as fake_stdout,
         patch("sys.stderr") as fake_stderr,
     ):
-        fake_stdout.buffer = MagicFake()
-        fake_stderr.buffer = MagicFake()
+        fake_stdout.buffer = MagicMock()
+        fake_stderr.buffer = MagicMock()
 
         with pytest.raises(SynthError, match="exit code 2") as exc_info:
             await ensure_synth(tmp_path)
@@ -175,8 +175,8 @@ async def test_ensure_synth_runs_when_stale(tmp_path: Path) -> None:
         patch("sys.stdout") as fake_stdout,
         patch("sys.stderr") as fake_stderr,
     ):
-        fake_stdout.buffer = MagicFake()
-        fake_stderr.buffer = MagicFake()
+        fake_stdout.buffer = MagicMock()
+        fake_stderr.buffer = MagicMock()
 
         actual_result = await ensure_synth(tmp_path)
 

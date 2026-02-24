@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -24,7 +24,7 @@ from lws.providers.eventbridge.provider import (
 
 def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
     """Return a fake ICompute whose ``invoke`` resolves to the given result."""
-    fake = AsyncFake(spec=ICompute)
+    fake = AsyncMock(spec=ICompute)
     fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,

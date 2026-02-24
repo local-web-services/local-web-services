@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
@@ -26,7 +26,7 @@ class TestDocDBDataPlaneEndpoint:
     def test_with_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
         expected_endpoint = "localhost:27017"
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = expected_endpoint
         app = create_docdb_app(container_manager=fake_cm)
         client = TestClient(app)
@@ -62,7 +62,7 @@ class TestDocDBDataPlaneEndpoint:
 
     def test_delete_cluster_stops_container(self) -> None:
         # Arrange
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:27017"
         app = create_docdb_app(container_manager=fake_cm)
         client = TestClient(app)

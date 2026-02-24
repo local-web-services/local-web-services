@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
@@ -27,7 +27,7 @@ class TestRdsDataPlaneEndpoint:
         # Arrange
         expected_address = "localhost"
         expected_port = 15432
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:15432"
         app = create_rds_app(postgres_container_manager=fake_cm)
         client = TestClient(app)
@@ -55,7 +55,7 @@ class TestRdsDataPlaneEndpoint:
         # Arrange
         expected_address = "localhost"
         expected_port = 13306
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:13306"
         app = create_rds_app(mysql_container_manager=fake_cm)
         client = TestClient(app)
@@ -108,7 +108,7 @@ class TestRdsDataPlaneEndpoint:
         # Arrange
         expected_host = "localhost"
         expected_port = 15432
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:15432"
         app = create_rds_app(postgres_container_manager=fake_cm)
         client = TestClient(app)
@@ -133,7 +133,7 @@ class TestRdsDataPlaneEndpoint:
 
     def test_delete_standalone_instance_stops_container(self) -> None:
         # Arrange
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:15432"
         app = create_rds_app(postgres_container_manager=fake_cm)
         client = TestClient(app)
@@ -155,7 +155,7 @@ class TestRdsDataPlaneEndpoint:
 
     def test_delete_cluster_stops_container(self) -> None:
         # Arrange
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:15432"
         app = create_rds_app(postgres_container_manager=fake_cm)
         client = TestClient(app)

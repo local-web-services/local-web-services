@@ -9,7 +9,7 @@ SQS event-source poller.
 from __future__ import annotations
 
 import asyncio
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -170,7 +170,7 @@ class TestSqsEventSourcePoller:
 
         await queue_provider.send_message(queue_name, expected_body)
 
-        fake_compute = AsyncFake(spec=ICompute)
+        fake_compute = AsyncMock(spec=ICompute)
         fake_compute.invoke.return_value = InvocationResult(
             payload={"statusCode": 200},
             error=None,
@@ -223,7 +223,7 @@ class TestSqsEventSourcePoller:
 
         await queue_provider.send_message(queue_name, "delete-after-invoke")
 
-        fake_compute = AsyncFake(spec=ICompute)
+        fake_compute = AsyncMock(spec=ICompute)
         fake_compute.invoke.return_value = InvocationResult(
             payload={}, error=None, duration_ms=10.0, request_id="r1"
         )
@@ -266,7 +266,7 @@ class TestSqsEventSourcePoller:
 
         await queue_provider.send_message(queue_name, "keep-on-fail")
 
-        fake_compute = AsyncFake(spec=ICompute)
+        fake_compute = AsyncMock(spec=ICompute)
         fake_compute.invoke.return_value = InvocationResult(
             payload=None, error="Lambda failed", duration_ms=10.0, request_id="r1"
         )
@@ -303,7 +303,7 @@ class TestSqsEventSourcePoller:
         # Arrange
         expected_task_count_after_start = 1
         expected_task_count_after_stop = 0
-        queue_provider = AsyncFake(spec=IQueue)
+        queue_provider = AsyncMock(spec=IQueue)
         queue_provider.receive_messages.return_value = []
 
         mapping = EventSourceMapping(
@@ -335,7 +335,7 @@ class TestSqsEventSourcePoller:
         """Disabled mappings should not create polling tasks."""
         # Arrange
         expected_task_count = 0
-        queue_provider = AsyncFake(spec=IQueue)
+        queue_provider = AsyncMock(spec=IQueue)
 
         mapping = EventSourceMapping(
             queue_name="q",

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.fake import AsyncFake
+from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient
 
@@ -27,7 +27,7 @@ class TestElastiCacheDataPlaneEndpoint:
         # Arrange
         expected_address = "localhost"
         expected_port = 16379
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:16379"
         app = create_elasticache_app(container_manager=fake_cm)
         client = TestClient(app)
@@ -70,7 +70,7 @@ class TestElastiCacheDataPlaneEndpoint:
 
     def test_delete_cluster_stops_container(self) -> None:
         # Arrange
-        fake_cm = AsyncFake()
+        fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:16379"
         app = create_elasticache_app(container_manager=fake_cm)
         client = TestClient(app)

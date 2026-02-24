@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake, patch
+from unittest.mock import AsyncMock, patch
 
 from typer.testing import CliRunner
 
@@ -13,9 +13,9 @@ runner = CliRunner()
 _TARGET_PREFIX = "DynamoDB_20120810"
 
 
-def _fake_client_response(return_value: dict) -> AsyncFake:
-    fake = AsyncFake()
-    fake.json_target_request = AsyncFake(return_value=return_value)
+def _fake_client_response(return_value: dict) -> AsyncMock:
+    fake = AsyncMock()
+    fake.json_target_request = AsyncMock(return_value=return_value)
     return fake
 
 

@@ -4,7 +4,7 @@ const EXPECTED_MGMT_PORT = 8080;
 const EXPECTED_CHAOS_URL = `http://127.0.0.1:${EXPECTED_MGMT_PORT}/_ldk/chaos`;
 
 describe("ChaosBuilder", () => {
-  let fakeFetch: jest.Fake;
+  let fakeFetch: jest.Mock;
 
   beforeEach(() => {
     fakeFetch = jest.fn().fakeResolvedValue({ ok: true });

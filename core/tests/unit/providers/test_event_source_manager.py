@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake, MagicFake, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from lws.providers.lambda_runtime.event_source_manager import (
     EventSourceManager,
@@ -17,8 +17,8 @@ class TestEventSourceManager:
 
     async def test_activate_sqs_starts_poller(self) -> None:
         # Arrange
-        queue_provider = AsyncFake()
-        compute = AsyncFake()
+        queue_provider = AsyncMock()
+        compute = AsyncMock()
         manager = EventSourceManager(
             queue_providers={"my-queue": queue_provider},
             stream_dispatchers={},
@@ -35,7 +35,7 @@ class TestEventSourceManager:
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
         ) as fake_poller_cls:
-            fake_poller = AsyncFake()
+            fake_poller = AsyncMock()
             fake_poller_cls.return_value = fake_poller
             await manager.activate(mapping)
 
@@ -44,8 +44,8 @@ class TestEventSourceManager:
 
     async def test_deactivate_stops_poller(self) -> None:
         # Arrange
-        queue_provider = AsyncFake()
-        compute = AsyncFake()
+        queue_provider = AsyncMock()
+        compute = AsyncMock()
         manager = EventSourceManager(
             queue_providers={"my-queue": queue_provider},
             stream_dispatchers={},
@@ -59,7 +59,7 @@ class TestEventSourceManager:
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
         ) as fake_poller_cls:
-            fake_poller = AsyncFake()
+            fake_poller = AsyncMock()
             fake_poller_cls.return_value = fake_poller
             await manager.activate(mapping)
 
@@ -71,8 +71,8 @@ class TestEventSourceManager:
 
     async def test_activate_dynamodb_stream_registers_handler(self) -> None:
         # Arrange
-        dispatcher = MagicFake()
-        compute = AsyncFake()
+        dispatcher = MagicMock()
+        compute = AsyncMock()
         manager = EventSourceManager(
             queue_providers={},
             stream_dispatchers={"my-table": dispatcher},
@@ -99,8 +99,8 @@ class TestEventSourceManager:
 
     async def test_stop_all_stops_all_pollers(self) -> None:
         # Arrange
-        queue_provider = AsyncFake()
-        compute = AsyncFake()
+        queue_provider = AsyncMock()
+        compute = AsyncMock()
         manager = EventSourceManager(
             queue_providers={"q1": queue_provider, "q2": queue_provider},
             stream_dispatchers={},
@@ -109,8 +109,8 @@ class TestEventSourceManager:
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
         ) as fake_poller_cls:
-            fake_poller1 = AsyncFake()
-            fake_poller2 = AsyncFake()
+            fake_poller1 = AsyncMock()
+            fake_poller2 = AsyncMock()
             fake_poller_cls.side_effect = [fake_poller1, fake_poller2]
             await manager.activate(
                 {

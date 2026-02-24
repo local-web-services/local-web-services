@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from lws.providers.fakeserver.engine import RouteMatchEngine
-from lws.providers.fakeserver.models import MatchCriteria, FakeResponse, RouteRule
+from lws.providers.fakeserver.models import FakeResponse, MatchCriteria, RouteRule
 
 
 def _simple_route(path: str, method: str, status: int = 200, body=None) -> RouteRule:

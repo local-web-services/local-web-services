@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake, patch
+from unittest.mock import AsyncMock, patch
 
 import httpx
 from fastapi.testclient import TestClient
@@ -58,7 +58,7 @@ class TestBuildAlbApp:
         assert resp.status_code == expected_status
 
     @patch("httpx.AsyncClient.request")
-    async def test_catch_all_proxies_matching_rule(self, fake_req: AsyncFake) -> None:
+    async def test_catch_all_proxies_matching_rule(self, fake_req: AsyncMock) -> None:
         fake_resp = httpx.Response(
             200,
             content=b'{"ok": true}',

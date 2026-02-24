@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake, patch
+from unittest.mock import AsyncMock, patch
 
 from typer.testing import CliRunner
 
@@ -11,10 +11,10 @@ from lws.cli.lws import app
 runner = CliRunner()
 
 
-def _fake_client(return_value: dict) -> AsyncFake:
-    fake = AsyncFake()
-    fake.json_target_request = AsyncFake(return_value=return_value)
-    fake.service_port = AsyncFake(return_value=3006)
+def _fake_client(return_value: dict) -> AsyncMock:
+    fake = AsyncMock()
+    fake.json_target_request = AsyncMock(return_value=return_value)
+    fake.service_port = AsyncMock(return_value=3006)
     return fake
 
 

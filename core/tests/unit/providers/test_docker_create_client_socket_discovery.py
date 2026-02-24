@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import MagicFake, patch
+from unittest.mock import MagicMock, patch
 
 
 class TestCreateDockerClientSocketDiscovery:
@@ -10,13 +10,13 @@ class TestCreateDockerClientSocketDiscovery:
 
     def test_colima_default_socket(self, tmp_path):
         # Arrange
-        fake_env_client = MagicFake()
+        fake_env_client = MagicMock()
         fake_env_client.ping.side_effect = Exception("no daemon")
 
-        fake_sock_client = MagicFake()
+        fake_sock_client = MagicMock()
         fake_sock_client.ping.return_value = True
 
-        fake_docker = MagicFake()
+        fake_docker = MagicMock()
         fake_docker.from_env.return_value = fake_env_client
         fake_docker.DockerClient.return_value = fake_sock_client
 
@@ -42,13 +42,13 @@ class TestCreateDockerClientSocketDiscovery:
 
     def test_rancher_desktop_socket(self, tmp_path):
         # Arrange
-        fake_env_client = MagicFake()
+        fake_env_client = MagicMock()
         fake_env_client.ping.side_effect = Exception("no daemon")
 
-        fake_sock_client = MagicFake()
+        fake_sock_client = MagicMock()
         fake_sock_client.ping.return_value = True
 
-        fake_docker = MagicFake()
+        fake_docker = MagicMock()
         fake_docker.from_env.return_value = fake_env_client
         fake_docker.DockerClient.return_value = fake_sock_client
 
@@ -74,13 +74,13 @@ class TestCreateDockerClientSocketDiscovery:
 
     def test_docker_desktop_socket(self, tmp_path):
         # Arrange
-        fake_env_client = MagicFake()
+        fake_env_client = MagicMock()
         fake_env_client.ping.side_effect = Exception("no daemon")
 
-        fake_sock_client = MagicFake()
+        fake_sock_client = MagicMock()
         fake_sock_client.ping.return_value = True
 
-        fake_docker = MagicFake()
+        fake_docker = MagicMock()
         fake_docker.from_env.return_value = fake_env_client
         fake_docker.DockerClient.return_value = fake_sock_client
 
@@ -106,16 +106,16 @@ class TestCreateDockerClientSocketDiscovery:
 
     def test_skips_socket_that_exists_but_fails_ping(self, tmp_path):
         # Arrange
-        fake_env_client = MagicFake()
+        fake_env_client = MagicMock()
         fake_env_client.ping.side_effect = Exception("no daemon")
 
-        fake_bad_client = MagicFake()
+        fake_bad_client = MagicMock()
         fake_bad_client.ping.side_effect = Exception("socket broken")
 
-        fake_good_client = MagicFake()
+        fake_good_client = MagicMock()
         fake_good_client.ping.return_value = True
 
-        fake_docker = MagicFake()
+        fake_docker = MagicMock()
         fake_docker.from_env.return_value = fake_env_client
         fake_docker.DockerClient.side_effect = [fake_bad_client, fake_good_client]
 

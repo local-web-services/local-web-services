@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import AsyncFake, MagicFake, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from typer.testing import CliRunner
 
@@ -15,15 +15,15 @@ def _fake_client_rest(
     status_code: int = 200,
     text: str = "",
     headers: dict | None = None,
-) -> AsyncFake:
-    fake = AsyncFake()
-    fake.service_port = AsyncFake(return_value=3003)
-    resp = MagicFake()
+) -> AsyncMock:
+    fake = AsyncMock()
+    fake.service_port = AsyncMock(return_value=3003)
+    resp = MagicMock()
     resp.status_code = status_code
     resp.text = text
     resp.content = text.encode()
     resp.headers = headers or {}
-    fake.rest_request = AsyncFake(return_value=resp)
+    fake.rest_request = AsyncMock(return_value=resp)
     return fake
 
 

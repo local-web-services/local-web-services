@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.fake import MagicFake
+from unittest.mock import MagicMock
 
 from lws.providers.lambda_function_url.routes import build_function_url_event
 
@@ -14,16 +14,16 @@ def _make_request(
     headers: dict | None = None,
     body: bytes = b"",
     client_host: str = "127.0.0.1",
-) -> MagicFake:
+) -> MagicMock:
     """Create a fake Starlette Request."""
-    request = MagicFake()
+    request = MagicMock()
     request.method = method
     request.url.path = path
     request.scope = {"http_version": "1.1"}
 
     # Headers
     header_items = list((headers or {}).items())
-    request.headers = MagicFake()
+    request.headers = MagicMock()
     request.headers.items.return_value = header_items
     request.headers.get = lambda key, default="": dict(header_items).get(key.lower(), default)
     request.headers.__iter__ = lambda self: iter(dict(header_items))
@@ -38,7 +38,7 @@ def _make_request(
         request.query_params = {}
 
     # Client
-    client = MagicFake()
+    client = MagicMock()
     client.host = client_host
     request.client = client
 
