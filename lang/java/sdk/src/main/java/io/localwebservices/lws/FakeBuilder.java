@@ -10,43 +10,43 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Configures mock responses for a single AWS service via the {@code /_ldk/aws-mock} API.
+ * Configures fake responses for a single AWS service via the {@code /_ldk/aws-mock} API.
  *
- * <p>Obtain a builder via {@link LwsSession#mock(String)}:
+ * <p>Obtain a builder via {@link LwsSession#fake(String)}:
  * <pre>{@code
- * MockBuilder sfnMock = session.mock("stepfunctions")
+ * FakeBuilder sfnFake = session.fake("stepfunctions")
  *         .operation("start-execution").respond(200, Map.of("executionArn", "..."))
  *         .operation("describe-execution").respond(200, Map.of("status", "SUCCEEDED", ...));
  * // later...
- * sfnMock.clear();
+ * sfnFake.clear();
  * }</pre>
  */
-public class MockBuilder {
+public class FakeBuilder {
 
     private final LwsSession session;
     private final String service;
-    private final List<MockRule> rules = new ArrayList<>();
+    private final List<FakeRule> rules = new ArrayList<>();
 
-    MockBuilder(LwsSession session, String service) {
+    FakeBuilder(LwsSession session, String service) {
         this.session = session;
         this.service = service;
     }
 
     /**
-     * Starts building a mock rule for the named operation (e.g. {@code "start-execution"}).
-     * Chain {@link MockRuleBuilder#respond} or {@link MockRuleBuilder#error} to finish.
+     * Starts building a fake rule for the named operation (e.g. {@code "start-execution"}).
+     * Chain {@link FakeRuleBuilder#respond} or {@link FakeRuleBuilder#error} to finish.
      */
-    public MockRuleBuilder operation(String operationName) {
-        return new MockRuleBuilder(this, operationName);
+    public FakeRuleBuilder operation(String operationName) {
+        return new FakeRuleBuilder(this, operationName);
     }
 
-    /** Removes all mock rules for this service. */
+    /** Removes all fake rules for this service. */
     public void clear() throws Exception {
         rules.clear();
         apply(false);
     }
 
-    void addRule(MockRule rule) throws Exception {
+    void addRule(FakeRule rule) throws Exception {
         rules.add(rule);
         apply(true);
     }
@@ -55,7 +55,7 @@ public class MockBuilder {
         StringBuilder rulesJson = new StringBuilder("[");
         for (int i = 0; i < rules.size(); i++) {
             if (i > 0) rulesJson.append(",");
-            MockRule r = rules.get(i);
+            FakeRule r = rules.get(i);
             rulesJson.append("{\"operation\":").append(jsonString(r.operation));
             if (r.matchHeaders != null && !r.matchHeaders.isEmpty()) {
                 rulesJson.append(",\"match_headers\":{");
@@ -135,25 +135,25 @@ public class MockBuilder {
         return jsonString(value.toString());
     }
 
-    static class MockRule {
+    static class FakeRule {
         final String operation;
         final Map<String, String> matchHeaders;
-        final MockResponse response;
+        final FakeResponse response;
 
-        MockRule(String operation, Map<String, String> matchHeaders, MockResponse response) {
+        FakeRule(String operation, Map<String, String> matchHeaders, FakeResponse response) {
             this.operation = operation;
             this.matchHeaders = matchHeaders;
             this.response = response;
         }
     }
 
-    static class MockResponse {
+    static class FakeResponse {
         final int status;
         final String contentType;
         final String body;
         final int delayMs;
 
-        MockResponse(int status, String contentType, String body, int delayMs) {
+        FakeResponse(int status, String contentType, String body, int delayMs) {
             this.status = status;
             this.contentType = contentType;
             this.body = body;
@@ -162,28 +162,28 @@ public class MockBuilder {
     }
 
     /**
-     * Builds a single mock rule for one operation.
+     * Builds a single fake rule for one operation.
      */
-    public static class MockRuleBuilder {
+    public static class FakeRuleBuilder {
 
-        private final MockBuilder parent;
+        private final FakeBuilder parent;
         private final String operation;
         private final Map<String, String> headers = new java.util.LinkedHashMap<>();
         private int delayMs;
 
-        MockRuleBuilder(MockBuilder parent, String operation) {
+        FakeRuleBuilder(FakeBuilder parent, String operation) {
             this.parent = parent;
             this.operation = operation;
         }
 
         /** Adds a required request header match to the rule. */
-        public MockRuleBuilder withHeader(String name, String value) {
+        public FakeRuleBuilder withHeader(String name, String value) {
             headers.put(name, value);
             return this;
         }
 
         /** Sets a response delay in milliseconds for the rule. */
-        public MockRuleBuilder delayMs(int ms) {
+        public FakeRuleBuilder delayMs(int ms) {
             this.delayMs = ms;
             return this;
         }
@@ -192,21 +192,21 @@ public class MockBuilder {
          * Configures a success response. {@code body} may be a {@link String}
          * or any JSON-serialisable object (e.g. a {@link Map}).
          *
-         * @return the parent {@link MockBuilder} so further operations can be chained
+         * @return the parent {@link FakeBuilder} so further operations can be chained
          */
-        public MockBuilder respond(int statusCode, Object body) throws Exception {
+        public FakeBuilder respond(int statusCode, Object body) throws Exception {
             String bodyStr = toBodyString(body);
-            parent.addRule(new MockRule(operation, headers.isEmpty() ? null : new java.util.LinkedHashMap<>(headers),
-                    new MockResponse(statusCode, "application/json", bodyStr, delayMs)));
+            parent.addRule(new FakeRule(operation, headers.isEmpty() ? null : new java.util.LinkedHashMap<>(headers),
+                    new FakeResponse(statusCode, "application/json", bodyStr, delayMs)));
             return parent;
         }
 
         /**
          * Configures the operation to return an AWS-style error response.
          *
-         * @return the parent {@link MockBuilder} so further operations can be chained
+         * @return the parent {@link FakeBuilder} so further operations can be chained
          */
-        public MockBuilder error(String errorType, String message) throws Exception {
+        public FakeBuilder error(String errorType, String message) throws Exception {
             String bodyStr = "{\"__type\":" + jsonString(errorType) + ",\"message\":" + jsonString(message) + "}";
             return respond(400, bodyStr);
         }

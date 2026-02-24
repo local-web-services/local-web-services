@@ -159,17 +159,17 @@ class LwsSessionTest {
     }
 
     @Test
-    void mockRuleBuilder_withHeaderAndDelayMs_storesValues() throws Exception {
+    void fakeRuleBuilder_withHeaderAndDelayMs_storesValues() throws Exception {
         // Arrange
         int basePort = LwsSession.findFreePort();
         LwsSession session = new LwsSession(basePort, null);
-        MockBuilder mock = session.mock("stepfunctions");
+        FakeBuilder fake = session.fake("stepfunctions");
         String expectedHeaderName = "X-Test";
         String expectedHeaderValue = "value";
         int expectedDelayMs = 100;
 
         // Act
-        MockBuilder.MockRuleBuilder ruleBuilder = mock.operation("start-execution")
+        FakeBuilder.FakeRuleBuilder ruleBuilder = fake.operation("start-execution")
                 .withHeader(expectedHeaderName, expectedHeaderValue)
                 .delayMs(expectedDelayMs);
 

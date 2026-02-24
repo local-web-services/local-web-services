@@ -114,17 +114,17 @@ public class LwsSession implements AutoCloseable {
         return session;
     }
 
-    /** Returns the base port for this session (used internally by {@link MockBuilder}). */
+    /** Returns the base port for this session (used internally by {@link FakeBuilder}). */
     int getBasePort() {
         return basePort;
     }
 
     /**
-     * Returns a {@link MockBuilder} for the given service (e.g. {@code "stepfunctions"}).
-     * Use it to configure mock responses or inject errors for specific operations.
+     * Returns a {@link FakeBuilder} for the given service (e.g. {@code "stepfunctions"}).
+     * Use it to configure fake responses or inject errors for specific operations.
      */
-    public MockBuilder mock(String service) {
-        return new MockBuilder(this, service);
+    public FakeBuilder fake(String service) {
+        return new FakeBuilder(this, service);
     }
 
     /** Returns the port number for a named service. */

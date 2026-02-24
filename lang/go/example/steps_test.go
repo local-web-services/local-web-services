@@ -29,8 +29,8 @@ type testContext struct {
 	lastOutput       map[string]interface{}
 	lastErr          error
 	logCapture       *lws.LogCapture
-	sfnMockBuilder   *lws.MockBuilder
-	mockExecutionArn string
+	sfnFakeBuilder   *lws.FakeBuilder
+	fakeExecutionArn string
 	// multi-order scenario storage
 	processedOutputs []map[string]interface{}
 	processedIDs     []string
@@ -48,7 +48,7 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 			ctx.logCapture = nil
 		}
 		if ctx.session != nil {
-			_ = ctx.session.Mock("stepfunctions").Clear()
+			_ = ctx.session.Fake("stepfunctions").Clear()
 			ctx.session.Close()
 			ctx.session = nil
 		}
@@ -62,11 +62,11 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 	sc.Step(`a DynamoDB table {string} with partition key {string}`, ctx.aDynamoDBTableWithPartitionKey)
 	sc.Step(`an SQS queue named {string}`, ctx.anSQSQueueNamed)
 
-	// Mock steps
-	sc.Step(`StartExecution is mocked to return execution ARN {string}`, ctx.startExecutionMockedReturnArn)
-	sc.Step(`DescribeExecution is mocked to return SUCCEEDED with output containing order ID {string}`, ctx.describeExecutionMockedSucceeded)
-	sc.Step(`StartExecution is mocked to return error {string}`, ctx.startExecutionMockedError)
-	sc.Step(`StartExecution is mocked with a 10ms delay returning execution ARN {string}`, ctx.startExecutionMockedWithDelay)
+	// Fake steps
+	sc.Step(`StartExecution is faked to return execution ARN {string}`, ctx.startExecutionFakedReturnArn)
+	sc.Step(`DescribeExecution is faked to return SUCCEEDED with output containing order ID {string}`, ctx.describeExecutionFakedSucceeded)
+	sc.Step(`StartExecution is faked to return error {string}`, ctx.startExecutionFakedError)
+	sc.Step(`StartExecution is faked with a 10ms delay returning execution ARN {string}`, ctx.startExecutionFakedWithDelay)
 
 	// IAM steps
 	sc.Step(`IAM is in enforce mode with identity {string} allowed all actions on all resources`, ctx.iamEnforceModeWithIdentity)
@@ -172,54 +172,54 @@ func (c *testContext) anSQSQueueNamed(queueName string) error {
 	return nil
 }
 
-// --- Mock steps ---
+// --- Fake steps ---
 
-func (c *testContext) startExecutionMockedReturnArn(executionArn string) error {
-	c.mockExecutionArn = executionArn
-	mb, err := c.session.Mock("stepfunctions").
+func (c *testContext) startExecutionFakedReturnArn(executionArn string) error {
+	c.fakeExecutionArn = executionArn
+	mb, err := c.session.Fake("stepfunctions").
 		Operation("start-execution").
 		Respond(200, map[string]any{
 			"executionArn": executionArn,
 			"startDate":    1704067200.0,
 		})
 	if err != nil {
-		return fmt.Errorf("failed to configure StartExecution mock: %w", err)
+		return fmt.Errorf("failed to configure StartExecution fake: %w", err)
 	}
-	c.sfnMockBuilder = mb
+	c.sfnFakeBuilder = mb
 	return nil
 }
 
-func (c *testContext) describeExecutionMockedSucceeded(orderId string) error {
-	stateMachineArnForMock := "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor"
-	_, err := c.sfnMockBuilder.
+func (c *testContext) describeExecutionFakedSucceeded(orderId string) error {
+	stateMachineArnForFake := "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor"
+	_, err := c.sfnFakeBuilder.
 		Operation("describe-execution").
 		Respond(200, map[string]any{
-			"executionArn":    c.mockExecutionArn,
-			"stateMachineArn": stateMachineArnForMock,
-			"name":            "mock-exec",
+			"executionArn":    c.fakeExecutionArn,
+			"stateMachineArn": stateMachineArnForFake,
+			"name":            "fake-exec",
 			"status":          "SUCCEEDED",
 			"startDate":       1704067200.0,
 			"output":          fmt.Sprintf(`{"orderId":%q}`, orderId),
 		})
 	if err != nil {
-		return fmt.Errorf("failed to configure DescribeExecution mock: %w", err)
+		return fmt.Errorf("failed to configure DescribeExecution fake: %w", err)
 	}
 	return nil
 }
 
-func (c *testContext) startExecutionMockedError(errorCode string) error {
-	_, err := c.session.Mock("stepfunctions").
+func (c *testContext) startExecutionFakedError(errorCode string) error {
+	_, err := c.session.Fake("stepfunctions").
 		Operation("start-execution").
 		Error(errorCode, "Injected error for testing")
 	if err != nil {
-		return fmt.Errorf("failed to configure StartExecution error mock: %w", err)
+		return fmt.Errorf("failed to configure StartExecution error fake: %w", err)
 	}
 	return nil
 }
 
-func (c *testContext) startExecutionMockedWithDelay(executionArn string) error {
-	c.mockExecutionArn = executionArn
-	mb, err := c.session.Mock("stepfunctions").
+func (c *testContext) startExecutionFakedWithDelay(executionArn string) error {
+	c.fakeExecutionArn = executionArn
+	mb, err := c.session.Fake("stepfunctions").
 		Operation("start-execution").
 		DelayMs(10).
 		Respond(200, map[string]any{
@@ -227,9 +227,9 @@ func (c *testContext) startExecutionMockedWithDelay(executionArn string) error {
 			"startDate":    1704067200.0,
 		})
 	if err != nil {
-		return fmt.Errorf("failed to configure delayed StartExecution mock: %w", err)
+		return fmt.Errorf("failed to configure delayed StartExecution fake: %w", err)
 	}
-	c.sfnMockBuilder = mb
+	c.sfnFakeBuilder = mb
 	return nil
 }
 

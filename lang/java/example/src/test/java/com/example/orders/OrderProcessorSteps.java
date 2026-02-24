@@ -7,7 +7,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.localwebservices.lws.LogCapture;
 import io.localwebservices.lws.LwsSession;
-import io.localwebservices.lws.MockBuilder;
+import io.localwebservices.lws.FakeBuilder;
 import io.localwebservices.lws.SessionSpec;
 import io.localwebservices.lws.StateMachineSpec;
 import io.localwebservices.lws.TableSpec;
@@ -44,8 +44,8 @@ public class OrderProcessorSteps {
     private String lastOutput;
     private Exception lastError;
     private LogCapture logCapture;
-    private MockBuilder sfnMockBuilder;
-    private String mockExecutionArn;
+    private FakeBuilder sfnFakeBuilder;
+    private String fakeExecutionArn;
 
     // Multi-order scenario state
     private List<String> processedOutputs;
@@ -104,40 +104,40 @@ public class OrderProcessorSteps {
         sqsHelper = session.sqs(queueName);
     }
 
-    // --- Mock steps ---
+    // --- Fake steps ---
 
-    @And("StartExecution is mocked to return execution ARN {string}")
-    public void startExecutionMockedReturnArn(String executionArn) throws Exception {
-        mockExecutionArn = executionArn;
-        sfnMockBuilder = session.mock("stepfunctions")
+    @And("StartExecution is faked to return execution ARN {string}")
+    public void startExecutionFakedReturnArn(String executionArn) throws Exception {
+        fakeExecutionArn = executionArn;
+        sfnFakeBuilder = session.fake("stepfunctions")
                 .operation("start-execution").respond(200, Map.of(
                         "executionArn", executionArn,
                         "startDate", 1704067200.0));
     }
 
-    @And("DescribeExecution is mocked to return SUCCEEDED with output containing order ID {string}")
-    public void describeExecutionMockedSucceeded(String orderId) throws Exception {
-        String stateMachineArnForMock = "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor";
-        sfnMockBuilder.operation("describe-execution").respond(200, Map.of(
-                "executionArn", mockExecutionArn,
-                "stateMachineArn", stateMachineArnForMock,
-                "name", "mock-exec",
+    @And("DescribeExecution is faked to return SUCCEEDED with output containing order ID {string}")
+    public void describeExecutionFakedSucceeded(String orderId) throws Exception {
+        String stateMachineArnForFake = "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor";
+        sfnFakeBuilder.operation("describe-execution").respond(200, Map.of(
+                "executionArn", fakeExecutionArn,
+                "stateMachineArn", stateMachineArnForFake,
+                "name", "fake-exec",
                 "status", "SUCCEEDED",
                 "startDate", 1704067200.0,
                 "output", "{\"orderId\":\"" + orderId + "\"}"));
     }
 
-    @And("StartExecution is mocked to return error {string}")
-    public void startExecutionMockedError(String errorCode) throws Exception {
-        session.mock("stepfunctions")
+    @And("StartExecution is faked to return error {string}")
+    public void startExecutionFakedError(String errorCode) throws Exception {
+        session.fake("stepfunctions")
                 .operation("start-execution").error(errorCode,
                         "Injected error for testing");
     }
 
-    @And("StartExecution is mocked with a 10ms delay returning execution ARN {string}")
-    public void startExecutionMockedWithDelay(String executionArn) throws Exception {
-        mockExecutionArn = executionArn;
-        sfnMockBuilder = session.mock("stepfunctions")
+    @And("StartExecution is faked with a 10ms delay returning execution ARN {string}")
+    public void startExecutionFakedWithDelay(String executionArn) throws Exception {
+        fakeExecutionArn = executionArn;
+        sfnFakeBuilder = session.fake("stepfunctions")
                 .operation("start-execution").delayMs(10).respond(200, Map.of(
                         "executionArn", executionArn,
                         "startDate", 1704067200.0));

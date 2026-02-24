@@ -217,10 +217,10 @@ func TestDiscoverHcl_parsesAllResourceTypes(t *testing.T) {
 	}
 }
 
-func TestMockRuleBuilder_withHeaderAndDelayMs(t *testing.T) {
+func TestFakeRuleBuilder_withHeaderAndDelayMs(t *testing.T) {
 	// Arrange
 	session := &Session{basePort: 10000}
-	builder := session.Mock("stepfunctions")
+	builder := session.Fake("stepfunctions")
 
 	// Act
 	ruleBuilder := builder.Operation("start-execution").
