@@ -177,12 +177,14 @@ def test_session_accepts_reset(session, sfn_client, state_machine_arn):
 
 def test_log_capture_records_start_execution(session, sfn_client, state_machine_arn):
     # Arrange + Act
+    import sys
     from lws.logging.logger import get_ws_handler
-    # Check if emit() is ever called: do a direct call outside capture and inspect recent_logs
+    current_ws_handler = get_ws_handler()
+    print(f"\n[DEBUG] current _ws_handler before probe: id={id(current_ws_handler)}")
     process_order("order-probe", state_machine_arn, sfn_client)
-    print(f"\n[DEBUG] recent_logs after probe={len(session.recent_logs())}")
-    print(f"[DEBUG] session._log_handler backlog after probe={len(session._log_handler.backlog())}")
-    print(f"[DEBUG] session._log_handler._buffer after probe={list(session._log_handler._buffer)[:2]}")
+    # Check if current _ws_handler (handler_B) received entries
+    print(f"[DEBUG] current _ws_handler backlog after probe: {len(current_ws_handler.backlog()) if current_ws_handler else 'None'}")
+    print(f"[DEBUG] session._log_handler backlog after probe: {len(session._log_handler.backlog())}")
     with session.capture_logs() as logs:
         process_order("order-logged", state_machine_arn, sfn_client)
     print(f"[DEBUG] entries after stop={logs.entries}")
