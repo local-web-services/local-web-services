@@ -36,7 +36,13 @@ class LogCapture:
         # Allow background log handler to flush async log entries.
         time.sleep(0.2)
         full_backlog = self._handler.backlog()
-        self._entries = full_backlog[self._snapshot_len :]
+        raw = full_backlog[self._snapshot_len :]
+        # Normalize: HTTP request logs emit 'handler' for the operation name;
+        # copy it to 'operation' so assert_called() works for all log types.
+        self._entries = [
+            {**e, "operation": e.get("operation") or e.get("handler")}
+            for e in raw
+        ]
 
     # ── Access ────────────────────────────────────────────────────────────────
 
