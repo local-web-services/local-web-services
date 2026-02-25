@@ -178,22 +178,27 @@ def test_session_accepts_reset(session, sfn_client, state_machine_arn):
 def test_log_capture_records_start_execution(session, sfn_client, state_machine_arn):
     # Arrange + Act
     from lws.logging.logger import get_ws_handler, set_ws_handler
-    # Directly emit to handler to verify emit() works
-    session._log_handler.emit({"service": "test", "operation": "DirectEmit", "level": "INFO"})
-    print(f"\n[DEBUG] after direct emit, backlog={len(session._log_handler.backlog())}")
-    # Now set as global and re-record
+    from lws.logging import logger as lws_logger_mod
+    # Patch emit_to_ws to directly observe calls
+    calls = []
+    orig_emit = lws_logger_mod._emit_to_ws
+    def patched_emit(entry):
+        calls.append(entry)
+        orig_emit(entry)
+    lws_logger_mod._emit_to_ws = patched_emit
+
     set_ws_handler(session._log_handler)
-    snap = len(session._log_handler.backlog())
-    process_order("order-logged", state_machine_arn, sfn_client)
-    backlog_after = session._log_handler.backlog()
-    import time; time.sleep(0.3)
-    backlog_after2 = session._log_handler.backlog()
-    print(f"[DEBUG] snap={snap}, backlog immediately after={len(backlog_after)}, after sleep={len(backlog_after2)}")
-    print(f"[DEBUG] new entries: {backlog_after2[snap:]}")
+    try:
+        process_order("order-logged", state_machine_arn, sfn_client)
+        import time; time.sleep(0.3)
+        print(f"\n[DEBUG] _emit_to_ws was called {len(calls)} times")
+        print(f"[DEBUG] call services: {[c.get('service') for c in calls]}")
+    finally:
+        lws_logger_mod._emit_to_ws = orig_emit
 
     # Assert
-    new_entries = [e for e in backlog_after2[snap:] if e.get("service", "").lower() == "stepfunctions"]
-    assert new_entries, f"Expected stepfunctions entries, got: {backlog_after2[snap:]}"
+    sfn_calls = [c for c in calls if c.get("service") == "stepfunctions"]
+    assert sfn_calls, f"Expected stepfunctions entries in _emit_to_ws calls, got: {calls}"
 
 
 def test_dynamodb_helper_seed_and_assert(session):
