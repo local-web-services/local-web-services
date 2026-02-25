@@ -1,6 +1,6 @@
 {
   "name": "local-web-services-typescript-sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "TypeScript testing SDK for local-web-services — subprocess-based AWS service fixtures for testing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

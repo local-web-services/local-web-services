@@ -1,6 +1,6 @@
 {
   "name": "local-web-services-javascript-sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "JavaScript testing SDK for local-web-services — subprocess-based AWS service fixtures for testing",
   "main": "src/index.js",
   "files": [

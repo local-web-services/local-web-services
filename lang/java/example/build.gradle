@@ -32,7 +32,7 @@ dependencies {
     implementation 'software.amazon.awssdk:dynamodb'
     implementation 'software.amazon.awssdk:sqs'
 
-    testImplementation 'io.localwebservices:local-web-services-java-sdk:0.2.1'
+    testImplementation 'io.localwebservices:local-web-services-java-sdk:0.2.2'
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
