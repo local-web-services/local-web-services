@@ -180,22 +180,10 @@ class LdkLogger:
 
         Format: ``[SERVICE] POST /orders -> createOrder (234ms) -> 201``
         """
-        if not self._logger.isEnabledFor(logging.INFO):
-            return
-        status_str = str(status_code)
-        style = _status_style(status_str)
         ts = _timestamp()
 
-        # CLI output with service prefix and optional IAM suffix
-        service_prefix = f"[bold cyan]{service.upper()}[/bold cyan] " if service else ""
-        iam_suffix = _iam_console_suffix(iam_eval)
-        _console.print(
-            f"[dim][{ts}][/dim] {service_prefix}"
-            f"[bold]{method}[/bold] {path} -> {handler_name} "
-            f"({duration_ms:.0f}ms) -> [{style}]{status_code}[/{style}]{iam_suffix}"
-        )
-
-        # WebSocket output with full details
+        # WebSocket output — always emitted regardless of log level so the GUI
+        # and LogCapture work even when the console level is WARNING or higher.
         entry: dict[str, Any] = {
             "timestamp": ts,
             "level": "INFO",
@@ -221,6 +209,19 @@ class LdkLogger:
             entry["iam_eval"] = iam_eval
         _emit_to_ws(entry)
 
+        # CLI output — gated on log level
+        if not self._logger.isEnabledFor(logging.INFO):
+            return
+        status_str = str(status_code)
+        style = _status_style(status_str)
+        service_prefix = f"[bold cyan]{service.upper()}[/bold cyan] " if service else ""
+        iam_suffix = _iam_console_suffix(iam_eval)
+        _console.print(
+            f"[dim][{ts}][/dim] {service_prefix}"
+            f"[bold]{method}[/bold] {path} -> {handler_name} "
+            f"({duration_ms:.0f}ms) -> [{style}]{status_code}[/{style}]{iam_suffix}"
+        )
+
     def log_iam_deny(
         self,
         method: str,
@@ -236,17 +237,10 @@ class LdkLogger:
         Called when IAM middleware short-circuits with 403 so the denied
         request still appears in the console and web UI.
         """
-        if not self._logger.isEnabledFor(logging.WARNING):
-            return
         identity = iam_eval.get("identity", "")
         ts = _timestamp()
-        svc_prefix = f"[bold cyan]{service.upper()}[/bold cyan] "
-        _console.print(
-            f"[dim][{ts}][/dim] {svc_prefix}"
-            f"[bold]{method}[/bold] {path} -> {operation} "
-            f"({duration_ms:.0f}ms) -> [yellow]403[/yellow] "
-            f"[red]IAM DENY: {identity}[/red]"
-        )
+
+        # WebSocket output — always emitted regardless of log level.
         entry: dict[str, Any] = {
             "timestamp": ts,
             "level": "WARNING",
@@ -266,6 +260,17 @@ class LdkLogger:
             entry["request_body"] = request_body
         _emit_to_ws(entry)
 
+        # CLI output — gated on log level
+        if not self._logger.isEnabledFor(logging.WARNING):
+            return
+        svc_prefix = f"[bold cyan]{service.upper()}[/bold cyan] "
+        _console.print(
+            f"[dim][{ts}][/dim] {svc_prefix}"
+            f"[bold]{method}[/bold] {path} -> {operation} "
+            f"({duration_ms:.0f}ms) -> [yellow]403[/yellow] "
+            f"[red]IAM DENY: {identity}[/red]"
+        )
+
     def log_sqs_invocation(
         self,
         queue_name: str,
@@ -278,16 +283,10 @@ class LdkLogger:
 
         Format: ``SQS OrderQueue -> processOrder (1 msg, 156ms) -> OK``
         """
-        if not self._logger.isEnabledFor(logging.INFO):
-            return
-        style = _status_style(status)
         ts = _timestamp()
         msg_word = "msg" if message_count == 1 else "msgs"
-        _console.print(
-            f"[dim][{ts}][/dim] "
-            f"[bold magenta]SQS[/bold magenta] {queue_name} -> {handler_name} "
-            f"({message_count} {msg_word}, {duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
-        )
+
+        # WebSocket output — always emitted regardless of log level.
         _emit_to_ws(
             {
                 "timestamp": ts,
@@ -304,6 +303,16 @@ class LdkLogger:
             }
         )
 
+        # CLI output — gated on log level
+        if not self._logger.isEnabledFor(logging.INFO):
+            return
+        style = _status_style(status)
+        _console.print(
+            f"[dim][{ts}][/dim] "
+            f"[bold magenta]SQS[/bold magenta] {queue_name} -> {handler_name} "
+            f"({message_count} {msg_word}, {duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
+        )
+
     def log_dynamodb_operation(
         self,
         operation: str,
@@ -315,15 +324,9 @@ class LdkLogger:
 
         Format: ``DynamoDB PutItem orders (3ms) -> OK``
         """
-        if not self._logger.isEnabledFor(logging.INFO):
-            return
-        style = _status_style(status)
         ts = _timestamp()
-        _console.print(
-            f"[dim][{ts}][/dim] "
-            f"[bold blue]DynamoDB[/bold blue] {operation} {table_name} "
-            f"({duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
-        )
+
+        # WebSocket output — always emitted regardless of log level.
         _emit_to_ws(
             {
                 "timestamp": ts,
@@ -335,6 +338,16 @@ class LdkLogger:
                 "duration_ms": duration_ms,
                 "status": status,
             }
+        )
+
+        # CLI output — gated on log level
+        if not self._logger.isEnabledFor(logging.INFO):
+            return
+        style = _status_style(status)
+        _console.print(
+            f"[dim][{ts}][/dim] "
+            f"[bold blue]DynamoDB[/bold blue] {operation} {table_name} "
+            f"({duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
         )
 
     def log_lambda_invocation(
@@ -352,15 +365,9 @@ class LdkLogger:
 
         Format: ``LAMBDA ProcessOrderFunction (234ms) -> OK``
         """
-        if not self._logger.isEnabledFor(logging.INFO):
-            return
-        style = _status_style(status)
         ts = _timestamp()
-        _console.print(
-            f"[dim][{ts}][/dim] "
-            f"[bold green]LAMBDA[/bold green] {function_name} "
-            f"({duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
-        )
+
+        # WebSocket output — always emitted regardless of log level.
         entry: dict[str, Any] = {
             "timestamp": ts,
             "level": "ERROR" if status == "ERROR" else "INFO",
@@ -379,6 +386,16 @@ class LdkLogger:
         if error is not None:
             entry["error"] = error
         _emit_to_ws(entry)
+
+        # CLI output — gated on log level
+        if not self._logger.isEnabledFor(logging.INFO):
+            return
+        style = _status_style(status)
+        _console.print(
+            f"[dim][{ts}][/dim] "
+            f"[bold green]LAMBDA[/bold green] {function_name} "
+            f"({duration_ms:.0f}ms) -> [{style}]{status}[/{style}]"
+        )
 
     def log_docker_operation(
         self,

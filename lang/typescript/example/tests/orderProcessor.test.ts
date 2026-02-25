@@ -1,4 +1,8 @@
-import { SFNClient, CreateStateMachineCommand, ListStateMachinesCommand } from "@aws-sdk/client-sfn";
+import {
+  SFNClient,
+  CreateStateMachineCommand,
+  ListStateMachinesCommand,
+} from "@aws-sdk/client-sfn";
 import { LwsSession } from "local-web-services-typescript-sdk";
 import { processOrder } from "../src/orderProcessor";
 
@@ -15,8 +19,11 @@ let sfnClient: SFNClient;
 let stateMachineArn: string;
 
 beforeAll(async () => {
-  // Arrange — start local services
-  session = await LwsSession.create({});
+  // Arrange — start local services with DynamoDB table and SQS queue
+  session = await LwsSession.create({
+    tables: [{ name: "Orders", partitionKey: "orderId" }],
+    queues: ["OrderQueue"],
+  });
 
   // session.client() returns a pre-configured client pointing at the local emulator
   sfnClient = session.client<SFNClient>("stepfunctions");
@@ -129,4 +136,102 @@ test("processOrder uses state machine provisioned from Terraform HCL", async () 
   } finally {
     await tfSession.close();
   }
+});
+
+test("processOrder fails when stepfunctions chaos is set to 100% error rate", async () => {
+  // Arrange — set 100% error rate on stepfunctions
+  await session.chaos("stepfunctions").errorRate(1.0).apply();
+
+  try {
+    // Act + Assert — should throw due to chaos error injection
+    await expect(
+      processOrder("order-chaos", stateMachineArn, sfnClient)
+    ).rejects.toThrow();
+  } finally {
+    // Cleanup
+    await session.chaos("stepfunctions").clear();
+  }
+});
+
+test("processOrder succeeds with IAM enforce mode and wildcard allow policy", async () => {
+  // Arrange — register identity and switch to enforce mode
+  await session.iam
+    .identity("test-user")
+    .allow(["states:*"])
+    .apply()
+    .mode("enforce")
+    .defaultIdentity("test-user")
+    .apply();
+
+  try {
+    // Act
+    const expectedOrderId = "order-iam-001";
+    const actualResult = await processOrder(expectedOrderId, stateMachineArn, sfnClient);
+
+    // Assert
+    expect(actualResult.orderId).toBe(expectedOrderId);
+  } finally {
+    // Cleanup — return IAM to disabled mode
+    await session.iam.mode("disabled").apply();
+  }
+});
+
+test("session remains functional after reset", async () => {
+  // Arrange — process an order before reset
+  await processOrder("order-before-reset", stateMachineArn, sfnClient);
+
+  // Act — reset session state
+  await session.reset();
+
+  // Assert — session accepts a second reset without error
+  await session.reset();
+});
+
+test("log capture records StartExecution call", async () => {
+  // Arrange
+  const logs = await session.captureLogsStart();
+
+  // Act
+  await processOrder("order-logged", stateMachineArn, sfnClient);
+  await logs.stop();
+
+  // Assert
+  logs.assertCalled("stepfunctions", "StartExecution");
+  logs.assertNoErrors();
+});
+
+test("DynamoDB helper seeds an item and asserts it exists", async () => {
+  // Arrange
+  const db = session.dynamodb("Orders");
+  const expectedItem = {
+    orderId: { S: "order-helper-001" },
+    status: { S: "pending" },
+  };
+
+  // Act
+  await db.put(expectedItem);
+
+  // Assert
+  await db.assertItemCount(1);
+  await db.assertItemExists({ orderId: { S: "order-helper-001" } });
+
+  // Cleanup
+  await session.reset();
+});
+
+test("SQS helper sends a message and receives it back", async () => {
+  // Arrange
+  const queue = session.sqs("OrderQueue");
+  const expectedBody = "order-sqs-001";
+
+  // Act
+  await queue.send(expectedBody);
+
+  // Assert
+  const actualMessages = await queue.receive(1);
+  expect(actualMessages).toHaveLength(1);
+  expect(actualMessages[0].Body).toBe(expectedBody);
+
+  // Cleanup
+  await session.reset();
 });

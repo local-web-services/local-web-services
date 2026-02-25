@@ -63,7 +63,7 @@ function freePort() {
   });
 }
 
-async function waitForReady(managementUrl, timeoutMs = 30000, intervalMs = 200) {
+async function waitForReady(managementUrl, timeoutMs = 60000, intervalMs = 200) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
@@ -80,58 +80,13 @@ async function waitForReady(managementUrl, timeoutMs = 30000, intervalMs = 200) 
   );
 }
 
-async function generateTerraformConfig(dir, spec) {
-  const lines = [];
-
-  for (const tableSpec of spec.tables ?? []) {
-    const name = typeof tableSpec === "string" ? tableSpec : tableSpec.name;
-    const pk = typeof tableSpec === "string" ? "id" : tableSpec.partitionKey;
-    const sk = typeof tableSpec === "string" ? undefined : tableSpec.sortKey;
-    const logicalId = name.toLowerCase().replace(/[^a-z0-9]/g, "_");
-
-    lines.push(`resource "aws_dynamodb_table" "${logicalId}" {`);
-    lines.push(`  name         = "${name}"`);
-    lines.push(`  hash_key     = "${pk}"`);
-    lines.push(`  billing_mode = "PAY_PER_REQUEST"`);
-    lines.push(`  attribute { name = "${pk}" type = "S" }`);
-    if (sk) {
-      lines.push(`  range_key = "${sk}"`);
-      lines.push(`  attribute { name = "${sk}" type = "S" }`);
-    }
-    lines.push(`}`);
-    lines.push("");
-  }
-
-  for (const queueSpec of spec.queues ?? []) {
-    const name = typeof queueSpec === "string" ? queueSpec : queueSpec.name;
-    const isFifo = typeof queueSpec !== "string" && queueSpec.isFifo;
-    const logicalId = name.toLowerCase().replace(/[^a-z0-9]/g, "_");
-    lines.push(`resource "aws_sqs_queue" "${logicalId}" {`);
-    lines.push(`  name = "${name}"`);
-    if (isFifo) lines.push(`  fifo_queue = true`);
-    lines.push(`}`);
-    lines.push("");
-  }
-
-  for (const bucketSpec of spec.buckets ?? []) {
-    const name = typeof bucketSpec === "string" ? bucketSpec : bucketSpec.name;
-    const logicalId = name.toLowerCase().replace(/[^a-z0-9]/g, "_");
-    lines.push(`resource "aws_s3_bucket" "${logicalId}" {`);
-    lines.push(`  bucket = "${name}"`);
-    lines.push(`}`);
-    lines.push("");
-  }
-
-  for (const topicSpec of spec.topics ?? []) {
-    const name = typeof topicSpec === "string" ? topicSpec : topicSpec.name;
-    const logicalId = name.toLowerCase().replace(/[^a-z0-9]/g, "_");
-    lines.push(`resource "aws_sns_topic" "${logicalId}" {`);
-    lines.push(`  name = "${name}"`);
-    lines.push(`}`);
-    lines.push("");
-  }
-
-  await fs.writeFile(path.join(dir, "main.tf"), lines.join("\n"), "utf8");
+async function generateTerraformConfig(dir) {
+  // ldk requires at least one .tf file to detect the project as Terraform mode.
+  // Resources are created explicitly via _preCreateResources after ldk starts.
+  await fs.writeFile(
+    path.join(dir, "main.tf"),
+    "# local-web-services testing session\n"
+  );
 }
 
 class LwsSession {
@@ -157,11 +112,12 @@ class LwsSession {
   static async create(spec = {}) {
     const basePort = await freePort();
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "lws-testing-"));
-    await generateTerraformConfig(tempDir, spec);
+    await generateTerraformConfig(tempDir);
 
     const session = new LwsSession(basePort, tempDir, spec);
     session._tempDir = tempDir;
     await session._start();
+    await session._preCreateResources(spec);
     return session;
   }
 
@@ -195,34 +151,12 @@ class LwsSession {
 
     const basePort = await freePort();
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "lws-testing-"));
-    await generateTerraformConfig(tempDir, spec);
+    await generateTerraformConfig(tempDir);
 
     const session = new LwsSession(basePort, tempDir, spec);
     session._tempDir = tempDir;
     await session._start();
-
-    // Pre-create state machines discovered from the HCL files.
-    const sfnPort = basePort + SERVICE_OFFSETS["stepfunctions"];
-    for (const sm of spec.stateMachines ?? []) {
-      const definition =
-        typeof sm.definition === "object"
-          ? JSON.stringify(sm.definition)
-          : (sm.definition ?? "{}");
-      await fetch(`http://127.0.0.1:${sfnPort}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-amz-json-1.0",
-          "X-Amz-Target": "AWSStepFunctions.CreateStateMachine",
-        },
-        body: JSON.stringify({
-          name: sm.name,
-          definition,
-          roleArn:
-            sm.roleArn ?? "arn:aws:iam::000000000000:role/StepFunctionsRole",
-          type: "STANDARD",
-        }),
-      });
-    }
+    await session._preCreateResources(spec);
 
     return session;
   }
@@ -469,11 +403,96 @@ class LwsSession {
     return new IamBuilder(this._basePort);
   }
 
+  // ── Resource pre-creation ───────────────────────────────────────────────────
+
+  async _preCreateResources(spec) {
+    const credentials = { accessKeyId: "test", secretAccessKey: "test" };
+    const region = "us-east-1";
+
+    if ((spec.tables ?? []).length > 0) {
+      const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
+      const port = this._basePort + SERVICE_OFFSETS.dynamodb;
+      const ddb = new DynamoDBClient({ endpoint: `http://127.0.0.1:${port}`, credentials, region });
+      for (const tableSpec of spec.tables ?? []) {
+        const name = typeof tableSpec === "string" ? tableSpec : tableSpec.name;
+        const pk = typeof tableSpec === "string" ? "id" : tableSpec.partitionKey;
+        const sk = typeof tableSpec === "string" ? undefined : tableSpec.sortKey;
+        const keySchema = [{ AttributeName: pk, KeyType: "HASH" }];
+        const attrDefs = [{ AttributeName: pk, AttributeType: "S" }];
+        if (sk) {
+          keySchema.push({ AttributeName: sk, KeyType: "RANGE" });
+          attrDefs.push({ AttributeName: sk, AttributeType: "S" });
+        }
+        await ddb.send(new CreateTableCommand({
+          TableName: name,
+          KeySchema: keySchema,
+          AttributeDefinitions: attrDefs,
+          BillingMode: "PAY_PER_REQUEST",
+        }));
+      }
+    }
+
+    if ((spec.queues ?? []).length > 0) {
+      const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+      const port = this._basePort + SERVICE_OFFSETS.sqs;
+      const sqsClient = new SQSClient({ endpoint: `http://127.0.0.1:${port}`, credentials, region });
+      for (const queueSpec of spec.queues ?? []) {
+        const name = typeof queueSpec === "string" ? queueSpec : queueSpec.name;
+        const isFifo = typeof queueSpec !== "string" && queueSpec.isFifo;
+        const attrs = isFifo ? { FifoQueue: "true" } : undefined;
+        await sqsClient.send(new CreateQueueCommand({ QueueName: name, Attributes: attrs }));
+      }
+    }
+
+    if ((spec.buckets ?? []).length > 0) {
+      const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+      const port = this._basePort + SERVICE_OFFSETS.s3;
+      const s3Client = new S3Client({ endpoint: `http://127.0.0.1:${port}`, credentials, region, forcePathStyle: true });
+      for (const bucketSpec of spec.buckets ?? []) {
+        const name = typeof bucketSpec === "string" ? bucketSpec : bucketSpec.name;
+        await s3Client.send(new CreateBucketCommand({ Bucket: name }));
+      }
+    }
+
+    if ((spec.topics ?? []).length > 0) {
+      const { SNSClient, CreateTopicCommand } = require("@aws-sdk/client-sns");
+      const port = this._basePort + SERVICE_OFFSETS.sns;
+      const snsClient = new SNSClient({ endpoint: `http://127.0.0.1:${port}`, credentials, region });
+      for (const topicSpec of spec.topics ?? []) {
+        const name = typeof topicSpec === "string" ? topicSpec : topicSpec.name;
+        await snsClient.send(new CreateTopicCommand({ Name: name }));
+      }
+    }
+
+    if ((spec.stateMachines ?? []).length > 0) {
+      const sfnPort = this._basePort + SERVICE_OFFSETS["stepfunctions"];
+      for (const sm of spec.stateMachines ?? []) {
+        const definition =
+          typeof sm.definition === "object"
+            ? JSON.stringify(sm.definition)
+            : (sm.definition ?? "{}");
+        await fetch(`http://127.0.0.1:${sfnPort}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-amz-json-1.0",
+            "X-Amz-Target": "AWSStepFunctions.CreateStateMachine",
+          },
+          body: JSON.stringify({
+            name: sm.name,
+            definition,
+            roleArn: sm.roleArn ?? "arn:aws:iam::000000000000:role/StepFunctionsRole",
+            type: "STANDARD",
+          }),
+        });
+      }
+    }
+  }
+
   // ── Log capture ─────────────────────────────────────────────────────────────
 
-  captureLogsStart() {
+  async captureLogsStart() {
     const capture = new LogCapture(this._basePort);
-    capture.start();
+    await capture.start();
     return capture;
   }
 

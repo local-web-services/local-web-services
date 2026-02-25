@@ -1,5 +1,7 @@
 /** Log capture utilities for LWS testing sessions. */
 
+import WebSocket from "ws";
+
 export interface LogEntry {
   service?: string;
   operation?: string;
@@ -9,27 +11,39 @@ export interface LogEntry {
 }
 
 export class LogCapture {
-  private snapshotLen = 0;
+  private ws: WebSocket | null = null;
   private entries: LogEntry[] = [];
 
   constructor(private readonly mgmtPort: number) {}
 
-  start(): void {
-    this.snapshotLen = 0;
+  async start(): Promise<void> {
     this.entries = [];
+    return new Promise<void>((resolve, reject) => {
+      const ws = new WebSocket(`ws://127.0.0.1:${this.mgmtPort}/_ldk/ws/logs`);
+      this.ws = ws;
+      ws.once("open", () => resolve());
+      ws.once("error", (err: Error) => reject(err));
+      ws.on("message", (data: WebSocket.RawData) => {
+        try {
+          const raw = JSON.parse(data.toString()) as Record<string, unknown>;
+          const entry: LogEntry = {
+            ...raw,
+            operation: (raw["operation"] ?? raw["handler"]) as string | undefined,
+          };
+          this.entries.push(entry);
+        } catch {
+          // ignore invalid JSON
+        }
+      });
+    });
   }
 
   async stop(): Promise<void> {
-    // Fetch recent logs from the management API
-    try {
-      const res = await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/status`);
-      if (res.ok) {
-        // Logs are streamed via WebSocket; for synchronous capture we
-        // rely on entries collected via the WebSocket during the test.
-        // A simple alternative is to parse the backlog from the API.
-      }
-    } catch {
-      // ignore
+    // Wait briefly for any in-flight WebSocket messages to arrive
+    await new Promise<void>((r) => setTimeout(r, 200));
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
     }
   }
 

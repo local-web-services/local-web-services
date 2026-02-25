@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.34.0
 	github.com/aws/aws-sdk-go-v2/service/sfn v1.30.0
 	github.com/cucumber/godog v0.15.0
-	github.com/local-web-services/local-web-services-go-sdk v0.3.0
+	github.com/local-web-services/local-web-services-go-sdk v0.2.1
 )
 
 replace github.com/local-web-services/local-web-services-go-sdk => ../sdk

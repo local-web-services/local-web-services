@@ -8,7 +8,14 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import type { ResourceSpec, StateMachineSpec } from "../types";
+import type {
+  ResourceSpec,
+  TableSpec,
+  QueueSpec,
+  StateMachineSpec,
+  ParameterSpec,
+  SecretSpec,
+} from "../types";
 
 const RESOURCE_HEADER = /resource\s+"(?<type>[^"]+)"\s+"(?<logical>[^"]+)"\s*\{/;
 const ATTR_STR = /^\s*(?<key>\w+)\s*=\s*"(?<value>[^"]*)"/;
@@ -131,16 +138,93 @@ function collectBlock(
 }
 
 function classifyResources(resources: ParsedResource[]): ResourceSpec {
-  const spec: ResourceSpec = { stateMachines: [] };
+  const spec: ResourceSpec = {
+    tables: [],
+    queues: [],
+    buckets: [],
+    topics: [],
+    stateMachines: [],
+    parameters: [],
+    secrets: [],
+  };
 
   for (const { type, attrs } of resources) {
-    if (type === "aws_sfn_state_machine") {
-      const sm = buildStateMachine(attrs);
-      if (sm) spec.stateMachines!.push(sm);
+    switch (type) {
+      case "aws_dynamodb_table": {
+        const table = buildDynamoDBTable(attrs);
+        if (table) spec.tables!.push(table);
+        break;
+      }
+      case "aws_sqs_queue": {
+        const queue = buildSqsQueue(attrs);
+        if (queue) spec.queues!.push(queue);
+        break;
+      }
+      case "aws_s3_bucket": {
+        const bucket = buildS3Bucket(attrs);
+        if (bucket) spec.buckets!.push(bucket);
+        break;
+      }
+      case "aws_sns_topic": {
+        const topic = buildSnsTopic(attrs);
+        if (topic) spec.topics!.push(topic);
+        break;
+      }
+      case "aws_sfn_state_machine": {
+        const sm = buildStateMachine(attrs);
+        if (sm) spec.stateMachines!.push(sm);
+        break;
+      }
+      case "aws_ssm_parameter": {
+        const param = buildSsmParameter(attrs);
+        if (param) spec.parameters!.push(param);
+        break;
+      }
+      case "aws_secretsmanager_secret": {
+        const secret = buildSecretsManagerSecret(attrs);
+        if (secret) spec.secrets!.push(secret);
+        break;
+      }
     }
   }
 
   return spec;
+}
+
+function buildDynamoDBTable(attrs: Record<string, string>): TableSpec | null {
+  if (!attrs["name"]) return null;
+  const table: TableSpec = {
+    name: attrs["name"],
+    partitionKey: attrs["hash_key"] ?? "id",
+  };
+  if (attrs["range_key"]) {
+    table.sortKey = attrs["range_key"];
+  }
+  return table;
+}
+
+function buildSqsQueue(attrs: Record<string, string>): QueueSpec | null {
+  if (!attrs["name"]) return null;
+  const queue: QueueSpec = { name: attrs["name"] };
+  if (attrs["fifo_queue"] === "true") {
+    queue.isFifo = true;
+  }
+  return queue;
+}
+
+function buildS3Bucket(
+  attrs: Record<string, string>
+): { name: string } | null {
+  const name = attrs["bucket"] ?? attrs["name"];
+  if (!name) return null;
+  return { name };
+}
+
+function buildSnsTopic(
+  attrs: Record<string, string>
+): { name: string } | null {
+  if (!attrs["name"]) return null;
+  return { name: attrs["name"] };
 }
 
 function buildStateMachine(
@@ -152,4 +236,23 @@ function buildStateMachine(
     definition: attrs["definition"] ?? "{}",
     roleArn: attrs["role_arn"],
   };
+}
+
+function buildSsmParameter(
+  attrs: Record<string, string>
+): ParameterSpec | null {
+  if (!attrs["name"]) return null;
+  const param: ParameterSpec = { name: attrs["name"] };
+  if (attrs["value"]) param.value = attrs["value"];
+  if (attrs["type"]) param.type = attrs["type"] as ParameterSpec["type"];
+  return param;
+}
+
+function buildSecretsManagerSecret(
+  attrs: Record<string, string>
+): SecretSpec | null {
+  if (!attrs["name"]) return null;
+  const secret: SecretSpec = { name: attrs["name"] };
+  if (attrs["description"]) secret.description = attrs["description"];
+  return secret;
 }

@@ -68,17 +68,13 @@ class _IdentityBuilder:
         """Add an Allow statement to this identity's inline policy."""
         self._inline_policies.append(
             {
-                "name": f"inline-{len(self._inline_policies)}",
-                "document": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Action": actions,
-                            "Resource": resource,
-                        }
-                    ],
-                },
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Action": actions,
+                        "Resource": resource,
+                    }
+                ],
             }
         )
         return self
@@ -87,17 +83,13 @@ class _IdentityBuilder:
         """Add an explicit Deny statement to this identity's inline policy."""
         self._inline_policies.append(
             {
-                "name": f"inline-deny-{len(self._inline_policies)}",
-                "document": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Deny",
-                            "Action": actions,
-                            "Resource": resource,
-                        }
-                    ],
-                },
+                "Statement": [
+                    {
+                        "Effect": "Deny",
+                        "Action": actions,
+                        "Resource": resource,
+                    }
+                ],
             }
         )
         return self

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 
@@ -26,14 +27,32 @@ class LogCapture:
         """Record the current log buffer length so we can slice new entries."""
         if self._handler is None:
             return
+        # Re-register this handler as the active global.  Another session
+        # started after this one (e.g. a from_hcl() session inside a test)
+        # calls set_ws_handler() with a *new* object, so subsequent emits
+        # would go to the wrong buffer.  Re-establishing here ensures all
+        # log entries within the capture window land on our handler.
+        try:
+            from lws.logging.logger import set_ws_handler  # noqa: PLC0415
+            set_ws_handler(self._handler)
+        except Exception:  # noqa: BLE001
+            pass
         self._snapshot_len = len(self._handler.backlog())
 
     def stop(self) -> None:
         """Collect all entries appended since :meth:`start` was called."""
         if self._handler is None:
             return
+        # Allow background log handler to flush async log entries.
+        time.sleep(0.2)
         full_backlog = self._handler.backlog()
-        self._entries = full_backlog[self._snapshot_len :]
+        raw = full_backlog[self._snapshot_len :]
+        # Normalize: HTTP request logs emit 'handler' for the operation name;
+        # copy it to 'operation' so assert_called() works for all log types.
+        self._entries = [
+            {**e, "operation": e.get("operation") or e.get("handler")}
+            for e in raw
+        ]
 
     # ── Access ────────────────────────────────────────────────────────────────
 
