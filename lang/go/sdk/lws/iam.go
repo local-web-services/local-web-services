@@ -19,14 +19,18 @@ type IamBuilder struct {
 type IdentityBuilder struct {
 	parent   *IamBuilder
 	name     string
-	policies []policyDoc
-	boundary *policyDoc
+	policies []policyStatement
+	boundary *policyStatement
 }
 
-type policyDoc struct {
+type policyStatement struct {
 	Effect   string   `json:"Effect"`
 	Actions  []string `json:"Action"`
 	Resource string   `json:"Resource"`
+}
+
+type inlinePolicy struct {
+	Statement []policyStatement `json:"Statement"`
 }
 
 // Mode sets the IAM authentication mode (e.g. "enforce" or "permissive").
@@ -59,10 +63,14 @@ func (b *IamBuilder) Apply() error {
 		for name, ib := range b.identities {
 			entry := make(map[string]any)
 			if len(ib.policies) > 0 {
-				entry["inline_policies"] = ib.policies
+				wrapped := make([]inlinePolicy, len(ib.policies))
+				for i, stmt := range ib.policies {
+					wrapped[i] = inlinePolicy{Statement: []policyStatement{stmt}}
+				}
+				entry["inline_policies"] = wrapped
 			}
 			if ib.boundary != nil {
-				entry["boundary_policy"] = ib.boundary
+				entry["boundary_policy"] = inlinePolicy{Statement: []policyStatement{*ib.boundary}}
 			}
 			identMap[name] = entry
 		}
@@ -83,19 +91,19 @@ func (b *IamBuilder) Apply() error {
 
 // Allow adds an allow policy statement for the given actions and resource.
 func (b *IdentityBuilder) Allow(actions []string, resource string) *IdentityBuilder {
-	b.policies = append(b.policies, policyDoc{Effect: "Allow", Actions: actions, Resource: resource})
+	b.policies = append(b.policies, policyStatement{Effect: "Allow", Actions: actions, Resource: resource})
 	return b
 }
 
 // Deny adds a deny policy statement for the given actions and resource.
 func (b *IdentityBuilder) Deny(actions []string, resource string) *IdentityBuilder {
-	b.policies = append(b.policies, policyDoc{Effect: "Deny", Actions: actions, Resource: resource})
+	b.policies = append(b.policies, policyStatement{Effect: "Deny", Actions: actions, Resource: resource})
 	return b
 }
 
 // Boundary sets a permissions boundary policy for the identity.
 func (b *IdentityBuilder) Boundary(actions []string, resource string) *IdentityBuilder {
-	p := policyDoc{Effect: "Allow", Actions: actions, Resource: resource}
+	p := policyStatement{Effect: "Allow", Actions: actions, Resource: resource}
 	b.boundary = &p
 	return b
 }

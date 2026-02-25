@@ -50,22 +50,14 @@ export class IdentityBuilder {
 
   allow(actions: string[], resource = "*"): IdentityBuilder {
     this.inlinePolicies.push({
-      name: `inline-${this.inlinePolicies.length}`,
-      document: {
-        Version: "2012-10-17",
-        Statement: [{ Effect: "Allow", Action: actions, Resource: resource }],
-      },
+      Statement: [{ Effect: "Allow", Action: actions, Resource: resource }],
     });
     return this;
   }
 
   deny(actions: string[], resource = "*"): IdentityBuilder {
     this.inlinePolicies.push({
-      name: `inline-deny-${this.inlinePolicies.length}`,
-      document: {
-        Version: "2012-10-17",
-        Statement: [{ Effect: "Deny", Action: actions, Resource: resource }],
-      },
+      Statement: [{ Effect: "Deny", Action: actions, Resource: resource }],
     });
     return this;
   }

@@ -130,9 +130,9 @@ describe("IdentityBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualPolicy = actualBody.identities["dev-user"].inline_policies[0];
-      expect(actualPolicy.document.Statement[0].Effect).toBe("Allow");
-      expect(actualPolicy.document.Statement[0].Action).toEqual(expectedActions);
-      expect(actualPolicy.document.Statement[0].Resource).toBe(expectedResource);
+      expect(actualPolicy.Statement[0].Effect).toBe("Allow");
+      expect(actualPolicy.Statement[0].Action).toEqual(expectedActions);
+      expect(actualPolicy.Statement[0].Resource).toBe(expectedResource);
     });
 
     it("defaults resource to * when not specified", async () => {
@@ -149,7 +149,7 @@ describe("IdentityBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualStatement =
-        actualBody.identities["dev-user"].inline_policies[0].document.Statement[0];
+        actualBody.identities["dev-user"].inline_policies[0].Statement[0];
       expect(actualStatement.Resource).toBe("*");
     });
 
@@ -188,7 +188,7 @@ describe("IdentityBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualStatement =
-        actualBody.identities["readonly-user"].inline_policies[0].document.Statement[0];
+        actualBody.identities["readonly-user"].inline_policies[0].Statement[0];
       expect(actualStatement.Effect).toBe("Deny");
       expect(actualStatement.Action).toEqual(expectedActions);
     });
