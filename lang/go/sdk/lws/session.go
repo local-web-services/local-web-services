@@ -267,8 +267,9 @@ func (s *Session) RecentLogs() []LogEntry {
 }
 
 func (s *Session) awaitReady() error {
+	const maxRetries = 3
 	statusURL := fmt.Sprintf("http://127.0.0.1:%d/_ldk/status", s.basePort)
-	for {
+	for attempt := 0; attempt <= maxRetries; attempt++ {
 		deadline := time.Now().Add(30 * time.Second)
 		for time.Now().Before(deadline) {
 			if s.cmd.ProcessState != nil {
@@ -286,10 +287,12 @@ func (s *Session) awaitReady() error {
 			}
 			time.Sleep(500 * time.Millisecond)
 		}
-		// Not ready within the window — wait 15 s and try again rather than failing.
-		fmt.Println("[lws] ldk dev not ready after 30 s, retrying in 15 s...")
-		time.Sleep(15 * time.Second)
+		if attempt < maxRetries {
+			fmt.Printf("[lws] ldk dev not ready after 30 s, retrying in 15 s... (%d/%d)\n", attempt+1, maxRetries)
+			time.Sleep(15 * time.Second)
+		}
 	}
+	return fmt.Errorf("ldk dev did not become ready after %d retries", maxRetries)
 }
 
 func (s *Session) preCreateResources(spec SessionSpec) error {

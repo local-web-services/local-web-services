@@ -67,7 +67,8 @@ async function waitForReady(
   timeoutMs = 60_000,
   intervalMs = 200
 ): Promise<void> {
-  for (;;) {
+  const maxRetries = 3;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       try {
@@ -78,12 +79,17 @@ async function waitForReady(
       }
       await new Promise((r) => setTimeout(r, intervalMs));
     }
-    // Not ready within the window — wait 15 s and try again rather than failing.
-    console.warn(
-      `[lws] ldk dev not ready after ${timeoutMs}ms, retrying in 15 s...`
-    );
-    await new Promise((r) => setTimeout(r, 15_000));
+    if (attempt < maxRetries) {
+      console.warn(
+        `[lws] ldk dev not ready after ${timeoutMs}ms, retrying in 15 s... (${attempt + 1}/${maxRetries})`
+      );
+      await new Promise((r) => setTimeout(r, 15_000));
+    }
   }
+  throw new Error(
+    `ldk dev did not become ready after ${maxRetries} retries. ` +
+      "Check that local-web-services is installed (pip install local-web-services)."
+  );
 }
 
 export class LwsSession {

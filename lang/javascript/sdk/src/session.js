@@ -64,7 +64,8 @@ function freePort() {
 }
 
 async function waitForReady(managementUrl, timeoutMs = 60000, intervalMs = 200) {
-  for (;;) {
+  const maxRetries = 3;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       try {
@@ -75,12 +76,17 @@ async function waitForReady(managementUrl, timeoutMs = 60000, intervalMs = 200) 
       }
       await new Promise((r) => setTimeout(r, intervalMs));
     }
-    // Not ready within the window — wait 15 s and try again rather than failing.
-    console.warn(
-      `[lws] ldk dev not ready after ${timeoutMs}ms, retrying in 15 s...`
-    );
-    await new Promise((r) => setTimeout(r, 15000));
+    if (attempt < maxRetries) {
+      console.warn(
+        `[lws] ldk dev not ready after ${timeoutMs}ms, retrying in 15 s... (${attempt + 1}/${maxRetries})`
+      );
+      await new Promise((r) => setTimeout(r, 15000));
+    }
   }
+  throw new Error(
+    `ldk dev did not become ready after ${maxRetries} retries. ` +
+      "Check that local-web-services is installed (pip install local-web-services)."
+  );
 }
 
 async function generateTerraformConfig(dir) {

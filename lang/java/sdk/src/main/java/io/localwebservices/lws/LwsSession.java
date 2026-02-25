@@ -309,11 +309,12 @@ public class LwsSession implements AutoCloseable {
     }
 
     private void awaitReady() throws Exception {
+        final int maxRetries = 3;
         HttpClient httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(2))
                 .build();
         URI statusUri = URI.create("http://127.0.0.1:" + basePort + "/_ldk/status");
-        while (true) {
+        for (int retry = 0; retry <= maxRetries; retry++) {
             for (int attempt = 0; attempt < 60; attempt++) {
                 if (!process.isAlive()) {
                     throw new RuntimeException("ldk dev process exited unexpectedly");
@@ -331,10 +332,12 @@ public class LwsSession implements AutoCloseable {
                 }
                 Thread.sleep(500);
             }
-            // Not ready within the window — wait 15 s and try again rather than failing.
-            System.out.println("[lws] ldk dev not ready after 30 s, retrying in 15 s...");
-            Thread.sleep(15_000);
+            if (retry < maxRetries) {
+                System.out.printf("[lws] ldk dev not ready after 30 s, retrying in 15 s... (%d/%d)%n", retry + 1, maxRetries);
+                Thread.sleep(15_000);
+            }
         }
+        throw new RuntimeException("ldk dev did not become ready after " + maxRetries + " retries");
     }
 
     private void preCreateResources(SessionSpec spec) {
