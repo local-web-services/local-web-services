@@ -89,10 +89,7 @@ async function waitForReady(
     }
   }
   const reason = lastError ? `: ${lastError.message}` : "";
-  throw new Error(
-    `ldk dev did not become ready after ${maxRetries} retries${reason}. ` +
-      "Check that local-web-services is installed (pip install local-web-services)."
-  );
+  throw new Error(`ldk dev did not become ready after ${maxRetries} retries${reason}`);
 }
 
 export class LwsSession {

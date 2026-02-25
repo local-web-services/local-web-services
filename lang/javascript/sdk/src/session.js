@@ -86,10 +86,7 @@ async function waitForReady(managementUrl, timeoutMs = 60000, intervalMs = 200) 
     }
   }
   const reason = lastError ? `: ${lastError.message}` : "";
-  throw new Error(
-    `ldk dev did not become ready after ${maxRetries} retries${reason}. ` +
-      "Check that local-web-services is installed (pip install local-web-services)."
-  );
+  throw new Error(`ldk dev did not become ready after ${maxRetries} retries${reason}`);
 }
 
 async function generateTerraformConfig(dir) {
