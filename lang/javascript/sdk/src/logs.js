@@ -1,23 +1,42 @@
 "use strict";
 
+const WebSocket = require("ws");
+
 class LogCapture {
   constructor(mgmtPort) {
     this.mgmtPort = mgmtPort;
+    this.ws = null;
     this.entries = [];
   }
 
   start() {
     this.entries = [];
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket(`ws://127.0.0.1:${this.mgmtPort}/_ldk/ws/logs`);
+      this.ws = ws;
+      ws.once("open", () => resolve());
+      ws.once("error", (err) => reject(err));
+      ws.on("message", (data) => {
+        try {
+          const raw = JSON.parse(data.toString());
+          const entry = {
+            ...raw,
+            operation: raw["operation"] ?? raw["handler"],
+          };
+          this.entries.push(entry);
+        } catch {
+          // ignore invalid JSON
+        }
+      });
+    });
   }
 
   async stop() {
-    try {
-      const res = await fetch(`http://127.0.0.1:${this.mgmtPort}/_ldk/status`);
-      if (res.ok) {
-        // Logs collected via WebSocket during the test.
-      }
-    } catch {
-      // ignore
+    // Wait briefly for any in-flight WebSocket messages to arrive
+    await new Promise((r) => setTimeout(r, 200));
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
     }
   }
 

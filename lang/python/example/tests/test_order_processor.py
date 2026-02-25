@@ -19,7 +19,10 @@ STATE_MACHINE_DEFINITION = {
 
 @pytest.fixture(scope="module")
 def session():
-    with LwsSession() as s:
+    with LwsSession(
+        tables=[{"name": "Orders", "partition_key": "orderId"}],
+        queues=["OrderQueue"],
+    ) as s:
         yield s
 
 
@@ -129,3 +132,85 @@ def test_process_order_using_terraform_definition():
 
     # Assert
     assert actual_result["orderId"] == expected_order_id
+
+
+def test_process_order_chaos_returns_error(session, sfn_client, state_machine_arn):
+    # Arrange — set 100% error rate on stepfunctions
+    session.chaos("stepfunctions").error_rate(1.0).apply()
+
+    try:
+        # Act + Assert — should raise due to 100% chaos error rate
+        with pytest.raises(Exception):
+            process_order("order-chaos", state_machine_arn, sfn_client)
+    finally:
+        # Cleanup
+        session.chaos("stepfunctions").clear()
+
+
+def test_process_order_with_iam_enforce_mode(session, sfn_client, state_machine_arn):
+    # Arrange — switch to enforce mode with a wildcard allow identity
+    session.iam.identity("test-user").allow(["states:*"]).apply()
+    session.iam.mode("enforce").default_identity("test-user").apply()
+
+    try:
+        # Act
+        expected_order_id = "order-iam-001"
+        actual_result = process_order(expected_order_id, state_machine_arn, sfn_client)
+
+        # Assert
+        assert actual_result["orderId"] == expected_order_id
+    finally:
+        # Cleanup — return IAM to disabled mode
+        session.iam.mode("disabled").apply()
+
+
+def test_session_accepts_reset(session, sfn_client, state_machine_arn):
+    # Arrange — process an order before reset
+    process_order("order-before-reset", state_machine_arn, sfn_client)
+
+    # Act — reset session state
+    session.reset()
+
+    # Assert — session accepts a second reset without error
+    session.reset()
+
+
+def test_log_capture_records_start_execution(session, sfn_client, state_machine_arn):
+    # Arrange + Act
+    with session.capture_logs() as logs:
+        process_order("order-logged", state_machine_arn, sfn_client)
+
+    # Assert
+    logs.assert_called("stepfunctions", "StartExecution")
+    logs.assert_no_errors()
+
+
+def test_dynamodb_helper_seed_and_assert(session):
+    # Arrange
+    db = session.dynamodb("Orders")
+
+    # Act
+    db.put({"orderId": {"S": "order-helper-001"}, "status": {"S": "pending"}})
+
+    # Assert
+    db.assert_item_count(1)
+    db.assert_item_exists({"orderId": {"S": "order-helper-001"}})
+
+    # Cleanup
+    session.reset()
+
+
+def test_sqs_helper_send_and_receive(session):
+    # Arrange
+    queue = session.sqs("OrderQueue")
+
+    # Act
+    queue.send("order-sqs-001")
+
+    # Assert
+    actual_messages = queue.receive(max_messages=1)
+    assert len(actual_messages) == 1
+    assert actual_messages[0]["Body"] == "order-sqs-001"
+
+    # Cleanup
+    session.reset()

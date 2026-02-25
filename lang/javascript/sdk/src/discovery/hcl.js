@@ -20,7 +20,7 @@ const ATTR_HEREDOC = /^\s*(?<key>\w+)\s*=\s*<<(?<marker>\w+)\s*$/;
  * discovered AWS resources ready for use with LwsSession.
  *
  * @param {string} projectDir
- * @returns {{ stateMachines?: Array<{ name: string, definition?: string, roleArn?: string }> }}
+ * @returns {{ tables?: Array, queues?: Array, buckets?: Array, topics?: Array, stateMachines?: Array, parameters?: Array, secrets?: Array }}
  */
 function discoverHcl(projectDir) {
   const tfFiles = [];
@@ -125,16 +125,89 @@ function collectBlock(lines, start) {
 }
 
 function classifyResources(resources) {
-  const spec = { stateMachines: [] };
+  const spec = {
+    tables: [],
+    queues: [],
+    buckets: [],
+    topics: [],
+    stateMachines: [],
+    parameters: [],
+    secrets: [],
+  };
 
   for (const { type, attrs } of resources) {
-    if (type === "aws_sfn_state_machine") {
-      const sm = buildStateMachine(attrs);
-      if (sm) spec.stateMachines.push(sm);
+    switch (type) {
+      case "aws_dynamodb_table": {
+        const table = buildDynamoDBTable(attrs);
+        if (table) spec.tables.push(table);
+        break;
+      }
+      case "aws_sqs_queue": {
+        const queue = buildSqsQueue(attrs);
+        if (queue) spec.queues.push(queue);
+        break;
+      }
+      case "aws_s3_bucket": {
+        const bucket = buildS3Bucket(attrs);
+        if (bucket) spec.buckets.push(bucket);
+        break;
+      }
+      case "aws_sns_topic": {
+        const topic = buildSnsTopic(attrs);
+        if (topic) spec.topics.push(topic);
+        break;
+      }
+      case "aws_sfn_state_machine": {
+        const sm = buildStateMachine(attrs);
+        if (sm) spec.stateMachines.push(sm);
+        break;
+      }
+      case "aws_ssm_parameter": {
+        const param = buildSsmParameter(attrs);
+        if (param) spec.parameters.push(param);
+        break;
+      }
+      case "aws_secretsmanager_secret": {
+        const secret = buildSecretsManagerSecret(attrs);
+        if (secret) spec.secrets.push(secret);
+        break;
+      }
     }
   }
 
   return spec;
+}
+
+function buildDynamoDBTable(attrs) {
+  if (!attrs["name"]) return null;
+  const table = {
+    name: attrs["name"],
+    partitionKey: attrs["hash_key"] ?? "id",
+  };
+  if (attrs["range_key"]) {
+    table.sortKey = attrs["range_key"];
+  }
+  return table;
+}
+
+function buildSqsQueue(attrs) {
+  if (!attrs["name"]) return null;
+  const queue = { name: attrs["name"] };
+  if (attrs["fifo_queue"] === "true") {
+    queue.isFifo = true;
+  }
+  return queue;
+}
+
+function buildS3Bucket(attrs) {
+  const name = attrs["bucket"] ?? attrs["name"];
+  if (!name) return null;
+  return { name };
+}
+
+function buildSnsTopic(attrs) {
+  if (!attrs["name"]) return null;
+  return { name: attrs["name"] };
 }
 
 function buildStateMachine(attrs) {
@@ -144,6 +217,21 @@ function buildStateMachine(attrs) {
     definition: attrs["definition"] ?? "{}",
     roleArn: attrs["role_arn"],
   };
+}
+
+function buildSsmParameter(attrs) {
+  if (!attrs["name"]) return null;
+  const param = { name: attrs["name"] };
+  if (attrs["value"]) param.value = attrs["value"];
+  if (attrs["type"]) param.type = attrs["type"];
+  return param;
+}
+
+function buildSecretsManagerSecret(attrs) {
+  if (!attrs["name"]) return null;
+  const secret = { name: attrs["name"] };
+  if (attrs["description"]) secret.description = attrs["description"];
+  return secret;
 }
 
 module.exports = { discoverHcl };

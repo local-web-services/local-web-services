@@ -471,9 +471,9 @@ class LwsSession {
 
   // ── Log capture ─────────────────────────────────────────────────────────────
 
-  captureLogsStart() {
+  async captureLogsStart() {
     const capture = new LogCapture(this._basePort);
-    capture.start();
+    await capture.start();
     return capture;
   }
 

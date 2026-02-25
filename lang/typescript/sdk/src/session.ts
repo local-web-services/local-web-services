@@ -440,9 +440,9 @@ export class LwsSession {
 
   // ── Log capture ─────────────────────────────────────────────────────────────
 
-  captureLogsStart(): LogCapture {
+  async captureLogsStart(): Promise<LogCapture> {
     const capture = new LogCapture(this._basePort);
-    capture.start();
+    await capture.start();
     return capture;
   }
 
