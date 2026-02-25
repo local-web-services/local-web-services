@@ -177,14 +177,21 @@ def test_session_accepts_reset(session, sfn_client, state_machine_arn):
 
 def test_log_capture_records_start_execution(session, sfn_client, state_machine_arn):
     # Arrange + Act
+    import sys
     from lws.logging.logger import get_ws_handler
-    print(f"\n[DEBUG] session._log_handler id={id(session._log_handler)}")
+    lws_mods = {k: id(v) for k, v in sys.modules.items() if "lws" in k and "logging" in k}
+    print(f"\n[DEBUG] lws logging modules in sys.modules: {lws_mods}")
+    print(f"[DEBUG] session._log_handler type={type(session._log_handler)} id={id(session._log_handler)}")
+    handler_module = sys.modules.get(type(session._log_handler).__module__)
+    print(f"[DEBUG] handler class module id={id(handler_module)}")
+    from lws.logging import logger as test_logger_mod
+    print(f"[DEBUG] test import lws.logging.logger id={id(test_logger_mod)}")
     print(f"[DEBUG] global _ws_handler id={id(get_ws_handler())}")
     print(f"[DEBUG] backlog before={len(session._log_handler.backlog())}")
     with session.capture_logs() as logs:
-        print(f"[DEBUG] inside with, _ws_handler id={id(get_ws_handler())}")
         process_order("order-logged", state_machine_arn, sfn_client)
         print(f"[DEBUG] after process_order, backlog={len(session._log_handler.backlog())}")
+        print(f"[DEBUG] handler_module._ws_handler id={id(handler_module._ws_handler) if handler_module and hasattr(handler_module, '_ws_handler') else 'N/A'}")
     print(f"[DEBUG] entries after stop={logs.entries}")
 
     # Assert
