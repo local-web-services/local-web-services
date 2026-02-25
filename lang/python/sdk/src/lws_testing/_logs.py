@@ -27,6 +27,16 @@ class LogCapture:
         """Record the current log buffer length so we can slice new entries."""
         if self._handler is None:
             return
+        # Re-register this handler as the active global.  Another session
+        # started after this one (e.g. a from_hcl() session inside a test)
+        # calls set_ws_handler() with a *new* object, so subsequent emits
+        # would go to the wrong buffer.  Re-establishing here ensures all
+        # log entries within the capture window land on our handler.
+        try:
+            from lws.logging.logger import set_ws_handler  # noqa: PLC0415
+            set_ws_handler(self._handler)
+        except Exception:  # noqa: BLE001
+            pass
         self._snapshot_len = len(self._handler.backlog())
 
     def stop(self) -> None:
