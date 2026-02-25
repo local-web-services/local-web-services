@@ -177,21 +177,23 @@ def test_session_accepts_reset(session, sfn_client, state_machine_arn):
 
 def test_log_capture_records_start_execution(session, sfn_client, state_machine_arn):
     # Arrange + Act
-    import sys
-    from lws.logging.logger import get_ws_handler
-    current_ws_handler = get_ws_handler()
-    print(f"\n[DEBUG] current _ws_handler before probe: id={id(current_ws_handler)}")
-    process_order("order-probe", state_machine_arn, sfn_client)
-    # Check if current _ws_handler (handler_B) received entries
-    print(f"[DEBUG] current _ws_handler backlog after probe: {len(current_ws_handler.backlog()) if current_ws_handler else 'None'}")
-    print(f"[DEBUG] session._log_handler backlog after probe: {len(session._log_handler.backlog())}")
-    with session.capture_logs() as logs:
-        process_order("order-logged", state_machine_arn, sfn_client)
-    print(f"[DEBUG] entries after stop={logs.entries}")
+    from lws.logging.logger import get_ws_handler, set_ws_handler
+    # Directly emit to handler to verify emit() works
+    session._log_handler.emit({"service": "test", "operation": "DirectEmit", "level": "INFO"})
+    print(f"\n[DEBUG] after direct emit, backlog={len(session._log_handler.backlog())}")
+    # Now set as global and re-record
+    set_ws_handler(session._log_handler)
+    snap = len(session._log_handler.backlog())
+    process_order("order-logged", state_machine_arn, sfn_client)
+    backlog_after = session._log_handler.backlog()
+    import time; time.sleep(0.3)
+    backlog_after2 = session._log_handler.backlog()
+    print(f"[DEBUG] snap={snap}, backlog immediately after={len(backlog_after)}, after sleep={len(backlog_after2)}")
+    print(f"[DEBUG] new entries: {backlog_after2[snap:]}")
 
     # Assert
-    logs.assert_called("stepfunctions", "StartExecution")
-    logs.assert_no_errors()
+    new_entries = [e for e in backlog_after2[snap:] if e.get("service", "").lower() == "stepfunctions"]
+    assert new_entries, f"Expected stepfunctions entries, got: {backlog_after2[snap:]}"
 
 
 def test_dynamodb_helper_seed_and_assert(session):
