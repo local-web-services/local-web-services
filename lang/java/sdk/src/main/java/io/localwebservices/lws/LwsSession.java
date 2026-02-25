@@ -309,28 +309,35 @@ public class LwsSession implements AutoCloseable {
     }
 
     private void awaitReady() throws Exception {
+        final int maxRetries = 3;
         HttpClient httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(2))
                 .build();
         URI statusUri = URI.create("http://127.0.0.1:" + basePort + "/_ldk/status");
-        for (int attempt = 0; attempt < 60; attempt++) {
-            if (!process.isAlive()) {
-                throw new RuntimeException("ldk dev process exited unexpectedly");
-            }
-            try {
-                HttpRequest request = HttpRequest.newBuilder(statusUri)
-                        .GET()
-                        .timeout(Duration.ofSeconds(2))
-                        .build();
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() < 400 && response.body().contains("\"running\":true")) {
-                    return;
+        for (int retry = 0; retry <= maxRetries; retry++) {
+            for (int attempt = 0; attempt < 60; attempt++) {
+                if (!process.isAlive()) {
+                    throw new RuntimeException("ldk dev process exited unexpectedly");
                 }
-            } catch (Exception ignored) {
+                try {
+                    HttpRequest request = HttpRequest.newBuilder(statusUri)
+                            .GET()
+                            .timeout(Duration.ofSeconds(2))
+                            .build();
+                    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                    if (response.statusCode() < 400 && response.body().contains("\"running\":true")) {
+                        return;
+                    }
+                } catch (Exception ignored) {
+                }
+                Thread.sleep(500);
             }
-            Thread.sleep(500);
+            if (retry < maxRetries) {
+                System.out.printf("[lws] ldk dev not ready after 30 s, retrying in 15 s... (%d/%d)%n", retry + 1, maxRetries);
+                Thread.sleep(15_000);
+            }
         }
-        throw new RuntimeException("ldk dev did not become ready within 30 seconds");
+        throw new RuntimeException("ldk dev did not become ready after " + maxRetries + " retries");
     }
 
     private void preCreateResources(SessionSpec spec) {

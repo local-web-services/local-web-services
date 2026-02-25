@@ -1,6 +1,6 @@
 [project]
 name = "local-web-services-python-sdk"
-version = "0.2.1"
+version = "0.2.2"
 description = "Python testing SDK for local-web-services — in-process pytest fixtures and boto3 helpers"
 readme = "README.md"
 license = "MIT"

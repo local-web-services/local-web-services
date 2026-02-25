@@ -267,25 +267,32 @@ func (s *Session) RecentLogs() []LogEntry {
 }
 
 func (s *Session) awaitReady() error {
+	const maxRetries = 3
 	statusURL := fmt.Sprintf("http://127.0.0.1:%d/_ldk/status", s.basePort)
-	deadline := time.Now().Add(30 * time.Second)
-	for time.Now().Before(deadline) {
-		if s.cmd.ProcessState != nil {
-			return fmt.Errorf("ldk dev process exited unexpectedly")
-		}
-		resp, err := http.Get(statusURL) //nolint:noctx
-		if err == nil && resp.StatusCode < 400 {
-			body, readErr := io.ReadAll(resp.Body)
-			resp.Body.Close()
-			if readErr == nil && bytes.Contains(body, []byte(`"running":true`)) {
-				return nil
+	for attempt := 0; attempt <= maxRetries; attempt++ {
+		deadline := time.Now().Add(30 * time.Second)
+		for time.Now().Before(deadline) {
+			if s.cmd.ProcessState != nil {
+				return fmt.Errorf("ldk dev process exited unexpectedly")
 			}
-		} else if resp != nil {
-			resp.Body.Close()
+			resp, err := http.Get(statusURL) //nolint:noctx
+			if err == nil && resp.StatusCode < 400 {
+				body, readErr := io.ReadAll(resp.Body)
+				resp.Body.Close()
+				if readErr == nil && bytes.Contains(body, []byte(`"running":true`)) {
+					return nil
+				}
+			} else if resp != nil {
+				resp.Body.Close()
+			}
+			time.Sleep(500 * time.Millisecond)
 		}
-		time.Sleep(500 * time.Millisecond)
+		if attempt < maxRetries {
+			fmt.Printf("[lws] ldk dev not ready after 30 s, retrying in 15 s... (%d/%d)\n", attempt+1, maxRetries)
+			time.Sleep(15 * time.Second)
+		}
 	}
-	return fmt.Errorf("ldk dev did not become ready within 30 seconds")
+	return fmt.Errorf("ldk dev did not become ready after %d retries", maxRetries)
 }
 
 func (s *Session) preCreateResources(spec SessionSpec) error {
