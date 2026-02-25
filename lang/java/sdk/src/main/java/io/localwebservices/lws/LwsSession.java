@@ -314,6 +314,7 @@ public class LwsSession implements AutoCloseable {
                 .connectTimeout(Duration.ofSeconds(2))
                 .build();
         URI statusUri = URI.create("http://127.0.0.1:" + basePort + "/_ldk/status");
+        Exception lastError = null;
         for (int retry = 0; retry <= maxRetries; retry++) {
             for (int attempt = 0; attempt < 60; attempt++) {
                 if (!process.isAlive()) {
@@ -328,7 +329,9 @@ public class LwsSession implements AutoCloseable {
                     if (response.statusCode() < 400 && response.body().contains("\"running\":true")) {
                         return;
                     }
-                } catch (Exception ignored) {
+                    lastError = new RuntimeException("status endpoint returned HTTP " + response.statusCode());
+                } catch (Exception e) {
+                    lastError = e;
                 }
                 Thread.sleep(500);
             }
@@ -337,7 +340,8 @@ public class LwsSession implements AutoCloseable {
                 Thread.sleep(15_000);
             }
         }
-        throw new RuntimeException("ldk dev did not become ready after " + maxRetries + " retries");
+        String reason = lastError != null ? ": " + lastError.getMessage() : "";
+        throw new RuntimeException("ldk dev did not become ready after " + maxRetries + " retries" + reason);
     }
 
     private void preCreateResources(SessionSpec spec) {

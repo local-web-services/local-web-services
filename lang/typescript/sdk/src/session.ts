@@ -68,14 +68,16 @@ async function waitForReady(
   intervalMs = 200
 ): Promise<void> {
   const maxRetries = 3;
+  let lastError: Error | undefined;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       try {
         const res = await fetch(`${managementUrl}/_ldk/status`);
         if (res.ok) return;
-      } catch {
-        // not ready yet
+        lastError = new Error(`status endpoint returned HTTP ${res.status}`);
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err));
       }
       await new Promise((r) => setTimeout(r, intervalMs));
     }
@@ -86,8 +88,9 @@ async function waitForReady(
       await new Promise((r) => setTimeout(r, 15_000));
     }
   }
+  const reason = lastError ? `: ${lastError.message}` : "";
   throw new Error(
-    `ldk dev did not become ready after ${maxRetries} retries. ` +
+    `ldk dev did not become ready after ${maxRetries} retries${reason}. ` +
       "Check that local-web-services is installed (pip install local-web-services)."
   );
 }
