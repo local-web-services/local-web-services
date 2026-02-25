@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 
@@ -32,6 +33,8 @@ class LogCapture:
         """Collect all entries appended since :meth:`start` was called."""
         if self._handler is None:
             return
+        # Allow background log handler to flush async log entries.
+        time.sleep(0.2)
         full_backlog = self._handler.backlog()
         self._entries = full_backlog[self._snapshot_len :]
 

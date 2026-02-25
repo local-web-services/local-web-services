@@ -3,7 +3,6 @@ import {
   CreateStateMachineCommand,
   ListStateMachinesCommand,
 } from "@aws-sdk/client-sfn";
-import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import { LwsSession } from "local-web-services-typescript-sdk";
 import { processOrder } from "../src/orderProcessor";
 
@@ -204,7 +203,7 @@ test("log capture records StartExecution call", async () => {
 test("DynamoDB helper seeds an item and asserts it exists", async () => {
   // Arrange
   const db = session.dynamodb("Orders");
-  const expectedItem: Record<string, AttributeValue> = {
+  const expectedItem = {
     orderId: { S: "order-helper-001" },
     status: { S: "pending" },
   };
