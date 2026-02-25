@@ -177,8 +177,15 @@ def test_session_accepts_reset(session, sfn_client, state_machine_arn):
 
 def test_log_capture_records_start_execution(session, sfn_client, state_machine_arn):
     # Arrange + Act
+    from lws.logging.logger import get_ws_handler
+    print(f"\n[DEBUG] session._log_handler id={id(session._log_handler)}")
+    print(f"[DEBUG] global _ws_handler id={id(get_ws_handler())}")
+    print(f"[DEBUG] backlog before={len(session._log_handler.backlog())}")
     with session.capture_logs() as logs:
+        print(f"[DEBUG] inside with, _ws_handler id={id(get_ws_handler())}")
         process_order("order-logged", state_machine_arn, sfn_client)
+        print(f"[DEBUG] after process_order, backlog={len(session._log_handler.backlog())}")
+    print(f"[DEBUG] entries after stop={logs.entries}")
 
     # Assert
     logs.assert_called("stepfunctions", "StartExecution")
