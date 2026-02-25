@@ -16,7 +16,7 @@ from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
-from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.stepfunctions.provider import StepFunctionsProvider
 
@@ -350,14 +350,14 @@ def _error_response(code: str, message: str, status_code: int = 400) -> Response
 def create_stepfunctions_app(
     provider: StepFunctionsProvider,
     chaos: AwsChaosConfig | None = None,
-    aws_mock: AwsMockConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol."""
     app = FastAPI()
-    if aws_mock is not None:
+    if aws_fake is not None:
         app.add_middleware(
-            AwsOperationMockMiddleware, mock_config=aws_mock, service="stepfunctions"
+            AwsOperationFakeMiddleware, fake_config=aws_fake, service="stepfunctions"
         )
     add_iam_auth_middleware(app, "stepfunctions", iam_auth, ErrorFormat.JSON)
     if chaos is not None:

@@ -18,16 +18,16 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given payload/error."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given payload/error."""
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 def _success_payload(
@@ -108,10 +108,10 @@ class TestGetRequestProxyEvent:
 
     @pytest.mark.asyncio
     async def test_get_request_transforms_to_proxy_event(self) -> None:
-        mock_compute = _make_compute_mock(payload=_success_payload())
+        fake_compute = _make_compute_fake(payload=_success_payload())
         provider = _make_provider(
             routes=[RouteConfig(method="GET", path="/items", handler_name="get-items")],
-            compute_providers={"get-items": mock_compute},
+            compute_providers={"get-items": fake_compute},
         )
 
         async with _client(provider) as client:
@@ -124,7 +124,7 @@ class TestGetRequestProxyEvent:
         assert response.status_code == expected_status
 
         # Inspect the event passed to invoke
-        call_args = mock_compute.invoke.call_args
+        call_args = fake_compute.invoke.call_args
         event: dict = call_args[0][0]
 
         actual_method = event["httpMethod"]

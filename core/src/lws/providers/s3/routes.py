@@ -11,7 +11,7 @@ from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
-from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers.s3.provider import S3Provider
 
 _logger = get_logger("ldk.s3")
@@ -874,13 +874,13 @@ def _register_bucket_routes(app: FastAPI, provider: S3Provider) -> None:
 def create_s3_app(
     provider: S3Provider,
     chaos: AwsChaosConfig | None = None,
-    aws_mock: AwsMockConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     app = FastAPI()
-    if aws_mock is not None:
-        app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="s3")
+    if aws_fake is not None:
+        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="s3")
     add_iam_auth_middleware(app, "s3", iam_auth, ErrorFormat.XML_S3)
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_S3)

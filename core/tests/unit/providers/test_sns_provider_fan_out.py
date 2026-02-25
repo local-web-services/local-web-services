@@ -20,23 +20,23 @@ from lws.providers.sns.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given result."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given result."""
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
-def _make_queue_mock() -> IQueue:
-    """Return a mock IQueue."""
-    mock = AsyncMock(spec=IQueue)
-    mock.send_message.return_value = "mock-sqs-message-id"
-    return mock
+def _make_queue_fake() -> IQueue:
+    """Return a fake IQueue."""
+    fake = AsyncMock(spec=IQueue)
+    fake.send_message.return_value = "fake-sqs-message-id"
+    return fake
 
 
 def _topic_configs() -> list[TopicConfig]:
@@ -116,11 +116,11 @@ class TestFanOut:
     @pytest.mark.asyncio
     async def test_fan_out_to_multiple_subscribers(self) -> None:
         provider = await _started_provider()
-        compute_a = _make_compute_mock(payload={"statusCode": 200})
-        compute_b = _make_compute_mock(payload={"statusCode": 200})
-        mock_queue = _make_queue_mock()
+        compute_a = _make_compute_fake(payload={"statusCode": 200})
+        compute_b = _make_compute_fake(payload={"statusCode": 200})
+        fake_queue = _make_queue_fake()
         provider.set_compute_providers({"func-a": compute_a, "func-b": compute_b})
-        provider.set_queue_provider(mock_queue)
+        provider.set_queue_provider(fake_queue)
 
         await provider.subscribe(topic_name="my-topic", protocol="lambda", endpoint="func-a")
         await provider.subscribe(topic_name="my-topic", protocol="lambda", endpoint="func-b")
@@ -135,13 +135,13 @@ class TestFanOut:
 
         compute_a.invoke.assert_called_once()
         compute_b.invoke.assert_called_once()
-        mock_queue.send_message.assert_called_once()
+        fake_queue.send_message.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_fan_out_respects_filter_policy(self) -> None:
         provider = await _started_provider()
-        compute_match = _make_compute_mock(payload={"statusCode": 200})
-        compute_no_match = _make_compute_mock(payload={"statusCode": 200})
+        compute_match = _make_compute_fake(payload={"statusCode": 200})
+        compute_no_match = _make_compute_fake(payload={"statusCode": 200})
         provider.set_compute_providers(
             {
                 "match-func": compute_match,

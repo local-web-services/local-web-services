@@ -42,7 +42,7 @@ def _make_service(**overrides: object) -> ServiceDefinition:
     return ServiceDefinition(**defaults)
 
 
-def _mock_process() -> AsyncMock:
+def _fake_process() -> AsyncMock:
     proc = AsyncMock()
     proc.pid = 1234
     proc.returncode = None
@@ -124,8 +124,8 @@ class TestEcsProviderHealthCheck:
         assert await provider.health_check() is True
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_health_check_delegates_to_checkers(self, mock_exec: AsyncMock) -> None:
-        mock_exec.return_value = _mock_process()
+    async def test_health_check_delegates_to_checkers(self, fake_exec: AsyncMock) -> None:
+        fake_exec.return_value = _fake_process()
         container = _make_container(
             health_check={
                 "command": ["CMD-SHELL", "curl -f http://localhost:8080/health"],

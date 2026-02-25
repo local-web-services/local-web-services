@@ -14,10 +14,10 @@ from lws.providers.stepfunctions.engine import (
     ExecutionStatus,
 )
 
-from ._helpers import MockCompute, SlowCompute
+from ._helpers import FakeCompute, SlowCompute
 
 # ---------------------------------------------------------------------------
-# Mock compute invoker
+# Fake compute invoker
 # ---------------------------------------------------------------------------
 
 
@@ -89,7 +89,7 @@ class TestTaskState:
     async def test_task_invokes_compute(self) -> None:
         # Arrange
         expected_output = {"result": "done"}
-        compute = MockCompute({"myFunc": expected_output})
+        compute = FakeCompute({"myFunc": expected_output})
 
         # Act
         history = await run_engine(
@@ -113,7 +113,7 @@ class TestTaskState:
             received.update(payload if isinstance(payload, dict) else {"payload": payload})
             return {"captured": True}
 
-        compute = MockCompute({"fn": capture})
+        compute = FakeCompute({"fn": capture})
         await run_engine(
             {
                 "StartAt": "T",
@@ -131,7 +131,7 @@ class TestTaskState:
             captured.update(payload if isinstance(payload, dict) else {})
             return {"ok": True}
 
-        compute = MockCompute({"fn": capture})
+        compute = FakeCompute({"fn": capture})
         await run_engine(
             {
                 "StartAt": "T",
@@ -156,7 +156,7 @@ class TestTaskState:
             captured.update(payload if isinstance(payload, dict) else {})
             return {}
 
-        compute = MockCompute({"fn": capture})
+        compute = FakeCompute({"fn": capture})
         await run_engine(
             {
                 "StartAt": "T",
@@ -178,7 +178,7 @@ class TestTaskState:
     async def test_task_with_result_path(self) -> None:
         # Arrange
         expected_task_result = {"response": "ok"}
-        compute = MockCompute({"fn": expected_task_result})
+        compute = FakeCompute({"fn": expected_task_result})
 
         # Act
         history = await run_engine(

@@ -9,8 +9,8 @@ from __future__ import annotations
 from typing import Any
 
 from lws.interfaces import Provider
+from lws.providers.fakeserver.provider import start_uvicorn_server, stop_uvicorn_server
 from lws.providers.lambda_function_url.routes import create_lambda_function_url_app
-from lws.providers.mockserver.provider import start_uvicorn_server, stop_uvicorn_server
 
 
 class LambdaFunctionUrlProvider(Provider):

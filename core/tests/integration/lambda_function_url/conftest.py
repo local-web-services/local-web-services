@@ -12,15 +12,15 @@ from lws.providers.lambda_function_url.routes import create_lambda_function_url_
 
 
 @dataclass
-class MockInvokeResult:
+class FakeInvokeResult:
     """Mimics the ICompute invoke result."""
 
     payload: Any = None
     error: str | None = None
 
 
-class MockCompute:
-    """A mock ICompute that returns a configurable response."""
+class FakeCompute:
+    """A fake ICompute that returns a configurable response."""
 
     def __init__(self, response: dict | None = None, error: str | None = None):
         self._response = response or {"statusCode": 200, "body": "OK"}
@@ -33,23 +33,23 @@ class MockCompute:
     async def stop(self) -> None:
         pass
 
-    async def invoke(self, event: dict, context: Any) -> MockInvokeResult:
+    async def invoke(self, event: dict, context: Any) -> FakeInvokeResult:
         self.last_event = event
         if self._error:
-            return MockInvokeResult(error=self._error)
-        return MockInvokeResult(payload=self._response)
+            return FakeInvokeResult(error=self._error)
+        return FakeInvokeResult(payload=self._response)
 
 
 @pytest.fixture
-def mock_compute():
-    return MockCompute()
+def fake_compute():
+    return FakeCompute()
 
 
 @pytest.fixture
-async def provider(mock_compute):
-    await mock_compute.start()
-    yield mock_compute
-    await mock_compute.stop()
+async def provider(fake_compute):
+    await fake_compute.start()
+    yield fake_compute
+    await fake_compute.stop()
 
 
 @pytest.fixture

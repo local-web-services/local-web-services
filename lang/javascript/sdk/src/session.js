@@ -16,7 +16,7 @@ const path = require("path");
 const { DynamoDBHelper } = require("./resources/dynamodb");
 const { SQSHelper } = require("./resources/sqs");
 const { S3Helper } = require("./resources/s3");
-const { MockBuilder } = require("./builders/mock");
+const { FakeBuilder } = require("./builders/fake");
 const { ChaosBuilder } = require("./builders/chaos");
 const { IamBuilder } = require("./builders/iam");
 const { LogCapture } = require("./logs");
@@ -455,10 +455,10 @@ class LwsSession {
     return new S3Helper(bucketName, this.client("s3"));
   }
 
-  // ── Mock / chaos / IAM builders ─────────────────────────────────────────────
+  // ── Fake / chaos / IAM builders ─────────────────────────────────────────────
 
-  mock(service) {
-    return new MockBuilder(service, this._basePort);
+  fake(service) {
+    return new FakeBuilder(service, this._basePort);
   }
 
   chaos(service) {

@@ -18,7 +18,7 @@ def _target(operation: str) -> dict[str, str]:
 
 
 @pytest.fixture()
-def mock_store() -> AsyncMock:
+def fake_store() -> AsyncMock:
     store = AsyncMock(spec=IKeyValueStore)
     store.get_item.return_value = None
     store.put_item.return_value = None
@@ -66,8 +66,8 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture()
-def client(mock_store: AsyncMock) -> httpx.AsyncClient:
-    app = create_dynamodb_app(mock_store)
+def client(fake_store: AsyncMock) -> httpx.AsyncClient:
+    app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
 
@@ -75,7 +75,7 @@ def client(mock_store: AsyncMock) -> httpx.AsyncClient:
 class TestDeleteTable:
     @pytest.mark.asyncio
     async def test_delete_table_success(
-        self, client: httpx.AsyncClient, mock_store: AsyncMock
+        self, client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         expected_status_code = 200
@@ -87,14 +87,14 @@ class TestDeleteTable:
         assert resp.status_code == expected_status_code
         data = resp.json()
         assert "TableDescription" in data
-        mock_store.delete_table.assert_awaited_once_with("MyTable")
+        fake_store.delete_table.assert_awaited_once_with("MyTable")
 
     @pytest.mark.asyncio
     async def test_delete_table_not_found(
-        self, client: httpx.AsyncClient, mock_store: AsyncMock
+        self, client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
-        mock_store.delete_table.side_effect = KeyError("Table not found: MyTable")
+        fake_store.delete_table.side_effect = KeyError("Table not found: MyTable")
         expected_status_code = 400
         expected_error_type = "ResourceNotFoundException"
 

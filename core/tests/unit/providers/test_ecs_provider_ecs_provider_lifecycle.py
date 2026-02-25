@@ -45,7 +45,7 @@ def _make_service(**overrides: object) -> ServiceDefinition:
     return ServiceDefinition(**defaults)
 
 
-def _mock_process() -> AsyncMock:
+def _fake_process() -> AsyncMock:
     proc = AsyncMock()
     proc.pid = 1234
     proc.returncode = None
@@ -131,8 +131,8 @@ class TestEcsProviderLifecycle:
         assert await provider.health_check() is False
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_start_sets_running(self, mock_exec: AsyncMock) -> None:
-        mock_exec.return_value = _mock_process()
+    async def test_start_sets_running(self, fake_exec: AsyncMock) -> None:
+        fake_exec.return_value = _fake_process()
         svc = _make_service()
         provider = EcsProvider(services=[svc])
 
@@ -140,8 +140,8 @@ class TestEcsProviderLifecycle:
         assert provider._status == ProviderStatus.RUNNING
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_stop_sets_stopped(self, mock_exec: AsyncMock) -> None:
-        mock_exec.return_value = _mock_process()
+    async def test_stop_sets_stopped(self, fake_exec: AsyncMock) -> None:
+        fake_exec.return_value = _fake_process()
         svc = _make_service()
         provider = EcsProvider(services=[svc])
 
@@ -150,8 +150,8 @@ class TestEcsProviderLifecycle:
         assert provider._status == ProviderStatus.STOPPED
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_start_registers_service(self, mock_exec: AsyncMock) -> None:
-        mock_exec.return_value = _mock_process()
+    async def test_start_registers_service(self, fake_exec: AsyncMock) -> None:
+        fake_exec.return_value = _fake_process()
         registry = ServiceRegistry()
         svc = _make_service()
         provider = EcsProvider(services=[svc], registry=registry)
@@ -163,8 +163,8 @@ class TestEcsProviderLifecycle:
         await provider.stop()
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_stop_deregisters_service(self, mock_exec: AsyncMock) -> None:
-        mock_exec.return_value = _mock_process()
+    async def test_stop_deregisters_service(self, fake_exec: AsyncMock) -> None:
+        fake_exec.return_value = _fake_process()
         registry = ServiceRegistry()
         svc = _make_service()
         provider = EcsProvider(services=[svc], registry=registry)
@@ -174,7 +174,7 @@ class TestEcsProviderLifecycle:
         assert registry.lookup("web-api") is None
 
     @patch("asyncio.create_subprocess_exec", side_effect=OSError("spawn failed"))
-    async def test_start_error_sets_error_status(self, mock_exec: AsyncMock) -> None:
+    async def test_start_error_sets_error_status(self, fake_exec: AsyncMock) -> None:
         svc = _make_service()
         provider = EcsProvider(services=[svc])
 

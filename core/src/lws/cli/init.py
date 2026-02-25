@@ -68,7 +68,7 @@ def init_command(
     """Initialize lws agent configuration in a project.
 
     Writes a CLAUDE.md snippet and custom slash commands so that coding
-    agents understand how to use lws mock and chaos features.
+    agents understand how to use lws fake and chaos features.
     """
     project_dir = project_dir.resolve()
 
@@ -81,7 +81,7 @@ def init_command(
 
     typer.echo(
         "\nDone! Your coding agent now has access to:"
-        "\n  /lws:mock     — Create or configure AWS operation mocks"
+        "\n  /lws:fake     — Create or configure AWS operation fakes"
         "\n  /lws:chaos    — Enable chaos engineering"
         "\n  /lws:iam-auth — Configure IAM authorization"
     )

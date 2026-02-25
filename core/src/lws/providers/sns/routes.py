@@ -15,7 +15,7 @@ from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
-from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers.sns.provider import SnsProvider
 
 _logger = get_logger("ldk.sns")
@@ -499,13 +499,13 @@ def _parse_message_attributes(params: dict[str, str]) -> dict:
 def create_sns_app(
     provider: SnsProvider,
     chaos: AwsChaosConfig | None = None,
-    aws_mock: AwsMockConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the SNS wire protocol."""
     app = FastAPI(title="LDK SNS")
-    if aws_mock is not None:
-        app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="sns")
+    if aws_fake is not None:
+        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="sns")
     add_iam_auth_middleware(app, "sns", iam_auth, ErrorFormat.XML_IAM)
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)

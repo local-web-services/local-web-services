@@ -34,13 +34,13 @@ class TestEventSourceManager:
         # Act
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
-        ) as mock_poller_cls:
-            mock_poller = AsyncMock()
-            mock_poller_cls.return_value = mock_poller
+        ) as fake_poller_cls:
+            fake_poller = AsyncMock()
+            fake_poller_cls.return_value = fake_poller
             await manager.activate(mapping)
 
         # Assert
-        mock_poller.start.assert_awaited_once()
+        fake_poller.start.assert_awaited_once()
 
     async def test_deactivate_stops_poller(self) -> None:
         # Arrange
@@ -58,16 +58,16 @@ class TestEventSourceManager:
         }
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
-        ) as mock_poller_cls:
-            mock_poller = AsyncMock()
-            mock_poller_cls.return_value = mock_poller
+        ) as fake_poller_cls:
+            fake_poller = AsyncMock()
+            fake_poller_cls.return_value = fake_poller
             await manager.activate(mapping)
 
         # Act
         await manager.deactivate("test-uuid-2")
 
         # Assert
-        mock_poller.stop.assert_awaited_once()
+        fake_poller.stop.assert_awaited_once()
 
     async def test_activate_dynamodb_stream_registers_handler(self) -> None:
         # Arrange
@@ -108,10 +108,10 @@ class TestEventSourceManager:
         )
         with patch(
             "lws.providers.lambda_runtime.event_source_manager.SqsEventSourcePoller"
-        ) as mock_poller_cls:
-            mock_poller1 = AsyncMock()
-            mock_poller2 = AsyncMock()
-            mock_poller_cls.side_effect = [mock_poller1, mock_poller2]
+        ) as fake_poller_cls:
+            fake_poller1 = AsyncMock()
+            fake_poller2 = AsyncMock()
+            fake_poller_cls.side_effect = [fake_poller1, fake_poller2]
             await manager.activate(
                 {
                     "UUID": "u1",
@@ -131,8 +131,8 @@ class TestEventSourceManager:
         await manager.stop_all()
 
         # Assert
-        mock_poller1.stop.assert_awaited_once()
-        mock_poller2.stop.assert_awaited_once()
+        fake_poller1.stop.assert_awaited_once()
+        fake_poller2.stop.assert_awaited_once()
 
     def test_extract_function_name_from_arn(self) -> None:
         # Act

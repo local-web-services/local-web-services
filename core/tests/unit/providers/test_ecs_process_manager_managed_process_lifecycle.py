@@ -25,11 +25,11 @@ def _make_config(**overrides: object) -> ProcessConfig:
     return ProcessConfig(**defaults)
 
 
-def _mock_process(
+def _fake_process(
     pid: int = 1234,
     returncode: int | None = None,
 ) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
+    """Create a fake asyncio.subprocess.Process."""
     proc = AsyncMock(spec=asyncio.subprocess.Process)
     proc.pid = pid
     proc.returncode = returncode
@@ -66,13 +66,13 @@ def _mock_process(
 
 class TestManagedProcessLifecycle:
     @patch("asyncio.create_subprocess_exec")
-    async def test_start_spawns_subprocess(self, mock_exec: AsyncMock) -> None:
+    async def test_start_spawns_subprocess(self, fake_exec: AsyncMock) -> None:
         # Arrange
         expected_pid = 1234
         expected_port = "8080"
         expected_cwd = "/tmp/app"
-        proc = _mock_process()
-        mock_exec.return_value = proc
+        proc = _fake_process()
+        fake_exec.return_value = proc
 
         # Act
         mp = ManagedProcess(_make_config())
@@ -82,17 +82,17 @@ class TestManagedProcessLifecycle:
         assert mp.is_running is True
         actual_pid = mp.pid
         assert actual_pid == expected_pid
-        mock_exec.assert_called_once()
-        call_kwargs = mock_exec.call_args.kwargs
+        fake_exec.assert_called_once()
+        call_kwargs = fake_exec.call_args.kwargs
         actual_port = call_kwargs["env"]["PORT"]
         actual_cwd = call_kwargs["cwd"]
         assert actual_port == expected_port
         assert actual_cwd == expected_cwd
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_stop_sends_sigterm(self, mock_exec: AsyncMock) -> None:
-        proc = _mock_process()
-        mock_exec.return_value = proc
+    async def test_stop_sends_sigterm(self, fake_exec: AsyncMock) -> None:
+        proc = _fake_process()
+        fake_exec.return_value = proc
 
         mp = ManagedProcess(_make_config())
         await mp.start()
@@ -102,8 +102,8 @@ class TestManagedProcessLifecycle:
         assert mp.is_running is False
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_stop_sends_sigkill_after_grace(self, mock_exec: AsyncMock) -> None:
-        proc = _mock_process()
+    async def test_stop_sends_sigkill_after_grace(self, fake_exec: AsyncMock) -> None:
+        proc = _fake_process()
         # First wait() call (inside wait_for) should hang so that wait_for
         # raises TimeoutError.  After kill(), the second wait() succeeds.
         call_count = 0
@@ -116,7 +116,7 @@ class TestManagedProcessLifecycle:
             return 0
 
         proc.wait = _wait_side_effect
-        mock_exec.return_value = proc
+        fake_exec.return_value = proc
 
         cfg = _make_config(grace_period=0.01)
         mp = ManagedProcess(cfg)
@@ -126,9 +126,9 @@ class TestManagedProcessLifecycle:
         proc.kill.assert_called_once()
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_stop_noop_when_already_exited(self, mock_exec: AsyncMock) -> None:
-        proc = _mock_process(returncode=0)
-        mock_exec.return_value = proc
+    async def test_stop_noop_when_already_exited(self, fake_exec: AsyncMock) -> None:
+        proc = _fake_process(returncode=0)
+        fake_exec.return_value = proc
 
         mp = ManagedProcess(_make_config())
         await mp.start()

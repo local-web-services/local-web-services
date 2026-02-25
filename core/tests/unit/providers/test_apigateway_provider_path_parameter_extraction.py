@@ -18,16 +18,16 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given payload/error."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given payload/error."""
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 def _success_payload(
@@ -108,12 +108,12 @@ class TestPathParameterExtraction:
 
     @pytest.mark.asyncio
     async def test_path_parameters_are_extracted(self) -> None:
-        mock_compute = _make_compute_mock(payload=_success_payload())
+        fake_compute = _make_compute_fake(payload=_success_payload())
         provider = _make_provider(
             routes=[
                 RouteConfig(method="GET", path="/orders/{order_id}", handler_name="get-order"),
             ],
-            compute_providers={"get-order": mock_compute},
+            compute_providers={"get-order": fake_compute},
         )
 
         async with _client(provider) as client:
@@ -126,7 +126,7 @@ class TestPathParameterExtraction:
         expected_resource = "/orders/{order_id}"
         assert response.status_code == expected_status
 
-        event: dict = mock_compute.invoke.call_args[0][0]
+        event: dict = fake_compute.invoke.call_args[0][0]
         actual_path_params = event["pathParameters"]
         actual_path = event["path"]
         actual_resource = event["resource"]

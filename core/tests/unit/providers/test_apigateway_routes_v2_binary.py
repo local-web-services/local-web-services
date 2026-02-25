@@ -19,12 +19,12 @@ from lws.providers.lambda_runtime.routes import LambdaRegistry
 _FUNC_CONFIG = {"FunctionName": "test", "Runtime": "python3.11", "Handler": "index.handler"}
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload, error=error, duration_ms=1.0, request_id="test-req"
     )
-    return mock
+    return fake
 
 
 # ---------------------------------------------------------------------------
@@ -50,7 +50,7 @@ class TestV2BinaryPayloads:
         # Arrange
         binary_data = b"\x89PNG\r\n\x1a\n"
         expected_encoded = base64.b64encode(binary_data).decode("ascii")
-        compute = _make_compute_mock({"statusCode": 200, "body": "{}"})
+        compute = _make_compute_fake({"statusCode": 200, "body": "{}"})
         registry.register("bin-func", {**_FUNC_CONFIG, "FunctionName": "bin-func"}, compute)
 
         api_resp = await client.post("/v2/apis", json={"name": "bin-api", "protocolType": "HTTP"})
@@ -85,7 +85,7 @@ class TestV2BinaryPayloads:
     async def test_text_request_not_encoded(self, client, registry) -> None:
         # Arrange
         expected_body = '{"key": "value"}'
-        compute = _make_compute_mock({"statusCode": 200, "body": "{}"})
+        compute = _make_compute_fake({"statusCode": 200, "body": "{}"})
         registry.register("txt-func", {**_FUNC_CONFIG, "FunctionName": "txt-func"}, compute)
 
         api_resp = await client.post("/v2/apis", json={"name": "txt-api", "protocolType": "HTTP"})
@@ -125,7 +125,7 @@ class TestV2BinaryPayloads:
         # Arrange
         expected_content = b"\x89PNG\r\n"
         encoded_body = base64.b64encode(expected_content).decode("ascii")
-        compute = _make_compute_mock(
+        compute = _make_compute_fake(
             {
                 "statusCode": 200,
                 "body": encoded_body,

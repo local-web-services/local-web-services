@@ -58,13 +58,13 @@ class TestBuildAlbApp:
         assert resp.status_code == expected_status
 
     @patch("httpx.AsyncClient.request")
-    async def test_catch_all_proxies_matching_rule(self, mock_req: AsyncMock) -> None:
-        mock_resp = httpx.Response(
+    async def test_catch_all_proxies_matching_rule(self, fake_req: AsyncMock) -> None:
+        fake_resp = httpx.Response(
             200,
             content=b'{"ok": true}',
             headers={"content-type": "application/json"},
         )
-        mock_req.return_value = mock_resp
+        fake_req.return_value = fake_resp
 
         rules = [ListenerRule(priority=1, path_pattern="/api/*", target_port=8080)]
         config = AlbConfig(listener_rules=rules, port=9000)

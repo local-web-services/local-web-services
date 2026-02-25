@@ -80,22 +80,22 @@ class TestLambdaRegistryFunctionUrls:
         # Arrange
         registry = LambdaRegistry()
         function_name = "with-provider"
-        mock_provider = object()
+        fake_provider = object()
         url_config = {"FunctionName": function_name}
 
         # Act
-        registry.register_function_url(function_name, url_config, mock_provider)
+        registry.register_function_url(function_name, url_config, fake_provider)
 
         # Assert
-        assert registry.function_url_providers[function_name] is mock_provider
+        assert registry.function_url_providers[function_name] is fake_provider
 
     def test_delete_removes_provider(self):
         # Arrange
         registry = LambdaRegistry()
         function_name = "with-provider"
-        mock_provider = object()
+        fake_provider = object()
         registry.register_function_url(
-            function_name, {"FunctionName": function_name}, mock_provider
+            function_name, {"FunctionName": function_name}, fake_provider
         )
 
         # Act

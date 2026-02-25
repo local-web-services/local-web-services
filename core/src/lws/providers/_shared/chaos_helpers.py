@@ -1,4 +1,4 @@
-"""Shared chaos engineering helpers used by both AWS and mock server middleware."""
+"""Shared chaos engineering helpers used by both AWS and fake server middleware."""
 
 from __future__ import annotations
 

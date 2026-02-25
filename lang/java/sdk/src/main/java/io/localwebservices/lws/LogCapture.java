@@ -169,6 +169,20 @@ public class LogCapture implements AutoCloseable {
         }
     }
 
+    /** Returns all captured entries whose {@code service} field matches the given value. */
+    public List<LogEntry> forService(String service) {
+        return entries.stream()
+                .filter(e -> service.equals(e.service))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    /** Returns all captured entries whose {@code operation} field matches the given value. */
+    public List<LogEntry> forOperation(String operation) {
+        return entries.stream()
+                .filter(e -> operation.equals(e.operation))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     // Minimal JSON field extractors — avoids adding a JSON library dependency.
 
     private static String extractJsonString(String json, String key) {

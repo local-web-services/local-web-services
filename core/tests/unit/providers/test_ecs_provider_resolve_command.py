@@ -41,7 +41,7 @@ def _make_service(**overrides: object) -> ServiceDefinition:
     return ServiceDefinition(**defaults)
 
 
-def _mock_process() -> AsyncMock:
+def _fake_process() -> AsyncMock:
     proc = AsyncMock()
     proc.pid = 1234
     proc.returncode = None

@@ -46,8 +46,8 @@ def _make_context(**overrides) -> LambdaContext:
     return LambdaContext(**defaults)
 
 
-def _mock_process(stdout: str, returncode: int = 0) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
+def _fake_process(stdout: str, returncode: int = 0) -> AsyncMock:
+    """Create a fake asyncio.subprocess.Process."""
     proc = AsyncMock()
     proc.communicate = AsyncMock(return_value=(stdout.encode(), b""))
     proc.returncode = returncode
@@ -74,10 +74,10 @@ class TestNodeJsComputeInvoke:
     """invoke() success, error, and timeout scenarios."""
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_success(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_success(self, fake_exec: AsyncMock) -> None:
         """Successful invocation returns the handler result as payload."""
         success_output = json.dumps({"result": {"statusCode": 200, "body": "ok"}})
-        mock_exec.return_value = _mock_process(success_output)
+        fake_exec.return_value = _fake_process(success_output)
 
         provider = NodeJsCompute(_make_config(), sdk_env={})
         provider._status = ProviderStatus.RUNNING
@@ -94,7 +94,7 @@ class TestNodeJsComputeInvoke:
         assert result.duration_ms >= 0
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_handler_error(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_handler_error(self, fake_exec: AsyncMock) -> None:
         """When the handler throws, invoke returns an error InvocationResult."""
         error_output = json.dumps(
             {
@@ -105,7 +105,7 @@ class TestNodeJsComputeInvoke:
                 }
             }
         )
-        mock_exec.return_value = _mock_process(error_output, returncode=1)
+        fake_exec.return_value = _fake_process(error_output, returncode=1)
 
         provider = NodeJsCompute(_make_config(), sdk_env={})
         provider._status = ProviderStatus.RUNNING
@@ -120,7 +120,7 @@ class TestNodeJsComputeInvoke:
         assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_timeout_kills_process(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_timeout_kills_process(self, fake_exec: AsyncMock) -> None:
         """When the subprocess exceeds the timeout, the process is killed."""
 
         # Make communicate hang forever
@@ -131,7 +131,7 @@ class TestNodeJsComputeInvoke:
         proc = AsyncMock()
         proc.communicate = hang
         proc.kill = MagicMock()
-        mock_exec.return_value = proc
+        fake_exec.return_value = proc
 
         config = _make_config(timeout=0.05)
         provider = NodeJsCompute(config, sdk_env={})
@@ -146,9 +146,9 @@ class TestNodeJsComputeInvoke:
         assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_bad_json_output(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_bad_json_output(self, fake_exec: AsyncMock) -> None:
         """Non-JSON stdout is treated as an error."""
-        mock_exec.return_value = _mock_process("this is not json")
+        fake_exec.return_value = _fake_process("this is not json")
 
         provider = NodeJsCompute(_make_config(), sdk_env={})
         provider._status = ProviderStatus.RUNNING

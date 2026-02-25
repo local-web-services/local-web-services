@@ -119,7 +119,7 @@ Env vars are restored when `session.close()` is called.
 | `session.close()` | Stop `ldk dev` process |
 | `session.queueUrl(queueName)` | Get local SQS queue URL |
 | `session.portFor(service)` | Get port number for a service |
-| `session.mock(service)` | Get `MockBuilder` for service |
+| `session.fake(service)` | Get `FakeBuilder` for service |
 | `session.chaos(service)` | Get `ChaosBuilder` for service |
 | `session.iam` | Get `IamBuilder` |
 

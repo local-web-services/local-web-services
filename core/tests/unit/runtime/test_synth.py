@@ -77,7 +77,7 @@ def test_is_synth_stale_excludes_node_modules(tmp_path: Path) -> None:
 
 
 def _make_fake_process(exit_code: int = 0, stdout: bytes = b"", stderr: bytes = b""):
-    """Return a mock process suitable for ``create_subprocess_exec``."""
+    """Return a fake process suitable for ``create_subprocess_exec``."""
     proc = AsyncMock()
     proc.stdout = AsyncMock()
     proc.stderr = AsyncMock()
@@ -103,19 +103,19 @@ async def test_ensure_synth_force_always_runs(tmp_path: Path) -> None:
     with (
         patch(
             "lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc
-        ) as mock_exec,
+        ) as fake_exec,
         patch("lws.runtime.synth.is_synth_stale", return_value=False),
-        patch("sys.stdout") as mock_stdout,
-        patch("sys.stderr") as mock_stderr,
+        patch("sys.stdout") as fake_stdout,
+        patch("sys.stderr") as fake_stderr,
     ):
-        mock_stdout.buffer = MagicMock()
-        mock_stderr.buffer = MagicMock()
+        fake_stdout.buffer = MagicMock()
+        fake_stderr.buffer = MagicMock()
 
         actual_result = await ensure_synth(tmp_path, force=True)
 
     # Assert
     assert actual_result == expected_result
-    mock_exec.assert_awaited_once()
+    fake_exec.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -129,11 +129,11 @@ async def test_ensure_synth_raises_synth_error(tmp_path: Path) -> None:
     with (
         patch("lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc),
         patch("lws.runtime.synth.is_synth_stale", return_value=True),
-        patch("sys.stdout") as mock_stdout,
-        patch("sys.stderr") as mock_stderr,
+        patch("sys.stdout") as fake_stdout,
+        patch("sys.stderr") as fake_stderr,
     ):
-        mock_stdout.buffer = MagicMock()
-        mock_stderr.buffer = MagicMock()
+        fake_stdout.buffer = MagicMock()
+        fake_stderr.buffer = MagicMock()
 
         with pytest.raises(SynthError, match="exit code 2") as exc_info:
             await ensure_synth(tmp_path)
@@ -149,14 +149,14 @@ async def test_ensure_synth_skips_when_not_stale(tmp_path: Path) -> None:
 
     # Act
     with (
-        patch("lws.runtime.synth.asyncio.create_subprocess_exec") as mock_exec,
+        patch("lws.runtime.synth.asyncio.create_subprocess_exec") as fake_exec,
         patch("lws.runtime.synth.is_synth_stale", return_value=False),
     ):
         actual_result = await ensure_synth(tmp_path, force=False)
 
     # Assert
     assert actual_result == expected_result
-    mock_exec.assert_not_awaited()
+    fake_exec.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -170,16 +170,16 @@ async def test_ensure_synth_runs_when_stale(tmp_path: Path) -> None:
     with (
         patch(
             "lws.runtime.synth.asyncio.create_subprocess_exec", return_value=fake_proc
-        ) as mock_exec,
+        ) as fake_exec,
         patch("lws.runtime.synth.is_synth_stale", return_value=True),
-        patch("sys.stdout") as mock_stdout,
-        patch("sys.stderr") as mock_stderr,
+        patch("sys.stdout") as fake_stdout,
+        patch("sys.stderr") as fake_stderr,
     ):
-        mock_stdout.buffer = MagicMock()
-        mock_stderr.buffer = MagicMock()
+        fake_stdout.buffer = MagicMock()
+        fake_stderr.buffer = MagicMock()
 
         actual_result = await ensure_synth(tmp_path)
 
     # Assert
     assert actual_result == expected_result
-    mock_exec.assert_awaited_once()
+    fake_exec.assert_awaited_once()

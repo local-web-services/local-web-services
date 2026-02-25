@@ -19,12 +19,12 @@ def _target(operation: str) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Mock-based fixtures (for route-level unit tests)
+# Fake-based fixtures (for route-level unit tests)
 # ---------------------------------------------------------------------------
 
 
 @pytest.fixture()
-def mock_store() -> AsyncMock:
+def fake_store() -> AsyncMock:
     """Return an ``AsyncMock`` that satisfies ``IKeyValueStore``."""
     store = AsyncMock(spec=IKeyValueStore)
     store.get_item.return_value = None
@@ -50,8 +50,8 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture()
-def mock_client(mock_store: AsyncMock) -> httpx.AsyncClient:
-    app = create_dynamodb_app(mock_store)
+def fake_client(fake_store: AsyncMock) -> httpx.AsyncClient:
+    app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
 
@@ -84,7 +84,7 @@ def real_client(real_provider: SqliteDynamoProvider) -> httpx.AsyncClient:
 class TestTransactWriteItems:
     @pytest.mark.asyncio
     async def test_transact_write_put_items(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         payload = {
@@ -107,20 +107,20 @@ class TestTransactWriteItems:
         expected_put_count = 2
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
         assert resp.status_code == expected_status_code
         assert resp.json() == {}
-        assert mock_store.put_item.await_count == expected_put_count
-        mock_store.put_item.assert_any_await(
+        assert fake_store.put_item.await_count == expected_put_count
+        fake_store.put_item.assert_any_await(
             "Users", {"pk": {"S": "user#1"}, "name": {"S": "Alice"}}
         )
-        mock_store.put_item.assert_any_await("Users", {"pk": {"S": "user#2"}, "name": {"S": "Bob"}})
+        fake_store.put_item.assert_any_await("Users", {"pk": {"S": "user#2"}, "name": {"S": "Bob"}})
 
     @pytest.mark.asyncio
     async def test_transact_write_delete_items(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         payload = {
@@ -136,18 +136,18 @@ class TestTransactWriteItems:
         expected_status_code = 200
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
         assert resp.status_code == expected_status_code
-        mock_store.delete_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
+        fake_store.delete_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
 
     @pytest.mark.asyncio
     async def test_transact_write_mixed_operations(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
-        mock_store.get_item.return_value = {"pk": {"S": "user#3"}}
+        fake_store.get_item.return_value = {"pk": {"S": "user#3"}}
         payload = {
             "TransactItems": [
                 {
@@ -174,17 +174,17 @@ class TestTransactWriteItems:
         expected_status_code = 200
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
         assert resp.status_code == expected_status_code
         assert resp.json() == {}
-        mock_store.put_item.assert_awaited_once()
-        mock_store.delete_item.assert_awaited_once()
+        fake_store.put_item.assert_awaited_once()
+        fake_store.delete_item.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_transact_write_update_item(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         payload = {
@@ -203,11 +203,11 @@ class TestTransactWriteItems:
         expected_status_code = 200
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
         assert resp.status_code == expected_status_code
-        mock_store.update_item.assert_awaited_once_with(
+        fake_store.update_item.assert_awaited_once_with(
             "Users",
             {"pk": {"S": "user#1"}},
             "SET #n = :val",
@@ -217,14 +217,14 @@ class TestTransactWriteItems:
 
     @pytest.mark.asyncio
     async def test_transact_write_empty_list(
-        self, mock_client: httpx.AsyncClient, mock_store: AsyncMock
+        self, fake_client: httpx.AsyncClient, fake_store: AsyncMock
     ) -> None:
         # Arrange
         payload = {"TransactItems": []}
         expected_status_code = 200
 
         # Act
-        resp = await mock_client.post("/", json=payload, headers=_target("TransactWriteItems"))
+        resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
         assert resp.status_code == expected_status_code

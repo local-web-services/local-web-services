@@ -46,8 +46,8 @@ def _make_context(**overrides) -> LambdaContext:
     return LambdaContext(**defaults)
 
 
-def _mock_process(stdout: str, returncode: int = 0) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
+def _fake_process(stdout: str, returncode: int = 0) -> AsyncMock:
+    """Create a fake asyncio.subprocess.Process."""
     proc = AsyncMock()
     proc.communicate = AsyncMock(return_value=(stdout.encode(), b""))
     proc.returncode = returncode
@@ -74,10 +74,10 @@ class TestPythonComputeInvoke:
     """invoke() success, error, and timeout scenarios."""
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_success(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_success(self, fake_exec: AsyncMock) -> None:
         """Successful invocation returns the handler result as payload."""
         success_output = json.dumps({"result": {"statusCode": 200, "body": "ok"}})
-        mock_exec.return_value = _mock_process(success_output)
+        fake_exec.return_value = _fake_process(success_output)
 
         provider = PythonCompute(_make_config(), sdk_env={})
         provider._status = ProviderStatus.RUNNING
@@ -94,7 +94,7 @@ class TestPythonComputeInvoke:
         assert result.duration_ms >= 0
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_handler_error(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_handler_error(self, fake_exec: AsyncMock) -> None:
         """When the handler throws, invoke returns an error InvocationResult."""
         error_output = json.dumps(
             {
@@ -104,7 +104,7 @@ class TestPythonComputeInvoke:
                 }
             }
         )
-        mock_exec.return_value = _mock_process(error_output, returncode=1)
+        fake_exec.return_value = _fake_process(error_output, returncode=1)
 
         provider = PythonCompute(_make_config(), sdk_env={})
         provider._status = ProviderStatus.RUNNING
@@ -119,7 +119,7 @@ class TestPythonComputeInvoke:
         assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_timeout_kills_process(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_timeout_kills_process(self, fake_exec: AsyncMock) -> None:
         """When the subprocess exceeds the timeout, the process is killed."""
 
         async def hang(*args, **kwargs):
@@ -129,7 +129,7 @@ class TestPythonComputeInvoke:
         proc = AsyncMock()
         proc.communicate = hang
         proc.kill = MagicMock()
-        mock_exec.return_value = proc
+        fake_exec.return_value = proc
 
         config = _make_config(timeout=0.05)
         provider = PythonCompute(config, sdk_env={})
@@ -144,9 +144,9 @@ class TestPythonComputeInvoke:
         assert result.request_id == expected_request_id
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_bad_json_output(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_bad_json_output(self, fake_exec: AsyncMock) -> None:
         """Non-JSON stdout is treated as an error."""
-        mock_exec.return_value = _mock_process("this is not json")
+        fake_exec.return_value = _fake_process("this is not json")
 
         provider = PythonCompute(_make_config(), sdk_env={})
         provider._status = ProviderStatus.RUNNING
@@ -157,10 +157,10 @@ class TestPythonComputeInvoke:
         assert "Failed to parse" in result.error
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_null_result(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_null_result(self, fake_exec: AsyncMock) -> None:
         """Handler returning None should produce a result with None payload."""
         success_output = json.dumps({"result": None})
-        mock_exec.return_value = _mock_process(success_output)
+        fake_exec.return_value = _fake_process(success_output)
 
         provider = PythonCompute(_make_config(), sdk_env={})
         provider._status = ProviderStatus.RUNNING
@@ -171,7 +171,7 @@ class TestPythonComputeInvoke:
         assert result.error is None
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_timeout_message_format(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_timeout_message_format(self, fake_exec: AsyncMock) -> None:
         """Timeout error message should include the timeout value with 2 decimal places."""
 
         async def hang(*args, **kwargs):
@@ -181,7 +181,7 @@ class TestPythonComputeInvoke:
         proc = AsyncMock()
         proc.communicate = hang
         proc.kill = MagicMock()
-        mock_exec.return_value = proc
+        fake_exec.return_value = proc
 
         config = _make_config(timeout=5)
         provider = PythonCompute(config, sdk_env={})

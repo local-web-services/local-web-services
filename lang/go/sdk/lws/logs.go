@@ -127,3 +127,25 @@ func (c *LogCapture) AssertNoErrors(t testing.TB) {
 		}
 	}
 }
+
+// ForService returns all captured log entries whose service field matches the given value.
+func (c *LogCapture) ForService(service string) []LogEntry {
+	var result []LogEntry
+	for _, e := range c.Entries() {
+		if e.Service == service {
+			result = append(result, e)
+		}
+	}
+	return result
+}
+
+// ForOperation returns all captured log entries whose operation field matches the given value.
+func (c *LogCapture) ForOperation(operation string) []LogEntry {
+	var result []LogEntry
+	for _, e := range c.Entries() {
+		if e.Operation == operation {
+			result = append(result, e)
+		}
+	}
+	return result
+}

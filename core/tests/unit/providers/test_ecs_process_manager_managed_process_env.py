@@ -25,11 +25,11 @@ def _make_config(**overrides: object) -> ProcessConfig:
     return ProcessConfig(**defaults)
 
 
-def _mock_process(
+def _fake_process(
     pid: int = 1234,
     returncode: int | None = None,
 ) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
+    """Create a fake asyncio.subprocess.Process."""
     proc = AsyncMock(spec=asyncio.subprocess.Process)
     proc.pid = pid
     proc.returncode = returncode
@@ -66,14 +66,14 @@ def _mock_process(
 
 class TestManagedProcessEnv:
     @patch("asyncio.create_subprocess_exec")
-    async def test_env_merges_os_and_config(self, mock_exec: AsyncMock) -> None:
-        proc = _mock_process()
-        mock_exec.return_value = proc
+    async def test_env_merges_os_and_config(self, fake_exec: AsyncMock) -> None:
+        proc = _fake_process()
+        fake_exec.return_value = proc
 
         mp = ManagedProcess(_make_config(environment={"MY_VAR": "my_val"}))
         await mp.start()
 
-        call_kwargs = mock_exec.call_args.kwargs
+        call_kwargs = fake_exec.call_args.kwargs
         env = call_kwargs["env"]
         # OS env should be present
         assert "PATH" in env

@@ -24,11 +24,11 @@ def _make_config(**overrides: object) -> ProcessConfig:
     return ProcessConfig(**defaults)
 
 
-def _mock_process(
+def _fake_process(
     pid: int = 1234,
     returncode: int | None = None,
 ) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
+    """Create a fake asyncio.subprocess.Process."""
     proc = AsyncMock(spec=asyncio.subprocess.Process)
     proc.pid = pid
     proc.returncode = returncode
@@ -65,8 +65,8 @@ def _mock_process(
 
 class TestManagedProcessStreaming:
     @patch("asyncio.create_subprocess_exec")
-    async def test_stdout_lines_logged(self, mock_exec: AsyncMock) -> None:
-        proc = _mock_process()
+    async def test_stdout_lines_logged(self, fake_exec: AsyncMock) -> None:
+        proc = _fake_process()
         lines = [b"hello\n", b"world\n", b""]
         call_count = 0
 
@@ -79,7 +79,7 @@ class TestManagedProcessStreaming:
             return b""
 
         proc.stdout.readline = _readline
-        mock_exec.return_value = proc
+        fake_exec.return_value = proc
 
         mp = ManagedProcess(_make_config())
         await mp.start()
@@ -88,12 +88,12 @@ class TestManagedProcessStreaming:
         await mp.stop()
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_wait_returns_exit_code(self, mock_exec: AsyncMock) -> None:
+    async def test_wait_returns_exit_code(self, fake_exec: AsyncMock) -> None:
         # Arrange
         expected_exit_code = 42
-        proc = _mock_process()
+        proc = _fake_process()
         proc.wait = AsyncMock(return_value=expected_exit_code)
-        mock_exec.return_value = proc
+        fake_exec.return_value = proc
 
         # Act
         mp = ManagedProcess(_make_config())

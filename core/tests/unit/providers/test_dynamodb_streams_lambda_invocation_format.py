@@ -23,7 +23,7 @@ from lws.providers.dynamodb.streams import (
     StreamViewType,
 )
 
-from ._helpers import MockLambdaHandler
+from ._helpers import FakeLambdaHandler
 
 
 class TestLambdaInvocationFormat:
@@ -31,7 +31,7 @@ class TestLambdaInvocationFormat:
 
     async def test_event_format(self) -> None:
         # Arrange
-        handler = MockLambdaHandler()
+        handler = FakeLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         dispatcher.configure_stream(
             StreamConfiguration(

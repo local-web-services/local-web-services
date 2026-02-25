@@ -18,16 +18,16 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given payload/error."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given payload/error."""
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 def _success_payload(
@@ -108,10 +108,10 @@ class TestQueryStringParameterExtraction:
 
     @pytest.mark.asyncio
     async def test_query_string_parameters_extracted(self) -> None:
-        mock_compute = _make_compute_mock(payload=_success_payload())
+        fake_compute = _make_compute_fake(payload=_success_payload())
         provider = _make_provider(
             routes=[RouteConfig(method="GET", path="/search", handler_name="search")],
-            compute_providers={"search": mock_compute},
+            compute_providers={"search": fake_compute},
         )
 
         async with _client(provider) as client:
@@ -121,20 +121,20 @@ class TestQueryStringParameterExtraction:
         expected_query_params = {"q": "hello", "page": "2"}
         assert response.status_code == expected_status
 
-        event: dict = mock_compute.invoke.call_args[0][0]
+        event: dict = fake_compute.invoke.call_args[0][0]
         actual_query_params = event["queryStringParameters"]
         assert actual_query_params == expected_query_params
 
     @pytest.mark.asyncio
     async def test_no_query_string_gives_none(self) -> None:
-        mock_compute = _make_compute_mock(payload=_success_payload())
+        fake_compute = _make_compute_fake(payload=_success_payload())
         provider = _make_provider(
             routes=[RouteConfig(method="GET", path="/items", handler_name="list-items")],
-            compute_providers={"list-items": mock_compute},
+            compute_providers={"list-items": fake_compute},
         )
 
         async with _client(provider) as client:
             await client.get("/items")
 
-        event: dict = mock_compute.invoke.call_args[0][0]
+        event: dict = fake_compute.invoke.call_args[0][0]
         assert event["queryStringParameters"] is None

@@ -71,8 +71,6 @@ jmespath==1.1.0
     # via
     #   boto3
     #   botocore
-local-web-services==0.17.2
-    # via local-web-services-python-sdk
 mando==0.7.1
     # via radon
 markdown-it-py==4.0.0

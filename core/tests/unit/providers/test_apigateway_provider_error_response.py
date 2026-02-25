@@ -18,16 +18,16 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given payload/error."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given payload/error."""
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 def _success_payload(
@@ -110,10 +110,10 @@ class TestErrorResponse:
     async def test_invocation_error_returns_500(self) -> None:
         # Arrange
         expected_error = "RuntimeError: kaboom"
-        mock_compute = _make_compute_mock(error=expected_error)
+        fake_compute = _make_compute_fake(error=expected_error)
         provider = _make_provider(
             routes=[RouteConfig(method="GET", path="/fail", handler_name="fail-fn")],
-            compute_providers={"fail-fn": mock_compute},
+            compute_providers={"fail-fn": fake_compute},
         )
 
         # Act

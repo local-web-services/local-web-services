@@ -44,6 +44,7 @@ type Session struct {
 	basePort int
 	cmd      *exec.Cmd
 	awsCfg   aws.Config
+	bgLogs   *LogCapture
 }
 
 // New creates a session with explicitly declared resources.
@@ -114,6 +115,10 @@ func newSession(projectDir string, spec SessionSpec) (*Session, error) {
 	if err := session.preCreateResources(spec); err != nil {
 		cmd.Process.Kill() //nolint:errcheck
 		return nil, err
+	}
+
+	if bgLogs, err := newLogCapture(session); err == nil {
+		session.bgLogs = bgLogs
 	}
 
 	return session, nil
@@ -212,12 +217,53 @@ func (s *Session) StartLogCapture() (*LogCapture, error) {
 	return newLogCapture(s)
 }
 
-// Close stops the ldk dev process.
+// Close stops the background log capture and the ldk dev process.
 func (s *Session) Close() {
+	if s.bgLogs != nil {
+		s.bgLogs.Stop()
+		s.bgLogs = nil
+	}
 	if s.cmd != nil && s.cmd.Process != nil {
 		s.cmd.Process.Kill() //nolint:errcheck
 		s.cmd.Wait()         //nolint:errcheck
 	}
+}
+
+// Iam returns an IamBuilder for configuring IAM authentication mode.
+func (s *Session) Iam() *IamBuilder {
+	return &IamBuilder{
+		session:    s,
+		updates:    make(map[string]any),
+		identities: make(map[string]*IdentityBuilder),
+	}
+}
+
+// DynamoDB returns a DynamoDBHelper bound to the given table name.
+func (s *Session) DynamoDB(tableName string) *DynamoDBHelper {
+	return &DynamoDBHelper{tableName: tableName, client: s.DynamoDBClient()}
+}
+
+// SQS returns an SQSHelper bound to the given queue name.
+func (s *Session) SQS(queueName string) *SQSHelper {
+	return &SQSHelper{
+		queueName: queueName,
+		queueURL:  s.QueueURL(queueName),
+		client:    s.SQSClient(),
+	}
+}
+
+// S3 returns an S3Helper bound to the given bucket name.
+func (s *Session) S3(bucketName string) *S3Helper {
+	return &S3Helper{bucket: bucketName, client: s.S3Client()}
+}
+
+// RecentLogs returns a snapshot of all log entries recorded since session start.
+// Returns nil if the background log capture is not running.
+func (s *Session) RecentLogs() []LogEntry {
+	if s.bgLogs == nil {
+		return nil
+	}
+	return s.bgLogs.Entries()
 }
 
 func (s *Session) awaitReady() error {

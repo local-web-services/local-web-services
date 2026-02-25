@@ -24,11 +24,11 @@ def _make_config(**overrides: object) -> ProcessConfig:
     return ProcessConfig(**defaults)
 
 
-def _mock_process(
+def _fake_process(
     pid: int = 1234,
     returncode: int | None = None,
 ) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
+    """Create a fake asyncio.subprocess.Process."""
     proc = AsyncMock(spec=asyncio.subprocess.Process)
     proc.pid = pid
     proc.returncode = returncode

@@ -25,12 +25,12 @@ from lws.providers.apigateway.routes import create_apigateway_management_app
 from lws.providers.lambda_runtime.routes import LambdaRegistry
 
 
-def _make_compute_mock(payload: dict | None = None) -> ICompute:
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None) -> ICompute:
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload, error=None, duration_ms=1.0, request_id="req-1"
     )
-    return mock
+    return fake
 
 
 class TestApiGatewayV2TerraformFlow:
@@ -58,9 +58,9 @@ class TestApiGatewayV2TerraformFlow:
         """
         # 1. Simulate Terraform creating the Lambda function.
         #    In production, Terraform calls the Lambda management API on
-        #    port+9; here we register the compute mock directly (the
+        #    port+9; here we register the compute fake directly (the
         #    Lambda management API is tested separately).
-        mock_compute = _make_compute_mock(
+        fake_compute = _make_compute_fake(
             payload={
                 "statusCode": 200,
                 "body": '{"orderId": "order-001"}',
@@ -70,7 +70,7 @@ class TestApiGatewayV2TerraformFlow:
         registry.register(
             "CreateOrderFunction",
             {"FunctionName": "CreateOrderFunction"},
-            mock_compute,
+            fake_compute,
         )
 
         # 2. Terraform creates the V2 HTTP API
@@ -131,8 +131,8 @@ class TestApiGatewayV2TerraformFlow:
         assert "order-001" in resp.text
 
         # Verify Lambda was actually invoked
-        mock_compute.invoke.assert_called_once()
-        event = mock_compute.invoke.call_args[0][0]
+        fake_compute.invoke.assert_called_once()
+        event = fake_compute.invoke.call_args[0][0]
         assert event["version"] == expected_version
         assert event["routeKey"] == expected_route_key
         assert event["rawPath"] == expected_raw_path
@@ -141,7 +141,7 @@ class TestApiGatewayV2TerraformFlow:
     @pytest.mark.asyncio
     async def test_terraform_creates_get_route_with_path_param(self, client, registry) -> None:
         """Terraform creates GET /orders/{id} route and proxy resolves it."""
-        mock_compute = _make_compute_mock(
+        fake_compute = _make_compute_fake(
             payload={
                 "statusCode": 200,
                 "body": '{"orderId": "abc-123", "status": "completed"}',
@@ -150,7 +150,7 @@ class TestApiGatewayV2TerraformFlow:
         registry.register(
             "GetOrderFunction",
             {"FunctionName": "GetOrderFunction"},
-            mock_compute,
+            fake_compute,
         )
 
         api_resp = await client.post(
@@ -185,7 +185,7 @@ class TestApiGatewayV2TerraformFlow:
         expected_status = 200
         assert resp.status_code == expected_status
         assert "abc-123" in resp.text
-        mock_compute.invoke.assert_called_once()
+        fake_compute.invoke.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_no_v2_routes_returns_not_found(self, client) -> None:
@@ -202,8 +202,8 @@ class TestApiGatewayV2TerraformFlow:
     @pytest.mark.asyncio
     async def test_v2_route_wrong_method_returns_stub(self, client, registry) -> None:
         """POST /orders route does not match GET /orders."""
-        mock_compute = _make_compute_mock(payload={"statusCode": 200, "body": "{}"})
-        registry.register("fn", {"FunctionName": "fn"}, mock_compute)
+        fake_compute = _make_compute_fake(payload={"statusCode": 200, "body": "{}"})
+        registry.register("fn", {"FunctionName": "fn"}, fake_compute)
 
         api_resp = await client.post("/v2/apis", json={"name": "api", "protocolType": "HTTP"})
         api_id = api_resp.json()["apiId"]
@@ -232,4 +232,4 @@ class TestApiGatewayV2TerraformFlow:
         body = resp.json()
         assert "lws" in body["message"]
         assert "API Gateway" in body["message"]
-        mock_compute.invoke.assert_not_called()
+        fake_compute.invoke.assert_not_called()

@@ -77,10 +77,10 @@ class TestGetRemainingTimeInMillis:
         assert actual_remaining == expected_remaining
 
     @patch("time.monotonic")
-    def test_countdown_with_mocked_time(self, mock_monotonic) -> None:
-        """Use mocked time to verify exact countdown calculation."""
-        # Arrange -- set start_time to 100.0, then mock monotonic to return 105.0 (5s elapsed)
-        mock_monotonic.return_value = 105.0
+    def test_countdown_with_faked_time(self, fake_monotonic) -> None:
+        """Use faked time to verify exact countdown calculation."""
+        # Arrange -- set start_time to 100.0, then fake monotonic to return 105.0 (5s elapsed)
+        fake_monotonic.return_value = 105.0
         expected_remaining = 25000  # 30s timeout - 5s elapsed = 25s = 25000ms
 
         # Act

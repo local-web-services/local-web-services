@@ -12,16 +12,16 @@ from lws.providers.apigateway.routes import create_apigateway_management_app
 from lws.providers.lambda_runtime.routes import LambdaRegistry
 
 
-def _make_compute_mock(payload: dict | None = None) -> ICompute:
-    """Return a mock ICompute whose invoke resolves to the given result."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None) -> ICompute:
+    """Return a fake ICompute whose invoke resolves to the given result."""
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=None,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 class TestApiGatewayV2Proxy:
@@ -40,8 +40,8 @@ class TestApiGatewayV2Proxy:
     @pytest.mark.asyncio
     async def test_proxy_invokes_lambda(self, client, registry) -> None:
         """Proxy request through V2 route to Lambda and return response."""
-        mock_compute = _make_compute_mock(payload={"statusCode": 200, "body": '{"orderId": "123"}'})
-        registry.register("create-order", {"FunctionName": "create-order"}, mock_compute)
+        fake_compute = _make_compute_fake(payload={"statusCode": 200, "body": '{"orderId": "123"}'})
+        registry.register("create-order", {"FunctionName": "create-order"}, fake_compute)
 
         # Create V2 API, integration, and route
         api_resp = await client.post(
@@ -78,7 +78,7 @@ class TestApiGatewayV2Proxy:
         assert '{"orderId": "123"}' in resp.text
 
         # Verify Lambda was invoked with V2 event format
-        call_args = mock_compute.invoke.call_args
+        call_args = fake_compute.invoke.call_args
         event = call_args[0][0]
         assert event["version"] == expected_version
         assert event["routeKey"] == expected_route_key
@@ -87,8 +87,8 @@ class TestApiGatewayV2Proxy:
     @pytest.mark.asyncio
     async def test_proxy_with_path_variables(self, client, registry) -> None:
         """Route with path variable {id} matches concrete paths."""
-        mock_compute = _make_compute_mock(payload={"statusCode": 200, "body": '{"orderId": "abc"}'})
-        registry.register("get-order", {"FunctionName": "get-order"}, mock_compute)
+        fake_compute = _make_compute_fake(payload={"statusCode": 200, "body": '{"orderId": "abc"}'})
+        registry.register("get-order", {"FunctionName": "get-order"}, fake_compute)
 
         api_resp = await client.post(
             "/v2/apis", json={"name": "orders-api", "protocolType": "HTTP"}
@@ -122,8 +122,8 @@ class TestApiGatewayV2Proxy:
     @pytest.mark.asyncio
     async def test_proxy_with_invoke_arn_uri(self, client, registry) -> None:
         """Integration URI in invoke_arn format resolves to correct function."""
-        mock_compute = _make_compute_mock(payload={"statusCode": 200, "body": '{"ok": true}'})
-        registry.register("my-func", {"FunctionName": "my-func"}, mock_compute)
+        fake_compute = _make_compute_fake(payload={"statusCode": 200, "body": '{"ok": true}'})
+        registry.register("my-func", {"FunctionName": "my-func"}, fake_compute)
 
         api_resp = await client.post("/v2/apis", json={"name": "test-api", "protocolType": "HTTP"})
         api_id = api_resp.json()["apiId"]

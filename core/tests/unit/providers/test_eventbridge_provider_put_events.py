@@ -22,16 +22,16 @@ from lws.providers.eventbridge.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given result."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given result."""
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 def _bus_configs() -> list[EventBusConfig]:
@@ -147,8 +147,8 @@ class TestPutEvents:
         expected_region = "us-east-1"
 
         provider = await _started_provider()
-        mock_compute = _make_compute_mock(payload={"statusCode": 200})
-        provider.set_compute_providers({"order-handler": mock_compute})
+        fake_compute = _make_compute_fake(payload={"statusCode": 200})
+        provider.set_compute_providers({"order-handler": fake_compute})
 
         # Act
         await provider.put_events(
@@ -164,8 +164,8 @@ class TestPutEvents:
         await asyncio.sleep(0.05)
 
         # Assert
-        mock_compute.invoke.assert_called_once()
-        call_args = mock_compute.invoke.call_args
+        fake_compute.invoke.assert_called_once()
+        call_args = fake_compute.invoke.call_args
         event = call_args[0][0]
         context = call_args[0][1]
 
@@ -180,8 +180,8 @@ class TestPutEvents:
     @pytest.mark.asyncio
     async def test_put_events_no_match_no_dispatch(self) -> None:
         provider = await _started_provider()
-        mock_compute = _make_compute_mock(payload={"statusCode": 200})
-        provider.set_compute_providers({"order-handler": mock_compute})
+        fake_compute = _make_compute_fake(payload={"statusCode": 200})
+        provider.set_compute_providers({"order-handler": fake_compute})
 
         await provider.put_events(
             [
@@ -194,7 +194,7 @@ class TestPutEvents:
         )
 
         await asyncio.sleep(0.05)
-        mock_compute.invoke.assert_not_called()
+        fake_compute.invoke.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_put_events_multiple_entries(self) -> None:

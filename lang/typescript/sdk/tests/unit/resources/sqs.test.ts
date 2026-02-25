@@ -1,7 +1,7 @@
 import { SQSClient } from "@aws-sdk/client-sqs";
 import { SQSHelper } from "../../../src/resources/sqs";
 
-function makeMockClient(): { send: jest.Mock; client: SQSClient } {
+function makeFakeClient(): { send: jest.Mock; client: SQSClient } {
   const send = jest.fn();
   return { send, client: { send } as unknown as SQSClient };
 }
@@ -14,7 +14,7 @@ describe("SQSHelper", () => {
   describe("url", () => {
     it("returns the correctly formatted queue URL", () => {
       // Arrange
-      const { client } = makeMockClient();
+      const { client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
 
       // Act
@@ -28,7 +28,7 @@ describe("SQSHelper", () => {
   describe("send", () => {
     it("sends a string body unchanged", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       const expectedBody = "plain text message";
       send.mockResolvedValue({ MessageId: "msg-1" });
@@ -45,7 +45,7 @@ describe("SQSHelper", () => {
 
     it("JSON-encodes an object body", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       const expectedPayload = { orderId: "42", status: "pending" };
       send.mockResolvedValue({ MessageId: "msg-2" });
@@ -60,7 +60,7 @@ describe("SQSHelper", () => {
 
     it("includes MessageGroupId when provided", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       send.mockResolvedValue({ MessageId: "msg-3" });
       const expectedGroupId = "order-group";
@@ -77,7 +77,7 @@ describe("SQSHelper", () => {
   describe("receive", () => {
     it("returns the messages from the response", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       const expectedMessages = [{ MessageId: "m1", Body: "hello" }];
       send.mockResolvedValue({ Messages: expectedMessages });
@@ -91,7 +91,7 @@ describe("SQSHelper", () => {
 
     it("returns empty array when no messages are available", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       send.mockResolvedValue({});
 
@@ -104,7 +104,7 @@ describe("SQSHelper", () => {
 
     it("caps MaxNumberOfMessages at 10", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       send.mockResolvedValue({ Messages: [] });
 
@@ -120,7 +120,7 @@ describe("SQSHelper", () => {
   describe("purge", () => {
     it("calls PurgeQueueCommand with the correct queue URL", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       send.mockResolvedValue({});
 
@@ -136,7 +136,7 @@ describe("SQSHelper", () => {
   describe("assertMessageCount", () => {
     it("does not throw when the count matches", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       send.mockResolvedValue({
         Attributes: { ApproximateNumberOfMessages: "3" },
@@ -149,7 +149,7 @@ describe("SQSHelper", () => {
 
     it("throws when the count does not match", async () => {
       // Arrange
-      const { send, client } = makeMockClient();
+      const { send, client } = makeFakeClient();
       const helper = new SQSHelper(EXPECTED_QUEUE_NAME, client, EXPECTED_PORT);
       send.mockResolvedValue({
         Attributes: { ApproximateNumberOfMessages: "5" },

@@ -68,7 +68,7 @@ class TestHealthChecker:
         new_callable=AsyncMock,
         return_value=True,
     )
-    async def test_start_creates_polling_task(self, _mock_get: AsyncMock) -> None:
+    async def test_start_creates_polling_task(self, _fake_get: AsyncMock) -> None:
         cfg = HealthCheckConfig(
             endpoint="http://localhost:8080/health",
             interval=0.01,
@@ -91,7 +91,7 @@ class TestHealthChecker:
         new_callable=AsyncMock,
         return_value=False,
     )
-    async def test_poll_marks_unhealthy(self, _mock_get: AsyncMock) -> None:
+    async def test_poll_marks_unhealthy(self, _fake_get: AsyncMock) -> None:
         cfg = HealthCheckConfig(
             endpoint="http://localhost:8080/health",
             interval=0.01,

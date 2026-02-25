@@ -18,3 +18,7 @@ test = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 timeout = 120
+
+[tool.uv.sources]
+local-web-services = { path = "../../../core", editable = true }
+local-web-services-python-sdk = { path = "../sdk", editable = true }

@@ -24,19 +24,27 @@ repositories {
 }
 
 def awsSdkVersion = '2.26.0'
+def cucumberVersion = '7.18.0'
 
 dependencies {
     implementation platform("software.amazon.awssdk:bom:${awsSdkVersion}")
     implementation 'software.amazon.awssdk:sfn'
+    implementation 'software.amazon.awssdk:dynamodb'
+    implementation 'software.amazon.awssdk:sqs'
 
-    testImplementation 'io.localwebservices:local-web-services-java-sdk:0.1.7'
+    testImplementation 'io.localwebservices:local-web-services-java-sdk:0.2.0'
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-picocontainer:${cucumberVersion}"
+    testImplementation 'org.junit.platform:junit-platform-suite'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
     useJUnitPlatform()
+    systemProperty 'cucumber.junit-platform.naming-strategy', 'long'
     testLogging {
         events 'passed', 'skipped', 'failed'
     }

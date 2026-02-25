@@ -14,7 +14,7 @@ import typer
 from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.cli.init import init_command
 from lws.cli.services.apigateway import app as apigateway_app
-from lws.cli.services.aws_mock import app as aws_mock_app
+from lws.cli.services.aws_fake import app as aws_fake_app
 from lws.cli.services.chaos import app as chaos_app
 from lws.cli.services.client import exit_with_error, output_json
 from lws.cli.services.cognito import app as cognito_app
@@ -23,11 +23,11 @@ from lws.cli.services.dynamodb import app as dynamodb_app
 from lws.cli.services.elasticache import app as elasticache_app
 from lws.cli.services.es import app as es_app
 from lws.cli.services.events import app as events_app
+from lws.cli.services.fake import app as fake_app
 from lws.cli.services.glacier import app as glacier_app
 from lws.cli.services.iam_auth import app as iam_auth_app
 from lws.cli.services.lambda_service import app as lambda_app
 from lws.cli.services.memorydb import app as memorydb_app
-from lws.cli.services.mock import app as mock_app
 from lws.cli.services.neptune import app as neptune_app
 from lws.cli.services.opensearch import app as opensearch_app
 from lws.cli.services.rds import app as rds_app
@@ -74,8 +74,8 @@ _add_service(opensearch_app, "opensearch")
 _add_service(rds_app, "rds")
 _add_service(glacier_app, "glacier")
 _add_service(s3tables_app, "s3tables")
-_add_service(mock_app, "mock")
-_add_service(aws_mock_app, "aws-mock")
+_add_service(fake_app, "fake")
+_add_service(aws_fake_app, "aws-fake")
 _add_service(chaos_app, "chaos")
 _add_service(iam_auth_app, "iam-auth")
 

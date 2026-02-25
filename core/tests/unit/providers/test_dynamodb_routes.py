@@ -16,7 +16,7 @@ from lws.providers.dynamodb.routes import create_dynamodb_app
 
 
 @pytest.fixture()
-def mock_store() -> AsyncMock:
+def fake_store() -> AsyncMock:
     """Return an ``AsyncMock`` that satisfies ``IKeyValueStore``."""
     store = AsyncMock(spec=IKeyValueStore)
     # Sensible defaults so tests that don't care about return values still pass.
@@ -32,9 +32,9 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture()
-def client(mock_store: AsyncMock) -> httpx.AsyncClient:
+def client(fake_store: AsyncMock) -> httpx.AsyncClient:
     """Create an ``httpx.AsyncClient`` wired to the DynamoDB ASGI app."""
-    app = create_dynamodb_app(mock_store)
+    app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)  # type: ignore[arg-type]
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
 
@@ -56,7 +56,7 @@ def _target(operation: str) -> dict[str, str]:
 
 
 @pytest.mark.asyncio
-async def test_put_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_put_item(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
     payload = {
         "TableName": "Users",
@@ -69,7 +69,7 @@ async def test_put_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> Non
 
     # Assert
     assert resp.status_code == expected_status_code
-    mock_store.put_item.assert_awaited_once_with(
+    fake_store.put_item.assert_awaited_once_with(
         "Users",
         {"pk": {"S": "user#1"}, "name": {"S": "Alice"}},
     )
@@ -81,9 +81,9 @@ async def test_put_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> Non
 
 
 @pytest.mark.asyncio
-async def test_get_item_found(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_get_item_found(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
-    mock_store.get_item.return_value = {
+    fake_store.get_item.return_value = {
         "pk": {"S": "user#1"},
         "name": {"S": "Alice"},
     }
@@ -100,13 +100,13 @@ async def test_get_item_found(client: httpx.AsyncClient, mock_store: AsyncMock) 
     assert "Item" in data
     actual_pk = data["Item"]["pk"]
     assert actual_pk == expected_pk
-    mock_store.get_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
+    fake_store.get_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
 
 
 @pytest.mark.asyncio
-async def test_get_item_not_found(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_get_item_not_found(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
-    mock_store.get_item.return_value = None
+    fake_store.get_item.return_value = None
     payload = {"TableName": "Users", "Key": {"pk": {"S": "user#999"}}}
     expected_status_code = 200
 
@@ -125,7 +125,7 @@ async def test_get_item_not_found(client: httpx.AsyncClient, mock_store: AsyncMo
 
 
 @pytest.mark.asyncio
-async def test_delete_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_delete_item(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
     payload = {"TableName": "Users", "Key": {"pk": {"S": "user#1"}}}
     expected_status_code = 200
@@ -135,7 +135,7 @@ async def test_delete_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> 
 
     # Assert
     assert resp.status_code == expected_status_code
-    mock_store.delete_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
+    fake_store.delete_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
 
 
 # ---------------------------------------------------------------------------
@@ -144,9 +144,9 @@ async def test_delete_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> 
 
 
 @pytest.mark.asyncio
-async def test_update_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_update_item(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
-    mock_store.update_item.return_value = {
+    fake_store.update_item.return_value = {
         "pk": {"S": "user#1"},
         "name": {"S": "Bob"},
     }
@@ -168,7 +168,7 @@ async def test_update_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> 
     data = resp.json()
     actual_name = data["Attributes"]["name"]
     assert actual_name == expected_name
-    mock_store.update_item.assert_awaited_once_with(
+    fake_store.update_item.assert_awaited_once_with(
         "Users",
         {"pk": {"S": "user#1"}},
         "SET #n = :val",
@@ -183,9 +183,9 @@ async def test_update_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> 
 
 
 @pytest.mark.asyncio
-async def test_query(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_query(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
-    mock_store.query.return_value = [
+    fake_store.query.return_value = [
         {"pk": {"S": "user#1"}, "sk": {"S": "order#1"}},
     ]
     payload = {
@@ -213,9 +213,9 @@ async def test_query(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_scan(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_scan(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
-    mock_store.scan.return_value = [
+    fake_store.scan.return_value = [
         {"pk": {"S": "a"}},
         {"pk": {"S": "b"}},
     ]
@@ -240,9 +240,9 @@ async def test_scan(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
 
 
 @pytest.mark.asyncio
-async def test_batch_get_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_batch_get_item(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
-    mock_store.batch_get_items.return_value = [
+    fake_store.batch_get_items.return_value = [
         {"pk": {"S": "user#1"}},
         {"pk": {"S": "user#2"}},
     ]
@@ -275,7 +275,7 @@ async def test_batch_get_item(client: httpx.AsyncClient, mock_store: AsyncMock) 
 
 
 @pytest.mark.asyncio
-async def test_batch_write_item(client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+async def test_batch_write_item(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     # Arrange
     payload = {
         "RequestItems": {
@@ -292,7 +292,7 @@ async def test_batch_write_item(client: httpx.AsyncClient, mock_store: AsyncMock
 
     # Assert
     assert resp.status_code == expected_status_code
-    mock_store.batch_write_items.assert_awaited_once_with(
+    fake_store.batch_write_items.assert_awaited_once_with(
         "Users",
         put_items=[{"pk": {"S": "user#1"}, "name": {"S": "A"}}],
         delete_keys=[{"pk": {"S": "user#2"}}],

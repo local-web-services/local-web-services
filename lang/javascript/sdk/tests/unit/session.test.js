@@ -7,9 +7,9 @@ jest.mock("child_process", () => ({
   spawn: jest.fn(),
 }));
 
-const mockSpawn = spawn;
+const fakeSpawn = spawn;
 
-function makeMockProcess() {
+function makeFakeProcess() {
   return {
     on: jest.fn(),
     kill: jest.fn(),
@@ -20,12 +20,12 @@ function makeMockProcess() {
 }
 
 describe("LwsSession", () => {
-  let mockProcess;
+  let fakeProcess;
 
   beforeEach(() => {
     jest.useFakeTimers();
-    mockProcess = makeMockProcess();
-    mockSpawn.mockReturnValue(mockProcess);
+    fakeProcess = makeFakeProcess();
+    fakeSpawn.mockReturnValue(fakeProcess);
     global.fetch = jest.fn().mockResolvedValue({ ok: true });
   });
 
@@ -40,7 +40,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Assert
-      expect(mockSpawn).toHaveBeenCalledWith(
+      expect(fakeSpawn).toHaveBeenCalledWith(
         "ldk",
         expect.arrayContaining([
           "dev",
@@ -60,7 +60,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Assert
-      const actualArgs = mockSpawn.mock.calls[0][1];
+      const actualArgs = fakeSpawn.mock.calls[0][1];
       expect(actualArgs).not.toContain("--mode");
 
       await session.close();
@@ -73,7 +73,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.fromCdk("/some/project");
 
       // Assert
-      const actualArgs = mockSpawn.mock.calls[0][1];
+      const actualArgs = fakeSpawn.mock.calls[0][1];
       expect(actualArgs).toContain("--mode");
       expect(actualArgs).toContain("cdk");
 
@@ -98,7 +98,7 @@ describe("LwsSession", () => {
         const session = await LwsSession.fromHcl(expectedTmpDir);
 
         // Assert — ldk is spawned without --mode terraform (mode is auto-detected)
-        const actualArgs = mockSpawn.mock.calls[0][1];
+        const actualArgs = fakeSpawn.mock.calls[0][1];
         expect(actualArgs).toContain("dev");
         expect(actualArgs).not.toContain("terraform");
 
@@ -217,7 +217,7 @@ describe("LwsSession", () => {
       await session.close();
 
       // Assert
-      expect(mockProcess.kill).toHaveBeenCalledWith("SIGTERM");
+      expect(fakeProcess.kill).toHaveBeenCalledWith("SIGTERM");
     });
 
     it("is idempotent — a second close does not throw", async () => {

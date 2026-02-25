@@ -13,10 +13,10 @@ runner = CliRunner()
 _TARGET_PREFIX = "DynamoDB_20120810"
 
 
-def _mock_client_response(return_value: dict) -> AsyncMock:
-    mock = AsyncMock()
-    mock.json_target_request = AsyncMock(return_value=return_value)
-    return mock
+def _fake_client_response(return_value: dict) -> AsyncMock:
+    fake = AsyncMock()
+    fake.json_target_request = AsyncMock(return_value=return_value)
+    return fake
 
 
 class TestDeleteTable:
@@ -26,10 +26,10 @@ class TestDeleteTable:
         expected_target = f"{_TARGET_PREFIX}.DeleteTable"
         expected_table_name = "MyTable"
         expected_body = {"TableName": expected_table_name}
-        mock = _mock_client_response({"TableDescription": {"TableName": expected_table_name}})
+        fake = _fake_client_response({"TableDescription": {"TableName": expected_table_name}})
 
         # Act
-        with patch("lws.cli.services.dynamodb._client", return_value=mock):
+        with patch("lws.cli.services.dynamodb._client", return_value=fake):
             result = runner.invoke(
                 app,
                 ["dynamodb", "delete-table", "--table-name", expected_table_name],
@@ -37,8 +37,8 @@ class TestDeleteTable:
 
         # Assert
         assert result.exit_code == expected_exit_code
-        mock.json_target_request.assert_awaited_once()
-        call_args = mock.json_target_request.call_args
+        fake.json_target_request.assert_awaited_once()
+        call_args = fake.json_target_request.call_args
         actual_target = call_args[0][1]
         actual_body = call_args[0][2]
         assert actual_target == expected_target

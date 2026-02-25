@@ -609,29 +609,29 @@ uvx --from local-web-services lws init --project-dir /path/to/your-project
 
 This creates:
 - **CLAUDE.md** snippet with lws quick reference and common commands
-- **Custom slash commands** (`/lws:mock`, `/lws:chaos`, and `/lws:iam-auth`) that guide your agent through mock, chaos, and IAM auth workflows
+- **Custom slash commands** (`/lws:fake`, `/lws:chaos`, and `/lws:iam-auth`) that guide your agent through fake, chaos, and IAM auth workflows
 
-## AWS Operation Mocking
+## AWS Operation Faking
 
-Mock specific AWS operations to return canned responses during local development. This lets you control exactly what your Lambda functions or application receives — useful for testing error handling, edge cases, or complex multi-service flows.
+Fake specific AWS operations to return canned responses during local development. This lets you control exactly what your Lambda functions or application receives — useful for testing error handling, edge cases, or complex multi-service flows.
 
 ```bash
-# Create a persistent mock definition
-uvx --from local-web-services lws aws-mock create my-s3-mock --service s3
+# Create a persistent fake definition
+uvx --from local-web-services lws aws-fake create my-s3-fake --service s3
 
 # Add an operation rule (returns custom response for get-object)
-uvx --from local-web-services lws aws-mock add-operation my-s3-mock \
-  --operation get-object --body-string "mocked file content"
+uvx --from local-web-services lws aws-fake add-operation my-s3-fake \
+  --operation get-object --body-string "faked file content"
 
 # Or configure at runtime (requires ldk dev running)
-uvx --from local-web-services lws aws-mock set-rules dynamodb \
-  --operation get-item --status 200 --body '{"Item": {"id": {"S": "mock-123"}}}'
+uvx --from local-web-services lws aws-fake set-rules dynamodb \
+  --operation get-item --status 200 --body '{"Item": {"id": {"S": "fake-123"}}}'
 
-# Check mock status
-uvx --from local-web-services lws aws-mock status
+# Check fake status
+uvx --from local-web-services lws aws-fake status
 ```
 
-Supported services: dynamodb, sqs, s3, sns, events, stepfunctions, cognito-idp, ssm, secretsmanager. Supports header-based filtering to mock only specific request patterns.
+Supported services: dynamodb, sqs, s3, sns, events, stepfunctions, cognito-idp, ssm, secretsmanager. Supports header-based filtering to fake only specific request patterns.
 
 ## Chaos Engineering
 

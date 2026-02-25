@@ -19,12 +19,12 @@ def _target(operation: str) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Mock-based fixtures (for route-level unit tests)
+# Fake-based fixtures (for route-level unit tests)
 # ---------------------------------------------------------------------------
 
 
 @pytest.fixture()
-def mock_store() -> AsyncMock:
+def fake_store() -> AsyncMock:
     """Return an ``AsyncMock`` that satisfies ``IKeyValueStore``."""
     store = AsyncMock(spec=IKeyValueStore)
     store.get_item.return_value = None
@@ -50,8 +50,8 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture()
-def mock_client(mock_store: AsyncMock) -> httpx.AsyncClient:
-    app = create_dynamodb_app(mock_store)
+def fake_client(fake_store: AsyncMock) -> httpx.AsyncClient:
+    app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
 
@@ -83,7 +83,7 @@ def real_client(real_provider: SqliteDynamoProvider) -> httpx.AsyncClient:
 
 class TestDescribeContinuousBackups:
     @pytest.mark.asyncio
-    async def test_describe_continuous_backups(self, mock_client: httpx.AsyncClient) -> None:
+    async def test_describe_continuous_backups(self, fake_client: httpx.AsyncClient) -> None:
         # Arrange
         payload = {"TableName": "MyTable"}
         expected_status_code = 200
@@ -91,7 +91,7 @@ class TestDescribeContinuousBackups:
         expected_pitr_status = "DISABLED"
 
         # Act
-        resp = await mock_client.post(
+        resp = await fake_client.post(
             "/", json=payload, headers=_target("DescribeContinuousBackups")
         )
 

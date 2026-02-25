@@ -26,9 +26,9 @@ class TestOpenSearchDataPlaneEndpoint:
     def test_with_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
         expected_endpoint = "localhost:9200"
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = expected_endpoint
-        app = create_opensearch_app(container_manager=mock_cm)
+        fake_cm = AsyncMock()
+        fake_cm.start_container.return_value = expected_endpoint
+        app = create_opensearch_app(container_manager=fake_cm)
         client = TestClient(app)
 
         # Act
@@ -41,7 +41,7 @@ class TestOpenSearchDataPlaneEndpoint:
         # Assert
         actual_endpoint = result["DomainStatus"]["Endpoint"]
         assert actual_endpoint == expected_endpoint
-        mock_cm.start_container.assert_called_once_with("test-domain")
+        fake_cm.start_container.assert_called_once_with("test-domain")
 
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
@@ -62,9 +62,9 @@ class TestOpenSearchDataPlaneEndpoint:
 
     def test_delete_domain_stops_container(self) -> None:
         # Arrange
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:9200"
-        app = create_opensearch_app(container_manager=mock_cm)
+        fake_cm = AsyncMock()
+        fake_cm.start_container.return_value = "localhost:9200"
+        app = create_opensearch_app(container_manager=fake_cm)
         client = TestClient(app)
         _post(client, "CreateDomain", {"DomainName": "test-domain"})
 
@@ -72,4 +72,4 @@ class TestOpenSearchDataPlaneEndpoint:
         _post(client, "DeleteDomain", {"DomainName": "test-domain"})
 
         # Assert
-        mock_cm.stop_container.assert_called_once_with("test-domain")
+        fake_cm.stop_container.assert_called_once_with("test-domain")

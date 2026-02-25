@@ -18,16 +18,16 @@ from lws.providers.apigateway.provider import (
 # ---------------------------------------------------------------------------
 
 
-def _make_compute_mock(payload: dict | None = None, error: str | None = None) -> ICompute:
-    """Return a mock ICompute whose ``invoke`` resolves to the given payload/error."""
-    mock = AsyncMock(spec=ICompute)
-    mock.invoke.return_value = InvocationResult(
+def _make_compute_fake(payload: dict | None = None, error: str | None = None) -> ICompute:
+    """Return a fake ICompute whose ``invoke`` resolves to the given payload/error."""
+    fake = AsyncMock(spec=ICompute)
+    fake.invoke.return_value = InvocationResult(
         payload=payload,
         error=error,
         duration_ms=1.0,
         request_id="test-request-id",
     )
-    return mock
+    return fake
 
 
 def _success_payload(
@@ -108,10 +108,10 @@ class TestLambdaContextPassed:
 
     @pytest.mark.asyncio
     async def test_lambda_context_fields(self) -> None:
-        mock_compute = _make_compute_mock(payload=_success_payload())
+        fake_compute = _make_compute_fake(payload=_success_payload())
         provider = _make_provider(
             routes=[RouteConfig(method="GET", path="/ctx", handler_name="ctx-fn")],
-            compute_providers={"ctx-fn": mock_compute},
+            compute_providers={"ctx-fn": fake_compute},
         )
 
         async with _client(provider) as client:
@@ -121,7 +121,7 @@ class TestLambdaContextPassed:
         expected_function_name = "ctx-fn"
         expected_memory = 128
         expected_timeout = 30
-        context: LambdaContext = mock_compute.invoke.call_args[0][1]
+        context: LambdaContext = fake_compute.invoke.call_args[0][1]
         actual_function_name = context.function_name
         actual_memory = context.memory_limit_in_mb
         actual_timeout = context.timeout_seconds

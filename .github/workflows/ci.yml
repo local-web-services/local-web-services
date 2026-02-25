@@ -263,6 +263,9 @@ jobs:
           node-version: "20"
       - name: Install ldk
         run: uv pip install --system -e core
+      - name: Build TypeScript SDK
+        working-directory: lang/typescript/sdk
+        run: npm ci && npm run build
       - name: Test
         working-directory: lang/typescript/example
         run: npm ci && npm test
@@ -286,6 +289,9 @@ jobs:
           node-version: "20"
       - name: Install ldk
         run: uv pip install --system -e core
+      - name: Install JavaScript SDK dependencies
+        working-directory: lang/javascript/sdk
+        run: npm ci
       - name: Test
         working-directory: lang/javascript/example
         run: npm ci && npm test

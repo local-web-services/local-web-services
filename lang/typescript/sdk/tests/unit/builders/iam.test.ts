@@ -4,11 +4,11 @@ const EXPECTED_MGMT_PORT = 8080;
 const EXPECTED_IAM_URL = `http://127.0.0.1:${EXPECTED_MGMT_PORT}/_ldk/iam-auth`;
 
 describe("IamBuilder", () => {
-  let mockFetch: jest.Mock;
+  let fakeFetch: jest.Mock;
 
   beforeEach(() => {
-    mockFetch = jest.fn().mockResolvedValue({ ok: true });
-    global.fetch = mockFetch;
+    fakeFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = fakeFetch;
   });
 
   describe("mode", () => {
@@ -21,7 +21,7 @@ describe("IamBuilder", () => {
       await builder.mode(expectedMode).apply();
 
       // Assert
-      const actualBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.mode).toBe(expectedMode);
     });
   });
@@ -36,7 +36,7 @@ describe("IamBuilder", () => {
       await builder.defaultIdentity(expectedIdentity).apply();
 
       // Assert
-      const actualBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.default_identity).toBe(expectedIdentity);
     });
   });
@@ -50,7 +50,7 @@ describe("IamBuilder", () => {
       await builder.apply();
 
       // Assert
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(fakeFetch).toHaveBeenCalledWith(
         EXPECTED_IAM_URL,
         expect.objectContaining({
           method: "POST",
@@ -63,13 +63,13 @@ describe("IamBuilder", () => {
       // Arrange
       const builder = new IamBuilder(EXPECTED_MGMT_PORT);
       await builder.mode("enforce").apply();
-      mockFetch.mockClear();
+      fakeFetch.mockClear();
 
       // Act — apply again without setting anything new
       await builder.apply();
 
       // Assert
-      const actualBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.mode).toBeUndefined();
     });
 
@@ -85,7 +85,7 @@ describe("IamBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.identities).toBeDefined();
       expect(actualBody.identities["read-only"]).toBeDefined();
     });
@@ -106,11 +106,11 @@ describe("IamBuilder", () => {
 });
 
 describe("IdentityBuilder", () => {
-  let mockFetch: jest.Mock;
+  let fakeFetch: jest.Mock;
 
   beforeEach(() => {
-    mockFetch = jest.fn().mockResolvedValue({ ok: true });
-    global.fetch = mockFetch;
+    fakeFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = fakeFetch;
   });
 
   describe("allow", () => {
@@ -128,11 +128,11 @@ describe("IdentityBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualPolicy = actualBody.identities["dev-user"].inline_policies[0];
-      expect(actualPolicy.document.Statement[0].Effect).toBe("Allow");
-      expect(actualPolicy.document.Statement[0].Action).toEqual(expectedActions);
-      expect(actualPolicy.document.Statement[0].Resource).toBe(expectedResource);
+      expect(actualPolicy.Statement[0].Effect).toBe("Allow");
+      expect(actualPolicy.Statement[0].Action).toEqual(expectedActions);
+      expect(actualPolicy.Statement[0].Resource).toBe(expectedResource);
     });
 
     it("defaults resource to * when not specified", async () => {
@@ -147,9 +147,9 @@ describe("IdentityBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualStatement =
-        actualBody.identities["dev-user"].inline_policies[0].document.Statement[0];
+        actualBody.identities["dev-user"].inline_policies[0].Statement[0];
       expect(actualStatement.Resource).toBe("*");
     });
 
@@ -166,7 +166,7 @@ describe("IdentityBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualPolicies = actualBody.identities["dev-user"].inline_policies;
       expect(actualPolicies).toHaveLength(2);
     });
@@ -186,9 +186,9 @@ describe("IdentityBuilder", () => {
         .apply();
 
       // Assert
-      const actualBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualStatement =
-        actualBody.identities["readonly-user"].inline_policies[0].document.Statement[0];
+        actualBody.identities["readonly-user"].inline_policies[0].Statement[0];
       expect(actualStatement.Effect).toBe("Deny");
       expect(actualStatement.Action).toEqual(expectedActions);
     });

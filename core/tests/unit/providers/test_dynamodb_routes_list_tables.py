@@ -18,7 +18,7 @@ def _target(operation: str) -> dict[str, str]:
 
 
 @pytest.fixture()
-def mock_store() -> AsyncMock:
+def fake_store() -> AsyncMock:
     store = AsyncMock(spec=IKeyValueStore)
     store.get_item.return_value = None
     store.put_item.return_value = None
@@ -66,15 +66,15 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture()
-def client(mock_store: AsyncMock) -> httpx.AsyncClient:
-    app = create_dynamodb_app(mock_store)
+def client(fake_store: AsyncMock) -> httpx.AsyncClient:
+    app = create_dynamodb_app(fake_store)
     transport = httpx.ASGITransport(app=app)
     return httpx.AsyncClient(transport=transport, base_url="http://testserver")
 
 
 class TestListTables:
     @pytest.mark.asyncio
-    async def test_list_tables(self, client: httpx.AsyncClient, mock_store: AsyncMock) -> None:
+    async def test_list_tables(self, client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
         # Arrange
         expected_status_code = 200
         expected_table_names = ["TableA", "TableB"]
@@ -87,4 +87,4 @@ class TestListTables:
         data = resp.json()
         actual_table_names = data["TableNames"]
         assert actual_table_names == expected_table_names
-        mock_store.list_tables.assert_awaited_once()
+        fake_store.list_tables.assert_awaited_once()

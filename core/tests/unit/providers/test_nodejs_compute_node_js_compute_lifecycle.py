@@ -46,8 +46,8 @@ def _make_context(**overrides) -> LambdaContext:
     return LambdaContext(**defaults)
 
 
-def _mock_process(stdout: str, returncode: int = 0) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
+def _fake_process(stdout: str, returncode: int = 0) -> AsyncMock:
+    """Create a fake asyncio.subprocess.Process."""
     proc = AsyncMock()
     proc.communicate = AsyncMock(return_value=(stdout.encode(), b""))
     proc.returncode = returncode

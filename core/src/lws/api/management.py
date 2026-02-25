@@ -19,7 +19,7 @@ from lws.api.gui import get_dashboard_html
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger, get_ws_handler
 from lws.providers._shared.aws_chaos import AwsChaosConfig, parse_chaos_config
-from lws.providers._shared.aws_operation_mock import AwsMockConfig
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 from lws.runtime.orchestrator import Orchestrator
 
 _logger = get_logger("ldk.management")
@@ -124,7 +124,7 @@ def create_management_router(
     providers: dict[str, Provider] | None = None,
     resource_metadata: dict[str, Any] | None = None,
     chaos_configs: dict[str, AwsChaosConfig] | None = None,
-    aws_mock_configs: dict[str, AwsMockConfig] | None = None,
+    aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth_bundle: Any | None = None,
 ) -> APIRouter:
     """Create a management API router.
@@ -134,7 +134,7 @@ def create_management_router(
         providers: Optional map of all providers for status reporting.
         resource_metadata: Pre-built resource metadata for the ``/_ldk/resources`` endpoint.
         chaos_configs: Map of service name to mutable ``AwsChaosConfig`` for runtime updates.
-        aws_mock_configs: Map of service name to mutable ``AwsMockConfig`` for runtime updates.
+        aws_fake_configs: Map of service name to mutable ``AwsFakeConfig`` for runtime updates.
         iam_auth_bundle: Optional IAM auth bundle for runtime IAM auth management.
 
     Returns:
@@ -144,13 +144,13 @@ def create_management_router(
     all_providers = providers or orchestrator.providers
     _resource_metadata = resource_metadata or {}
     _chaos_configs = chaos_configs or {}
-    _aws_mock_configs = aws_mock_configs or {}
+    _aws_fake_configs = aws_fake_configs or {}
 
     _register_core_routes(router, orchestrator, all_providers, _resource_metadata)
     _register_chaos_routes(router, _chaos_configs)
     _register_iam_auth_routes(router, iam_auth_bundle)
     _register_function_url_routes(router, all_providers)
-    _register_aws_mock_routes(router, _aws_mock_configs)
+    _register_aws_fake_routes(router, _aws_fake_configs)
 
     return router
 
@@ -250,19 +250,19 @@ def _handle_get_function_urls(providers_map: dict[str, Any]) -> JSONResponse:
     return JSONResponse(content=result)
 
 
-def _register_aws_mock_routes(
+def _register_aws_fake_routes(
     router: APIRouter,
-    aws_mock_configs: dict[str, AwsMockConfig],
+    aws_fake_configs: dict[str, AwsFakeConfig],
 ) -> None:
-    """Register AWS mock management routes on the router."""
+    """Register AWS fake management routes on the router."""
 
-    @router.get("/aws-mock")
-    async def get_aws_mock() -> JSONResponse:
-        return _handle_get_aws_mock(aws_mock_configs)
+    @router.get("/aws-fake")
+    async def get_aws_fake() -> JSONResponse:
+        return _handle_get_aws_fake(aws_fake_configs)
 
-    @router.post("/aws-mock")
-    async def set_aws_mock(request: Request) -> JSONResponse:
-        return await _handle_set_aws_mock(request, aws_mock_configs)
+    @router.post("/aws-fake")
+    async def set_aws_fake(request: Request) -> JSONResponse:
+        return await _handle_set_aws_fake(request, aws_fake_configs)
 
 
 def _handle_get_chaos(chaos_configs: dict[str, AwsChaosConfig]) -> JSONResponse:
@@ -318,33 +318,33 @@ def _apply_chaos_overrides(cfg: AwsChaosConfig, overrides: dict[str, Any]) -> No
 
 
 # ---------------------------------------------------------------------------
-# AWS Mock helpers
+# AWS Fake helpers
 # ---------------------------------------------------------------------------
 
 
-def _handle_get_aws_mock(mock_configs: dict[str, AwsMockConfig]) -> JSONResponse:
-    """Return current AWS mock config for all services."""
-    result = {svc: _serialize_aws_mock(cfg) for svc, cfg in mock_configs.items()}
+def _handle_get_aws_fake(fake_configs: dict[str, AwsFakeConfig]) -> JSONResponse:
+    """Return current AWS fake config for all services."""
+    result = {svc: _serialize_aws_fake(cfg) for svc, cfg in fake_configs.items()}
     return JSONResponse(content=result)
 
 
-async def _handle_set_aws_mock(
-    request: Request, mock_configs: dict[str, AwsMockConfig]
+async def _handle_set_aws_fake(
+    request: Request, fake_configs: dict[str, AwsFakeConfig]
 ) -> JSONResponse:
-    """Update AWS mock config for one or more services."""
+    """Update AWS fake config for one or more services."""
     body = await request.json()
     updated: list[str] = []
     for svc, overrides in body.items():
-        if svc not in mock_configs:
+        if svc not in fake_configs:
             continue
-        _apply_aws_mock_overrides(mock_configs[svc], overrides)
+        _apply_aws_fake_overrides(fake_configs[svc], overrides)
         updated.append(svc)
-    result = {svc: _serialize_aws_mock(mock_configs[svc]) for svc in updated}
-    return JSONResponse(content={"updated": updated, "aws_mock": result})
+    result = {svc: _serialize_aws_fake(fake_configs[svc]) for svc in updated}
+    return JSONResponse(content={"updated": updated, "aws_fake": result})
 
 
-def _serialize_aws_mock(cfg: AwsMockConfig) -> dict[str, Any]:
-    """Serialize an AwsMockConfig to a JSON-safe dict."""
+def _serialize_aws_fake(cfg: AwsFakeConfig) -> dict[str, Any]:
+    """Serialize an AwsFakeConfig to a JSON-safe dict."""
     return {
         "service": cfg.service,
         "enabled": cfg.enabled,
@@ -363,16 +363,16 @@ def _serialize_aws_mock(cfg: AwsMockConfig) -> dict[str, Any]:
     }
 
 
-def _apply_aws_mock_overrides(cfg: AwsMockConfig, overrides: dict[str, Any]) -> None:
-    """Apply partial overrides to an existing AwsMockConfig in place."""
-    from lws.providers._shared.aws_operation_mock import (  # pylint: disable=import-outside-toplevel
-        parse_mock_rule,
+def _apply_aws_fake_overrides(cfg: AwsFakeConfig, overrides: dict[str, Any]) -> None:
+    """Apply partial overrides to an existing AwsFakeConfig in place."""
+    from lws.providers._shared.aws_operation_fake import (  # pylint: disable=import-outside-toplevel
+        parse_fake_rule,
     )
 
     if "enabled" in overrides:
         cfg.enabled = bool(overrides["enabled"])
     if "rules" in overrides:
-        cfg.rules = [parse_mock_rule(r) for r in overrides["rules"]]
+        cfg.rules = [parse_fake_rule(r) for r in overrides["rules"]]
 
 
 # ---------------------------------------------------------------------------

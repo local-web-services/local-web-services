@@ -1,11 +1,11 @@
 [project]
 name = "local-web-services-python-sdk"
-version = "0.1.6"
+version = "0.2.0"
 description = "Python testing SDK for local-web-services — in-process pytest fixtures and boto3 helpers"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
-keywords = ["aws", "testing", "pytest", "boto3", "local", "dynamodb", "sqs", "s3", "mocking"]
+keywords = ["aws", "testing", "pytest", "boto3", "local", "dynamodb", "sqs", "s3", "faking"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -81,3 +81,6 @@ disable = [
     "R0903", "R0902", "R0913", "R0917", "R0904", "R0911", "R0914", "C0103",
     "W0603", "W0621", "C0415", "C0116", "W0212",
 ]
+
+[tool.uv.sources]
+local-web-services = { path = "../../../core", editable = true }

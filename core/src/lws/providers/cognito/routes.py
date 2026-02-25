@@ -11,7 +11,7 @@ from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
-from lws.providers._shared.aws_operation_mock import AwsMockConfig, AwsOperationMockMiddleware
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers.cognito.provider import CognitoProvider
 from lws.providers.cognito.user_store import CognitoError
 
@@ -304,13 +304,13 @@ def _error_response(error_type: str, message: str) -> Response:
 def create_cognito_app(
     provider: CognitoProvider,
     chaos: AwsChaosConfig | None = None,
-    aws_mock: AwsMockConfig | None = None,
+    aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Cognito wire protocol."""
     app = FastAPI(title="LDK Cognito")
-    if aws_mock is not None:
-        app.add_middleware(AwsOperationMockMiddleware, mock_config=aws_mock, service="cognito-idp")
+    if aws_fake is not None:
+        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="cognito-idp")
     add_iam_auth_middleware(app, "cognito-idp", iam_auth, ErrorFormat.JSON)
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)

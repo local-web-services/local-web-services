@@ -21,7 +21,7 @@ from lws.providers.dynamodb.streams import (
     StreamViewType,
 )
 
-from ._helpers import MockLambdaHandler
+from ._helpers import FakeLambdaHandler
 
 
 class TestStreamViewTypeFiltering:
@@ -29,7 +29,7 @@ class TestStreamViewTypeFiltering:
 
     async def test_keys_only_stream(self) -> None:
         # Arrange
-        handler = MockLambdaHandler()
+        handler = FakeLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         dispatcher.configure_stream(
             StreamConfiguration(
@@ -64,7 +64,7 @@ class TestStreamViewTypeFiltering:
 
     async def test_new_image_stream(self) -> None:
         # Arrange
-        handler = MockLambdaHandler()
+        handler = FakeLambdaHandler()
         dispatcher = StreamDispatcher(batch_window_ms=50)
         dispatcher.configure_stream(
             StreamConfiguration(

@@ -41,7 +41,7 @@ def _make_service(**overrides: object) -> ServiceDefinition:
     return ServiceDefinition(**defaults)
 
 
-def _mock_process() -> AsyncMock:
+def _fake_process() -> AsyncMock:
     proc = AsyncMock()
     proc.pid = 1234
     proc.returncode = None
@@ -117,8 +117,8 @@ def _mock_process() -> AsyncMock:
 
 class TestEcsProviderRestart:
     @patch("asyncio.create_subprocess_exec")
-    async def test_restart_service(self, mock_exec: AsyncMock) -> None:
-        mock_exec.return_value = _mock_process()
+    async def test_restart_service(self, fake_exec: AsyncMock) -> None:
+        fake_exec.return_value = _fake_process()
         svc = _make_service()
         provider = EcsProvider(services=[svc])
 
@@ -129,8 +129,8 @@ class TestEcsProviderRestart:
         await provider.stop()
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_restart_unknown_service_is_noop(self, mock_exec: AsyncMock) -> None:
-        mock_exec.return_value = _mock_process()
+    async def test_restart_unknown_service_is_noop(self, fake_exec: AsyncMock) -> None:
+        fake_exec.return_value = _fake_process()
         provider = EcsProvider(services=[])
         await provider.start()
         await provider.restart_service("nonexistent")

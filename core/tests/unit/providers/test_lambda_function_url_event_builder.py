@@ -15,7 +15,7 @@ def _make_request(
     body: bytes = b"",
     client_host: str = "127.0.0.1",
 ) -> MagicMock:
-    """Create a mock Starlette Request."""
+    """Create a fake Starlette Request."""
     request = MagicMock()
     request.method = method
     request.url.path = path

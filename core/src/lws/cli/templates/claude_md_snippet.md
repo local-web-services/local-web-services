@@ -24,26 +24,26 @@ lws status
 ```
 
 ### Available slash commands
-- `/lws:mock` — Create or configure AWS operation mocks (return canned responses for specific operations)
+- `/lws:fake` — Create or configure AWS operation fakes (return canned responses for specific operations)
 - `/lws:chaos` — Enable chaos engineering (inject errors, latency, timeouts into AWS service calls)
 - `/lws:iam-auth` — Configure IAM authorization (enforce/audit/disabled modes, identities, permissions)
 
-### AWS Operation Mocking
+### AWS Operation Faking
 
-Mock specific AWS operations to return canned responses during development:
+Fake specific AWS operations to return canned responses during development:
 
 ```bash
-# Create a mock definition
-lws aws-mock create my-mock --service s3
+# Create a fake definition
+lws aws-fake create my-fake --service s3
 
 # Add an operation rule
-lws aws-mock add-operation my-mock --operation get-object --body '{"key": "value"}'
+lws aws-fake add-operation my-fake --operation get-object --body '{"key": "value"}'
 
 # Or configure at runtime (server must be running)
-lws aws-mock set-rules s3 --operation get-object --status 200 --body '{"key": "value"}'
+lws aws-fake set-rules s3 --operation get-object --status 200 --body '{"key": "value"}'
 
-# Check mock status
-lws aws-mock status
+# Check fake status
+lws aws-fake status
 ```
 
 Supported services: dynamodb, sqs, s3, sns, events, stepfunctions, cognito-idp, ssm, secretsmanager.

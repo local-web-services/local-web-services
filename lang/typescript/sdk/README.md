@@ -102,7 +102,7 @@ test('creates an order', async () => {
 | `session.s3(bucketName)` | Get `S3Helper` |
 | `session.reset()` | Clear all state (use in `beforeEach`) |
 | `session.close()` | Stop `ldk dev` process |
-| `session.mock(service)` | Get `MockBuilder` for service |
+| `session.fake(service)` | Get `FakeBuilder` for service |
 | `session.chaos(service)` | Get `ChaosBuilder` for service |
 | `session.iam` | Get `IamBuilder` |
 

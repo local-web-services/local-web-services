@@ -14,10 +14,10 @@ runner = CliRunner()
 _TARGET_PREFIX = "DynamoDB_20120810"
 
 
-def _mock_client_response(return_value: dict) -> AsyncMock:
-    mock = AsyncMock()
-    mock.json_target_request = AsyncMock(return_value=return_value)
-    return mock
+def _fake_client_response(return_value: dict) -> AsyncMock:
+    fake = AsyncMock()
+    fake.json_target_request = AsyncMock(return_value=return_value)
+    return fake
 
 
 class TestCreateTable:
@@ -29,10 +29,10 @@ class TestCreateTable:
         expected_table_name = "MyTable"
         expected_key_schema = [{"AttributeName": "pk", "KeyType": "HASH"}]
         expected_attribute_definitions = [{"AttributeName": "pk", "AttributeType": "S"}]
-        mock = _mock_client_response({"TableDescription": {"TableName": expected_table_name}})
+        fake = _fake_client_response({"TableDescription": {"TableName": expected_table_name}})
 
         # Act
-        with patch("lws.cli.services.dynamodb._client", return_value=mock):
+        with patch("lws.cli.services.dynamodb._client", return_value=fake):
             result = runner.invoke(
                 app,
                 [
@@ -49,8 +49,8 @@ class TestCreateTable:
 
         # Assert
         assert result.exit_code == expected_exit_code
-        mock.json_target_request.assert_awaited_once()
-        call_args = mock.json_target_request.call_args
+        fake.json_target_request.assert_awaited_once()
+        call_args = fake.json_target_request.call_args
         actual_service = call_args[0][0]
         actual_target = call_args[0][1]
         actual_body = call_args[0][2]
@@ -63,7 +63,7 @@ class TestCreateTable:
     def test_create_table_with_gsi(self) -> None:
         # Arrange
         expected_exit_code = 0
-        mock = _mock_client_response({"TableDescription": {"TableName": "MyTable"}})
+        fake = _fake_client_response({"TableDescription": {"TableName": "MyTable"}})
         gsis = [
             {
                 "IndexName": "gsi1",
@@ -73,7 +73,7 @@ class TestCreateTable:
         ]
 
         # Act
-        with patch("lws.cli.services.dynamodb._client", return_value=mock):
+        with patch("lws.cli.services.dynamodb._client", return_value=fake):
             result = runner.invoke(
                 app,
                 [
@@ -92,5 +92,5 @@ class TestCreateTable:
 
         # Assert
         assert result.exit_code == expected_exit_code
-        actual_body = mock.json_target_request.call_args[0][2]
+        actual_body = fake.json_target_request.call_args[0][2]
         assert "GlobalSecondaryIndexes" in actual_body

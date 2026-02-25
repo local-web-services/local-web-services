@@ -12,10 +12,10 @@ class TestCreateDockerClientFromEnv:
         # Arrange
         expected_client = MagicMock()
         expected_client.ping.return_value = True
-        mock_docker = MagicMock()
-        mock_docker.from_env.return_value = expected_client
+        fake_docker = MagicMock()
+        fake_docker.from_env.return_value = expected_client
 
-        with patch.dict("sys.modules", {"docker": mock_docker}):
+        with patch.dict("sys.modules", {"docker": fake_docker}):
             from lws.providers.lambda_runtime.docker import create_docker_client
 
             # Act
@@ -23,25 +23,25 @@ class TestCreateDockerClientFromEnv:
 
         # Assert
         assert actual_client is expected_client
-        mock_docker.from_env.assert_called_once()
+        fake_docker.from_env.assert_called_once()
 
     def test_from_env_ping_failure_falls_through(self, tmp_path):
         # Arrange
-        mock_env_client = MagicMock()
-        mock_env_client.ping.side_effect = Exception("connection refused")
+        fake_env_client = MagicMock()
+        fake_env_client.ping.side_effect = Exception("connection refused")
 
-        mock_sock_client = MagicMock()
-        mock_sock_client.ping.return_value = True
+        fake_sock_client = MagicMock()
+        fake_sock_client.ping.return_value = True
 
-        mock_docker = MagicMock()
-        mock_docker.from_env.return_value = mock_env_client
-        mock_docker.DockerClient.return_value = mock_sock_client
+        fake_docker = MagicMock()
+        fake_docker.from_env.return_value = fake_env_client
+        fake_docker.DockerClient.return_value = fake_sock_client
 
         sock_path = tmp_path / "docker.sock"
         sock_path.touch()
 
         with (
-            patch.dict("sys.modules", {"docker": mock_docker}),
+            patch.dict("sys.modules", {"docker": fake_docker}),
             patch(
                 "lws.providers.lambda_runtime.docker._socket_candidates",
                 return_value=[sock_path],
@@ -53,4 +53,4 @@ class TestCreateDockerClientFromEnv:
             actual_client = create_docker_client()
 
         # Assert
-        assert actual_client is mock_sock_client
+        assert actual_client is fake_sock_client

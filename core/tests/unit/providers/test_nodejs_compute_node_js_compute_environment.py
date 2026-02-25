@@ -44,8 +44,8 @@ def _make_context(**overrides) -> LambdaContext:
     return LambdaContext(**defaults)
 
 
-def _mock_process(stdout: str, returncode: int = 0) -> AsyncMock:
-    """Create a mock asyncio.subprocess.Process."""
+def _fake_process(stdout: str, returncode: int = 0) -> AsyncMock:
+    """Create a fake asyncio.subprocess.Process."""
     proc = AsyncMock()
     proc.communicate = AsyncMock(return_value=(stdout.encode(), b""))
     proc.returncode = returncode
@@ -126,10 +126,10 @@ class TestNodeJsComputeEnvironment:
         assert env["SHARED_KEY"] == expected_value
 
     @patch("asyncio.create_subprocess_exec")
-    async def test_invoke_passes_env_to_subprocess(self, mock_exec: AsyncMock) -> None:
+    async def test_invoke_passes_env_to_subprocess(self, fake_exec: AsyncMock) -> None:
         """The env dict built by _build_env is passed to the subprocess."""
         success_output = json.dumps({"result": None})
-        mock_exec.return_value = _mock_process(success_output)
+        fake_exec.return_value = _fake_process(success_output)
 
         sdk_env = {"SDK_VAR": "sdk-value"}
         config = _make_config(environment={"CFG_VAR": "cfg-value"})
@@ -142,7 +142,7 @@ class TestNodeJsComputeEnvironment:
         expected_sdk_var = "sdk-value"
         expected_cfg_var = "cfg-value"
         expected_handler = "index.handler"
-        call_kwargs = mock_exec.call_args.kwargs
+        call_kwargs = fake_exec.call_args.kwargs
         env_passed = call_kwargs["env"]
         assert env_passed["SDK_VAR"] == expected_sdk_var
         assert env_passed["CFG_VAR"] == expected_cfg_var

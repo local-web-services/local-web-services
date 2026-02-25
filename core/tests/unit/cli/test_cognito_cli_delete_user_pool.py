@@ -11,11 +11,11 @@ from lws.cli.lws import app
 runner = CliRunner()
 
 
-def _mock_client(return_value: dict) -> AsyncMock:
-    mock = AsyncMock()
-    mock.json_target_request = AsyncMock(return_value=return_value)
-    mock.service_port = AsyncMock(return_value=3007)
-    return mock
+def _fake_client(return_value: dict) -> AsyncMock:
+    fake = AsyncMock()
+    fake.json_target_request = AsyncMock(return_value=return_value)
+    fake.service_port = AsyncMock(return_value=3007)
+    return fake
 
 
 class TestDeleteUserPool:
@@ -23,10 +23,10 @@ class TestDeleteUserPool:
         # Arrange
         expected_exit_code = 0
         expected_target = "DeleteUserPool"
-        mock = _mock_client({})
+        fake = _fake_client({})
 
         # Act
-        with patch("lws.cli.services.cognito._client", return_value=mock):
+        with patch("lws.cli.services.cognito._client", return_value=fake):
             result = runner.invoke(
                 app,
                 ["cognito-idp", "delete-user-pool", "--user-pool-id", "us-east-1_default"],
@@ -34,6 +34,6 @@ class TestDeleteUserPool:
 
         # Assert
         assert result.exit_code == expected_exit_code
-        mock.json_target_request.assert_awaited_once()
-        actual_target = mock.json_target_request.call_args[0][1]
+        fake.json_target_request.assert_awaited_once()
+        actual_target = fake.json_target_request.call_args[0][1]
         assert expected_target in actual_target

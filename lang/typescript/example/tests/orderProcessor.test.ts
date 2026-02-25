@@ -60,41 +60,41 @@ test("processOrder handles multiple different orders", async () => {
   }
 });
 
-const MOCK_STATE_MACHINE_ARN = "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor";
-const MOCK_EXECUTION_ARN = "arn:aws:states:us-east-1:000000000000:execution:OrderProcessor:mock-exec";
+const FAKE_STATE_MACHINE_ARN = "arn:aws:states:us-east-1:000000000000:stateMachine:OrderProcessor";
+const FAKE_EXECUTION_ARN = "arn:aws:states:us-east-1:000000000000:execution:OrderProcessor:fake-exec";
 
-test("processOrder succeeds with mocked SFN responses", async () => {
-  // Arrange — mock both SFN calls so no real state machine is needed
-  await session.mock("stepfunctions").operation("start-execution").respond({
+test("processOrder succeeds with faked SFN responses", async () => {
+  // Arrange — fake both SFN calls so no real state machine is needed
+  await session.fake("stepfunctions").operation("start-execution").respond({
     body: {
-      executionArn: MOCK_EXECUTION_ARN,
+      executionArn: FAKE_EXECUTION_ARN,
       startDate: 1704067200.0,
     },
   });
-  await session.mock("stepfunctions").operation("describe-execution").respond({
+  await session.fake("stepfunctions").operation("describe-execution").respond({
     body: {
-      executionArn: MOCK_EXECUTION_ARN,
-      stateMachineArn: MOCK_STATE_MACHINE_ARN,
-      name: "mock-exec",
+      executionArn: FAKE_EXECUTION_ARN,
+      stateMachineArn: FAKE_STATE_MACHINE_ARN,
+      name: "fake-exec",
       status: "SUCCEEDED",
       startDate: 1704067200.0,
-      output: JSON.stringify({ orderId: "order-mock" }),
+      output: JSON.stringify({ orderId: "order-fake" }),
     },
   });
 
   // Act
-  const actualResult = await processOrder("order-mock", MOCK_STATE_MACHINE_ARN, sfnClient);
+  const actualResult = await processOrder("order-fake", FAKE_STATE_MACHINE_ARN, sfnClient);
 
   // Assert
-  expect(actualResult.orderId).toBe("order-mock");
+  expect(actualResult.orderId).toBe("order-fake");
 
-  // Cleanup — clear the mock so subsequent tests are unaffected
-  await session.mock("stepfunctions").clear();
+  // Cleanup — clear the fake so subsequent tests are unaffected
+  await session.fake("stepfunctions").clear();
 });
 
 test("processOrder throws when AWS returns ExecutionLimitExceeded", async () => {
-  // Arrange — mock StartExecution to return an AWS error
-  await session.mock("stepfunctions").operation("start-execution").error(
+  // Arrange — fake StartExecution to return an AWS error
+  await session.fake("stepfunctions").operation("start-execution").error(
     "ExecutionLimitExceeded",
     "You have exceeded the maximum number of running executions."
   );
@@ -102,11 +102,11 @@ test("processOrder throws when AWS returns ExecutionLimitExceeded", async () => 
   try {
     // Act + Assert — AWS SDK v3 surfaces the error type in error.name
     await expect(
-      processOrder("order-999", MOCK_STATE_MACHINE_ARN, sfnClient)
+      processOrder("order-999", FAKE_STATE_MACHINE_ARN, sfnClient)
     ).rejects.toMatchObject({ name: "ExecutionLimitExceeded" });
   } finally {
     // Cleanup — always clear even if the assertion above fails
-    await session.mock("stepfunctions").clear();
+    await session.fake("stepfunctions").clear();
   }
 });
 

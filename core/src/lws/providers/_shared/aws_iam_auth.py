@@ -22,7 +22,7 @@ from lws.providers._shared.aws_chaos import (
     ErrorFormat,
     format_error,
 )
-from lws.providers._shared.aws_operation_mock import extract_operation_from_request
+from lws.providers._shared.aws_operation_fake import extract_operation_from_request
 from lws.providers._shared.iam_identity_store import IdentityStore
 from lws.providers._shared.iam_permissions_map import PermissionsMap
 from lws.providers._shared.iam_policy_engine import (

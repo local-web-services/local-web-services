@@ -1,0 +1,58 @@
+{
+  "Resources": {
+    "MyTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "CdkTestTable",
+        "KeySchema": [
+          {"AttributeName": "pk", "KeyType": "HASH"},
+          {"AttributeName": "sk", "KeyType": "RANGE"}
+        ],
+        "AttributeDefinitions": [
+          {"AttributeName": "pk", "AttributeType": "S"},
+          {"AttributeName": "sk", "AttributeType": "S"}
+        ],
+        "BillingMode": "PAY_PER_REQUEST"
+      }
+    },
+    "MyQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "CdkTestQueue"
+      }
+    },
+    "MyBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "cdk-test-bucket"
+      }
+    },
+    "MyTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "CdkTestTopic"
+      }
+    },
+    "MyStateMachine": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "StateMachineName": "CdkTestStateMachine",
+        "DefinitionString": "{\"StartAt\":\"Done\",\"States\":{\"Done\":{\"Type\":\"Pass\",\"End\":true}}}"
+      }
+    },
+    "MyParameter": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/cdk/test/param",
+        "Type": "String",
+        "Value": ""
+      }
+    },
+    "MySecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": "cdk-test-secret"
+      }
+    }
+  }
+}

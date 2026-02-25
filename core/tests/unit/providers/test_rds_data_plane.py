@@ -27,9 +27,9 @@ class TestRdsDataPlaneEndpoint:
         # Arrange
         expected_address = "localhost"
         expected_port = 15432
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:15432"
-        app = create_rds_app(postgres_container_manager=mock_cm)
+        fake_cm = AsyncMock()
+        fake_cm.start_container.return_value = "localhost:15432"
+        app = create_rds_app(postgres_container_manager=fake_cm)
         client = TestClient(app)
 
         # Act
@@ -49,15 +49,15 @@ class TestRdsDataPlaneEndpoint:
         actual_port = actual_endpoint["Port"]
         assert actual_address == expected_address
         assert actual_port == expected_port
-        mock_cm.start_container.assert_called_once_with("test-pg")
+        fake_cm.start_container.assert_called_once_with("test-pg")
 
     def test_mysql_with_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
         expected_address = "localhost"
         expected_port = 13306
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:13306"
-        app = create_rds_app(mysql_container_manager=mock_cm)
+        fake_cm = AsyncMock()
+        fake_cm.start_container.return_value = "localhost:13306"
+        app = create_rds_app(mysql_container_manager=fake_cm)
         client = TestClient(app)
 
         # Act
@@ -77,7 +77,7 @@ class TestRdsDataPlaneEndpoint:
         actual_port = actual_endpoint["Port"]
         assert actual_address == expected_address
         assert actual_port == expected_port
-        mock_cm.start_container.assert_called_once_with("test-mysql")
+        fake_cm.start_container.assert_called_once_with("test-mysql")
 
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
@@ -108,9 +108,9 @@ class TestRdsDataPlaneEndpoint:
         # Arrange
         expected_host = "localhost"
         expected_port = 15432
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:15432"
-        app = create_rds_app(postgres_container_manager=mock_cm)
+        fake_cm = AsyncMock()
+        fake_cm.start_container.return_value = "localhost:15432"
+        app = create_rds_app(postgres_container_manager=fake_cm)
         client = TestClient(app)
 
         # Act
@@ -129,13 +129,13 @@ class TestRdsDataPlaneEndpoint:
         actual_port = result["DBCluster"]["Port"]
         assert actual_endpoint == expected_host
         assert actual_port == expected_port
-        mock_cm.start_container.assert_called_once_with("test-pg-cluster")
+        fake_cm.start_container.assert_called_once_with("test-pg-cluster")
 
     def test_delete_standalone_instance_stops_container(self) -> None:
         # Arrange
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:15432"
-        app = create_rds_app(postgres_container_manager=mock_cm)
+        fake_cm = AsyncMock()
+        fake_cm.start_container.return_value = "localhost:15432"
+        app = create_rds_app(postgres_container_manager=fake_cm)
         client = TestClient(app)
         _post(
             client,
@@ -151,13 +151,13 @@ class TestRdsDataPlaneEndpoint:
         _post(client, "DeleteDBInstance", {"DBInstanceIdentifier": "test-pg"})
 
         # Assert
-        mock_cm.stop_container.assert_called_once_with("test-pg")
+        fake_cm.stop_container.assert_called_once_with("test-pg")
 
     def test_delete_cluster_stops_container(self) -> None:
         # Arrange
-        mock_cm = AsyncMock()
-        mock_cm.start_container.return_value = "localhost:15432"
-        app = create_rds_app(postgres_container_manager=mock_cm)
+        fake_cm = AsyncMock()
+        fake_cm.start_container.return_value = "localhost:15432"
+        app = create_rds_app(postgres_container_manager=fake_cm)
         client = TestClient(app)
         _post(
             client,
@@ -173,4 +173,4 @@ class TestRdsDataPlaneEndpoint:
         _post(client, "DeleteDBCluster", {"DBClusterIdentifier": "test-pg-cluster"})
 
         # Assert
-        mock_cm.stop_container.assert_called_once_with("test-pg-cluster")
+        fake_cm.stop_container.assert_called_once_with("test-pg-cluster")
