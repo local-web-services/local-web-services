@@ -64,7 +64,7 @@ function freePort(): Promise<number> {
 
 async function waitForReady(
   managementUrl: string,
-  timeoutMs = 30_000,
+  timeoutMs = 60_000,
   intervalMs = 200
 ): Promise<void> {
   const deadline = Date.now() + timeoutMs;

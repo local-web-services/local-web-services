@@ -63,7 +63,7 @@ function freePort() {
   });
 }
 
-async function waitForReady(managementUrl, timeoutMs = 30000, intervalMs = 200) {
+async function waitForReady(managementUrl, timeoutMs = 60000, intervalMs = 200) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
