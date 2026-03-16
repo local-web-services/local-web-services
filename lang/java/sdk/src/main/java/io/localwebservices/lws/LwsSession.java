@@ -7,11 +7,23 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
+import software.amazon.awssdk.services.apigateway.ApiGatewayClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.sfn.SfnClient;
 import software.amazon.awssdk.services.sfn.model.StateMachineType;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.rds.RdsClient;
+import software.amazon.awssdk.services.docdb.DocDbClient;
+import software.amazon.awssdk.services.neptune.NeptuneClient;
+import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
+import software.amazon.awssdk.services.memorydb.MemoryDbClient;
+import software.amazon.awssdk.services.glacier.GlacierClient;
+import software.amazon.awssdk.services.elasticsearch.ElasticsearchClient;
+import software.amazon.awssdk.services.opensearch.OpenSearchClient;
+import software.amazon.awssdk.services.s3tables.S3TablesClient;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.BillingMode;
@@ -25,6 +37,8 @@ import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
 import software.amazon.awssdk.services.ssm.model.ParameterType;
 import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 
+import io.localwebservices.lws.LwsServer;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -35,6 +49,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -53,23 +68,44 @@ import java.util.concurrent.TimeUnit;
  */
 public class LwsSession implements AutoCloseable {
 
-    static final Map<String, Integer> SERVICE_OFFSETS = Map.of(
-            "dynamodb", 1,
-            "sqs", 2,
-            "s3", 3,
-            "sns", 4,
-            "stepfunctions", 6,
-            "ssm", 12,
-            "secretsmanager", 13
-    );
+    static final Map<String, Integer> SERVICE_OFFSETS;
+    static {
+        SERVICE_OFFSETS = new LinkedHashMap<>();
+        SERVICE_OFFSETS.put("dynamodb", 1);
+        SERVICE_OFFSETS.put("sqs", 2);
+        SERVICE_OFFSETS.put("s3", 3);
+        SERVICE_OFFSETS.put("sns", 4);
+        SERVICE_OFFSETS.put("stepfunctions", 6);
+        SERVICE_OFFSETS.put("cognito-idp", 7);
+        SERVICE_OFFSETS.put("lambda", 8);
+        SERVICE_OFFSETS.put("apigateway", 9);
+        SERVICE_OFFSETS.put("rds", 10);
+        SERVICE_OFFSETS.put("docdb", 11);
+        SERVICE_OFFSETS.put("ssm", 12);
+        SERVICE_OFFSETS.put("secretsmanager", 13);
+        SERVICE_OFFSETS.put("elasticache", 14);
+        SERVICE_OFFSETS.put("neptune", 15);
+        SERVICE_OFFSETS.put("memorydb", 16);
+        SERVICE_OFFSETS.put("glacier", 17);
+        SERVICE_OFFSETS.put("elasticsearch", 18);
+        SERVICE_OFFSETS.put("opensearch", 19);
+        SERVICE_OFFSETS.put("s3tables", 20);
+    }
 
     private final int basePort;
     private final Process process;
+    private LwsServer.RunningServer runningServer;
     private LogCapture bgLogs;
 
     LwsSession(int basePort, Process process) {
         this.basePort = basePort;
         this.process = process;
+    }
+
+    LwsSession(int basePort, LwsServer.RunningServer runningServer) {
+        this.basePort = basePort;
+        this.process = null;
+        this.runningServer = runningServer;
     }
 
     /**
@@ -111,6 +147,22 @@ public class LwsSession implements AutoCloseable {
             session.bgLogs = LogCapture.start(session);
         } catch (Exception ignored) {
         }
+        return session;
+    }
+
+    /**
+     * Creates a session backed by an in-process LWS server (no external binary required).
+     * The server is started using {@code io.localwebservices.lws.LwsServer.start(basePort)}.
+     *
+     * @param spec resource declarations
+     * @return a ready session
+     */
+    public static LwsSession createInProcess(SessionSpec spec) throws Exception {
+        int basePort = findFreePort();
+        LwsServer.RunningServer runningServer = LwsServer.start(basePort);
+        LwsSession session = new LwsSession(basePort, runningServer);
+        session.preCreateResources(spec);
+        session.bgLogs = LogCapture.startHttp(session);
         return session;
     }
 
@@ -205,6 +257,149 @@ public class LwsSession implements AutoCloseable {
                 .build();
     }
 
+    /** Returns a pre-configured Cognito Identity Provider client pointing at the local emulator. */
+    public CognitoIdentityProviderClient cognitoIdpClient() {
+        return CognitoIdentityProviderClient.builder()
+                .endpointOverride(endpointFor("cognito-idp"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured API Gateway client pointing at the local emulator. */
+    public ApiGatewayClient apiGatewayClient() {
+        return ApiGatewayClient.builder()
+                .endpointOverride(endpointFor("apigateway"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured Lambda client pointing at the local emulator. */
+    public LambdaClient lambdaClient() {
+        return LambdaClient.builder()
+                .endpointOverride(endpointFor("lambda"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured RDS client pointing at the local emulator. */
+    public RdsClient rdsClient() {
+        return RdsClient.builder()
+                .endpointOverride(endpointFor("rds"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured DocDB client pointing at the local emulator. */
+    public DocDbClient docDbClient() {
+        return DocDbClient.builder()
+                .endpointOverride(endpointFor("docdb"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured Neptune client pointing at the local emulator. */
+    public NeptuneClient neptuneClient() {
+        return NeptuneClient.builder()
+                .endpointOverride(endpointFor("neptune"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured ElastiCache client pointing at the local emulator. */
+    public ElastiCacheClient elastiCacheClient() {
+        return ElastiCacheClient.builder()
+                .endpointOverride(endpointFor("elasticache"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured MemoryDB client pointing at the local emulator. */
+    public MemoryDbClient memoryDbClient() {
+        return MemoryDbClient.builder()
+                .endpointOverride(endpointFor("memorydb"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured Glacier client pointing at the local emulator. */
+    public GlacierClient glacierClient() {
+        return GlacierClient.builder()
+                .endpointOverride(endpointFor("glacier"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured Elasticsearch client pointing at the local emulator. */
+    public ElasticsearchClient elasticsearchClient() {
+        return ElasticsearchClient.builder()
+                .endpointOverride(endpointFor("elasticsearch"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured OpenSearch client pointing at the local emulator. */
+    public OpenSearchClient openSearchClient() {
+        return OpenSearchClient.builder()
+                .endpointOverride(endpointFor("opensearch"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /** Returns a pre-configured S3Tables client pointing at the local emulator. */
+    public S3TablesClient s3TablesClient() {
+        return S3TablesClient.builder()
+                .endpointOverride(endpointFor("s3tables"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(testCredentials())
+                .build();
+    }
+
+    /**
+     * Returns a pre-configured AWS SDK client of the requested type.
+     *
+     * <p>Supported types: {@link DynamoDbClient}, {@link SqsClient}, {@link SfnClient},
+     * {@link S3Client}, {@link SnsClient}, {@link SsmClient}, {@link SecretsManagerClient}.
+     *
+     * @param clientClass the AWS SDK client class
+     * @param <T>         the client type
+     * @return a client pointing at the local emulator
+     * @throws IllegalArgumentException if the client type is not supported
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T client(Class<T> clientClass) {
+        if (clientClass == DynamoDbClient.class) return clientClass.cast(dynamoDbClient());
+        if (clientClass == SqsClient.class) return clientClass.cast(sqsClient());
+        if (clientClass == SfnClient.class) return clientClass.cast(sfnClient());
+        if (clientClass == S3Client.class) return clientClass.cast(s3Client());
+        if (clientClass == SnsClient.class) return clientClass.cast(snsClient());
+        if (clientClass == SsmClient.class) return clientClass.cast(ssmClient());
+        if (clientClass == SecretsManagerClient.class) return clientClass.cast(secretsManagerClient());
+        if (clientClass == CognitoIdentityProviderClient.class) return clientClass.cast(cognitoIdpClient());
+        if (clientClass == ApiGatewayClient.class) return clientClass.cast(apiGatewayClient());
+        if (clientClass == LambdaClient.class) return clientClass.cast(lambdaClient());
+        if (clientClass == RdsClient.class) return clientClass.cast(rdsClient());
+        if (clientClass == DocDbClient.class) return clientClass.cast(docDbClient());
+        if (clientClass == NeptuneClient.class) return clientClass.cast(neptuneClient());
+        if (clientClass == ElastiCacheClient.class) return clientClass.cast(elastiCacheClient());
+        if (clientClass == MemoryDbClient.class) return clientClass.cast(memoryDbClient());
+        if (clientClass == GlacierClient.class) return clientClass.cast(glacierClient());
+        if (clientClass == ElasticsearchClient.class) return clientClass.cast(elasticsearchClient());
+        if (clientClass == OpenSearchClient.class) return clientClass.cast(openSearchClient());
+        if (clientClass == S3TablesClient.class) return clientClass.cast(s3TablesClient());
+        throw new IllegalArgumentException("Unsupported client type: " + clientClass.getName());
+    }
+
     /**
      * Resets all provider state via the management API.
      */
@@ -228,9 +423,14 @@ public class LwsSession implements AutoCloseable {
     }
 
     /**
-     * Connects to the WebSocket log stream and begins recording entries.
+     * Connects to the log stream and begins recording entries.
+     * Uses WebSocket if available; falls back to HTTP polling for in-process sessions.
      */
     public LogCapture startLogCapture() throws Exception {
+        if (runningServer != null) {
+            // In-process mode: use HTTP polling since WebSocket is not available
+            return LogCapture.startHttp(this);
+        }
         return LogCapture.start(this);
     }
 
@@ -289,6 +489,10 @@ public class LwsSession implements AutoCloseable {
         if (bgLogs != null) {
             bgLogs.stop();
             bgLogs = null;
+        }
+        if (runningServer != null) {
+            runningServer.stop();
+            runningServer = null;
         }
         if (process != null && process.isAlive()) {
             process.destroy();
@@ -428,9 +632,24 @@ public class LwsSession implements AutoCloseable {
     }
 
     static int findFreePort() throws IOException {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            socket.setReuseAddress(true);
-            return socket.getLocalPort();
+        // Services occupy basePort+1 through basePort+13; verify all are free before returning.
+        for (int attempt = 0; attempt < 20; attempt++) {
+            int base;
+            try (ServerSocket s = new ServerSocket(0)) {
+                s.setReuseAddress(true);
+                base = s.getLocalPort();
+            }
+            boolean allFree = true;
+            for (int offset = 1; offset <= 14; offset++) {
+                try (ServerSocket check = new ServerSocket(base + offset)) {
+                    check.setReuseAddress(true);
+                } catch (IOException e) {
+                    allFree = false;
+                    break;
+                }
+            }
+            if (allFree) return base;
         }
+        throw new IOException("Could not find a free contiguous port range after 20 attempts");
     }
 }

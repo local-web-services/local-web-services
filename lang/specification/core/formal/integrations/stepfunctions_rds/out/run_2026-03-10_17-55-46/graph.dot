@@ -1,0 +1,331 @@
+digraph G {
+  "0x14000094240" [label="yield
+Actions: 0, Forks: 0
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000094240" -> "0x14000094ba0" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x14000094ba0" [label="CreateStateMachine
+Actions: 1, Forks: 1
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000094ba0" -> "0x140000953e0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140000953e0" [label="yield
+Actions: 1, Forks: 2
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140000953e0" -> "0x14000095b00" [label="CreateDBInstance", color="black" penwidth="1" ];
+  "0x14000095b00" [label="CreateDBInstance
+Actions: 2, Forks: 3
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000095b00" -> "0x140002d2fc0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140002d2fc0" [label="yield
+Actions: 2, Forks: 4
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002d2fc0" -> "0x140002d3740" [label="DBFailoverBegins", color="black" penwidth="1" ];
+  "0x140002d3740" [label="DBFailoverBegins
+Actions: 3, Forks: 5
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d3740" -> "0x1400039b8c0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x1400039b8c0" [label="yield
+Actions: 3, Forks: 6
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400039b8c0" -> "0x140003de240" [label="DBFailoverComplete", color="black" penwidth="1" ];
+  "0x140003de240" [label="DBFailoverComplete
+Actions: 4, Forks: 7
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003de240" -> "0x140002d2fc0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x1400039b8c0" -> "0x140003de300" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140003de300" [label="StartExecution
+Actions: 4, Forks: 7
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003de300" -> "0x14000104d80" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000104d80" [label="Any:smid=\"sm-1\"
+Actions: 4, Forks: 8
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000104d80" -> "0x14000105380" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000105380" [label="yield
+Actions: 4, Forks: 9
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000105380" -> "0x14000094480" [label="DBFailoverComplete", color="black" penwidth="1" ];
+  "0x14000094480" [label="DBFailoverComplete
+Actions: 5, Forks: 10
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000094480" -> "0x140003df1a0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140003df1a0" [label="yield
+Actions: 3, Forks: 7
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003df1a0" -> "0x140003dfec0" [label="DBFailoverBegins", color="black" penwidth="1" ];
+  "0x140003dfec0" [label="DBFailoverBegins
+Actions: 4, Forks: 8
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003dfec0" -> "0x14000105380" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140003df1a0" -> "0x14000418180" [label="QueryDBTaskSucceeds", color="black" penwidth="1" ];
+  "0x14000418180" [label="QueryDBTaskSucceeds
+Actions: 4, Forks: 8
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000418180" -> "0x140002d2720" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140002d2720" [label="Any:eid=\"exec-1\"
+Actions: 4, Forks: 9
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d2720" -> "0x140002d2de0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140002d2de0" [label="yield
+Actions: 4, Forks: 10
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002d2de0" -> "0x14000314240" [label="DBFailoverBegins", color="black" penwidth="1" ];
+  "0x14000314240" [label="DBFailoverBegins
+Actions: 5, Forks: 11
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000314240" -> "0x140003dfbc0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140003dfbc0" [label="yield
+Actions: 5, Forks: 12
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003dfbc0" -> "0x140004190e0" [label="DBFailoverComplete", color="black" penwidth="1" ];
+  "0x140004190e0" [label="DBFailoverComplete
+Actions: 6, Forks: 13
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004190e0" -> "0x140002d2de0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140003dfbc0" -> "0x140004191a0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140004191a0" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004191a0" -> "0x14000616600" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000616600" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000616600" -> "0x14000432600" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000432600" [label="yield
+Actions: 6, Forks: 15
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000432600" -> "0x140005ac4e0" [label="DBFailoverComplete", color="black" penwidth="1" ];
+  "0x140005ac4e0" [label="DBFailoverComplete
+Actions: 7, Forks: 16
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140005ac4e0" -> "0x140003684e0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140003684e0" [label="yield
+Actions: 5, Forks: 13
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003684e0" -> "0x14000369200" [label="DBFailoverBegins", color="black" penwidth="1" ];
+  "0x14000369200" [label="DBFailoverBegins
+Actions: 6, Forks: 14
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000369200" -> "0x14000432600" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140003684e0" -> "0x14000369440" [label="QueryDBTaskSucceeds", color="black" penwidth="1" ];
+  "0x14000369440" [label="QueryDBTaskSucceeds
+Actions: 6, Forks: 14
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000369440" -> "0x140001b61e0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140001b61e0" [label="Any:eid=\"exec-1\"
+Actions: 6, Forks: 15
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001b61e0" -> "0x140002d2de0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x14000432600" -> "0x140005ac720" [label="QueryDBTaskFails", color="black" penwidth="1" ];
+  "0x140005ac720" [label="QueryDBTaskFails
+Actions: 7, Forks: 16
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140005ac720" -> "0x1400035a0c0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400035a0c0" [label="Any:eid=\"exec-1\"
+Actions: 7, Forks: 17
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400035a0c0" -> "0x1400039b5c0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x1400039b5c0" [label="yield
+Actions: 5, Forks: 12
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400039b5c0" -> "0x140003decc0" [label="DBFailoverComplete", color="black" penwidth="1" ];
+  "0x140003decc0" [label="DBFailoverComplete
+Actions: 6, Forks: 13
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003decc0" -> "0x14000432e40" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x14000432e40" [label="yield
+Actions: 6, Forks: 14
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000432e40" -> "0x14000433980" [label="DBFailoverBegins", color="black" penwidth="1" ];
+  "0x14000433980" [label="DBFailoverBegins
+Actions: 7, Forks: 15
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000433980" -> "0x1400039b5c0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x14000432e40" -> "0x14000433b00" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000433b00" [label="StartExecution
+Actions: 7, Forks: 15
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000433b00" -> "0x14000105aa0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000105aa0" [label="Any:smid=\"sm-1\"
+Actions: 7, Forks: 16
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000105aa0" -> "0x140003684e0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400039b5c0" -> "0x140003dee40" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140003dee40" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003dee40" -> "0x140005ac000" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140005ac000" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140005ac000" -> "0x14000432600" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140002d2de0" -> "0x14000314420" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000314420" [label="StartExecution
+Actions: 5, Forks: 11
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000314420" -> "0x14000419c80" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000419c80" [label="Any:smid=\"sm-1\"
+Actions: 5, Forks: 12
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{\"exec-1\": \"db-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000419c80" -> "0x140003684e0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000105380" -> "0x14000094720" [label="QueryDBTaskFails", color="black" penwidth="1" ];
+  "0x14000094720" [label="QueryDBTaskFails
+Actions: 5, Forks: 10
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000094720" -> "0x1400039af60" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400039af60" [label="Any:eid=\"exec-1\"
+Actions: 5, Forks: 11
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400039af60" -> "0x1400039b5c0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140002d2fc0" -> "0x140002d38c0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140002d38c0" [label="StartExecution
+Actions: 3, Forks: 5
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d38c0" -> "0x140003dec00" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003dec00" [label="Any:smid=\"sm-1\"
+Actions: 3, Forks: 6
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003dec00" -> "0x140003df1a0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140000953e0" -> "0x14000095d40" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000095d40" [label="StartExecution
+Actions: 2, Forks: 3
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000095d40" -> "0x14000314600" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000314600" [label="Any:smid=\"sm-1\"
+Actions: 2, Forks: 4
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000314600" -> "0x14000314ba0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000314ba0" [label="yield
+Actions: 2, Forks: 5
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000314ba0" -> "0x140003158c0" [label="CreateDBInstance", color="black" penwidth="1" ];
+  "0x140003158c0" [label="CreateDBInstance
+Actions: 3, Forks: 6
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003158c0" -> "0x140003df1a0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x14000094240" -> "0x14000094c60" [label="CreateDBInstance", color="black" penwidth="1" ];
+  "0x14000094c60" [label="CreateDBInstance
+Actions: 1, Forks: 1
+State: {\"db_status\":\"{}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000094c60" -> "0x140002a0300" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x140002a0300" [label="yield
+Actions: 1, Forks: 2
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002a0300" -> "0x140002a0960" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x140002a0960" [label="CreateStateMachine
+Actions: 2, Forks: 3
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a0960" -> "0x140002d2fc0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140002a0300" -> "0x140002a0ae0" [label="DBFailoverBegins", color="black" penwidth="1" ];
+  "0x140002a0ae0" [label="DBFailoverBegins
+Actions: 2, Forks: 3
+State: {\"db_status\":\"{\"db-1\": \"AVAILABLE\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a0ae0" -> "0x1400035b0e0" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+  "0x1400035b0e0" [label="yield
+Actions: 2, Forks: 4
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400035b0e0" -> "0x1400035b7a0" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x1400035b7a0" [label="CreateStateMachine
+Actions: 3, Forks: 5
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400035b7a0" -> "0x1400039b8c0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400035b0e0" -> "0x1400035b9e0" [label="DBFailoverComplete", color="black" penwidth="1" ];
+  "0x1400035b9e0" [label="DBFailoverComplete
+Actions: 3, Forks: 5
+State: {\"db_status\":\"{\"db-1\": \"FAILING_OVER\"}\",\"exec_db\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400035b9e0" -> "0x140002a0300" [label="Any:dbid=\"db-1\"", color="black" penwidth="1" ];
+}

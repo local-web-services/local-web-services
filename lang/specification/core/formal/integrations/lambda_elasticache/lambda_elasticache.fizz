@@ -1,0 +1,157 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Lambda -> ElastiCache Integration Formal Specification
+# Models a Lambda function reading and writing values to an ElastiCache cluster.
+# On a cache miss the function falls through; on a cache hit the function can return early.
+# Cache entries can be evicted by ElastiCache independently of Lambda activity.
+
+FUNC_IDS = ["func-1"]
+CLUSTER_IDS = ["cluster-1"]
+INV_IDS = ["inv-1"]
+KEY_IDS = ["key-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    cluster_status = {}         # cluster_status[cid] = "AVAILABLE"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    key_status = {}             # key_status[kid] = "CACHED" | "EVICTED"
+    key_cluster = {}            # key_cluster[kid] = cluster_id
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: an ElastiCache cluster is created
+# result: the cluster is AVAILABLE
+# guard: the cluster does not already exist
+# guard_violation: the cluster already exists
+atomic action CreateCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid not in cluster_status:
+            cluster_status[cid] = "AVAILABLE"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# step: the Lambda function writes a value to the ElastiCache cluster during invocation
+# result: the cache entry is CACHED in the cluster
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+# guard: a key slot is available
+# guard_violation_capacity: no key slot is available
+atomic action CacheWrite:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof cid in CLUSTER_IDS:
+                    if cid in cluster_status:
+                        if cluster_status[cid] == "AVAILABLE":
+                            oneof kid in KEY_IDS:
+                                if kid not in key_status or key_status[kid] == "EVICTED":
+                                    key_status[kid] = "CACHED"
+                                    key_cluster[kid] = cid
+
+
+# fake_skip: internal
+# step: ElastiCache evicts a cache entry due to memory pressure or TTL expiry
+# result: the cache entry is EVICTED
+# guard: a CACHED entry exists
+# guard_violation_lifecycle: no CACHED entry exists
+atomic action CacheEvict:
+    oneof kid in KEY_IDS:
+        if kid in key_status:
+            if key_status[kid] == "CACHED":
+                key_status[kid] = "EVICTED"
+
+
+# fake_skip: internal
+# step: the Lambda invocation reads an existing cache entry and completes successfully
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: a CACHED entry exists in the cluster
+# guard_violation_lifecycle: no CACHED entry exists in the cluster
+atomic action InvocationSucceedsCacheHit:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                found = False
+                for kid in key_status:
+                    if key_status[kid] == "CACHED":
+                        found = True
+                if found == True:
+                    inv_status[iid] = "SUCCESS"
+
+
+# fake_skip: internal
+# step: the Lambda invocation fails because all cache entries have been evicted
+# result: the invocation is FAILED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: no CACHED entries exist in the cluster
+# guard_violation_lifecycle: a CACHED entry exists in the cluster
+atomic action InvocationFailsCacheMiss:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                found = False
+                for kid in key_status:
+                    if key_status[kid] == "CACHED":
+                        found = True
+                if found == False:
+                    inv_status[iid] = "FAILED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every CACHED entry belongs to an AVAILABLE cluster
+always assertion CachedEntryRequiresAvailableCluster:
+    for kid in key_status:
+        if key_status[kid] == "CACHED":
+            cid = key_cluster[kid]
+            if cid in cluster_status:
+                if cluster_status[cid] != "AVAILABLE":
+                    return False
+    return True

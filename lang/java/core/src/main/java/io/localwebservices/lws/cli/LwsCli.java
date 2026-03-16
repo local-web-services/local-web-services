@@ -1,0 +1,104 @@
+package io.localwebservices.lws.cli;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+/** Static CLI methods for calling management HTTP endpoints. */
+public class LwsCli {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private static String baseUrl(int port) {
+        return "http://127.0.0.1:" + port;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> post(int port, String path, Object body) throws IOException {
+        URL url = new URL(baseUrl(port) + path);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+        byte[] bytes = MAPPER.writeValueAsBytes(body);
+        conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(bytes);
+        }
+        try (InputStream is = conn.getInputStream()) {
+            return MAPPER.readValue(is, Map.class);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> get(int port, String path) throws IOException {
+        URL url = new URL(baseUrl(port) + path);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        try (InputStream is = conn.getInputStream()) {
+            return MAPPER.readValue(is, Map.class);
+        }
+    }
+
+    public static void chaosEnable(int port, String service) throws IOException {
+        post(port, "/_ldk/chaos", Map.of(service, Map.of("enabled", true)));
+    }
+
+    public static void chaosDisable(int port, String service) throws IOException {
+        post(port, "/_ldk/chaos", Map.of(service, Map.of("enabled", false)));
+    }
+
+    public static void chaosSet(int port, String service, double errorRate, int latencyMin, int latencyMax) throws IOException {
+        var config = new java.util.LinkedHashMap<String, Object>();
+        config.put("enabled", true);
+        if (errorRate > 0) config.put("error_rate", errorRate);
+        if (latencyMin > 0) config.put("latency_min_ms", latencyMin);
+        if (latencyMax > 0) config.put("latency_max_ms", latencyMax);
+        post(port, "/_ldk/chaos", Map.of(service, config));
+    }
+
+    public static Map<String, Object> chaosStatus(int port) throws IOException {
+        return get(port, "/_ldk/chaos");
+    }
+
+    public static Map<String, Object> iamStatus(int port) throws IOException {
+        return get(port, "/_ldk/iam-auth");
+    }
+
+    public static void iamSet(int port, String mode) throws IOException {
+        post(port, "/_ldk/iam-auth", Map.of("mode", mode));
+    }
+
+    public static void iamSetIdentity(int port, String identity) throws IOException {
+        post(port, "/_ldk/iam-auth", Map.of("default_identity", identity));
+    }
+
+    public static void iamSetModeAndIdentity(int port, String mode, String identity) throws IOException {
+        post(port, "/_ldk/iam-auth", Map.of("mode", mode, "default_identity", identity));
+    }
+
+    public static void iamRegisterIdentities(int port, Map<String, Object> identities) throws IOException {
+        post(port, "/_ldk/iam-auth", Map.of("identities", identities));
+    }
+
+    public static void reset(int port) throws IOException {
+        post(port, "/_ldk/reset", Map.of());
+    }
+
+    public static void lifecycleSet(int port, String service, int createDwellMs, int deleteDwellMs) throws IOException {
+        var config = new java.util.LinkedHashMap<String, Object>();
+        config.put("enabled", true);
+        if (createDwellMs > 0) config.put("create_dwell_ms", createDwellMs);
+        if (deleteDwellMs > 0) config.put("delete_dwell_ms", deleteDwellMs);
+        post(port, "/_ldk/lifecycle", Map.of(service, config));
+    }
+
+    public static void lifecycleDisable(int port, String service) throws IOException {
+        post(port, "/_ldk/lifecycle", Map.of(service, Map.of("enabled", false, "create_dwell_ms", 0, "delete_dwell_ms", 0)));
+    }
+}

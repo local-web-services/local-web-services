@@ -1,0 +1,155 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# SNS -> SQS Integration Formal Specification
+# Models an SNS topic delivering messages to a subscribed SQS queue.
+
+TOPIC_IDS = ["topic-1"]
+QUEUE_IDS = ["queue-1"]
+SUB_IDS = ["sub-1"]
+MSG_IDS = ["msg-1", "msg-2", "msg-3"]
+
+action Init:
+    # SNS
+    topic_status = {}           # topic_status[tid] = "ACTIVE" | "DELETED"
+
+    # SQS subscription
+    sub_status = {}             # sub_status[sid] = "CONFIRMED" | "DELETED"
+    sub_topic = {}              # sub_topic[sid] = topic_id
+    sub_queue = {}              # sub_queue[sid] = queue_id
+
+    # SQS queues
+    queue_status = {}           # queue_status[qid] = "ACTIVE" | "DELETED"
+
+    # SQS messages
+    msg_status = {}             # msg_status[mid] = "AVAILABLE" | "DELETED"
+    msg_queue = {}              # msg_queue[mid] = queue_id
+
+
+# step: an SNS topic is created
+# result: the topic is ACTIVE
+# guard: the topic does not already exist
+# guard_violation: the topic already exists
+atomic action CreateTopic:
+    oneof tid in TOPIC_IDS:
+        if tid not in topic_status:
+            topic_status[tid] = "ACTIVE"
+
+
+# step: an SQS queue is created
+# result: the queue is ACTIVE
+# guard: the queue does not already exist
+# guard_violation: the queue already exists
+atomic action CreateQueue:
+    oneof qid in QUEUE_IDS:
+        if qid not in queue_status:
+            queue_status[qid] = "ACTIVE"
+
+
+# step: an SQS queue subscribes to an SNS topic
+# result: the subscription is CONFIRMED and the queue will receive published messages
+# guard: the topic exists
+# guard_violation: the topic does not exist
+# guard: the topic is ACTIVE
+# guard_violation_lifecycle: the topic is not ACTIVE
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+# guard: the subscription slot is available
+# guard_violation_capacity: the subscription slot is not available
+atomic action SubscribeQueueToTopic:
+    oneof tid in TOPIC_IDS:
+        if tid in topic_status:
+            if topic_status[tid] == "ACTIVE":
+                oneof qid in QUEUE_IDS:
+                    if qid in queue_status:
+                        if queue_status[qid] == "ACTIVE":
+                            oneof sid in SUB_IDS:
+                                if sid not in sub_status:
+                                    sub_status[sid] = "CONFIRMED"
+                                    sub_topic[sid] = tid
+                                    sub_queue[sid] = qid
+
+
+# step: a message is published to an SNS topic and delivered to the subscribed SQS queue
+# result: the message is AVAILABLE in the queue
+# guard: the topic exists
+# guard_violation: the topic does not exist
+# guard: the topic is ACTIVE
+# guard_violation_lifecycle: the topic is not ACTIVE
+# guard: a confirmed subscription exists for the topic
+# guard_violation_lifecycle: no confirmed subscription exists for the topic
+# guard: the subscribed queue is ACTIVE
+# guard_violation_lifecycle: the subscribed queue is not ACTIVE
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action PublishAndDeliver:
+    oneof tid in TOPIC_IDS:
+        if tid in topic_status:
+            if topic_status[tid] == "ACTIVE":
+                oneof sid in SUB_IDS:
+                    if sid in sub_status:
+                        if sub_status[sid] == "CONFIRMED":
+                            if sub_topic[sid] == tid:
+                                qid = sub_queue[sid]
+                                if qid in queue_status:
+                                    if queue_status[qid] == "ACTIVE":
+                                        oneof mid in MSG_IDS:
+                                            if mid not in msg_status or msg_status[mid] == "DELETED":
+                                                msg_status[mid] = "AVAILABLE"
+                                                msg_queue[mid] = qid
+
+
+
+# step: a message is consumed from the SQS queue
+# result: the message is DELETED
+# guard: an AVAILABLE message exists in the queue
+# guard_violation_lifecycle: no AVAILABLE message exists in the queue
+atomic action ConsumeMessage:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "AVAILABLE":
+                msg_status[mid] = "DELETED"
+
+
+# check: every confirmed subscription references an ACTIVE SNS topic
+always assertion SubscriptionReferencesActiveTopic:
+    for sid in sub_status:
+        if sub_status[sid] == "CONFIRMED":
+            tid = sub_topic[sid]
+            if tid in topic_status:
+                if topic_status[tid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every AVAILABLE message belongs to an ACTIVE queue
+always assertion MessagesReferenceActiveQueues:
+    for mid in msg_status:
+        if msg_status[mid] == "AVAILABLE":
+            qid = msg_queue[mid]
+            if qid in queue_status:
+                if queue_status[qid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: a message can only be delivered if a confirmed subscription exists for the topic
+always assertion DeliveryRequiresConfirmedSubscription:
+    for mid in msg_status:
+        if msg_status[mid] == "AVAILABLE":
+            qid = msg_queue[mid]
+            found = False
+            for sid in sub_status:
+                if sub_status[sid] == "CONFIRMED":
+                    if sub_queue[sid] == qid:
+                        found = True
+            if found == False:
+                return False
+    return True
+
+

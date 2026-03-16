@@ -1,0 +1,431 @@
+digraph G {
+  "0x1400008e1e0" [label="yield
+Actions: 0, Forks: 0
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400008e1e0" -> "0x1400008ef60" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x1400008ef60" [label="DeployFunction
+Actions: 1, Forks: 1
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008ef60" -> "0x1400008f7a0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400008f7a0" [label="yield
+Actions: 1, Forks: 2
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400008f7a0" -> "0x14000344120" [label="CreateDomain", color="black" penwidth="1" ];
+  "0x14000344120" [label="CreateDomain
+Actions: 2, Forks: 3
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000344120" -> "0x1400039b740" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400039b740" [label="yield
+Actions: 2, Forks: 4
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400039b740" -> "0x140003e2120" [label="CreateIndex", color="black" penwidth="1" ];
+  "0x140003e2120" [label="CreateIndex
+Actions: 3, Forks: 5
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003e2120" -> "0x140001b7ec0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x140001b7ec0" [label="Any:did=\"domain-1\"
+Actions: 3, Forks: 6
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001b7ec0" -> "0x1400028e540" [label="Any:xid=\"index-1\"", color="black" penwidth="1" ];
+  "0x1400028e540" [label="yield
+Actions: 3, Forks: 7
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400028e540" -> "0x1400028f380" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400028f380" [label="InvokeFunction
+Actions: 4, Forks: 8
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400028f380" -> "0x14000345740" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000345740" [label="Any:fid=\"func-1\"
+Actions: 4, Forks: 9
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000345740" -> "0x14000345e60" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000345e60" [label="yield
+Actions: 4, Forks: 10
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000345e60" -> "0x1400044e900" [label="IndexDocument", color="black" penwidth="1" ];
+  "0x1400044e900" [label="IndexDocument
+Actions: 5, Forks: 11
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044e900" -> "0x14000599c80" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000599c80" [label="Any:iid=\"inv-1\"
+Actions: 5, Forks: 12
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000599c80" -> "0x1400044eea0" [label="Any:xid=\"index-1\"", color="black" penwidth="1" ];
+  "0x1400044eea0" [label="Any:xid=\"index-1\"
+Actions: 5, Forks: 13
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044eea0" -> "0x1400039a0c0" [label="Any:docid=\"doc-1\"", color="black" penwidth="1" ];
+  "0x1400039a0c0" [label="yield
+Actions: 5, Forks: 14
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400039a0c0" -> "0x140003e33e0" [label="IndexDocument", color="black" penwidth="1" ];
+  "0x140003e33e0" [label="IndexDocument
+Actions: 6, Forks: 15
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003e33e0" -> "0x1400039a900" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400039a900" [label="Any:iid=\"inv-1\"
+Actions: 6, Forks: 16
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400039a900" -> "0x1400039b3e0" [label="Any:xid=\"index-1\"", color="black" penwidth="1" ];
+  "0x1400039b3e0" [label="Any:xid=\"index-1\"
+Actions: 6, Forks: 17
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400039a0c0" -> "0x140003e34a0" [label="InvocationSucceeds", color="black" penwidth="1" ];
+  "0x140003e34a0" [label="InvocationSucceeds
+Actions: 6, Forks: 15
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003e34a0" -> "0x140003e3ce0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003e3ce0" [label="yield
+Actions: 6, Forks: 16
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003e3ce0" -> "0x140001b6a20" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140001b6a20" [label="InvokeFunction
+Actions: 7, Forks: 17
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001b6a20" -> "0x1400069cfc0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400069cfc0" [label="Any:fid=\"func-1\"
+Actions: 7, Forks: 18
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400069cfc0" -> "0x1400039a0c0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400039a0c0" -> "0x140003e3560" [label="InvocationFails", color="black" penwidth="1" ];
+  "0x140003e3560" [label="InvocationFails
+Actions: 6, Forks: 15
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003e3560" -> "0x140001b7980" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140001b7980" [label="yield
+Actions: 6, Forks: 16
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140001b7980" -> "0x14000518360" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x14000518360" [label="InvokeFunction
+Actions: 7, Forks: 17
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000518360" -> "0x14000701aa0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000701aa0" [label="Any:fid=\"func-1\"
+Actions: 7, Forks: 18
+State: {\"doc_index\":\"{\"doc-1\": \"index-1\"}\",\"doc_inv\":\"{\"doc-1\": \"inv-1\"}\",\"doc_status\":\"{\"doc-1\": \"INDEXED\"}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000701aa0" -> "0x1400039a0c0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000345e60" -> "0x1400044e9c0" [label="InvocationSucceeds", color="black" penwidth="1" ];
+  "0x1400044e9c0" [label="InvocationSucceeds
+Actions: 5, Forks: 11
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044e9c0" -> "0x140003e3980" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003e3980" [label="yield
+Actions: 5, Forks: 12
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003e3980" -> "0x1400068b2c0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400068b2c0" [label="InvokeFunction
+Actions: 6, Forks: 13
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068b2c0" -> "0x14000519a40" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000519a40" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 14
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000519a40" -> "0x14000345e60" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000345e60" -> "0x1400044ea80" [label="InvocationFails", color="black" penwidth="1" ];
+  "0x1400044ea80" [label="InvocationFails
+Actions: 5, Forks: 11
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044ea80" -> "0x1400068bda0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400068bda0" [label="yield
+Actions: 5, Forks: 12
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400068bda0" -> "0x140001b7c20" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140001b7c20" [label="InvokeFunction
+Actions: 6, Forks: 13
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001b7c20" -> "0x14000562480" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000562480" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 14
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000562480" -> "0x14000345e60" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400039b740" -> "0x140003e21e0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140003e21e0" [label="InvokeFunction
+Actions: 3, Forks: 5
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003e21e0" -> "0x1400028f8c0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400028f8c0" [label="Any:fid=\"func-1\"
+Actions: 3, Forks: 6
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400028f8c0" -> "0x1400028fe60" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400028fe60" [label="yield
+Actions: 3, Forks: 7
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400028fe60" -> "0x14000528cc0" [label="CreateIndex", color="black" penwidth="1" ];
+  "0x14000528cc0" [label="CreateIndex
+Actions: 4, Forks: 8
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000528cc0" -> "0x1400039aae0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400039aae0" [label="Any:did=\"domain-1\"
+Actions: 4, Forks: 9
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400039aae0" -> "0x14000345e60" [label="Any:xid=\"index-1\"", color="black" penwidth="1" ];
+  "0x1400028fe60" -> "0x14000528f00" [label="InvocationSucceeds", color="black" penwidth="1" ];
+  "0x14000528f00" [label="InvocationSucceeds
+Actions: 4, Forks: 8
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000528f00" -> "0x140003e3920" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003e3920" [label="yield
+Actions: 4, Forks: 9
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003e3920" -> "0x1400068a7e0" [label="CreateIndex", color="black" penwidth="1" ];
+  "0x1400068a7e0" [label="CreateIndex
+Actions: 5, Forks: 10
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068a7e0" -> "0x1400028f980" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400028f980" [label="Any:did=\"domain-1\"
+Actions: 5, Forks: 11
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400028f980" -> "0x140003e3980" [label="Any:xid=\"index-1\"", color="black" penwidth="1" ];
+  "0x140003e3920" -> "0x1400068a8a0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400068a8a0" [label="InvokeFunction
+Actions: 5, Forks: 10
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068a8a0" -> "0x140005290e0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140005290e0" [label="Any:fid=\"func-1\"
+Actions: 5, Forks: 11
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140005290e0" -> "0x1400028fe60" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400028fe60" -> "0x14000528fc0" [label="InvocationFails", color="black" penwidth="1" ];
+  "0x14000528fc0" [label="InvocationFails
+Actions: 4, Forks: 8
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000528fc0" -> "0x1400068ade0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400068ade0" [label="yield
+Actions: 4, Forks: 9
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400068ade0" -> "0x1400068b980" [label="CreateIndex", color="black" penwidth="1" ];
+  "0x1400068b980" [label="CreateIndex
+Actions: 5, Forks: 10
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068b980" -> "0x1400006cba0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400006cba0" [label="Any:did=\"domain-1\"
+Actions: 5, Forks: 11
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006cba0" -> "0x1400068bda0" [label="Any:xid=\"index-1\"", color="black" penwidth="1" ];
+  "0x1400068ade0" -> "0x1400068ba40" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400068ba40" [label="InvokeFunction
+Actions: 5, Forks: 10
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068ba40" -> "0x1400006db60" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400006db60" [label="Any:fid=\"func-1\"
+Actions: 5, Forks: 11
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006db60" -> "0x1400028fe60" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400008f7a0" -> "0x140003442a0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140003442a0" [label="InvokeFunction
+Actions: 2, Forks: 3
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003442a0" -> "0x140003e2b40" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140003e2b40" [label="Any:fid=\"func-1\"
+Actions: 2, Forks: 4
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003e2b40" -> "0x140003e30e0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003e30e0" [label="yield
+Actions: 2, Forks: 5
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003e30e0" -> "0x140003e3e00" [label="CreateDomain", color="black" penwidth="1" ];
+  "0x140003e3e00" [label="CreateDomain
+Actions: 3, Forks: 6
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003e3e00" -> "0x1400028fe60" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x140003e30e0" -> "0x1400044e180" [label="InvocationSucceeds", color="black" penwidth="1" ];
+  "0x1400044e180" [label="InvocationSucceeds
+Actions: 3, Forks: 6
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044e180" -> "0x140004aa000" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140004aa000" [label="yield
+Actions: 3, Forks: 7
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004aa000" -> "0x140004aab40" [label="CreateDomain", color="black" penwidth="1" ];
+  "0x140004aab40" [label="CreateDomain
+Actions: 4, Forks: 8
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004aab40" -> "0x140003e3920" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x140004aa000" -> "0x140004ab260" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140004ab260" [label="InvokeFunction
+Actions: 4, Forks: 8
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004ab260" -> "0x140001b7260" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140001b7260" [label="Any:fid=\"func-1\"
+Actions: 4, Forks: 9
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001b7260" -> "0x140003e30e0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003e30e0" -> "0x1400044e240" [label="InvocationFails", color="black" penwidth="1" ];
+  "0x1400044e240" [label="InvocationFails
+Actions: 3, Forks: 6
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044e240" -> "0x140004ab7a0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140004ab7a0" [label="yield
+Actions: 3, Forks: 7
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004ab7a0" -> "0x1400006c4e0" [label="CreateDomain", color="black" penwidth="1" ];
+  "0x1400006c4e0" [label="CreateDomain
+Actions: 4, Forks: 8
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006c4e0" -> "0x1400068ade0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x140004ab7a0" -> "0x1400006c660" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400006c660" [label="InvokeFunction
+Actions: 4, Forks: 8
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006c660" -> "0x140005289c0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140005289c0" [label="Any:fid=\"func-1\"
+Actions: 4, Forks: 9
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140005289c0" -> "0x140003e30e0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400008e1e0" -> "0x1400008f020" [label="CreateDomain", color="black" penwidth="1" ];
+  "0x1400008f020" [label="CreateDomain
+Actions: 1, Forks: 1
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{}\",\"func_status\":\"{}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008f020" -> "0x140003448a0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x140003448a0" [label="yield
+Actions: 1, Forks: 2
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140003448a0" -> "0x140003450e0" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x140003450e0" [label="DeployFunction
+Actions: 2, Forks: 3
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003450e0" -> "0x1400039b740" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140003448a0" -> "0x14000345260" [label="CreateIndex", color="black" penwidth="1" ];
+  "0x14000345260" [label="CreateIndex
+Actions: 2, Forks: 3
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000345260" -> "0x1400044fa40" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400044fa40" [label="Any:did=\"domain-1\"
+Actions: 2, Forks: 4
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{}\",\"index_domain\":\"{}\",\"index_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044fa40" -> "0x140004aa060" [label="Any:xid=\"index-1\"", color="black" penwidth="1" ];
+  "0x140004aa060" [label="yield
+Actions: 2, Forks: 5
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140004aa060" -> "0x140004aacc0" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x140004aacc0" [label="DeployFunction
+Actions: 3, Forks: 6
+State: {\"doc_index\":\"{}\",\"doc_inv\":\"{}\",\"doc_status\":\"{}\",\"domain_status\":\"{\"domain-1\": \"ACTIVE\"}\",\"func_status\":\"{}\",\"index_domain\":\"{\"index-1\": \"domain-1\"}\",\"index_status\":\"{\"index-1\": \"EXISTS\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004aacc0" -> "0x1400028e540" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+}

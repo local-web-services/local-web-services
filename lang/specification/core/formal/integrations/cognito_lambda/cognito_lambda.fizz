@@ -1,0 +1,189 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Cognito -> Lambda Integration Formal Specification
+# Models a Cognito User Pool pre-signup trigger that synchronously invokes a Lambda function.
+# The Lambda can allow the signup (user CONFIRMED) or deny it (user REJECTED).
+# Without a trigger configured, signups are confirmed directly.
+
+POOL_IDS = ["pool-1"]
+FUNC_IDS = ["func-1"]
+USER_IDS = ["user-1"]
+INV_IDS = ["inv-1"]
+
+
+action Init:
+    pool_status = {}            # pool_status[pid] = "ACTIVE"
+    pool_trigger = {}           # pool_trigger[pid] = func_id or "" (pre-signup trigger)
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    user_status = {}            # user_status[uid] = "PENDING" | "CONFIRMED" | "REJECTED"
+    user_pool = {}              # user_pool[uid] = pool_id
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_user = {}               # inv_user[iid] = user_id
+    user_inv = {}               # user_inv[uid] = inv_id (invocation for this pending signup)
+
+
+# step: a Cognito User Pool is created
+# result: the pool is ACTIVE with no pre-signup trigger configured
+# guard: the pool does not already exist
+# guard_violation: the pool already exists
+atomic action CreateUserPool:
+    oneof pid in POOL_IDS:
+        if pid not in pool_status:
+            pool_status[pid] = "ACTIVE"
+            pool_trigger[pid] = ""
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a Lambda pre-signup trigger is configured on the Cognito User Pool
+# result: all subsequent signups will synchronously invoke the function before confirming
+# guard: the pool exists
+# guard_violation: the pool does not exist
+# guard: the pool is ACTIVE
+# guard_violation_lifecycle: the pool is not ACTIVE
+# guard: the pool has no trigger configured
+# guard_violation: the pool already has a trigger configured
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+atomic action ConfigureTrigger:
+    oneof pid in POOL_IDS:
+        if pid in pool_status:
+            if pool_status[pid] == "ACTIVE":
+                if pool_trigger[pid] == "":
+                    oneof fid in FUNC_IDS:
+                        if fid in func_status:
+                            if func_status[fid] == "ACTIVE":
+                                pool_trigger[pid] = fid
+
+
+# step: a user signs up to a pool that has no pre-signup trigger configured
+# result: the user is immediately CONFIRMED
+# guard: the pool exists
+# guard_violation: the pool does not exist
+# guard: the pool is ACTIVE
+# guard_violation_lifecycle: the pool is not ACTIVE
+# guard: the pool has no pre-signup trigger configured
+# guard_violation: the pool has a pre-signup trigger configured
+# guard: the user slot is available
+# guard_violation_capacity: no user slot is available
+atomic action SignupWithoutTrigger:
+    oneof pid in POOL_IDS:
+        if pid in pool_status:
+            if pool_status[pid] == "ACTIVE":
+                if pool_trigger[pid] == "":
+                    oneof uid in USER_IDS:
+                        if uid not in user_status:
+                            user_status[uid] = "CONFIRMED"
+                            user_pool[uid] = pid
+
+
+# step: a user initiates signup to a pool that has a pre-signup trigger configured
+# result: the user is PENDING and the trigger Lambda is invoked synchronously
+# guard: the pool exists
+# guard_violation: the pool does not exist
+# guard: the pool is ACTIVE
+# guard_violation_lifecycle: the pool is not ACTIVE
+# guard: the pool has a pre-signup trigger configured
+# guard_violation: the pool has no pre-signup trigger configured
+# guard: the trigger function is ACTIVE
+# guard_violation_lifecycle: the trigger function is not ACTIVE
+# guard: the user slot is available
+# guard_violation_capacity: no user slot is available
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InitiateSignupWithTrigger:
+    oneof pid in POOL_IDS:
+        if pid in pool_status:
+            if pool_status[pid] == "ACTIVE":
+                if pool_trigger[pid] != "":
+                    fid = pool_trigger[pid]
+                    if fid in func_status:
+                        if func_status[fid] == "ACTIVE":
+                            oneof uid in USER_IDS:
+                                if uid not in user_status:
+                                    oneof iid in INV_IDS:
+                                        if iid not in inv_status:
+                                            user_status[uid] = "PENDING"
+                                            user_pool[uid] = pid
+                                            inv_status[iid] = "IN_PROGRESS"
+                                            inv_user[iid] = uid
+                                            user_inv[uid] = iid
+
+
+# fake_skip: internal
+# step: the pre-signup Lambda allows the signup
+# result: the invocation is SUCCESS and the user is CONFIRMED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action TriggerAllows:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                uid = inv_user[iid]
+                inv_status[iid] = "SUCCESS"
+                user_status[uid] = "CONFIRMED"
+
+
+# fake_skip: internal
+# step: the pre-signup Lambda denies the signup
+# result: the invocation is FAILED and the user is REJECTED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action TriggerDenies:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                uid = inv_user[iid]
+                inv_status[iid] = "FAILED"
+                user_status[uid] = "REJECTED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            uid = inv_user[iid]
+            if uid in user_pool:
+                pid = user_pool[uid]
+                if pid in pool_trigger:
+                    fid = pool_trigger[pid]
+                    if fid in func_status:
+                        if func_status[fid] != "ACTIVE":
+                            return False
+    return True
+
+
+# check: every IN_PROGRESS invocation is for a PENDING user
+always assertion InvocationLinkedToPendingUser:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            uid = inv_user[iid]
+            if uid in user_status:
+                if user_status[uid] != "PENDING":
+                    return False
+    return True
+
+
+# check: every PENDING user has a corresponding IN_PROGRESS invocation
+always assertion PendingSignupHasInProgressInvocation:
+    for uid in user_status:
+        if user_status[uid] == "PENDING":
+            iid = user_inv[uid]
+            if iid in inv_status:
+                if inv_status[iid] != "IN_PROGRESS":
+                    return False
+    return True

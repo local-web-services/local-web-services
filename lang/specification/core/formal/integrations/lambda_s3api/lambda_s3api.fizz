@@ -1,0 +1,132 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Lambda -> S3 Integration Formal Specification
+# Models a Lambda function writing an object to an S3 bucket during invocation.
+# The object persists in the bucket after the invocation completes.
+
+FUNC_IDS = ["func-1"]
+BUCKET_IDS = ["bucket-1"]
+INV_IDS = ["inv-1"]
+OBJ_IDS = ["obj-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    bucket_status = {}          # bucket_status[bid] = "ACTIVE"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    obj_status = {}             # obj_status[oid] = "EXISTS" | "DELETED"
+    obj_bucket = {}             # obj_bucket[oid] = bucket_id
+    obj_inv = {}                # obj_inv[oid] = inv_id
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: an S3 bucket is created
+# result: the bucket is ACTIVE
+# guard: the bucket does not already exist
+# guard_violation: the bucket already exists
+atomic action CreateBucket:
+    oneof bid in BUCKET_IDS:
+        if bid not in bucket_status:
+            bucket_status[bid] = "ACTIVE"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# step: the Lambda function writes an object to the S3 bucket during invocation
+# result: the object EXISTS in the bucket
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: an object slot is available
+# guard_violation_capacity: no object slot is available
+atomic action PutObject:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof bid in BUCKET_IDS:
+                    if bid in bucket_status:
+                        if bucket_status[bid] == "ACTIVE":
+                            oneof oid in OBJ_IDS:
+                                if oid not in obj_status or obj_status[oid] == "DELETED":
+                                    obj_status[oid] = "EXISTS"
+                                    obj_bucket[oid] = bid
+                                    obj_inv[oid] = iid
+
+
+# fake_skip: internal
+# step: the Lambda invocation completes successfully
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "SUCCESS"
+
+
+# fake_skip: internal
+# step: the Lambda invocation fails
+# result: the invocation is FAILED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationFails:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "FAILED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every existing object belongs to an ACTIVE bucket
+always assertion ObjectRequiresActiveBucket:
+    for oid in obj_status:
+        if obj_status[oid] == "EXISTS":
+            bid = obj_bucket[oid]
+            if bid in bucket_status:
+                if bucket_status[bid] != "ACTIVE":
+                    return False
+    return True

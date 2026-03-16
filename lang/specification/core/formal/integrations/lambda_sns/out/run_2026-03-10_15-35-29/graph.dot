@@ -1,0 +1,262 @@
+digraph G {
+  "0x140001d5920" [label="yield
+Actions: 0, Forks: 0
+State: {\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140001d5920" -> "0x14000264300" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x14000264300" [label="DeployFunction
+Actions: 1, Forks: 1
+State: {\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000264300" -> "0x14000264a80" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000264a80" [label="yield
+Actions: 1, Forks: 2
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000264a80" -> "0x140002651a0" [label="CreateTopic", color="black" penwidth="1" ];
+  "0x140002651a0" [label="CreateTopic
+Actions: 2, Forks: 3
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002651a0" -> "0x14000325f20" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x14000325f20" [label="yield
+Actions: 2, Forks: 4
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000325f20" -> "0x14000350720" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x14000350720" [label="InvokeFunction
+Actions: 3, Forks: 5
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000350720" -> "0x140003d7440" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140003d7440" [label="Any:fid=\"func-1\"
+Actions: 3, Forks: 6
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d7440" -> "0x140003d79e0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003d79e0" [label="yield
+Actions: 3, Forks: 7
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003d79e0" -> "0x1400041e8a0" [label="PublishToTopic", color="black" penwidth="1" ];
+  "0x1400041e8a0" [label="PublishToTopic
+Actions: 4, Forks: 8
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400041e8a0" -> "0x140004dca20" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140004dca20" [label="Any:iid=\"inv-1\"
+Actions: 4, Forks: 9
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004dca20" -> "0x140004dd0e0" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x140004dd0e0" [label="yield
+Actions: 4, Forks: 10
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004dd0e0" -> "0x1400028e360" [label="InvocationSucceeds", color="black" penwidth="1" ];
+  "0x1400028e360" [label="InvocationSucceeds
+Actions: 5, Forks: 11
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400028e360" -> "0x1400068e600" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400068e600" [label="yield
+Actions: 5, Forks: 12
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400068e600" -> "0x1400068f440" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400068f440" [label="InvokeFunction
+Actions: 6, Forks: 13
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068f440" -> "0x14000264180" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000264180" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 14
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000264180" -> "0x140003d79e0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140004dd0e0" -> "0x1400028e420" [label="InvocationFails", color="black" penwidth="1" ];
+  "0x1400028e420" [label="InvocationFails
+Actions: 5, Forks: 11
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400028e420" -> "0x1400068f980" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400068f980" [label="yield
+Actions: 5, Forks: 12
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400068f980" -> "0x140007008a0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140007008a0" [label="InvokeFunction
+Actions: 6, Forks: 13
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140007008a0" -> "0x14000325800" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000325800" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 14
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": True}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000325800" -> "0x140003d79e0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003d79e0" -> "0x1400041e960" [label="InvocationSucceeds", color="black" penwidth="1" ];
+  "0x1400041e960" [label="InvocationSucceeds
+Actions: 4, Forks: 8
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400041e960" -> "0x1400028e720" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400028e720" [label="yield
+Actions: 4, Forks: 9
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400028e720" -> "0x1400008eae0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400008eae0" [label="InvokeFunction
+Actions: 5, Forks: 10
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008eae0" -> "0x14000701620" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000701620" [label="Any:fid=\"func-1\"
+Actions: 5, Forks: 11
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000701620" -> "0x140003d79e0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003d79e0" -> "0x1400041ea20" [label="InvocationFails", color="black" penwidth="1" ];
+  "0x1400041ea20" [label="InvocationFails
+Actions: 4, Forks: 8
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400041ea20" -> "0x1400008f020" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400008f020" [label="yield
+Actions: 4, Forks: 9
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400008f020" -> "0x1400008fb60" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400008fb60" [label="InvokeFunction
+Actions: 5, Forks: 10
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008fb60" -> "0x1400006d9e0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400006d9e0" [label="Any:fid=\"func-1\"
+Actions: 5, Forks: 11
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d9e0" -> "0x140003d79e0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000264a80" -> "0x14000265260" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x14000265260" [label="InvokeFunction
+Actions: 2, Forks: 3
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000265260" -> "0x14000350c60" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000350c60" [label="Any:fid=\"func-1\"
+Actions: 2, Forks: 4
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000350c60" -> "0x14000351200" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000351200" [label="yield
+Actions: 2, Forks: 5
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000351200" -> "0x1400039a000" [label="CreateTopic", color="black" penwidth="1" ];
+  "0x1400039a000" [label="CreateTopic
+Actions: 3, Forks: 6
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400039a000" -> "0x140003d79e0" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x14000351200" -> "0x1400039a240" [label="InvocationSucceeds", color="black" penwidth="1" ];
+  "0x1400039a240" [label="InvocationSucceeds
+Actions: 3, Forks: 6
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400039a240" -> "0x14000455680" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000455680" [label="yield
+Actions: 3, Forks: 7
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000455680" -> "0x14000498180" [label="CreateTopic", color="black" penwidth="1" ];
+  "0x14000498180" [label="CreateTopic
+Actions: 4, Forks: 8
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000498180" -> "0x1400028e720" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x14000455680" -> "0x14000498240" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x14000498240" [label="InvokeFunction
+Actions: 4, Forks: 8
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000498240" -> "0x14000542a20" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000542a20" [label="Any:fid=\"func-1\"
+Actions: 4, Forks: 9
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000542a20" -> "0x14000351200" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000351200" -> "0x1400039a300" [label="InvocationFails", color="black" penwidth="1" ];
+  "0x1400039a300" [label="InvocationFails
+Actions: 3, Forks: 6
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400039a300" -> "0x14000498780" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000498780" [label="yield
+Actions: 3, Forks: 7
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000498780" -> "0x14000499200" [label="CreateTopic", color="black" penwidth="1" ];
+  "0x14000499200" [label="CreateTopic
+Actions: 4, Forks: 8
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000499200" -> "0x1400008f020" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x14000498780" -> "0x140004992c0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140004992c0" [label="InvokeFunction
+Actions: 4, Forks: 8
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004992c0" -> "0x1400028f440" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400028f440" [label="Any:fid=\"func-1\"
+Actions: 4, Forks: 9
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_published\":\"{\"inv-1\": False}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400028f440" -> "0x14000351200" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140001d5920" -> "0x140002643c0" [label="CreateTopic", color="black" penwidth="1" ];
+  "0x140002643c0" [label="CreateTopic
+Actions: 1, Forks: 1
+State: {\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002643c0" -> "0x14000265860" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x14000265860" [label="yield
+Actions: 1, Forks: 2
+State: {\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000265860" -> "0x14000265ec0" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x14000265ec0" [label="DeployFunction
+Actions: 2, Forks: 3
+State: {\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_published\":\"{}\",\"inv_status\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000265ec0" -> "0x14000325f20" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+}

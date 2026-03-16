@@ -1,0 +1,265 @@
+digraph G {
+  "0x140002a00c0" [label="yield
+Actions: 0, Forks: 0
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002a00c0" -> "0x140002a0a20" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x140002a0a20" [label="CreateStateMachine
+Actions: 1, Forks: 1
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a0a20" -> "0x140002a11a0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140002a11a0" [label="yield
+Actions: 1, Forks: 2
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002a11a0" -> "0x140002a18c0" [label="CreateUserPool", color="black" penwidth="1" ];
+  "0x140002a18c0" [label="CreateUserPool
+Actions: 2, Forks: 3
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a18c0" -> "0x140003486c0" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x140003486c0" [label="yield
+Actions: 2, Forks: 4
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003486c0" -> "0x14000348e40" [label="DeleteUserPool", color="black" penwidth="1" ];
+  "0x14000348e40" [label="DeleteUserPool
+Actions: 3, Forks: 5
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000348e40" -> "0x1400040a4e0" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x1400040a4e0" [label="yield
+Actions: 3, Forks: 6
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400040a4e0" -> "0x1400040ade0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400040ade0" [label="StartExecution
+Actions: 4, Forks: 7
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400040ade0" -> "0x1400008fce0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400008fce0" [label="Any:smid=\"sm-1\"
+Actions: 4, Forks: 8
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008fce0" -> "0x140001d4300" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140001d4300" [label="yield
+Actions: 4, Forks: 9
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140001d4300" -> "0x140001d5620" [label="CognitoTaskFails", color="black" penwidth="1" ];
+  "0x140001d5620" [label="CognitoTaskFails
+Actions: 5, Forks: 10
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001d5620" -> "0x140003118c0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140003118c0" [label="Any:eid=\"exec-1\"
+Actions: 5, Forks: 11
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003118c0" -> "0x14000348000" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x14000348000" [label="yield
+Actions: 5, Forks: 12
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000348000" -> "0x140003493e0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140003493e0" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003493e0" -> "0x14000450000" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000450000" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000450000" -> "0x14000450ae0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000450ae0" [label="yield
+Actions: 6, Forks: 15
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000450ae0" -> "0x14000451d40" [label="CognitoTaskFails", color="black" penwidth="1" ];
+  "0x14000451d40" [label="CognitoTaskFails
+Actions: 7, Forks: 16
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000451d40" -> "0x1400008fe60" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400008fe60" [label="Any:eid=\"exec-1\"
+Actions: 7, Forks: 17
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008fe60" -> "0x14000348000" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x140003486c0" -> "0x14000348f00" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000348f00" [label="StartExecution
+Actions: 3, Forks: 5
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000348f00" -> "0x1400040b260" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400040b260" [label="Any:smid=\"sm-1\"
+Actions: 3, Forks: 6
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400040b260" -> "0x1400040b800" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400040b800" [label="yield
+Actions: 3, Forks: 7
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400040b800" -> "0x140004505a0" [label="DeleteUserPool", color="black" penwidth="1" ];
+  "0x140004505a0" [label="DeleteUserPool
+Actions: 4, Forks: 8
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004505a0" -> "0x140001d4300" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x1400040b800" -> "0x14000450720" [label="CognitoTaskSucceeds", color="black" penwidth="1" ];
+  "0x14000450720" [label="CognitoTaskSucceeds
+Actions: 4, Forks: 8
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000450720" -> "0x140004d9e00" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140004d9e00" [label="Any:eid=\"exec-1\"
+Actions: 4, Forks: 9
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004d9e00" -> "0x1400006c600" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x1400006c600" [label="yield
+Actions: 4, Forks: 10
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400006c600" -> "0x1400006d2c0" [label="DeleteUserPool", color="black" penwidth="1" ];
+  "0x1400006d2c0" [label="DeleteUserPool
+Actions: 5, Forks: 11
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d2c0" -> "0x14000390540" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x14000390540" [label="yield
+Actions: 5, Forks: 12
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000390540" -> "0x14000391860" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000391860" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000391860" -> "0x1400034e360" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400034e360" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400034e360" -> "0x14000450ae0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400006c600" -> "0x1400006d380" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400006d380" [label="StartExecution
+Actions: 5, Forks: 11
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d380" -> "0x14000391da0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000391da0" [label="Any:smid=\"sm-1\"
+Actions: 5, Forks: 12
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000391da0" -> "0x140003d04e0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140003d04e0" [label="yield
+Actions: 5, Forks: 13
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003d04e0" -> "0x140003d18c0" [label="DeleteUserPool", color="black" penwidth="1" ];
+  "0x140003d18c0" [label="DeleteUserPool
+Actions: 6, Forks: 14
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d18c0" -> "0x14000450ae0" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x140003d04e0" -> "0x140003d1b00" [label="CognitoTaskSucceeds", color="black" penwidth="1" ];
+  "0x140003d1b00" [label="CognitoTaskSucceeds
+Actions: 6, Forks: 14
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d1b00" -> "0x1400034f3e0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400034f3e0" [label="Any:eid=\"exec-1\"
+Actions: 6, Forks: 15
+State: {\"exec_pool\":\"{\"exec-1\": \"pool-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400034f3e0" -> "0x1400006c600" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x140002a11a0" -> "0x140002a1a40" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140002a1a40" [label="StartExecution
+Actions: 2, Forks: 3
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a1a40" -> "0x140003497a0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003497a0" [label="Any:smid=\"sm-1\"
+Actions: 2, Forks: 4
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003497a0" -> "0x14000349d40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000349d40" [label="yield
+Actions: 2, Forks: 5
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000349d40" -> "0x14000390ae0" [label="CreateUserPool", color="black" penwidth="1" ];
+  "0x14000390ae0" [label="CreateUserPool
+Actions: 3, Forks: 6
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"pool_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000390ae0" -> "0x1400040b800" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x140002a00c0" -> "0x140002a0ae0" [label="CreateUserPool", color="black" penwidth="1" ];
+  "0x140002a0ae0" [label="CreateUserPool
+Actions: 1, Forks: 1
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a0ae0" -> "0x14000310000" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x14000310000" [label="yield
+Actions: 1, Forks: 2
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000310000" -> "0x14000310660" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x14000310660" [label="CreateStateMachine
+Actions: 2, Forks: 3
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000310660" -> "0x140003486c0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000310000" -> "0x140003107e0" [label="DeleteUserPool", color="black" penwidth="1" ];
+  "0x140003107e0" [label="DeleteUserPool
+Actions: 2, Forks: 3
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"ACTIVE\"}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003107e0" -> "0x140003d0240" [label="Any:pid=\"pool-1\"", color="black" penwidth="1" ];
+  "0x140003d0240" [label="yield
+Actions: 2, Forks: 4
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140003d0240" -> "0x140003d0900" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x140003d0900" [label="CreateStateMachine
+Actions: 3, Forks: 5
+State: {\"exec_pool\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"pool_status\":\"{\"pool-1\": \"DELETED\"}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d0900" -> "0x1400040a4e0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+}

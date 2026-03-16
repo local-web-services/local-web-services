@@ -1,0 +1,415 @@
+digraph G {
+  "0x1400006c120" [label="yield
+Actions: 0, Forks: 0
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400006c120" -> "0x1400006cba0" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x1400006cba0" [label="DeployFunction
+Actions: 1, Forks: 1
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006cba0" -> "0x1400006d3e0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400006d3e0" [label="yield
+Actions: 1, Forks: 2
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400006d3e0" -> "0x1400006db00" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x1400006db00" [label="CreateStateMachine
+Actions: 2, Forks: 3
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006db00" -> "0x140002d2fc0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140002d2fc0" [label="yield
+Actions: 2, Forks: 4
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002d2fc0" -> "0x140002d3740" [label="DeleteStateMachine", color="black" penwidth="1" ];
+  "0x140002d3740" [label="DeleteStateMachine
+Actions: 3, Forks: 5
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d3740" -> "0x140003a7680" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003a7680" [label="yield
+Actions: 3, Forks: 6
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003a7680" -> "0x140003ee000" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140003ee000" [label="InvokeFunction
+Actions: 4, Forks: 7
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003ee000" -> "0x14000435a40" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000435a40" [label="Any:fid=\"func-1\"
+Actions: 4, Forks: 8
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000435a40" -> "0x140000ac180" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140000ac180" [label="yield
+Actions: 4, Forks: 9
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140000ac180" -> "0x140000acfc0" [label="InvocationFailsStateMachineDeleted", color="black" penwidth="1" ];
+  "0x140000acfc0" [label="InvocationFailsStateMachineDeleted
+Actions: 5, Forks: 10
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000acfc0" -> "0x140003a6000" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003a6000" [label="Any:iid=\"inv-1\"
+Actions: 5, Forks: 11
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003a6000" -> "0x140003a66c0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003a66c0" [label="yield
+Actions: 5, Forks: 12
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003a66c0" -> "0x140003a7380" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140003a7380" [label="InvokeFunction
+Actions: 6, Forks: 13
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003a7380" -> "0x140004a58c0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140004a58c0" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 14
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004a58c0" -> "0x140000ac180" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140002d2fc0" -> "0x140002d3800" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140002d3800" [label="InvokeFunction
+Actions: 3, Forks: 5
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d3800" -> "0x140003ee540" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140003ee540" [label="Any:fid=\"func-1\"
+Actions: 3, Forks: 6
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003ee540" -> "0x140003eeae0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003eeae0" [label="yield
+Actions: 3, Forks: 7
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003eeae0" -> "0x140003ef680" [label="DeleteStateMachine", color="black" penwidth="1" ];
+  "0x140003ef680" [label="DeleteStateMachine
+Actions: 4, Forks: 8
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003ef680" -> "0x140000ac180" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003eeae0" -> "0x140003ef800" [label="StartExecutionTask", color="black" penwidth="1" ];
+  "0x140003ef800" [label="StartExecutionTask
+Actions: 4, Forks: 8
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003ef800" -> "0x14000296780" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000296780" [label="Any:iid=\"inv-1\"
+Actions: 4, Forks: 9
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000296780" -> "0x14000297380" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000297380" [label="Any:smid=\"sm-1\"
+Actions: 4, Forks: 10
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000297380" -> "0x14000297ce0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000297ce0" [label="yield
+Actions: 4, Forks: 11
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000297ce0" -> "0x140002d2f00" [label="DeleteStateMachine", color="black" penwidth="1" ];
+  "0x140002d2f00" [label="DeleteStateMachine
+Actions: 5, Forks: 12
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d2f00" -> "0x140003ef020" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003ef020" [label="yield
+Actions: 5, Forks: 13
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003ef020" -> "0x14000418480" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x14000418480" [label="InvokeFunction
+Actions: 6, Forks: 14
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000418480" -> "0x14000701ec0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000701ec0" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 15
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000701ec0" -> "0x14000418de0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000418de0" [label="yield
+Actions: 6, Forks: 16
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000418de0" -> "0x14000419ec0" [label="InvocationFailsStateMachineDeleted", color="black" penwidth="1" ];
+  "0x14000419ec0" [label="InvocationFailsStateMachineDeleted
+Actions: 7, Forks: 17
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000419ec0" -> "0x140004a4cc0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140004a4cc0" [label="Any:iid=\"inv-1\"
+Actions: 7, Forks: 18
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004a4cc0" -> "0x140004a53e0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140004a53e0" [label="yield
+Actions: 7, Forks: 19
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004a53e0" -> "0x140007006c0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140007006c0" [label="InvokeFunction
+Actions: 8, Forks: 20
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140007006c0" -> "0x140003ef320" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140003ef320" [label="Any:fid=\"func-1\"
+Actions: 8, Forks: 21
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003ef320" -> "0x14000418de0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140004a53e0" -> "0x140007009c0" [label="ExecutionCompletes", color="black" penwidth="1" ];
+  "0x140007009c0" [label="ExecutionCompletes
+Actions: 8, Forks: 20
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140007009c0" -> "0x14000297a40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000297a40" [label="yield
+Actions: 8, Forks: 21
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000297a40" -> "0x14000312fc0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x14000312fc0" [label="InvokeFunction
+Actions: 9, Forks: 22
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000312fc0" -> "0x14000174d80" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000174d80" [label="Any:fid=\"func-1\"
+Actions: 9, Forks: 23
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000174d80" -> "0x14000700d80" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000700d80" [label="yield
+Actions: 7, Forks: 18
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000700d80" -> "0x14000418c00" [label="InvocationFailsStateMachineDeleted", color="black" penwidth="1" ];
+  "0x14000418c00" [label="InvocationFailsStateMachineDeleted
+Actions: 8, Forks: 19
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000418c00" -> "0x140007000c0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140007000c0" [label="Any:iid=\"inv-1\"
+Actions: 8, Forks: 20
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140007000c0" -> "0x14000297a40" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000418de0" -> "0x14000174060" [label="ExecutionCompletes", color="black" penwidth="1" ];
+  "0x14000174060" [label="ExecutionCompletes
+Actions: 7, Forks: 17
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000174060" -> "0x14000700d80" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140003ef020" -> "0x140004186c0" [label="ExecutionCompletes", color="black" penwidth="1" ];
+  "0x140004186c0" [label="ExecutionCompletes
+Actions: 6, Forks: 14
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004186c0" -> "0x14000175920" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000175920" [label="yield
+Actions: 6, Forks: 15
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000175920" -> "0x1400011a960" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400011a960" [label="InvokeFunction
+Actions: 7, Forks: 16
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400011a960" -> "0x140001744e0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140001744e0" [label="Any:fid=\"func-1\"
+Actions: 7, Forks: 17
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001744e0" -> "0x14000700d80" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000297ce0" -> "0x140002d3020" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140002d3020" [label="InvokeFunction
+Actions: 5, Forks: 12
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d3020" -> "0x140004189c0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140004189c0" [label="Any:fid=\"func-1\"
+Actions: 5, Forks: 13
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004189c0" -> "0x14000418f60" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000418f60" [label="yield
+Actions: 5, Forks: 14
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000418f60" -> "0x14000616ae0" [label="DeleteStateMachine", color="black" penwidth="1" ];
+  "0x14000616ae0" [label="DeleteStateMachine
+Actions: 6, Forks: 15
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000616ae0" -> "0x14000418de0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000418f60" -> "0x14000616de0" [label="ExecutionCompletes", color="black" penwidth="1" ];
+  "0x14000616de0" [label="ExecutionCompletes
+Actions: 6, Forks: 15
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000616de0" -> "0x140000ada40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140000ada40" [label="yield
+Actions: 6, Forks: 16
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140000ada40" -> "0x1400006d2c0" [label="DeleteStateMachine", color="black" penwidth="1" ];
+  "0x1400006d2c0" [label="DeleteStateMachine
+Actions: 7, Forks: 17
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d2c0" -> "0x14000700d80" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140000ada40" -> "0x1400006d500" [label="StartExecutionTask", color="black" penwidth="1" ];
+  "0x1400006d500" [label="StartExecutionTask
+Actions: 7, Forks: 17
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d500" -> "0x140000ad800" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140000ad800" [label="Any:iid=\"inv-1\"
+Actions: 7, Forks: 18
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000ad800" -> "0x1400006c2a0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400006c2a0" [label="Any:smid=\"sm-1\"
+Actions: 7, Forks: 19
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006c2a0" -> "0x14000297ce0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000297ce0" -> "0x140002d3260" [label="ExecutionCompletes", color="black" penwidth="1" ];
+  "0x140002d3260" [label="ExecutionCompletes
+Actions: 5, Forks: 12
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d3260" -> "0x140006179e0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140006179e0" [label="yield
+Actions: 5, Forks: 13
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140006179e0" -> "0x140004a4600" [label="DeleteStateMachine", color="black" penwidth="1" ];
+  "0x140004a4600" [label="DeleteStateMachine
+Actions: 6, Forks: 14
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004a4600" -> "0x14000175920" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140006179e0" -> "0x140004a46c0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140004a46c0" [label="InvokeFunction
+Actions: 6, Forks: 14
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004a46c0" -> "0x140002d2ae0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140002d2ae0" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 15
+State: {\"exec_inv\":\"{\"exec-1\": \"inv-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002d2ae0" -> "0x140000ada40" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400006d3e0" -> "0x1400006dc80" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400006dc80" [label="InvokeFunction
+Actions: 2, Forks: 3
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006dc80" -> "0x140003121e0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140003121e0" [label="Any:fid=\"func-1\"
+Actions: 2, Forks: 4
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003121e0" -> "0x14000312780" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000312780" [label="yield
+Actions: 2, Forks: 5
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000312780" -> "0x140003132c0" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x140003132c0" [label="CreateStateMachine
+Actions: 3, Forks: 6
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003132c0" -> "0x140003eeae0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400006c120" -> "0x1400006cc60" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x1400006cc60" [label="CreateStateMachine
+Actions: 1, Forks: 1
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006cc60" -> "0x14000296300" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000296300" [label="yield
+Actions: 1, Forks: 2
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000296300" -> "0x14000296960" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x14000296960" [label="DeployFunction
+Actions: 2, Forks: 3
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000296960" -> "0x140002d2fc0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000296300" -> "0x14000296ae0" [label="DeleteStateMachine", color="black" penwidth="1" ];
+  "0x14000296ae0" [label="DeleteStateMachine
+Actions: 2, Forks: 3
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000296ae0" -> "0x14000360f00" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000360f00" [label="yield
+Actions: 2, Forks: 4
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000360f00" -> "0x140003615c0" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x140003615c0" [label="DeployFunction
+Actions: 3, Forks: 5
+State: {\"exec_inv\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003615c0" -> "0x140003a7680" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+}

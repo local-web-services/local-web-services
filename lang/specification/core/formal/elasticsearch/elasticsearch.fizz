@@ -1,0 +1,290 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 15
+---
+DOMAIN_NAMES = ["domain-a", "domain-b", "domain-c"]
+INDEX_NAMES = ["index-1", "index-2", "index-3"]
+TAG_KEYS = ["env", "team", "cost-center", "project"]
+
+action Init:
+    domain_status = {}
+    domain_instance_type = {}
+    domain_instance_count = {}
+    domain_pending_config = {}
+    domain_tag = {}
+    index_status = {}
+    index_doc_count = {}
+
+# step: a search domain is created
+# result: the domain is in CREATING state
+# guard: the domain does not already exist
+# guard_violation: the domain already exists
+atomic action CreateElasticsearchDomain:
+    oneof domain in DOMAIN_NAMES:
+        if domain not in domain_status:
+            domain_status[domain] = "CREATING"
+            domain_instance_type[domain] = "r5.large.elasticsearch"
+            domain_instance_count[domain] = 1
+            domain_pending_config[domain] = False
+
+# fake_skip: internal
+# step: a search domain finishes creating
+# result: the domain is ACTIVE and ready for use
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is CREATING
+# guard_violation: the domain is not CREATING
+atomic action FinishCreatingDomain:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "CREATING":
+                domain_status[domain] = "ACTIVE"
+
+# step: a search domain is deleted
+# result: the domain is in DELETING state
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+atomic action DeleteElasticsearchDomain:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                domain_status[domain] = "DELETING"
+
+# fake_skip: internal
+# step: a search domain finishes deleting
+# result: the domain is DELETED and all its indices are removed
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is DELETING
+# guard_violation: the domain is not DELETING
+# guard: the index exists
+# guard_violation: the index does not exist
+atomic action FinishDeletingDomain:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "DELETING":
+                domain_status[domain] = "DELETED"
+                for iname in INDEX_NAMES:
+                    idx_key = domain + "#" + iname
+                    if idx_key in index_status:
+                        index_status[idx_key] = "DELETED"
+
+# step: a domain configuration update is requested
+# result: the domain is in PROCESSING state with a pending config change
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+atomic action UpdateElasticsearchDomainConfig:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                domain_status[domain] = "PROCESSING"
+                domain_pending_config[domain] = True
+
+# fake_skip: internal
+# step: a domain finishes processing its configuration update
+# result: the domain is ACTIVE with the new configuration applied
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is PROCESSING
+# guard_violation: the domain is not PROCESSING
+# guard: the domain has a pending configuration change
+# guard_violation: the domain does not have a pending configuration change
+atomic action FinishProcessingDomainConfig:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "PROCESSING":
+                if domain_pending_config[domain] == True:
+                    domain_instance_type[domain] = "r5.xlarge.elasticsearch"
+                    domain_instance_count[domain] = 2
+                    domain_pending_config[domain] = False
+                domain_status[domain] = "ACTIVE"
+
+# step: an index is created in an active domain
+# result: the index is ACTIVE with zero documents
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+# guard: the index does not already exist
+# guard_violation: the index already exists
+atomic action CreateIndex:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                oneof iname in INDEX_NAMES:
+                    idx_key = domain + "#" + iname
+                    if idx_key not in index_status:
+                        index_status[idx_key] = "ACTIVE"
+                        index_doc_count[idx_key] = 0
+
+# step: a document is indexed in an active index
+# result: the document count for the index increases by one
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+# guard: the index exists
+# guard_violation: the index does not exist
+# guard: the index is ACTIVE
+# guard_violation: the index is not ACTIVE
+atomic action IndexDocument:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                oneof iname in INDEX_NAMES:
+                    idx_key = domain + "#" + iname
+                    if idx_key in index_status:
+                        if index_status[idx_key] == "ACTIVE":
+                            index_doc_count[idx_key] = index_doc_count[idx_key] + 1
+
+# step: an index is deleted from an active domain
+# result: the index is marked as DELETED
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+# guard: the index exists
+# guard_violation: the index does not exist
+# guard: the index is ACTIVE
+# guard_violation: the index is not ACTIVE
+atomic action DeleteIndex:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                oneof iname in INDEX_NAMES:
+                    idx_key = domain + "#" + iname
+                    if idx_key in index_status:
+                        if index_status[idx_key] == "ACTIVE":
+                            index_status[idx_key] = "DELETED"
+
+# step: tags are added to a domain
+# result: the specified tags are associated with the domain
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is not being deleted
+# guard_violation_lifecycle: the domain is being deleted
+# guard: the domain is not deleted
+# guard_violation: the domain is deleted
+atomic action AddTags:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] != "DELETING":
+                if domain_status[domain] != "DELETED":
+                    oneof tkey in TAG_KEYS:
+                        domain_tag[domain + "#" + tkey] = True
+
+# step: tags are removed from a domain
+# result: the specified tags are no longer associated with the domain
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is not being deleted
+# guard_violation_lifecycle: the domain is being deleted
+# guard: the domain is not deleted
+# guard_violation: the domain is deleted
+# guard: the tag key exists
+# guard_violation: the tag key does not exist
+atomic action RemoveTags:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] != "DELETING":
+                if domain_status[domain] != "DELETED":
+                    oneof tkey in TAG_KEYS:
+                        tk = domain + "#" + tkey
+                        if tk in domain_tag:
+                            domain_tag[tk] = False
+
+# fake_skip: internal
+# step: shards are reallocated across nodes in an active domain
+# result: the domain shard layout is updated without changing document counts
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+# guard: the index exists
+# guard_violation: the index does not exist
+# guard: the index is ACTIVE
+# guard_violation: the index is not ACTIVE
+atomic action ShardReallocation:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                oneof iname in INDEX_NAMES:
+                    idx_key = domain + "#" + iname
+                    if idx_key in index_status:
+                        if index_status[idx_key] == "ACTIVE":
+                            index_doc_count[idx_key] = index_doc_count[idx_key]
+
+# fake_skip: internal
+# step: a replica sync lag event occurs on an active domain
+# result: the replica eventually catches up without changing document counts
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+# guard: the index exists
+# guard_violation: the index does not exist
+# guard: the index is ACTIVE
+# guard_violation: the index is not ACTIVE
+atomic action ReplicaSyncLag:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                oneof iname in INDEX_NAMES:
+                    idx_key = domain + "#" + iname
+                    if idx_key in index_status:
+                        if index_status[idx_key] == "ACTIVE":
+                            index_doc_count[idx_key] = index_doc_count[idx_key]
+
+# fake_skip: internal
+# step: a node failure occurs in an active domain
+# result: the domain enters PROCESSING state while recovering
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+atomic action NodeFailure:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                domain_status[domain] = "PROCESSING"
+                domain_pending_config[domain] = False
+
+# check: every active index belongs to an existing non-deleted domain
+always assertion IndicesHaveParentDomain:
+    for idx_key in index_status:
+        if index_status[idx_key] == "ACTIVE":
+            parts = idx_key.split("#")
+            domain = parts[0]
+            if domain not in domain_status:
+                return False
+            if domain_status[domain] == "DELETED":
+                return False
+    return True
+
+# check: every active tag belongs to an existing non-deleted domain
+always assertion TagsHaveParentDomain:
+    for tkey in domain_tag:
+        if domain_tag[tkey] == True:
+            parts = tkey.split("#")
+            domain = parts[0]
+            if domain not in domain_status:
+                return False
+            if domain_status[domain] == "DELETED":
+                return False
+    return True
+
+# check: a pending config change only exists on a domain that is PROCESSING
+always assertion PendingConfigOnlyOnProcessingDomain:
+    for domain in DOMAIN_NAMES:
+        if domain in domain_pending_config:
+            if domain_pending_config[domain] == True:
+                if domain in domain_status:
+                    if domain_status[domain] != "PROCESSING":
+                        return False
+    return True

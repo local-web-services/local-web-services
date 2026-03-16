@@ -1,0 +1,148 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Lambda -> Elasticsearch Integration Formal Specification
+# Models a Lambda function indexing documents into and querying an Elasticsearch domain.
+# When the domain is PROCESSING (config update in progress) write operations may fail.
+
+FUNC_IDS = ["func-1"]
+DOMAIN_IDS = ["domain-1"]
+INV_IDS = ["inv-1"]
+DOC_IDS = ["doc-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    domain_status = {}          # domain_status[did] = "AVAILABLE" | "PROCESSING"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    doc_status = {}             # doc_status[docid] = "EXISTS" | "DELETED"
+    doc_domain = {}             # doc_domain[docid] = domain_id
+    doc_inv = {}                # doc_inv[docid] = inv_id
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: an Elasticsearch domain is created and becomes AVAILABLE
+# result: the domain is AVAILABLE
+# guard: the domain does not already exist
+# guard_violation: the domain already exists
+atomic action CreateDomain:
+    oneof did in DOMAIN_IDS:
+        if did not in domain_status:
+            domain_status[did] = "AVAILABLE"
+
+
+# step: a domain configuration update begins
+# result: the domain is PROCESSING and write operations may fail
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is AVAILABLE
+# guard_violation_lifecycle: the domain is not AVAILABLE
+atomic action DomainProcessingBegins:
+    oneof did in DOMAIN_IDS:
+        if did in domain_status:
+            if domain_status[did] == "AVAILABLE":
+                domain_status[did] = "PROCESSING"
+
+
+# fake_skip: internal
+# step: the domain configuration update completes
+# result: the domain is AVAILABLE again
+# guard: the domain is PROCESSING
+# guard_violation_lifecycle: the domain is not PROCESSING
+atomic action DomainProcessingComplete:
+    oneof did in DOMAIN_IDS:
+        if did in domain_status:
+            if domain_status[did] == "PROCESSING":
+                domain_status[did] = "AVAILABLE"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# fake_skip: internal
+# step: the Lambda function indexes a document into the AVAILABLE domain and succeeds
+# result: the document EXISTS and the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the domain is AVAILABLE
+# guard_violation_lifecycle: the domain is not AVAILABLE
+# guard: a document slot is available
+# guard_violation_capacity: no document slot is available
+atomic action IndexDocumentTask:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof did in DOMAIN_IDS:
+                    if did in domain_status:
+                        if domain_status[did] == "AVAILABLE":
+                            oneof docid in DOC_IDS:
+                                if docid not in doc_status or doc_status[docid] == "DELETED":
+                                    doc_status[docid] = "EXISTS"
+                                    doc_domain[docid] = did
+                                    doc_inv[docid] = iid
+                                    inv_status[iid] = "SUCCESS"
+
+
+# step: the Lambda function fails to write because the domain is processing a config update
+# result: the invocation is FAILED with a connection error
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the domain is PROCESSING
+# guard_violation_lifecycle: the domain is not PROCESSING
+atomic action InvocationFailsDomainProcessing:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof did in DOMAIN_IDS:
+                    if did in domain_status:
+                        if domain_status[did] == "PROCESSING":
+                            inv_status[iid] = "FAILED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every existing document references a domain that exists
+always assertion DocumentRequiresExistingDomain:
+    for docid in doc_status:
+        if doc_status[docid] == "EXISTS":
+            did = doc_domain[docid]
+            if did not in domain_status:
+                return False
+    return True

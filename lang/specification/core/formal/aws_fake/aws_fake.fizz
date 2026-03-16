@@ -1,0 +1,150 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 10
+---
+# AWS Fake Service Formal Specification
+# Models AWS fakes: per-service operation interception with optional header-based filtering.
+# A fake is tied to one AWS service. Operations on a fake intercept matching API calls.
+# Header-filtered operations only activate when the request carries the matching header.
+
+FAKE_IDS = ["f1", "f2", "f3"]
+OP_IDS = ["op1", "op2", "op3", "op4", "op5", "op6"]
+
+action Init:
+    fake_status = {}
+    fake_service = {}
+    op_status = {}
+    op_fake = {}
+    op_has_header = {}
+
+
+# step: an AWS fake is created for a service
+# result: the AWS fake is ACTIVE
+# guard: the AWS fake does not already exist
+# guard_violation: the AWS fake already exists
+atomic action CreateAwsFake:
+    oneof fid in FAKE_IDS:
+        if fid not in fake_status:
+            fake_status[fid] = "ACTIVE"
+            oneof:
+                fake_service[fid] = "dynamodb"
+                fake_service[fid] = "sqs"
+                fake_service[fid] = "s3"
+                fake_service[fid] = "sns"
+
+
+# step: an AWS fake is deleted
+# result: the AWS fake is DELETED and its operations are removed
+# guard: the AWS fake exists
+# guard_violation: the AWS fake does not exist
+# guard: the AWS fake is ACTIVE
+# guard_violation: the AWS fake is not ACTIVE
+atomic action DeleteAwsFake:
+    oneof fid in FAKE_IDS:
+        if fid in fake_status:
+            if fake_status[fid] == "ACTIVE":
+                fake_status[fid] = "DELETED"
+                for oid in OP_IDS:
+                    if oid in op_fake:
+                        if op_fake[oid] == fid:
+                            op_status[oid] = "DELETED"
+
+
+# step: an operation is added to an AWS fake
+# result: the operation is ACTIVE on the AWS fake
+# guard: the AWS fake exists
+# guard_violation: the AWS fake does not exist
+# guard: the AWS fake is ACTIVE
+# guard_violation: the AWS fake is not ACTIVE
+# guard: an operation slot is available
+# guard_violation: no operation slot is available
+atomic action AddOperation:
+    oneof fid in FAKE_IDS:
+        if fid in fake_status:
+            if fake_status[fid] == "ACTIVE":
+                oneof oid in OP_IDS:
+                    if oid not in op_status:
+                        op_fake[oid] = fid
+                        op_status[oid] = "ACTIVE"
+                        oneof:
+                            op_has_header[oid] = True
+                            op_has_header[oid] = False
+
+
+# step: an operation is removed from an AWS fake
+# result: the operation is DELETED
+# guard: the operation exists
+# guard_violation: the operation does not exist
+# guard: the operation is ACTIVE
+# guard_violation: the operation is not ACTIVE
+atomic action RemoveOperation:
+    oneof oid in OP_IDS:
+        if oid in op_status:
+            if op_status[oid] == "ACTIVE":
+                op_status[oid] = "DELETED"
+
+
+# step: a request matching an AWS fake operation is intercepted
+# result: the canned response is returned and the request does not reach the provider
+# guard: the operation exists
+# guard_violation: the operation does not exist
+# guard: the operation is ACTIVE
+# guard_violation: the operation is not ACTIVE
+# guard: the operation has no header filter
+# guard_violation: the operation has a header filter
+atomic action InterceptRequest:
+    oneof oid in OP_IDS:
+        if oid in op_status:
+            if op_status[oid] == "ACTIVE":
+                if op_has_header[oid] == False:
+                    pass
+
+
+# step: a request matching a header-filtered operation is intercepted
+# result: the canned response is returned when the request header matches
+# guard: the operation exists
+# guard_violation: the operation does not exist
+# guard: the operation is ACTIVE
+# guard_violation: the operation is not ACTIVE
+# guard: the operation has a header filter
+# guard_violation: the operation does not have a header filter
+atomic action InterceptRequestWithHeader:
+    oneof oid in OP_IDS:
+        if oid in op_status:
+            if op_status[oid] == "ACTIVE":
+                if op_has_header[oid] == True:
+                    pass
+
+
+# step: a request for an operation not covered by the AWS fake reaches the provider
+# result: the request passes through to the real AWS provider unchanged
+# guard: the AWS fake exists
+# guard_violation: the AWS fake does not exist
+# guard: the AWS fake is ACTIVE
+# guard_violation: the AWS fake is not ACTIVE
+atomic action FallthroughRequest:
+    oneof fid in FAKE_IDS:
+        if fid in fake_status:
+            if fake_status[fid] == "ACTIVE":
+                pass
+
+
+# check: every ACTIVE operation belongs to an ACTIVE AWS fake
+always assertion ActiveOperationsBelongToActiveFakes:
+    for oid in op_status:
+        if op_status[oid] == "ACTIVE":
+            if op_fake[oid] in fake_status:
+                if fake_status[op_fake[oid]] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every AWS fake is tied to a known service
+always assertion FakesReferenceKnownServices:
+    for fid in fake_service:
+        if fake_service[fid] not in ["dynamodb", "sqs", "s3", "sns"]:
+            return False
+    return True
+

@@ -13,14 +13,6 @@ java {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        name = 'GitHubPackages'
-        url = uri('https://maven.pkg.github.com/local-web-services/local-web-services-java-sdk')
-        credentials {
-            username = System.getenv('GITHUB_ACTOR') ?: project.findProperty('gpr.user') ?: ''
-            password = System.getenv('GITHUB_TOKEN') ?: project.findProperty('gpr.key') ?: ''
-        }
-    }
 }
 
 def awsSdkVersion = '2.26.0'
@@ -32,7 +24,9 @@ dependencies {
     implementation 'software.amazon.awssdk:dynamodb'
     implementation 'software.amazon.awssdk:sqs'
 
-    testImplementation 'io.localwebservices:local-web-services-java-sdk:0.2.2'
+    testImplementation files('/tmp/gradle-build-lws-java-sdk/libs/local-web-services-java-sdk-0.2.2.jar')
+    testImplementation files('/tmp/gradle-build-lws-java-core/libs/lws-java-core-0.1.0.jar')
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
@@ -40,6 +34,14 @@ dependencies {
     testImplementation "io.cucumber:cucumber-picocontainer:${cucumberVersion}"
     testImplementation 'org.junit.platform:junit-platform-suite'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sourceSets {
+    test {
+        resources {
+            srcDir '../../specification/example'
+        }
+    }
 }
 
 test {

@@ -1,16 +1,8 @@
 # local-web-services-go-sdk
 
-Go testing SDK for [local-web-services](https://local-web-services.github.io) — spawns `ldk dev` as a subprocess and provides pre-configured AWS SDK v2 clients pointing at the local emulators. No AWS account or credentials required.
-
-## Prerequisites
-
-Install `local-web-services`:
-
-```bash
-pip install local-web-services
-```
-
-This installs the `ldk` binary that the SDK uses to start the local AWS emulators.
+Go testing SDK for [local-web-services](https://local-web-services.github.io) — starts an
+in-process LWS server and provides pre-configured AWS SDK v2 clients pointing at the local
+emulators. No AWS account, credentials, or Docker required.
 
 ## Installation
 
@@ -26,7 +18,7 @@ go get github.com/local-web-services/local-web-services-go-sdk
 import "github.com/local-web-services/local-web-services-go-sdk/lws"
 
 func TestProcessOrder(t *testing.T) {
-    // FromHcl reads your .tf files, starts ldk dev, and pre-creates
+    // FromHcl reads your .tf files, starts the in-process server, and pre-creates
     // all declared resources (tables, queues, state machines, etc.)
     session, err := lws.FromHcl("terraform")
     if err != nil {
@@ -39,6 +31,16 @@ func TestProcessOrder(t *testing.T) {
 }
 ```
 
+### Auto-discover from CDK
+
+```go
+session, err := lws.FromCdk("../my-cdk-project")
+if err != nil {
+    t.Fatal(err)
+}
+defer session.Close()
+```
+
 ### Explicit resource declaration
 
 ```go
@@ -46,10 +48,8 @@ spec := lws.SessionSpec{
     Tables: []lws.TableSpec{
         {Name: "Orders", PartitionKey: "id"},
     },
-    Queues: []string{"OrderQueue"},
-    StateMachines: []lws.StateMachineSpec{
-        {Name: "OrderProcessor", Definition: definitionJSON},
-    },
+    Queues:  []string{"OrderQueue"},
+    Buckets: []string{"ReceiptsBucket"},
 }
 
 session, err := lws.New(spec)
@@ -59,26 +59,25 @@ if err != nil {
 defer session.Close()
 
 dynamoClient := session.DynamoDBClient()
-sqsClient := session.SQSClient()
-sfnClient := session.SFNClient()
+sqsClient    := session.SQSClient()
+s3Client     := session.S3Client()
 ```
 
-## Go testing example
+## Full test example
 
 ```go
-// order_processor_test.go
-package main
+package orders_test
 
 import (
     "context"
     "testing"
 
+    "github.com/aws/aws-sdk-go-v2/aws"
     "github.com/aws/aws-sdk-go-v2/service/sfn"
     "github.com/local-web-services/local-web-services-go-sdk/lws"
 )
 
 func TestProcessOrder_runsStateMachineAndReturnsResult(t *testing.T) {
-    // Start ldk dev and discover resources from terraform/
     session, err := lws.FromHcl("terraform")
     if err != nil {
         t.Fatalf("failed to start lws session: %v", err)
@@ -87,16 +86,14 @@ func TestProcessOrder_runsStateMachineAndReturnsResult(t *testing.T) {
 
     sfnClient := session.SFNClient()
 
-    // Resolve the state machine ARN
     result, err := sfnClient.ListStateMachines(context.Background(), &sfn.ListStateMachinesInput{})
     if err != nil || len(result.StateMachines) == 0 {
         t.Fatalf("could not list state machines: %v", err)
     }
-    stateMachineArn := *result.StateMachines[0].StateMachineArn
+    stateMachineArn := aws.ToString(result.StateMachines[0].StateMachineArn)
 
     processor := NewOrderProcessor(sfnClient)
     output, err := processor.ProcessOrder(context.Background(), "order-001", stateMachineArn)
-
     if err != nil {
         t.Fatalf("ProcessOrder returned error: %v", err)
     }
@@ -108,48 +105,69 @@ func TestProcessOrder_runsStateMachineAndReturnsResult(t *testing.T) {
 
 ## API
 
-### `Session`
+### Session constructors
+
+| Constructor | Description |
+|---|---|
+| `lws.FromHcl(projectDir)` | Auto-discover resources from Terraform `.tf` files |
+| `lws.FromCdk(projectDir)` | Auto-discover resources from CDK cloud assembly |
+| `lws.New(spec)` | Start with explicitly declared resources |
+| `lws.NewInProcessSession()` | Start a bare session with no pre-created resources |
+
+### Client methods
+
+| Method | Returns |
+|---|---|
+| `session.DynamoDBClient()` | `*dynamodb.Client` |
+| `session.SQSClient()` | `*sqs.Client` |
+| `session.S3Client()` | `*s3.Client` |
+| `session.SNSClient()` | `*sns.Client` |
+| `session.SFNClient()` | `*sfn.Client` |
+| `session.SSMClient()` | `*ssm.Client` |
+| `session.SecretsManagerClient()` | `*secretsmanager.Client` |
+
+### Helpers
 
 | Method | Description |
-|--------|-------------|
-| `lws.FromHcl(projectDir)` | Auto-discover resources from Terraform `.tf` files and start `ldk dev` |
-| `lws.New(spec)` | Start `ldk dev` with explicitly declared resources |
-| `session.DynamoDBClient()` | Pre-configured `*dynamodb.Client` |
-| `session.SQSClient()` | Pre-configured `*sqs.Client` |
-| `session.S3Client()` | Pre-configured `*s3.Client` |
-| `session.SNSClient()` | Pre-configured `*sns.Client` |
-| `session.SFNClient()` | Pre-configured `*sfn.Client` |
-| `session.SSMClient()` | Pre-configured `*ssm.Client` |
-| `session.SecretsManagerClient()` | Pre-configured `*secretsmanager.Client` |
+|---|---|
 | `session.PortFor(service)` | Port number for a named service |
 | `session.QueueURL(queueName)` | Local SQS queue URL |
-| `session.Close()` | Stop `ldk dev` |
+| `session.Close()` | Stop the in-process server |
 
-### `SessionSpec`
+## Supported services
 
-```go
-type SessionSpec struct {
-    Tables        []TableSpec
-    Queues        []string
-    StateMachines []StateMachineSpec
-}
+All 20 services are available. Use `session.PortFor(name)` to get the port for any service
+not yet covered by a typed client method:
 
-type TableSpec struct {
-    Name         string
-    PartitionKey string
-    SortKey      string // optional
-}
+| Service | Name |
+|---|---|
+| DynamoDB | `"dynamodb"` |
+| SQS | `"sqs"` |
+| S3 | `"s3"` |
+| SNS | `"sns"` |
+| EventBridge | `"eventbridge"` |
+| Step Functions | `"stepfunctions"` |
+| Cognito IDP | `"cognitoidp"` |
+| Lambda | `"lambda"` |
+| API Gateway | `"apigateway"` |
+| RDS | `"rds"` |
+| DocumentDB | `"docdb"` |
+| SSM Parameter Store | `"ssm"` |
+| Secrets Manager | `"secretsmanager"` |
+| ElastiCache | `"elasticache"` |
+| Neptune | `"neptune"` |
+| MemoryDB | `"memorydb"` |
+| Glacier | `"glacier"` |
+| Elasticsearch | `"elasticsearch"` |
+| OpenSearch | `"opensearch"` |
+| S3 Tables | `"s3tables"` |
 
-type StateMachineSpec struct {
-    Name       string
-    Definition string // JSON state machine definition
-    RoleArn    string // optional, defaults to a local test ARN
-}
-```
+## How it works
 
-### Supported services
-
-`dynamodb`, `s3`, `sqs`, `sns`, `ssm`, `secretsmanager`, `stepfunctions`
+`lws.New` / `lws.FromHcl` starts the Go LWS core as an in-process goroutine on a randomly
+chosen base port. Each service listens at `basePort + offset`. The session returns AWS SDK v2
+clients pre-configured with `http://127.0.0.1:<port>` endpoint overrides and stub credentials
+(`AWS_ACCESS_KEY_ID=test`). When `Close()` is called the server shuts down cleanly.
 
 ## License
 

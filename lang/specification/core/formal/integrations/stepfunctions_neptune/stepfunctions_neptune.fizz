@@ -1,0 +1,141 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Step Functions -> Neptune Integration Formal Specification
+# Models a Step Functions state machine executing graph queries against a Neptune cluster
+# as a task step via the Neptune SDK integration.
+# If the cluster is STOPPED, the task fails with a connection error.
+
+SM_IDS = ["sm-1"]
+CLUSTER_IDS = ["cluster-1"]
+EXEC_IDS = ["exec-1"]
+
+
+action Init:
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    cluster_status = {}         # cluster_status[cid] = "AVAILABLE" | "STOPPED"
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    exec_cluster = {}           # exec_cluster[eid] = cluster_id (cluster queried by this execution)
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+
+
+# step: a Neptune cluster is created
+# result: the cluster is AVAILABLE
+# guard: the cluster does not already exist
+# guard_violation: the cluster already exists
+atomic action CreateCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid not in cluster_status:
+            cluster_status[cid] = "AVAILABLE"
+
+
+# step: the Neptune cluster is stopped
+# result: the cluster is STOPPED and graph queries will be rejected
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+atomic action StopCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                cluster_status[cid] = "STOPPED"
+
+
+# step: the Neptune cluster is started
+# result: the cluster is AVAILABLE and ready to accept graph queries
+# guard: the cluster is STOPPED
+# guard_violation_lifecycle: the cluster is not STOPPED
+atomic action StartCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "STOPPED":
+                cluster_status[cid] = "AVAILABLE"
+
+
+# step: an execution of the state machine is started
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecution:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                oneof eid in EXEC_IDS:
+                    if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                        exec_status[eid] = "RUNNING"
+                        exec_sm[eid] = smid
+
+
+# fake_skip: internal
+# step: a running execution queries the AVAILABLE Neptune cluster and the task succeeds
+# result: the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+atomic action QueryGraphTaskSucceeds:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof cid in CLUSTER_IDS:
+                    if cid in cluster_status:
+                        if cluster_status[cid] == "AVAILABLE":
+                            exec_status[eid] = "SUCCEEDED"
+                            exec_cluster[eid] = cid
+
+
+# fake_skip: internal
+# step: a running execution fails to query because the Neptune cluster is stopped
+# result: the execution is FAILED with a connection error
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the cluster is STOPPED
+# guard_violation_lifecycle: the cluster is not STOPPED
+atomic action QueryGraphTaskFails:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof cid in CLUSTER_IDS:
+                    if cid in cluster_status:
+                        if cluster_status[cid] == "STOPPED":
+                            exec_status[eid] = "FAILED"
+                            exec_cluster[eid] = cid
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every succeeded execution recorded which cluster it queried
+# (verifies an execution cannot succeed without querying a cluster; cluster may be stopped afterwards)
+always assertion SuccessfulExecutionQueriedACluster:
+    for eid in exec_status:
+        if exec_status[eid] == "SUCCEEDED":
+            if eid not in exec_cluster:
+                return False
+    return True

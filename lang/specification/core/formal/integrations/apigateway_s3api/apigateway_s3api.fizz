@@ -1,0 +1,182 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# API Gateway -> S3 Integration Formal Specification
+# Models an API Gateway REST API with a direct S3 proxy integration (no Lambda proxy).
+# Requests to the API are forwarded directly to S3 to GET or PUT objects.
+# If the bucket has been deleted, requests fail with a service error.
+
+API_IDS = ["api-1"]
+BUCKET_IDS = ["bucket-1"]
+REQ_IDS = ["req-1"]
+OBJ_IDS = ["obj-1"]
+
+
+action Init:
+    api_status = {}             # api_status[aid] = "ACTIVE"
+    api_bucket = {}             # api_bucket[aid] = bucket_id or "" (S3 integration target)
+    bucket_status = {}          # bucket_status[bid] = "ACTIVE" | "DELETED"
+    req_status = {}             # req_status[rid] = "SUCCESS" | "FAILED"
+    req_api = {}                # req_api[rid] = api_id
+    obj_status = {}             # obj_status[oid] = "EXISTS" | "DELETED"
+    obj_bucket = {}             # obj_bucket[oid] = bucket_id
+    obj_req = {}                # obj_req[oid] = req_id
+
+
+# step: an API Gateway REST API is created
+# result: the API is ACTIVE with no S3 integration configured
+# guard: the API does not already exist
+# guard_violation: the API already exists
+atomic action CreateRestAPI:
+    oneof aid in API_IDS:
+        if aid not in api_status:
+            api_status[aid] = "ACTIVE"
+            api_bucket[aid] = ""
+
+
+# step: an S3 bucket is created
+# result: the bucket is ACTIVE
+# guard: the bucket does not already exist
+# guard_violation: the bucket already exists
+atomic action CreateBucket:
+    oneof bid in BUCKET_IDS:
+        if bid not in bucket_status:
+            bucket_status[bid] = "ACTIVE"
+
+
+# step: the S3 bucket is deleted
+# result: the bucket is DELETED and API requests targeting it will fail
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is already DELETED
+atomic action DeleteBucket:
+    oneof bid in BUCKET_IDS:
+        if bid in bucket_status:
+            if bucket_status[bid] == "ACTIVE":
+                bucket_status[bid] = "DELETED"
+
+
+# step: a direct S3 integration is configured on the API
+# result: the API will proxy requests to the S3 bucket
+# guard: the API exists and is ACTIVE
+# guard_violation: the API does not exist or is not ACTIVE
+# guard: the API has no S3 integration configured
+# guard_violation: the API already has an S3 integration configured
+# guard: the bucket exists and is ACTIVE
+# guard_violation: the bucket does not exist or is not ACTIVE
+atomic action ConfigureS3Integration:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_bucket[aid] == "":
+                    oneof bid in BUCKET_IDS:
+                        if bid in bucket_status:
+                            if bucket_status[bid] == "ACTIVE":
+                                api_bucket[aid] = bid
+
+
+# step: a PUT request is received and the API writes an object to the S3 bucket
+# result: the object EXISTS and the request is SUCCESS
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has an S3 integration configured
+# guard_violation: the API has no S3 integration configured
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+# guard: an object slot is available
+# guard_violation_capacity: no object slot is available
+atomic action PutObjectRequestSucceeds:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_bucket[aid] != "":
+                    bid = api_bucket[aid]
+                    if bid in bucket_status:
+                        if bucket_status[bid] == "ACTIVE":
+                            oneof rid in REQ_IDS:
+                                if rid not in req_status:
+                                    oneof oid in OBJ_IDS:
+                                        if oid not in obj_status or obj_status[oid] == "DELETED":
+                                            req_status[rid] = "SUCCESS"
+                                            req_api[rid] = aid
+                                            obj_status[oid] = "EXISTS"
+                                            obj_bucket[oid] = bid
+                                            obj_req[oid] = rid
+
+
+# step: a GET request is received and the API retrieves an existing object from S3
+# result: the request is SUCCESS
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has an S3 integration configured
+# guard_violation: the API has no S3 integration configured
+# guard: an object EXISTS in the target bucket
+# guard_violation_lifecycle: no object EXISTS in the target bucket
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+atomic action GetObjectRequestSucceeds:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_bucket[aid] != "":
+                    bid = api_bucket[aid]
+                    found = False
+                    for oid in obj_status:
+                        if obj_status[oid] == "EXISTS":
+                            if obj_bucket[oid] == bid:
+                                found = True
+                    if found == True:
+                        oneof rid in REQ_IDS:
+                            if rid not in req_status:
+                                req_status[rid] = "SUCCESS"
+                                req_api[rid] = aid
+
+
+# step: a request fails because the S3 bucket has been deleted
+# result: the request is FAILED with a NoSuchBucket error
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has an S3 integration configured
+# guard_violation: the API has no S3 integration configured
+# guard: the bucket is DELETED
+# guard_violation_lifecycle: the bucket is not DELETED
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+atomic action RequestFails:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_bucket[aid] != "":
+                    bid = api_bucket[aid]
+                    if bid in bucket_status:
+                        if bucket_status[bid] == "DELETED":
+                            oneof rid in REQ_IDS:
+                                if rid not in req_status:
+                                    req_status[rid] = "FAILED"
+                                    req_api[rid] = aid
+
+
+# check: every existing object references a bucket that exists
+always assertion ObjectReferencesExistingBucket:
+    for oid in obj_status:
+        if obj_status[oid] == "EXISTS":
+            bid = obj_bucket[oid]
+            if bid not in bucket_status:
+                return False
+    return True
+
+
+# check: every successful request references an API that exists
+always assertion SuccessfulRequestReferencesExistingAPI:
+    for rid in req_status:
+        if req_status[rid] == "SUCCESS":
+            aid = req_api[rid]
+            if aid not in api_status:
+                return False
+    return True

@@ -83,4 +83,4 @@ disable = [
 ]
 
 [tool.uv.sources]
-local-web-services = { path = "../../../core", editable = true }
+local-web-services = { path = "../core", editable = true }

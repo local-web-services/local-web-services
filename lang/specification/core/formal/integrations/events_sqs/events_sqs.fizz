@@ -1,0 +1,136 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 30
+---
+# EventBridge -> SQS Integration Formal Specification
+# Models an EventBridge rule routing events from a bus to an SQS queue.
+
+BUS_IDS = ["bus-1"]
+RULE_IDS = ["rule-1"]
+QUEUE_IDS = ["queue-1"]
+MSG_IDS = ["msg-1", "msg-2"]
+
+
+action Init:
+    # EventBridge
+    bus_status = {}             # bus_status[bid] = "ACTIVE"
+    rule_status = {}            # rule_status[rid] = "ENABLED" | "DISABLED"
+    rule_bus = {}               # rule_bus[rid] = bus_id
+    rule_queue = {}             # rule_queue[rid] = queue_id
+
+    # SQS
+    queue_status = {}           # queue_status[qid] = "ACTIVE"
+
+    # SQS messages delivered by EventBridge
+    msg_status = {}             # msg_status[mid] = "AVAILABLE" | "DELETED"
+    msg_queue = {}              # msg_queue[mid] = queue_id
+
+
+# step: an EventBridge event bus is created
+# result: the event bus is ACTIVE
+# guard: the event bus does not already exist
+# guard_violation: the event bus already exists
+atomic action CreateEventBus:
+    oneof bid in BUS_IDS:
+        if bid not in bus_status:
+            bus_status[bid] = "ACTIVE"
+
+
+# step: an SQS queue is created
+# result: the queue is ACTIVE
+# guard: the queue does not already exist
+# guard_violation: the queue already exists
+atomic action CreateQueue:
+    oneof qid in QUEUE_IDS:
+        if qid not in queue_status:
+            queue_status[qid] = "ACTIVE"
+
+
+# step: an EventBridge rule is created to route matching events to the SQS queue
+# result: the rule is ENABLED and will forward matching events to the queue
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation_lifecycle: the event bus is not ACTIVE
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+# guard: the rule does not already exist
+# guard_violation: the rule already exists
+atomic action PutRule:
+    oneof rid in RULE_IDS:
+        if rid not in rule_status:
+            oneof bid in BUS_IDS:
+                if bid in bus_status:
+                    if bus_status[bid] == "ACTIVE":
+                        oneof qid in QUEUE_IDS:
+                            if qid in queue_status:
+                                if queue_status[qid] == "ACTIVE":
+                                    rule_status[rid] = "ENABLED"
+                                    rule_bus[rid] = bid
+                                    rule_queue[rid] = qid
+
+
+# step: an event is published to the bus and routed to the target SQS queue
+# result: the message is AVAILABLE in the target queue
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation_lifecycle: the event bus is not ACTIVE
+# guard: an ENABLED rule exists on the bus targeting a queue
+# guard_violation_lifecycle: no ENABLED rule exists on the bus targeting a queue
+# guard: the target queue is ACTIVE
+# guard_violation_lifecycle: the target queue is not ACTIVE
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action PutEvent:
+    oneof bid in BUS_IDS:
+        if bid in bus_status:
+            if bus_status[bid] == "ACTIVE":
+                oneof rid in RULE_IDS:
+                    if rid in rule_status:
+                        if rule_status[rid] == "ENABLED":
+                            if rule_bus[rid] == bid:
+                                qid = rule_queue[rid]
+                                if qid in queue_status:
+                                    if queue_status[qid] == "ACTIVE":
+                                        oneof mid in MSG_IDS:
+                                            if mid not in msg_status or msg_status[mid] == "DELETED":
+                                                msg_status[mid] = "AVAILABLE"
+                                                msg_queue[mid] = qid
+
+
+# step: a message is consumed from the SQS queue
+# result: the message is DELETED
+# guard: an AVAILABLE message exists in the queue
+# guard_violation_lifecycle: no AVAILABLE message exists in the queue
+atomic action ConsumeMessage:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "AVAILABLE":
+                msg_status[mid] = "DELETED"
+
+
+# check: every ENABLED rule references an ACTIVE event bus
+always assertion RuleReferencesActiveBus:
+    for rid in rule_status:
+        if rule_status[rid] == "ENABLED":
+            bid = rule_bus[rid]
+            if bid in bus_status:
+                if bus_status[bid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every AVAILABLE message belongs to an ACTIVE queue
+always assertion MessagesReferenceActiveQueues:
+    for mid in msg_status:
+        if msg_status[mid] == "AVAILABLE":
+            qid = msg_queue[mid]
+            if qid in queue_status:
+                if queue_status[qid] != "ACTIVE":
+                    return False
+    return True

@@ -1,0 +1,171 @@
+digraph G {
+  "0x1400006c120" [label="yield
+Actions: 0, Forks: 0
+State: {\"bucket_status\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400006c120" -> "0x1400006cc00" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x1400006cc00" [label="CreateStateMachine
+Actions: 1, Forks: 1
+State: {\"bucket_status\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006cc00" -> "0x1400006d440" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400006d440" [label="yield
+Actions: 1, Forks: 2
+State: {\"bucket_status\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400006d440" -> "0x1400006dbc0" [label="CreateBucket", color="black" penwidth="1" ];
+  "0x1400006dbc0" [label="CreateBucket
+Actions: 2, Forks: 3
+State: {\"bucket_status\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006dbc0" -> "0x140003b7080" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140003b7080" [label="yield
+Actions: 2, Forks: 4
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003b7080" -> "0x140003b7800" [label="ConfigureS3Task", color="black" penwidth="1" ];
+  "0x140003b7800" [label="ConfigureS3Task
+Actions: 3, Forks: 5
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003b7800" -> "0x14000480180" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000480180" [label="Any:smid=\"sm-1\"
+Actions: 3, Forks: 6
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000480180" -> "0x14000480840" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x14000480840" [label="yield
+Actions: 3, Forks: 7
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000480840" -> "0x140004811a0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140004811a0" [label="StartExecution
+Actions: 4, Forks: 8
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004811a0" -> "0x140004d1680" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140004d1680" [label="Any:smid=\"sm-1\"
+Actions: 4, Forks: 9
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004d1680" -> "0x140004d1d40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140004d1d40" [label="yield
+Actions: 4, Forks: 10
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004d1d40" -> "0x1400011ad20" [label="PutObjectTask", color="black" penwidth="1" ];
+  "0x1400011ad20" [label="PutObjectTask
+Actions: 5, Forks: 11
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400011ad20" -> "0x14000175c20" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000175c20" [label="Any:eid=\"exec-1\"
+Actions: 5, Forks: 12
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000175c20" -> "0x140004d09c0" [label="Any:oid=\"obj-1\"", color="black" penwidth="1" ];
+  "0x140004d09c0" [label="yield
+Actions: 5, Forks: 13
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_exec\":\"{\"obj-1\": \"exec-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004d09c0" -> "0x1400068e3c0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400068e3c0" [label="StartExecution
+Actions: 6, Forks: 14
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_exec\":\"{\"obj-1\": \"exec-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068e3c0" -> "0x140000ad6e0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140000ad6e0" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 15
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_exec\":\"{\"obj-1\": \"exec-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000ad6e0" -> "0x140000adda0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140000adda0" [label="yield
+Actions: 6, Forks: 16
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_exec\":\"{\"obj-1\": \"exec-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140000adda0" -> "0x1400006d740" [label="PutObjectTask", color="black" penwidth="1" ];
+  "0x1400006d740" [label="PutObjectTask
+Actions: 7, Forks: 17
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_exec\":\"{\"obj-1\": \"exec-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d740" -> "0x1400044ade0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400044ade0" [label="Any:eid=\"exec-1\"
+Actions: 7, Forks: 18
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_exec\":\"{\"obj-1\": \"exec-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000adda0" -> "0x1400006d800" [label="GetObjectTask", color="black" penwidth="1" ];
+  "0x1400006d800" [label="GetObjectTask
+Actions: 7, Forks: 17
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_exec\":\"{\"obj-1\": \"exec-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d800" -> "0x140004d09c0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140000adda0" -> "0x1400006d8c0" [label="GetObjectNotFoundTask", color="black" penwidth="1" ];
+  "0x1400006d8c0" [label="GetObjectNotFoundTask
+Actions: 7, Forks: 17
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_exec\":\"{\"obj-1\": \"exec-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d8c0" -> "0x140000adda0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140004d1d40" -> "0x1400011ade0" [label="GetObjectTask", color="black" penwidth="1" ];
+  "0x1400011ade0" [label="GetObjectTask
+Actions: 5, Forks: 11
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400011ade0" -> "0x140004d1d40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140004d1d40" -> "0x1400011aea0" [label="GetObjectNotFoundTask", color="black" penwidth="1" ];
+  "0x1400011aea0" [label="GetObjectNotFoundTask
+Actions: 5, Forks: 11
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400011aea0" -> "0x1400068f260" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400068f260" [label="yield
+Actions: 5, Forks: 12
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400068f260" -> "0x140000ac3c0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140000ac3c0" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000ac3c0" -> "0x140003b6960" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003b6960" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{\"sm-1\": \"bucket-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003b6960" -> "0x140004d1d40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400006c120" -> "0x1400006ccc0" [label="CreateBucket", color="black" penwidth="1" ];
+  "0x1400006ccc0" [label="CreateBucket
+Actions: 1, Forks: 1
+State: {\"bucket_status\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006ccc0" -> "0x140003763c0" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140003763c0" [label="yield
+Actions: 1, Forks: 2
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140003763c0" -> "0x14000376a20" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x14000376a20" [label="CreateStateMachine
+Actions: 2, Forks: 3
+State: {\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_exec\":\"{}\",\"obj_status\":\"{}\",\"sm_bucket\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000376a20" -> "0x140003b7080" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+}

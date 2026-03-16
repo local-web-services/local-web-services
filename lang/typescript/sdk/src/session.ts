@@ -1,15 +1,15 @@
 /**
  * LwsSession — main entry point for the lws TypeScript testing SDK.
  *
- * Spawns `ldk dev` in a background process and provides pre-configured
+ * Starts an in-process TypeScript core and provides pre-configured
  * AWS SDK v3 clients pointing at the local services.
  */
 
-import { ChildProcess, spawn } from "child_process";
 import * as fs from "fs/promises";
 import * as net from "net";
 import * as os from "os";
 import * as path from "path";
+import type { LwsServer } from "local-web-services-typescript-core";
 
 import type { ResourceSpec } from "./types";
 import { DynamoDBHelper } from "./resources/dynamodb";
@@ -28,8 +28,20 @@ const SERVICE_OFFSETS: Record<string, number> = {
   sns: 4,
   eventbridge: 5,
   stepfunctions: 6,
+  cognitoidp: 7,
+  lambda: 8,
+  apigateway: 9,
   ssm: 12,
   secretsmanager: 13,
+  rds: 10,
+  docdb: 11,
+  elasticache: 14,
+  neptune: 15,
+  memorydb: 16,
+  glacier: 17,
+  elasticsearch: 18,
+  opensearch: 19,
+  s3tables: 20,
 };
 
 // Maps service name → AWS SDK v3 endpoint URL env var.
@@ -41,8 +53,19 @@ const SERVICE_ENV_VARS: Record<string, string> = {
   s3: "AWS_ENDPOINT_URL_S3",
   sns: "AWS_ENDPOINT_URL_SNS",
   stepfunctions: "AWS_ENDPOINT_URL_STATES",
+  cognitoidp: "AWS_ENDPOINT_URL_COGNITO_IDP",
+  lambda: "AWS_ENDPOINT_URL_LAMBDA",
   ssm: "AWS_ENDPOINT_URL_SSM",
   secretsmanager: "AWS_ENDPOINT_URL_SECRETS_MANAGER",
+  rds: "AWS_ENDPOINT_URL_RDS",
+  docdb: "AWS_ENDPOINT_URL_DOCDB",
+  neptune: "AWS_ENDPOINT_URL_NEPTUNE",
+  elasticache: "AWS_ENDPOINT_URL_ELASTICACHE",
+  memorydb: "AWS_ENDPOINT_URL_MEMORY_DB",
+  glacier: "AWS_ENDPOINT_URL_GLACIER",
+  elasticsearch: "AWS_ENDPOINT_URL_ELASTICSEARCH",
+  opensearch: "AWS_ENDPOINT_URL_OPENSEARCH",
+  s3tables: "AWS_ENDPOINT_URL_S3_TABLES",
 };
 
 const TEST_CREDENTIALS: Record<string, string> = {
@@ -62,41 +85,73 @@ function freePort(): Promise<number> {
   });
 }
 
-async function waitForReady(
-  managementUrl: string,
-  timeoutMs = 60_000,
-  intervalMs = 200
-): Promise<void> {
-  const maxRetries = 3;
-  let lastError: Error | undefined;
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    const deadline = Date.now() + timeoutMs;
-    while (Date.now() < deadline) {
-      try {
-        const res = await fetch(`${managementUrl}/_ldk/status`);
-        if (res.ok) return;
-        lastError = new Error(`status endpoint returned HTTP ${res.status}`);
-      } catch (err) {
-        lastError = err instanceof Error ? err : new Error(String(err));
-      }
-      await new Promise((r) => setTimeout(r, intervalMs));
-    }
-    if (attempt < maxRetries) {
-      console.warn(
-        `[lws] ldk dev not ready after ${timeoutMs}ms, retrying in 15 s... (${attempt + 1}/${maxRetries})`
-      );
-      await new Promise((r) => setTimeout(r, 15_000));
-    }
-  }
-  const reason = lastError ? `: ${lastError.message}` : "";
-  throw new Error(`ldk dev did not become ready after ${maxRetries} retries${reason}`);
+// ── Typed resource descriptors ───────────────────────────────────────────────
+
+/**
+ * A typed resource descriptor accepted by {@link LwsSession.start} and
+ * {@link useLws}.
+ */
+export interface Resource {
+  readonly _spec: ResourceSpec;
+}
+
+function mergeSpec(target: ResourceSpec, source: ResourceSpec): void {
+  if (source.tables) target.tables = [...(target.tables ?? []), ...source.tables];
+  if (source.queues) target.queues = [...(target.queues ?? []), ...source.queues];
+  if (source.buckets) target.buckets = [...(target.buckets ?? []), ...source.buckets];
+  if (source.topics) target.topics = [...(target.topics ?? []), ...source.topics];
+  if (source.stateMachines)
+    target.stateMachines = [...(target.stateMachines ?? []), ...source.stateMachines];
+  if (source.parameters)
+    target.parameters = [...(target.parameters ?? []), ...source.parameters];
+  if (source.secrets) target.secrets = [...(target.secrets ?? []), ...source.secrets];
+}
+
+/** Declare a DynamoDB table resource. */
+export function table(
+  name: string,
+  options?: { hashKey?: string; sortKey?: string }
+): Resource {
+  const spec: import("./types").TableSpec = {
+    name,
+    partitionKey: options?.hashKey ?? "id",
+    ...(options?.sortKey ? { sortKey: options.sortKey } : {}),
+  };
+  return { _spec: { tables: [spec] } };
+}
+
+/** Declare an SQS queue resource. */
+export function queue(
+  name: string,
+  options?: { isFifo?: boolean; visibilityTimeout?: number }
+): Resource {
+  return { _spec: { queues: [{ name, ...options }] } };
+}
+
+/** Declare an S3 bucket resource. */
+export function bucket(name: string): Resource {
+  return { _spec: { buckets: [name] } };
+}
+
+/** Declare an SNS topic resource. */
+export function topic(name: string): Resource {
+  return { _spec: { topics: [name] } };
+}
+
+/** Declare a Step Functions state machine resource. */
+export function stateMachine(
+  name: string,
+  definition: string | object,
+  roleArn?: string
+): Resource {
+  return { _spec: { stateMachines: [{ name, definition, roleArn }] } };
 }
 
 export class LwsSession {
   private readonly _basePort: number;
   private readonly _projectDir: string;
   private readonly _spec: ResourceSpec;
-  private _process: ChildProcess | null = null;
+  private _server: LwsServer | null = null;
   private _tempDir: string | null = null;
   private _savedEnv: Record<string, string | undefined> = {};
 
@@ -167,42 +222,39 @@ export class LwsSession {
     return session;
   }
 
+  /**
+   * Create a session from typed resource descriptors (functional-options style).
+   *
+   * ```ts
+   * const session = await LwsSession.start(
+   *   table("Orders", { hashKey: "orderId" }),
+   *   queue("OrderQueue"),
+   * );
+   * ```
+   */
+  static async start(...resources: Resource[]): Promise<LwsSession> {
+    const merged: ResourceSpec = {};
+    for (const r of resources) {
+      mergeSpec(merged, r._spec);
+    }
+    return LwsSession.create(merged);
+  }
+
   // ── Lifecycle ───────────────────────────────────────────────────────────────
 
-  private async _start(mode?: string): Promise<void> {
-    const args = ["dev", "--project-dir", this._projectDir, "--port", String(this._basePort)];
-    if (mode) {
-      args.push("--mode", mode);
-    }
-
-    this._process = spawn("ldk", args, {
-      stdio: ["ignore", "pipe", "pipe"],
-      detached: false,
-    });
-
-    this._process.on("error", (err) => {
-      throw new Error(
-        `Failed to start ldk: ${err.message}. ` +
-          "Ensure local-web-services is installed: pip install local-web-services"
-      );
-    });
-
-    const managementUrl = `http://127.0.0.1:${this._basePort}`;
-    await waitForReady(managementUrl);
+  private async _start(_mode?: string): Promise<void> {
+    const { startServer } = await import("local-web-services-typescript-core");
+    this._server = await startServer({ basePort: this._basePort });
     this._patchEnv();
   }
 
-  /** Stop the ldk dev process and clean up any temporary files. */
+  /** Stop the in-process server and clean up any temporary files. */
   async close(): Promise<void> {
     this._restoreEnv();
 
-    if (this._process) {
-      this._process.kill("SIGTERM");
-      await new Promise<void>((resolve) => {
-        this._process!.once("exit", () => resolve());
-        setTimeout(resolve, 5000); // force close after 5s
-      });
-      this._process = null;
+    if (this._server) {
+      await this._server.close();
+      this._server = null;
     }
     if (this._tempDir) {
       await fs.rm(this._tempDir, { recursive: true, force: true });
@@ -309,6 +361,54 @@ export class LwsSession {
         const { SFNClient } = require("@aws-sdk/client-sfn");
         return new SFNClient({ endpoint: endpointUrl, credentials, region }) as T;
       }
+      case "cognitoidp": {
+        const { CognitoIdentityProviderClient } = require("@aws-sdk/client-cognito-identity-provider");
+        return new CognitoIdentityProviderClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "lambda": {
+        const { LambdaClient } = require("@aws-sdk/client-lambda");
+        return new LambdaClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "apigateway": {
+        const { APIGatewayClient } = require("@aws-sdk/client-api-gateway");
+        return new APIGatewayClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "rds": {
+        const { RDSClient } = require("@aws-sdk/client-rds");
+        return new RDSClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "docdb": {
+        const { DocDBClient } = require("@aws-sdk/client-docdb");
+        return new DocDBClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "neptune": {
+        const { NeptuneClient } = require("@aws-sdk/client-neptune");
+        return new NeptuneClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "elasticache": {
+        const { ElastiCacheClient } = require("@aws-sdk/client-elasticache");
+        return new ElastiCacheClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "memorydb": {
+        const { MemoryDBClient } = require("@aws-sdk/client-memory-db");
+        return new MemoryDBClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "glacier": {
+        const { GlacierClient } = require("@aws-sdk/client-glacier");
+        return new GlacierClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "elasticsearch": {
+        const { ElasticsearchServiceClient } = require("@aws-sdk/client-elasticsearch");
+        return new ElasticsearchServiceClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "opensearch": {
+        const { OpenSearchClient } = require("@aws-sdk/client-opensearch");
+        return new OpenSearchClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "s3tables": {
+        const { S3TablesClient } = require("@aws-sdk/client-s3tables");
+        return new S3TablesClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
       default: {
         throw new Error(`No SDK client implementation for service "${service}"`);
       }
@@ -319,82 +419,8 @@ export class LwsSession {
 
   /** Clear all in-memory state. Call between tests for isolation. */
   async reset(): Promise<void> {
-    await this._resetDynamoDB();
-    await this._resetSqs();
-    await this._resetS3();
-  }
-
-  private async _resetDynamoDB(): Promise<void> {
-    if (!("dynamodb" in SERVICE_OFFSETS)) return;
-    const { DynamoDBClient, ScanCommand, DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
-    const dynamo = this.client<typeof DynamoDBClient>("dynamodb");
-    const tables = this._spec.tables ?? [];
-    for (const tableSpec of tables) {
-      const name = typeof tableSpec === "string" ? tableSpec : tableSpec.name;
-      const partitionKey =
-        typeof tableSpec === "string" ? "id" : tableSpec.partitionKey;
-      const sortKey = typeof tableSpec === "string" ? undefined : tableSpec.sortKey;
-      const keyNames = [partitionKey, ...(sortKey ? [sortKey] : [])];
-      const projection = keyNames.map((k, i) => `#k${i}`).join(", ");
-      const exprNames = Object.fromEntries(keyNames.map((k, i) => [`#k${i}`, k]));
-
-      let lastKey: Record<string, unknown> | undefined;
-      do {
-        const scanInput: Record<string, unknown> = {
-          TableName: name,
-          ProjectionExpression: projection,
-          ExpressionAttributeNames: exprNames,
-        };
-        if (lastKey) scanInput.ExclusiveStartKey = lastKey;
-
-        const result = await dynamo.send(new ScanCommand(scanInput));
-        for (const item of result.Items ?? []) {
-          const key = Object.fromEntries(keyNames.map((k) => [k, item[k]]));
-          await dynamo.send(new DeleteItemCommand({ TableName: name, Key: key }));
-        }
-        lastKey = result.LastEvaluatedKey;
-      } while (lastKey);
-    }
-  }
-
-  private async _resetSqs(): Promise<void> {
-    const { SQSClient, PurgeQueueCommand } = require("@aws-sdk/client-sqs");
-    const sqs = this.client<typeof SQSClient>("sqs");
-    const port = this._basePort + SERVICE_OFFSETS.sqs;
-    for (const queueSpec of this._spec.queues ?? []) {
-      const name = typeof queueSpec === "string" ? queueSpec : queueSpec.name;
-      const queueUrl = `http://127.0.0.1:${port}/000000000000/${name}`;
-      try {
-        await sqs.send(new PurgeQueueCommand({ QueueUrl: queueUrl }));
-      } catch {
-        // ignore if queue doesn't exist or other errors
-      }
-    }
-  }
-
-  private async _resetS3(): Promise<void> {
-    const {
-      S3Client,
-      ListObjectsV2Command,
-      DeleteObjectCommand,
-    } = require("@aws-sdk/client-s3");
-    const s3 = this.client<typeof S3Client>("s3");
-    for (const bucketSpec of this._spec.buckets ?? []) {
-      const name =
-        typeof bucketSpec === "string" ? bucketSpec : (bucketSpec as { name: string }).name;
-      let token: string | undefined;
-      do {
-        const listInput: Record<string, unknown> = { Bucket: name };
-        if (token) listInput.ContinuationToken = token;
-        const result = await s3.send(new ListObjectsV2Command(listInput));
-        for (const obj of result.Contents ?? []) {
-          await s3.send(
-            new DeleteObjectCommand({ Bucket: name, Key: obj.Key! })
-          );
-        }
-        token = result.NextContinuationToken;
-      } while (token);
-    }
+    await fetch(`http://127.0.0.1:${this._basePort}/_ldk/reset`, { method: "POST" });
+    await this._preCreateResources(this._spec);
   }
 
   // ── Resource helpers ────────────────────────────────────────────────────────
@@ -559,6 +585,49 @@ export class LwsSession {
     }
     return this._basePort + offset;
   }
+}
+
+// ── Test framework integration ───────────────────────────────────────────────
+
+/**
+ * Set up a shared {@link LwsSession} for a Jest/Vitest test suite.
+ *
+ * Automatically wires `beforeAll`, `afterAll`, and `beforeEach` hooks so the
+ * session is started once, reset between tests, and closed at the end. Call at
+ * the top level of a test file or `describe` block:
+ *
+ * ```ts
+ * const { session } = useLws(
+ *   table("Orders", { hashKey: "orderId" }),
+ *   queue("OrderQueue"),
+ * );
+ *
+ * test("places an order", async () => {
+ *   const db = session().client("dynamodb");
+ *   ...
+ * });
+ * ```
+ */
+export function useLws(...resources: Resource[]): { session(): LwsSession } {
+  let _session: LwsSession;
+  // Use dynamic access so this file compiles outside a test environment.
+  const g = globalThis as Record<string, unknown>;
+  if (typeof g["beforeAll"] === "function") {
+    (g["beforeAll"] as (fn: () => Promise<void>) => void)(async () => {
+      _session = await LwsSession.start(...resources);
+    });
+  }
+  if (typeof g["afterAll"] === "function") {
+    (g["afterAll"] as (fn: () => Promise<void>) => void)(async () => {
+      if (_session) await _session.close();
+    });
+  }
+  if (typeof g["beforeEach"] === "function") {
+    (g["beforeEach"] as (fn: () => Promise<void>) => void)(async () => {
+      if (_session) await _session.reset();
+    });
+  }
+  return { session: () => _session };
 }
 
 // ── Terraform config generator ──────────────────────────────────────────────

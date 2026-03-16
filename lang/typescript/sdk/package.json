@@ -8,8 +8,9 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "tsc",
-    "test": "jest --forceExit",
+    "build": "tsup",
+    "test": "cucumber-js",
+    "test:jest": "jest --forceExit",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write src/**/*.ts",
     "prepublishOnly": "npm run build"
@@ -38,14 +39,16 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.600.0",
     "@aws-sdk/client-s3": "^3.600.0",
-    "@aws-sdk/client-sqs": "^3.600.0",
-    "@aws-sdk/client-sns": "^3.600.0",
-    "@aws-sdk/client-ssm": "^3.600.0",
     "@aws-sdk/client-secrets-manager": "^3.600.0",
     "@aws-sdk/client-sfn": "^3.600.0",
+    "@aws-sdk/client-sns": "^3.600.0",
+    "@aws-sdk/client-sqs": "^3.600.0",
+    "@aws-sdk/client-ssm": "^3.600.0",
+    "local-web-services-typescript-core": "file:../core",
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^11.0.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
     "@types/ws": "^8.5.0",
@@ -55,6 +58,8 @@
     "jest": "^29.7.0",
     "prettier": "^3.3.0",
     "ts-jest": "^29.2.0",
+    "ts-node": "^10.9.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.5.0"
   },
   "engines": {

@@ -1,0 +1,4697 @@
+[
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": null,
+      "state": {
+        "inv_status": {},
+        "queue_dlq": {},
+        "esm_status": {},
+        "msg_status": {},
+        "msg_receive_count": {},
+        "inv_msg": {},
+        "inv_esm": {},
+        "func_status": {},
+        "queue_status": {},
+        "msg_queue": {},
+        "esm_queue": {},
+        "esm_func": {}
+      },
+      "stats": {
+        "totalActions": 0,
+        "counts": {}
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Init",
+    "Labels": [],
+    "Fairness": 3,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "CreateQueue",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_msg": {},
+        "func_status": {},
+        "inv_status": {},
+        "esm_queue": {},
+        "msg_status": {},
+        "esm_status": {},
+        "msg_receive_count": {},
+        "inv_esm": {},
+        "msg_queue": {},
+        "esm_func": {},
+        "queue_dlq": {},
+        "queue_status": {}
+      },
+      "stats": {
+        "totalActions": 1,
+        "counts": {
+          "CreateQueue": 1
+        }
+      },
+      "threads": [
+        {
+          "id": 8,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "CreateQueue",
+              "pc": "Actions[1].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "CreateQueue",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_status": {},
+        "inv_msg": {},
+        "esm_status": {},
+        "queue_dlq": {
+          "queue-1": ""
+        },
+        "inv_esm": {},
+        "esm_func": {},
+        "msg_receive_count": {},
+        "func_status": {},
+        "msg_queue": {},
+        "inv_status": {},
+        "queue_status": {
+          "queue-1": "ACTIVE"
+        },
+        "esm_queue": {}
+      },
+      "stats": {
+        "totalActions": 1,
+        "counts": {
+          "CreateQueue": 1
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:qid=\"queue-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "CreateQueue",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_status": {},
+        "inv_esm": {},
+        "queue_dlq": {
+          "queue-1": ""
+        },
+        "inv_status": {},
+        "queue_status": {
+          "queue-1": "ACTIVE"
+        },
+        "inv_msg": {},
+        "msg_receive_count": {},
+        "msg_queue": {},
+        "esm_queue": {},
+        "func_status": {},
+        "esm_func": {},
+        "msg_status": {}
+      },
+      "stats": {
+        "totalActions": 2,
+        "counts": {
+          "CreateQueue": 2
+        }
+      },
+      "threads": [
+        {
+          "id": 22,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "CreateQueue",
+              "pc": "Actions[1].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "CreateQueue",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_queue": {},
+        "esm_queue": {},
+        "inv_msg": {},
+        "msg_status": {},
+        "queue_dlq": {
+          "dlq-1": "",
+          "queue-1": ""
+        },
+        "msg_receive_count": {},
+        "esm_status": {},
+        "inv_status": {},
+        "inv_esm": {},
+        "esm_func": {},
+        "func_status": {}
+      },
+      "stats": {
+        "totalActions": 2,
+        "counts": {
+          "CreateQueue": 2
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:qid=\"dlq-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "ConfigureRedrive",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_status": {},
+        "msg_queue": {},
+        "queue_dlq": {
+          "dlq-1": "",
+          "queue-1": ""
+        },
+        "esm_status": {},
+        "inv_status": {},
+        "msg_receive_count": {},
+        "esm_func": {},
+        "func_status": {},
+        "inv_msg": {},
+        "esm_queue": {},
+        "inv_esm": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        }
+      },
+      "stats": {
+        "totalActions": 3,
+        "counts": {
+          "ConfigureRedrive": 1,
+          "CreateQueue": 2
+        }
+      },
+      "threads": [
+        {
+          "id": 79,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ConfigureRedrive",
+              "pc": "Actions[2].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "ConfigureRedrive",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:qid=\"queue-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_queue": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_status": {},
+        "esm_func": {},
+        "esm_status": {},
+        "inv_esm": {},
+        "queue_dlq": {
+          "dlq-1": "",
+          "queue-1": ""
+        },
+        "inv_msg": {},
+        "msg_receive_count": {},
+        "msg_status": {},
+        "msg_queue": {},
+        "func_status": {}
+      },
+      "stats": {
+        "totalActions": 3,
+        "counts": {
+          "ConfigureRedrive": 1,
+          "CreateQueue": 2
+        }
+      },
+      "threads": [
+        {
+          "id": 79,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ConfigureRedrive",
+              "pc": "Actions[2].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": null,
+                            "skipstmts": null,
+                            "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:qid=\"queue-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_status": {},
+        "msg_queue": {},
+        "esm_queue": {},
+        "esm_func": {},
+        "msg_receive_count": {},
+        "func_status": {},
+        "queue_dlq": {
+          "dlq-1": "",
+          "queue-1": "dlq-1"
+        },
+        "esm_status": {},
+        "inv_msg": {},
+        "inv_esm": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_status": {}
+      },
+      "stats": {
+        "totalActions": 3,
+        "counts": {
+          "ConfigureRedrive": 1,
+          "CreateQueue": 2
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:did=\"dlq-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "ConfigureRedrive",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_receive_count": {},
+        "msg_queue": {},
+        "esm_queue": {},
+        "inv_status": {},
+        "queue_dlq": {
+          "dlq-1": "",
+          "queue-1": "dlq-1"
+        },
+        "inv_esm": {},
+        "esm_status": {},
+        "func_status": {},
+        "esm_func": {},
+        "msg_status": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_msg": {}
+      },
+      "stats": {
+        "totalActions": 4,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2
+        }
+      },
+      "threads": [
+        {
+          "id": 233,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ConfigureRedrive",
+              "pc": "Actions[2].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "ConfigureRedrive",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:qid=\"dlq-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_status": {},
+        "msg_status": {},
+        "esm_func": {},
+        "inv_status": {},
+        "inv_msg": {},
+        "func_status": {},
+        "esm_queue": {},
+        "inv_esm": {},
+        "queue_dlq": {
+          "dlq-1": "",
+          "queue-1": "dlq-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_queue": {},
+        "msg_receive_count": {}
+      },
+      "stats": {
+        "totalActions": 4,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2
+        }
+      },
+      "threads": [
+        {
+          "id": 233,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ConfigureRedrive",
+              "pc": "Actions[2].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": null,
+                            "skipstmts": null,
+                            "vars": "{\"qid\":\"\\\"dlq-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"qid\":\"\\\"dlq-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"qid\":\"\\\"dlq-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"qid\":\"\\\"dlq-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"qid\":\"\\\"dlq-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"qid\":\"\\\"dlq-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"qid\":\"\\\"dlq-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:qid=\"dlq-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_status": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "esm_func": {},
+        "esm_queue": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_esm": {},
+        "esm_status": {},
+        "msg_queue": {},
+        "inv_msg": {},
+        "inv_status": {},
+        "msg_receive_count": {},
+        "func_status": {}
+      },
+      "stats": {
+        "totalActions": 4,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:did=\"queue-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "MessageArrives",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "func_status": {},
+        "inv_msg": {},
+        "esm_func": {},
+        "msg_status": {},
+        "esm_status": {},
+        "esm_queue": {},
+        "msg_queue": {},
+        "inv_status": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_receive_count": {},
+        "inv_esm": {}
+      },
+      "stats": {
+        "totalActions": 5,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 1
+        }
+      },
+      "threads": [
+        {
+          "id": 654,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "MessageArrives",
+              "pc": "Actions[3].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "MessageArrives",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:qid=\"queue-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_queue": {},
+        "inv_status": {},
+        "esm_func": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "esm_status": {},
+        "msg_receive_count": {},
+        "func_status": {},
+        "msg_queue": {},
+        "msg_status": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_msg": {},
+        "inv_esm": {}
+      },
+      "stats": {
+        "totalActions": 5,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 1
+        }
+      },
+      "threads": [
+        {
+          "id": 654,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "MessageArrives",
+              "pc": "Actions[3].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": null,
+                          "skipstmts": null,
+                          "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:qid=\"queue-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_esm": {},
+        "msg_receive_count": {
+          "msg-1": 0
+        },
+        "inv_status": {},
+        "esm_func": {},
+        "inv_msg": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "func_status": {},
+        "esm_queue": {},
+        "esm_status": {},
+        "msg_status": {
+          "msg-1": "AVAILABLE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1"
+        }
+      },
+      "stats": {
+        "totalActions": 5,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 1
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:mid=\"msg-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "MessageArrives",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_status": {
+          "msg-1": "AVAILABLE"
+        },
+        "inv_status": {},
+        "esm_func": {},
+        "esm_queue": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 0
+        },
+        "func_status": {},
+        "esm_status": {},
+        "inv_esm": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "inv_msg": {}
+      },
+      "stats": {
+        "totalActions": 6,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 2
+        }
+      },
+      "threads": [
+        {
+          "id": 1536,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "MessageArrives",
+              "pc": "Actions[3].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "MessageArrives",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:qid=\"queue-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "func_status": {},
+        "esm_status": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "esm_queue": {},
+        "inv_msg": {},
+        "msg_queue": {
+          "msg-1": "queue-1"
+        },
+        "inv_status": {},
+        "inv_esm": {},
+        "msg_receive_count": {
+          "msg-1": 0
+        },
+        "msg_status": {
+          "msg-1": "AVAILABLE"
+        },
+        "esm_func": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        }
+      },
+      "stats": {
+        "totalActions": 6,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 2
+        }
+      },
+      "threads": [
+        {
+          "id": 1536,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "MessageArrives",
+              "pc": "Actions[3].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": null,
+                          "skipstmts": null,
+                          "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:qid=\"queue-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "func_status": {},
+        "inv_msg": {},
+        "esm_func": {},
+        "esm_queue": {},
+        "inv_status": {},
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1"
+        },
+        "esm_status": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE"
+        },
+        "inv_esm": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0
+        }
+      },
+      "stats": {
+        "totalActions": 6,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 2
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:mid=\"msg-2\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "MessageArrives",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "func_status": {},
+        "esm_status": {},
+        "inv_msg": {},
+        "inv_status": {},
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE"
+        },
+        "esm_queue": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_esm": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0
+        },
+        "esm_func": {}
+      },
+      "stats": {
+        "totalActions": 7,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 3384,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "MessageArrives",
+              "pc": "Actions[3].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "MessageArrives",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:qid=\"queue-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0
+        },
+        "inv_status": {},
+        "func_status": {},
+        "esm_status": {},
+        "inv_msg": {},
+        "esm_queue": {},
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1"
+        },
+        "esm_func": {},
+        "inv_esm": {},
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        }
+      },
+      "stats": {
+        "totalActions": 7,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 3384,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "MessageArrives",
+              "pc": "Actions[3].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": null,
+                          "skipstmts": null,
+                          "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:qid=\"queue-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "esm_status": {},
+        "esm_queue": {},
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_msg": {},
+        "func_status": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "inv_status": {},
+        "esm_func": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "inv_esm": {}
+      },
+      "stats": {
+        "totalActions": 7,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:mid=\"msg-3\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "DeployFunction",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "esm_status": {},
+        "inv_esm": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "esm_func": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "inv_msg": {},
+        "esm_queue": {},
+        "inv_status": {},
+        "func_status": {}
+      },
+      "stats": {
+        "totalActions": 8,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 6829,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "DeployFunction",
+              "pc": "Actions[4].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "DeployFunction",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:fid=\"func-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_msg": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "esm_queue": {},
+        "inv_status": {},
+        "inv_esm": {},
+        "esm_status": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "esm_func": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "func_status": {}
+      },
+      "stats": {
+        "totalActions": 8,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 6829,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "DeployFunction",
+              "pc": "Actions[4].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": null,
+                      "skipstmts": null,
+                      "vars": "{\"fid\":\"\\\"func-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"fid\":\"\\\"func-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"fid\":\"\\\"func-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"fid\":\"\\\"func-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:fid=\"func-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "esm_func": {},
+        "inv_esm": {},
+        "esm_status": {},
+        "inv_status": {},
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "inv_msg": {},
+        "esm_queue": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        }
+      },
+      "stats": {
+        "totalActions": 8,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Stmt:0",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "CreateEventSourceMapping",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_queue": {},
+        "esm_status": {},
+        "inv_msg": {},
+        "esm_func": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_esm": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "inv_status": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        }
+      },
+      "stats": {
+        "totalActions": 9,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 13074,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "CreateEventSourceMapping",
+              "pc": "Actions[5].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "CreateEventSourceMapping",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:eid=\"esm-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_status": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "esm_func": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "inv_msg": {},
+        "inv_esm": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "esm_queue": {},
+        "esm_status": {}
+      },
+      "stats": {
+        "totalActions": 9,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 13074,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "CreateEventSourceMapping",
+              "pc": "Actions[5].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": null,
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:eid=\"esm-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:fid=\"func-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_esm": {},
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "esm_func": {},
+        "inv_status": {},
+        "inv_msg": {},
+        "esm_queue": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_status": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        }
+      },
+      "stats": {
+        "totalActions": 9,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 13074,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "CreateEventSourceMapping",
+              "pc": "Actions[5].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": {
+                              "loopRange": null,
+                              "parent": {
+                                "loopRange": null,
+                                "parent": null,
+                                "skipstmts": null,
+                                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+                              },
+                              "skipstmts": null,
+                              "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+                            },
+                            "skipstmts": null,
+                            "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:fid=\"func-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_msg": {},
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "inv_esm": {},
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_status": {},
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        }
+      },
+      "stats": {
+        "totalActions": 9,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:qid=\"queue-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "ESMPollAndInvoke",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "inv_status": {},
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "inv_esm": {},
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "inv_msg": {},
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        }
+      },
+      "stats": {
+        "totalActions": 10,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 26179,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "ESMPollAndInvoke",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:eid=\"esm-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "inv_status": {},
+        "inv_esm": {},
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_msg": {},
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        }
+      },
+      "stats": {
+        "totalActions": 10,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 26179,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": {
+                              "loopRange": null,
+                              "parent": null,
+                              "skipstmts": null,
+                              "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                            },
+                            "skipstmts": null,
+                            "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:eid=\"esm-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:mid=\"msg-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_status": {
+          "msg-1": "AVAILABLE",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_status": {},
+        "inv_msg": {},
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_esm": {},
+        "msg_receive_count": {
+          "msg-1": 0,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        }
+      },
+      "stats": {
+        "totalActions": 10,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 26179,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": {
+                              "loopRange": null,
+                              "parent": {
+                                "loopRange": null,
+                                "parent": {
+                                  "loopRange": null,
+                                  "parent": {
+                                    "loopRange": null,
+                                    "parent": {
+                                      "loopRange": null,
+                                      "parent": {
+                                        "loopRange": null,
+                                        "parent": null,
+                                        "skipstmts": null,
+                                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                      },
+                                      "skipstmts": null,
+                                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                    },
+                                    "skipstmts": null,
+                                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                  },
+                                  "skipstmts": null,
+                                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                },
+                                "skipstmts": null,
+                                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                              },
+                              "skipstmts": null,
+                              "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                            },
+                            "skipstmts": null,
+                            "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:mid=\"msg-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "inv_status": {
+          "inv-1": "IN_PROGRESS"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "inv_esm": {
+          "inv-1": "esm-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        }
+      },
+      "stats": {
+        "totalActions": 10,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:iid=\"inv-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "ESMPollAndInvoke",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_status": {
+          "inv-1": "IN_PROGRESS"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        }
+      },
+      "stats": {
+        "totalActions": 11,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 51267,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "ESMPollAndInvoke",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:eid=\"esm-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_esm": {
+          "inv-1": "esm-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_status": {
+          "inv-1": "IN_PROGRESS"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        }
+      },
+      "stats": {
+        "totalActions": 11,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 51267,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": {
+                              "loopRange": null,
+                              "parent": null,
+                              "skipstmts": null,
+                              "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                            },
+                            "skipstmts": null,
+                            "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:eid=\"esm-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:mid=\"msg-2\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_status": {
+          "inv-1": "IN_PROGRESS"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 0,
+          "msg-3": 0
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "AVAILABLE",
+          "msg-3": "AVAILABLE"
+        }
+      },
+      "stats": {
+        "totalActions": 11,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 51267,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": {
+                              "loopRange": null,
+                              "parent": {
+                                "loopRange": null,
+                                "parent": {
+                                  "loopRange": null,
+                                  "parent": {
+                                    "loopRange": null,
+                                    "parent": {
+                                      "loopRange": null,
+                                      "parent": {
+                                        "loopRange": null,
+                                        "parent": null,
+                                        "skipstmts": null,
+                                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                      },
+                                      "skipstmts": null,
+                                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                    },
+                                    "skipstmts": null,
+                                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                  },
+                                  "skipstmts": null,
+                                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                },
+                                "skipstmts": null,
+                                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                              },
+                              "skipstmts": null,
+                              "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                            },
+                            "skipstmts": null,
+                            "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-2\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:mid=\"msg-2\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 0
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "IN_FLIGHT",
+          "msg-3": "AVAILABLE"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "inv_status": {
+          "inv-1": "IN_PROGRESS",
+          "inv-2": "IN_PROGRESS"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        }
+      },
+      "stats": {
+        "totalActions": 11,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:iid=\"inv-2\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "ESMPollAndInvoke",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_status": {
+          "inv-1": "IN_PROGRESS",
+          "inv-2": "IN_PROGRESS"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 0
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "IN_FLIGHT",
+          "msg-3": "AVAILABLE"
+        }
+      },
+      "stats": {
+        "totalActions": 12,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 92595,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "ESMPollAndInvoke",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:eid=\"esm-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_status": {
+          "inv-1": "IN_PROGRESS",
+          "inv-2": "IN_PROGRESS"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 0
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "IN_FLIGHT",
+          "msg-3": "AVAILABLE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1"
+        }
+      },
+      "stats": {
+        "totalActions": 12,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 92595,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": {
+                              "loopRange": null,
+                              "parent": null,
+                              "skipstmts": null,
+                              "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                            },
+                            "skipstmts": null,
+                            "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:eid=\"esm-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:mid=\"msg-3\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "inv_status": {
+          "inv-1": "IN_PROGRESS",
+          "inv-2": "IN_PROGRESS"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 0
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "IN_FLIGHT",
+          "msg-3": "AVAILABLE"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1"
+        }
+      },
+      "stats": {
+        "totalActions": 12,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 92595,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": {
+                              "loopRange": null,
+                              "parent": {
+                                "loopRange": null,
+                                "parent": {
+                                  "loopRange": null,
+                                  "parent": {
+                                    "loopRange": null,
+                                    "parent": {
+                                      "loopRange": null,
+                                      "parent": {
+                                        "loopRange": null,
+                                        "parent": null,
+                                        "skipstmts": null,
+                                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                      },
+                                      "skipstmts": null,
+                                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                    },
+                                    "skipstmts": null,
+                                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                  },
+                                  "skipstmts": null,
+                                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                                },
+                                "skipstmts": null,
+                                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                              },
+                              "skipstmts": null,
+                              "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                            },
+                            "skipstmts": null,
+                            "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"mid\":\"\\\"msg-3\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:mid=\"msg-3\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_status": {
+          "inv-1": "IN_PROGRESS",
+          "inv-2": "IN_PROGRESS",
+          "inv-3": "IN_PROGRESS"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "IN_FLIGHT",
+          "msg-3": "IN_FLIGHT"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        }
+      },
+      "stats": {
+        "totalActions": 12,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:iid=\"inv-3\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "InvocationSucceeds",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "inv_status": {
+          "inv-1": "IN_PROGRESS",
+          "inv-2": "IN_PROGRESS",
+          "inv-3": "IN_PROGRESS"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "msg_status": {
+          "msg-1": "IN_FLIGHT",
+          "msg-2": "IN_FLIGHT",
+          "msg-3": "IN_FLIGHT"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        }
+      },
+      "stats": {
+        "totalActions": 13,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "InvocationSucceeds": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 149884,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "InvocationSucceeds",
+              "pc": "Actions[7].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "InvocationSucceeds",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "msg_status": {
+          "msg-1": "DELETED",
+          "msg-2": "IN_FLIGHT",
+          "msg-3": "IN_FLIGHT"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "inv_status": {
+          "inv-1": "SUCCESS",
+          "inv-2": "IN_PROGRESS",
+          "inv-3": "IN_PROGRESS"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        }
+      },
+      "stats": {
+        "totalActions": 13,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "InvocationSucceeds": 1,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:iid=\"inv-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "InvocationSucceeds",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_status": {
+          "inv-1": "SUCCESS",
+          "inv-2": "IN_PROGRESS",
+          "inv-3": "IN_PROGRESS"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_status": {
+          "msg-1": "DELETED",
+          "msg-2": "IN_FLIGHT",
+          "msg-3": "IN_FLIGHT"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        }
+      },
+      "stats": {
+        "totalActions": 14,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "InvocationSucceeds": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 211456,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "InvocationSucceeds",
+              "pc": "Actions[7].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "InvocationSucceeds",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_status": {
+          "inv-1": "SUCCESS",
+          "inv-2": "SUCCESS",
+          "inv-3": "IN_PROGRESS"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "msg_status": {
+          "msg-1": "DELETED",
+          "msg-2": "DELETED",
+          "msg-3": "IN_FLIGHT"
+        }
+      },
+      "stats": {
+        "totalActions": 14,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "InvocationSucceeds": 2,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:iid=\"inv-2\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "InvocationSucceeds",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "inv_status": {
+          "inv-1": "SUCCESS",
+          "inv-2": "SUCCESS",
+          "inv-3": "IN_PROGRESS"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "msg_status": {
+          "msg-1": "DELETED",
+          "msg-2": "DELETED",
+          "msg-3": "IN_FLIGHT"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        }
+      },
+      "stats": {
+        "totalActions": 15,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "InvocationSucceeds": 3,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 264124,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "InvocationSucceeds",
+              "pc": "Actions[7].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "InvocationSucceeds",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "yield",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "msg_status": {
+          "msg-1": "DELETED",
+          "msg-2": "DELETED",
+          "msg-3": "DELETED"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_status": {
+          "inv-1": "SUCCESS",
+          "inv-2": "SUCCESS",
+          "inv-3": "SUCCESS"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        }
+      },
+      "stats": {
+        "totalActions": 15,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 3,
+          "InvocationSucceeds": 3,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:iid=\"inv-3\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "ESMPollAndInvoke",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "inv_status": {
+          "inv-1": "SUCCESS",
+          "inv-2": "SUCCESS",
+          "inv-3": "SUCCESS"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "msg_status": {
+          "msg-1": "DELETED",
+          "msg-2": "DELETED",
+          "msg-3": "DELETED"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        }
+      },
+      "stats": {
+        "totalActions": 16,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 4,
+          "InvocationSucceeds": 3,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 296463,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": null,
+                  "skipstmts": null,
+                  "vars": "{}"
+                },
+                "skipstmts": null,
+                "vars": "{}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "action",
+    "Name": "ESMPollAndInvoke",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  },
+  {
+    "Node": {
+      "channel_messages": {},
+      "channels": {},
+      "current": 0,
+      "failedInvariants": null,
+      "name": "Any:eid=\"esm-1\"",
+      "returns": "{}",
+      "roles": [],
+      "state": {
+        "inv_msg": {
+          "inv-1": "msg-1",
+          "inv-2": "msg-2",
+          "inv-3": "msg-3"
+        },
+        "queue_status": {
+          "dlq-1": "ACTIVE",
+          "queue-1": "ACTIVE"
+        },
+        "msg_receive_count": {
+          "msg-1": 1,
+          "msg-2": 1,
+          "msg-3": 1
+        },
+        "queue_dlq": {
+          "dlq-1": "queue-1",
+          "queue-1": "dlq-1"
+        },
+        "inv_status": {
+          "inv-1": "SUCCESS",
+          "inv-2": "SUCCESS",
+          "inv-3": "SUCCESS"
+        },
+        "msg_queue": {
+          "msg-1": "queue-1",
+          "msg-2": "queue-1",
+          "msg-3": "queue-1"
+        },
+        "inv_esm": {
+          "inv-1": "esm-1",
+          "inv-2": "esm-1",
+          "inv-3": "esm-1"
+        },
+        "func_status": {
+          "func-1": "ACTIVE"
+        },
+        "esm_status": {
+          "esm-1": "ENABLED"
+        },
+        "esm_func": {
+          "esm-1": "func-1"
+        },
+        "esm_queue": {
+          "esm-1": "queue-1"
+        },
+        "msg_status": {
+          "msg-1": "DELETED",
+          "msg-2": "DELETED",
+          "msg-3": "DELETED"
+        }
+      },
+      "stats": {
+        "totalActions": 16,
+        "counts": {
+          "ConfigureRedrive": 2,
+          "CreateEventSourceMapping": 1,
+          "CreateQueue": 2,
+          "DeployFunction": 1,
+          "ESMPollAndInvoke": 4,
+          "InvocationSucceeds": 3,
+          "MessageArrives": 3
+        }
+      },
+      "threads": [
+        {
+          "id": 296463,
+          "stack": [
+            {
+              "fileIndex": 0,
+              "name": "ESMPollAndInvoke",
+              "pc": "Actions[6].Block.Stmts[0].AnyStmt.Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1].IfStmt.Branches[0].Block.Stmts[0].IfStmt.Branches[0].Block.Stmts[1]",
+              "scope": {
+                "loopRange": null,
+                "parent": {
+                  "loopRange": null,
+                  "parent": {
+                    "loopRange": null,
+                    "parent": {
+                      "loopRange": null,
+                      "parent": {
+                        "loopRange": null,
+                        "parent": {
+                          "loopRange": null,
+                          "parent": {
+                            "loopRange": null,
+                            "parent": {
+                              "loopRange": null,
+                              "parent": null,
+                              "skipstmts": null,
+                              "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                            },
+                            "skipstmts": null,
+                            "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                          },
+                          "skipstmts": null,
+                          "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                        },
+                        "skipstmts": null,
+                        "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                      },
+                      "skipstmts": null,
+                      "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                    },
+                    "skipstmts": null,
+                    "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                  },
+                  "skipstmts": null,
+                  "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+                },
+                "skipstmts": null,
+                "vars": "{\"eid\":\"\\\"esm-1\\\"\",\"fid\":\"\\\"func-1\\\"\",\"qid\":\"\\\"queue-1\\\"\"}"
+              },
+              "vars": "{}"
+            }
+          ],
+          "fairness": 1
+        }
+      ],
+      "witness": [
+        [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    },
+    "Type": "",
+    "Name": "Any:eid=\"esm-1\"",
+    "Labels": null,
+    "Fairness": 1,
+    "ChoiceFairness": 0,
+    "Messages": null,
+    "ReqId": 0,
+    "ThreadsMap": null,
+    "FailedInvariants": null
+  }
+]

@@ -1,0 +1,309 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 30
+---
+# EventBridge (events) Formal Specification
+# Models event buses, rules, targets, event publishing, pattern matching, and target invocation.
+
+BUS_NAMES = ["default", "bus-a"]
+RULE_NAMES = ["rule-1"]
+TARGET_IDS = ["target-lambda"]
+
+action Init:
+    bus_status = {}
+    rule_status = {}
+    rule_bus = {}
+    rule_pattern_type = {}
+    rule_target = {}
+    dlq = []
+
+# step: an event bus is created
+# result: the event bus is ACTIVE
+# guard: the event bus does not already exist
+# guard_violation: the event bus already exists
+atomic action CreateEventBus:
+    oneof name in BUS_NAMES:
+        if name not in bus_status:
+            bus_status[name] = "ACTIVE"
+
+# step: an event bus is deleted
+# result: the event bus is DELETED
+# guard: the event bus is not the default bus
+# guard_violation: the event bus is the default bus
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation_lifecycle: the event bus is not ACTIVE
+# guard: the event bus has no rules
+# guard_violation: the event bus has rules
+atomic action DeleteEventBus:
+    oneof name in BUS_NAMES:
+        if name != "default":
+            if name in bus_status:
+                if bus_status[name] == "ACTIVE":
+                    if all([rule_name not in rule_bus or rule_bus[rule_name] != name for rule_name in RULE_NAMES]):
+                        bus_status[name] = "DELETED"
+
+# step: an event bus is described
+# result: the event bus details are returned
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation: the event bus is not ACTIVE
+atomic action DescribeEventBus:
+    oneof name in BUS_NAMES:
+        if name in bus_status:
+            if bus_status[name] == "ACTIVE":
+                pass
+
+# step: all event buses are listed
+# result: the list of event buses is returned
+atomic action ListEventBuses:
+    pass
+
+# step: an EventBridge rule is created
+# result: the rule is ENABLED
+# guard: the rule does not already exist
+# guard_violation: the rule already exists
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation: the event bus is not ACTIVE
+atomic action PutRule:
+    oneof rule_name in RULE_NAMES:
+        if rule_name not in rule_status:
+            oneof bus_name in BUS_NAMES:
+                if bus_name in bus_status:
+                    if bus_status[bus_name] == "ACTIVE":
+                        oneof:
+                            atomic:
+                                rule_status[rule_name] = "ENABLED"
+                                rule_bus[rule_name] = bus_name
+                                rule_pattern_type[rule_name] = "EVENT_PATTERN"
+                            atomic:
+                                rule_status[rule_name] = "ENABLED"
+                                rule_bus[rule_name] = bus_name
+                                rule_pattern_type[rule_name] = "SCHEDULE"
+
+# step: an EventBridge rule is deleted
+# result: the rule is DELETED
+# guard: the rule exists
+# guard_violation: the rule does not exist
+# guard: the rule is not already DELETED
+# guard_violation: the rule is already DELETED
+# guard: the rule has no active targets
+# guard_violation: the rule has active targets
+atomic action DeleteRule:
+    oneof rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] != "DELETED":
+                if all([(rule_name + "#" + tid) not in rule_target or rule_target[rule_name + "#" + tid] == False for tid in TARGET_IDS]):
+                    rule_status[rule_name] = "DELETED"
+
+# step: an EventBridge rule is described
+# result: the rule details are returned
+# guard: the rule exists
+# guard_violation: the rule does not exist
+# guard: the rule is not DELETED
+# guard_violation: the rule is DELETED
+atomic action DescribeRule:
+    oneof rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] != "DELETED":
+                pass
+
+# step: all rules on an event bus are listed
+# result: the list of rules is returned
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation: the event bus is not ACTIVE
+atomic action ListRules:
+    oneof bus_name in BUS_NAMES:
+        if bus_name in bus_status:
+            if bus_status[bus_name] == "ACTIVE":
+                pass
+
+# step: a rule is enabled
+# result: the rule is ENABLED
+# guard: the rule exists
+# guard_violation: the rule does not exist
+# guard: the rule is DISABLED
+# guard_violation: the rule is not DISABLED
+atomic action EnableRule:
+    oneof rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] == "DISABLED":
+                rule_status[rule_name] = "ENABLED"
+
+# step: a rule is disabled
+# result: the rule is DISABLED
+# guard: the rule exists
+# guard_violation: the rule does not exist
+# guard: the rule is ENABLED
+# guard_violation: the rule is not ENABLED
+atomic action DisableRule:
+    oneof rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] == "ENABLED":
+                rule_status[rule_name] = "DISABLED"
+
+# step: targets are added to a rule
+# result: the targets are associated with the rule
+# guard: the rule exists
+# guard_violation: the rule does not exist
+# guard: the rule is not DELETED
+# guard_violation: the rule is DELETED
+atomic action PutTargets:
+    oneof rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] != "DELETED":
+                oneof target_id in TARGET_IDS:
+                    rule_target[rule_name + "#" + target_id] = True
+
+# step: targets are removed from a rule
+# result: the targets are disassociated from the rule
+# guard: the rule exists
+# guard_violation: the rule does not exist
+# guard: the rule is not DELETED
+# guard_violation: the rule is DELETED
+# guard: the target is associated with the rule
+# guard_violation: the target is not associated with the rule
+# guard: the target association is active
+# guard_violation: the target association is not active
+atomic action RemoveTargets:
+    oneof rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] != "DELETED":
+                oneof target_id in TARGET_IDS:
+                    if (rule_name + "#" + target_id) in rule_target:
+                        if rule_target[rule_name + "#" + target_id] == True:
+                            rule_target[rule_name + "#" + target_id] = False
+
+# step: targets for a rule are listed
+# result: the list of targets is returned
+# guard: the rule exists
+# guard_violation: the rule does not exist
+# guard: the rule is not DELETED
+# guard_violation: the rule is DELETED
+atomic action ListTargetsByRule:
+    oneof rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] != "DELETED":
+                pass
+
+# step: events are published to an event bus
+# result: matching enabled rules route the event to their targets
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation: the event bus is not ACTIVE
+# guard: a rule is associated with the event bus
+# guard_violation: no rule is associated with the event bus
+# guard: the rule's event bus matches
+# guard_violation: the rule's event bus does not match
+# guard: the rule is ENABLED
+# guard_violation: the rule is not ENABLED
+# guard: a target is associated with the rule
+# guard_violation: no target is associated with the rule
+# guard: the target association is active
+# guard_violation: the target association is not active
+atomic action PutEvents:
+    oneof bus_name in BUS_NAMES:
+        if bus_name in bus_status:
+            if bus_status[bus_name] == "ACTIVE":
+                oneof rule_name in RULE_NAMES:
+                    if rule_name in rule_bus:
+                        if rule_bus[rule_name] == bus_name:
+                            if rule_status[rule_name] == "ENABLED":
+                                oneof target_id in TARGET_IDS:
+                                    if (rule_name + "#" + target_id) in rule_target:
+                                        if rule_target[rule_name + "#" + target_id] == True:
+                                            if len(dlq) < 2:
+                                                oneof:
+                                                    pass
+                                                    dlq.append(rule_name + "#" + target_id)
+
+# fake_skip: internal
+# step: a dead-letter queue entry is retried or discarded
+# result: the entry is removed from the dead-letter queue
+# guard: the dead-letter queue is not empty
+# guard_violation: the dead-letter queue is empty
+atomic action RetryDeadLetter:
+    if len(dlq) > 0:
+        oneof entry in dlq:
+            oneof:
+                dlq.remove(entry)
+                pass
+
+# check: every event bus has a valid status (ACTIVE or DELETED)
+always assertion EventBusStatusValid:
+    for name in BUS_NAMES:
+        if name in bus_status:
+            if bus_status[name] not in ["ACTIVE", "DELETED"]:
+                return False
+    return True
+
+# check: every rule has a valid status (ENABLED, DISABLED, or DELETED)
+always assertion RuleStatusValid:
+    for rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] not in ["ENABLED", "DISABLED", "DELETED"]:
+                return False
+    return True
+
+# check: every rule has a valid pattern type (EVENT_PATTERN or SCHEDULE)
+always assertion RulePatternTypeValid:
+    for rule_name in RULE_NAMES:
+        if rule_name in rule_pattern_type:
+            if rule_pattern_type[rule_name] not in ["EVENT_PATTERN", "SCHEDULE"]:
+                return False
+    return True
+
+# check: every rule references an event bus that exists
+always assertion RuleBusExists:
+    for rule_name in RULE_NAMES:
+        if rule_name in rule_bus:
+            bus = rule_bus[rule_name]
+            if bus not in bus_status:
+                return False
+    return True
+
+# check: the default event bus cannot be deleted
+always assertion DefaultBusCannotBeDeleted:
+    if "default" in bus_status:
+        if bus_status["default"] == "DELETED":
+            return False
+    return True
+
+# check: a rule can only be deleted when it has no targets
+always assertion DeleteRuleRequiresNoTargets:
+    for rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] == "DELETED":
+                for tid in TARGET_IDS:
+                    key = rule_name + "#" + tid
+                    if key in rule_target:
+                        if rule_target[key] == True:
+                            return False
+    return True
+
+# check: no enabled rule references a deleted event bus
+always assertion RuleOnlyEnabledOnActiveBus:
+    for rule_name in RULE_NAMES:
+        if rule_name in rule_status:
+            if rule_status[rule_name] == "ENABLED":
+                if rule_name in rule_bus:
+                    bus = rule_bus[rule_name]
+                    if bus in bus_status:
+                        if bus_status[bus] != "ACTIVE":
+                            return False
+    return True
+
+# check: the dead-letter queue never exceeds its bounded capacity
+always assertion DeadLetterQueueBounded:
+    if len(dlq) > 2:
+        return False
+    return True

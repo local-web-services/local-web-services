@@ -1,0 +1,265 @@
+digraph G {
+  "0x140002a00c0" [label="yield
+Actions: 0, Forks: 0
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002a00c0" -> "0x140002a0a20" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x140002a0a20" [label="CreateStateMachine
+Actions: 1, Forks: 1
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a0a20" -> "0x140002a11a0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140002a11a0" [label="yield
+Actions: 1, Forks: 2
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002a11a0" -> "0x140002a18c0" [label="CreateSecret", color="black" penwidth="1" ];
+  "0x140002a18c0" [label="CreateSecret
+Actions: 2, Forks: 3
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a18c0" -> "0x140003466c0" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x140003466c0" [label="yield
+Actions: 2, Forks: 4
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003466c0" -> "0x14000346e40" [label="ScheduleSecretDeletion", color="black" penwidth="1" ];
+  "0x14000346e40" [label="ScheduleSecretDeletion
+Actions: 3, Forks: 5
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000346e40" -> "0x1400040e4e0" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x1400040e4e0" [label="yield
+Actions: 3, Forks: 6
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400040e4e0" -> "0x1400040ede0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400040ede0" [label="StartExecution
+Actions: 4, Forks: 7
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400040ede0" -> "0x1400008f620" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400008f620" [label="Any:smid=\"sm-1\"
+Actions: 4, Forks: 8
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008f620" -> "0x1400008fbc0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400008fbc0" [label="yield
+Actions: 4, Forks: 9
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400008fbc0" -> "0x140004e0c60" [label="ReadSecretTaskFails", color="black" penwidth="1" ];
+  "0x140004e0c60" [label="ReadSecretTaskFails
+Actions: 5, Forks: 10
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004e0c60" -> "0x140002a04e0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140002a04e0" [label="Any:eid=\"exec-1\"
+Actions: 5, Forks: 11
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a04e0" -> "0x140002a0fc0" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x140002a0fc0" [label="yield
+Actions: 5, Forks: 12
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002a0fc0" -> "0x140003103c0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140003103c0" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003103c0" -> "0x140003d1380" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003d1380" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d1380" -> "0x140003d1a40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140003d1a40" [label="yield
+Actions: 6, Forks: 15
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003d1a40" -> "0x1400040f3e0" [label="ReadSecretTaskFails", color="black" penwidth="1" ];
+  "0x1400040f3e0" [label="ReadSecretTaskFails
+Actions: 7, Forks: 16
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400040f3e0" -> "0x140004e0420" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140004e0420" [label="Any:eid=\"exec-1\"
+Actions: 7, Forks: 17
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004e0420" -> "0x140002a0fc0" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x140003466c0" -> "0x14000346f00" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000346f00" [label="StartExecution
+Actions: 3, Forks: 5
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000346f00" -> "0x1400040f260" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400040f260" [label="Any:smid=\"sm-1\"
+Actions: 3, Forks: 6
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400040f260" -> "0x1400040f800" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400040f800" [label="yield
+Actions: 3, Forks: 7
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400040f800" -> "0x140004525a0" [label="ScheduleSecretDeletion", color="black" penwidth="1" ];
+  "0x140004525a0" [label="ScheduleSecretDeletion
+Actions: 4, Forks: 8
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004525a0" -> "0x1400008fbc0" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x1400040f800" -> "0x14000452720" [label="ReadSecretTaskSucceeds", color="black" penwidth="1" ];
+  "0x14000452720" [label="ReadSecretTaskSucceeds
+Actions: 4, Forks: 8
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000452720" -> "0x140001d5200" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140001d5200" [label="Any:eid=\"exec-1\"
+Actions: 4, Forks: 9
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001d5200" -> "0x140001d5920" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x140001d5920" [label="yield
+Actions: 4, Forks: 10
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140001d5920" -> "0x140005b3080" [label="ScheduleSecretDeletion", color="black" penwidth="1" ];
+  "0x140005b3080" [label="ScheduleSecretDeletion
+Actions: 5, Forks: 11
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140005b3080" -> "0x14000311860" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x14000311860" [label="yield
+Actions: 5, Forks: 12
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000311860" -> "0x14000346840" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000346840" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000346840" -> "0x14000453560" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000453560" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000453560" -> "0x140003d1a40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140001d5920" -> "0x140005b3140" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140005b3140" [label="StartExecution
+Actions: 5, Forks: 11
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140005b3140" -> "0x140003471a0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003471a0" [label="Any:smid=\"sm-1\"
+Actions: 5, Forks: 12
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003471a0" -> "0x14000347b60" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000347b60" [label="yield
+Actions: 5, Forks: 13
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000347b60" -> "0x1400038c960" [label="ScheduleSecretDeletion", color="black" penwidth="1" ];
+  "0x1400038c960" [label="ScheduleSecretDeletion
+Actions: 6, Forks: 14
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038c960" -> "0x140003d1a40" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x14000347b60" -> "0x1400038d020" [label="ReadSecretTaskSucceeds", color="black" penwidth="1" ];
+  "0x1400038d020" [label="ReadSecretTaskSucceeds
+Actions: 6, Forks: 14
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038d020" -> "0x1400045c3c0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400045c3c0" [label="Any:eid=\"exec-1\"
+Actions: 6, Forks: 15
+State: {\"exec_secret\":\"{\"exec-1\": \"secret-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400045c3c0" -> "0x140001d5920" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x140002a11a0" -> "0x140002a1a40" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140002a1a40" [label="StartExecution
+Actions: 2, Forks: 3
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a1a40" -> "0x140003477a0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003477a0" [label="Any:smid=\"sm-1\"
+Actions: 2, Forks: 4
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003477a0" -> "0x14000347d40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000347d40" [label="yield
+Actions: 2, Forks: 5
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000347d40" -> "0x1400038cae0" [label="CreateSecret", color="black" penwidth="1" ];
+  "0x1400038cae0" [label="CreateSecret
+Actions: 3, Forks: 6
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"secret_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038cae0" -> "0x1400040f800" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x140002a00c0" -> "0x140002a0ae0" [label="CreateSecret", color="black" penwidth="1" ];
+  "0x140002a0ae0" [label="CreateSecret
+Actions: 1, Forks: 1
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a0ae0" -> "0x14000310000" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x14000310000" [label="yield
+Actions: 1, Forks: 2
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000310000" -> "0x14000310660" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x14000310660" [label="CreateStateMachine
+Actions: 2, Forks: 3
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000310660" -> "0x140003466c0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000310000" -> "0x140003107e0" [label="ScheduleSecretDeletion", color="black" penwidth="1" ];
+  "0x140003107e0" [label="ScheduleSecretDeletion
+Actions: 2, Forks: 3
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"ACTIVE\"}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003107e0" -> "0x140003d0240" [label="Any:sid=\"secret-1\"", color="black" penwidth="1" ];
+  "0x140003d0240" [label="yield
+Actions: 2, Forks: 4
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140003d0240" -> "0x140003d0900" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x140003d0900" [label="CreateStateMachine
+Actions: 3, Forks: 5
+State: {\"exec_secret\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"secret_status\":\"{\"secret-1\": \"PENDING_DELETION\"}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d0900" -> "0x1400040e4e0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+}

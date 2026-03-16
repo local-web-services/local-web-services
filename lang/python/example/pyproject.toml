@@ -12,13 +12,15 @@ test = [
     "local-web-services",
     "local-web-services-python-sdk",
     "pytest",
+    "pytest-bdd",
     "pytest-timeout",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 timeout = 120
+pythonpath = ["."]
 
 [tool.uv.sources]
-local-web-services = { path = "../../../core", editable = true }
+local-web-services = { path = "../core", editable = true }
 local-web-services-python-sdk = { path = "../sdk", editable = true }

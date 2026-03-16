@@ -2,7 +2,10 @@ package io.localwebservices.lws;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.http.WebSocket;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +49,25 @@ public class LogCapture implements AutoCloseable {
 
     private final WebSocket webSocket;
     private final List<LogEntry> entries = new CopyOnWriteArrayList<>();
+    /** Base port used for HTTP-polling fallback (non-zero means HTTP mode). */
+    private final int httpBasePort;
 
     private LogCapture(WebSocket webSocket) {
         this.webSocket = webSocket;
+        this.httpBasePort = 0;
+    }
+
+    private LogCapture(int httpBasePort) {
+        this.webSocket = null;
+        this.httpBasePort = httpBasePort;
+    }
+
+    /**
+     * Starts a log capture that polls the {@code /_ldk/logs} HTTP endpoint.
+     * Used when the WebSocket endpoint is unavailable (e.g., in-process server).
+     */
+    static LogCapture startHttp(LwsSession session) {
+        return new LogCapture(session.getBasePort());
     }
 
     static LogCapture start(LwsSession session) throws Exception {
@@ -104,9 +123,11 @@ public class LogCapture implements AutoCloseable {
         }
     }
 
-    /** Closes the WebSocket connection. */
+    /** Closes the WebSocket connection (no-op in HTTP polling mode). */
     public void stop() {
-        webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "done");
+        if (webSocket != null) {
+            webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "done");
+        }
     }
 
     @Override
@@ -114,8 +135,11 @@ public class LogCapture implements AutoCloseable {
         stop();
     }
 
-    /** Returns a snapshot of all captured log entries. */
+    /** Returns a snapshot of all captured log entries (polls HTTP endpoint if in HTTP mode). */
     public List<LogEntry> getEntries() {
+        if (httpBasePort != 0) {
+            pollHttp();
+        }
         return new ArrayList<>(entries);
     }
 
@@ -126,13 +150,15 @@ public class LogCapture implements AutoCloseable {
     public void assertCalled(String service, String operation) {
         Instant deadline = Instant.now().plusSeconds(5);
         while (Instant.now().isBefore(deadline)) {
+            if (httpBasePort != 0) pollHttp();
             for (LogEntry e : entries) {
                 if (service.equals(e.service) && operation.equals(e.operation)) {
                     return;
                 }
             }
-            try { Thread.sleep(50); } catch (InterruptedException e) { Thread.currentThread().interrupt(); break; }
+            try { Thread.sleep(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); break; }
         }
+        if (httpBasePort != 0) pollHttp();
         for (LogEntry e : entries) {
             if (service.equals(e.service) && operation.equals(e.operation)) return;
         }
@@ -141,6 +167,7 @@ public class LogCapture implements AutoCloseable {
 
     /** Throws {@link AssertionError} if any entry matches the given service and operation. */
     public void assertNotCalled(String service, String operation) {
+        if (httpBasePort != 0) pollHttp();
         for (LogEntry e : entries) {
             if (service.equals(e.service) && operation.equals(e.operation)) {
                 throw new AssertionError("Expected no call to " + service + "/" + operation + " but one was recorded");
@@ -150,6 +177,16 @@ public class LogCapture implements AutoCloseable {
 
     /** Throws {@link AssertionError} if the number of matching entries differs from {@code expected}. */
     public void assertCallCount(String service, String operation, int expected) {
+        Instant deadline = Instant.now().plusSeconds(5);
+        while (Instant.now().isBefore(deadline)) {
+            if (httpBasePort != 0) pollHttp();
+            long count = entries.stream()
+                    .filter(e -> service.equals(e.service) && operation.equals(e.operation))
+                    .count();
+            if (count == expected) return;
+            try { Thread.sleep(100); } catch (InterruptedException ex) { Thread.currentThread().interrupt(); break; }
+        }
+        if (httpBasePort != 0) pollHttp();
         long count = entries.stream()
                 .filter(e -> service.equals(e.service) && operation.equals(e.operation))
                 .count();
@@ -161,6 +198,7 @@ public class LogCapture implements AutoCloseable {
 
     /** Throws {@link AssertionError} if any entry has a 5xx status code. */
     public void assertNoErrors() {
+        if (httpBasePort != 0) pollHttp();
         for (LogEntry e : entries) {
             if (e.statusCode >= 500) {
                 throw new AssertionError("Unexpected error entry: service=" + e.service
@@ -169,8 +207,81 @@ public class LogCapture implements AutoCloseable {
         }
     }
 
+    /**
+     * Polls the HTTP {@code /_ldk/logs} endpoint and replaces the local entry list.
+     * Only used in HTTP polling mode (when {@code httpBasePort} is non-zero).
+     */
+    private void pollHttp() {
+        try {
+            URI uri = URI.create("http://127.0.0.1:" + httpBasePort + "/_ldk/logs");
+            HttpRequest request = HttpRequest.newBuilder(uri)
+                    .GET()
+                    .timeout(Duration.ofSeconds(5))
+                    .build();
+            HttpResponse<String> response = HttpClient.newBuilder()
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .build()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            String body = response.body();
+            parseHttpLogs(body);
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * Parses a JSON response of the form {@code {"logs":[{...},{...}]}} and
+     * replaces {@link #entries} with the parsed log entries.
+     */
+    private void parseHttpLogs(String json) {
+        int logsStart = json.indexOf("\"logs\"");
+        if (logsStart < 0) return;
+        int arrStart = json.indexOf('[', logsStart);
+        int arrEnd = json.lastIndexOf(']');
+        if (arrStart < 0 || arrEnd < arrStart) return;
+        String arr = json.substring(arrStart + 1, arrEnd).trim();
+        if (arr.isEmpty()) {
+            entries.clear();
+            return;
+        }
+        List<LogEntry> parsed = new ArrayList<>();
+        List<String> objects = splitJsonObjects(arr);
+        for (String obj : objects) {
+            String service = extractJsonString(obj, "service");
+            String operation = extractJsonString(obj, "handler");
+            if (operation.isEmpty()) operation = extractJsonString(obj, "operation");
+            String level = extractJsonString(obj, "level");
+            int statusCode = extractJsonInt(obj, "status_code");
+            double durationMs = extractJsonDouble(obj, "duration_ms");
+            String timestamp = extractJsonString(obj, "timestamp");
+            parsed.add(new LogEntry(service, operation, level, statusCode, durationMs, timestamp));
+        }
+        entries.clear();
+        entries.addAll(parsed);
+    }
+
+    private static List<String> splitJsonObjects(String arr) {
+        List<String> result = new ArrayList<>();
+        int depth = 0;
+        int start = -1;
+        for (int i = 0; i < arr.length(); i++) {
+            char c = arr.charAt(i);
+            if (c == '{') {
+                if (depth == 0) start = i;
+                depth++;
+            } else if (c == '}') {
+                depth--;
+                if (depth == 0 && start >= 0) {
+                    result.add(arr.substring(start, i + 1));
+                    start = -1;
+                }
+            }
+        }
+        return result;
+    }
+
     /** Returns all captured entries whose {@code service} field matches the given value. */
     public List<LogEntry> forService(String service) {
+        if (httpBasePort != 0) pollHttp();
         return entries.stream()
                 .filter(e -> service.equals(e.service))
                 .collect(java.util.stream.Collectors.toList());
@@ -178,6 +289,7 @@ public class LogCapture implements AutoCloseable {
 
     /** Returns all captured entries whose {@code operation} field matches the given value. */
     public List<LogEntry> forOperation(String operation) {
+        if (httpBasePort != 0) pollHttp();
         return entries.stream()
                 .filter(e -> operation.equals(e.operation))
                 .collect(java.util.stream.Collectors.toList());

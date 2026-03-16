@@ -1,0 +1,23 @@
+@eventslambda @generated
+Feature: EventsLambda - The Lambda Invocation Completes Successfully
+
+  # Generated from FizzBee spec: events_lambda.fizz
+  # Safety invariants: InvocationRequiresEnabledRule, InvocationRequiresActiveFunction, RuleReferencesActiveBus
+
+  Background:
+    Given the system is initialized
+
+  @minimal @happy @invocation_succeeds @internal
+  Scenario: the Lambda invocation completes successfully
+    Given an invocation is "IN_PROGRESS"
+    When the Lambda invocation completes successfully
+    Then the invocation is "SUCCESS"
+    And every "IN_PROGRESS" invocation was triggered by an "ENABLED" rule
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "ENABLED" rule references an "ACTIVE" event bus
+
+  @standard @negative @invocation_succeeds @internal
+  Scenario: the Lambda invocation completes successfully fails when no invocation is "IN_PROGRESS"
+    Given no invocation is "IN_PROGRESS"
+    When the Lambda invocation completes successfully
+    Then the operation is rejected

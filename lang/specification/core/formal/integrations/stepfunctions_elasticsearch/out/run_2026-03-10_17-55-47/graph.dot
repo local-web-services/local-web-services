@@ -1,0 +1,331 @@
+digraph G {
+  "0x140001b7980" [label="yield
+Actions: 0, Forks: 0
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140001b7980" -> "0x14000262360" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x14000262360" [label="CreateStateMachine
+Actions: 1, Forks: 1
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000262360" -> "0x14000262ba0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000262ba0" [label="yield
+Actions: 1, Forks: 2
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000262ba0" -> "0x140002632c0" [label="CreateDomain", color="black" penwidth="1" ];
+  "0x140002632c0" [label="CreateDomain
+Actions: 2, Forks: 3
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002632c0" -> "0x14000350780" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000350780" [label="yield
+Actions: 2, Forks: 4
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000350780" -> "0x14000350f00" [label="DomainProcessingBegins", color="black" penwidth="1" ];
+  "0x14000350f00" [label="DomainProcessingBegins
+Actions: 3, Forks: 5
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000350f00" -> "0x14000413080" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000413080" [label="yield
+Actions: 3, Forks: 6
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000413080" -> "0x14000413980" [label="DomainProcessingComplete", color="black" penwidth="1" ];
+  "0x14000413980" [label="DomainProcessingComplete
+Actions: 4, Forks: 7
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000413980" -> "0x14000350780" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000413080" -> "0x14000413a40" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000413a40" [label="StartExecution
+Actions: 4, Forks: 7
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000413a40" -> "0x1400008ff20" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400008ff20" [label="Any:smid=\"sm-1\"
+Actions: 4, Forks: 8
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008ff20" -> "0x140002965a0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140002965a0" [label="yield
+Actions: 4, Forks: 9
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002965a0" -> "0x14000297380" [label="DomainProcessingComplete", color="black" penwidth="1" ];
+  "0x14000297380" [label="DomainProcessingComplete
+Actions: 5, Forks: 10
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000297380" -> "0x14000450960" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000450960" [label="yield
+Actions: 3, Forks: 7
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000450960" -> "0x14000451680" [label="DomainProcessingBegins", color="black" penwidth="1" ];
+  "0x14000451680" [label="DomainProcessingBegins
+Actions: 4, Forks: 8
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000451680" -> "0x140002965a0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000450960" -> "0x140004518c0" [label="SearchTaskSucceeds", color="black" penwidth="1" ];
+  "0x140004518c0" [label="SearchTaskSucceeds
+Actions: 4, Forks: 8
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004518c0" -> "0x1400006c180" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400006c180" [label="Any:eid=\"exec-1\"
+Actions: 4, Forks: 9
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006c180" -> "0x1400006c780" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400006c780" [label="yield
+Actions: 4, Forks: 10
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400006c780" -> "0x1400006d440" [label="DomainProcessingBegins", color="black" penwidth="1" ];
+  "0x1400006d440" [label="DomainProcessingBegins
+Actions: 5, Forks: 11
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d440" -> "0x14000350c00" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000350c00" [label="yield
+Actions: 5, Forks: 12
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000350c00" -> "0x1400038a3c0" [label="DomainProcessingComplete", color="black" penwidth="1" ];
+  "0x1400038a3c0" [label="DomainProcessingComplete
+Actions: 6, Forks: 13
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038a3c0" -> "0x1400006c780" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000350c00" -> "0x1400038a480" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400038a480" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038a480" -> "0x14000622900" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000622900" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000622900" -> "0x140004512c0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140004512c0" [label="yield
+Actions: 6, Forks: 15
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004512c0" -> "0x14000490960" [label="DomainProcessingComplete", color="black" penwidth="1" ];
+  "0x14000490960" [label="DomainProcessingComplete
+Actions: 7, Forks: 16
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000490960" -> "0x1400038b980" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400038b980" [label="yield
+Actions: 5, Forks: 13
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400038b980" -> "0x140003d0a20" [label="DomainProcessingBegins", color="black" penwidth="1" ];
+  "0x140003d0a20" [label="DomainProcessingBegins
+Actions: 6, Forks: 14
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d0a20" -> "0x140004512c0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400038b980" -> "0x140003d0c60" [label="SearchTaskSucceeds", color="black" penwidth="1" ];
+  "0x140003d0c60" [label="SearchTaskSucceeds
+Actions: 6, Forks: 14
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d0c60" -> "0x14000592780" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000592780" [label="Any:eid=\"exec-1\"
+Actions: 6, Forks: 15
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000592780" -> "0x1400006c780" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x140004512c0" -> "0x14000490c00" [label="SearchTaskFails", color="black" penwidth="1" ];
+  "0x14000490c00" [label="SearchTaskFails
+Actions: 7, Forks: 16
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000490c00" -> "0x14000297c20" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000297c20" [label="Any:eid=\"exec-1\"
+Actions: 7, Forks: 17
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000297c20" -> "0x1400031eae0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x1400031eae0" [label="yield
+Actions: 5, Forks: 12
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400031eae0" -> "0x1400031fb00" [label="DomainProcessingComplete", color="black" penwidth="1" ];
+  "0x1400031fb00" [label="DomainProcessingComplete
+Actions: 6, Forks: 13
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400031fb00" -> "0x14000413140" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000413140" [label="yield
+Actions: 6, Forks: 14
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000413140" -> "0x140004506c0" [label="DomainProcessingBegins", color="black" penwidth="1" ];
+  "0x140004506c0" [label="DomainProcessingBegins
+Actions: 7, Forks: 15
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004506c0" -> "0x1400031eae0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000413140" -> "0x14000450840" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000450840" [label="StartExecution
+Actions: 7, Forks: 15
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000450840" -> "0x1400042b080" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400042b080" [label="Any:smid=\"sm-1\"
+Actions: 7, Forks: 16
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400042b080" -> "0x1400038b980" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400031eae0" -> "0x1400031fc80" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400031fc80" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400031fc80" -> "0x14000450d20" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000450d20" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000450d20" -> "0x140004512c0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400006c780" -> "0x1400006d5c0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400006d5c0" [label="StartExecution
+Actions: 5, Forks: 11
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d5c0" -> "0x1400038ad80" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400038ad80" [label="Any:smid=\"sm-1\"
+Actions: 5, Forks: 12
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{\"exec-1\": \"domain-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038ad80" -> "0x1400038b980" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140002965a0" -> "0x140002975c0" [label="SearchTaskFails", color="black" penwidth="1" ];
+  "0x140002975c0" [label="SearchTaskFails
+Actions: 5, Forks: 10
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002975c0" -> "0x14000263e60" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000263e60" [label="Any:eid=\"exec-1\"
+Actions: 5, Forks: 11
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000263e60" -> "0x1400031eae0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000350780" -> "0x14000351080" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000351080" [label="StartExecution
+Actions: 3, Forks: 5
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000351080" -> "0x140004503c0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140004503c0" [label="Any:smid=\"sm-1\"
+Actions: 3, Forks: 6
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004503c0" -> "0x14000450960" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000262ba0" -> "0x14000263500" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000263500" [label="StartExecution
+Actions: 2, Forks: 3
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000263500" -> "0x14000351d40" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000351d40" [label="Any:smid=\"sm-1\"
+Actions: 2, Forks: 4
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000351d40" -> "0x1400038a360" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400038a360" [label="yield
+Actions: 2, Forks: 5
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400038a360" -> "0x1400038b080" [label="CreateDomain", color="black" penwidth="1" ];
+  "0x1400038b080" [label="CreateDomain
+Actions: 3, Forks: 6
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038b080" -> "0x14000450960" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x140001b7980" -> "0x14000262420" [label="CreateDomain", color="black" penwidth="1" ];
+  "0x14000262420" [label="CreateDomain
+Actions: 1, Forks: 1
+State: {\"domain_status\":\"{}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000262420" -> "0x14000263a40" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x14000263a40" [label="yield
+Actions: 1, Forks: 2
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000263a40" -> "0x1400031e120" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x1400031e120" [label="CreateStateMachine
+Actions: 2, Forks: 3
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400031e120" -> "0x14000350780" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000263a40" -> "0x1400031e2a0" [label="DomainProcessingBegins", color="black" penwidth="1" ];
+  "0x1400031e2a0" [label="DomainProcessingBegins
+Actions: 2, Forks: 3
+State: {\"domain_status\":\"{\"domain-1\": \"AVAILABLE\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400031e2a0" -> "0x140003d08a0" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+  "0x140003d08a0" [label="yield
+Actions: 2, Forks: 4
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140003d08a0" -> "0x140003d0f60" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x140003d0f60" [label="CreateStateMachine
+Actions: 3, Forks: 5
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d0f60" -> "0x14000413080" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003d08a0" -> "0x140003d11a0" [label="DomainProcessingComplete", color="black" penwidth="1" ];
+  "0x140003d11a0" [label="DomainProcessingComplete
+Actions: 3, Forks: 5
+State: {\"domain_status\":\"{\"domain-1\": \"PROCESSING\"}\",\"exec_domain\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d11a0" -> "0x14000263a40" [label="Any:did=\"domain-1\"", color="black" penwidth="1" ];
+}

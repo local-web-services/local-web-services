@@ -1,0 +1,22 @@
+@lambdas3api @generated
+Feature: LambdaS3api - The Lambda Invocation Fails
+
+  # Generated from FizzBee spec: lambda_s3api.fizz
+  # Safety invariants: InvocationRequiresActiveFunction, ObjectRequiresActiveBucket
+
+  Background:
+    Given the system is initialized
+
+  @minimal @happy @invocation_fails @internal
+  Scenario: the Lambda invocation fails
+    Given an invocation is "IN_PROGRESS"
+    When the Lambda invocation fails
+    Then the invocation is "FAILED"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every existing object belongs to an "ACTIVE" bucket
+
+  @standard @negative @invocation_fails @internal
+  Scenario: the Lambda invocation fails fails when no invocation is "IN_PROGRESS"
+    Given no invocation is "IN_PROGRESS"
+    When the Lambda invocation fails
+    Then the operation is rejected

@@ -1,0 +1,225 @@
+digraph G {
+  "0x1400006c240" [label="yield
+Actions: 0, Forks: 0
+State: {\"bucket_bus\":\"{}\",\"bucket_status\":\"{}\",\"bus_status\":\"{}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400006c240" -> "0x1400006cd20" [label="CreateBucket", color="black" penwidth="1" ];
+  "0x1400006cd20" [label="CreateBucket
+Actions: 1, Forks: 1
+State: {\"bucket_bus\":\"{}\",\"bucket_status\":\"{}\",\"bus_status\":\"{}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006cd20" -> "0x1400006d4a0" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x1400006d4a0" [label="yield
+Actions: 1, Forks: 2
+State: {\"bucket_bus\":\"{\"bucket-1\": \"\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400006d4a0" -> "0x1400006dc20" [label="CreateEventBus", color="black" penwidth="1" ];
+  "0x1400006dc20" [label="CreateEventBus
+Actions: 2, Forks: 3
+State: {\"bucket_bus\":\"{\"bucket-1\": \"\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006dc20" -> "0x140002dea20" [label="Any:busid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x140002dea20" [label="yield
+Actions: 2, Forks: 4
+State: {\"bucket_bus\":\"{\"bucket-1\": \"\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002dea20" -> "0x140002df1a0" [label="DeleteEventBus", color="black" penwidth="1" ];
+  "0x140002df1a0" [label="DeleteEventBus
+Actions: 3, Forks: 5
+State: {\"bucket_bus\":\"{\"bucket-1\": \"\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002df1a0" -> "0x1400037dc20" [label="Any:busid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x1400037dc20" [label="yield
+Actions: 3, Forks: 6
+State: {\"bucket_bus\":\"{\"bucket-1\": \"\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002dea20" -> "0x140002df260" [label="EnableEventBridgeNotification", color="black" penwidth="1" ];
+  "0x140002df260" [label="EnableEventBridgeNotification
+Actions: 3, Forks: 5
+State: {\"bucket_bus\":\"{\"bucket-1\": \"\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002df260" -> "0x140003bca20" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140003bca20" [label="Any:bid=\"bucket-1\"
+Actions: 3, Forks: 6
+State: {\"bucket_bus\":\"{\"bucket-1\": \"\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003bca20" -> "0x140003bd0e0" [label="Any:busid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x140003bd0e0" [label="yield
+Actions: 3, Forks: 7
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140003bd0e0" -> "0x140003bd980" [label="DeleteEventBus", color="black" penwidth="1" ];
+  "0x140003bd980" [label="DeleteEventBus
+Actions: 4, Forks: 8
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003bd980" -> "0x140004531a0" [label="Any:busid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x140004531a0" [label="yield
+Actions: 4, Forks: 9
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140004531a0" -> "0x14000453b60" [label="PutObjectWithEvent", color="black" penwidth="1" ];
+  "0x14000453b60" [label="PutObjectWithEvent
+Actions: 5, Forks: 10
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000453b60" -> "0x140004531a0" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140004531a0" -> "0x14000453c20" [label="PutObjectEventFails", color="black" penwidth="1" ];
+  "0x14000453c20" [label="PutObjectEventFails
+Actions: 5, Forks: 10
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000453c20" -> "0x140000acf60" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140000acf60" [label="Any:bid=\"bucket-1\"
+Actions: 5, Forks: 11
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000acf60" -> "0x140000ad980" [label="Any:oid=\"obj-1\"", color="black" penwidth="1" ];
+  "0x140000ad980" [label="yield
+Actions: 5, Forks: 12
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140000ad980" -> "0x1400006c6c0" [label="PutObjectWithEvent", color="black" penwidth="1" ];
+  "0x1400006c6c0" [label="PutObjectWithEvent
+Actions: 6, Forks: 13
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006c6c0" -> "0x140000ad980" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140000ad980" -> "0x1400006c780" [label="PutObjectEventFails", color="black" penwidth="1" ];
+  "0x1400006c780" [label="PutObjectEventFails
+Actions: 6, Forks: 13
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006c780" -> "0x14000323f20" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x14000323f20" [label="Any:bid=\"bucket-1\"
+Actions: 6, Forks: 14
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003bd0e0" -> "0x140003bdb00" [label="PutObjectWithEvent", color="black" penwidth="1" ];
+  "0x140003bdb00" [label="PutObjectWithEvent
+Actions: 4, Forks: 8
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003bdb00" -> "0x14000130540" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x14000130540" [label="Any:bid=\"bucket-1\"
+Actions: 4, Forks: 9
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000130540" -> "0x14000130f00" [label="Any:oid=\"obj-1\"", color="black" penwidth="1" ];
+  "0x14000130f00" [label="Any:oid=\"obj-1\"
+Actions: 4, Forks: 10
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000130f00" -> "0x14000131620" [label="Any:eid=\"event-1\"", color="black" penwidth="1" ];
+  "0x14000131620" [label="yield
+Actions: 4, Forks: 11
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000131620" -> "0x14000680720" [label="DeleteEventBus", color="black" penwidth="1" ];
+  "0x14000680720" [label="DeleteEventBus
+Actions: 5, Forks: 12
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000680720" -> "0x1400006d8c0" [label="Any:busid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x1400006d8c0" [label="yield
+Actions: 5, Forks: 13
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400006d8c0" -> "0x140002994a0" [label="PutObjectWithEvent", color="black" penwidth="1" ];
+  "0x140002994a0" [label="PutObjectWithEvent
+Actions: 6, Forks: 14
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002994a0" -> "0x1400006d8c0" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x1400006d8c0" -> "0x140002995c0" [label="PutObjectEventFails", color="black" penwidth="1" ];
+  "0x140002995c0" [label="PutObjectEventFails
+Actions: 6, Forks: 14
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002995c0" -> "0x14000522600" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x14000522600" [label="Any:bid=\"bucket-1\"
+Actions: 6, Forks: 15
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000131620" -> "0x140006808a0" [label="PutObjectWithEvent", color="black" penwidth="1" ];
+  "0x140006808a0" [label="PutObjectWithEvent
+Actions: 5, Forks: 12
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140006808a0" -> "0x140002de0c0" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140002de0c0" [label="Any:bid=\"bucket-1\"
+Actions: 5, Forks: 13
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000131620" -> "0x14000680960" [label="PutObjectEventFails", color="black" penwidth="1" ];
+  "0x14000680960" [label="PutObjectEventFails
+Actions: 5, Forks: 12
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{\"event-1\": \"bus-1\"}\",\"event_obj\":\"{\"event-1\": \"obj-1\"}\",\"event_status\":\"{\"event-1\": \"DELIVERED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000680960" -> "0x14000131620" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140003bd0e0" -> "0x140003bdbc0" [label="PutObjectEventFails", color="black" penwidth="1" ];
+  "0x140003bdbc0" [label="PutObjectEventFails
+Actions: 4, Forks: 8
+State: {\"bucket_bus\":\"{\"bucket-1\": \"bus-1\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003bdbc0" -> "0x140003bd0e0" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x1400006c240" -> "0x1400006cde0" [label="CreateEventBus", color="black" penwidth="1" ];
+  "0x1400006cde0" [label="CreateEventBus
+Actions: 1, Forks: 1
+State: {\"bucket_bus\":\"{}\",\"bucket_status\":\"{}\",\"bus_status\":\"{}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006cde0" -> "0x14000298360" [label="Any:busid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x14000298360" [label="yield
+Actions: 1, Forks: 2
+State: {\"bucket_bus\":\"{}\",\"bucket_status\":\"{}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000298360" -> "0x140002989c0" [label="CreateBucket", color="black" penwidth="1" ];
+  "0x140002989c0" [label="CreateBucket
+Actions: 2, Forks: 3
+State: {\"bucket_bus\":\"{}\",\"bucket_status\":\"{}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002989c0" -> "0x140002dea20" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x14000298360" -> "0x14000298b40" [label="DeleteEventBus", color="black" penwidth="1" ];
+  "0x14000298b40" [label="DeleteEventBus
+Actions: 2, Forks: 3
+State: {\"bucket_bus\":\"{}\",\"bucket_status\":\"{}\",\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000298b40" -> "0x14000323980" [label="Any:busid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x14000323980" [label="yield
+Actions: 2, Forks: 4
+State: {\"bucket_bus\":\"{}\",\"bucket_status\":\"{}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000323980" -> "0x1400037c0c0" [label="CreateBucket", color="black" penwidth="1" ];
+  "0x1400037c0c0" [label="CreateBucket
+Actions: 3, Forks: 5
+State: {\"bucket_bus\":\"{}\",\"bucket_status\":\"{}\",\"bus_status\":\"{\"bus-1\": \"DELETED\"}\",\"event_bus\":\"{}\",\"event_obj\":\"{}\",\"event_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400037c0c0" -> "0x1400037dc20" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+}

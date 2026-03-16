@@ -1,6 +1,9 @@
 package com.example.orders;
 
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -9,13 +12,23 @@ import io.localwebservices.lws.LogCapture;
 import io.localwebservices.lws.LwsSession;
 import io.localwebservices.lws.FakeBuilder;
 import io.localwebservices.lws.SessionSpec;
-import io.localwebservices.lws.StateMachineSpec;
-import io.localwebservices.lws.TableSpec;
+import io.localwebservices.lws.hcl.HclDiscovery;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.BillingMode;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
+import software.amazon.awssdk.services.dynamodb.model.KeyType;
+import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 import software.amazon.awssdk.services.sfn.SfnClient;
+import software.amazon.awssdk.services.sfn.model.CreateStateMachineRequest;
 import software.amazon.awssdk.services.sfn.model.ListStateMachinesRequest;
 import software.amazon.awssdk.services.sfn.model.ListStateMachinesResponse;
 import software.amazon.awssdk.services.sfn.model.SfnException;
+import software.amazon.awssdk.services.sfn.model.StateMachineType;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -38,6 +51,10 @@ public class OrderProcessorSteps {
               }
             }""";
 
+    // Shared session started once before all scenarios and reset before each.
+    private static LwsSession sharedSession;
+
+    // Per-scenario state
     private LwsSession session;
     private SfnClient sfnClient;
     private String stateMachineArn;
@@ -55,13 +72,46 @@ public class OrderProcessorSteps {
     private io.localwebservices.lws.DynamoDbHelper ddbHelper;
     private io.localwebservices.lws.SqsHelper sqsHelper;
 
+    @BeforeAll
+    public static void startSharedSession() throws Exception {
+        sharedSession = LwsSession.createInProcess(SessionSpec.empty());
+    }
+
+    @AfterAll
+    public static void closeSharedSession() throws Exception {
+        if (sharedSession != null) {
+            sharedSession.close();
+            sharedSession = null;
+        }
+    }
+
+    @Before
+    public void resetSession() throws Exception {
+        if (sharedSession != null) {
+            sharedSession.reset();
+        }
+        session = sharedSession;
+        sfnClient = null;
+        stateMachineArn = null;
+        lastOutput = null;
+        lastError = null;
+        logCapture = null;
+        sfnFakeBuilder = null;
+        fakeExecutionArn = null;
+        processedOutputs = null;
+        processedIDs = null;
+        ddbHelper = null;
+        sqsHelper = null;
+    }
+
     @After
     public void tearDown() throws Exception {
         if (logCapture != null) {
             logCapture.close();
             logCapture = null;
         }
-        if (session != null) {
+        // Close scenario-specific sessions (e.g., from HCL discovery)
+        if (session != null && session != sharedSession) {
             session.close();
             session = null;
         }
@@ -71,36 +121,52 @@ public class OrderProcessorSteps {
 
     @Given("an OrderProcessor state machine is running")
     public void anOrderProcessorStateMachineIsRunning() throws Exception {
-        session = LwsSession.create(new SessionSpec()
-                .stateMachines(List.of(new StateMachineSpec("OrderProcessor", STATE_MACHINE_DEFINITION))));
-        sfnClient = session.sfnClient();
+        sfnClient = session.client(SfnClient.class);
+        sfnClient.createStateMachine(
+                CreateStateMachineRequest.builder()
+                        .name("OrderProcessor")
+                        .definition(STATE_MACHINE_DEFINITION)
+                        .roleArn("arn:aws:iam::000000000000:role/StepFunctionsRole")
+                        .type(StateMachineType.STANDARD)
+                        .build());
         stateMachineArn = resolveStateMachineArn(sfnClient);
     }
 
     @Given("no state machines are configured")
     public void noStateMachinesConfigured() throws Exception {
-        session = LwsSession.create(SessionSpec.empty());
-        sfnClient = session.sfnClient();
+        sfnClient = session.client(SfnClient.class);
     }
 
     @Given("a session started from the {string} HCL directory")
     public void aSessionStartedFromHCLDirectory(String dir) throws Exception {
-        session = LwsSession.fromHcl(dir);
-        sfnClient = session.sfnClient();
+        SessionSpec spec = HclDiscovery.discover(dir);
+        session = LwsSession.createInProcess(spec);
+        sfnClient = session.client(SfnClient.class);
         stateMachineArn = resolveStateMachineArn(sfnClient);
     }
 
     @Given("a DynamoDB table {string} with partition key {string}")
     public void aDynamoDBTableWithPartitionKey(String tableName, String partitionKey) throws Exception {
-        session = LwsSession.create(new SessionSpec()
-                .tables(List.of(new TableSpec(tableName, partitionKey))));
+        session.client(DynamoDbClient.class).createTable(
+                CreateTableRequest.builder()
+                        .tableName(tableName)
+                        .keySchema(KeySchemaElement.builder()
+                                .attributeName(partitionKey)
+                                .keyType(KeyType.HASH)
+                                .build())
+                        .attributeDefinitions(AttributeDefinition.builder()
+                                .attributeName(partitionKey)
+                                .attributeType(ScalarAttributeType.S)
+                                .build())
+                        .billingMode(BillingMode.PAY_PER_REQUEST)
+                        .build());
         ddbHelper = session.dynamoDb(tableName);
     }
 
     @Given("an SQS queue named {string}")
     public void anSQSQueueNamed(String queueName) throws Exception {
-        session = LwsSession.create(new SessionSpec()
-                .queues(List.of(queueName)));
+        session.client(SqsClient.class).createQueue(
+                CreateQueueRequest.builder().queueName(queueName).build());
         sqsHelper = session.sqs(queueName);
     }
 

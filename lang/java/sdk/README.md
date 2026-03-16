@@ -1,16 +1,8 @@
 # local-web-services-java-sdk
 
-Java testing SDK for [local-web-services](https://local-web-services.github.io) — spawns `ldk dev` as a subprocess and provides pre-configured AWS SDK v2 clients pointing at the local emulators. No AWS account or credentials required.
-
-## Prerequisites
-
-Install `local-web-services`:
-
-```bash
-pip install local-web-services
-```
-
-This installs the `ldk` binary that the SDK uses to start the local AWS emulators.
+Java testing SDK for [local-web-services](https://local-web-services.github.io) — starts
+an in-process LWS server and provides pre-configured AWS SDK v2 clients pointing at the local
+emulators. No AWS account, credentials, or Docker required.
 
 ## Installation
 
@@ -30,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'io.localwebservices:local-web-services-java-sdk:0.1.0'
+    testImplementation 'io.localwebservices:lws-java-sdk:0.2.2'
 }
 ```
 
@@ -39,11 +31,20 @@ dependencies {
 ### Auto-discover from Terraform
 
 ```java
-// LwsSession.fromHcl() reads your .tf files, starts ldk dev, and pre-creates
-// all declared resources (tables, queues, state machines, etc.)
+// LwsSession.fromHcl() reads your .tf files, starts the in-process server, and
+// pre-creates all declared resources (tables, queues, state machines, etc.)
 try (LwsSession session = LwsSession.fromHcl("terraform")) {
     SfnClient sfn = session.sfnClient();
     // state machine already exists — run your test
+}
+```
+
+### Auto-discover from CDK
+
+```java
+try (LwsSession session = LwsSession.fromCdk("../my-cdk-project")) {
+    DynamoDbClient dynamo = session.dynamoDbClient();
+    // resources pre-created from CDK cloud assembly
 }
 ```
 
@@ -53,12 +54,13 @@ try (LwsSession session = LwsSession.fromHcl("terraform")) {
 SessionSpec spec = new SessionSpec()
     .withTable(new TableSpec("Orders", "id"))
     .withQueue("OrderQueue")
+    .withBucket("ReceiptsBucket")
     .withStateMachine(new StateMachineSpec("OrderProcessor", definitionJson));
 
 try (LwsSession session = LwsSession.create(spec)) {
     DynamoDbClient dynamo = session.dynamoDbClient();
-    SqsClient sqs = session.sqsClient();
-    SfnClient sfn = session.sfnClient();
+    SqsClient      sqs   = session.sqsClient();
+    SfnClient      sfn   = session.sfnClient();
     // run your tests
 }
 ```
@@ -75,23 +77,26 @@ import software.amazon.awssdk.services.sfn.model.*;
 class OrderProcessorTest {
 
     static LwsSession session;
-    static SfnClient sfnClient;
-    static String stateMachineArn;
+    static SfnClient  sfnClient;
+    static String     stateMachineArn;
 
     @BeforeAll
     static void setUp() throws Exception {
-        // Start ldk dev and discover resources from terraform/
-        session = LwsSession.fromHcl("terraform");
+        session   = LwsSession.fromHcl("terraform");
         sfnClient = session.sfnClient();
-
-        // Resolve the state machine ARN
-        stateMachineArn = sfnClient.listStateMachines(ListStateMachinesRequest.builder().build())
-                .stateMachines().get(0).stateMachineArn();
+        stateMachineArn = sfnClient
+            .listStateMachines(ListStateMachinesRequest.builder().build())
+            .stateMachines().get(0).stateMachineArn();
     }
 
     @AfterAll
     static void tearDown() {
         session.close();
+    }
+
+    @BeforeEach
+    void reset() throws Exception {
+        session.reset(); // clear all state between tests
     }
 
     @Test
@@ -107,34 +112,57 @@ class OrderProcessorTest {
 
 ## API
 
-### `LwsSession`
+### Session constructors
+
+| Constructor | Description |
+|---|---|
+| `LwsSession.fromHcl(projectDir)` | Auto-discover resources from Terraform `.tf` files |
+| `LwsSession.fromCdk(projectDir)` | Auto-discover resources from CDK cloud assembly |
+| `LwsSession.create(spec)` | Start with explicitly declared resources |
+
+### Client methods
+
+| Method | Returns |
+|---|---|
+| `session.dynamoDbClient()` | `DynamoDbClient` |
+| `session.sqsClient()` | `SqsClient` |
+| `session.s3Client()` | `S3Client` (path-style) |
+| `session.snsClient()` | `SnsClient` |
+| `session.sfnClient()` | `SfnClient` |
+| `session.ssmClient()` | `SsmClient` |
+| `session.secretsManagerClient()` | `SecretsManagerClient` |
+| `session.cognitoClient()` | `CognitoIdentityProviderClient` |
+| `session.lambdaClient()` | `LambdaClient` |
+| `session.apiGatewayClient()` | `ApiGatewayClient` |
+| `session.rdsClient()` | `RdsClient` |
+| `session.docDbClient()` | `DocDbClient` |
+| `session.neptuneClient()` | `NeptuneClient` |
+| `session.elastiCacheClient()` | `ElastiCacheClient` |
+| `session.memoryDbClient()` | `MemoryDbClient` |
+| `session.glacierClient()` | `GlacierClient` |
+| `session.elasticsearchClient()` | `ElasticsearchClient` |
+| `session.openSearchClient()` | `OpenSearchClient` |
+| `session.s3TablesClient()` | `S3TablesClient` |
+
+### Helpers
 
 | Method | Description |
-|--------|-------------|
-| `LwsSession.fromHcl(projectDir)` | Auto-discover resources from Terraform `.tf` files and start `ldk dev` |
-| `LwsSession.create(spec)` | Start `ldk dev` with explicitly declared resources |
-| `session.dynamoDbClient()` | Pre-configured `DynamoDbClient` |
-| `session.sqsClient()` | Pre-configured `SqsClient` |
-| `session.s3Client()` | Pre-configured `S3Client` (path-style) |
-| `session.snsClient()` | Pre-configured `SnsClient` |
-| `session.sfnClient()` | Pre-configured `SfnClient` |
-| `session.ssmClient()` | Pre-configured `SsmClient` |
-| `session.secretsManagerClient()` | Pre-configured `SecretsManagerClient` |
+|---|---|
 | `session.portFor(service)` | Port number for a named service |
 | `session.queueUrl(queueName)` | Local SQS queue URL |
-| `session.close()` | Stop `ldk dev` (also called automatically by try-with-resources) |
+| `session.reset()` | Clear all service state |
+| `session.close()` | Stop the in-process server (also via try-with-resources) |
 
-### `SessionSpec`
+## Supported services
 
-| Method | Description |
-|--------|-------------|
-| `withTable(TableSpec)` | Declare a DynamoDB table |
-| `withQueue(name)` | Declare an SQS queue |
-| `withStateMachine(StateMachineSpec)` | Declare a Step Functions state machine |
+All 20 services are available. See client methods above for the full list.
 
-### Supported services
+## How it works
 
-`dynamodb`, `s3`, `sqs`, `sns`, `ssm`, `secretsmanager`, `stepfunctions`
+`LwsSession.create` starts the Java LWS core in-process on a randomly chosen base port. Each
+service listens at `basePort + offset`. Client methods return AWS SDK v2 clients pre-configured
+with `http://127.0.0.1:<port>` endpoint overrides and stub credentials. `close()` (or
+try-with-resources) stops the server cleanly.
 
 ## License
 

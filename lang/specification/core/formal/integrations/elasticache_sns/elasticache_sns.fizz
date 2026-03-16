@@ -1,0 +1,156 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# ElastiCache -> SNS Integration Formal Specification
+# Models ElastiCache cluster event notifications delivered to an SNS topic.
+# ElastiCache can be configured to publish cluster lifecycle events
+# (e.g., node replacements, failovers, parameter group changes) to an SNS topic.
+# If the topic has been deleted, notification delivery fails silently.
+
+CLUSTER_IDS = ["cluster-1"]
+TOPIC_IDS = ["topic-1"]
+MSG_IDS = ["msg-1"]
+
+
+action Init:
+    cluster_status = {}         # cluster_status[cid] = "AVAILABLE" | "MODIFYING" | "DELETED"
+    cluster_topic = {}          # cluster_topic[cid] = topic_id or "" (SNS notification config)
+    topic_status = {}           # topic_status[tid] = "ACTIVE" | "DELETED"
+    msg_status = {}             # msg_status[mid] = "PUBLISHED"
+    msg_topic = {}              # msg_topic[mid] = topic_id
+    msg_cluster = {}            # msg_cluster[mid] = cluster_id
+
+
+# step: an ElastiCache cluster is created
+# result: the cluster is AVAILABLE with no SNS notification configured
+# guard: the cluster does not already exist
+# guard_violation: the cluster already exists
+atomic action CreateCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid not in cluster_status:
+            cluster_status[cid] = "AVAILABLE"
+            cluster_topic[cid] = ""
+
+
+# step: an SNS topic is created
+# result: the topic is ACTIVE
+# guard: the topic does not already exist
+# guard_violation: the topic already exists
+atomic action CreateTopic:
+    oneof tid in TOPIC_IDS:
+        if tid not in topic_status:
+            topic_status[tid] = "ACTIVE"
+
+
+# step: the SNS topic is deleted
+# result: the topic is DELETED and ElastiCache event notifications will fail
+# guard: the topic exists
+# guard_violation: the topic does not exist
+# guard: the topic is ACTIVE
+# guard_violation_lifecycle: the topic is already DELETED
+atomic action DeleteTopic:
+    oneof tid in TOPIC_IDS:
+        if tid in topic_status:
+            if topic_status[tid] == "ACTIVE":
+                topic_status[tid] = "DELETED"
+
+
+# step: an SNS notification is configured on the ElastiCache cluster
+# result: the cluster will publish lifecycle events to the topic
+# guard: the cluster exists and is AVAILABLE
+# guard_violation_lifecycle: the cluster does not exist or is not AVAILABLE
+# guard: the cluster has no SNS notification configured
+# guard_violation: the cluster already has an SNS notification configured
+# guard: the topic exists and is ACTIVE
+# guard_violation: the topic does not exist or is not ACTIVE
+atomic action ConfigureNotification:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                if cluster_topic[cid] == "":
+                    oneof tid in TOPIC_IDS:
+                        if tid in topic_status:
+                            if topic_status[tid] == "ACTIVE":
+                                cluster_topic[cid] = tid
+
+
+# fake_skip: internal
+# step: a cluster modification event occurs and ElastiCache publishes a notification to the SNS topic
+# result: the cluster is MODIFYING and the notification is PUBLISHED to the topic
+# guard: the cluster exists and is AVAILABLE
+# guard_violation_lifecycle: the cluster does not exist or is not AVAILABLE
+# guard: the cluster has an SNS notification configured
+# guard_violation: the cluster has no SNS notification configured
+# guard: the topic is ACTIVE
+# guard_violation_lifecycle: the topic is DELETED
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action ClusterEventNotificationDelivered:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                if cluster_topic[cid] != "":
+                    tid = cluster_topic[cid]
+                    if tid in topic_status:
+                        if topic_status[tid] == "ACTIVE":
+                            oneof mid in MSG_IDS:
+                                if mid not in msg_status:
+                                    cluster_status[cid] = "MODIFYING"
+                                    msg_status[mid] = "PUBLISHED"
+                                    msg_topic[mid] = tid
+                                    msg_cluster[mid] = cid
+
+
+# fake_skip: internal
+# step: a cluster event occurs but the SNS notification fails because the topic has been deleted
+# result: the cluster is MODIFYING but no notification is published
+# guard: the cluster exists and is AVAILABLE
+# guard_violation_lifecycle: the cluster does not exist or is not AVAILABLE
+# guard: the cluster has an SNS notification configured
+# guard_violation: the cluster has no SNS notification configured
+# guard: the topic is DELETED
+# guard_violation_lifecycle: the topic is not DELETED
+atomic action ClusterEventNotificationFails:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                if cluster_topic[cid] != "":
+                    tid = cluster_topic[cid]
+                    if tid in topic_status:
+                        if topic_status[tid] == "DELETED":
+                            cluster_status[cid] = "MODIFYING"
+
+
+# fake_skip: internal
+# step: the cluster modification completes
+# result: the cluster is AVAILABLE again
+# guard: the cluster is MODIFYING
+# guard_violation_lifecycle: the cluster is not MODIFYING
+atomic action ClusterModificationComplete:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "MODIFYING":
+                cluster_status[cid] = "AVAILABLE"
+
+
+# check: every PUBLISHED notification references a cluster that exists
+always assertion PublishedNotificationReferencesExistingCluster:
+    for mid in msg_status:
+        if msg_status[mid] == "PUBLISHED":
+            cid = msg_cluster[mid]
+            if cid not in cluster_status:
+                return False
+    return True
+
+
+# check: every PUBLISHED notification references a topic that exists
+always assertion PublishedNotificationReferencesExistingTopic:
+    for mid in msg_status:
+        if msg_status[mid] == "PUBLISHED":
+            tid = msg_topic[mid]
+            if tid not in topic_status:
+                return False
+    return True

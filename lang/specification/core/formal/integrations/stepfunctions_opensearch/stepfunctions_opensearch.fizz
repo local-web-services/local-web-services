@@ -1,0 +1,142 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Step Functions -> OpenSearch Integration Formal Specification
+# Models a Step Functions state machine calling OpenSearch APIs as a task step
+# (e.g., indexing documents or running search queries via the SDK integration).
+# If the domain is PROCESSING a configuration update, the task fails.
+
+SM_IDS = ["sm-1"]
+DOMAIN_IDS = ["domain-1"]
+EXEC_IDS = ["exec-1"]
+
+
+action Init:
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    domain_status = {}          # domain_status[did] = "ACTIVE" | "PROCESSING"
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    exec_domain = {}            # exec_domain[eid] = domain_id (domain called by this execution)
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+
+
+# step: an OpenSearch domain is created and becomes ACTIVE
+# result: the domain is ACTIVE
+# guard: the domain does not already exist
+# guard_violation: the domain already exists
+atomic action CreateDomain:
+    oneof did in DOMAIN_IDS:
+        if did not in domain_status:
+            domain_status[did] = "ACTIVE"
+
+
+# step: a domain configuration update begins
+# result: the domain is PROCESSING and API calls may fail
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+atomic action DomainProcessingBegins:
+    oneof did in DOMAIN_IDS:
+        if did in domain_status:
+            if domain_status[did] == "ACTIVE":
+                domain_status[did] = "PROCESSING"
+
+
+# fake_skip: internal
+# step: the domain configuration update completes
+# result: the domain is ACTIVE again
+# guard: the domain is PROCESSING
+# guard_violation_lifecycle: the domain is not PROCESSING
+atomic action DomainProcessingComplete:
+    oneof did in DOMAIN_IDS:
+        if did in domain_status:
+            if domain_status[did] == "PROCESSING":
+                domain_status[did] = "ACTIVE"
+
+
+# step: an execution of the state machine is started
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecution:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                oneof eid in EXEC_IDS:
+                    if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                        exec_status[eid] = "RUNNING"
+                        exec_sm[eid] = smid
+
+
+# fake_skip: internal
+# step: a running execution calls an ACTIVE OpenSearch domain and the task succeeds
+# result: the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+atomic action SearchTaskSucceeds:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof did in DOMAIN_IDS:
+                    if did in domain_status:
+                        if domain_status[did] == "ACTIVE":
+                            exec_status[eid] = "SUCCEEDED"
+                            exec_domain[eid] = did
+
+
+# fake_skip: internal
+# step: a running execution fails because the domain is processing a config update
+# result: the execution is FAILED with a connection error
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the domain is PROCESSING
+# guard_violation_lifecycle: the domain is not PROCESSING
+atomic action SearchTaskFails:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof did in DOMAIN_IDS:
+                    if did in domain_status:
+                        if domain_status[did] == "PROCESSING":
+                            exec_status[eid] = "FAILED"
+                            exec_domain[eid] = did
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every succeeded execution recorded which domain it called
+# (verifies an execution cannot succeed without calling a domain; domain may enter PROCESSING afterwards)
+always assertion SuccessfulExecutionCalledADomain:
+    for eid in exec_status:
+        if exec_status[eid] == "SUCCEEDED":
+            if eid not in exec_domain:
+                return False
+    return True

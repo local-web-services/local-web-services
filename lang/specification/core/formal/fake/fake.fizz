@@ -1,0 +1,130 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 10
+---
+# Fake Server Formal Specification
+# Models fake HTTP servers with configurable routes, protocols, and chaos settings.
+# Servers support rest, graphql, and grpc protocols.
+# Routes are per-server and identified by an abstract slot.
+
+SERVER_IDS = ["s1", "s2", "s3"]
+ROUTE_IDS = ["r1", "r2", "r3", "r4", "r5", "r6"]
+
+action Init:
+    server_status = {}
+    server_protocol = {}
+    server_chaos_enabled = {}
+    route_status = {}
+    route_server = {}
+
+
+# step: a fake server is created
+# result: the server is ACTIVE with chaos disabled by default
+# guard: the server does not already exist
+# guard_violation: the server already exists
+atomic action CreateServer:
+    oneof sid in SERVER_IDS:
+        if sid not in server_status:
+            server_status[sid] = "ACTIVE"
+            server_chaos_enabled[sid] = False
+            oneof:
+                server_protocol[sid] = "rest"
+                server_protocol[sid] = "graphql"
+                server_protocol[sid] = "grpc"
+
+
+# step: a fake server is deleted
+# result: the server is DELETED and its routes are removed
+# guard: the server exists
+# guard_violation: the server does not exist
+# guard: the server is ACTIVE
+# guard_violation: the server is not ACTIVE
+atomic action DeleteServer:
+    oneof sid in SERVER_IDS:
+        if sid in server_status:
+            if server_status[sid] == "ACTIVE":
+                server_status[sid] = "DELETED"
+                for rid in ROUTE_IDS:
+                    if rid in route_server:
+                        if route_server[rid] == sid:
+                            route_status[rid] = "DELETED"
+
+
+# step: a route is added to a fake server
+# result: the route is ACTIVE on the server
+# guard: the server exists
+# guard_violation: the server does not exist
+# guard: the server is ACTIVE
+# guard_violation: the server is not ACTIVE
+# guard: a route slot is available
+# guard_violation: no route slot is available
+atomic action AddRoute:
+    oneof sid in SERVER_IDS:
+        if sid in server_status:
+            if server_status[sid] == "ACTIVE":
+                oneof rid in ROUTE_IDS:
+                    if rid not in route_status:
+                        route_server[rid] = sid
+                        route_status[rid] = "ACTIVE"
+
+
+# step: a route is removed from a fake server
+# result: the route is DELETED
+# guard: the route exists
+# guard_violation: the route does not exist
+# guard: the route is ACTIVE
+# guard_violation: the route is not ACTIVE
+atomic action RemoveRoute:
+    oneof rid in ROUTE_IDS:
+        if rid in route_status:
+            if route_status[rid] == "ACTIVE":
+                route_status[rid] = "DELETED"
+
+
+# step: the status of a fake server is retrieved
+# result: the server name, protocol, and route count are returned
+# guard: the server exists
+# guard_violation: the server does not exist
+# guard: the server is ACTIVE
+# guard_violation: the server is not ACTIVE
+atomic action GetStatus:
+    oneof sid in SERVER_IDS:
+        if sid in server_status:
+            if server_status[sid] == "ACTIVE":
+                pass
+
+
+# step: chaos is enabled or disabled for a fake server
+# result: the chaos enabled flag is updated
+# guard: the server exists
+# guard_violation: the server does not exist
+# guard: the server is ACTIVE
+# guard_violation: the server is not ACTIVE
+atomic action SetChaosEnabled:
+    oneof sid in SERVER_IDS:
+        if sid in server_status:
+            if server_status[sid] == "ACTIVE":
+                oneof:
+                    server_chaos_enabled[sid] = True
+                    server_chaos_enabled[sid] = False
+
+
+# check: every ACTIVE route belongs to an ACTIVE server
+always assertion ActiveRoutesBelongToActiveServers:
+    for rid in route_status:
+        if route_status[rid] == "ACTIVE":
+            if route_server[rid] in server_status:
+                if server_status[route_server[rid]] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every server has a valid protocol
+always assertion ServerProtocolIsValid:
+    for sid in server_protocol:
+        if server_protocol[sid] not in ["rest", "graphql", "grpc"]:
+            return False
+    return True
+

@@ -1,0 +1,185 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Step Functions -> Lambda Integration Formal Specification
+# Models a Step Functions state machine invoking a Lambda function as a task.
+# A task token is issued at invocation time; success or failure resolves the execution.
+
+SM_IDS = ["sm-1"]
+FUNC_IDS = ["func-1"]
+EXEC_IDS = ["exec-1"]
+INV_IDS = ["inv-1"]
+
+
+action Init:
+    # Step Functions state machine
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    sm_func = {}                # sm_func[smid] = func_id or "" (task Lambda not yet configured)
+
+    # Lambda function
+    func_status = {}            # func_status[fid] = "ACTIVE"
+
+    # State machine executions
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+
+    # Lambda invocations triggered by the state machine task
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_exec = {}               # inv_exec[iid] = exec_id
+    inv_func = {}               # inv_func[iid] = func_id
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE with no Lambda task configured
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+            sm_func[smid] = ""
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a Lambda task is configured on the state machine
+# result: the state machine will invoke the function when it reaches the task state
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine has no Lambda task configured
+# guard_violation: the state machine already has a Lambda task configured
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+atomic action ConfigureTask:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_func[smid] == "":
+                    oneof fid in FUNC_IDS:
+                        if fid in func_status:
+                            if func_status[fid] == "ACTIVE":
+                                sm_func[smid] = fid
+
+
+# step: an execution of the state machine is started
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine has a Lambda task configured
+# guard_violation: the state machine has no Lambda task configured
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecution:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_func[smid] != "":
+                    oneof eid in EXEC_IDS:
+                        if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                            exec_status[eid] = "RUNNING"
+                            exec_sm[eid] = smid
+
+
+# step: a running execution reaches the Lambda task state and invokes the function
+# result: the invocation is IN_PROGRESS
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the execution's state machine has a configured Lambda task
+# guard_violation: the execution's state machine has no Lambda task configured
+# guard: the configured function is ACTIVE
+# guard_violation_lifecycle: the configured function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeTask:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_func:
+                    fid = sm_func[smid]
+                    if fid != "":
+                        if fid in func_status:
+                            if func_status[fid] == "ACTIVE":
+                                oneof iid in INV_IDS:
+                                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                                        inv_status[iid] = "IN_PROGRESS"
+                                        inv_exec[iid] = eid
+                                        inv_func[iid] = fid
+
+
+# fake_skip: internal
+# step: the Lambda task completes successfully and the execution succeeds
+# result: the invocation is SUCCESS and the execution is SUCCEEDED
+# guard: an invocation is IN_PROGRESS
+# guard_violation: no invocation is IN_PROGRESS
+atomic action TaskSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                eid = inv_exec[iid]
+                inv_status[iid] = "SUCCESS"
+                exec_status[eid] = "SUCCEEDED"
+
+
+# fake_skip: internal
+# step: the Lambda task fails and the execution fails
+# result: the invocation is FAILED and the execution is FAILED
+# guard: an invocation is IN_PROGRESS
+# guard_violation: no invocation is IN_PROGRESS
+atomic action TaskFails:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                eid = inv_exec[iid]
+                inv_status[iid] = "FAILED"
+                exec_status[eid] = "FAILED"
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every IN_PROGRESS invocation has a corresponding RUNNING execution
+always assertion InvocationLinkedToRunningExecution:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            eid = inv_exec[iid]
+            if eid in exec_status:
+                if exec_status[eid] != "RUNNING":
+                    return False
+    return True

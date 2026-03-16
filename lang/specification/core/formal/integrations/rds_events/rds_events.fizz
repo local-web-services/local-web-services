@@ -1,0 +1,129 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# RDS -> EventBridge Integration Formal Specification
+# Models RDS instance state change events being published to an EventBridge event bus.
+# When an RDS instance changes state (e.g., starts, stops, fails over),
+# RDS automatically sends an event to EventBridge.
+# If the event bus has been deleted, event delivery fails silently.
+
+DB_IDS = ["db-1"]
+BUS_IDS = ["bus-1"]
+EVENT_IDS = ["event-1"]
+
+
+action Init:
+    db_status = {}              # db_status[dbid] = "AVAILABLE" | "STOPPING" | "STOPPED" | "STARTING"
+    bus_status = {}             # bus_status[busid] = "ACTIVE" | "DELETED"
+    event_status = {}           # event_status[eid] = "DELIVERED" | "FAILED"
+    event_db = {}               # event_db[eid] = db_id
+    event_bus = {}              # event_bus[eid] = bus_id
+
+
+# step: an RDS DB instance is created and becomes AVAILABLE
+# result: the DB instance is AVAILABLE
+# guard: the DB instance does not already exist
+# guard_violation: the DB instance already exists
+atomic action CreateDBInstance:
+    oneof dbid in DB_IDS:
+        if dbid not in db_status:
+            db_status[dbid] = "AVAILABLE"
+
+
+# step: an EventBridge event bus is created
+# result: the bus is ACTIVE
+# guard: the bus does not already exist
+# guard_violation: the bus already exists
+atomic action CreateEventBus:
+    oneof busid in BUS_IDS:
+        if busid not in bus_status:
+            bus_status[busid] = "ACTIVE"
+
+
+# step: the EventBridge event bus is deleted
+# result: the bus is DELETED and RDS event delivery will fail
+# guard: the bus exists
+# guard_violation: the bus does not exist
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is already DELETED
+atomic action DeleteEventBus:
+    oneof busid in BUS_IDS:
+        if busid in bus_status:
+            if bus_status[busid] == "ACTIVE":
+                bus_status[busid] = "DELETED"
+
+
+# fake_skip: internal
+# step: the RDS instance stops and delivers the state change event to the EventBridge bus
+# result: the DB instance is STOPPING and the event is DELIVERED
+# guard: the DB instance is AVAILABLE
+# guard_violation_lifecycle: the DB instance is not AVAILABLE
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is DELETED
+# guard: an event slot is available
+# guard_violation_capacity: no event slot is available
+atomic action DBStopEventDelivered:
+    oneof dbid in DB_IDS:
+        if dbid in db_status:
+            if db_status[dbid] == "AVAILABLE":
+                oneof busid in BUS_IDS:
+                    if busid in bus_status:
+                        if bus_status[busid] == "ACTIVE":
+                            oneof eid in EVENT_IDS:
+                                if eid not in event_status:
+                                    db_status[dbid] = "STOPPING"
+                                    event_status[eid] = "DELIVERED"
+                                    event_db[eid] = dbid
+                                    event_bus[eid] = busid
+
+
+# fake_skip: internal
+# step: the RDS instance stops but the state change event delivery fails because the bus is deleted
+# result: the DB instance is STOPPING but no event is delivered
+# guard: the DB instance is AVAILABLE
+# guard_violation_lifecycle: the DB instance is not AVAILABLE
+# guard: the bus is DELETED
+# guard_violation_lifecycle: the bus is not DELETED
+atomic action DBStopEventFails:
+    oneof dbid in DB_IDS:
+        if dbid in db_status:
+            if db_status[dbid] == "AVAILABLE":
+                oneof busid in BUS_IDS:
+                    if busid in bus_status:
+                        if bus_status[busid] == "DELETED":
+                            db_status[dbid] = "STOPPING"
+
+
+# fake_skip: internal
+# step: the DB instance finishes stopping
+# result: the DB instance is STOPPED
+# guard: the DB instance is STOPPING
+# guard_violation_lifecycle: the DB instance is not STOPPING
+atomic action DBStopComplete:
+    oneof dbid in DB_IDS:
+        if dbid in db_status:
+            if db_status[dbid] == "STOPPING":
+                db_status[dbid] = "STOPPED"
+
+
+# check: every DELIVERED event references a DB instance that exists
+always assertion DeliveredEventReferencesExistingDB:
+    for eid in event_status:
+        if event_status[eid] == "DELIVERED":
+            dbid = event_db[eid]
+            if dbid not in db_status:
+                return False
+    return True
+
+
+# check: every DELIVERED event references a bus that exists
+always assertion DeliveredEventReferencesExistingBus:
+    for eid in event_status:
+        if event_status[eid] == "DELIVERED":
+            busid = event_bus[eid]
+            if busid not in bus_status:
+                return False
+    return True

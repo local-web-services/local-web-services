@@ -1,0 +1,2719 @@
+{
+  "sourceInfo": {
+    "fileName": "lambda_cognito.fizz",
+    "start": {
+      "line": 11,
+      "column": 1
+    },
+    "end": {
+      "line": 128
+    }
+  },
+  "invariants": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 110,
+          "column": 1
+        },
+        "end": {
+          "line": 122
+        }
+      },
+      "name": "InvocationRequiresActiveFunction",
+      "temporalOperators": [
+        "always"
+      ],
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 111,
+            "column": 5
+          },
+          "end": {
+            "line": 122
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 111,
+                "column": 5
+              },
+              "end": {
+                "line": 117,
+                "column": 4
+              }
+            },
+            "forStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 111,
+                  "column": 5
+                },
+                "end": {
+                  "line": 117,
+                  "column": 4
+                }
+              },
+              "loopVars": [
+                "iid"
+              ],
+              "pyExpr": "inv_status",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 112,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 117,
+                    "column": 4
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 112,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 117,
+                        "column": 4
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 112,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 117,
+                          "column": 4
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 112,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 117,
+                              "column": 4
+                            }
+                          },
+                          "condition": "inv_status[iid] == \"IN_PROGRESS\"",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 113,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 117,
+                                "column": 4
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 113,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 114,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 113,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 113,
+                                      "column": 31
+                                    }
+                                  },
+                                  "code": "fid = inv_func[iid]"
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 114,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 117,
+                                    "column": 4
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 114,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 117,
+                                      "column": 4
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 114,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 117,
+                                          "column": 4
+                                        }
+                                      },
+                                      "condition": "fid in func_status",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 115,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 117,
+                                            "column": 4
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 115,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 117,
+                                                "column": 4
+                                              }
+                                            },
+                                            "ifStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 115,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 117,
+                                                  "column": 4
+                                                }
+                                              },
+                                              "branches": [
+                                                {
+                                                  "sourceInfo": {
+                                                    "start": {
+                                                      "line": 115,
+                                                      "column": 20
+                                                    },
+                                                    "end": {
+                                                      "line": 117,
+                                                      "column": 4
+                                                    }
+                                                  },
+                                                  "condition": "func_status[fid] != \"ACTIVE\"",
+                                                  "block": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 116,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 117,
+                                                        "column": 4
+                                                      }
+                                                    },
+                                                    "stmts": [
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 116,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 117,
+                                                            "column": 4
+                                                          }
+                                                        },
+                                                        "returnStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 116,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 116,
+                                                              "column": 32
+                                                            }
+                                                          },
+                                                          "pyExpr": "False",
+                                                          "expr": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 116,
+                                                                "column": 28
+                                                              },
+                                                              "end": {
+                                                                "line": 116,
+                                                                "column": 32
+                                                              }
+                                                            },
+                                                            "pyExpr": "False"
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  },
+                                                  "conditionExpr": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 115,
+                                                        "column": 20
+                                                      },
+                                                      "end": {
+                                                        "line": 115,
+                                                        "column": 47
+                                                      }
+                                                    },
+                                                    "pyExpr": "func_status[fid] != \"ACTIVE\""
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 114,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 114,
+                                            "column": 33
+                                          }
+                                        },
+                                        "pyExpr": "fid in func_status"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 112,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 112,
+                                "column": 43
+                              }
+                            },
+                            "pyExpr": "inv_status[iid] == \"IN_PROGRESS\""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 111,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 111,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "inv_status"
+              }
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 117,
+                "column": 5
+              },
+              "end": {
+                "line": 122
+              }
+            },
+            "returnStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 117,
+                  "column": 5
+                },
+                "end": {
+                  "line": 117,
+                  "column": 15
+                }
+              },
+              "pyExpr": "True",
+              "expr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 117,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 117,
+                    "column": 15
+                  }
+                },
+                "pyExpr": "True"
+              }
+            }
+          }
+        ]
+      },
+      "pyCode": "def InvocationRequiresActiveFunction():\n    for iid in inv_status:\n        if inv_status[iid] == \"IN_PROGRESS\":\n            fid = inv_func[iid]\n            if fid in func_status:\n                if func_status[fid] != \"ACTIVE\":\n                    return False\n    return True\n\n\n# check: every successful invocation recorded which pool it called\n# (verifies Lambda cannot succeed without calling a pool; pool may be deleted afterwards)\n"
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 122,
+          "column": 1
+        },
+        "end": {
+          "line": 128
+        }
+      },
+      "name": "SuccessfulInvocationCalledAPool",
+      "temporalOperators": [
+        "always"
+      ],
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 123,
+            "column": 5
+          },
+          "end": {
+            "line": 128
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 123,
+                "column": 5
+              },
+              "end": {
+                "line": 127,
+                "column": 4
+              }
+            },
+            "forStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 123,
+                  "column": 5
+                },
+                "end": {
+                  "line": 127,
+                  "column": 4
+                }
+              },
+              "loopVars": [
+                "iid"
+              ],
+              "pyExpr": "inv_status",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 124,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 127,
+                    "column": 4
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 124,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 127,
+                        "column": 4
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 124,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 127,
+                          "column": 4
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 124,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 127,
+                              "column": 4
+                            }
+                          },
+                          "condition": "inv_status[iid] == \"SUCCESS\"",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 125,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 127,
+                                "column": 4
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 125,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 127,
+                                    "column": 4
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 125,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 127,
+                                      "column": 4
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 125,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 127,
+                                          "column": 4
+                                        }
+                                      },
+                                      "condition": "iid not in inv_pool",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 126,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 127,
+                                            "column": 4
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 126,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 127,
+                                                "column": 4
+                                              }
+                                            },
+                                            "returnStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 126,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 126,
+                                                  "column": 28
+                                                }
+                                              },
+                                              "pyExpr": "False",
+                                              "expr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 126,
+                                                    "column": 24
+                                                  },
+                                                  "end": {
+                                                    "line": 126,
+                                                    "column": 28
+                                                  }
+                                                },
+                                                "pyExpr": "False"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 125,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 125,
+                                            "column": 34
+                                          }
+                                        },
+                                        "pyExpr": "iid not in inv_pool"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 124,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 124,
+                                "column": 39
+                              }
+                            },
+                            "pyExpr": "inv_status[iid] == \"SUCCESS\""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 123,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 123,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "inv_status"
+              }
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 127,
+                "column": 5
+              },
+              "end": {
+                "line": 128
+              }
+            },
+            "returnStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 127,
+                  "column": 5
+                },
+                "end": {
+                  "line": 127,
+                  "column": 15
+                }
+              },
+              "pyExpr": "True",
+              "expr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 127,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 127,
+                    "column": 15
+                  }
+                },
+                "pyExpr": "True"
+              }
+            }
+          }
+        ]
+      },
+      "pyCode": "def SuccessfulInvocationCalledAPool():\n    for iid in inv_status:\n        if inv_status[iid] == \"SUCCESS\":\n            if iid not in inv_pool:\n                return False\n    return True\n"
+    }
+  ],
+  "actions": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 16,
+          "column": 1
+        },
+        "end": {
+          "line": 28
+        }
+      },
+      "name": "Init",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_STRONG"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 17,
+            "column": 5
+          },
+          "end": {
+            "line": 28
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 17,
+                "column": 5
+              },
+              "end": {
+                "line": 18,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 17,
+                  "column": 5
+                },
+                "end": {
+                  "line": 17,
+                  "column": 20
+                }
+              },
+              "code": "func_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 18,
+                "column": 5
+              },
+              "end": {
+                "line": 19,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 18,
+                  "column": 5
+                },
+                "end": {
+                  "line": 18,
+                  "column": 20
+                }
+              },
+              "code": "pool_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 19,
+                "column": 5
+              },
+              "end": {
+                "line": 20,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 19,
+                  "column": 5
+                },
+                "end": {
+                  "line": 19,
+                  "column": 19
+                }
+              },
+              "code": "inv_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 20,
+                "column": 5
+              },
+              "end": {
+                "line": 21,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 20,
+                  "column": 5
+                },
+                "end": {
+                  "line": 20,
+                  "column": 17
+                }
+              },
+              "code": "inv_func = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 21,
+                "column": 5
+              },
+              "end": {
+                "line": 28
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 21,
+                  "column": 5
+                },
+                "end": {
+                  "line": 21,
+                  "column": 17
+                }
+              },
+              "code": "inv_pool = {}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 28,
+          "column": 1
+        },
+        "end": {
+          "line": 38
+        }
+      },
+      "name": "DeployFunction",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 29,
+            "column": 5
+          },
+          "end": {
+            "line": 38
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 29,
+                "column": 5
+              },
+              "end": {
+                "line": 38
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 29,
+                  "column": 5
+                },
+                "end": {
+                  "line": 38
+                }
+              },
+              "loopVars": [
+                "fid"
+              ],
+              "pyExpr": "FUNC_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 30,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 38
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 30,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 38
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 30,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 38
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 30,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 38
+                            }
+                          },
+                          "condition": "fid not in func_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 31,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 38
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 31,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 38
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 31,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 31,
+                                      "column": 39
+                                    }
+                                  },
+                                  "code": "func_status[fid] = \"ACTIVE\""
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 30,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 30,
+                                "column": 33
+                              }
+                            },
+                            "pyExpr": "fid not in func_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 29,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 29,
+                    "column": 23
+                  }
+                },
+                "pyExpr": "FUNC_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 38,
+          "column": 1
+        },
+        "end": {
+          "line": 50
+        }
+      },
+      "name": "CreateUserPool",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 39,
+            "column": 5
+          },
+          "end": {
+            "line": 50
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 39,
+                "column": 5
+              },
+              "end": {
+                "line": 50
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 39,
+                  "column": 5
+                },
+                "end": {
+                  "line": 50
+                }
+              },
+              "loopVars": [
+                "pid"
+              ],
+              "pyExpr": "POOL_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 40,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 50
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 40,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 50
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 40,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 50
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 40,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 50
+                            }
+                          },
+                          "condition": "pid not in pool_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 41,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 50
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 41,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 50
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 41,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 41,
+                                      "column": 39
+                                    }
+                                  },
+                                  "code": "pool_status[pid] = \"ACTIVE\""
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 40,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 40,
+                                "column": 33
+                              }
+                            },
+                            "pyExpr": "pid not in pool_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 39,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 39,
+                    "column": 23
+                  }
+                },
+                "pyExpr": "POOL_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 50,
+          "column": 1
+        },
+        "end": {
+          "line": 65
+        }
+      },
+      "name": "DeleteUserPool",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 51,
+            "column": 5
+          },
+          "end": {
+            "line": 65
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 51,
+                "column": 5
+              },
+              "end": {
+                "line": 65
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 51,
+                  "column": 5
+                },
+                "end": {
+                  "line": 65
+                }
+              },
+              "loopVars": [
+                "pid"
+              ],
+              "pyExpr": "POOL_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 52,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 65
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 52,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 65
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 52,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 65
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 52,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 65
+                            }
+                          },
+                          "condition": "pid in pool_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 53,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 65
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 53,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 65
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 53,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 65
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 53,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 65
+                                        }
+                                      },
+                                      "condition": "pool_status[pid] == \"ACTIVE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 54,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 65
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 54,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 65
+                                              }
+                                            },
+                                            "pyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 54,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 54,
+                                                  "column": 44
+                                                }
+                                              },
+                                              "code": "pool_status[pid] = \"DELETED\""
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 53,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 53,
+                                            "column": 43
+                                          }
+                                        },
+                                        "pyExpr": "pool_status[pid] == \"ACTIVE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 52,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 52,
+                                "column": 29
+                              }
+                            },
+                            "pyExpr": "pid in pool_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 51,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 51,
+                    "column": 23
+                  }
+                },
+                "pyExpr": "POOL_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 65,
+          "column": 1
+        },
+        "end": {
+          "line": 81
+        }
+      },
+      "name": "InvokeFunction",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 66,
+            "column": 5
+          },
+          "end": {
+            "line": 81
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 66,
+                "column": 5
+              },
+              "end": {
+                "line": 81
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 66,
+                  "column": 5
+                },
+                "end": {
+                  "line": 81
+                }
+              },
+              "loopVars": [
+                "fid"
+              ],
+              "pyExpr": "FUNC_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 67,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 81
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 67,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 81
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 67,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 81
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 67,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 81
+                            }
+                          },
+                          "condition": "fid in func_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 68,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 81
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 68,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 81
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 68,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 81
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 68,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 81
+                                        }
+                                      },
+                                      "condition": "func_status[fid] == \"ACTIVE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 69,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 81
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 69,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 81
+                                              }
+                                            },
+                                            "anyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 69,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 81
+                                                }
+                                              },
+                                              "loopVars": [
+                                                "iid"
+                                              ],
+                                              "pyExpr": "INV_IDS",
+                                              "block": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 70,
+                                                    "column": 21
+                                                  },
+                                                  "end": {
+                                                    "line": 81
+                                                  }
+                                                },
+                                                "stmts": [
+                                                  {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 70,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 81
+                                                      }
+                                                    },
+                                                    "ifStmt": {
+                                                      "sourceInfo": {
+                                                        "start": {
+                                                          "line": 70,
+                                                          "column": 21
+                                                        },
+                                                        "end": {
+                                                          "line": 81
+                                                        }
+                                                      },
+                                                      "branches": [
+                                                        {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 70,
+                                                              "column": 24
+                                                            },
+                                                            "end": {
+                                                              "line": 81
+                                                            }
+                                                          },
+                                                          "condition": "iid not in inv_status or inv_status[iid] == \"SUCCESS\" or inv_status[iid] == \"FAILED\"",
+                                                          "block": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 71,
+                                                                "column": 25
+                                                              },
+                                                              "end": {
+                                                                "line": 81
+                                                              }
+                                                            },
+                                                            "stmts": [
+                                                              {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 71,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 72,
+                                                                    "column": 24
+                                                                  }
+                                                                },
+                                                                "pyStmt": {
+                                                                  "sourceInfo": {
+                                                                    "start": {
+                                                                      "line": 71,
+                                                                      "column": 25
+                                                                    },
+                                                                    "end": {
+                                                                      "line": 71,
+                                                                      "column": 55
+                                                                    }
+                                                                  },
+                                                                  "code": "inv_status[iid] = \"IN_PROGRESS\""
+                                                                }
+                                                              },
+                                                              {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 72,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 81
+                                                                  }
+                                                                },
+                                                                "pyStmt": {
+                                                                  "sourceInfo": {
+                                                                    "start": {
+                                                                      "line": 72,
+                                                                      "column": 25
+                                                                    },
+                                                                    "end": {
+                                                                      "line": 72,
+                                                                      "column": 43
+                                                                    }
+                                                                  },
+                                                                  "code": "inv_func[iid] = fid"
+                                                                }
+                                                              }
+                                                            ]
+                                                          },
+                                                          "conditionExpr": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 70,
+                                                                "column": 24
+                                                              },
+                                                              "end": {
+                                                                "line": 70,
+                                                                "column": 107
+                                                              }
+                                                            },
+                                                            "pyExpr": "iid not in inv_status or inv_status[iid] == \"SUCCESS\" or inv_status[iid] == \"FAILED\""
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "iterExpr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 69,
+                                                    "column": 28
+                                                  },
+                                                  "end": {
+                                                    "line": 69,
+                                                    "column": 34
+                                                  }
+                                                },
+                                                "pyExpr": "INV_IDS"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 68,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 68,
+                                            "column": 43
+                                          }
+                                        },
+                                        "pyExpr": "func_status[fid] == \"ACTIVE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 67,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 67,
+                                "column": 29
+                              }
+                            },
+                            "pyExpr": "fid in func_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 66,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 66,
+                    "column": 23
+                  }
+                },
+                "pyExpr": "FUNC_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 81,
+          "column": 1
+        },
+        "end": {
+          "line": 98
+        }
+      },
+      "name": "InvocationSucceeds",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 82,
+            "column": 5
+          },
+          "end": {
+            "line": 98
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 82,
+                "column": 5
+              },
+              "end": {
+                "line": 98
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 82,
+                  "column": 5
+                },
+                "end": {
+                  "line": 98
+                }
+              },
+              "loopVars": [
+                "iid"
+              ],
+              "pyExpr": "INV_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 83,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 98
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 83,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 98
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 83,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 98
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 83,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 98
+                            }
+                          },
+                          "condition": "iid in inv_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 84,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 98
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 84,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 98
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 84,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 98
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 84,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 98
+                                        }
+                                      },
+                                      "condition": "inv_status[iid] == \"IN_PROGRESS\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 85,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 98
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 85,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 98
+                                              }
+                                            },
+                                            "anyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 85,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 98
+                                                }
+                                              },
+                                              "loopVars": [
+                                                "pid"
+                                              ],
+                                              "pyExpr": "POOL_IDS",
+                                              "block": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 86,
+                                                    "column": 21
+                                                  },
+                                                  "end": {
+                                                    "line": 98
+                                                  }
+                                                },
+                                                "stmts": [
+                                                  {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 86,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 98
+                                                      }
+                                                    },
+                                                    "ifStmt": {
+                                                      "sourceInfo": {
+                                                        "start": {
+                                                          "line": 86,
+                                                          "column": 21
+                                                        },
+                                                        "end": {
+                                                          "line": 98
+                                                        }
+                                                      },
+                                                      "branches": [
+                                                        {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 86,
+                                                              "column": 24
+                                                            },
+                                                            "end": {
+                                                              "line": 98
+                                                            }
+                                                          },
+                                                          "condition": "pid in pool_status",
+                                                          "block": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 87,
+                                                                "column": 25
+                                                              },
+                                                              "end": {
+                                                                "line": 98
+                                                              }
+                                                            },
+                                                            "stmts": [
+                                                              {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 87,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 98
+                                                                  }
+                                                                },
+                                                                "ifStmt": {
+                                                                  "sourceInfo": {
+                                                                    "start": {
+                                                                      "line": 87,
+                                                                      "column": 25
+                                                                    },
+                                                                    "end": {
+                                                                      "line": 98
+                                                                    }
+                                                                  },
+                                                                  "branches": [
+                                                                    {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 87,
+                                                                          "column": 28
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 98
+                                                                        }
+                                                                      },
+                                                                      "condition": "pool_status[pid] == \"ACTIVE\"",
+                                                                      "block": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 88,
+                                                                            "column": 29
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 98
+                                                                          }
+                                                                        },
+                                                                        "stmts": [
+                                                                          {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 88,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 89,
+                                                                                "column": 28
+                                                                              }
+                                                                            },
+                                                                            "pyStmt": {
+                                                                              "sourceInfo": {
+                                                                                "start": {
+                                                                                  "line": 88,
+                                                                                  "column": 29
+                                                                                },
+                                                                                "end": {
+                                                                                  "line": 88,
+                                                                                  "column": 55
+                                                                                }
+                                                                              },
+                                                                              "code": "inv_status[iid] = \"SUCCESS\""
+                                                                            }
+                                                                          },
+                                                                          {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 89,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 98
+                                                                              }
+                                                                            },
+                                                                            "pyStmt": {
+                                                                              "sourceInfo": {
+                                                                                "start": {
+                                                                                  "line": 89,
+                                                                                  "column": 29
+                                                                                },
+                                                                                "end": {
+                                                                                  "line": 89,
+                                                                                  "column": 47
+                                                                                }
+                                                                              },
+                                                                              "code": "inv_pool[iid] = pid"
+                                                                            }
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      "conditionExpr": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 87,
+                                                                            "column": 28
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 87,
+                                                                            "column": 55
+                                                                          }
+                                                                        },
+                                                                        "pyExpr": "pool_status[pid] == \"ACTIVE\""
+                                                                      }
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              }
+                                                            ]
+                                                          },
+                                                          "conditionExpr": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 86,
+                                                                "column": 24
+                                                              },
+                                                              "end": {
+                                                                "line": 86,
+                                                                "column": 41
+                                                              }
+                                                            },
+                                                            "pyExpr": "pid in pool_status"
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "iterExpr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 85,
+                                                    "column": 28
+                                                  },
+                                                  "end": {
+                                                    "line": 85,
+                                                    "column": 35
+                                                  }
+                                                },
+                                                "pyExpr": "POOL_IDS"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 84,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 84,
+                                            "column": 47
+                                          }
+                                        },
+                                        "pyExpr": "inv_status[iid] == \"IN_PROGRESS\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 83,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 83,
+                                "column": 28
+                              }
+                            },
+                            "pyExpr": "iid in inv_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 82,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 82,
+                    "column": 22
+                  }
+                },
+                "pyExpr": "INV_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 98,
+          "column": 1
+        },
+        "end": {
+          "line": 110
+        }
+      },
+      "name": "InvocationFailsPoolDeleted",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 99,
+            "column": 5
+          },
+          "end": {
+            "line": 110
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 99,
+                "column": 5
+              },
+              "end": {
+                "line": 110
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 99,
+                  "column": 5
+                },
+                "end": {
+                  "line": 110
+                }
+              },
+              "loopVars": [
+                "iid"
+              ],
+              "pyExpr": "INV_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 100,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 110
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 100,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 110
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 100,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 110
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 100,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 110
+                            }
+                          },
+                          "condition": "iid in inv_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 101,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 110
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 101,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 110
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 101,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 110
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 101,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 110
+                                        }
+                                      },
+                                      "condition": "inv_status[iid] == \"IN_PROGRESS\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 102,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 110
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 102,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 110
+                                              }
+                                            },
+                                            "anyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 102,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 110
+                                                }
+                                              },
+                                              "loopVars": [
+                                                "pid"
+                                              ],
+                                              "pyExpr": "POOL_IDS",
+                                              "block": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 103,
+                                                    "column": 21
+                                                  },
+                                                  "end": {
+                                                    "line": 110
+                                                  }
+                                                },
+                                                "stmts": [
+                                                  {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 103,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 110
+                                                      }
+                                                    },
+                                                    "ifStmt": {
+                                                      "sourceInfo": {
+                                                        "start": {
+                                                          "line": 103,
+                                                          "column": 21
+                                                        },
+                                                        "end": {
+                                                          "line": 110
+                                                        }
+                                                      },
+                                                      "branches": [
+                                                        {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 103,
+                                                              "column": 24
+                                                            },
+                                                            "end": {
+                                                              "line": 110
+                                                            }
+                                                          },
+                                                          "condition": "pid in pool_status",
+                                                          "block": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 104,
+                                                                "column": 25
+                                                              },
+                                                              "end": {
+                                                                "line": 110
+                                                              }
+                                                            },
+                                                            "stmts": [
+                                                              {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 104,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 110
+                                                                  }
+                                                                },
+                                                                "ifStmt": {
+                                                                  "sourceInfo": {
+                                                                    "start": {
+                                                                      "line": 104,
+                                                                      "column": 25
+                                                                    },
+                                                                    "end": {
+                                                                      "line": 110
+                                                                    }
+                                                                  },
+                                                                  "branches": [
+                                                                    {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 104,
+                                                                          "column": 28
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 110
+                                                                        }
+                                                                      },
+                                                                      "condition": "pool_status[pid] == \"DELETED\"",
+                                                                      "block": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 105,
+                                                                            "column": 29
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 110
+                                                                          }
+                                                                        },
+                                                                        "stmts": [
+                                                                          {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 105,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 106,
+                                                                                "column": 28
+                                                                              }
+                                                                            },
+                                                                            "pyStmt": {
+                                                                              "sourceInfo": {
+                                                                                "start": {
+                                                                                  "line": 105,
+                                                                                  "column": 29
+                                                                                },
+                                                                                "end": {
+                                                                                  "line": 105,
+                                                                                  "column": 54
+                                                                                }
+                                                                              },
+                                                                              "code": "inv_status[iid] = \"FAILED\""
+                                                                            }
+                                                                          },
+                                                                          {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 106,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 110
+                                                                              }
+                                                                            },
+                                                                            "pyStmt": {
+                                                                              "sourceInfo": {
+                                                                                "start": {
+                                                                                  "line": 106,
+                                                                                  "column": 29
+                                                                                },
+                                                                                "end": {
+                                                                                  "line": 106,
+                                                                                  "column": 47
+                                                                                }
+                                                                              },
+                                                                              "code": "inv_pool[iid] = pid"
+                                                                            }
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      "conditionExpr": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 104,
+                                                                            "column": 28
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 104,
+                                                                            "column": 56
+                                                                          }
+                                                                        },
+                                                                        "pyExpr": "pool_status[pid] == \"DELETED\""
+                                                                      }
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              }
+                                                            ]
+                                                          },
+                                                          "conditionExpr": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 103,
+                                                                "column": 24
+                                                              },
+                                                              "end": {
+                                                                "line": 103,
+                                                                "column": 41
+                                                              }
+                                                            },
+                                                            "pyExpr": "pid in pool_status"
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "iterExpr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 102,
+                                                    "column": 28
+                                                  },
+                                                  "end": {
+                                                    "line": 102,
+                                                    "column": 35
+                                                  }
+                                                },
+                                                "pyExpr": "POOL_IDS"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 101,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 101,
+                                            "column": 47
+                                          }
+                                        },
+                                        "pyExpr": "inv_status[iid] == \"IN_PROGRESS\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 100,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 100,
+                                "column": 28
+                              }
+                            },
+                            "pyExpr": "iid in inv_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 99,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 99,
+                    "column": 22
+                  }
+                },
+                "pyExpr": "INV_IDS"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "stmts": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 11,
+          "column": 1
+        },
+        "end": {
+          "line": 12
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 11,
+            "column": 1
+          },
+          "end": {
+            "line": 11,
+            "column": 21
+          }
+        },
+        "code": "FUNC_IDS = [\"func-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 12,
+          "column": 1
+        },
+        "end": {
+          "line": 13
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 12,
+            "column": 1
+          },
+          "end": {
+            "line": 12,
+            "column": 21
+          }
+        },
+        "code": "POOL_IDS = [\"pool-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 13,
+          "column": 1
+        },
+        "end": {
+          "line": 16
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 13,
+            "column": 1
+          },
+          "end": {
+            "line": 13,
+            "column": 19
+          }
+        },
+        "code": "INV_IDS = [\"inv-1\"]"
+      }
+    }
+  ],
+  "frontMatter": {
+    "yaml": "deadlock_detection: false\noptions:\n  max_concurrent_actions: 1\n  max_actions: 35\n"
+  }
+}

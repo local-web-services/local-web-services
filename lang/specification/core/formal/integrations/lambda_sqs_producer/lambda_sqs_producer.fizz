@@ -1,0 +1,133 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Lambda -> SQS Producer Integration Formal Specification
+# Models a Lambda function sending a message to an SQS queue during invocation.
+# This is the producer direction, distinct from lambda_sqs which models the ESM
+# consumer direction where SQS triggers Lambda.
+
+FUNC_IDS = ["func-1"]
+QUEUE_IDS = ["queue-1"]
+INV_IDS = ["inv-1"]
+MSG_IDS = ["msg-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    queue_status = {}           # queue_status[qid] = "ACTIVE"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    msg_status = {}             # msg_status[mid] = "AVAILABLE" | "DELETED"
+    msg_queue = {}              # msg_queue[mid] = queue_id
+    msg_inv = {}                # msg_inv[mid] = inv_id
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: an SQS queue is created
+# result: the queue is ACTIVE
+# guard: the queue does not already exist
+# guard_violation: the queue already exists
+atomic action CreateQueue:
+    oneof qid in QUEUE_IDS:
+        if qid not in queue_status:
+            queue_status[qid] = "ACTIVE"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# step: the Lambda function sends a message to the SQS queue during invocation
+# result: the message is AVAILABLE in the queue
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action SendMessage:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof qid in QUEUE_IDS:
+                    if qid in queue_status:
+                        if queue_status[qid] == "ACTIVE":
+                            oneof mid in MSG_IDS:
+                                if mid not in msg_status or msg_status[mid] == "DELETED":
+                                    msg_status[mid] = "AVAILABLE"
+                                    msg_queue[mid] = qid
+                                    msg_inv[mid] = iid
+
+
+# fake_skip: internal
+# step: the Lambda invocation completes successfully
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "SUCCESS"
+
+
+# fake_skip: internal
+# step: the Lambda invocation fails
+# result: the invocation is FAILED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationFails:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "FAILED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every AVAILABLE message belongs to an ACTIVE queue
+always assertion MessageRequiresActiveQueue:
+    for mid in msg_status:
+        if msg_status[mid] == "AVAILABLE":
+            qid = msg_queue[mid]
+            if qid in queue_status:
+                if queue_status[qid] != "ACTIVE":
+                    return False
+    return True

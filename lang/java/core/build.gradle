@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'io.localwebservices'
+version = '0.1.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+    mainClass = 'io.localwebservices.lws.LwsServer'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def awsSdkVersion = '2.26.0'
+def cucumberVersion = '7.15.0'
+def jacksonVersion = '2.17.0'
+
+dependencies {
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+
+    testImplementation platform("software.amazon.awssdk:bom:${awsSdkVersion}")
+    testImplementation 'software.amazon.awssdk:dynamodb'
+    testImplementation 'software.amazon.awssdk:sqs'
+    testImplementation 'software.amazon.awssdk:s3'
+    testImplementation 'software.amazon.awssdk:sns'
+    testImplementation 'software.amazon.awssdk:eventbridge'
+    testImplementation 'software.amazon.awssdk:sfn'
+    testImplementation 'software.amazon.awssdk:ssm'
+    testImplementation 'software.amazon.awssdk:secretsmanager'
+    testImplementation 'software.amazon.awssdk:url-connection-client'
+
+    testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-picocontainer:${cucumberVersion}"
+    testImplementation 'org.junit.platform:junit-platform-suite:1.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
+}
+
+sourceSets {
+    test {
+        resources {
+            srcDir '../../specification/core'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty 'cucumber.junit-platform.naming-strategy', 'long'
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showStandardStreams = false
+    }
+}

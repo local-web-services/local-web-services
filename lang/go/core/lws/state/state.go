@@ -1,0 +1,272 @@
+// Package state holds the shared ServerState used by lws and all providers.
+package state
+
+import (
+	"strings"
+	"sync"
+)
+
+// ChaosRule holds chaos injection configuration for a service/operation.
+type ChaosRule struct {
+	ErrorRate       float64
+	LatencyMinMs    int
+	LatencyMaxMs    int
+	ErrorCode       string
+	ConnectionReset bool
+	Timeout         bool
+}
+
+// IamStatement is a single IAM policy statement.
+type IamStatement struct {
+	Effect   string      // "Allow" or "Deny"
+	Action   interface{} // string or []string
+	Resource interface{} // string or []string
+}
+
+// IamPolicy is a list of IAM statements.
+type IamPolicy struct {
+	Statement []IamStatement
+}
+
+// IamIdentity holds policies for an identity.
+type IamIdentity struct {
+	InlinePolicies     []IamPolicy
+	PermissionBoundary *IamPolicy
+}
+
+// IamConfig holds the current IAM configuration.
+type IamConfig struct {
+	Enforce          bool
+	DefaultIdentity  string
+	Identities       map[string]IamIdentity
+	ResourcePolicies map[string]IamPolicy
+}
+
+// LogEntry represents a single log record.
+type LogEntry struct {
+	Timestamp  string `json:"timestamp"`
+	Service    string `json:"service"`
+	Operation  string `json:"operation"`
+	Method     string `json:"method"`
+	Path       string `json:"path"`
+	Status     int    `json:"status"`
+	DurationMs int64  `json:"duration_ms"`
+	RequestID  string `json:"request_id"`
+}
+
+// FakeResponse holds a configured fake HTTP response.
+type FakeResponse struct {
+	Status      int
+	ContentType string
+	Body        string
+	DelayMs     int
+}
+
+// FakeRule maps an operation to a fake response.
+type FakeRule struct {
+	Operation string
+	Response  FakeResponse
+}
+
+// ServerState holds all mutable server state.
+type ServerState struct {
+	mu sync.RWMutex
+
+	// chaosRules: service -> operation -> ChaosRule
+	chaosRules map[string]map[string]*ChaosRule
+
+	// iamConfig
+	iamConfig IamConfig
+
+	// logBuffer (circular, max 500)
+	logBuffer []LogEntry
+
+	// fakeRules: service -> []FakeRule
+	fakeRules map[string][]FakeRule
+
+	// resetCallbacks called on POST /_ldk/reset
+	resetCallbacks []func()
+}
+
+func NewServerState() *ServerState {
+	return &ServerState{
+		chaosRules: make(map[string]map[string]*ChaosRule),
+		fakeRules:  make(map[string][]FakeRule),
+		iamConfig: IamConfig{
+			Identities:       make(map[string]IamIdentity),
+			ResourcePolicies: make(map[string]IamPolicy),
+		},
+	}
+}
+
+func (s *ServerState) AddResetCallback(cb func()) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.resetCallbacks = append(s.resetCallbacks, cb)
+}
+
+func (s *ServerState) Reset() {
+	s.mu.Lock()
+	s.chaosRules = make(map[string]map[string]*ChaosRule)
+	s.fakeRules = make(map[string][]FakeRule)
+	s.iamConfig = IamConfig{
+		Identities:       make(map[string]IamIdentity),
+		ResourcePolicies: make(map[string]IamPolicy),
+	}
+	s.logBuffer = nil
+	callbacks := s.resetCallbacks
+	s.mu.Unlock()
+
+	for _, cb := range callbacks {
+		cb()
+	}
+}
+
+func (s *ServerState) GetChaosRule(service, operation string) *ChaosRule {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	svcRules, ok := s.chaosRules[service]
+	if !ok {
+		return nil
+	}
+	if r, ok := svcRules[operation]; ok {
+		return r
+	}
+	return svcRules["*"]
+}
+
+func (s *ServerState) HasChaosRules(service string) bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	_, ok := s.chaosRules[service]
+	return ok
+}
+
+func (s *ServerState) SetChaosRule(service, operation string, rule *ChaosRule) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, ok := s.chaosRules[service]; !ok {
+		s.chaosRules[service] = make(map[string]*ChaosRule)
+	}
+	if rule == nil {
+		delete(s.chaosRules[service], operation)
+	} else {
+		s.chaosRules[service][operation] = rule
+	}
+}
+
+func (s *ServerState) EnableChaos(service string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, ok := s.chaosRules[service]; !ok {
+		s.chaosRules[service] = make(map[string]*ChaosRule)
+	}
+}
+
+func (s *ServerState) DisableChaos(service string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.chaosRules, service)
+}
+
+func (s *ServerState) GetAllChaosStatus() map[string]map[string]interface{} {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	services := []string{"dynamodb", "sqs", "s3", "sns", "stepfunctions", "events", "ssm", "secretsmanager", "cognito-idp"}
+	result := make(map[string]map[string]interface{})
+	for _, svc := range services {
+		rules, ok := s.chaosRules[svc]
+		enabled := ok
+		var errRate float64
+		var latMin, latMax int
+		if ok {
+			if r, found := rules["*"]; found {
+				errRate = r.ErrorRate
+				latMin = r.LatencyMinMs
+				latMax = r.LatencyMaxMs
+			}
+		}
+		result[svc] = map[string]interface{}{
+			"enabled":        enabled,
+			"error_rate":     errRate,
+			"latency_min_ms": latMin,
+			"latency_max_ms": latMax,
+		}
+	}
+	return result
+}
+
+func (s *ServerState) GetIamConfig() IamConfig {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.iamConfig
+}
+
+func (s *ServerState) SetIamConfig(cfg IamConfig) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.iamConfig = cfg
+}
+
+func (s *ServerState) AppendLog(entry LogEntry) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.logBuffer = append(s.logBuffer, entry)
+	if len(s.logBuffer) > 500 {
+		s.logBuffer = s.logBuffer[len(s.logBuffer)-500:]
+	}
+}
+
+func (s *ServerState) GetLogs() []LogEntry {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	result := make([]LogEntry, len(s.logBuffer))
+	copy(result, s.logBuffer)
+	return result
+}
+
+// GetFakeRule returns the first fake rule matching service+operation, or nil.
+// Matches both CamelCase (e.g. "StartExecution") and kebab-case (e.g. "start-execution").
+func (s *ServerState) GetFakeRule(service, operation string) *FakeResponse {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	rules, ok := s.fakeRules[service]
+	if !ok {
+		return nil
+	}
+	opKebab := toKebab(operation)
+	for i := range rules {
+		ruleOp := rules[i].Operation
+		if strings.EqualFold(ruleOp, operation) || strings.EqualFold(ruleOp, opKebab) {
+			resp := rules[i].Response
+			return &resp
+		}
+	}
+	return nil
+}
+
+// SetFakeRules replaces all fake rules for a service.
+func (s *ServerState) SetFakeRules(service string, rules []FakeRule) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.fakeRules[service] = rules
+}
+
+// ClearFakeRules removes all fake rules for a service.
+func (s *ServerState) ClearFakeRules(service string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.fakeRules, service)
+}
+
+// toKebab converts CamelCase to kebab-case for operation matching.
+func toKebab(s string) string {
+	var result []byte
+	for i, c := range s {
+		if c >= 'A' && c <= 'Z' && i > 0 {
+			result = append(result, '-')
+		}
+		result = append(result, byte(strings.ToLower(string(c))[0]))
+	}
+	return string(result)
+}

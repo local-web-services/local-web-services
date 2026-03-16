@@ -1,0 +1,217 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 10
+---
+# SQS Formal Specification
+# Models queues, messages, visibility timeouts, DLQ redrive, and FIFO ordering.
+
+QUEUE_NAMES = ["q1", "q2", "dlq1"]
+MSG_IDS = ["msg-1", "msg-2", "msg-3", "msg-4", "msg-5", "msg-6"]
+
+action Init:
+    queue_status = {}
+    queue_is_fifo = {}
+    queue_dlq = {}
+    queue_max_receive = {}
+
+    msg_status = {}
+    msg_queue = {}
+    msg_receive_count = {}
+
+# step: a queue is created
+# result: the queue is ACTIVE
+# guard: the queue does not already exist
+# guard_violation: the queue already exists
+atomic action CreateQueue:
+    oneof qname in QUEUE_NAMES:
+        if qname not in queue_status:
+            oneof:
+                atomic:
+                    queue_status[qname] = "ACTIVE"
+                    queue_is_fifo[qname] = False
+                    queue_dlq[qname] = ""
+                    queue_max_receive[qname] = 0
+                atomic:
+                    queue_status[qname] = "ACTIVE"
+                    queue_is_fifo[qname] = False
+                    queue_dlq[qname] = "dlq1"
+                    queue_max_receive[qname] = 3
+                atomic:
+                    queue_status[qname] = "ACTIVE"
+                    queue_is_fifo[qname] = True
+                    queue_dlq[qname] = ""
+                    queue_max_receive[qname] = 0
+
+# step: a queue is deleted
+# result: the queue is DELETED and its messages are removed
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+atomic action DeleteQueue:
+    oneof qname in QUEUE_NAMES:
+        if qname in queue_status:
+            if queue_status[qname] == "ACTIVE":
+                queue_status[qname] = "DELETED"
+                for mid in MSG_IDS:
+                    if mid in msg_queue:
+                        if msg_queue[mid] == qname:
+                            msg_status[mid] = "DELETED"
+
+# step: a message is sent to the queue
+# result: the message is AVAILABLE for delivery
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+# guard: the message slot is available
+# guard_violation_capacity: the message slot is not available
+atomic action SendMessage:
+    oneof qname in QUEUE_NAMES:
+        if qname in queue_status:
+            if queue_status[qname] == "ACTIVE":
+                oneof mid in MSG_IDS:
+                    if mid not in msg_status:
+                        msg_queue[mid] = qname
+                        msg_receive_count[mid] = 0
+                        msg_status[mid] = "AVAILABLE"
+
+# step: a message is received from the queue
+# result: the message is IN_FLIGHT
+# guard: the message exists
+# guard_violation: the message does not exist
+# guard: the message is AVAILABLE
+# guard_violation: the message is not AVAILABLE
+# guard: the message's queue exists
+# guard_violation: the message's queue does not exist
+# guard: the message's queue is ACTIVE
+# guard_violation_lifecycle: the message's queue is not ACTIVE
+atomic action ReceiveMessage:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "AVAILABLE":
+                if msg_queue[mid] in queue_status:
+                    if queue_status[msg_queue[mid]] == "ACTIVE":
+                        msg_status[mid] = "IN_FLIGHT"
+                        msg_receive_count[mid] = msg_receive_count[mid] + 1
+
+# step: an in-flight message is deleted
+# result: the message is removed from the queue
+# guard: the message exists
+# guard_violation: the message does not exist
+# guard: the message is IN_FLIGHT
+# guard_violation: the message is not IN_FLIGHT
+atomic action DeleteMessage:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "IN_FLIGHT":
+                msg_status[mid] = "DELETED"
+
+# step: message visibility timeout is changed
+# result: the message visibility is updated
+# guard: the message exists
+# guard_violation: the message does not exist
+# guard: the message is IN_FLIGHT
+# guard_violation: the message is not IN_FLIGHT
+atomic action ChangeMessageVisibility:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "IN_FLIGHT":
+                pass
+
+# step: all messages in a queue are purged
+# result: all messages in the queue are DELETED
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+atomic action PurgeQueue:
+    oneof qname in QUEUE_NAMES:
+        if qname in queue_status:
+            if queue_status[qname] == "ACTIVE":
+                for mid in MSG_IDS:
+                    if mid in msg_queue:
+                        if msg_queue[mid] == qname:
+                            msg_status[mid] = "DELETED"
+
+# step: queue attributes are retrieved
+# result: the queue attributes are returned
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+atomic action GetQueueAttributes:
+    oneof qname in QUEUE_NAMES:
+        if qname in queue_status:
+            if queue_status[qname] == "ACTIVE":
+                pass
+
+# fake_skip: internal
+# step: a message visibility timeout expires
+# result: the message becomes AVAILABLE again
+# guard: the message exists
+# guard_violation: the message does not exist
+# guard: the message is IN_FLIGHT
+# guard_violation: the message is not IN_FLIGHT
+atomic action VisibilityTimeoutExpires:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "IN_FLIGHT":
+                msg_status[mid] = "AVAILABLE"
+
+# fake_skip: internal
+# step: a message exceeding its receive count is moved to the dead-letter queue
+# result: the message is AVAILABLE in the dead-letter queue
+# guard: the message exists
+# guard_violation: the message does not exist
+# guard: the message is AVAILABLE
+# guard_violation: the message is not AVAILABLE
+# guard: the message's queue exists
+# guard_violation: the message's queue does not exist
+# guard: the queue has a maximum receive count configured
+# guard_violation: the queue does not have a maximum receive count configured
+# guard: the message has exceeded the maximum receive count
+# guard_violation: the message has not exceeded the maximum receive count
+# guard: the dead-letter queue exists
+# guard_violation: the dead-letter queue does not exist
+# guard: the dead-letter queue is ACTIVE
+# guard_violation: the dead-letter queue is not ACTIVE
+atomic action RedriveToDeadLetterQueue:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "AVAILABLE":
+                if msg_queue[mid] in queue_status:
+                    if queue_max_receive[msg_queue[mid]] > 0:
+                        if msg_receive_count[mid] >= queue_max_receive[msg_queue[mid]]:
+                            if queue_dlq[msg_queue[mid]] in queue_status:
+                                if queue_status[queue_dlq[msg_queue[mid]]] == "ACTIVE":
+                                    msg_queue[mid] = queue_dlq[msg_queue[mid]]
+                                    msg_status[mid] = "AVAILABLE"
+
+# check: every non-deleted message belongs to an ACTIVE queue
+always assertion MessagesReferValidQueues:
+    for mid in msg_status:
+        if msg_status[mid] != "DELETED":
+            if msg_queue[mid] in queue_status:
+                if queue_status[msg_queue[mid]] == "DELETED":
+                    return False
+    return True
+
+# check: every in-flight message belongs to an ACTIVE queue
+always assertion InFlightMessagesBelongToActiveQueues:
+    for mid in msg_status:
+        if msg_status[mid] == "IN_FLIGHT":
+            if msg_queue[mid] in queue_status:
+                if queue_status[msg_queue[mid]] != "ACTIVE":
+                    return False
+    return True
+
+# check: every message has a non-negative receive count
+always assertion ReceiveCountNonNegative:
+    for mid in msg_receive_count:
+        if msg_receive_count[mid] < 0:
+            return False
+    return True
+

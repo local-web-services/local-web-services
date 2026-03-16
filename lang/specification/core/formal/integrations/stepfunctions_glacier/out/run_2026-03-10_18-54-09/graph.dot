@@ -1,0 +1,265 @@
+digraph G {
+  "0x140001801e0" [label="yield
+Actions: 0, Forks: 0
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{}\",\"vault_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140001801e0" -> "0x14000180b40" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x14000180b40" [label="CreateStateMachine
+Actions: 1, Forks: 1
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000180b40" -> "0x140001812c0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140001812c0" [label="yield
+Actions: 1, Forks: 2
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140001812c0" -> "0x140001819e0" [label="CreateVault", color="black" penwidth="1" ];
+  "0x140001819e0" [label="CreateVault
+Actions: 2, Forks: 3
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001819e0" -> "0x140003487e0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140003487e0" [label="yield
+Actions: 2, Forks: 4
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003487e0" -> "0x14000348f60" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x14000348f60" [label="DeleteVault
+Actions: 3, Forks: 5
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000348f60" -> "0x14000410600" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x14000410600" [label="yield
+Actions: 3, Forks: 6
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000410600" -> "0x14000410f00" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000410f00" [label="StartExecution
+Actions: 4, Forks: 7
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000410f00" -> "0x140000d9260" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140000d9260" [label="Any:smid=\"sm-1\"
+Actions: 4, Forks: 8
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000d9260" -> "0x140000d9800" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140000d9800" [label="yield
+Actions: 4, Forks: 9
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140000d9800" -> "0x1400024c840" [label="GlacierTaskFails", color="black" penwidth="1" ];
+  "0x1400024c840" [label="GlacierTaskFails
+Actions: 5, Forks: 10
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400024c840" -> "0x1400030e420" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400030e420" [label="Any:eid=\"exec-1\"
+Actions: 5, Forks: 11
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400030e420" -> "0x1400030ef60" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x1400030ef60" [label="yield
+Actions: 5, Forks: 12
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400030ef60" -> "0x14000348000" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000348000" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000348000" -> "0x14000410a20" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000410a20" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000410a20" -> "0x14000411800" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000411800" [label="yield
+Actions: 6, Forks: 15
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000411800" -> "0x14000450d80" [label="GlacierTaskFails", color="black" penwidth="1" ];
+  "0x14000450d80" [label="GlacierTaskFails
+Actions: 7, Forks: 16
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000450d80" -> "0x140004899e0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140004899e0" [label="Any:eid=\"exec-1\"
+Actions: 7, Forks: 17
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004899e0" -> "0x1400030ef60" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140003487e0" -> "0x14000349020" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000349020" [label="StartExecution
+Actions: 3, Forks: 5
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000349020" -> "0x14000411380" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000411380" [label="Any:smid=\"sm-1\"
+Actions: 3, Forks: 6
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000411380" -> "0x14000411920" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000411920" [label="yield
+Actions: 3, Forks: 7
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000411920" -> "0x140004506c0" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x140004506c0" [label="DeleteVault
+Actions: 4, Forks: 8
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004506c0" -> "0x140000d9800" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x14000411920" -> "0x14000450840" [label="GlacierTaskSucceeds", color="black" penwidth="1" ];
+  "0x14000450840" [label="GlacierTaskSucceeds
+Actions: 4, Forks: 8
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000450840" -> "0x1400060f020" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400060f020" [label="Any:eid=\"exec-1\"
+Actions: 4, Forks: 9
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400060f020" -> "0x1400060f5c0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x1400060f5c0" [label="yield
+Actions: 4, Forks: 10
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400060f5c0" -> "0x1400006c480" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x1400006c480" [label="DeleteVault
+Actions: 5, Forks: 11
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006c480" -> "0x140003493e0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140003493e0" [label="yield
+Actions: 5, Forks: 12
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003493e0" -> "0x1400038e4e0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400038e4e0" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038e4e0" -> "0x14000394a20" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000394a20" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000394a20" -> "0x14000411800" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400060f5c0" -> "0x1400006c540" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400006c540" [label="StartExecution
+Actions: 5, Forks: 11
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006c540" -> "0x1400038e960" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400038e960" [label="Any:smid=\"sm-1\"
+Actions: 5, Forks: 12
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038e960" -> "0x1400038f500" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400038f500" [label="yield
+Actions: 5, Forks: 13
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400038f500" -> "0x140003d4540" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x140003d4540" [label="DeleteVault
+Actions: 6, Forks: 14
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d4540" -> "0x14000411800" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x1400038f500" -> "0x140003d46c0" [label="GlacierTaskSucceeds", color="black" penwidth="1" ];
+  "0x140003d46c0" [label="GlacierTaskSucceeds
+Actions: 6, Forks: 14
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d46c0" -> "0x1400046d380" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400046d380" [label="Any:eid=\"exec-1\"
+Actions: 6, Forks: 15
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{\"exec-1\": \"vault-1\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400046d380" -> "0x1400060f5c0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140001812c0" -> "0x14000181b60" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000181b60" [label="StartExecution
+Actions: 2, Forks: 3
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000181b60" -> "0x140003498c0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003498c0" [label="Any:smid=\"sm-1\"
+Actions: 2, Forks: 4
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003498c0" -> "0x14000349e60" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000349e60" [label="yield
+Actions: 2, Forks: 5
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000349e60" -> "0x1400038ec00" [label="CreateVault", color="black" penwidth="1" ];
+  "0x1400038ec00" [label="CreateVault
+Actions: 3, Forks: 6
+State: {\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"exec_vault\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400038ec00" -> "0x14000411920" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140001801e0" -> "0x14000180c00" [label="CreateVault", color="black" penwidth="1" ];
+  "0x14000180c00" [label="CreateVault
+Actions: 1, Forks: 1
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000180c00" -> "0x1400030e120" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x1400030e120" [label="yield
+Actions: 1, Forks: 2
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400030e120" -> "0x1400030e780" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x1400030e780" [label="CreateStateMachine
+Actions: 2, Forks: 3
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400030e780" -> "0x140003487e0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400030e120" -> "0x1400030e900" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x1400030e900" [label="DeleteVault
+Actions: 2, Forks: 3
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400030e900" -> "0x140003d4360" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140003d4360" [label="yield
+Actions: 2, Forks: 4
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003d4360" -> "0x140003d4a20" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x140003d4a20" [label="CreateStateMachine
+Actions: 3, Forks: 5
+State: {\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"exec_vault\":\"{}\",\"sm_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003d4a20" -> "0x14000410600" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+}

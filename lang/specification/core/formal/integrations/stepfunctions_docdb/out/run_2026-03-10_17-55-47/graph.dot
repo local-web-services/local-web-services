@@ -1,0 +1,331 @@
+digraph G {
+  "0x14000271860" [label="yield
+Actions: 0, Forks: 0
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000271860" -> "0x14000322240" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x14000322240" [label="CreateStateMachine
+Actions: 1, Forks: 1
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000322240" -> "0x14000322a80" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000322a80" [label="yield
+Actions: 1, Forks: 2
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000322a80" -> "0x140003231a0" [label="CreateCluster", color="black" penwidth="1" ];
+  "0x140003231a0" [label="CreateCluster
+Actions: 2, Forks: 3
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003231a0" -> "0x14000390660" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000390660" [label="yield
+Actions: 2, Forks: 4
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000390660" -> "0x14000390de0" [label="StopCluster", color="black" penwidth="1" ];
+  "0x14000390de0" [label="StopCluster
+Actions: 3, Forks: 5
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000390de0" -> "0x1400044af60" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x1400044af60" [label="yield
+Actions: 3, Forks: 6
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400044af60" -> "0x1400044b860" [label="StartCluster", color="black" penwidth="1" ];
+  "0x1400044b860" [label="StartCluster
+Actions: 4, Forks: 7
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044b860" -> "0x14000390660" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x1400044af60" -> "0x1400044b920" [label="StartExecution", color="black" penwidth="1" ];
+  "0x1400044b920" [label="StartExecution
+Actions: 4, Forks: 7
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044b920" -> "0x14000189bc0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000189bc0" [label="Any:smid=\"sm-1\"
+Actions: 4, Forks: 8
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000189bc0" -> "0x1400050c300" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400050c300" [label="yield
+Actions: 4, Forks: 9
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400050c300" -> "0x1400050d2c0" [label="StartCluster", color="black" penwidth="1" ];
+  "0x1400050d2c0" [label="StartCluster
+Actions: 5, Forks: 10
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400050d2c0" -> "0x14000490840" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000490840" [label="yield
+Actions: 3, Forks: 7
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000490840" -> "0x14000491560" [label="StopCluster", color="black" penwidth="1" ];
+  "0x14000491560" [label="StopCluster
+Actions: 4, Forks: 8
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000491560" -> "0x1400050c300" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000490840" -> "0x140004917a0" [label="QueryDocumentTaskSucceeds", color="black" penwidth="1" ];
+  "0x140004917a0" [label="QueryDocumentTaskSucceeds
+Actions: 4, Forks: 8
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004917a0" -> "0x14000639e00" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000639e00" [label="Any:eid=\"exec-1\"
+Actions: 4, Forks: 9
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000639e00" -> "0x140000a8480" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x140000a8480" [label="yield
+Actions: 4, Forks: 10
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140000a8480" -> "0x140000a9140" [label="StopCluster", color="black" penwidth="1" ];
+  "0x140000a9140" [label="StopCluster
+Actions: 5, Forks: 11
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000a9140" -> "0x14000390960" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000390960" [label="yield
+Actions: 5, Forks: 12
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000390960" -> "0x140003c80c0" [label="StartCluster", color="black" penwidth="1" ];
+  "0x140003c80c0" [label="StartCluster
+Actions: 6, Forks: 13
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003c80c0" -> "0x140000a8480" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000390960" -> "0x140003c8180" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140003c8180" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003c8180" -> "0x1400006d200" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400006d200" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d200" -> "0x140004ccf00" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140004ccf00" [label="yield
+Actions: 6, Forks: 15
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004ccf00" -> "0x1400044a600" [label="StartCluster", color="black" penwidth="1" ];
+  "0x1400044a600" [label="StartCluster
+Actions: 7, Forks: 16
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044a600" -> "0x140003c9680" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x140003c9680" [label="yield
+Actions: 5, Forks: 13
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003c9680" -> "0x140004906c0" [label="StopCluster", color="black" penwidth="1" ];
+  "0x140004906c0" [label="StopCluster
+Actions: 6, Forks: 14
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004906c0" -> "0x140004ccf00" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x140003c9680" -> "0x14000490960" [label="QueryDocumentTaskSucceeds", color="black" penwidth="1" ];
+  "0x14000490960" [label="QueryDocumentTaskSucceeds
+Actions: 6, Forks: 14
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000490960" -> "0x1400050d800" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400050d800" [label="Any:eid=\"exec-1\"
+Actions: 6, Forks: 15
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400050d800" -> "0x140000a8480" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x140004ccf00" -> "0x1400044a840" [label="QueryDocumentTaskFails", color="black" penwidth="1" ];
+  "0x1400044a840" [label="QueryDocumentTaskFails
+Actions: 7, Forks: 16
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044a840" -> "0x14000490e40" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000490e40" [label="Any:eid=\"exec-1\"
+Actions: 7, Forks: 17
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000490e40" -> "0x14000360840" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000360840" [label="yield
+Actions: 5, Forks: 12
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000360840" -> "0x14000361860" [label="StartCluster", color="black" penwidth="1" ];
+  "0x14000361860" [label="StartCluster
+Actions: 6, Forks: 13
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000361860" -> "0x1400040ed20" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x1400040ed20" [label="yield
+Actions: 6, Forks: 14
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400040ed20" -> "0x140004cc0c0" [label="StopCluster", color="black" penwidth="1" ];
+  "0x140004cc0c0" [label="StopCluster
+Actions: 7, Forks: 15
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004cc0c0" -> "0x14000360840" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x1400040ed20" -> "0x140004cc300" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140004cc300" [label="StartExecution
+Actions: 7, Forks: 15
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004cc300" -> "0x140000a8de0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140000a8de0" [label="Any:smid=\"sm-1\"
+Actions: 7, Forks: 16
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000a8de0" -> "0x140003c9680" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000360840" -> "0x14000361920" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000361920" [label="StartExecution
+Actions: 6, Forks: 13
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000361920" -> "0x140004cc840" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140004cc840" [label="Any:smid=\"sm-1\"
+Actions: 6, Forks: 14
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"FAILED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004cc840" -> "0x140004ccf00" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140000a8480" -> "0x140000a92c0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140000a92c0" [label="StartExecution
+Actions: 5, Forks: 11
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000a92c0" -> "0x140003c8ae0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140003c8ae0" [label="Any:smid=\"sm-1\"
+Actions: 5, Forks: 12
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{\"exec-1\": \"cluster-1\"}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"SUCCEEDED\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003c8ae0" -> "0x140003c9680" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x1400050c300" -> "0x1400050d500" [label="QueryDocumentTaskFails", color="black" penwidth="1" ];
+  "0x1400050d500" [label="QueryDocumentTaskFails
+Actions: 5, Forks: 10
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400050d500" -> "0x14000323bc0" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000323bc0" [label="Any:eid=\"exec-1\"
+Actions: 5, Forks: 11
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000323bc0" -> "0x14000360840" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000390660" -> "0x14000390f60" [label="StartExecution", color="black" penwidth="1" ];
+  "0x14000390f60" [label="StartExecution
+Actions: 3, Forks: 5
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000390f60" -> "0x140004902a0" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x140004902a0" [label="Any:smid=\"sm-1\"
+Actions: 3, Forks: 6
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004902a0" -> "0x14000490840" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x14000322a80" -> "0x140003233e0" [label="StartExecution", color="black" penwidth="1" ];
+  "0x140003233e0" [label="StartExecution
+Actions: 2, Forks: 3
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003233e0" -> "0x14000391c20" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000391c20" [label="Any:smid=\"sm-1\"
+Actions: 2, Forks: 4
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000391c20" -> "0x140003c8240" [label="Any:eid=\"exec-1\"", color="black" penwidth="1" ];
+  "0x140003c8240" [label="yield
+Actions: 2, Forks: 5
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003c8240" -> "0x140003c8f60" [label="CreateCluster", color="black" penwidth="1" ];
+  "0x140003c8f60" [label="CreateCluster
+Actions: 3, Forks: 6
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{\"exec-1\": \"sm-1\"}\",\"exec_status\":\"{\"exec-1\": \"RUNNING\"}\",\"sm_status\":\"{\"sm-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003c8f60" -> "0x14000490840" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000271860" -> "0x14000322300" [label="CreateCluster", color="black" penwidth="1" ];
+  "0x14000322300" [label="CreateCluster
+Actions: 1, Forks: 1
+State: {\"cluster_status\":\"{}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000322300" -> "0x14000323920" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x14000323920" [label="yield
+Actions: 1, Forks: 2
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000323920" -> "0x14000360000" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x14000360000" [label="CreateStateMachine
+Actions: 2, Forks: 3
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000360000" -> "0x14000390660" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x14000323920" -> "0x14000360180" [label="StopCluster", color="black" penwidth="1" ];
+  "0x14000360180" [label="StopCluster
+Actions: 2, Forks: 3
+State: {\"cluster_status\":\"{\"cluster-1\": \"AVAILABLE\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000360180" -> "0x1400040e780" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+  "0x1400040e780" [label="yield
+Actions: 2, Forks: 4
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400040e780" -> "0x1400040ee40" [label="CreateStateMachine", color="black" penwidth="1" ];
+  "0x1400040ee40" [label="CreateStateMachine
+Actions: 3, Forks: 5
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400040ee40" -> "0x1400044af60" [label="Any:smid=\"sm-1\"", color="black" penwidth="1" ];
+  "0x1400040e780" -> "0x1400040f080" [label="StartCluster", color="black" penwidth="1" ];
+  "0x1400040f080" [label="StartCluster
+Actions: 3, Forks: 5
+State: {\"cluster_status\":\"{\"cluster-1\": \"STOPPED\"}\",\"exec_cluster\":\"{}\",\"exec_sm\":\"{}\",\"exec_status\":\"{}\",\"sm_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400040f080" -> "0x14000323920" [label="Any:cid=\"cluster-1\"", color="black" penwidth="1" ];
+}

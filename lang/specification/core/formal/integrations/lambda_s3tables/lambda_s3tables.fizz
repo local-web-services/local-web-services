@@ -1,0 +1,156 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Lambda -> S3 Tables Integration Formal Specification
+# Models a Lambda function reading and writing records to an S3 Tables table.
+# If the table is being deleted, write operations fail with a ResourceNotFoundException.
+
+FUNC_IDS = ["func-1"]
+BUCKET_IDS = ["bucket-1"]
+TABLE_IDS = ["table-1"]
+INV_IDS = ["inv-1"]
+RECORD_IDS = ["record-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    bucket_status = {}          # bucket_status[bid] = "ACTIVE"
+    table_status = {}           # table_status[tid] = "ACTIVE" | "DELETING"
+    table_bucket = {}           # table_bucket[tid] = bucket_id
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    record_status = {}          # record_status[rid] = "EXISTS" | "DELETED"
+    record_table = {}           # record_table[rid] = table_id
+    record_inv = {}             # record_inv[rid] = inv_id
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: an S3 table bucket is created
+# result: the bucket is ACTIVE
+# guard: the bucket does not already exist
+# guard_violation: the bucket already exists
+atomic action CreateTableBucket:
+    oneof bid in BUCKET_IDS:
+        if bid not in bucket_status:
+            bucket_status[bid] = "ACTIVE"
+
+
+# step: a table is created in the table bucket
+# result: the table is ACTIVE
+# guard: the table does not already exist
+# guard_violation: the table already exists
+# guard: the table bucket is ACTIVE
+# guard_violation_lifecycle: the table bucket is not ACTIVE
+atomic action CreateTable:
+    oneof bid in BUCKET_IDS:
+        if bid in bucket_status:
+            if bucket_status[bid] == "ACTIVE":
+                oneof tid in TABLE_IDS:
+                    if tid not in table_status:
+                        table_status[tid] = "ACTIVE"
+                        table_bucket[tid] = bid
+
+
+# step: a table deletion is initiated
+# result: the table is DELETING and write operations will fail
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is already DELETING
+atomic action DeleteTable:
+    oneof tid in TABLE_IDS:
+        if tid in table_status:
+            if table_status[tid] == "ACTIVE":
+                table_status[tid] = "DELETING"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# fake_skip: internal
+# step: the Lambda function writes a record to an ACTIVE table and succeeds
+# result: the record EXISTS and the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: a table is ACTIVE
+# guard_violation_lifecycle: no table is ACTIVE
+# guard: a record slot is available
+# guard_violation_capacity: no record slot is available
+atomic action WriteRecord:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof tid in TABLE_IDS:
+                    if tid in table_status:
+                        if table_status[tid] == "ACTIVE":
+                            oneof rid in RECORD_IDS:
+                                if rid not in record_status or record_status[rid] == "DELETED":
+                                    record_status[rid] = "EXISTS"
+                                    record_table[rid] = tid
+                                    record_inv[rid] = iid
+                                    inv_status[iid] = "SUCCESS"
+
+
+# step: the Lambda function fails to write because the table is being deleted
+# result: the invocation is FAILED with a ResourceNotFoundException
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the table is DELETING
+# guard_violation_lifecycle: the table is not DELETING
+atomic action InvocationFailsTableDeleting:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof tid in TABLE_IDS:
+                    if tid in table_status:
+                        if table_status[tid] == "DELETING":
+                            inv_status[iid] = "FAILED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every existing record references a table that exists
+# (records are stored in the table bucket and persist structurally)
+always assertion RecordReferencesExistingTable:
+    for rid in record_status:
+        if record_status[rid] == "EXISTS":
+            tid = record_table[rid]
+            if tid not in table_status:
+                return False
+    return True

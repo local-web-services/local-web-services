@@ -1,0 +1,140 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Lambda -> Neptune Integration Formal Specification
+# Models a Lambda function executing graph queries against a Neptune cluster.
+# Neptune clusters can be stopped (e.g., for cost savings); Lambda invocations
+# that attempt queries against a STOPPED cluster fail with a connection error.
+
+FUNC_IDS = ["func-1"]
+CLUSTER_IDS = ["cluster-1"]
+INV_IDS = ["inv-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    cluster_status = {}         # cluster_status[cid] = "AVAILABLE" | "STOPPED"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    inv_cluster = {}            # inv_cluster[iid] = cluster_id (cluster queried)
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a Neptune cluster is created
+# result: the cluster is AVAILABLE
+# guard: the cluster does not already exist
+# guard_violation: the cluster already exists
+atomic action CreateCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid not in cluster_status:
+            cluster_status[cid] = "AVAILABLE"
+
+
+# step: the Neptune cluster is stopped
+# result: the cluster is STOPPED and graph queries will be rejected
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+atomic action StopCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                cluster_status[cid] = "STOPPED"
+
+
+# step: the Neptune cluster is started
+# result: the cluster is AVAILABLE and ready to accept graph queries
+# guard: the cluster is STOPPED
+# guard_violation_lifecycle: the cluster is not STOPPED
+atomic action StartCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "STOPPED":
+                cluster_status[cid] = "AVAILABLE"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# fake_skip: internal
+# step: the Lambda function executes a graph query against the AVAILABLE cluster and succeeds
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the Neptune cluster is AVAILABLE
+# guard_violation_lifecycle: the Neptune cluster is not AVAILABLE
+atomic action InvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof cid in CLUSTER_IDS:
+                    if cid in cluster_status:
+                        if cluster_status[cid] == "AVAILABLE":
+                            inv_status[iid] = "SUCCESS"
+                            inv_cluster[iid] = cid
+
+
+# step: the Lambda function fails to connect because the Neptune cluster is stopped
+# result: the invocation is FAILED with a connection error
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the Neptune cluster is STOPPED
+# guard_violation_lifecycle: the Neptune cluster is not STOPPED
+atomic action InvocationFailsClusterStopped:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof cid in CLUSTER_IDS:
+                    if cid in cluster_status:
+                        if cluster_status[cid] == "STOPPED":
+                            inv_status[iid] = "FAILED"
+                            inv_cluster[iid] = cid
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every successful invocation recorded which cluster it queried
+# (verifies Lambda cannot succeed without connecting to a cluster; cluster may be stopped afterwards)
+always assertion SuccessfulInvocationQueriedACluster:
+    for iid in inv_status:
+        if inv_status[iid] == "SUCCESS":
+            if iid not in inv_cluster:
+                return False
+    return True

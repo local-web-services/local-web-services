@@ -1,0 +1,270 @@
+digraph G {
+  "0x140002a80c0" [label="yield
+Actions: 0, Forks: 0
+State: {\"api_bucket\":\"{}\",\"api_status\":\"{}\",\"bucket_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002a80c0" -> "0x140002a8ba0" [label="CreateRestAPI", color="black" penwidth="1" ];
+  "0x140002a8ba0" [label="CreateRestAPI
+Actions: 1, Forks: 1
+State: {\"api_bucket\":\"{}\",\"api_status\":\"{}\",\"bucket_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a8ba0" -> "0x140002a93e0" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x140002a93e0" [label="yield
+Actions: 1, Forks: 2
+State: {\"api_bucket\":\"{\"api-1\": \"\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002a93e0" -> "0x140002a9b60" [label="CreateBucket", color="black" penwidth="1" ];
+  "0x140002a9b60" [label="CreateBucket
+Actions: 2, Forks: 3
+State: {\"api_bucket\":\"{\"api-1\": \"\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a9b60" -> "0x1400036f020" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x1400036f020" [label="yield
+Actions: 2, Forks: 4
+State: {\"api_bucket\":\"{\"api-1\": \"\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400036f020" -> "0x1400036f7a0" [label="DeleteBucket", color="black" penwidth="1" ];
+  "0x1400036f7a0" [label="DeleteBucket
+Actions: 3, Forks: 5
+State: {\"api_bucket\":\"{\"api-1\": \"\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400036f7a0" -> "0x14000458d80" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x14000458d80" [label="yield
+Actions: 3, Forks: 6
+State: {\"api_bucket\":\"{\"api-1\": \"\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400036f020" -> "0x1400036f860" [label="ConfigureS3Integration", color="black" penwidth="1" ];
+  "0x1400036f860" [label="ConfigureS3Integration
+Actions: 3, Forks: 5
+State: {\"api_bucket\":\"{\"api-1\": \"\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400036f860" -> "0x14000459bc0" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x14000459bc0" [label="Any:aid=\"api-1\"
+Actions: 3, Forks: 6
+State: {\"api_bucket\":\"{\"api-1\": \"\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000459bc0" -> "0x1400049c300" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x1400049c300" [label="yield
+Actions: 3, Forks: 7
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400049c300" -> "0x1400049cba0" [label="DeleteBucket", color="black" penwidth="1" ];
+  "0x1400049cba0" [label="DeleteBucket
+Actions: 4, Forks: 8
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400049cba0" -> "0x1400006cae0" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x1400006cae0" [label="yield
+Actions: 4, Forks: 9
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400006cae0" -> "0x1400006d500" [label="PutObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x1400006d500" [label="PutObjectRequestSucceeds
+Actions: 5, Forks: 10
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d500" -> "0x1400006cae0" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x1400006cae0" -> "0x1400006d5c0" [label="GetObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x1400006d5c0" [label="GetObjectRequestSucceeds
+Actions: 5, Forks: 10
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d5c0" -> "0x1400006cae0" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x1400006cae0" -> "0x1400006d680" [label="RequestFails", color="black" penwidth="1" ];
+  "0x1400006d680" [label="RequestFails
+Actions: 5, Forks: 10
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006d680" -> "0x140004042a0" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x140004042a0" [label="Any:aid=\"api-1\"
+Actions: 5, Forks: 11
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004042a0" -> "0x14000405380" [label="Any:rid=\"req-1\"", color="black" penwidth="1" ];
+  "0x14000405380" [label="yield
+Actions: 5, Forks: 12
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"FAILED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000405380" -> "0x14000458180" [label="PutObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x14000458180" [label="PutObjectRequestSucceeds
+Actions: 6, Forks: 13
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000458180" -> "0x14000405380" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x14000405380" -> "0x14000458240" [label="GetObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x14000458240" [label="GetObjectRequestSucceeds
+Actions: 6, Forks: 13
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000458240" -> "0x14000405380" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x14000405380" -> "0x14000458360" [label="RequestFails", color="black" penwidth="1" ];
+  "0x14000458360" [label="RequestFails
+Actions: 6, Forks: 13
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000458360" -> "0x1400069b500" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x1400069b500" [label="Any:aid=\"api-1\"
+Actions: 6, Forks: 14
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"FAILED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400049c300" -> "0x1400049cd20" [label="PutObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x1400049cd20" [label="PutObjectRequestSucceeds
+Actions: 4, Forks: 8
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400049cd20" -> "0x1400006df20" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x1400006df20" [label="Any:aid=\"api-1\"
+Actions: 4, Forks: 9
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006df20" -> "0x140002a8a80" [label="Any:rid=\"req-1\"", color="black" penwidth="1" ];
+  "0x140002a8a80" [label="Any:rid=\"req-1\"
+Actions: 4, Forks: 10
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a8a80" -> "0x140002a9860" [label="Any:oid=\"obj-1\"", color="black" penwidth="1" ];
+  "0x140002a9860" [label="yield
+Actions: 4, Forks: 11
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002a9860" -> "0x1400032f740" [label="DeleteBucket", color="black" penwidth="1" ];
+  "0x1400032f740" [label="DeleteBucket
+Actions: 5, Forks: 12
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400032f740" -> "0x140004590e0" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x140004590e0" [label="yield
+Actions: 5, Forks: 13
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004590e0" -> "0x1400047e9c0" [label="PutObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x1400047e9c0" [label="PutObjectRequestSucceeds
+Actions: 6, Forks: 14
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400047e9c0" -> "0x140004590e0" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x140004590e0" -> "0x1400047ea80" [label="GetObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x1400047ea80" [label="GetObjectRequestSucceeds
+Actions: 6, Forks: 14
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400047ea80" -> "0x1400049c420" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x1400049c420" [label="Any:aid=\"api-1\"
+Actions: 6, Forks: 15
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004590e0" -> "0x1400047eb40" [label="RequestFails", color="black" penwidth="1" ];
+  "0x1400047eb40" [label="RequestFails
+Actions: 6, Forks: 14
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400047eb40" -> "0x140001b61e0" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x140001b61e0" [label="Any:aid=\"api-1\"
+Actions: 6, Forks: 15
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a9860" -> "0x1400032f8c0" [label="PutObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x1400032f8c0" [label="PutObjectRequestSucceeds
+Actions: 5, Forks: 12
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400032f8c0" -> "0x140000cc3c0" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x140000cc3c0" [label="Any:aid=\"api-1\"
+Actions: 5, Forks: 13
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a9860" -> "0x1400032f980" [label="GetObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x1400032f980" [label="GetObjectRequestSucceeds
+Actions: 5, Forks: 12
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400032f980" -> "0x140000cd140" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x140000cd140" [label="Any:aid=\"api-1\"
+Actions: 5, Forks: 13
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a9860" -> "0x1400032fb60" [label="RequestFails", color="black" penwidth="1" ];
+  "0x1400032fb60" [label="RequestFails
+Actions: 5, Forks: 12
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{\"obj-1\": \"bucket-1\"}\",\"obj_req\":\"{\"obj-1\": \"req-1\"}\",\"obj_status\":\"{\"obj-1\": \"EXISTS\"}\",\"req_api\":\"{\"req-1\": \"api-1\"}\",\"req_status\":\"{\"req-1\": \"SUCCESS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400032fb60" -> "0x140002a9860" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x1400049c300" -> "0x1400049cde0" [label="GetObjectRequestSucceeds", color="black" penwidth="1" ];
+  "0x1400049cde0" [label="GetObjectRequestSucceeds
+Actions: 4, Forks: 8
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400049cde0" -> "0x1400049c300" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x1400049c300" -> "0x1400049cea0" [label="RequestFails", color="black" penwidth="1" ];
+  "0x1400049cea0" [label="RequestFails
+Actions: 4, Forks: 8
+State: {\"api_bucket\":\"{\"api-1\": \"bucket-1\"}\",\"api_status\":\"{\"api-1\": \"ACTIVE\"}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400049cea0" -> "0x1400049c300" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x140002a80c0" -> "0x140002a8c60" [label="CreateBucket", color="black" penwidth="1" ];
+  "0x140002a8c60" [label="CreateBucket
+Actions: 1, Forks: 1
+State: {\"api_bucket\":\"{}\",\"api_status\":\"{}\",\"bucket_status\":\"{}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002a8c60" -> "0x1400032e360" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x1400032e360" [label="yield
+Actions: 1, Forks: 2
+State: {\"api_bucket\":\"{}\",\"api_status\":\"{}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x1400032e360" -> "0x1400032e9c0" [label="CreateRestAPI", color="black" penwidth="1" ];
+  "0x1400032e9c0" [label="CreateRestAPI
+Actions: 2, Forks: 3
+State: {\"api_bucket\":\"{}\",\"api_status\":\"{}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400032e9c0" -> "0x1400036f020" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+  "0x1400032e360" -> "0x1400032eb40" [label="DeleteBucket", color="black" penwidth="1" ];
+  "0x1400032eb40" [label="DeleteBucket
+Actions: 2, Forks: 3
+State: {\"api_bucket\":\"{}\",\"api_status\":\"{}\",\"bucket_status\":\"{\"bucket-1\": \"ACTIVE\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400032eb40" -> "0x14000404600" [label="Any:bid=\"bucket-1\"", color="black" penwidth="1" ];
+  "0x14000404600" [label="yield
+Actions: 2, Forks: 4
+State: {\"api_bucket\":\"{}\",\"api_status\":\"{}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000404600" -> "0x14000404cc0" [label="CreateRestAPI", color="black" penwidth="1" ];
+  "0x14000404cc0" [label="CreateRestAPI
+Actions: 3, Forks: 5
+State: {\"api_bucket\":\"{}\",\"api_status\":\"{}\",\"bucket_status\":\"{\"bucket-1\": \"DELETED\"}\",\"obj_bucket\":\"{}\",\"obj_req\":\"{}\",\"obj_status\":\"{}\",\"req_api\":\"{}\",\"req_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000404cc0" -> "0x14000458d80" [label="Any:aid=\"api-1\"", color="black" penwidth="1" ];
+}

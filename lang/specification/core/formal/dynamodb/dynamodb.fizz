@@ -1,0 +1,360 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 15
+---
+# DynamoDB Formal Specification
+# Models tables, items, GSI/LSI indexes, transactions, and throttling.
+#
+# FizzBee grammar rules:
+#   - Iterate over a fixed list/set, NOT over the dict being mutated
+#   - Only single-level subscript assignments: dict[key] = x is OK
+#   - del dict[key] is NOT supported: use sentinel values instead
+#   - No inline comments (comments on their own line only)
+#   - No comments inside oneof: blocks
+
+TABLE_NAMES = ["TableA", "TableB", "TableC"]
+PK_VALUES = ["pk1", "pk2", "pk3"]
+SK_VALUES = ["sk1", "sk2"]
+
+action Init:
+    # table_status[name] = "CREATING" | "ACTIVE" | "DELETED"
+    table_status = {}
+
+    # items[table+"#"+pk+"#"+sk] = True (exists) or False (deleted)
+    items = {}
+
+    # gsi_pending[name] = count of writes not yet propagated to GSI
+    gsi_pending = {}
+
+    # transaction_status = "" | "PENDING" | "COMMITTED" | "ROLLED_BACK"
+    transaction_status = ""
+    transaction_table = ""
+
+    throttle_reads = False
+    throttle_writes = False
+
+# step: a table is created
+# result: the table is in CREATING state
+# guard: the table does not already exist
+# guard_violation: the table already exists
+atomic action CreateTable:
+    oneof name in TABLE_NAMES:
+        if name not in table_status:
+            table_status[name] = "CREATING"
+            gsi_pending[name] = 0
+
+# fake_skip: internal
+# step: a table finishes creating and becomes active
+# result: the table is ACTIVE and ready for reads and writes
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is CREATING
+# guard_violation: the table is not CREATING
+atomic action ActivateTable:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "CREATING":
+                table_status[name] = "ACTIVE"
+
+# step: a table is deleted
+# result: the table is marked as DELETED and all its items are removed
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+atomic action DeleteTable:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                table_status[name] = "DELETED"
+                for pk in PK_VALUES:
+                    for sk in SK_VALUES:
+                        item_key = name + "#" + pk + "#" + sk
+                        if item_key in items:
+                            items[item_key] = False
+
+# step: a table is described
+# result: the table metadata is returned
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation: the table is not ACTIVE
+atomic action DescribeTable:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                pass
+
+# step: all tables are listed
+# result: the list of tables is returned
+atomic action ListTables:
+    pass
+
+# step: an item is written to the table
+# result: the item exists in the table and GSI propagation is pending
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: writes are not throttled
+# guard_violation_capacity: writes are throttled
+atomic action PutItem:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                if not throttle_writes:
+                    oneof pk in PK_VALUES:
+                        oneof sk in SK_VALUES:
+                            item_key = name + "#" + pk + "#" + sk
+                            items[item_key] = True
+                            gsi_pending[name] = gsi_pending[name] + 1
+
+# step: an item is conditionally written to the table
+# result: the item is written if the condition holds, otherwise the write is rejected
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: writes are not throttled
+# guard_violation_capacity: writes are throttled
+atomic action ConditionalPutItem:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                if not throttle_writes:
+                    oneof pk in PK_VALUES:
+                        oneof sk in SK_VALUES:
+                            item_key = name + "#" + pk + "#" + sk
+                            oneof:
+                                items[item_key] = True
+                                pass
+
+# step: an item is read from the table
+# result: the item value is returned
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: reads are not throttled
+# guard_violation_capacity: reads are throttled
+atomic action GetItem:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                if not throttle_reads:
+                    pass
+
+# step: an existing item is updated in the table
+# result: the item is updated or unchanged (conditional update)
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: writes are not throttled
+# guard_violation_capacity: writes are throttled
+# guard: the item exists
+# guard_violation: the item does not exist
+# guard: the item is present
+# guard_violation: the item is not present
+atomic action UpdateItem:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                if not throttle_writes:
+                    oneof pk in PK_VALUES:
+                        oneof sk in SK_VALUES:
+                            item_key = name + "#" + pk + "#" + sk
+                            if item_key in items:
+                                if items[item_key] == True:
+                                    oneof:
+                                        items[item_key] = True
+                                        pass
+
+# step: an existing item is deleted from the table
+# result: the item is deleted or unchanged (conditional delete)
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: writes are not throttled
+# guard_violation_capacity: writes are throttled
+# guard: the item exists
+# guard_violation: the item does not exist
+# guard: the item is present
+# guard_violation: the item is not present
+atomic action DeleteItem:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                if not throttle_writes:
+                    oneof pk in PK_VALUES:
+                        oneof sk in SK_VALUES:
+                            item_key = name + "#" + pk + "#" + sk
+                            if item_key in items:
+                                if items[item_key] == True:
+                                    oneof:
+                                        items[item_key] = False
+                                        pass
+
+# step: items are queried from the table by key
+# result: matching items are returned
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: reads are not throttled
+# guard_violation_capacity: reads are throttled
+atomic action Query:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                if not throttle_reads:
+                    pass
+
+# step: all items in the table are scanned
+# result: all items are returned
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: reads are not throttled
+# guard_violation_capacity: reads are throttled
+atomic action Scan:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                if not throttle_reads:
+                    pass
+
+# step: a transactional write is initiated across one or more items
+# result: the transaction is PENDING
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: writes are not throttled
+# guard_violation_capacity: writes are throttled
+# guard: no transaction is currently in progress
+# guard_violation: a transaction is currently in progress
+atomic action TransactWriteItems:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "ACTIVE":
+                if not throttle_writes:
+                    if transaction_status == "":
+                        transaction_status = "PENDING"
+                        transaction_table = name
+
+# fake_skip: internal
+# step: a pending transaction resolves non-deterministically
+# result: the transaction is COMMITTED or ROLLED_BACK
+# guard: a transaction is PENDING
+# guard_violation: no transaction is PENDING
+# guard: the transaction's table exists
+# guard_violation: the transaction's table does not exist
+# guard: the transaction's table is ACTIVE
+# guard_violation_lifecycle: the transaction's table is not ACTIVE
+atomic action CommitTransaction:
+    if transaction_status == "PENDING":
+        if transaction_table in table_status:
+            if table_status[transaction_table] == "ACTIVE":
+                oneof:
+                    transaction_status = "COMMITTED"
+                    transaction_status = "ROLLED_BACK"
+
+# fake_skip: internal
+# step: a committed transaction is cleared
+# result: the transaction slot is free
+# guard: the transaction is COMMITTED
+# guard_violation: the transaction is not COMMITTED
+atomic action ClearTransaction:
+    if transaction_status == "COMMITTED":
+        transaction_status = ""
+        transaction_table = ""
+
+# fake_skip: internal
+# step: a rolled-back transaction is cleared
+# result: the transaction slot is free
+# guard: the transaction is ROLLED_BACK
+# guard_violation: the transaction is not ROLLED_BACK
+atomic action ClearRolledBack:
+    if transaction_status == "ROLLED_BACK":
+        transaction_status = ""
+        transaction_table = ""
+
+# fake_skip: internal
+# step: a GSI catches up with pending write propagation
+# result: the GSI is consistent with the table
+# guard: the table has pending GSI propagation
+# guard_violation: the table does not have pending GSI propagation
+# guard: there are writes pending propagation to the GSI
+# guard_violation: there are no writes pending propagation to the GSI
+atomic action PropagateGSI:
+    oneof name in TABLE_NAMES:
+        if name in gsi_pending:
+            if gsi_pending[name] > 0:
+                gsi_pending[name] = 0
+
+# step: read throttling is toggled on or off
+# result: reads are throttled or unthrottled
+atomic action SetThrottleReads:
+    oneof:
+        throttle_reads = True
+        throttle_reads = False
+
+# step: write throttling is toggled on or off
+# result: writes are throttled or unthrottled
+atomic action SetThrottleWrites:
+    oneof:
+        throttle_writes = True
+        throttle_writes = False
+
+# check: every table has a valid status (CREATING, ACTIVE, or DELETED)
+always assertion TableStatusValid:
+    for name in table_status:
+        if table_status[name] not in ["CREATING", "ACTIVE", "DELETED"]:
+            return False
+    return True
+
+# check: GSI pending write count is never negative
+always assertion GsiPendingNonNegative:
+    for name in gsi_pending:
+        if gsi_pending[name] < 0:
+            return False
+    return True
+
+# check: transaction status is always a valid value
+always assertion TransactionStatusValid:
+    if transaction_status not in ["", "PENDING", "COMMITTED", "ROLLED_BACK"]:
+        return False
+    return True
+
+# check: a pending transaction always references an existing table
+always assertion TransactionTableExists:
+    if transaction_status == "PENDING":
+        if transaction_table not in table_status:
+            return False
+    return True
+
+# check: items only exist in non-deleted tables
+always assertion ItemsOnlyInActiveTables:
+    for item_key in items:
+        if items[item_key] == True:
+            parts = item_key.split("#")
+            name = parts[0]
+            if name in table_status:
+                if table_status[name] == "DELETED":
+                    return False
+    return True
+
+# check: deleted tables are never the target of a pending transaction
+always assertion DeletedTableNotWritable:
+    for name in table_status:
+        if table_status[name] == "DELETED":
+            if transaction_table == name:
+                if transaction_status == "PENDING":
+                    return False
+    return True
+

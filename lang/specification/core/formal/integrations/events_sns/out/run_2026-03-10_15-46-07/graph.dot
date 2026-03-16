@@ -1,0 +1,311 @@
+digraph G {
+  "0x14000233860" [label="yield
+Actions: 0, Forks: 0
+State: {\"bus_status\":\"{}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000233860" -> "0x140002ee360" [label="CreateEventBus", color="black" penwidth="1" ];
+  "0x140002ee360" [label="CreateEventBus
+Actions: 1, Forks: 1
+State: {\"bus_status\":\"{}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002ee360" -> "0x140002eea20" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x140002eea20" [label="yield
+Actions: 1, Forks: 2
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002eea20" -> "0x140002ef140" [label="CreateTopic", color="black" penwidth="1" ];
+  "0x140002ef140" [label="CreateTopic
+Actions: 2, Forks: 3
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002ef140" -> "0x14000333f20" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x14000333f20" [label="yield
+Actions: 2, Forks: 4
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000333f20" -> "0x14000372720" [label="PutRule", color="black" penwidth="1" ];
+  "0x14000372720" [label="PutRule
+Actions: 3, Forks: 5
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000372720" -> "0x140003f9080" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x140003f9080" [label="Any:rid=\"rule-1\"
+Actions: 3, Forks: 6
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003f9080" -> "0x140003f9500" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x140003f9500" [label="Any:bid=\"bus-1\"
+Actions: 3, Forks: 7
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003f9500" -> "0x140003f9bc0" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x140003f9bc0" [label="yield
+Actions: 3, Forks: 8
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003f9bc0" -> "0x1400044aa80" [label="PutEvent", color="black" penwidth="1" ];
+  "0x1400044aa80" [label="PutEvent
+Actions: 4, Forks: 9
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044aa80" -> "0x14000486ba0" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x14000486ba0" [label="Any:bid=\"bus-1\"
+Actions: 4, Forks: 10
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000486ba0" -> "0x14000487140" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x14000487140" [label="Any:rid=\"rule-1\"
+Actions: 4, Forks: 11
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000487140" -> "0x140004c2240" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x140004c2240" [label="yield
+Actions: 4, Forks: 12
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004c2240" -> "0x140004c32c0" [label="PutEvent", color="black" penwidth="1" ];
+  "0x140004c32c0" [label="PutEvent
+Actions: 5, Forks: 13
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004c32c0" -> "0x14000184a80" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x14000184a80" [label="Any:bid=\"bus-1\"
+Actions: 5, Forks: 14
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000184a80" -> "0x14000185020" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x14000185020" [label="Any:rid=\"rule-1\"
+Actions: 5, Forks: 15
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000185020" -> "0x140000941e0" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x140000941e0" [label="yield
+Actions: 5, Forks: 16
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140000941e0" -> "0x14000095620" [label="PutEvent", color="black" penwidth="1" ];
+  "0x14000095620" [label="PutEvent
+Actions: 6, Forks: 17
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000095620" -> "0x14000333620" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x14000333620" [label="Any:bid=\"bus-1\"
+Actions: 6, Forks: 18
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000333620" -> "0x14000333c80" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x14000333c80" [label="Any:rid=\"rule-1\"
+Actions: 6, Forks: 19
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000941e0" -> "0x140000956e0" [label="ConsumeMessage", color="black" penwidth="1" ];
+  "0x140000956e0" [label="ConsumeMessage
+Actions: 6, Forks: 17
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140000956e0" -> "0x140003b6540" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x140003b6540" [label="yield
+Actions: 6, Forks: 18
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003b6540" -> "0x140003b7c80" [label="PutEvent", color="black" penwidth="1" ];
+  "0x140003b7c80" [label="PutEvent
+Actions: 7, Forks: 19
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003b7c80" -> "0x140005981e0" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x140005981e0" [label="Any:bid=\"bus-1\"
+Actions: 7, Forks: 20
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140005981e0" -> "0x14000598780" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x14000598780" [label="Any:rid=\"rule-1\"
+Actions: 7, Forks: 21
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000598780" -> "0x140000941e0" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x140003b6540" -> "0x140003b7d40" [label="ConsumeMessage", color="black" penwidth="1" ];
+  "0x140003b7d40" [label="ConsumeMessage
+Actions: 7, Forks: 19
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003b7d40" -> "0x140004c20c0" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x140004c20c0" [label="yield
+Actions: 7, Forks: 20
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004c20c0" -> "0x140004c3bc0" [label="PutEvent", color="black" penwidth="1" ];
+  "0x140004c3bc0" [label="PutEvent
+Actions: 8, Forks: 21
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004c3bc0" -> "0x14000095ec0" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x14000095ec0" [label="Any:bid=\"bus-1\"
+Actions: 8, Forks: 22
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000095ec0" -> "0x1400068e600" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x1400068e600" [label="Any:rid=\"rule-1\"
+Actions: 8, Forks: 23
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068e600" -> "0x140003b65a0" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x140003b65a0" [label="yield
+Actions: 6, Forks: 18
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003b65a0" -> "0x140003f9920" [label="PutEvent", color="black" penwidth="1" ];
+  "0x140003f9920" [label="PutEvent
+Actions: 7, Forks: 19
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003f9920" -> "0x14000185920" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x14000185920" [label="Any:bid=\"bus-1\"
+Actions: 7, Forks: 20
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000185920" -> "0x14000185ec0" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x14000185ec0" [label="Any:rid=\"rule-1\"
+Actions: 7, Forks: 21
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000185ec0" -> "0x140000941e0" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x140003b65a0" -> "0x140003f99e0" [label="ConsumeMessage", color="black" penwidth="1" ];
+  "0x140003f99e0" [label="ConsumeMessage
+Actions: 7, Forks: 19
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\", \"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\", \"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003f99e0" -> "0x140004c20c0" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x1400068e600" -> "0x140003b6540" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x140000956e0" -> "0x140003b65a0" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x140004c2240" -> "0x140004c3380" [label="ConsumeMessage", color="black" penwidth="1" ];
+  "0x140004c3380" [label="ConsumeMessage
+Actions: 5, Forks: 13
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004c3380" -> "0x14000095b00" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x14000095b00" [label="yield
+Actions: 5, Forks: 14
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000095b00" -> "0x14000104b40" [label="PutEvent", color="black" penwidth="1" ];
+  "0x14000104b40" [label="PutEvent
+Actions: 6, Forks: 15
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000104b40" -> "0x1400044b1a0" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x1400044b1a0" [label="Any:bid=\"bus-1\"
+Actions: 6, Forks: 16
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044b1a0" -> "0x1400044b800" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x1400044b800" [label="Any:rid=\"rule-1\"
+Actions: 6, Forks: 17
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-1\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-1\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044b800" -> "0x140004c2240" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x1400044b800" -> "0x140003b6540" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x14000487140" -> "0x140004c22a0" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x140004c22a0" [label="yield
+Actions: 4, Forks: 12
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140004c22a0" -> "0x140004c2ba0" [label="PutEvent", color="black" penwidth="1" ];
+  "0x140004c2ba0" [label="PutEvent
+Actions: 5, Forks: 13
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004c2ba0" -> "0x14000105d40" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x14000105d40" [label="Any:bid=\"bus-1\"
+Actions: 5, Forks: 14
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000105d40" -> "0x140002323c0" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x140002323c0" [label="Any:rid=\"rule-1\"
+Actions: 5, Forks: 15
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002323c0" -> "0x140000941e0" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x140004c22a0" -> "0x140004c2c60" [label="ConsumeMessage", color="black" penwidth="1" ];
+  "0x140004c2c60" [label="ConsumeMessage
+Actions: 5, Forks: 13
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"AVAILABLE\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140004c2c60" -> "0x140002ee1e0" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x140002ee1e0" [label="yield
+Actions: 5, Forks: 14
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002ee1e0" -> "0x140002efbc0" [label="PutEvent", color="black" penwidth="1" ];
+  "0x140002efbc0" [label="PutEvent
+Actions: 6, Forks: 15
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002efbc0" -> "0x1400068f860" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+  "0x1400068f860" [label="Any:bid=\"bus-1\"
+Actions: 6, Forks: 16
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068f860" -> "0x1400068fe00" [label="Any:rid=\"rule-1\"", color="black" penwidth="1" ];
+  "0x1400068fe00" [label="Any:rid=\"rule-1\"
+Actions: 6, Forks: 17
+State: {\"bus_status\":\"{\"bus-1\": \"ACTIVE\"}\",\"msg_status\":\"{\"msg-2\": \"DELETED\"}\",\"msg_topic\":\"{\"msg-2\": \"topic-1\"}\",\"rule_bus\":\"{\"rule-1\": \"bus-1\"}\",\"rule_status\":\"{\"rule-1\": \"ENABLED\"}\",\"rule_topic\":\"{\"rule-1\": \"topic-1\"}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068fe00" -> "0x140003b65a0" [label="Any:mid=\"msg-1\"", color="black" penwidth="1" ];
+  "0x1400068fe00" -> "0x140004c22a0" [label="Any:mid=\"msg-2\"", color="black" penwidth="1" ];
+  "0x14000233860" -> "0x140002ee420" [label="CreateTopic", color="black" penwidth="1" ];
+  "0x140002ee420" [label="CreateTopic
+Actions: 1, Forks: 1
+State: {\"bus_status\":\"{}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002ee420" -> "0x140002ef740" [label="Any:tid=\"topic-1\"", color="black" penwidth="1" ];
+  "0x140002ef740" [label="yield
+Actions: 1, Forks: 2
+State: {\"bus_status\":\"{}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002ef740" -> "0x140002efda0" [label="CreateEventBus", color="black" penwidth="1" ];
+  "0x140002efda0" [label="CreateEventBus
+Actions: 2, Forks: 3
+State: {\"bus_status\":\"{}\",\"msg_status\":\"{}\",\"msg_topic\":\"{}\",\"rule_bus\":\"{}\",\"rule_status\":\"{}\",\"rule_topic\":\"{}\",\"topic_status\":\"{\"topic-1\": \"ACTIVE\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002efda0" -> "0x14000333f20" [label="Any:bid=\"bus-1\"", color="black" penwidth="1" ];
+}

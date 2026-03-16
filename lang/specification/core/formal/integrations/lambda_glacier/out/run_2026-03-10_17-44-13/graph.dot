@@ -1,0 +1,275 @@
+digraph G {
+  "0x140001b7920" [label="yield
+Actions: 0, Forks: 0
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140001b7920" -> "0x140002ea420" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x140002ea420" [label="DeployFunction
+Actions: 1, Forks: 1
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002ea420" -> "0x140002eaba0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140002eaba0" [label="yield
+Actions: 1, Forks: 2
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x140002eaba0" -> "0x140002eb2c0" [label="CreateVault", color="black" penwidth="1" ];
+  "0x140002eb2c0" [label="CreateVault
+Actions: 2, Forks: 3
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002eb2c0" -> "0x140003720c0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140003720c0" [label="yield
+Actions: 2, Forks: 4
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003720c0" -> "0x14000372840" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x14000372840" [label="DeleteVault
+Actions: 3, Forks: 5
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000372840" -> "0x14000401c80" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x14000401c80" [label="yield
+Actions: 3, Forks: 6
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000401c80" -> "0x1400044a600" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400044a600" [label="InvokeFunction
+Actions: 4, Forks: 7
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044a600" -> "0x1400008f800" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400008f800" [label="Any:fid=\"func-1\"
+Actions: 4, Forks: 8
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400008f800" -> "0x1400008fda0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400008fda0" [label="yield
+Actions: 4, Forks: 9
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400008fda0" -> "0x1400051cd20" [label="InvocationFailsVaultDeleted", color="black" penwidth="1" ];
+  "0x1400051cd20" [label="InvocationFailsVaultDeleted
+Actions: 5, Forks: 10
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400051cd20" -> "0x140001b6000" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140001b6000" [label="Any:iid=\"inv-1\"
+Actions: 5, Forks: 11
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001b6000" -> "0x140001b65a0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140001b65a0" [label="yield
+Actions: 5, Forks: 12
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140001b65a0" -> "0x140001b7380" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140001b7380" [label="InvokeFunction
+Actions: 6, Forks: 13
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001b7380" -> "0x140003baa20" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140003baa20" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 14
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003baa20" -> "0x1400008fda0" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003720c0" -> "0x14000372900" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x14000372900" [label="InvokeFunction
+Actions: 3, Forks: 5
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000372900" -> "0x1400044aa80" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400044aa80" [label="Any:fid=\"func-1\"
+Actions: 3, Forks: 6
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044aa80" -> "0x1400044b020" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400044b020" [label="yield
+Actions: 3, Forks: 7
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400044b020" -> "0x1400044bbc0" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x1400044bbc0" [label="DeleteVault
+Actions: 4, Forks: 8
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044bbc0" -> "0x1400008fda0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x1400044b020" -> "0x1400044bd40" [label="UploadArchiveTask", color="black" penwidth="1" ];
+  "0x1400044bd40" [label="UploadArchiveTask
+Actions: 4, Forks: 8
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044bd40" -> "0x14000201140" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000201140" [label="Any:iid=\"inv-1\"
+Actions: 4, Forks: 9
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000201140" -> "0x140002016e0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140002016e0" [label="Any:vid=\"vault-1\"
+Actions: 4, Forks: 10
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002016e0" -> "0x14000201e00" [label="Any:aid=\"archive-1\"", color="black" penwidth="1" ];
+  "0x14000201e00" [label="yield
+Actions: 4, Forks: 11
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000201e00" -> "0x1400068ecc0" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x1400068ecc0" [label="DeleteVault
+Actions: 5, Forks: 12
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068ecc0" -> "0x140002ea2a0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140002ea2a0" [label="yield
+Actions: 5, Forks: 13
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002ea2a0" -> "0x140002ebbc0" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140002ebbc0" [label="InvokeFunction
+Actions: 6, Forks: 14
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002ebbc0" -> "0x1400044b740" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x1400044b740" [label="Any:fid=\"func-1\"
+Actions: 6, Forks: 15
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400044b740" -> "0x140003ba720" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x140003ba720" [label="yield
+Actions: 6, Forks: 16
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003ba720" -> "0x14000401260" [label="InvocationFailsVaultDeleted", color="black" penwidth="1" ];
+  "0x14000401260" [label="InvocationFailsVaultDeleted
+Actions: 7, Forks: 17
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000401260" -> "0x1400068fc80" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x1400068fc80" [label="Any:iid=\"inv-1\"
+Actions: 7, Forks: 18
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068fc80" -> "0x1400006c600" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x1400006c600" [label="yield
+Actions: 7, Forks: 19
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x1400006c600" -> "0x1400006db00" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400006db00" [label="InvokeFunction
+Actions: 8, Forks: 20
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400006db00" -> "0x140001b7bc0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140001b7bc0" [label="Any:fid=\"func-1\"
+Actions: 8, Forks: 21
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"FAILED\"}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140001b7bc0" -> "0x140003ba720" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000201e00" -> "0x1400068ed80" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x1400068ed80" [label="InvokeFunction
+Actions: 5, Forks: 12
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x1400068ed80" -> "0x14000334600" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x14000334600" [label="Any:fid=\"func-1\"
+Actions: 5, Forks: 13
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000334600" -> "0x14000334d20" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000334d20" [label="yield
+Actions: 5, Forks: 14
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x14000334d20" -> "0x14000335f20" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x14000335f20" [label="DeleteVault
+Actions: 6, Forks: 15
+State: {\"archive_inv\":\"{\"archive-1\": \"inv-1\"}\",\"archive_status\":\"{\"archive-1\": \"EXISTS\"}\",\"archive_vault\":\"{\"archive-1\": \"vault-1\"}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000335f20" -> "0x140003ba720" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140002eaba0" -> "0x140002eb440" [label="InvokeFunction", color="black" penwidth="1" ];
+  "0x140002eb440" [label="InvokeFunction
+Actions: 2, Forks: 3
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002eb440" -> "0x140003731a0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140003731a0" [label="Any:fid=\"func-1\"
+Actions: 2, Forks: 4
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003731a0" -> "0x14000373740" [label="Any:iid=\"inv-1\"", color="black" penwidth="1" ];
+  "0x14000373740" [label="yield
+Actions: 2, Forks: 5
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{}\"}
+", color="black" penwidth="2" ];
+  "0x14000373740" -> "0x140003ba300" [label="CreateVault", color="black" penwidth="1" ];
+  "0x140003ba300" [label="CreateVault
+Actions: 3, Forks: 6
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003ba300" -> "0x1400044b020" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140001b7920" -> "0x140002ea4e0" [label="CreateVault", color="black" penwidth="1" ];
+  "0x140002ea4e0" [label="CreateVault
+Actions: 1, Forks: 1
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140002ea4e0" -> "0x140002eb980" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140002eb980" [label="yield
+Actions: 1, Forks: 2
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+  "0x140002eb980" -> "0x14000334060" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x14000334060" [label="DeployFunction
+Actions: 2, Forks: 3
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000334060" -> "0x140003720c0" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+  "0x140002eb980" -> "0x140003341e0" [label="DeleteVault", color="black" penwidth="1" ];
+  "0x140003341e0" [label="DeleteVault
+Actions: 2, Forks: 3
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x140003341e0" -> "0x140003bb9e0" [label="Any:vid=\"vault-1\"", color="black" penwidth="1" ];
+  "0x140003bb9e0" [label="yield
+Actions: 2, Forks: 4
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+", color="black" penwidth="2" ];
+  "0x140003bb9e0" -> "0x14000400120" [label="DeployFunction", color="black" penwidth="1" ];
+  "0x14000400120" [label="DeployFunction
+Actions: 3, Forks: 5
+State: {\"archive_inv\":\"{}\",\"archive_status\":\"{}\",\"archive_vault\":\"{}\",\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_status\":\"{}\",\"vault_status\":\"{\"vault-1\": \"DELETED\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+  "0x14000400120" -> "0x14000401c80" [label="Any:fid=\"func-1\"", color="black" penwidth="1" ];
+}

@@ -1,0 +1,3266 @@
+{
+  "sourceInfo": {
+    "fileName": "elasticache_sns.fizz",
+    "start": {
+      "line": 13,
+      "column": 1
+    },
+    "end": {
+      "line": 154
+    }
+  },
+  "invariants": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 137,
+          "column": 1
+        },
+        "end": {
+          "line": 147
+        }
+      },
+      "name": "PublishedNotificationReferencesExistingCluster",
+      "temporalOperators": [
+        "always"
+      ],
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 138,
+            "column": 5
+          },
+          "end": {
+            "line": 147
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 138,
+                "column": 5
+              },
+              "end": {
+                "line": 143,
+                "column": 4
+              }
+            },
+            "forStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 138,
+                  "column": 5
+                },
+                "end": {
+                  "line": 143,
+                  "column": 4
+                }
+              },
+              "loopVars": [
+                "mid"
+              ],
+              "pyExpr": "msg_status",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 139,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 143,
+                    "column": 4
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 139,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 143,
+                        "column": 4
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 139,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 143,
+                          "column": 4
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 139,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 143,
+                              "column": 4
+                            }
+                          },
+                          "condition": "msg_status[mid] == \"PUBLISHED\"",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 140,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 143,
+                                "column": 4
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 140,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 141,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 140,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 140,
+                                      "column": 34
+                                    }
+                                  },
+                                  "code": "cid = msg_cluster[mid]"
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 141,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 143,
+                                    "column": 4
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 141,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 143,
+                                      "column": 4
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 141,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 143,
+                                          "column": 4
+                                        }
+                                      },
+                                      "condition": "cid not in cluster_status",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 142,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 143,
+                                            "column": 4
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 142,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 143,
+                                                "column": 4
+                                              }
+                                            },
+                                            "returnStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 142,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 142,
+                                                  "column": 28
+                                                }
+                                              },
+                                              "pyExpr": "False",
+                                              "expr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 142,
+                                                    "column": 24
+                                                  },
+                                                  "end": {
+                                                    "line": 142,
+                                                    "column": 28
+                                                  }
+                                                },
+                                                "pyExpr": "False"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 141,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 141,
+                                            "column": 40
+                                          }
+                                        },
+                                        "pyExpr": "cid not in cluster_status"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 139,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 139,
+                                "column": 41
+                              }
+                            },
+                            "pyExpr": "msg_status[mid] == \"PUBLISHED\""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 138,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 138,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "msg_status"
+              }
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 143,
+                "column": 5
+              },
+              "end": {
+                "line": 147
+              }
+            },
+            "returnStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 143,
+                  "column": 5
+                },
+                "end": {
+                  "line": 143,
+                  "column": 15
+                }
+              },
+              "pyExpr": "True",
+              "expr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 143,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 143,
+                    "column": 15
+                  }
+                },
+                "pyExpr": "True"
+              }
+            }
+          }
+        ]
+      },
+      "pyCode": "def PublishedNotificationReferencesExistingCluster():\n    for mid in msg_status:\n        if msg_status[mid] == \"PUBLISHED\":\n            cid = msg_cluster[mid]\n            if cid not in cluster_status:\n                return False\n    return True\n\n\n# check: every PUBLISHED notification references a topic that exists\n"
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 147,
+          "column": 1
+        },
+        "end": {
+          "line": 154
+        }
+      },
+      "name": "PublishedNotificationReferencesExistingTopic",
+      "temporalOperators": [
+        "always"
+      ],
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 148,
+            "column": 5
+          },
+          "end": {
+            "line": 154
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 148,
+                "column": 5
+              },
+              "end": {
+                "line": 153,
+                "column": 4
+              }
+            },
+            "forStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 148,
+                  "column": 5
+                },
+                "end": {
+                  "line": 153,
+                  "column": 4
+                }
+              },
+              "loopVars": [
+                "mid"
+              ],
+              "pyExpr": "msg_status",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 149,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 153,
+                    "column": 4
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 149,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 153,
+                        "column": 4
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 149,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 153,
+                          "column": 4
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 149,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 153,
+                              "column": 4
+                            }
+                          },
+                          "condition": "msg_status[mid] == \"PUBLISHED\"",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 150,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 153,
+                                "column": 4
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 150,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 151,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 150,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 150,
+                                      "column": 32
+                                    }
+                                  },
+                                  "code": "tid = msg_topic[mid]"
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 151,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 153,
+                                    "column": 4
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 151,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 153,
+                                      "column": 4
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 151,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 153,
+                                          "column": 4
+                                        }
+                                      },
+                                      "condition": "tid not in topic_status",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 152,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 153,
+                                            "column": 4
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 152,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 153,
+                                                "column": 4
+                                              }
+                                            },
+                                            "returnStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 152,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 152,
+                                                  "column": 28
+                                                }
+                                              },
+                                              "pyExpr": "False",
+                                              "expr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 152,
+                                                    "column": 24
+                                                  },
+                                                  "end": {
+                                                    "line": 152,
+                                                    "column": 28
+                                                  }
+                                                },
+                                                "pyExpr": "False"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 151,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 151,
+                                            "column": 38
+                                          }
+                                        },
+                                        "pyExpr": "tid not in topic_status"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 149,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 149,
+                                "column": 41
+                              }
+                            },
+                            "pyExpr": "msg_status[mid] == \"PUBLISHED\""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 148,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 148,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "msg_status"
+              }
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 153,
+                "column": 5
+              },
+              "end": {
+                "line": 154
+              }
+            },
+            "returnStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 153,
+                  "column": 5
+                },
+                "end": {
+                  "line": 153,
+                  "column": 15
+                }
+              },
+              "pyExpr": "True",
+              "expr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 153,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 153,
+                    "column": 15
+                  }
+                },
+                "pyExpr": "True"
+              }
+            }
+          }
+        ]
+      },
+      "pyCode": "def PublishedNotificationReferencesExistingTopic():\n    for mid in msg_status:\n        if msg_status[mid] == \"PUBLISHED\":\n            tid = msg_topic[mid]\n            if tid not in topic_status:\n                return False\n    return True\n"
+    }
+  ],
+  "actions": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 18,
+          "column": 1
+        },
+        "end": {
+          "line": 31
+        }
+      },
+      "name": "Init",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_STRONG"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 19,
+            "column": 5
+          },
+          "end": {
+            "line": 31
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 19,
+                "column": 5
+              },
+              "end": {
+                "line": 20,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 19,
+                  "column": 5
+                },
+                "end": {
+                  "line": 19,
+                  "column": 23
+                }
+              },
+              "code": "cluster_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 20,
+                "column": 5
+              },
+              "end": {
+                "line": 21,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 20,
+                  "column": 5
+                },
+                "end": {
+                  "line": 20,
+                  "column": 22
+                }
+              },
+              "code": "cluster_topic = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 21,
+                "column": 5
+              },
+              "end": {
+                "line": 22,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 21,
+                  "column": 5
+                },
+                "end": {
+                  "line": 21,
+                  "column": 21
+                }
+              },
+              "code": "topic_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 22,
+                "column": 5
+              },
+              "end": {
+                "line": 23,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 22,
+                  "column": 5
+                },
+                "end": {
+                  "line": 22,
+                  "column": 19
+                }
+              },
+              "code": "msg_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 23,
+                "column": 5
+              },
+              "end": {
+                "line": 24,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 23,
+                  "column": 5
+                },
+                "end": {
+                  "line": 23,
+                  "column": 18
+                }
+              },
+              "code": "msg_topic = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 24,
+                "column": 5
+              },
+              "end": {
+                "line": 31
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 24,
+                  "column": 5
+                },
+                "end": {
+                  "line": 24,
+                  "column": 20
+                }
+              },
+              "code": "msg_cluster = {}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 31,
+          "column": 1
+        },
+        "end": {
+          "line": 42
+        }
+      },
+      "name": "CreateCluster",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 32,
+            "column": 5
+          },
+          "end": {
+            "line": 42
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 32,
+                "column": 5
+              },
+              "end": {
+                "line": 42
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 32,
+                  "column": 5
+                },
+                "end": {
+                  "line": 42
+                }
+              },
+              "loopVars": [
+                "cid"
+              ],
+              "pyExpr": "CLUSTER_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 33,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 42
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 33,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 42
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 33,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 42
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 33,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 42
+                            }
+                          },
+                          "condition": "cid not in cluster_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 34,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 42
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 34,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 35,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 34,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 34,
+                                      "column": 45
+                                    }
+                                  },
+                                  "code": "cluster_status[cid] = \"AVAILABLE\""
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 35,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 42
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 35,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 35,
+                                      "column": 35
+                                    }
+                                  },
+                                  "code": "cluster_topic[cid] = \"\""
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 33,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 33,
+                                "column": 36
+                              }
+                            },
+                            "pyExpr": "cid not in cluster_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 32,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 32,
+                    "column": 26
+                  }
+                },
+                "pyExpr": "CLUSTER_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 42,
+          "column": 1
+        },
+        "end": {
+          "line": 54
+        }
+      },
+      "name": "CreateTopic",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 43,
+            "column": 5
+          },
+          "end": {
+            "line": 54
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 43,
+                "column": 5
+              },
+              "end": {
+                "line": 54
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 43,
+                  "column": 5
+                },
+                "end": {
+                  "line": 54
+                }
+              },
+              "loopVars": [
+                "tid"
+              ],
+              "pyExpr": "TOPIC_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 44,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 54
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 44,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 54
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 44,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 54
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 44,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 54
+                            }
+                          },
+                          "condition": "tid not in topic_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 45,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 54
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 45,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 54
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 45,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 45,
+                                      "column": 40
+                                    }
+                                  },
+                                  "code": "topic_status[tid] = \"ACTIVE\""
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 44,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 44,
+                                "column": 34
+                              }
+                            },
+                            "pyExpr": "tid not in topic_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 43,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 43,
+                    "column": 24
+                  }
+                },
+                "pyExpr": "TOPIC_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 54,
+          "column": 1
+        },
+        "end": {
+          "line": 69
+        }
+      },
+      "name": "DeleteTopic",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 55,
+            "column": 5
+          },
+          "end": {
+            "line": 69
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 55,
+                "column": 5
+              },
+              "end": {
+                "line": 69
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 55,
+                  "column": 5
+                },
+                "end": {
+                  "line": 69
+                }
+              },
+              "loopVars": [
+                "tid"
+              ],
+              "pyExpr": "TOPIC_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 56,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 69
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 56,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 69
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 56,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 69
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 56,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 69
+                            }
+                          },
+                          "condition": "tid in topic_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 57,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 69
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 57,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 69
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 57,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 69
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 57,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 69
+                                        }
+                                      },
+                                      "condition": "topic_status[tid] == \"ACTIVE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 58,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 69
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 58,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 69
+                                              }
+                                            },
+                                            "pyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 58,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 58,
+                                                  "column": 45
+                                                }
+                                              },
+                                              "code": "topic_status[tid] = \"DELETED\""
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 57,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 57,
+                                            "column": 44
+                                          }
+                                        },
+                                        "pyExpr": "topic_status[tid] == \"ACTIVE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 56,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 56,
+                                "column": 30
+                              }
+                            },
+                            "pyExpr": "tid in topic_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 55,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 55,
+                    "column": 24
+                  }
+                },
+                "pyExpr": "TOPIC_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 69,
+          "column": 1
+        },
+        "end": {
+          "line": 90
+        }
+      },
+      "name": "ConfigureNotification",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 70,
+            "column": 5
+          },
+          "end": {
+            "line": 90
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 70,
+                "column": 5
+              },
+              "end": {
+                "line": 90
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 70,
+                  "column": 5
+                },
+                "end": {
+                  "line": 90
+                }
+              },
+              "loopVars": [
+                "cid"
+              ],
+              "pyExpr": "CLUSTER_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 71,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 90
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 71,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 90
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 71,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 90
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 71,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 90
+                            }
+                          },
+                          "condition": "cid in cluster_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 72,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 90
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 72,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 90
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 72,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 90
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 72,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 90
+                                        }
+                                      },
+                                      "condition": "cluster_status[cid] == \"AVAILABLE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 73,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 90
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 73,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 90
+                                              }
+                                            },
+                                            "ifStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 73,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 90
+                                                }
+                                              },
+                                              "branches": [
+                                                {
+                                                  "sourceInfo": {
+                                                    "start": {
+                                                      "line": 73,
+                                                      "column": 20
+                                                    },
+                                                    "end": {
+                                                      "line": 90
+                                                    }
+                                                  },
+                                                  "condition": "cluster_topic[cid] == \"\"",
+                                                  "block": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 74,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 90
+                                                      }
+                                                    },
+                                                    "stmts": [
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 74,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 90
+                                                          }
+                                                        },
+                                                        "anyStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 74,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 90
+                                                            }
+                                                          },
+                                                          "loopVars": [
+                                                            "tid"
+                                                          ],
+                                                          "pyExpr": "TOPIC_IDS",
+                                                          "block": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 75,
+                                                                "column": 25
+                                                              },
+                                                              "end": {
+                                                                "line": 90
+                                                              }
+                                                            },
+                                                            "stmts": [
+                                                              {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 75,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 90
+                                                                  }
+                                                                },
+                                                                "ifStmt": {
+                                                                  "sourceInfo": {
+                                                                    "start": {
+                                                                      "line": 75,
+                                                                      "column": 25
+                                                                    },
+                                                                    "end": {
+                                                                      "line": 90
+                                                                    }
+                                                                  },
+                                                                  "branches": [
+                                                                    {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 75,
+                                                                          "column": 28
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 90
+                                                                        }
+                                                                      },
+                                                                      "condition": "tid in topic_status",
+                                                                      "block": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 76,
+                                                                            "column": 29
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 90
+                                                                          }
+                                                                        },
+                                                                        "stmts": [
+                                                                          {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 76,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 90
+                                                                              }
+                                                                            },
+                                                                            "ifStmt": {
+                                                                              "sourceInfo": {
+                                                                                "start": {
+                                                                                  "line": 76,
+                                                                                  "column": 29
+                                                                                },
+                                                                                "end": {
+                                                                                  "line": 90
+                                                                                }
+                                                                              },
+                                                                              "branches": [
+                                                                                {
+                                                                                  "sourceInfo": {
+                                                                                    "start": {
+                                                                                      "line": 76,
+                                                                                      "column": 32
+                                                                                    },
+                                                                                    "end": {
+                                                                                      "line": 90
+                                                                                    }
+                                                                                  },
+                                                                                  "condition": "topic_status[tid] == \"ACTIVE\"",
+                                                                                  "block": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 77,
+                                                                                        "column": 33
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 90
+                                                                                      }
+                                                                                    },
+                                                                                    "stmts": [
+                                                                                      {
+                                                                                        "sourceInfo": {
+                                                                                          "start": {
+                                                                                            "line": 77,
+                                                                                            "column": 33
+                                                                                          },
+                                                                                          "end": {
+                                                                                            "line": 90
+                                                                                          }
+                                                                                        },
+                                                                                        "pyStmt": {
+                                                                                          "sourceInfo": {
+                                                                                            "start": {
+                                                                                              "line": 77,
+                                                                                              "column": 33
+                                                                                            },
+                                                                                            "end": {
+                                                                                              "line": 77,
+                                                                                              "column": 56
+                                                                                            }
+                                                                                          },
+                                                                                          "code": "cluster_topic[cid] = tid"
+                                                                                        }
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  "conditionExpr": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 76,
+                                                                                        "column": 32
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 76,
+                                                                                        "column": 60
+                                                                                      }
+                                                                                    },
+                                                                                    "pyExpr": "topic_status[tid] == \"ACTIVE\""
+                                                                                  }
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      "conditionExpr": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 75,
+                                                                            "column": 28
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 75,
+                                                                            "column": 46
+                                                                          }
+                                                                        },
+                                                                        "pyExpr": "tid in topic_status"
+                                                                      }
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              }
+                                                            ]
+                                                          },
+                                                          "iterExpr": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 74,
+                                                                "column": 32
+                                                              },
+                                                              "end": {
+                                                                "line": 74,
+                                                                "column": 40
+                                                              }
+                                                            },
+                                                            "pyExpr": "TOPIC_IDS"
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  },
+                                                  "conditionExpr": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 73,
+                                                        "column": 20
+                                                      },
+                                                      "end": {
+                                                        "line": 73,
+                                                        "column": 43
+                                                      }
+                                                    },
+                                                    "pyExpr": "cluster_topic[cid] == \"\""
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 72,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 72,
+                                            "column": 49
+                                          }
+                                        },
+                                        "pyExpr": "cluster_status[cid] == \"AVAILABLE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 71,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 71,
+                                "column": 32
+                              }
+                            },
+                            "pyExpr": "cid in cluster_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 70,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 70,
+                    "column": 26
+                  }
+                },
+                "pyExpr": "CLUSTER_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 90,
+          "column": 1
+        },
+        "end": {
+          "line": 114
+        }
+      },
+      "name": "ClusterEventNotificationDelivered",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 91,
+            "column": 5
+          },
+          "end": {
+            "line": 114
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 91,
+                "column": 5
+              },
+              "end": {
+                "line": 114
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 91,
+                  "column": 5
+                },
+                "end": {
+                  "line": 114
+                }
+              },
+              "loopVars": [
+                "cid"
+              ],
+              "pyExpr": "CLUSTER_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 92,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 114
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 92,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 114
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 92,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 114
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 92,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 114
+                            }
+                          },
+                          "condition": "cid in cluster_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 93,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 114
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 93,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 114
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 93,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 114
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 93,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 114
+                                        }
+                                      },
+                                      "condition": "cluster_status[cid] == \"AVAILABLE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 94,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 114
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 94,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 114
+                                              }
+                                            },
+                                            "ifStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 94,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 114
+                                                }
+                                              },
+                                              "branches": [
+                                                {
+                                                  "sourceInfo": {
+                                                    "start": {
+                                                      "line": 94,
+                                                      "column": 20
+                                                    },
+                                                    "end": {
+                                                      "line": 114
+                                                    }
+                                                  },
+                                                  "condition": "cluster_topic[cid] != \"\"",
+                                                  "block": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 95,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 114
+                                                      }
+                                                    },
+                                                    "stmts": [
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 95,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 96,
+                                                            "column": 20
+                                                          }
+                                                        },
+                                                        "pyStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 95,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 95,
+                                                              "column": 44
+                                                            }
+                                                          },
+                                                          "code": "tid = cluster_topic[cid]"
+                                                        }
+                                                      },
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 96,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 114
+                                                          }
+                                                        },
+                                                        "ifStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 96,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 114
+                                                            }
+                                                          },
+                                                          "branches": [
+                                                            {
+                                                              "sourceInfo": {
+                                                                "start": {
+                                                                  "line": 96,
+                                                                  "column": 24
+                                                                },
+                                                                "end": {
+                                                                  "line": 114
+                                                                }
+                                                              },
+                                                              "condition": "tid in topic_status",
+                                                              "block": {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 97,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 114
+                                                                  }
+                                                                },
+                                                                "stmts": [
+                                                                  {
+                                                                    "sourceInfo": {
+                                                                      "start": {
+                                                                        "line": 97,
+                                                                        "column": 25
+                                                                      },
+                                                                      "end": {
+                                                                        "line": 114
+                                                                      }
+                                                                    },
+                                                                    "ifStmt": {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 97,
+                                                                          "column": 25
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 114
+                                                                        }
+                                                                      },
+                                                                      "branches": [
+                                                                        {
+                                                                          "sourceInfo": {
+                                                                            "start": {
+                                                                              "line": 97,
+                                                                              "column": 28
+                                                                            },
+                                                                            "end": {
+                                                                              "line": 114
+                                                                            }
+                                                                          },
+                                                                          "condition": "topic_status[tid] == \"ACTIVE\"",
+                                                                          "block": {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 98,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 114
+                                                                              }
+                                                                            },
+                                                                            "stmts": [
+                                                                              {
+                                                                                "sourceInfo": {
+                                                                                  "start": {
+                                                                                    "line": 98,
+                                                                                    "column": 29
+                                                                                  },
+                                                                                  "end": {
+                                                                                    "line": 114
+                                                                                  }
+                                                                                },
+                                                                                "anyStmt": {
+                                                                                  "sourceInfo": {
+                                                                                    "start": {
+                                                                                      "line": 98,
+                                                                                      "column": 29
+                                                                                    },
+                                                                                    "end": {
+                                                                                      "line": 114
+                                                                                    }
+                                                                                  },
+                                                                                  "loopVars": [
+                                                                                    "mid"
+                                                                                  ],
+                                                                                  "pyExpr": "MSG_IDS",
+                                                                                  "block": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 99,
+                                                                                        "column": 33
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 114
+                                                                                      }
+                                                                                    },
+                                                                                    "stmts": [
+                                                                                      {
+                                                                                        "sourceInfo": {
+                                                                                          "start": {
+                                                                                            "line": 99,
+                                                                                            "column": 33
+                                                                                          },
+                                                                                          "end": {
+                                                                                            "line": 114
+                                                                                          }
+                                                                                        },
+                                                                                        "ifStmt": {
+                                                                                          "sourceInfo": {
+                                                                                            "start": {
+                                                                                              "line": 99,
+                                                                                              "column": 33
+                                                                                            },
+                                                                                            "end": {
+                                                                                              "line": 114
+                                                                                            }
+                                                                                          },
+                                                                                          "branches": [
+                                                                                            {
+                                                                                              "sourceInfo": {
+                                                                                                "start": {
+                                                                                                  "line": 99,
+                                                                                                  "column": 36
+                                                                                                },
+                                                                                                "end": {
+                                                                                                  "line": 114
+                                                                                                }
+                                                                                              },
+                                                                                              "condition": "mid not in msg_status",
+                                                                                              "block": {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 100,
+                                                                                                    "column": 37
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 114
+                                                                                                  }
+                                                                                                },
+                                                                                                "stmts": [
+                                                                                                  {
+                                                                                                    "sourceInfo": {
+                                                                                                      "start": {
+                                                                                                        "line": 100,
+                                                                                                        "column": 37
+                                                                                                      },
+                                                                                                      "end": {
+                                                                                                        "line": 101,
+                                                                                                        "column": 36
+                                                                                                      }
+                                                                                                    },
+                                                                                                    "pyStmt": {
+                                                                                                      "sourceInfo": {
+                                                                                                        "start": {
+                                                                                                          "line": 100,
+                                                                                                          "column": 37
+                                                                                                        },
+                                                                                                        "end": {
+                                                                                                          "line": 100,
+                                                                                                          "column": 69
+                                                                                                        }
+                                                                                                      },
+                                                                                                      "code": "cluster_status[cid] = \"MODIFYING\""
+                                                                                                    }
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "sourceInfo": {
+                                                                                                      "start": {
+                                                                                                        "line": 101,
+                                                                                                        "column": 37
+                                                                                                      },
+                                                                                                      "end": {
+                                                                                                        "line": 102,
+                                                                                                        "column": 36
+                                                                                                      }
+                                                                                                    },
+                                                                                                    "pyStmt": {
+                                                                                                      "sourceInfo": {
+                                                                                                        "start": {
+                                                                                                          "line": 101,
+                                                                                                          "column": 37
+                                                                                                        },
+                                                                                                        "end": {
+                                                                                                          "line": 101,
+                                                                                                          "column": 65
+                                                                                                        }
+                                                                                                      },
+                                                                                                      "code": "msg_status[mid] = \"PUBLISHED\""
+                                                                                                    }
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "sourceInfo": {
+                                                                                                      "start": {
+                                                                                                        "line": 102,
+                                                                                                        "column": 37
+                                                                                                      },
+                                                                                                      "end": {
+                                                                                                        "line": 103,
+                                                                                                        "column": 36
+                                                                                                      }
+                                                                                                    },
+                                                                                                    "pyStmt": {
+                                                                                                      "sourceInfo": {
+                                                                                                        "start": {
+                                                                                                          "line": 102,
+                                                                                                          "column": 37
+                                                                                                        },
+                                                                                                        "end": {
+                                                                                                          "line": 102,
+                                                                                                          "column": 56
+                                                                                                        }
+                                                                                                      },
+                                                                                                      "code": "msg_topic[mid] = tid"
+                                                                                                    }
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "sourceInfo": {
+                                                                                                      "start": {
+                                                                                                        "line": 103,
+                                                                                                        "column": 37
+                                                                                                      },
+                                                                                                      "end": {
+                                                                                                        "line": 114
+                                                                                                      }
+                                                                                                    },
+                                                                                                    "pyStmt": {
+                                                                                                      "sourceInfo": {
+                                                                                                        "start": {
+                                                                                                          "line": 103,
+                                                                                                          "column": 37
+                                                                                                        },
+                                                                                                        "end": {
+                                                                                                          "line": 103,
+                                                                                                          "column": 58
+                                                                                                        }
+                                                                                                      },
+                                                                                                      "code": "msg_cluster[mid] = cid"
+                                                                                                    }
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              "conditionExpr": {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 99,
+                                                                                                    "column": 36
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 99,
+                                                                                                    "column": 56
+                                                                                                  }
+                                                                                                },
+                                                                                                "pyExpr": "mid not in msg_status"
+                                                                                              }
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  "iterExpr": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 98,
+                                                                                        "column": 40
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 98,
+                                                                                        "column": 46
+                                                                                      }
+                                                                                    },
+                                                                                    "pyExpr": "MSG_IDS"
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          "conditionExpr": {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 97,
+                                                                                "column": 28
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 97,
+                                                                                "column": 56
+                                                                              }
+                                                                            },
+                                                                            "pyExpr": "topic_status[tid] == \"ACTIVE\""
+                                                                          }
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  }
+                                                                ]
+                                                              },
+                                                              "conditionExpr": {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 96,
+                                                                    "column": 24
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 96,
+                                                                    "column": 42
+                                                                  }
+                                                                },
+                                                                "pyExpr": "tid in topic_status"
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  },
+                                                  "conditionExpr": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 94,
+                                                        "column": 20
+                                                      },
+                                                      "end": {
+                                                        "line": 94,
+                                                        "column": 43
+                                                      }
+                                                    },
+                                                    "pyExpr": "cluster_topic[cid] != \"\""
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 93,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 93,
+                                            "column": 49
+                                          }
+                                        },
+                                        "pyExpr": "cluster_status[cid] == \"AVAILABLE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 92,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 92,
+                                "column": 32
+                              }
+                            },
+                            "pyExpr": "cid in cluster_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 91,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 91,
+                    "column": 26
+                  }
+                },
+                "pyExpr": "CLUSTER_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 114,
+          "column": 1
+        },
+        "end": {
+          "line": 129
+        }
+      },
+      "name": "ClusterEventNotificationFails",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 115,
+            "column": 5
+          },
+          "end": {
+            "line": 129
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 115,
+                "column": 5
+              },
+              "end": {
+                "line": 129
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 115,
+                  "column": 5
+                },
+                "end": {
+                  "line": 129
+                }
+              },
+              "loopVars": [
+                "cid"
+              ],
+              "pyExpr": "CLUSTER_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 116,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 129
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 116,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 129
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 116,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 129
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 116,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 129
+                            }
+                          },
+                          "condition": "cid in cluster_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 117,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 129
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 117,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 129
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 117,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 129
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 117,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 129
+                                        }
+                                      },
+                                      "condition": "cluster_status[cid] == \"AVAILABLE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 118,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 129
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 118,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 129
+                                              }
+                                            },
+                                            "ifStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 118,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 129
+                                                }
+                                              },
+                                              "branches": [
+                                                {
+                                                  "sourceInfo": {
+                                                    "start": {
+                                                      "line": 118,
+                                                      "column": 20
+                                                    },
+                                                    "end": {
+                                                      "line": 129
+                                                    }
+                                                  },
+                                                  "condition": "cluster_topic[cid] != \"\"",
+                                                  "block": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 119,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 129
+                                                      }
+                                                    },
+                                                    "stmts": [
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 119,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 120,
+                                                            "column": 20
+                                                          }
+                                                        },
+                                                        "pyStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 119,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 119,
+                                                              "column": 44
+                                                            }
+                                                          },
+                                                          "code": "tid = cluster_topic[cid]"
+                                                        }
+                                                      },
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 120,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 129
+                                                          }
+                                                        },
+                                                        "ifStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 120,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 129
+                                                            }
+                                                          },
+                                                          "branches": [
+                                                            {
+                                                              "sourceInfo": {
+                                                                "start": {
+                                                                  "line": 120,
+                                                                  "column": 24
+                                                                },
+                                                                "end": {
+                                                                  "line": 129
+                                                                }
+                                                              },
+                                                              "condition": "tid in topic_status",
+                                                              "block": {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 121,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 129
+                                                                  }
+                                                                },
+                                                                "stmts": [
+                                                                  {
+                                                                    "sourceInfo": {
+                                                                      "start": {
+                                                                        "line": 121,
+                                                                        "column": 25
+                                                                      },
+                                                                      "end": {
+                                                                        "line": 129
+                                                                      }
+                                                                    },
+                                                                    "ifStmt": {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 121,
+                                                                          "column": 25
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 129
+                                                                        }
+                                                                      },
+                                                                      "branches": [
+                                                                        {
+                                                                          "sourceInfo": {
+                                                                            "start": {
+                                                                              "line": 121,
+                                                                              "column": 28
+                                                                            },
+                                                                            "end": {
+                                                                              "line": 129
+                                                                            }
+                                                                          },
+                                                                          "condition": "topic_status[tid] == \"DELETED\"",
+                                                                          "block": {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 122,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 129
+                                                                              }
+                                                                            },
+                                                                            "stmts": [
+                                                                              {
+                                                                                "sourceInfo": {
+                                                                                  "start": {
+                                                                                    "line": 122,
+                                                                                    "column": 29
+                                                                                  },
+                                                                                  "end": {
+                                                                                    "line": 129
+                                                                                  }
+                                                                                },
+                                                                                "pyStmt": {
+                                                                                  "sourceInfo": {
+                                                                                    "start": {
+                                                                                      "line": 122,
+                                                                                      "column": 29
+                                                                                    },
+                                                                                    "end": {
+                                                                                      "line": 122,
+                                                                                      "column": 61
+                                                                                    }
+                                                                                  },
+                                                                                  "code": "cluster_status[cid] = \"MODIFYING\""
+                                                                                }
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          "conditionExpr": {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 121,
+                                                                                "column": 28
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 121,
+                                                                                "column": 57
+                                                                              }
+                                                                            },
+                                                                            "pyExpr": "topic_status[tid] == \"DELETED\""
+                                                                          }
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  }
+                                                                ]
+                                                              },
+                                                              "conditionExpr": {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 120,
+                                                                    "column": 24
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 120,
+                                                                    "column": 42
+                                                                  }
+                                                                },
+                                                                "pyExpr": "tid in topic_status"
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  },
+                                                  "conditionExpr": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 118,
+                                                        "column": 20
+                                                      },
+                                                      "end": {
+                                                        "line": 118,
+                                                        "column": 43
+                                                      }
+                                                    },
+                                                    "pyExpr": "cluster_topic[cid] != \"\""
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 117,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 117,
+                                            "column": 49
+                                          }
+                                        },
+                                        "pyExpr": "cluster_status[cid] == \"AVAILABLE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 116,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 116,
+                                "column": 32
+                              }
+                            },
+                            "pyExpr": "cid in cluster_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 115,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 115,
+                    "column": 26
+                  }
+                },
+                "pyExpr": "CLUSTER_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 129,
+          "column": 1
+        },
+        "end": {
+          "line": 137
+        }
+      },
+      "name": "ClusterModificationComplete",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 130,
+            "column": 5
+          },
+          "end": {
+            "line": 137
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 130,
+                "column": 5
+              },
+              "end": {
+                "line": 137
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 130,
+                  "column": 5
+                },
+                "end": {
+                  "line": 137
+                }
+              },
+              "loopVars": [
+                "cid"
+              ],
+              "pyExpr": "CLUSTER_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 131,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 137
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 131,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 137
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 131,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 137
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 131,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 137
+                            }
+                          },
+                          "condition": "cid in cluster_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 132,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 137
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 132,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 137
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 132,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 137
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 132,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 137
+                                        }
+                                      },
+                                      "condition": "cluster_status[cid] == \"MODIFYING\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 133,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 137
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 133,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 137
+                                              }
+                                            },
+                                            "pyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 133,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 133,
+                                                  "column": 49
+                                                }
+                                              },
+                                              "code": "cluster_status[cid] = \"AVAILABLE\""
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 132,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 132,
+                                            "column": 49
+                                          }
+                                        },
+                                        "pyExpr": "cluster_status[cid] == \"MODIFYING\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 131,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 131,
+                                "column": 32
+                              }
+                            },
+                            "pyExpr": "cid in cluster_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 130,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 130,
+                    "column": 26
+                  }
+                },
+                "pyExpr": "CLUSTER_IDS"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "stmts": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 13,
+          "column": 1
+        },
+        "end": {
+          "line": 14
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 13,
+            "column": 1
+          },
+          "end": {
+            "line": 13,
+            "column": 27
+          }
+        },
+        "code": "CLUSTER_IDS = [\"cluster-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 14,
+          "column": 1
+        },
+        "end": {
+          "line": 15
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 14,
+            "column": 1
+          },
+          "end": {
+            "line": 14,
+            "column": 23
+          }
+        },
+        "code": "TOPIC_IDS = [\"topic-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 15,
+          "column": 1
+        },
+        "end": {
+          "line": 18
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 15,
+            "column": 1
+          },
+          "end": {
+            "line": 15,
+            "column": 19
+          }
+        },
+        "code": "MSG_IDS = [\"msg-1\"]"
+      }
+    }
+  ],
+  "frontMatter": {
+    "yaml": "deadlock_detection: false\noptions:\n  max_concurrent_actions: 1\n  max_actions: 35\n"
+  }
+}

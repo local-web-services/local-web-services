@@ -1,0 +1,320 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 6
+---
+# StepFunctions Formal Specification
+# Models state machines, executions, versioning, sync vs standard semantics, and tagging.
+
+SM_ARNS = ["arn:sm:a", "arn:sm:b"]
+EXEC_IDS = ["exec-1", "exec-2"]
+TAG_KEYS = ["env"]
+
+action Init:
+    sm_status = {}
+    sm_type = {}
+    sm_version = {}
+    sm_tag = {}
+    exec_status = {}
+    exec_sm = {}
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof arn in SM_ARNS:
+        if arn not in sm_status:
+            oneof:
+                atomic:
+                    sm_status[arn] = "ACTIVE"
+                    sm_type[arn] = "STANDARD"
+                    sm_version[arn] = 1
+                atomic:
+                    sm_status[arn] = "ACTIVE"
+                    sm_type[arn] = "EXPRESS"
+                    sm_version[arn] = 1
+
+# step: a state machine is deleted
+# result: the state machine is in DELETING state
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action DeleteStateMachine:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                sm_status[arn] = "DELETING"
+
+# fake_skip: internal
+# step: a state machine deletion is finalized
+# result: the state machine is DELETED
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is DELETING
+# guard_violation: the state machine is not DELETING
+atomic action FinalizeDeleteStateMachine:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "DELETING":
+                sm_status[arn] = "DELETED"
+
+# step: a state machine definition is updated
+# result: the state machine version is incremented
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action UpdateStateMachine:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                sm_version[arn] = sm_version[arn] + 1
+
+# step: a state machine is described
+# result: the state machine details are returned
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action DescribeStateMachine:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                pass
+
+# step: all state machines are listed
+# result: the list of state machines is returned
+atomic action ListStateMachines:
+    pass
+
+# step: versions of a state machine are listed
+# result: the list of state machine versions is returned
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action ListStateMachineVersions:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                pass
+
+# step: a state machine definition is validated
+# result: the definition is valid or invalid
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action ValidateStateMachineDefinition:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                oneof:
+                    pass
+                    pass
+
+# step: tags are added to a state machine
+# result: the tags are associated with the state machine
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action TagResource:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                oneof tkey in TAG_KEYS:
+                    sm_tag[arn + "#" + tkey] = True
+
+# step: tags are removed from a state machine
+# result: the tags are disassociated from the state machine
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the tag is associated with the state machine
+# guard_violation: the tag is not associated with the state machine
+# guard: the tag association is active
+# guard_violation: the tag association is not active
+atomic action UntagResource:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                oneof tkey in TAG_KEYS:
+                    if (arn + "#" + tkey) in sm_tag:
+                        if sm_tag[arn + "#" + tkey] == True:
+                            sm_tag[arn + "#" + tkey] = False
+
+# step: tags for a state machine are listed
+# result: the list of tags is returned
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action ListTagsForResource:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                pass
+
+# step: an execution is started on a standard state machine
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine is a STANDARD type
+# guard_violation: the state machine is not a STANDARD type
+# guard: the execution slot is available
+# guard_violation_capacity: the execution slot is not available
+atomic action StartExecution:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                if sm_type[arn] == "STANDARD":
+                    oneof eid in EXEC_IDS:
+                        if eid not in exec_status:
+                            exec_status[eid] = "RUNNING"
+                            exec_sm[eid] = arn
+
+# step: a synchronous execution is started on an express state machine
+# result: the execution is SUCCEEDED or FAILED
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine is an EXPRESS type
+# guard_violation: the state machine is not an EXPRESS type
+# guard: the execution slot is available
+# guard_violation_capacity: the execution slot is not available
+atomic action StartSyncExecution:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                if sm_type[arn] == "EXPRESS":
+                    oneof eid in EXEC_IDS:
+                        if eid not in exec_status:
+                            oneof:
+                                atomic:
+                                    exec_status[eid] = "SUCCEEDED"
+                                    exec_sm[eid] = arn
+                                atomic:
+                                    exec_status[eid] = "FAILED"
+                                    exec_sm[eid] = arn
+
+# step: a running execution is stopped
+# result: the execution is ABORTED
+# guard: the execution exists
+# guard_violation: the execution does not exist
+# guard: the execution is RUNNING
+# guard_violation_lifecycle: the execution is not RUNNING
+atomic action StopExecution:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                exec_status[eid] = "ABORTED"
+
+# step: an execution is described
+# result: the execution details are returned
+# guard: the execution exists
+# guard_violation: the execution does not exist
+atomic action DescribeExecution:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            pass
+
+# step: executions for a state machine are listed
+# result: the list of executions is returned
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action ListExecutions:
+    oneof arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] == "ACTIVE":
+                pass
+
+# step: the event history of an execution is retrieved
+# result: the execution history is returned
+# guard: the execution exists
+# guard_violation: the execution does not exist
+atomic action GetExecutionHistory:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            pass
+
+# fake_skip: internal
+# step: a running execution transitions to a terminal state
+# result: the execution is SUCCEEDED or FAILED
+# guard: the execution exists
+# guard_violation: the execution does not exist
+# guard: the execution is RUNNING
+# guard_violation: the execution is not RUNNING
+atomic action ExecutionStepTransition:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof:
+                    exec_status[eid] = "SUCCEEDED"
+                    exec_status[eid] = "FAILED"
+
+# fake_skip: internal
+# step: a running execution exceeds its timeout
+# result: the execution is TIMED_OUT
+# guard: the execution exists
+# guard_violation: the execution does not exist
+# guard: the execution is RUNNING
+# guard_violation: the execution is not RUNNING
+atomic action ExecutionTimeout:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                exec_status[eid] = "TIMED_OUT"
+
+# check: every state machine has a valid status (ACTIVE, DELETING, or DELETED)
+always assertion StateMachineStatusValid:
+    for arn in SM_ARNS:
+        if arn in sm_status:
+            if sm_status[arn] not in ["ACTIVE", "DELETING", "DELETED"]:
+                return False
+    return True
+
+# check: every execution has a valid status (RUNNING, SUCCEEDED, FAILED, TIMED_OUT, or ABORTED)
+always assertion ExecutionStatusValid:
+    for eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] not in ["RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", "ABORTED"]:
+                return False
+    return True
+
+# check: every state machine has a valid type (STANDARD or EXPRESS)
+always assertion StateMachineTypeValid:
+    for arn in SM_ARNS:
+        if arn in sm_type:
+            if sm_type[arn] not in ["STANDARD", "EXPRESS"]:
+                return False
+    return True
+
+# check: synchronous executions only run on express state machines
+always assertion SyncExecutionOnlyForExpress:
+    for eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                sm = exec_sm[eid]
+                if sm in sm_type:
+                    if sm_type[sm] == "EXPRESS":
+                        return False
+    return True
+
+# check: every execution belongs to a known state machine
+always assertion ExecutionBelongsToKnownStateMachine:
+    for eid in EXEC_IDS:
+        if eid in exec_sm:
+            sm = exec_sm[eid]
+            if sm not in sm_status:
+                return False
+    return True

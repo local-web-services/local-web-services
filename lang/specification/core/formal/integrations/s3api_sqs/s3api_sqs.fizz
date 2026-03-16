@@ -1,0 +1,155 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# S3 -> SQS Integration Formal Specification
+# Models S3 bucket event notifications delivered to an SQS queue.
+# When an object is uploaded to a bucket with a notification configuration,
+# S3 sends a notification message to the target SQS queue.
+# If the queue has been deleted, notification delivery fails silently.
+
+BUCKET_IDS = ["bucket-1"]
+QUEUE_IDS = ["queue-1"]
+OBJ_IDS = ["obj-1"]
+MSG_IDS = ["msg-1"]
+
+
+action Init:
+    bucket_status = {}          # bucket_status[bid] = "ACTIVE"
+    bucket_queue = {}           # bucket_queue[bid] = queue_id or "" (notification config)
+    queue_status = {}           # queue_status[qid] = "ACTIVE" | "DELETED"
+    obj_status = {}             # obj_status[oid] = "EXISTS"
+    obj_bucket = {}             # obj_bucket[oid] = bucket_id
+    msg_status = {}             # msg_status[mid] = "QUEUED" | "DELETED"
+    msg_queue = {}              # msg_queue[mid] = queue_id
+    msg_obj = {}                # msg_obj[mid] = obj_id
+
+
+# step: an S3 bucket is created
+# result: the bucket is ACTIVE with no notification configuration
+# guard: the bucket does not already exist
+# guard_violation: the bucket already exists
+atomic action CreateBucket:
+    oneof bid in BUCKET_IDS:
+        if bid not in bucket_status:
+            bucket_status[bid] = "ACTIVE"
+            bucket_queue[bid] = ""
+
+
+# step: an SQS queue is created
+# result: the queue is ACTIVE
+# guard: the queue does not already exist
+# guard_violation: the queue already exists
+atomic action CreateQueue:
+    oneof qid in QUEUE_IDS:
+        if qid not in queue_status:
+            queue_status[qid] = "ACTIVE"
+
+
+# step: the SQS queue is deleted
+# result: the queue is DELETED and notification delivery to it will fail
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is already DELETED
+atomic action DeleteQueue:
+    oneof qid in QUEUE_IDS:
+        if qid in queue_status:
+            if queue_status[qid] == "ACTIVE":
+                queue_status[qid] = "DELETED"
+
+
+# step: an SQS notification configuration is added to the bucket
+# result: the bucket will send notifications to the queue when objects are uploaded
+# guard: the bucket exists and is ACTIVE
+# guard_violation: the bucket does not exist or is not ACTIVE
+# guard: the bucket has no notification configuration
+# guard_violation: the bucket already has a notification configuration
+# guard: the queue exists and is ACTIVE
+# guard_violation: the queue does not exist or is not ACTIVE
+atomic action ConfigureNotification:
+    oneof bid in BUCKET_IDS:
+        if bid in bucket_status:
+            if bucket_status[bid] == "ACTIVE":
+                if bucket_queue[bid] == "":
+                    oneof qid in QUEUE_IDS:
+                        if qid in queue_status:
+                            if queue_status[qid] == "ACTIVE":
+                                bucket_queue[bid] = qid
+
+
+# step: an object is uploaded to the bucket and S3 delivers a notification to the SQS queue
+# result: the object EXISTS and a notification message is QUEUED
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the bucket has a notification configuration
+# guard_violation: the bucket has no notification configuration
+# guard: the target queue is ACTIVE
+# guard_violation_lifecycle: the target queue is DELETED
+# guard: an object slot is available
+# guard_violation_capacity: no object slot is available
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action PutObjectWithNotification:
+    oneof bid in BUCKET_IDS:
+        if bid in bucket_status:
+            if bucket_status[bid] == "ACTIVE":
+                if bucket_queue[bid] != "":
+                    qid = bucket_queue[bid]
+                    if qid in queue_status:
+                        if queue_status[qid] == "ACTIVE":
+                            oneof oid in OBJ_IDS:
+                                if oid not in obj_status:
+                                    oneof mid in MSG_IDS:
+                                        if mid not in msg_status:
+                                            obj_status[oid] = "EXISTS"
+                                            obj_bucket[oid] = bid
+                                            msg_status[mid] = "QUEUED"
+                                            msg_queue[mid] = qid
+                                            msg_obj[mid] = oid
+
+
+# step: an object is uploaded but notification delivery fails because the queue has been deleted
+# result: the object EXISTS but no notification message is delivered
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the bucket has a notification configuration
+# guard_violation: the bucket has no notification configuration
+# guard: the target queue is DELETED
+# guard_violation_lifecycle: the target queue is not DELETED
+# guard: an object slot is available
+# guard_violation_capacity: no object slot is available
+atomic action PutObjectNotificationFails:
+    oneof bid in BUCKET_IDS:
+        if bid in bucket_status:
+            if bucket_status[bid] == "ACTIVE":
+                if bucket_queue[bid] != "":
+                    qid = bucket_queue[bid]
+                    if qid in queue_status:
+                        if queue_status[qid] == "DELETED":
+                            oneof oid in OBJ_IDS:
+                                if oid not in obj_status:
+                                    obj_status[oid] = "EXISTS"
+                                    obj_bucket[oid] = bid
+
+
+# check: every QUEUED message references an object that exists
+always assertion QueuedMessageReferencesExistingObject:
+    for mid in msg_status:
+        if msg_status[mid] == "QUEUED":
+            oid = msg_obj[mid]
+            if oid not in obj_status:
+                return False
+    return True
+
+
+# check: every QUEUED message references a queue that exists
+always assertion QueuedMessageReferencesExistingQueue:
+    for mid in msg_status:
+        if msg_status[mid] == "QUEUED":
+            qid = msg_queue[mid]
+            if qid not in queue_status:
+                return False
+    return True

@@ -1,0 +1,130 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Step Functions -> Cognito IdP Integration Formal Specification
+# Models a Step Functions state machine calling Cognito IdP admin APIs
+# (e.g., AdminCreateUser, AdminGetUser) as a task step via the SDK integration.
+# If the user pool has been deleted, the task fails with a ResourceNotFoundException.
+
+SM_IDS = ["sm-1"]
+POOL_IDS = ["pool-1"]
+EXEC_IDS = ["exec-1"]
+
+
+action Init:
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    pool_status = {}            # pool_status[pid] = "ACTIVE" | "DELETED"
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    exec_pool = {}              # exec_pool[eid] = pool_id (pool called by this execution)
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+
+
+# step: a Cognito user pool is created
+# result: the pool is ACTIVE
+# guard: the pool does not already exist
+# guard_violation: the pool already exists
+atomic action CreateUserPool:
+    oneof pid in POOL_IDS:
+        if pid not in pool_status:
+            pool_status[pid] = "ACTIVE"
+
+
+# step: a Cognito user pool is deleted
+# result: the pool is DELETED and SDK task calls targeting it will fail
+# guard: the pool exists
+# guard_violation: the pool does not exist
+# guard: the pool is ACTIVE
+# guard_violation_lifecycle: the pool is already DELETED
+atomic action DeleteUserPool:
+    oneof pid in POOL_IDS:
+        if pid in pool_status:
+            if pool_status[pid] == "ACTIVE":
+                pool_status[pid] = "DELETED"
+
+
+# step: an execution of the state machine is started
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecution:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                oneof eid in EXEC_IDS:
+                    if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                        exec_status[eid] = "RUNNING"
+                        exec_sm[eid] = smid
+
+
+# fake_skip: internal
+# step: a running execution calls an ACTIVE Cognito user pool and the task succeeds
+# result: the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the pool is ACTIVE
+# guard_violation_lifecycle: the pool does not exist or is DELETED
+atomic action CognitoTaskSucceeds:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof pid in POOL_IDS:
+                    if pid in pool_status:
+                        if pool_status[pid] == "ACTIVE":
+                            exec_status[eid] = "SUCCEEDED"
+                            exec_pool[eid] = pid
+
+
+# fake_skip: internal
+# step: a running execution fails because the Cognito user pool has been deleted
+# result: the execution is FAILED with a ResourceNotFoundException
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the pool is DELETED
+# guard_violation_lifecycle: the pool is not DELETED
+atomic action CognitoTaskFails:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof pid in POOL_IDS:
+                    if pid in pool_status:
+                        if pool_status[pid] == "DELETED":
+                            exec_status[eid] = "FAILED"
+                            exec_pool[eid] = pid
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every succeeded execution recorded which pool it called
+# (verifies an execution cannot succeed without calling a pool; pool may be deleted afterwards)
+always assertion SuccessfulExecutionCalledAPool:
+    for eid in exec_status:
+        if exec_status[eid] == "SUCCEEDED":
+            if eid not in exec_pool:
+                return False
+    return True

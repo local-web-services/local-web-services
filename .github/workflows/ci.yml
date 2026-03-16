@@ -19,11 +19,11 @@ jobs:
       core: ${{ steps.filter.outputs.core }}
       python: ${{ steps.filter.outputs.python }}
       typescript: ${{ steps.filter.outputs.typescript }}
-      javascript: ${{ steps.filter.outputs.javascript }}
       java: ${{ steps.filter.outputs.java }}
       go: ${{ steps.filter.outputs.go }}
       sample-cdk: ${{ steps.filter.outputs.sample-cdk }}
       sample-hcl: ${{ steps.filter.outputs.sample-hcl }}
+      specification: ${{ steps.filter.outputs.specification }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -31,31 +31,57 @@ jobs:
         with:
           filters: |
             core:
-              - 'core/**'
+              - 'lang/python/core/**'
             python:
-              - 'core/**'
               - 'lang/python/**'
             typescript:
-              - 'core/**'
-              - 'lang/typescript/**'
-            javascript:
-              - 'core/**'
-              - 'lang/javascript/**'
+              - 'lang/typescript/core/**'
+              - 'lang/typescript/sdk/**'
+              - 'lang/typescript/example/**'
+              - 'lang/specification/**'
             java:
-              - 'core/**'
               - 'lang/java/**'
+              - 'lang/specification/**'
             go:
-              - 'core/**'
               - 'lang/go/**'
+              - 'lang/specification/**'
             sample-cdk:
-              - 'core/**'
+              - 'lang/python/core/**'
               - 'sample-project/cdk/**'
             sample-hcl:
-              - 'core/**'
+              - 'lang/python/core/**'
               - 'sample-project/hcl/**'
+            specification:
+              - 'lang/specification/core/formal/**'
 
-  # ── Core (Python ldk) ──────────────────────────────────────────────────────
-  core-lint:
+  # ── FizzBee Formal Specs ────────────────────────────────────────────────────
+  fizzbee-check:
+    needs: [changes]
+    if: needs.changes.outputs.specification == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install FizzBee
+        run: |
+          curl -L https://github.com/fizzbee-io/fizzbee/releases/download/v0.3.1/fizzbee-v0.3.1-linux_x86.tar.gz -o fizzbee.tar.gz
+          echo "73754b32b9950fcee78201484856fd734a7b3bc8a1b33fe491a58046da0ac9d4  fizzbee.tar.gz" | sha256sum -c
+          tar -xzf fizzbee.tar.gz
+          sudo install -m 755 fizz /usr/local/bin/fizz
+      - name: Run FizzBee model checker
+        run: |
+          failed=0
+          for spec in lang/specification/core/formal/*/*.fizz lang/specification/core/formal/integrations/*/*.fizz; do
+            echo "Checking: $spec"
+            if ! timeout 120 fizz "$spec"; then
+              echo "FAILED: $spec"
+              failed=1
+            fi
+          done
+          exit $failed
+
+  # ── Python Core ────────────────────────────────────────────────────────────
+  python-core-lint:
     needs: [changes]
     if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-latest
@@ -66,13 +92,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
-        working-directory: core
+        working-directory: lang/python/core
       - run: make lint
-        working-directory: core
+        working-directory: lang/python/core
       - run: make format-check
-        working-directory: core
+        working-directory: lang/python/core
 
-  core-test:
+  python-core-test:
     needs: [changes]
     if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-latest
@@ -83,12 +109,12 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
-        working-directory: core
+        working-directory: lang/python/core
       - run: make test
-        working-directory: core
+        working-directory: lang/python/core
 
-  core-test-e2e:
-    needs: [changes, core-lint, core-test]
+  python-core-test-e2e:
+    needs: [changes, python-core-lint, python-core-test]
     if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -105,17 +131,17 @@ jobs:
           docker pull public.ecr.aws/lambda/python:3.12
           docker pull public.ecr.aws/lambda/nodejs:20
       - run: make install
-        working-directory: core
+        working-directory: lang/python/core
       - run: make test-e2e
-        working-directory: core
+        working-directory: lang/python/core
 
   # ── Python SDK ─────────────────────────────────────────────────────────────
   python-sdk-test:
-    needs: [changes, core-test-e2e]
+    needs: [changes, python-core-test-e2e]
     if: |
       always() &&
       needs.changes.outputs.python == 'true' &&
-      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+      (needs.python-core-test-e2e.result == 'success' || needs.python-core-test-e2e.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -124,100 +150,105 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install ldk
-        run: uv pip install --system -e core
+        run: uv pip install --system -e lang/python/core
       - name: Test
         working-directory: lang/python/sdk
         run: uv run pytest
 
-  # ── TypeScript SDK ─────────────────────────────────────────────────────────
-  typescript-sdk-test:
-    needs: [changes, core-test-e2e]
-    if: |
-      always() &&
-      needs.changes.outputs.typescript == 'true' &&
-      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+  # ── TypeScript Core ─────────────────────────────────────────────────────────
+  typescript-core-test:
+    needs: [changes]
+    if: needs.changes.outputs.typescript == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install ldk
-        run: uv pip install --system -e core
       - name: Test
-        working-directory: lang/typescript/sdk
+        working-directory: lang/typescript/core
         run: npm ci && npm test
 
-  # ── JavaScript SDK ─────────────────────────────────────────────────────────
-  javascript-sdk-test:
-    needs: [changes, core-test-e2e]
-    if: |
-      always() &&
-      needs.changes.outputs.javascript == 'true' &&
-      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+  # ── Go Core ─────────────────────────────────────────────────────────────────
+  go-core-test:
+    needs: [changes]
+    if: needs.changes.outputs.go == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-go@v5
         with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install ldk
-        run: uv pip install --system -e core
+          go-version: "1.23"
       - name: Test
-        working-directory: lang/javascript/sdk
-        run: npm ci && npm test
+        working-directory: lang/go/core
+        run: go test ./...
 
-  # ── Java SDK ───────────────────────────────────────────────────────────────
-  java-sdk-test:
-    needs: [changes, core-test-e2e]
-    if: |
-      always() &&
-      needs.changes.outputs.java == 'true' &&
-      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+  # ── Java Core ───────────────────────────────────────────────────────────────
+  java-core-test:
+    needs: [changes]
+    if: needs.changes.outputs.java == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: "temurin"
-      - name: Install ldk
-        run: uv pip install --system -e core
+      - name: Test
+        working-directory: lang/java/core
+        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew test
+
+  # ── TypeScript SDK ─────────────────────────────────────────────────────────
+  typescript-sdk-test:
+    needs: [changes, typescript-core-test]
+    if: |
+      always() &&
+      needs.changes.outputs.typescript == 'true' &&
+      (needs.typescript-core-test.result == 'success' || needs.typescript-core-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Test
+        working-directory: lang/typescript/sdk
+        run: npm ci && npm test
+
+  # ── Java SDK ───────────────────────────────────────────────────────────────
+  java-sdk-test:
+    needs: [changes, java-core-test]
+    if: |
+      always() &&
+      needs.changes.outputs.java == 'true' &&
+      (needs.java-core-test.result == 'success' || needs.java-core-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Build Java core JAR
+        working-directory: lang/java/core
+        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
       - name: Test
         working-directory: lang/java/sdk
         run: ./gradlew test
 
   # ── Go SDK ─────────────────────────────────────────────────────────────────
   go-sdk-test:
-    needs: [changes, core-test-e2e]
+    needs: [changes, go-core-test]
     if: |
       always() &&
       needs.changes.outputs.go == 'true' &&
-      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+      (needs.go-core-test.result == 'success' || needs.go-core-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23"
-      - name: Install ldk
-        run: uv pip install --system -e core
       - name: Test
         working-directory: lang/go/sdk
         run: go test ./...
@@ -238,7 +269,7 @@ jobs:
           python-version: "3.12"
       - name: Install ldk and Python SDK
         run: |
-          uv pip install --system -e core
+          uv pip install --system -e lang/python/core
           uv pip install --system -e lang/python/sdk
       - name: Test
         working-directory: lang/python/example
@@ -254,47 +285,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install ldk
-        run: uv pip install --system -e core
       - name: Build TypeScript SDK
         working-directory: lang/typescript/sdk
         run: npm ci && npm run build
-      - name: Test
+      - name: Test (Jest)
         working-directory: lang/typescript/example
         run: npm ci && npm test
-
-  # ── JavaScript Example ──────────────────────────────────────────────────────
-  javascript-example-test:
-    needs: [changes, javascript-sdk-test]
-    if: |
-      always() &&
-      needs.changes.outputs.javascript == 'true' &&
-      needs.javascript-sdk-test.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install ldk
-        run: uv pip install --system -e core
-      - name: Install JavaScript SDK dependencies
-        working-directory: lang/javascript/sdk
-        run: npm ci
-      - name: Test
-        working-directory: lang/javascript/example
-        run: npm ci && npm test
+      - name: Test (BDD)
+        working-directory: lang/typescript/example
+        run: npm run test:bdd
 
   # ── Java Example ────────────────────────────────────────────────────────────
   java-example-test:
@@ -306,30 +308,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: "temurin"
-      - name: Install ldk
-        run: uv pip install --system -e core
-      - name: Publish SDK to mavenLocal
+      - name: Build Java core JAR
+        working-directory: lang/java/core
+        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
+      - name: Build Java SDK JAR
         working-directory: lang/java/sdk
-        run: ./gradlew publishToMavenLocal
+        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew jar
       - name: Test
         working-directory: lang/java/example
-        run: ./gradlew test
+        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example" ./gradlew test
 
   # ── Sample Project CDK ──────────────────────────────────────────────────────
   sample-project-cdk-build:
-    needs: [changes, core-test-e2e]
+    needs: [changes, python-core-test-e2e]
     if: |
       always() &&
       needs.changes.outputs.sample-cdk == 'true' &&
-      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+      (needs.python-core-test-e2e.result == 'success' || needs.python-core-test-e2e.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -344,7 +343,7 @@ jobs:
         run: |
           docker pull public.ecr.aws/lambda/nodejs:20
       - name: Install ldk and lws
-        run: uv pip install --system -e core
+        run: uv pip install --system -e lang/python/core
       - name: Install CDK dependencies
         working-directory: sample-project/cdk
         run: npm ci
@@ -370,11 +369,11 @@ jobs:
 
   # ── Sample Project HCL ──────────────────────────────────────────────────────
   sample-project-hcl-build:
-    needs: [changes, core-test-e2e]
+    needs: [changes, python-core-test-e2e]
     if: |
       always() &&
       needs.changes.outputs.sample-hcl == 'true' &&
-      (needs.core-test-e2e.result == 'success' || needs.core-test-e2e.result == 'skipped')
+      (needs.python-core-test-e2e.result == 'success' || needs.python-core-test-e2e.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -387,7 +386,7 @@ jobs:
         run: |
           docker pull public.ecr.aws/lambda/nodejs:20
       - name: Install ldk and lws
-        run: uv pip install --system -e core
+        run: uv pip install --system -e lang/python/core
       - name: Start ldk dev
         working-directory: sample-project/hcl
         run: ldk dev &
@@ -421,15 +420,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - uses: actions/setup-go@v5
         with:
           go-version: "1.23"
-      - name: Install ldk
-        run: uv pip install --system -e core
       - name: Test
         working-directory: lang/go/example
         run: go test ./...

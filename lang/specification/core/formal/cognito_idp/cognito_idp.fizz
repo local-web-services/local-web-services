@@ -1,0 +1,415 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 12
+---
+POOL_IDS = ["pool-1", "pool-2"]
+USER_IDS = ["user-1", "user-2", "user-3", "user-4"]
+GROUP_IDS = ["group-1", "group-2"]
+SESSION_IDS = ["session-1", "session-2", "session-3", "session-4"]
+
+action Init:
+    pool_status = {}
+    user_status = {}
+    user_pool = {}
+    user_enabled = {}
+    user_attr_updated = {}
+    group_pool = {}
+    group_status = {}
+    user_in_group = {}
+    session_status = {}
+    session_user = {}
+    session_pool = {}
+
+# step: a user pool is created
+# result: the user pool is ACTIVE
+# guard: the user pool does not already exist
+# guard_violation: the user pool already exists
+atomic action CreateUserPool:
+    oneof pool_id in POOL_IDS:
+        if pool_id not in pool_status:
+            pool_status[pool_id] = "ACTIVE"
+
+# step: a user pool is deleted
+# result: the user pool is DELETED along with all its users and groups
+# guard: the user pool exists
+# guard_violation: the user pool does not exist
+# guard: the user pool is ACTIVE
+# guard_violation: the user pool is not ACTIVE
+# guard: the user belongs to a pool
+# guard_violation: the user does not belong to a pool
+# guard: the user belongs to this pool
+# guard_violation: the user belongs to a different pool
+# guard: the group belongs to a pool
+# guard_violation: the group does not belong to a pool
+# guard: the group belongs to this pool
+# guard_violation: the group belongs to a different pool
+atomic action DeleteUserPool:
+    oneof pool_id in POOL_IDS:
+        if pool_id in pool_status:
+            if pool_status[pool_id] == "ACTIVE":
+                pool_status[pool_id] = "DELETED"
+                for user_id in USER_IDS:
+                    if user_id in user_pool:
+                        if user_pool[user_id] == pool_id:
+                            user_status[user_id] = "DELETED"
+                for group_id in GROUP_IDS:
+                    if group_id in group_pool:
+                        if group_pool[group_id] == pool_id:
+                            group_status[group_id] = "DELETED"
+
+# step: a user is created by an admin in an active user pool
+# result: the user exists in FORCE_CHANGE_PASSWORD state and is enabled
+# guard: the user pool exists
+# guard_violation: the user pool does not exist
+# guard: the user pool is ACTIVE
+# guard_violation: the user pool is not ACTIVE
+# guard: the user does not already exist
+# guard_violation: the user already exists
+atomic action AdminCreateUser:
+    oneof pool_id in POOL_IDS:
+        if pool_id in pool_status:
+            if pool_status[pool_id] == "ACTIVE":
+                oneof user_id in USER_IDS:
+                    if user_id not in user_status:
+                        user_status[user_id] = "FORCE_CHANGE_PASSWORD"
+                        user_pool[user_id] = pool_id
+                        user_enabled[user_id] = True
+
+# step: a user is deleted by an admin
+# result: the user is DELETED, their sessions are expired, and group memberships are cleared
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is not already DELETED
+# guard_violation: the user is already DELETED
+atomic action AdminDeleteUser:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] != "DELETED":
+                user_status[user_id] = "DELETED"
+                for session_id in SESSION_IDS:
+                    if session_id in session_user:
+                        if session_user[session_id] == user_id:
+                            if session_status[session_id] == "AUTHENTICATED":
+                                session_status[session_id] = "EXPIRED"
+                for group_id in GROUP_IDS:
+                    user_in_group[user_id + "#" + group_id] = False
+
+# step: an admin confirms a user registration
+# result: the user is CONFIRMED
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is UNCONFIRMED
+# guard_violation: the user is not UNCONFIRMED
+atomic action AdminConfirmSignUp:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] == "UNCONFIRMED":
+                user_status[user_id] = "CONFIRMED"
+
+# step: an admin resets a user password
+# result: the user is in RESET_REQUIRED state
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is CONFIRMED
+# guard_violation: the user is not CONFIRMED
+atomic action AdminResetUserPassword:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] == "CONFIRMED":
+                user_status[user_id] = "RESET_REQUIRED"
+
+# step: an admin sets a user password
+# result: the user is CONFIRMED
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is in RESET_REQUIRED state
+# guard_violation: the user is not in RESET_REQUIRED state
+# guard: the user is in FORCE_CHANGE_PASSWORD state
+# guard_violation: the user is not in FORCE_CHANGE_PASSWORD state
+atomic action AdminSetUserPassword:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] == "RESET_REQUIRED":
+                user_status[user_id] = "CONFIRMED"
+            if user_status[user_id] == "FORCE_CHANGE_PASSWORD":
+                user_status[user_id] = "CONFIRMED"
+
+# step: a user account is disabled by an admin
+# result: the user is disabled
+# guard: the user has an enabled flag
+# guard_violation: the user does not have an enabled flag
+# guard: the user is enabled
+# guard_violation: the user is not enabled
+atomic action AdminDisableUser:
+    oneof user_id in USER_IDS:
+        if user_id in user_enabled:
+            if user_enabled[user_id]:
+                user_enabled[user_id] = False
+
+# step: a user account is enabled by an admin
+# result: the user is enabled
+# guard: the user has an enabled flag
+# guard_violation: the user does not have an enabled flag
+# guard: the user is disabled
+# guard_violation: the user is not disabled
+atomic action AdminEnableUser:
+    oneof user_id in USER_IDS:
+        if user_id in user_enabled:
+            if not user_enabled[user_id]:
+                user_enabled[user_id] = True
+
+# step: an admin updates attributes for a confirmed user
+# result: the user attributes are updated
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is CONFIRMED
+# guard_violation: the user is not CONFIRMED
+atomic action AdminUpdateUserAttributes:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] == "CONFIRMED":
+                user_attr_updated[user_id] = True
+
+# fake_skip: internal
+# step: a user account is marked as compromised
+# result: the user is in COMPROMISED state
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is CONFIRMED
+# guard_violation: the user is not CONFIRMED
+atomic action MarkUserCompromised:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] == "CONFIRMED":
+                user_status[user_id] = "COMPROMISED"
+
+# step: a group is created in an active user pool
+# result: the group is ACTIVE and associated with the pool
+# guard: the user pool exists
+# guard_violation: the user pool does not exist
+# guard: the user pool is ACTIVE
+# guard_violation: the user pool is not ACTIVE
+# guard: the group does not already exist
+# guard_violation: the group already exists
+atomic action CreateGroup:
+    oneof pool_id in POOL_IDS:
+        if pool_id in pool_status:
+            if pool_status[pool_id] == "ACTIVE":
+                oneof group_id in GROUP_IDS:
+                    if group_id not in group_status:
+                        group_pool[group_id] = pool_id
+                        group_status[group_id] = "ACTIVE"
+
+# step: a group is deleted
+# result: the group is DELETED and all users are removed from it
+# guard: the group exists
+# guard_violation: the group does not exist
+# guard: the group is ACTIVE
+# guard_violation: the group is not ACTIVE
+atomic action DeleteGroup:
+    oneof group_id in GROUP_IDS:
+        if group_id in group_status:
+            if group_status[group_id] == "ACTIVE":
+                group_status[group_id] = "DELETED"
+                for user_id in USER_IDS:
+                    user_in_group[user_id + "#" + group_id] = False
+
+# step: an admin adds a user to a group in the same pool
+# result: the user is a member of the group
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is not DELETED
+# guard_violation: the user is DELETED
+# guard: the group exists
+# guard_violation: the group does not exist
+# guard: the group is ACTIVE
+# guard_violation: the group is not ACTIVE
+# guard: the user and group belong to the same pool
+# guard_violation: the user and group belong to different pools
+atomic action AdminAddUserToGroup:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] != "DELETED":
+                oneof group_id in GROUP_IDS:
+                    if group_id in group_status:
+                        if group_status[group_id] == "ACTIVE":
+                            if user_pool[user_id] == group_pool[group_id]:
+                                user_in_group[user_id + "#" + group_id] = True
+
+# step: an admin removes a user from a group
+# result: the user is no longer a member of the group
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is not DELETED
+# guard_violation: the user is DELETED
+# guard: the group exists
+# guard_violation: the group does not exist
+# guard: the group is ACTIVE
+# guard_violation: the group is not ACTIVE
+atomic action AdminRemoveUserFromGroup:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] != "DELETED":
+                oneof group_id in GROUP_IDS:
+                    if group_id in group_status:
+                        if group_status[group_id] == "ACTIVE":
+                            user_in_group[user_id + "#" + group_id] = False
+
+# step: a confirmed enabled user initiates authentication
+# result: a session is created in CHALLENGE_REQUIRED state
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is CONFIRMED
+# guard_violation: the user is not CONFIRMED
+# guard: the user is enabled
+# guard_violation: the user is not enabled
+# guard: the session slot is available
+# guard_violation_capacity: the session slot is not available
+atomic action InitiateAuth:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] == "CONFIRMED":
+                if user_enabled[user_id]:
+                    oneof session_id in SESSION_IDS:
+                        if session_id not in session_status:
+                            session_status[session_id] = "CHALLENGE_REQUIRED"
+                            session_user[session_id] = user_id
+                            session_pool[session_id] = user_pool[user_id]
+
+# step: a user responds to an auth challenge
+# result: the session is either AUTHENTICATED or CHALLENGE_FAILED
+# guard: the session exists
+# guard_violation: the session does not exist
+# guard: the session is CHALLENGE_REQUIRED
+# guard_violation: the session is not CHALLENGE_REQUIRED
+atomic action RespondToAuthChallenge:
+    oneof session_id in SESSION_IDS:
+        if session_id in session_status:
+            if session_status[session_id] == "CHALLENGE_REQUIRED":
+                oneof:
+                    session_status[session_id] = "AUTHENTICATED"
+                    session_status[session_id] = "CHALLENGE_FAILED"
+
+# step: an admin initiates authentication on behalf of a confirmed enabled user
+# result: a session is created in AUTHENTICATED state
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is CONFIRMED
+# guard_violation: the user is not CONFIRMED
+# guard: the user is enabled
+# guard_violation: the user is not enabled
+# guard: the session slot is available
+# guard_violation_capacity: the session slot is not available
+atomic action AdminInitiateAuth:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] == "CONFIRMED":
+                if user_enabled[user_id]:
+                    oneof session_id in SESSION_IDS:
+                        if session_id not in session_status:
+                            session_status[session_id] = "AUTHENTICATED"
+                            session_user[session_id] = user_id
+                            session_pool[session_id] = user_pool[user_id]
+
+# fake_skip: internal
+# step: an authenticated session expires
+# result: the session is in EXPIRED state
+# guard: the session exists
+# guard_violation: the session does not exist
+# guard: the session is AUTHENTICATED
+# guard_violation: the session is not AUTHENTICATED
+atomic action ExpireAuthSession:
+    oneof session_id in SESSION_IDS:
+        if session_id in session_status:
+            if session_status[session_id] == "AUTHENTICATED":
+                session_status[session_id] = "EXPIRED"
+
+# step: a verification code delivery fails for an unconfirmed user
+# result: the user remains in UNCONFIRMED state
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is UNCONFIRMED
+# guard_violation: the user is not UNCONFIRMED
+atomic action VerificationCodeDeliveryFailure:
+    oneof user_id in USER_IDS:
+        if user_id in user_status:
+            if user_status[user_id] == "UNCONFIRMED":
+                pass
+
+# check: every user pool has a valid status (ACTIVE or DELETED)
+always assertion ValidUserPoolStatus:
+    for pool_id in pool_status:
+        if pool_status[pool_id] != "ACTIVE":
+            if pool_status[pool_id] != "DELETED":
+                return False
+    return True
+
+# check: every user has a valid status
+always assertion ValidUserStatus:
+    for user_id in user_status:
+        s = user_status[user_id]
+        if s != "UNCONFIRMED":
+            if s != "CONFIRMED":
+                if s != "ARCHIVED":
+                    if s != "COMPROMISED":
+                        if s != "RESET_REQUIRED":
+                            if s != "FORCE_CHANGE_PASSWORD":
+                                if s != "DELETED":
+                                    return False
+    return True
+
+# check: every non-deleted user has an enabled flag set
+always assertion UserGroupMembershipEntryExists:
+    for user_id in user_status:
+        if user_status[user_id] != "DELETED":
+            if user_id not in user_enabled:
+                return False
+    return True
+
+# check: every group membership references an existing active group
+always assertion GroupMembershipReferencesExistingGroups:
+    for user_id in USER_IDS:
+        for group_id in GROUP_IDS:
+            compound = user_id + "#" + group_id
+            if compound in user_in_group:
+                if user_in_group[compound]:
+                    if group_id not in group_status:
+                        return False
+                    if group_status[group_id] == "DELETED":
+                        return False
+    return True
+
+# check: every auth session has a valid status
+always assertion ValidAuthSessionStatus:
+    for session_id in session_status:
+        s = session_status[session_id]
+        if s != "CHALLENGE_REQUIRED":
+            if s != "AUTHENTICATED":
+                if s != "CHALLENGE_FAILED":
+                    if s != "EXPIRED":
+                        return False
+    return True
+
+# check: deleted users do not have active authenticated sessions
+always assertion DeletedUsersNotAuthenticated:
+    for session_id in SESSION_IDS:
+        if session_id in session_status:
+            if session_status[session_id] == "AUTHENTICATED":
+                user_id = session_user[session_id]
+                if user_id in user_status:
+                    if user_status[user_id] == "DELETED":
+                        return False
+    return True
+
+# check: disabled users do not have active authenticated sessions
+always assertion DisabledUsersNotAuthenticated:
+    for session_id in SESSION_IDS:
+        if session_id in session_status:
+            if session_status[session_id] == "AUTHENTICATED":
+                user_id = session_user[session_id]
+                if user_id in user_enabled:
+                    if not user_enabled[user_id]:
+                        return False
+    return True

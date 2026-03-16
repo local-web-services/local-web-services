@@ -1,0 +1,201 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Step Functions -> EventBridge Integration Formal Specification
+# Models Step Functions automatically publishing execution state change events
+# to an EventBridge event bus. When an execution starts, succeeds, or fails,
+# Step Functions sends an event to the configured bus.
+# If the bus has been deleted, event delivery fails but the execution still completes.
+
+SM_IDS = ["sm-1"]
+BUS_IDS = ["bus-1"]
+EXEC_IDS = ["exec-1"]
+EVENT_IDS = ["event-1", "event-2"]
+
+
+action Init:
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    sm_bus = {}                 # sm_bus[smid] = bus_id or "" (EventBridge config)
+    bus_status = {}             # bus_status[busid] = "ACTIVE" | "DELETED"
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    event_status = {}           # event_status[evid] = "DELIVERED" | "UNDELIVERED"
+    event_exec = {}             # event_exec[evid] = exec_id
+    event_type = {}             # event_type[evid] = "STARTED" | "SUCCEEDED" | "FAILED"
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE with no EventBridge bus configured
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+            sm_bus[smid] = ""
+
+
+# step: an EventBridge event bus is created
+# result: the bus is ACTIVE
+# guard: the bus does not already exist
+# guard_violation: the bus already exists
+atomic action CreateEventBus:
+    oneof busid in BUS_IDS:
+        if busid not in bus_status:
+            bus_status[busid] = "ACTIVE"
+
+
+# step: the EventBridge event bus is deleted
+# result: the bus is DELETED and execution event delivery will fail
+# guard: the bus exists
+# guard_violation: the bus does not exist
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is already DELETED
+atomic action DeleteEventBus:
+    oneof busid in BUS_IDS:
+        if busid in bus_status:
+            if bus_status[busid] == "ACTIVE":
+                bus_status[busid] = "DELETED"
+
+
+# step: the state machine is configured to publish execution events to the event bus
+# result: the state machine will send execution state change events to the bus
+# guard: the state machine exists and is ACTIVE
+# guard_violation_lifecycle: the state machine does not exist or is not ACTIVE
+# guard: the state machine has no EventBridge bus configured
+# guard_violation: the state machine already has an EventBridge bus configured
+# guard: the bus exists and is ACTIVE
+# guard_violation_lifecycle: the bus does not exist or is not ACTIVE
+atomic action ConfigureEventPublishing:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_bus[smid] == "":
+                    oneof busid in BUS_IDS:
+                        if busid in bus_status:
+                            if bus_status[busid] == "ACTIVE":
+                                sm_bus[smid] = busid
+
+
+# step: an execution starts and Step Functions delivers a STARTED event to the EventBridge bus
+# result: the execution is RUNNING and the STARTED event is DELIVERED
+# guard: the state machine exists and is ACTIVE
+# guard_violation_lifecycle: the state machine does not exist or is not ACTIVE
+# guard: the state machine has an EventBridge bus configured
+# guard_violation: the state machine has no EventBridge bus configured
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is DELETED
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+# guard: an event slot is available
+# guard_violation_capacity: no event slot is available
+atomic action StartExecutionEventDelivered:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_bus[smid] != "":
+                    busid = sm_bus[smid]
+                    if busid in bus_status:
+                        if bus_status[busid] == "ACTIVE":
+                            oneof eid in EXEC_IDS:
+                                if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                                    oneof evid in EVENT_IDS:
+                                        if evid not in event_status:
+                                            exec_status[eid] = "RUNNING"
+                                            exec_sm[eid] = smid
+                                            event_status[evid] = "DELIVERED"
+                                            event_exec[evid] = eid
+                                            event_type[evid] = "STARTED"
+
+
+# step: an execution starts but the STARTED event delivery fails because the bus is deleted
+# result: the execution is RUNNING but no STARTED event is delivered
+# guard: the state machine exists and is ACTIVE
+# guard_violation_lifecycle: the state machine does not exist or is not ACTIVE
+# guard: the state machine has an EventBridge bus configured
+# guard_violation: the state machine has no EventBridge bus configured
+# guard: the bus is DELETED
+# guard_violation_lifecycle: the bus is not DELETED
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecutionEventFails:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_bus[smid] != "":
+                    busid = sm_bus[smid]
+                    if busid in bus_status:
+                        if bus_status[busid] == "DELETED":
+                            oneof eid in EXEC_IDS:
+                                if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                                    exec_status[eid] = "RUNNING"
+                                    exec_sm[eid] = smid
+
+
+# step: a running execution succeeds and Step Functions delivers a SUCCEEDED event to the bus
+# result: the execution is SUCCEEDED and the SUCCEEDED event is DELIVERED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is DELETED
+# guard: an event slot is available
+# guard_violation_capacity: no event slot is available
+atomic action ExecutionSucceedsEventDelivered:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_bus:
+                    busid = sm_bus[smid]
+                    if busid != "":
+                        if busid in bus_status:
+                            if bus_status[busid] == "ACTIVE":
+                                oneof evid in EVENT_IDS:
+                                    if evid not in event_status:
+                                        exec_status[eid] = "SUCCEEDED"
+                                        event_status[evid] = "DELIVERED"
+                                        event_exec[evid] = eid
+                                        event_type[evid] = "SUCCEEDED"
+
+
+# step: a running execution succeeds but the SUCCEEDED event delivery fails because the bus is deleted
+# result: the execution is SUCCEEDED but no SUCCEEDED event is delivered
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the bus is DELETED
+# guard_violation_lifecycle: the bus is not DELETED
+atomic action ExecutionSucceedsEventFails:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_bus:
+                    busid = sm_bus[smid]
+                    if busid != "":
+                        if busid in bus_status:
+                            if bus_status[busid] == "DELETED":
+                                exec_status[eid] = "SUCCEEDED"
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every DELIVERED event references an execution that exists
+always assertion DeliveredEventReferencesExistingExecution:
+    for evid in event_status:
+        if event_status[evid] == "DELIVERED":
+            eid = event_exec[evid]
+            if eid not in exec_status:
+                return False
+    return True

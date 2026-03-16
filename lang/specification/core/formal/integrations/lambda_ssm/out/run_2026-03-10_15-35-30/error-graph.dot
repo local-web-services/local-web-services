@@ -1,0 +1,73 @@
+digraph G {
+    "0" [label="yield
+Actions: 0, Forks: 0
+State: {\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_param\":\"{}\",\"inv_status\":\"{}\",\"param_status\":\"{}\"}
+", color="black" penwidth="2" ];
+    "1" [label="DeployFunction
+Actions: 1, Forks: 1
+State: {\"func_status\":\"{}\",\"inv_func\":\"{}\",\"inv_param\":\"{}\",\"inv_status\":\"{}\",\"param_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+    "0" -> "1" [label="1: DeployFunction", color="black" penwidth="1"];
+    "2" [label="yield
+Actions: 1, Forks: 2
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_param\":\"{}\",\"inv_status\":\"{}\",\"param_status\":\"{}\"}
+", color="black" penwidth="2" ];
+    "1" -> "2" [label="2: Any:fid=\"func-1\"", color="black" penwidth="1"];
+    "3" [label="CreateParameter
+Actions: 2, Forks: 3
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_param\":\"{}\",\"inv_status\":\"{}\",\"param_status\":\"{}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+    "2" -> "3" [label="3: CreateParameter", color="black" penwidth="1"];
+    "4" [label="yield
+Actions: 2, Forks: 4
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_param\":\"{}\",\"inv_status\":\"{}\",\"param_status\":\"{\"param-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+    "3" -> "4" [label="4: Any:pid=\"param-1\"", color="black" penwidth="1"];
+    "5" [label="InvokeFunction
+Actions: 3, Forks: 5
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_param\":\"{}\",\"inv_status\":\"{}\",\"param_status\":\"{\"param-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+    "4" -> "5" [label="5: InvokeFunction", color="black" penwidth="1"];
+    "6" [label="Any:fid=\"func-1\"
+Actions: 3, Forks: 6
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{}\",\"inv_param\":\"{}\",\"inv_status\":\"{}\",\"param_status\":\"{\"param-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+    "5" -> "6" [label="6: Any:fid=\"func-1\"", color="black" penwidth="1"];
+    "7" [label="yield
+Actions: 3, Forks: 7
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_param\":\"{}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"param_status\":\"{\"param-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+    "6" -> "7" [label="7: Any:iid=\"inv-1\"", color="black" penwidth="1"];
+    "8" [label="InvocationSucceeds
+Actions: 4, Forks: 8
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_param\":\"{}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"param_status\":\"{\"param-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+    "7" -> "8" [label="8: InvocationSucceeds", color="black" penwidth="1"];
+    "9" [label="Any:iid=\"inv-1\"
+Actions: 4, Forks: 9
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_param\":\"{}\",\"inv_status\":\"{\"inv-1\": \"IN_PROGRESS\"}\",\"param_status\":\"{\"param-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+    "8" -> "9" [label="9: Any:iid=\"inv-1\"", color="black" penwidth="1"];
+    "10" [label="yield
+Actions: 4, Forks: 10
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_param\":\"{\"inv-1\": \"param-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"param_status\":\"{\"param-1\": \"EXISTS\"}\"}
+", color="black" penwidth="2" ];
+    "9" -> "10" [label="10: Any:pid=\"param-1\"", color="black" penwidth="1"];
+    "11" [label="DeleteParameter
+Actions: 5, Forks: 11
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_param\":\"{\"inv-1\": \"param-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"param_status\":\"{\"param-1\": \"EXISTS\"}\"}
+Threads: 0/1
+", color="black" penwidth="1" ];
+    "10" -> "11" [label="11: DeleteParameter", color="black" penwidth="1"];
+    "12" [label="yield
+Actions: 5, Forks: 12
+State: {\"func_status\":\"{\"func-1\": \"ACTIVE\"}\",\"inv_func\":\"{\"inv-1\": \"func-1\"}\",\"inv_param\":\"{\"inv-1\": \"param-1\"}\",\"inv_status\":\"{\"inv-1\": \"SUCCESS\"}\",\"param_status\":\"{\"param-1\": \"DELETED\"}\"}
+", color="red" penwidth="2" ];
+    "11" -> "12" [label="12: Any:pid=\"param-1\"", color="black" penwidth="1"];
+}

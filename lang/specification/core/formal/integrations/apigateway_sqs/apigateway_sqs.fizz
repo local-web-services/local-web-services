@@ -1,0 +1,136 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# API Gateway -> SQS Integration Formal Specification
+# Models a REST API with a direct SQS integration: the API enqueues the request body
+# as a message and immediately returns 200 to the caller without invoking Lambda.
+# This is the async API pattern where callers are decoupled from backend processing.
+
+API_IDS = ["api-1"]
+QUEUE_IDS = ["queue-1"]
+REQ_IDS = ["req-1"]
+MSG_IDS = ["msg-1"]
+
+
+action Init:
+    api_status = {}             # api_status[aid] = "ACTIVE"
+    api_queue = {}              # api_queue[aid] = queue_id or "" (integrated queue)
+    queue_status = {}           # queue_status[qid] = "ACTIVE"
+    req_status = {}             # req_status[rid] = "ACCEPTED" | "FAILED"
+    req_api = {}                # req_api[rid] = api_id
+    msg_status = {}             # msg_status[mid] = "AVAILABLE" | "DELETED"
+    msg_queue = {}              # msg_queue[mid] = queue_id
+    msg_req = {}                # msg_req[mid] = request_id
+
+
+# step: a REST API is created
+# result: the API is ACTIVE with no SQS integration configured
+# guard: the API does not already exist
+# guard_violation: the API already exists
+atomic action CreateRestApi:
+    oneof aid in API_IDS:
+        if aid not in api_status:
+            api_status[aid] = "ACTIVE"
+            api_queue[aid] = ""
+
+
+# step: an SQS queue is created
+# result: the queue is ACTIVE
+# guard: the queue does not already exist
+# guard_violation: the queue already exists
+atomic action CreateQueue:
+    oneof qid in QUEUE_IDS:
+        if qid not in queue_status:
+            queue_status[qid] = "ACTIVE"
+
+
+# step: an SQS direct integration is configured on the REST API
+# result: the API will enqueue incoming requests as SQS messages without invoking Lambda
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has no integration configured
+# guard_violation: the API already has an integration configured
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+atomic action ConfigureIntegration:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_queue[aid] == "":
+                    oneof qid in QUEUE_IDS:
+                        if qid in queue_status:
+                            if queue_status[qid] == "ACTIVE":
+                                api_queue[aid] = qid
+
+
+# step: the API receives a request and enqueues it as an SQS message
+# result: the request is ACCEPTED and the message is AVAILABLE in the queue
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has an SQS integration configured
+# guard_violation: the API has no SQS integration configured
+# guard: the target queue is ACTIVE
+# guard_violation_lifecycle: the target queue is not ACTIVE
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action HandleRequest:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_queue[aid] != "":
+                    qid = api_queue[aid]
+                    if qid in queue_status:
+                        if queue_status[qid] == "ACTIVE":
+                            oneof rid in REQ_IDS:
+                                if rid not in req_status or req_status[rid] == "ACCEPTED" or req_status[rid] == "FAILED":
+                                    oneof mid in MSG_IDS:
+                                        if mid not in msg_status or msg_status[mid] == "DELETED":
+                                            req_status[rid] = "ACCEPTED"
+                                            req_api[rid] = aid
+                                            msg_status[mid] = "AVAILABLE"
+                                            msg_queue[mid] = qid
+                                            msg_req[mid] = rid
+
+
+# step: a backend consumer processes the message from the queue
+# result: the message is DELETED
+# guard: an AVAILABLE message exists in the queue
+# guard_violation_lifecycle: no AVAILABLE message exists in the queue
+atomic action ConsumeMessage:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "AVAILABLE":
+                msg_status[mid] = "DELETED"
+
+
+# check: every ACCEPTED request references an ACTIVE API
+always assertion RequestRequiresActiveApi:
+    for rid in req_status:
+        if req_status[rid] == "ACCEPTED":
+            aid = req_api[rid]
+            if aid in api_status:
+                if api_status[aid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every AVAILABLE message belongs to an ACTIVE queue
+always assertion MessageRequiresActiveQueue:
+    for mid in msg_status:
+        if msg_status[mid] == "AVAILABLE":
+            qid = msg_queue[mid]
+            if qid in queue_status:
+                if queue_status[qid] != "ACTIVE":
+                    return False
+    return True
