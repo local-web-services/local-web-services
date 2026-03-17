@@ -22,8 +22,8 @@ from lws.parser._assembly_helpers import (
     extract_website_configuration,
     find_handler_for_integration,
     resolve_code_path,
-    resolve_substitutions,
-    resolve_sm_definition,
+    resolve_sm_definition,  # noqa: F401
+    resolve_substitutions,  # noqa: F401
 )
 from lws.parser._assembly_nodes import (
     ApiDefinition,

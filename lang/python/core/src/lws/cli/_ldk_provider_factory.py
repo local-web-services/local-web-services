@@ -16,14 +16,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from lws.config.loader import LdkConfig
-from lws.graph.builder import AppGraph
-from lws.interfaces import Provider
-from lws.parser.assembly import AppModel
-from lws.providers._shared.aws_chaos import AwsChaosConfig
-from lws.providers._shared.aws_iam_auth import IamAuthBundle
-from lws.providers._shared.aws_operation_fake import AwsFakeConfig
-
 # Re-export per-service helpers so existing callers importing from this
 # module continue to work without changes.
 from lws.cli._ldk_providers_core import (  # noqa: F401
@@ -44,6 +36,13 @@ from lws.cli._ldk_providers_extended import (  # noqa: F401
     _register_experimental_providers,
     _register_ssm_secretsmanager_providers,
 )
+from lws.config.loader import LdkConfig
+from lws.graph.builder import AppGraph
+from lws.interfaces import Provider
+from lws.parser.assembly import AppModel
+from lws.providers._shared.aws_chaos import AwsChaosConfig
+from lws.providers._shared.aws_iam_auth import IamAuthBundle
+from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 
 _CHAOS_SERVICES = [
     "dynamodb",

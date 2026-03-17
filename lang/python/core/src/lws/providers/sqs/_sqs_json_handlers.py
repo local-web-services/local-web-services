@@ -8,8 +8,8 @@ import time
 from fastapi import Response
 
 from lws.providers.sqs._sqs_helpers import (
-    _build_queue_attrs,
     _apply_queue_attrs,
+    _build_queue_attrs,
     _extract_queue_name_from_url,
     _json_error,
     _json_response,

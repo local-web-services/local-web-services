@@ -22,7 +22,10 @@ from lws.cli.services.iam_auth import app as iam_auth_app
 
 app = typer.Typer(
     name="lws",
-    help="Management commands for a running 'ldk dev' instance. Use the AWS CLI with --endpoint-url for service operations.",
+    help=(
+        "Management commands for a running 'ldk dev' instance. "
+        "Use the AWS CLI with --endpoint-url for service operations."
+    ),
 )
 
 

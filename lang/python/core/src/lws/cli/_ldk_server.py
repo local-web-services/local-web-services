@@ -34,7 +34,6 @@ from lws.cli.display import print_error
 from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.config.loader import LdkConfig
 from lws.interfaces import Provider
-from lws.parser.assembly import AppModel
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 from lws.providers.cognito.provider import CognitoProvider
@@ -71,7 +70,9 @@ def _create_terraform_providers(
     dict[str, Any],
 ]:
     """Create all service providers for Terraform mode (no app model)."""
-    from lws.cli._ldk_http_registry import _HttpServiceProvider  # pylint: disable=import-outside-toplevel
+    from lws.cli._ldk_http_registry import (
+        _HttpServiceProvider,  # pylint: disable=import-outside-toplevel
+    )
 
     providers: dict[str, Provider] = {}
 
@@ -239,12 +240,13 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     Starts all service providers in always-on mode, generates the
     Terraform provider override file, and waits for shutdown.
     """
+    from rich.console import Console  # pylint: disable=import-outside-toplevel
+
     from lws.terraform.gitignore import ensure_gitignore  # pylint: disable=import-outside-toplevel
     from lws.terraform.override import (  # pylint: disable=import-outside-toplevel
         cleanup_override,
         generate_override,
     )
-    from rich.console import Console  # pylint: disable=import-outside-toplevel
 
     _console = Console()
 
@@ -356,9 +358,6 @@ async def _run_dev(
     mode_override: str | None = None,
 ) -> None:
     """Async implementation of the ``ldk dev`` command."""
-    from lws.graph.builder import build_graph  # pylint: disable=import-outside-toplevel
-    from lws.parser.assembly import parse_assembly  # pylint: disable=import-outside-toplevel
-
     from lws.cli._ldk_dev_runner import (  # pylint: disable=import-outside-toplevel
         _display_summary,
         _has_any_resources,
@@ -366,6 +365,8 @@ async def _run_dev(
         _resolve_mode,
     )
     from lws.cli.display import print_banner  # pylint: disable=import-outside-toplevel
+    from lws.graph.builder import build_graph  # pylint: disable=import-outside-toplevel
+    from lws.parser.assembly import parse_assembly  # pylint: disable=import-outside-toplevel
 
     project_dir = project_dir.resolve()
     config = _load_and_apply_config(project_dir, port_override, no_persist, log_level_override)

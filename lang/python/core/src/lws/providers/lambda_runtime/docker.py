@@ -39,8 +39,14 @@ from lws.providers._shared.docker_client import (  # noqa: F401  # pylint: disab
 from lws.providers._shared.docker_service import destroy_container
 from lws.providers.lambda_runtime._docker_constants import (
     EOL_RUNTIMES as _EOL_RUNTIMES,
+)
+from lws.providers.lambda_runtime._docker_constants import (
     MB_PER_VCPU as _MB_PER_VCPU,
+)
+from lws.providers.lambda_runtime._docker_constants import (
     MIN_NANO_CPUS as _MIN_NANO_CPUS,
+)
+from lws.providers.lambda_runtime._docker_constants import (
     RUNTIME_IMAGES as _RUNTIME_IMAGES,
 )
 from lws.providers.lambda_runtime.result_parser import parse_invocation_output

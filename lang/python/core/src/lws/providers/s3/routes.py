@@ -10,7 +10,6 @@ from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, 
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
-from lws.providers.s3.provider import S3Provider
 from lws.providers.s3._s3_bucket_ops import (
     _create_bucket,
     _delete_bucket,
@@ -48,6 +47,7 @@ from lws.providers.s3._s3_object_ops import (
     _put_object,
 )
 from lws.providers.s3._s3_xml_helpers import _error_xml, _xml_response
+from lws.providers.s3.provider import S3Provider
 
 _logger = get_logger("ldk.s3")
 

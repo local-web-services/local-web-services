@@ -16,7 +16,6 @@ from typing import Any
 from lws.interfaces.compute import ICompute
 from lws.interfaces.state_machine import IStateMachine
 from lws.providers.stepfunctions._provider_helpers import (
-    _WorkflowTypeParser,
     _build_async_response,
     _build_execution_arn,
     _build_execution_history_events,

@@ -15,14 +15,6 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
-from lws.cli.display import (
-    print_error,
-    print_resource_summary,
-    print_startup_complete,
-)
-from lws.config.loader import ConfigError, LdkConfig, load_config
-from lws.parser.assembly import AppModel
-
 # Re-export server-layer symbols so callers importing from this module
 # continue to work without changes.
 from lws.cli._ldk_server import (  # noqa: F401
@@ -31,6 +23,13 @@ from lws.cli._ldk_server import (  # noqa: F401
     _run_dev,
     _run_dev_terraform,
 )
+from lws.cli.display import (
+    print_error,
+    print_resource_summary,
+    print_startup_complete,
+)
+from lws.config.loader import ConfigError, LdkConfig, load_config
+from lws.parser.assembly import AppModel
 
 _console = Console()
 

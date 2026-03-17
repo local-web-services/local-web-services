@@ -13,7 +13,6 @@ from typing import Any
 from lws.parser.ref_resolver import RefResolver
 from lws.parser.template_parser import CfnResource
 
-
 # ---------------------------------------------------------------------------
 # Ref resolution helpers
 # ---------------------------------------------------------------------------

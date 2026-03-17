@@ -93,6 +93,8 @@ known-first-party = ["lws"]
 
 [tool.ruff.lint.per-file-ignores]
 "src/lws/api/gui.py" = ["E501"]
+"src/lws/api/_gui_config_routes.py" = ["E501"]
+"src/lws/api/_gui_provider_routes.py" = ["E501"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10

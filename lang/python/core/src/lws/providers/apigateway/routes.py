@@ -19,15 +19,6 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
-from lws.providers.apigateway._apigateway_state import (
-    _ACCOUNT_ID,
-    _REGION,
-    _ApiGatewayState,
-    _ApiGatewayV2State,
-    _HttpApi,
-    _RestApi,
-)
-from lws.providers.apigateway._apigateway_v1 import ApiGatewayManagementRouter
 from lws.providers.apigateway._apigateway_proxy_helpers import (
     _build_apigw_v2_event,
     _build_cors_headers,
@@ -38,6 +29,15 @@ from lws.providers.apigateway._apigateway_proxy_helpers import (
     _inject_cors_headers,
     _route_path_matches,
 )
+from lws.providers.apigateway._apigateway_state import (
+    _ACCOUNT_ID,
+    _REGION,
+    _ApiGatewayState,
+    _ApiGatewayV2State,
+    _HttpApi,
+    _RestApi,
+)
+from lws.providers.apigateway._apigateway_v1 import ApiGatewayManagementRouter
 from lws.providers.apigateway._apigateway_v2 import ApiGatewayV2Router, _format_http_api
 
 if TYPE_CHECKING:

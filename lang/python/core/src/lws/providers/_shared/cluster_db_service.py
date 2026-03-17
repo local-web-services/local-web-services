@@ -15,10 +15,10 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared._cluster_db_state import (
+    _apply_tags,
     _ClusterDBState,
     _DBCluster,
     _DBInstance,
-    _apply_tags,
     _describe_cluster,
     _describe_instance,
     _find_tags_by_arn,

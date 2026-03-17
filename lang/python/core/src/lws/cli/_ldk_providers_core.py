@@ -39,7 +39,6 @@ from lws.providers.stepfunctions.provider import (
     WorkflowType,
 )
 from lws.runtime.env_builder import build_lambda_env
-from lws.runtime.sdk_env import build_sdk_env
 
 
 def _create_dynamo_providers(

@@ -4,10 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from lws.providers._shared.response_helpers import (
-    error_response as _error_response,
-)
-
 _ACCOUNT_ID = "000000000000"
 _REGION = "us-east-1"
 

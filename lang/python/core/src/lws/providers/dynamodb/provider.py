@@ -27,7 +27,6 @@ from lws.providers.dynamodb._dynamo_query import (
     _VersionStore,
 )
 from lws.providers.dynamodb._provider_helpers import (
-    _MAX_BATCH_SIZE,
     _extract_key_value,
     _extract_sk,
     _setup_table_connection,
@@ -473,7 +472,9 @@ class SqliteDynamoProvider(IKeyValueStore):
         """Emit a stream event for put/update operations."""
         if self._stream_dispatcher is None:
             return
-        await emit_stream_event(self._stream_dispatcher, table_name, new_item, old_item_json, config)
+        await emit_stream_event(
+            self._stream_dispatcher, table_name, new_item, old_item_json, config
+        )
 
     async def _emit_delete_stream_event(
         self,

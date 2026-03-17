@@ -10,6 +10,7 @@ from lws.interfaces import GsiDefinition, KeyAttribute, TableConfig
 
 if TYPE_CHECKING:
     import aiosqlite
+
     from lws.providers.dynamodb.streams import StreamDispatcher
 
 

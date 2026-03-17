@@ -17,6 +17,7 @@ from lws.interfaces import (
 
 if TYPE_CHECKING:
     import aiosqlite
+
     from lws.providers.dynamodb.streams import StreamDispatcher
 
 # Maximum number of items in a single batch operation (DynamoDB limit)
@@ -254,8 +255,9 @@ async def _setup_table_connection(
 
     Returns the aiosqlite connection object.
     """
-    import aiosqlite  # pylint: disable=import-outside-toplevel
     from pathlib import Path  # pylint: disable=import-outside-toplevel
+
+    import aiosqlite  # pylint: disable=import-outside-toplevel
 
     table_name = config.table_name
 

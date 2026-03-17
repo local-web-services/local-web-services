@@ -18,15 +18,15 @@ from lws.providers.cognito._cognito_auth import (
     validate_password,
 )
 from lws.providers.cognito._cognito_errors import (
-    CognitoError,
     CodeMismatchException,
+    CognitoError,
     ExpiredCodeException,
     InvalidParameterException,
     InvalidPasswordException,
     NotAuthorizedException,
+    UsernameExistsException,
     UserNotConfirmedException,
     UserNotFoundException,
-    UsernameExistsException,
 )
 
 # Re-export for external consumers

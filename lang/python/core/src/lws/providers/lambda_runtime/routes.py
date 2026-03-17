@@ -25,10 +25,10 @@ from lws.providers.lambda_runtime._lambda_esm_ops import (
     handle_delete_event_source_mapping,
     handle_get_event_source_mapping,
     handle_list_event_source_mappings,
-    handle_update_event_source_mapping,
+    handle_update_event_source_mapping,  # noqa: F401
 )
 from lws.providers.lambda_runtime._lambda_function_ops import (
-    _format_function_config,
+    _format_function_config,  # noqa: F401
     _function_arn,
     _json_response,
     handle_add_permission,

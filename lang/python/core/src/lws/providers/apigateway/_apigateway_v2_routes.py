@@ -7,8 +7,8 @@ import uuid
 
 from fastapi import Request, Response
 
-from lws.providers._shared.request_helpers import parse_json_body
 from lws.logging.logger import get_logger
+from lws.providers._shared.request_helpers import parse_json_body
 from lws.providers.apigateway._apigateway_state import _ApiGatewayV2State
 
 _logger = get_logger("ldk.apigateway-mgmt")

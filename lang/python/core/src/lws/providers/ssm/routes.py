@@ -20,11 +20,11 @@ from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, Resourc
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.ssm._ssm_state import (
-    _Parameter,
-    _SsmState,
     _apply_parameter_filters,
     _format_parameter,
     _format_parameter_metadata,
+    _Parameter,
+    _SsmState,
 )
 
 _logger = get_logger("ldk.ssm")

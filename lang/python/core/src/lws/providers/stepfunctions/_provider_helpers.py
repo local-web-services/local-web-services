@@ -16,7 +16,7 @@ from lws.interfaces.compute import ICompute, InvocationResult, LambdaContext
 from lws.providers.stepfunctions.engine import ExecutionHistory, ExecutionStatus
 
 if TYPE_CHECKING:
-    from lws.providers.stepfunctions.provider import StateMachineConfig, WorkflowType
+    from lws.providers.stepfunctions.provider import StateMachineConfig
 
 
 # ---------------------------------------------------------------------------

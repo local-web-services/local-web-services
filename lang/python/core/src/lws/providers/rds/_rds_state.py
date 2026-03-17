@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import Any
 
+from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
     iso_now as _iso_now,
 )
 from lws.providers._shared.response_helpers import (
     parse_endpoint as _parse_endpoint,
 )
-from lws.providers._shared.resource_container import ResourceContainerManager
 
 _ACCOUNT_ID = "000000000000"
 _REGION = "us-east-1"

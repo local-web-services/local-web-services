@@ -32,10 +32,10 @@ from lws.providers.stepfunctions._engine_helpers import (
 from lws.providers.stepfunctions._engine_state import (
     ExecutionHistory,
     ExecutionStatus,
-    StateTransition,
     StatesError,
-    StatesTaskFailed,
+    StatesTaskFailed,  # noqa: F401
     StatesTimeout,
+    StateTransition,
 )
 from lws.providers.stepfunctions.asl_parser import (
     ChoiceState,
@@ -43,6 +43,7 @@ from lws.providers.stepfunctions.asl_parser import (
     MapState,
     ParallelState,
     PassState,
+    RetryConfig,
     StateMachineDefinition,
     SucceedState,
     TaskState,

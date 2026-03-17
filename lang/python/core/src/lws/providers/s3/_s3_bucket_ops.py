@@ -11,7 +11,6 @@ from lws.providers.s3.provider import S3Provider
 
 from ._s3_xml_helpers import _error_xml, _json_s3_response, _xml_escape, _xml_response
 
-
 # ------------------------------------------------------------------
 # Bucket CRUD
 # ------------------------------------------------------------------

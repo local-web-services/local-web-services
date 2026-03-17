@@ -7,7 +7,6 @@ using JSON request/response format with X-Amz-Target header dispatch.
 from __future__ import annotations
 
 import json
-import time
 import uuid
 from typing import Any
 
@@ -23,12 +22,12 @@ from lws.providers._shared.request_helpers import parse_json_body, resolve_api_a
 from lws.providers.secretsmanager._secretsmanager_handlers import (
     _ACTION_HANDLERS,
     _error_response,
-    _json_response,
+    _json_response,  # noqa: F401
 )
 from lws.providers.secretsmanager._secretsmanager_state import (
     _Secret,
-    _SecretVersion,
     _SecretsState,
+    _SecretVersion,
 )
 
 _logger = get_logger("ldk.secretsmanager")

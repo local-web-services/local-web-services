@@ -19,7 +19,7 @@ from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperation
 from lws.providers.iam._iam_handlers import (
     _ACTION_HANDLERS,
     _request_id,
-    _xml_response,
+    _xml_response,  # noqa: F401
 )
 from lws.providers.iam._iam_state import _IamState
 
