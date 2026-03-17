@@ -64,10 +64,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install FizzBee
         run: |
-          curl -L https://github.com/fizzbee-io/fizzbee/releases/download/v0.3.1/fizzbee-v0.3.1-linux_x86.tar.gz -o fizzbee.tar.gz
-          echo "73754b32b9950fcee78201484856fd734a7b3bc8a1b33fe491a58046da0ac9d4  fizzbee.tar.gz" | sha256sum -c
+          curl -L https://github.com/fizzbee-io/fizzbee/releases/download/v0.4.0/fizzbee-v0.4.0-linux_x86.tar.gz -o fizzbee.tar.gz
+          echo "d8490771e3ba7ad38b264bd1588f783753c5abf2d8582c5ac15f7379812a30d2  fizzbee.tar.gz" | sha256sum -c
           tar -xzf fizzbee.tar.gz
-          sudo cp -r fizzbee-v0.3.1-linux_x86/. /usr/local/bin/
+          sudo cp -r fizzbee-v0.4.0-linux_x86/. /usr/local/bin/
       - name: Install FizzBee MBT
         run: |
           curl -L https://github.com/fizzbee-io/fizzbee-mbt-releases/releases/download/v0.2.0/fizzbee-mbt-0.2.0-linux_x86.tar.gz -o fizzbee-mbt.tar.gz
