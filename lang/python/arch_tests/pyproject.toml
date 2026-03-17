@@ -1,0 +1,13 @@
+[project]
+name = "lws-arch-tests"
+version = "0.1.0"
+description = "Shared architecture test package for local-web-services Python projects"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lws_arch_tests"]

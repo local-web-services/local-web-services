@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
-
 from fastapi import FastAPI, Request, Response
-from fastapi.responses import StreamingResponse
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
@@ -14,640 +11,45 @@ from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middl
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers.s3.provider import S3Provider
+from lws.providers.s3._s3_bucket_ops import (
+    _create_bucket,
+    _delete_bucket,
+    _delete_bucket_tagging,
+    _delete_bucket_website,
+    _get_bucket_location,
+    _get_bucket_notification_configuration,
+    _get_bucket_policy,
+    _get_bucket_tagging,
+    _get_bucket_versioning,
+    _get_bucket_website,
+    _head_bucket,
+    _list_all_buckets,
+    _put_bucket_notification_configuration,
+    _put_bucket_policy,
+    _put_bucket_tagging,
+    _put_bucket_versioning,
+    _put_bucket_website,
+    _s3_bucket_lifecycle_error,
+)
+from lws.providers.s3._s3_multipart_ops import (
+    _abort_multipart_upload,
+    _complete_multipart_upload,
+    _create_multipart_upload,
+    _list_parts_handler,
+    _upload_part,
+)
+from lws.providers.s3._s3_object_ops import (
+    _copy_object,
+    _delete_object,
+    _delete_objects,
+    _get_object,
+    _head_object,
+    _list_objects_v2,
+    _put_object,
+)
+from lws.providers.s3._s3_xml_helpers import _error_xml, _xml_response
 
 _logger = get_logger("ldk.s3")
-
-# ------------------------------------------------------------------
-# XML helpers
-# ------------------------------------------------------------------
-
-
-def _xml_response(body: str, status_code: int = 200) -> Response:
-    """Return an XML response with the standard S3 content type."""
-    return Response(
-        content=body,
-        status_code=status_code,
-        media_type="application/xml",
-    )
-
-
-def _json_s3_response(body: str, status_code: int = 200) -> Response:
-    """Return a JSON response (used for GetBucketPolicy etc.)."""
-    return Response(
-        content=body,
-        status_code=status_code,
-        media_type="application/json",
-    )
-
-
-def _xml_escape(text: str) -> str:
-    """Escape special XML characters."""
-    return (
-        text.replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-        .replace("'", "&apos;")
-    )
-
-
-def _error_xml(code: str, message: str, status_code: int = 400) -> Response:
-    """Return an S3-style XML error response."""
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        "<Error>"
-        f"<Code>{_xml_escape(code)}</Code>"
-        f"<Message>{_xml_escape(message)}</Message>"
-        "</Error>"
-    )
-    return _xml_response(body, status_code=status_code)
-
-
-# ------------------------------------------------------------------
-# Route handlers
-# ------------------------------------------------------------------
-
-
-async def _put_object(bucket: str, key: str, request: Request, provider: S3Provider) -> Response:
-    """Handle PutObject requests."""
-    buckets = await provider.list_buckets()
-    if bucket not in buckets:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    body = await request.body()
-    content_type = request.headers.get("content-type")
-    result = await provider.storage.put_object(bucket, key, body, content_type=content_type)
-    provider.dispatcher.dispatch(bucket, "ObjectCreated:Put", key)
-    return Response(
-        status_code=200,
-        headers={"ETag": result["ETag"]},
-    )
-
-
-async def _get_object(bucket: str, key: str, provider: S3Provider) -> Response:
-    """Handle GetObject requests."""
-    try:
-        result = await provider.storage.get_object(bucket, key)
-    except IsADirectoryError:
-        result = None
-    if result is None:
-        # Try website-aware resolution
-        buckets = await provider.list_buckets()
-        website = provider.get_bucket_website(bucket) if bucket in buckets else None
-        if website:
-            return await _serve_website_fallback(bucket, key, website, provider)
-        return _error_xml("NoSuchKey", f"The specified key does not exist: {key}", 404)
-
-    return StreamingResponse(
-        iter([result["body"]]),
-        media_type=result["content_type"],
-        headers={
-            "ETag": f'"{result["etag"]}"',
-            "Content-Length": str(result["size"]),
-            "Last-Modified": result["last_modified"],
-        },
-    )
-
-
-def _streaming_object_response(result: dict) -> StreamingResponse:
-    """Build a StreamingResponse from a storage result dict."""
-    return StreamingResponse(
-        iter([result["body"]]),
-        media_type=result["content_type"],
-        headers={
-            "ETag": f'"{result["etag"]}"',
-            "Content-Length": str(result["size"]),
-            "Last-Modified": result["last_modified"],
-        },
-    )
-
-
-def _website_index_candidates(key: str, index_doc: str) -> list[str]:
-    """Return candidate index keys to try for website resolution."""
-    candidates: list[str] = []
-    if not index_doc:
-        return candidates
-    if key.endswith("/") or key == "":
-        candidates.append(f"{key}{index_doc}" if key else index_doc)
-    elif "." not in key.split("/")[-1]:
-        candidates.append(f"{key}/{index_doc}")
-    return candidates
-
-
-async def _serve_website_fallback(
-    bucket: str, key: str, website: dict[str, str], provider: S3Provider
-) -> Response:
-    """Try index document and error document resolution for website-enabled buckets."""
-    candidates = _website_index_candidates(key, website.get("index_document", ""))
-    for candidate_key in candidates:
-        result = await provider.storage.get_object(bucket, candidate_key)
-        if result is not None:
-            return _streaming_object_response(result)
-
-    # Serve error document with 404 status
-    error_doc = website.get("error_document", "")
-    if error_doc:
-        result = await provider.storage.get_object(bucket, error_doc)
-        if result is not None:
-            return Response(
-                content=result["body"],
-                status_code=404,
-                media_type=result["content_type"],
-            )
-
-    return _error_xml("NoSuchKey", f"The specified key does not exist: {key}", 404)
-
-
-async def _delete_object(bucket: str, key: str, provider: S3Provider) -> Response:
-    """Handle DeleteObject requests."""
-    buckets = await provider.list_buckets()
-    if bucket not in buckets:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    meta = await provider.storage.head_object(bucket, key)
-    if meta is None:
-        return _error_xml("NoSuchKey", f"The specified key does not exist: {key}", 404)
-    await provider.storage.delete_object(bucket, key)
-    provider.dispatcher.dispatch(bucket, "ObjectRemoved:Delete", key)
-    return Response(status_code=204)
-
-
-async def _head_object(bucket: str, key: str, provider: S3Provider) -> Response:
-    """Handle HeadObject requests."""
-    meta = await provider.storage.head_object(bucket, key)
-    if meta is None:
-        return Response(status_code=404)
-
-    return Response(
-        status_code=200,
-        headers={
-            "ETag": f'"{meta["etag"]}"',
-            "Content-Length": str(meta["size"]),
-            "Content-Type": meta["content_type"],
-            "Last-Modified": meta["last_modified"],
-        },
-    )
-
-
-async def _list_objects_v2(bucket: str, request: Request, provider: S3Provider) -> Response:
-    """Handle ListObjectsV2 requests."""
-    buckets = await provider.list_buckets()
-    if bucket not in buckets:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    prefix = request.query_params.get("prefix", "")
-    max_keys_str = request.query_params.get("max-keys", "1000")
-    continuation_token = request.query_params.get("continuation-token")
-
-    try:
-        max_keys = int(max_keys_str)
-    except ValueError:
-        max_keys = 1000
-
-    result = await provider.storage.list_objects(
-        bucket,
-        prefix=prefix,
-        max_keys=max_keys,
-        continuation_token=continuation_token,
-    )
-
-    contents_xml = ""
-    for item in result["contents"]:
-        contents_xml += (
-            "<Contents>"
-            f"<Key>{_xml_escape(item['key'])}</Key>"
-            f"<Size>{item['size']}</Size>"
-            f"<ETag>{_xml_escape(item['etag'])}</ETag>"
-            f"<LastModified>{_xml_escape(item['last_modified'])}</LastModified>"
-            "</Contents>"
-        )
-
-    is_truncated = "true" if result["is_truncated"] else "false"
-    token_xml = ""
-    if result["next_token"]:
-        token_xml = (
-            f"<NextContinuationToken>{_xml_escape(result['next_token'])}</NextContinuationToken>"
-        )
-
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">'
-        f"<Name>{_xml_escape(bucket)}</Name>"
-        f"<Prefix>{_xml_escape(prefix)}</Prefix>"
-        f"<KeyCount>{len(result['contents'])}</KeyCount>"
-        f"<MaxKeys>{max_keys}</MaxKeys>"
-        f"<IsTruncated>{is_truncated}</IsTruncated>"
-        f"{token_xml}"
-        f"{contents_xml}"
-        "</ListBucketResult>"
-    )
-
-    return _xml_response(body)
-
-
-# ------------------------------------------------------------------
-# CopyObject
-# ------------------------------------------------------------------
-
-
-async def _copy_object(bucket: str, key: str, request: Request, provider: S3Provider) -> Response:
-    """Handle CopyObject (PUT /{bucket}/{key} with x-amz-copy-source header)."""
-    copy_source = request.headers.get("x-amz-copy-source", "")
-    # The header value is /source-bucket/source-key (with leading slash)
-    copy_source = copy_source.lstrip("/")
-    if "/" not in copy_source:
-        return _error_xml("InvalidArgument", "Invalid x-amz-copy-source header", 400)
-
-    src_bucket, src_key = copy_source.split("/", 1)
-    result = await provider.storage.get_object(src_bucket, src_key)
-    if result is None:
-        return _error_xml("NoSuchKey", f"The specified key does not exist: {src_key}", 404)
-
-    put_result = await provider.storage.put_object(
-        bucket, key, result["body"], content_type=result["content_type"]
-    )
-    provider.dispatcher.dispatch(bucket, "ObjectCreated:Copy", key)
-
-    # Return a CopyObjectResult XML
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        "<CopyObjectResult>"
-        f"<ETag>{_xml_escape(put_result['ETag'])}</ETag>"
-        f"<LastModified>{_xml_escape(result['last_modified'])}</LastModified>"
-        "</CopyObjectResult>"
-    )
-    return _xml_response(body)
-
-
-# ------------------------------------------------------------------
-# DeleteObjects (multi-object delete)
-# ------------------------------------------------------------------
-
-
-async def _delete_objects(bucket: str, request: Request, provider: S3Provider) -> Response:
-    """Handle DeleteObjects (POST /{bucket}?delete)."""
-    body = await request.body()
-    try:
-        root = ET.fromstring(body)  # noqa: S314
-    except ET.ParseError:
-        return _error_xml("MalformedXML", "The XML you provided was not well-formed.", 400)
-
-    # Parse keys from the XML - handle both namespaced and non-namespaced
-    ns = ""
-    if root.tag.startswith("{"):
-        ns = root.tag.split("}")[0] + "}"
-
-    deleted_keys: list[str] = []
-    error_keys: list[dict] = []
-
-    for obj_elem in root.findall(f"{ns}Object"):
-        key_elem = obj_elem.find(f"{ns}Key")
-        if key_elem is None or key_elem.text is None:
-            continue
-        key = key_elem.text
-        try:
-            await provider.storage.delete_object(bucket, key)
-            provider.dispatcher.dispatch(bucket, "ObjectRemoved:Delete", key)
-            deleted_keys.append(key)
-        except Exception as exc:
-            error_keys.append({"key": key, "code": "InternalError", "message": str(exc)})
-
-    deleted_xml = ""
-    for k in deleted_keys:
-        deleted_xml += f"<Deleted><Key>{_xml_escape(k)}</Key></Deleted>"
-    error_xml = ""
-    for e in error_keys:
-        error_xml += (
-            "<Error>"
-            f"<Key>{_xml_escape(e['key'])}</Key>"
-            f"<Code>{_xml_escape(e['code'])}</Code>"
-            f"<Message>{_xml_escape(e['message'])}</Message>"
-            "</Error>"
-        )
-
-    result_body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        "<DeleteResult>"
-        f"{deleted_xml}"
-        f"{error_xml}"
-        "</DeleteResult>"
-    )
-    return _xml_response(result_body)
-
-
-# ------------------------------------------------------------------
-# Bucket tagging
-# ------------------------------------------------------------------
-
-
-async def _put_bucket_tagging(bucket: str, request: Request, provider: S3Provider) -> Response:
-    """Handle PutBucketTagging (PUT /{bucket}?tagging)."""
-    body = await request.body()
-    try:
-        root = ET.fromstring(body)  # noqa: S314
-    except ET.ParseError:
-        return _error_xml("MalformedXML", "The XML you provided was not well-formed.", 400)
-
-    ns = ""
-    if root.tag.startswith("{"):
-        ns = root.tag.split("}")[0] + "}"
-
-    tags: dict[str, str] = {}
-    tag_set = root.find(f"{ns}TagSet")
-    if tag_set is not None:
-        for tag_elem in tag_set.findall(f"{ns}Tag"):
-            key_elem = tag_elem.find(f"{ns}Key")
-            val_elem = tag_elem.find(f"{ns}Value")
-            if key_elem is not None and key_elem.text is not None:
-                val = val_elem.text if val_elem is not None and val_elem.text else ""
-                tags[key_elem.text] = val
-
-    try:
-        provider.put_bucket_tagging(bucket, tags)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return Response(status_code=204)
-
-
-async def _delete_bucket_tagging(bucket: str, provider: S3Provider) -> Response:
-    """Handle DeleteBucketTagging (DELETE /{bucket}?tagging)."""
-    try:
-        provider.delete_bucket_tagging(bucket)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return Response(status_code=204)
-
-
-async def _get_bucket_tagging(bucket: str, provider: S3Provider) -> Response:
-    """Handle GetBucketTagging (GET /{bucket}?tagging)."""
-    try:
-        tags = provider.get_bucket_tagging(bucket)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-
-    tag_set_xml = ""
-    for k, v in tags.items():
-        tag_set_xml += f"<Tag><Key>{_xml_escape(k)}</Key><Value>{_xml_escape(v)}</Value></Tag>"
-
-    body = (
-        f'<?xml version="1.0" encoding="UTF-8"?><Tagging><TagSet>{tag_set_xml}</TagSet></Tagging>'
-    )
-    return _xml_response(body)
-
-
-# ------------------------------------------------------------------
-# Bucket location
-# ------------------------------------------------------------------
-
-
-async def _get_bucket_location(bucket: str, provider: S3Provider) -> Response:
-    """Handle GetBucketLocation (GET /{bucket}?location)."""
-    try:
-        await provider.head_bucket(bucket)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?><LocationConstraint>us-east-1</LocationConstraint>'
-    )
-    return _xml_response(body)
-
-
-# ------------------------------------------------------------------
-# Bucket policy
-# ------------------------------------------------------------------
-
-
-async def _put_bucket_policy(bucket: str, request: Request, provider: S3Provider) -> Response:
-    """Handle PutBucketPolicy (PUT /{bucket}?policy)."""
-    body = await request.body()
-    try:
-        provider.put_bucket_policy(bucket, body.decode("utf-8"))
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return Response(status_code=204)
-
-
-async def _get_bucket_policy(bucket: str, provider: S3Provider) -> Response:
-    """Handle GetBucketPolicy (GET /{bucket}?policy)."""
-    try:
-        policy = provider.get_bucket_policy(bucket)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return _json_s3_response(policy)
-
-
-# ------------------------------------------------------------------
-# Bucket notification configuration
-# ------------------------------------------------------------------
-
-
-async def _put_bucket_notification_configuration(
-    bucket: str, request: Request, provider: S3Provider
-) -> Response:
-    """Handle PutBucketNotificationConfiguration (PUT /{bucket}?notification)."""
-    body = await request.body()
-    try:
-        provider.put_bucket_notification_configuration(bucket, body.decode("utf-8"))
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return Response(status_code=200)
-
-
-async def _get_bucket_notification_configuration(bucket: str, provider: S3Provider) -> Response:
-    """Handle GetBucketNotificationConfiguration (GET /{bucket}?notification)."""
-    try:
-        config = provider.get_bucket_notification_configuration(bucket)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return _xml_response(config)
-
-
-# ------------------------------------------------------------------
-# Bucket website configuration
-# ------------------------------------------------------------------
-
-
-def _parse_website_config_xml(root: ET.Element) -> dict[str, str]:
-    """Extract website configuration fields from a parsed XML element."""
-    ns = ""
-    if root.tag.startswith("{"):
-        ns = root.tag.split("}")[0] + "}"
-
-    config: dict[str, str] = {}
-    _xml_nested_text(root, f"{ns}IndexDocument", f"{ns}Suffix", config, "index_document")
-    _xml_nested_text(root, f"{ns}ErrorDocument", f"{ns}Key", config, "error_document")
-    return config
-
-
-def _xml_nested_text(
-    root: ET.Element, parent_tag: str, child_tag: str, out: dict[str, str], key: str
-) -> None:
-    """Extract text from a nested XML element into *out* if present."""
-    parent = root.find(parent_tag)
-    if parent is not None:
-        child = parent.find(child_tag)
-        if child is not None and child.text:
-            out[key] = child.text
-
-
-async def _put_bucket_website(bucket: str, request: Request, provider: S3Provider) -> Response:
-    """Handle PutBucketWebsite (PUT /{bucket}?website)."""
-    body = await request.body()
-    try:
-        root = ET.fromstring(body)  # noqa: S314
-    except ET.ParseError:
-        return _error_xml("MalformedXML", "The XML you provided was not well-formed.", 400)
-
-    config = _parse_website_config_xml(root)
-    if "index_document" not in config:
-        return _error_xml(
-            "InvalidArgument",
-            "A value for IndexDocument Suffix must be provided.",
-            400,
-        )
-
-    try:
-        provider.put_bucket_website(bucket, config)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return Response(status_code=200)
-
-
-async def _get_bucket_website(bucket: str, provider: S3Provider) -> Response:
-    """Handle GetBucketWebsite (GET /{bucket}?website)."""
-    try:
-        config = provider.get_bucket_website(bucket)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-
-    if config is None:
-        return _error_xml(
-            "NoSuchWebsiteConfiguration",
-            "The specified bucket does not have a website configuration",
-            404,
-        )
-
-    index_xml = ""
-    if "index_document" in config:
-        index_xml = (
-            f"<IndexDocument><Suffix>{_xml_escape(config['index_document'])}</Suffix>"
-            "</IndexDocument>"
-        )
-    error_xml = ""
-    if "error_document" in config:
-        error_xml = (
-            f"<ErrorDocument><Key>{_xml_escape(config['error_document'])}</Key></ErrorDocument>"
-        )
-
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        f"<WebsiteConfiguration>{index_xml}{error_xml}</WebsiteConfiguration>"
-    )
-    return _xml_response(body)
-
-
-async def _delete_bucket_website(bucket: str, provider: S3Provider) -> Response:
-    """Handle DeleteBucketWebsite (DELETE /{bucket}?website)."""
-    try:
-        provider.delete_bucket_website(bucket)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return Response(status_code=204)
-
-
-# ------------------------------------------------------------------
-# Multipart upload
-# ------------------------------------------------------------------
-
-
-async def _create_multipart_upload(bucket: str, key: str, provider: S3Provider) -> Response:
-    """Handle CreateMultipartUpload (POST /{bucket}/{key}?uploads)."""
-    try:
-        upload_id = provider.create_multipart_upload(bucket, key)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        "<InitiateMultipartUploadResult>"
-        f"<Bucket>{_xml_escape(bucket)}</Bucket>"
-        f"<Key>{_xml_escape(key)}</Key>"
-        f"<UploadId>{_xml_escape(upload_id)}</UploadId>"
-        "</InitiateMultipartUploadResult>"
-    )
-    return _xml_response(body)
-
-
-async def _upload_part(bucket: str, key: str, request: Request, provider: S3Provider) -> Response:
-    """Handle UploadPart (PUT /{bucket}/{key}?partNumber=N&uploadId=X)."""
-    part_number = int(request.query_params.get("partNumber", "0"))
-    upload_id = request.query_params.get("uploadId", "")
-    data = await request.body()
-    try:
-        etag = provider.upload_part(bucket, key, upload_id, part_number, data)
-    except KeyError:
-        return _error_xml("NoSuchUpload", f"Upload not found: {upload_id}", 404)
-    return Response(status_code=200, headers={"ETag": f'"{etag}"'})
-
-
-async def _complete_multipart_upload(
-    bucket: str, key: str, request: Request, provider: S3Provider
-) -> Response:
-    """Handle CompleteMultipartUpload (POST /{bucket}/{key}?uploadId=X)."""
-    upload_id = request.query_params.get("uploadId", "")
-    try:
-        result = await provider.complete_multipart_upload(bucket, key, upload_id)
-    except KeyError:
-        return _error_xml("NoSuchUpload", f"Upload not found: {upload_id}", 404)
-    except ValueError as exc:
-        return _error_xml("InvalidRequest", str(exc), 400)
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        "<CompleteMultipartUploadResult>"
-        f"<Location>{_xml_escape(result['Location'])}</Location>"
-        f"<Bucket>{_xml_escape(result['Bucket'])}</Bucket>"
-        f"<Key>{_xml_escape(result['Key'])}</Key>"
-        f"<ETag>{_xml_escape(result['ETag'])}</ETag>"
-        "</CompleteMultipartUploadResult>"
-    )
-    return _xml_response(body)
-
-
-async def _abort_multipart_upload(
-    _bucket: str, _key: str, request: Request, provider: S3Provider
-) -> Response:
-    """Handle AbortMultipartUpload (DELETE /{bucket}/{key}?uploadId=X)."""
-    upload_id = request.query_params.get("uploadId", "")
-    provider.abort_multipart_upload(upload_id)
-    return Response(status_code=204)
-
-
-async def _list_parts_handler(
-    bucket: str, key: str, request: Request, provider: S3Provider
-) -> Response:
-    """Handle ListParts (GET /{bucket}/{key}?uploadId=X)."""
-    upload_id = request.query_params.get("uploadId", "")
-    try:
-        parts = provider.list_parts(upload_id)
-    except KeyError:
-        return _error_xml("NoSuchUpload", f"Upload not found: {upload_id}", 404)
-
-    parts_xml = ""
-    for part in parts:
-        parts_xml += (
-            "<Part>"
-            f"<PartNumber>{part['PartNumber']}</PartNumber>"
-            f"<Size>{part['Size']}</Size>"
-            f"<ETag>{_xml_escape(part['ETag'])}</ETag>"
-            "</Part>"
-        )
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        "<ListPartsResult>"
-        f"<Bucket>{_xml_escape(bucket)}</Bucket>"
-        f"<Key>{_xml_escape(key)}</Key>"
-        f"<UploadId>{_xml_escape(upload_id)}</UploadId>"
-        f"{parts_xml}"
-        "</ListPartsResult>"
-    )
-    return _xml_response(body)
 
 
 # ------------------------------------------------------------------
@@ -702,7 +104,7 @@ class _VirtualHostRewriteMiddleware:
 
 
 # ------------------------------------------------------------------
-# App factory
+# Bucket-level dispatch helpers
 # ------------------------------------------------------------------
 
 
@@ -719,20 +121,7 @@ async def _get_bucket(bucket: str, request: Request, provider: S3Provider) -> Re
     if "notification" in request.query_params:
         return await _get_bucket_notification_configuration(bucket, provider)
     if "versioning" in request.query_params:
-        try:
-            status = provider.get_bucket_versioning(bucket)
-        except KeyError:
-            return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-        if status:
-            body = (
-                '<?xml version="1.0" encoding="UTF-8"?>'
-                "<VersioningConfiguration>"
-                f"<Status>{_xml_escape(status)}</Status>"
-                "</VersioningConfiguration>"
-            )
-        else:
-            body = '<?xml version="1.0" encoding="UTF-8"?><VersioningConfiguration/>'
-        return _xml_response(body)
+        return await _get_bucket_versioning(bucket, provider)
     if "acl" in request.query_params:
         return _xml_response(
             '<?xml version="1.0" encoding="UTF-8"?>'
@@ -745,74 +134,6 @@ async def _get_bucket(bucket: str, request: Request, provider: S3Provider) -> Re
             "</AccessControlPolicy>"
         )
     return await _list_objects_v2(bucket, request, provider)
-
-
-async def _create_bucket(bucket: str, provider: S3Provider) -> Response:
-    """Handle CreateBucket (PUT /{bucket} with no key)."""
-    try:
-        await provider.create_bucket(bucket)
-    except ValueError:
-        return _error_xml("BucketAlreadyOwnedByYou", f"Bucket already exists: {bucket}", 409)
-    return Response(status_code=200)
-
-
-async def _delete_bucket(bucket: str, provider: S3Provider) -> Response:
-    """Handle DeleteBucket (DELETE /{bucket})."""
-    try:
-        await provider.delete_bucket(bucket)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    except ValueError:
-        return _error_xml(
-            "BucketNotEmpty",
-            f"The bucket you tried to delete is not empty: {bucket}",
-            409,
-        )
-    return Response(status_code=204)
-
-
-async def _head_bucket(bucket: str, provider: S3Provider) -> Response:
-    """Handle HeadBucket (HEAD /{bucket})."""
-    try:
-        await provider.head_bucket(bucket)
-    except KeyError:
-        return Response(status_code=404)
-    return Response(
-        status_code=200,
-        headers={
-            "x-amz-bucket-region": "us-east-1",
-        },
-    )
-
-
-async def _list_all_buckets(provider: S3Provider) -> Response:
-    """Handle ListBuckets (GET /)."""
-    bucket_names = await provider.list_buckets()
-    buckets_xml = ""
-    for name in bucket_names:
-        try:
-            meta = await provider.head_bucket(name)
-            creation_date = meta["CreationDate"]
-        except KeyError:
-            creation_date = ""
-        buckets_xml += (
-            "<Bucket>"
-            f"<Name>{_xml_escape(name)}</Name>"
-            f"<CreationDate>{creation_date}</CreationDate>"
-            "</Bucket>"
-        )
-
-    body = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        "<ListAllMyBucketsResult>"
-        f"<Buckets>{buckets_xml}</Buckets>"
-        "<Owner>"
-        "<ID>000000000000</ID>"
-        "<DisplayName>local</DisplayName>"
-        "</Owner>"
-        "</ListAllMyBucketsResult>"
-    )
-    return _xml_response(body)
 
 
 async def _dispatch_put_object(
@@ -835,24 +156,6 @@ async def _dispatch_post_object(
     if "uploadId" in request.query_params:
         return await _complete_multipart_upload(bucket, key, request, provider)
     return _error_xml("InvalidRequest", "Unsupported POST operation", 400)
-
-
-def _s3_bucket_lifecycle_error(
-    bucket: str,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response | None:
-    """Return a 404 NoSuchBucket response if bucket is in a transient lifecycle state."""
-    if not lc.enabled:
-        return None
-    state = tracker.get_state(bucket)
-    if state in ("CREATING", "DELETING"):
-        return _error_xml(
-            "NoSuchBucket",
-            f"The specified bucket does not exist: {bucket} (status: {state})",
-            404,
-        )
-    return None
 
 
 async def _s3_delete_bucket_route(
@@ -920,6 +223,48 @@ async def _s3_delete_object_route(
     return await _delete_object(bucket, key, provider)
 
 
+_S3_BUCKET_MODIFY_PARAMS = ("versioning", "website", "tagging", "policy", "notification")
+
+
+async def _s3_put_bucket_route(
+    bucket: str,
+    request: Request,
+    provider: S3Provider,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    if not any(k in request.query_params for k in _S3_BUCKET_MODIFY_PARAMS):
+        resp = await _dispatch_put_bucket(bucket, request, provider)
+        if resp.status_code == 200 and lc.enabled and lc.create_dwell_ms > 0:
+            tracker.set_state(bucket, "CREATING")
+            tracker.schedule_transition(bucket, "ACTIVE", lc.create_dwell_ms)
+        return resp
+    err = _s3_bucket_lifecycle_error(bucket, lc, tracker)
+    if err is not None:
+        return err
+    return await _dispatch_put_bucket(bucket, request, provider)
+
+
+async def _dispatch_put_bucket(bucket: str, request: Request, provider: S3Provider) -> Response:
+    """Dispatch PUT /{bucket} based on query parameters."""
+    if "versioning" in request.query_params:
+        return await _put_bucket_versioning(bucket, request, provider)
+    if "website" in request.query_params:
+        return await _put_bucket_website(bucket, request, provider)
+    if "tagging" in request.query_params:
+        return await _put_bucket_tagging(bucket, request, provider)
+    if "policy" in request.query_params:
+        return await _put_bucket_policy(bucket, request, provider)
+    if "notification" in request.query_params:
+        return await _put_bucket_notification_configuration(bucket, request, provider)
+    return await _create_bucket(bucket, provider)
+
+
+# ------------------------------------------------------------------
+# Route registration
+# ------------------------------------------------------------------
+
+
 def _register_object_routes(
     app: FastAPI,
     provider: S3Provider,
@@ -958,62 +303,6 @@ def _register_object_routes(
         if err is not None:
             return err
         return await _head_object(bucket, key, provider)
-
-
-async def _put_bucket_versioning(bucket: str, request: Request, provider: S3Provider) -> Response:
-    """Handle PutBucketVersioning (PUT /{bucket}?versioning)."""
-    body = await request.body()
-    try:
-        root = ET.fromstring(body)  # noqa: S314
-    except ET.ParseError:
-        return _error_xml("MalformedXML", "The XML you provided was not well-formed.", 400)
-    ns = ""
-    if root.tag.startswith("{"):
-        ns = root.tag.split("}")[0] + "}"
-    status_elem = root.find(f"{ns}Status")
-    status = status_elem.text if status_elem is not None and status_elem.text else ""
-    try:
-        provider.put_bucket_versioning(bucket, status)
-    except KeyError:
-        return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
-    return Response(status_code=200)
-
-
-async def _dispatch_put_bucket(bucket: str, request: Request, provider: S3Provider) -> Response:
-    """Dispatch PUT /{bucket} based on query parameters."""
-    if "versioning" in request.query_params:
-        return await _put_bucket_versioning(bucket, request, provider)
-    if "website" in request.query_params:
-        return await _put_bucket_website(bucket, request, provider)
-    if "tagging" in request.query_params:
-        return await _put_bucket_tagging(bucket, request, provider)
-    if "policy" in request.query_params:
-        return await _put_bucket_policy(bucket, request, provider)
-    if "notification" in request.query_params:
-        return await _put_bucket_notification_configuration(bucket, request, provider)
-    return await _create_bucket(bucket, provider)
-
-
-_S3_BUCKET_MODIFY_PARAMS = ("versioning", "website", "tagging", "policy", "notification")
-
-
-async def _s3_put_bucket_route(
-    bucket: str,
-    request: Request,
-    provider: S3Provider,
-    lc: ResourceLifecycleConfig,
-    tracker: ResourceStateTracker,
-) -> Response:
-    if not any(k in request.query_params for k in _S3_BUCKET_MODIFY_PARAMS):
-        resp = await _dispatch_put_bucket(bucket, request, provider)
-        if resp.status_code == 200 and lc.enabled and lc.create_dwell_ms > 0:
-            tracker.set_state(bucket, "CREATING")
-            tracker.schedule_transition(bucket, "ACTIVE", lc.create_dwell_ms)
-        return resp
-    err = _s3_bucket_lifecycle_error(bucket, lc, tracker)
-    if err is not None:
-        return err
-    return await _dispatch_put_bucket(bucket, request, provider)
 
 
 def _register_bucket_routes(
@@ -1056,6 +345,11 @@ def _register_bucket_routes(
         if err is not None:
             return err
         return await _get_bucket(bucket, request, provider)
+
+
+# ------------------------------------------------------------------
+# App factory
+# ------------------------------------------------------------------
 
 
 def create_s3_app(

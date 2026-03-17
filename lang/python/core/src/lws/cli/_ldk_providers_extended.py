@@ -1,0 +1,229 @@
+"""Extended-service provider registration helpers for the LDK dev server.
+
+Contains ``_register_*`` functions for services that are either
+pre-seeded from CloudFormation (SSM, Secrets Manager) or experimental
+(ElastiCache, MemoryDB, DocumentDB, Neptune, Elasticsearch, OpenSearch,
+RDS, Glacier, S3 Tables).
+"""
+
+from __future__ import annotations
+
+from lws.interfaces import Provider
+from lws.parser.assembly import AppModel
+from lws.providers._shared.aws_iam_auth import IamAuthBundle
+
+
+def _register_ssm_secretsmanager_providers(
+    providers: dict,
+    *,
+    app_model: AppModel,
+    chaos_configs: dict,
+    aws_fake_configs: dict,
+    iam_auth_bundle: IamAuthBundle | None,
+    ssm_port: int,
+    secretsmanager_port: int,
+) -> None:
+    """Register SSM and Secrets Manager HTTP providers."""
+    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
+        _HttpServiceProvider,
+    )
+    from lws.providers.secretsmanager.routes import (  # pylint: disable=import-outside-toplevel
+        create_secretsmanager_app,
+    )
+    from lws.providers.ssm.routes import create_ssm_app  # pylint: disable=import-outside-toplevel
+
+    ssm_params = [
+        {"name": p.name, "type": p.type, "value": p.value, "description": p.description}
+        for p in app_model.ssm_parameters
+    ]
+    sm_secrets = [
+        {"name": s.name, "description": s.description, "secret_string": s.secret_string}
+        for s in app_model.secrets
+    ]
+    providers["__ssm_http__"] = _HttpServiceProvider(
+        "ssm-http",
+        lambda ia=iam_auth_bundle: create_ssm_app(
+            ssm_params,
+            chaos=chaos_configs.get("ssm"),
+            aws_fake=aws_fake_configs.get("ssm"),
+            iam_auth=ia,
+        ),
+        ssm_port,
+    )
+    providers["__secretsmanager_http__"] = _HttpServiceProvider(
+        "secretsmanager-http",
+        lambda ia=iam_auth_bundle: create_secretsmanager_app(
+            sm_secrets,
+            chaos=chaos_configs.get("secretsmanager"),
+            aws_fake=aws_fake_configs.get("secretsmanager"),
+            iam_auth=ia,
+        ),
+        secretsmanager_port,
+    )
+
+
+def _register_experimental_providers(
+    providers: dict[str, Provider],
+    ports: dict[str, int],
+) -> None:
+    """Register all experimental-service providers (HTTP with per-resource containers)."""
+    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
+        _ContainerCleanupProvider,
+        _HttpServiceProvider,
+    )
+    from lws.providers._shared.resource_container import (  # pylint: disable=import-outside-toplevel
+        ResourceContainerConfig,
+        ResourceContainerManager,
+    )
+    from lws.providers.docdb.routes import (  # pylint: disable=import-outside-toplevel
+        create_docdb_app,
+    )
+    from lws.providers.elasticache.routes import (  # pylint: disable=import-outside-toplevel
+        create_elasticache_app,
+    )
+    from lws.providers.elasticsearch.routes import (  # pylint: disable=import-outside-toplevel
+        create_elasticsearch_app,
+    )
+    from lws.providers.glacier.routes import (  # pylint: disable=import-outside-toplevel
+        create_glacier_app,
+    )
+    from lws.providers.memorydb.routes import (  # pylint: disable=import-outside-toplevel
+        create_memorydb_app,
+    )
+    from lws.providers.neptune.routes import (  # pylint: disable=import-outside-toplevel
+        create_neptune_app,
+    )
+    from lws.providers.opensearch.routes import (  # pylint: disable=import-outside-toplevel
+        create_opensearch_app,
+    )
+    from lws.providers.rds.routes import (  # pylint: disable=import-outside-toplevel
+        create_rds_app,
+    )
+    from lws.providers.s3tables.routes import (  # pylint: disable=import-outside-toplevel
+        create_s3tables_app,
+    )
+
+    # Per-resource container managers
+    elasticache_cm = ResourceContainerManager(
+        "elasticache", ResourceContainerConfig(image="redis:7-alpine", internal_port=6379)
+    )
+    memorydb_cm = ResourceContainerManager(
+        "memorydb", ResourceContainerConfig(image="redis:7-alpine", internal_port=6379)
+    )
+    docdb_cm = ResourceContainerManager(
+        "docdb", ResourceContainerConfig(image="mongo:7", internal_port=27017)
+    )
+    neptune_cm = ResourceContainerManager(
+        "neptune",
+        ResourceContainerConfig(image="janusgraph/janusgraph:1.0", internal_port=8182),
+    )
+    opensearch_env = {
+        "discovery.type": "single-node",
+        "DISABLE_SECURITY_PLUGIN": "true",
+    }
+    es_cm = ResourceContainerManager(
+        "elasticsearch",
+        ResourceContainerConfig(
+            image="opensearchproject/opensearch:2",
+            internal_port=9200,
+            environment=opensearch_env,
+        ),
+    )
+    opensearch_cm = ResourceContainerManager(
+        "opensearch",
+        ResourceContainerConfig(
+            image="opensearchproject/opensearch:2",
+            internal_port=9200,
+            environment=opensearch_env,
+        ),
+    )
+    rds_pg_cm = ResourceContainerManager(
+        "rds",
+        ResourceContainerConfig(
+            image="postgres:16-alpine",
+            internal_port=5432,
+            environment={"POSTGRES_PASSWORD": "lws-local"},
+        ),
+    )
+    rds_mysql_cm = ResourceContainerManager(
+        "rds",
+        ResourceContainerConfig(
+            image="mysql:8",
+            internal_port=3306,
+            environment={"MYSQL_ROOT_PASSWORD": "lws-local"},
+        ),
+    )
+
+    # ElastiCache
+    providers["__elasticache_http__"] = _HttpServiceProvider(
+        "elasticache-http",
+        lambda cm=elasticache_cm: create_elasticache_app(container_manager=cm),
+        ports["elasticache"],
+    )
+
+    # MemoryDB
+    providers["__memorydb_http__"] = _HttpServiceProvider(
+        "memorydb-http",
+        lambda cm=memorydb_cm: create_memorydb_app(container_manager=cm),
+        ports["memorydb"],
+    )
+
+    # DocumentDB
+    providers["__docdb_http__"] = _HttpServiceProvider(
+        "docdb-http",
+        lambda cm=docdb_cm: create_docdb_app(container_manager=cm),
+        ports["docdb"],
+    )
+
+    # Neptune
+    providers["__neptune_http__"] = _HttpServiceProvider(
+        "neptune-http",
+        lambda cm=neptune_cm: create_neptune_app(container_manager=cm),
+        ports["neptune"],
+    )
+
+    # Elasticsearch
+    providers["__es_http__"] = _HttpServiceProvider(
+        "es-http",
+        lambda cm=es_cm: create_elasticsearch_app(container_manager=cm),
+        ports["es"],
+    )
+
+    # OpenSearch
+    providers["__opensearch_http__"] = _HttpServiceProvider(
+        "opensearch-http",
+        lambda cm=opensearch_cm: create_opensearch_app(container_manager=cm),
+        ports["opensearch"],
+    )
+
+    # RDS
+    providers["__rds_http__"] = _HttpServiceProvider(
+        "rds-http",
+        lambda pg=rds_pg_cm, my=rds_mysql_cm: create_rds_app(
+            postgres_container_manager=pg, mysql_container_manager=my
+        ),
+        ports["rds"],
+    )
+
+    # Glacier
+    providers["__glacier_http__"] = _HttpServiceProvider(
+        "glacier-http", create_glacier_app, ports["glacier"]
+    )
+
+    # S3 Tables
+    providers["__s3tables_http__"] = _HttpServiceProvider(
+        "s3tables-http", create_s3tables_app, ports["s3tables"]
+    )
+
+    # Container cleanup provider for graceful shutdown
+    all_managers = [
+        elasticache_cm,
+        memorydb_cm,
+        docdb_cm,
+        neptune_cm,
+        es_cm,
+        opensearch_cm,
+        rds_pg_cm,
+        rds_mysql_cm,
+    ]
+    providers["__container_cleanup__"] = _ContainerCleanupProvider(all_managers)

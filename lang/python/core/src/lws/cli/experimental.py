@@ -9,17 +9,7 @@ from __future__ import annotations
 import sys
 
 # Services where every command is experimental.
-EXPERIMENTAL_SERVICES: set[str] = {
-    "docdb",
-    "elasticache",
-    "es",
-    "glacier",
-    "memorydb",
-    "neptune",
-    "opensearch",
-    "rds",
-    "s3tables",
-}
+EXPERIMENTAL_SERVICES: set[str] = set()
 
 # Individual commands that are experimental (service, command-name).
 # Use this when only specific commands within a stable service are experimental.

@@ -16,8 +16,10 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
+      python-core: ${{ steps.filter.outputs.python-core }}
+      python-sdk: ${{ steps.filter.outputs.python-sdk }}
+      python-example: ${{ steps.filter.outputs.python-example }}
       core: ${{ steps.filter.outputs.core }}
-      python: ${{ steps.filter.outputs.python }}
       typescript: ${{ steps.filter.outputs.typescript }}
       java: ${{ steps.filter.outputs.java }}
       go: ${{ steps.filter.outputs.go }}
@@ -30,10 +32,20 @@ jobs:
         id: filter
         with:
           filters: |
+            python-core:
+              - 'lang/python/core/**'
+              - 'lang/python/arch_tests/**'
+            python-sdk:
+              - 'lang/python/sdk/**'
+              - 'lang/python/core/**'
+              - 'lang/python/arch_tests/**'
+            python-example:
+              - 'lang/python/example/**'
+              - 'lang/python/sdk/**'
+              - 'lang/python/core/**'
+              - 'lang/python/arch_tests/**'
             core:
               - 'lang/python/core/**'
-            python:
-              - 'lang/python/**'
             typescript:
               - 'lang/typescript/core/**'
               - 'lang/typescript/sdk/**'
@@ -90,46 +102,141 @@ jobs:
   # ── Python Core ────────────────────────────────────────────────────────────
   python-core-lint:
     needs: [changes]
-    if: needs.changes.outputs.core == 'true'
+    if: needs.changes.outputs.python-core == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ steps.pyver.outputs.version }}
       - run: make install
         working-directory: lang/python/core
-      - run: make lint
-        working-directory: lang/python/core
-      - run: make format-check
+      - run: make lint format-check complexity cpd pylint
         working-directory: lang/python/core
 
-  python-core-test:
+  python-core-unit-test:
     needs: [changes]
-    if: needs.changes.outputs.core == 'true'
+    if: needs.changes.outputs.python-core == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ steps.pyver.outputs.version }}
       - run: make install
         working-directory: lang/python/core
-      - run: make test
+      - run: make unit-test
         working-directory: lang/python/core
 
-  python-core-test-e2e:
-    needs: [changes, python-core-lint, python-core-test]
-    if: needs.changes.outputs.core == 'true'
+  python-core-integration-test:
+    needs: [changes]
+    if: needs.changes.outputs.python-core == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: make install
+        working-directory: lang/python/core
+      - run: make integration-test
+        working-directory: lang/python/core
+
+  python-core-architecture-test:
+    needs: [changes]
+    if: needs.changes.outputs.python-core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: make install
+        working-directory: lang/python/core
+      - run: make architecture-test
+        working-directory: lang/python/core
+
+  # ── Python SDK ─────────────────────────────────────────────────────────────
+  python-sdk-lint:
+    needs: [changes]
+    if: needs.changes.outputs.python-sdk == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: make install
+        working-directory: lang/python/sdk
+      - run: make lint format-check complexity cpd pylint
+        working-directory: lang/python/sdk
+
+  python-sdk-unit-test:
+    needs: [changes]
+    if: needs.changes.outputs.python-sdk == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: uv pip install --system -e lang/python/core
+      - run: make install
+        working-directory: lang/python/sdk
+      - run: make unit-test
+        working-directory: lang/python/sdk
+
+  python-sdk-architecture-test:
+    needs: [changes]
+    if: needs.changes.outputs.python-sdk == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: uv pip install --system -e lang/python/core
+      - run: make install
+        working-directory: lang/python/sdk
+      - run: make architecture-test
+        working-directory: lang/python/sdk
+
+  python-sdk-e2e-test:
+    needs: [changes, python-core-unit-test]
+    if: |
+      always() &&
+      needs.changes.outputs.python-sdk == 'true' &&
+      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -137,30 +244,11 @@ jobs:
         run: |
           docker pull public.ecr.aws/lambda/python:3.12
           docker pull public.ecr.aws/lambda/nodejs:20
+      - run: uv pip install --system -e lang/python/core
       - run: make install
-        working-directory: lang/python/core
-      - run: make test-e2e
-        working-directory: lang/python/core
-
-  # ── Python SDK ─────────────────────────────────────────────────────────────
-  python-sdk-test:
-    needs: [changes, python-core-test-e2e]
-    if: |
-      always() &&
-      needs.changes.outputs.python == 'true' &&
-      (needs.python-core-test-e2e.result == 'success' || needs.python-core-test-e2e.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install ldk
-        run: uv pip install --system -e lang/python/core
-      - name: Test
         working-directory: lang/python/sdk
-        run: uv run pytest
+      - run: make e2e-test
+        working-directory: lang/python/sdk
 
   # ── TypeScript Core ─────────────────────────────────────────────────────────
   typescript-core-test:
@@ -261,26 +349,84 @@ jobs:
         run: go test ./...
 
   # ── Python Example ─────────────────────────────────────────────────────────
-  python-example-test:
-    needs: [changes, python-sdk-test]
-    if: |
-      always() &&
-      needs.changes.outputs.python == 'true' &&
-      needs.python-sdk-test.result == 'success'
+  python-example-lint:
+    needs: [changes]
+    if: needs.changes.outputs.python-example == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Install ldk and Python SDK
-        run: |
-          uv pip install --system -e lang/python/core
-          uv pip install --system -e lang/python/sdk
-      - name: Test
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: make install
         working-directory: lang/python/example
-        run: uv run --extra test pytest
+      - run: make lint format-check complexity cpd pylint
+        working-directory: lang/python/example
+
+  python-example-unit-test:
+    needs: [changes]
+    if: needs.changes.outputs.python-example == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: make install
+        working-directory: lang/python/example
+      - run: make unit-test
+        working-directory: lang/python/example
+
+  python-example-architecture-test:
+    needs: [changes]
+    if: needs.changes.outputs.python-example == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - run: make install
+        working-directory: lang/python/example
+      - run: make architecture-test
+        working-directory: lang/python/example
+
+  python-example-e2e-test:
+    needs: [changes, python-sdk-e2e-test]
+    if: |
+      always() &&
+      needs.changes.outputs.python-example == 'true' &&
+      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - id: pyver
+        run: echo "version=$(cat lang/python/.python-version)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+          docker pull public.ecr.aws/lambda/nodejs:20
+      - run: uv pip install --system -e lang/python/core -e lang/python/sdk
+      - run: make install
+        working-directory: lang/python/example
+      - run: make e2e-test
+        working-directory: lang/python/example
 
   # ── TypeScript Example ──────────────────────────────────────────────────────
   typescript-example-test:
@@ -331,11 +477,11 @@ jobs:
 
   # ── Sample Project CDK ──────────────────────────────────────────────────────
   sample-project-cdk-build:
-    needs: [changes, python-core-test-e2e]
+    needs: [changes, python-core-unit-test]
     if: |
       always() &&
       needs.changes.outputs.sample-cdk == 'true' &&
-      (needs.python-core-test-e2e.result == 'success' || needs.python-core-test-e2e.result == 'skipped')
+      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -376,11 +522,11 @@ jobs:
 
   # ── Sample Project HCL ──────────────────────────────────────────────────────
   sample-project-hcl-build:
-    needs: [changes, python-core-test-e2e]
+    needs: [changes, python-core-unit-test]
     if: |
       always() &&
       needs.changes.outputs.sample-hcl == 'true' &&
-      (needs.python-core-test-e2e.result == 'success' || needs.python-core-test-e2e.result == 'skipped')
+      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

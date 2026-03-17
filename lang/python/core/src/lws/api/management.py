@@ -15,10 +15,25 @@ from fastapi import APIRouter, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
+from lws.api._management_aws_fake import (
+    _handle_get_aws_fake,
+    _handle_set_aws_fake,
+)
+from lws.api._management_chaos import (
+    _handle_get_chaos,
+    _handle_set_chaos,
+)
+from lws.api._management_iam_auth import (
+    _handle_get_iam_auth,
+    _handle_set_iam_auth,
+)
+from lws.api._management_lifecycle import (
+    _register_lifecycle_routes,
+)
 from lws.api.gui import get_dashboard_html
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger, get_ws_handler
-from lws.providers._shared.aws_chaos import AwsChaosConfig, parse_chaos_config
+from lws.providers._shared.aws_chaos import AwsChaosConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 from lws.runtime.orchestrator import Orchestrator
@@ -306,227 +321,3 @@ def _register_aws_fake_routes(
     @router.post("/aws-fake")
     async def set_aws_fake(request: Request) -> JSONResponse:
         return await _handle_set_aws_fake(request, aws_fake_configs)
-
-
-def _handle_get_chaos(chaos_configs: dict[str, AwsChaosConfig]) -> JSONResponse:
-    """Return current chaos config for all services."""
-    result = {svc: _serialize_chaos(cfg) for svc, cfg in chaos_configs.items()}
-    return JSONResponse(content=result)
-
-
-async def _handle_set_chaos(
-    request: Request, chaos_configs: dict[str, AwsChaosConfig]
-) -> JSONResponse:
-    """Update chaos config for one or more services."""
-    body = await request.json()
-    updated: list[str] = []
-    for svc, overrides in body.items():
-        if svc not in chaos_configs:
-            continue
-        _apply_chaos_overrides(chaos_configs[svc], overrides)
-        updated.append(svc)
-    result = {svc: _serialize_chaos(chaos_configs[svc]) for svc in updated}
-    return JSONResponse(content={"updated": updated, "chaos": result})
-
-
-def _serialize_chaos(cfg: AwsChaosConfig) -> dict[str, Any]:
-    """Serialize an AwsChaosConfig to a JSON-safe dict."""
-    return {
-        "enabled": cfg.enabled,
-        "error_rate": cfg.error_rate,
-        "latency_min_ms": cfg.latency_min_ms,
-        "latency_max_ms": cfg.latency_max_ms,
-        "errors": [{"type": e.type, "message": e.message, "weight": e.weight} for e in cfg.errors],
-        "connection_reset_rate": cfg.connection_reset_rate,
-        "timeout_rate": cfg.timeout_rate,
-    }
-
-
-def _apply_chaos_overrides(cfg: AwsChaosConfig, overrides: dict[str, Any]) -> None:
-    """Apply partial overrides to an existing AwsChaosConfig in place."""
-    if "enabled" in overrides:
-        cfg.enabled = bool(overrides["enabled"])
-    if "error_rate" in overrides:
-        cfg.error_rate = float(overrides["error_rate"])
-    if "latency_min_ms" in overrides:
-        cfg.latency_min_ms = int(overrides["latency_min_ms"])
-    if "latency_max_ms" in overrides:
-        cfg.latency_max_ms = int(overrides["latency_max_ms"])
-    if "connection_reset_rate" in overrides:
-        cfg.connection_reset_rate = float(overrides["connection_reset_rate"])
-    if "timeout_rate" in overrides:
-        cfg.timeout_rate = float(overrides["timeout_rate"])
-    if "errors" in overrides:
-        cfg.errors = parse_chaos_config({"errors": overrides["errors"]}).errors
-
-
-# ---------------------------------------------------------------------------
-# AWS Fake helpers
-# ---------------------------------------------------------------------------
-
-
-def _handle_get_aws_fake(fake_configs: dict[str, AwsFakeConfig]) -> JSONResponse:
-    """Return current AWS fake config for all services."""
-    result = {svc: _serialize_aws_fake(cfg) for svc, cfg in fake_configs.items()}
-    return JSONResponse(content=result)
-
-
-async def _handle_set_aws_fake(
-    request: Request, fake_configs: dict[str, AwsFakeConfig]
-) -> JSONResponse:
-    """Update AWS fake config for one or more services."""
-    body = await request.json()
-    updated: list[str] = []
-    for svc, overrides in body.items():
-        if svc not in fake_configs:
-            continue
-        _apply_aws_fake_overrides(fake_configs[svc], overrides)
-        updated.append(svc)
-    result = {svc: _serialize_aws_fake(fake_configs[svc]) for svc in updated}
-    return JSONResponse(content={"updated": updated, "aws_fake": result})
-
-
-def _serialize_aws_fake(cfg: AwsFakeConfig) -> dict[str, Any]:
-    """Serialize an AwsFakeConfig to a JSON-safe dict."""
-    return {
-        "service": cfg.service,
-        "enabled": cfg.enabled,
-        "rules": [
-            {
-                "operation": r.operation,
-                "match_headers": r.match_headers,
-                "response": {
-                    "status": r.response.status,
-                    "content_type": r.response.content_type,
-                    "delay_ms": r.response.delay_ms,
-                },
-            }
-            for r in cfg.rules
-        ],
-    }
-
-
-def _apply_aws_fake_overrides(cfg: AwsFakeConfig, overrides: dict[str, Any]) -> None:
-    """Apply partial overrides to an existing AwsFakeConfig in place."""
-    from lws.providers._shared.aws_operation_fake import (  # pylint: disable=import-outside-toplevel
-        parse_fake_rule,
-    )
-
-    if "enabled" in overrides:
-        cfg.enabled = bool(overrides["enabled"])
-    if "rules" in overrides:
-        cfg.rules = [parse_fake_rule(r) for r in overrides["rules"]]
-
-
-# ---------------------------------------------------------------------------
-# IAM auth helpers
-# ---------------------------------------------------------------------------
-
-
-def _handle_get_iam_auth(iam_auth_bundle: Any) -> JSONResponse:
-    """Return current IAM auth config."""
-    if iam_auth_bundle is None:
-        return JSONResponse(content={"enabled": False})
-    return JSONResponse(content=_serialize_iam_auth_config(iam_auth_bundle.config))
-
-
-async def _handle_set_iam_auth(request: Request, iam_auth_bundle: Any) -> JSONResponse:
-    """Update IAM auth config at runtime."""
-    if iam_auth_bundle is None:
-        return JSONResponse(content={"error": "IAM auth not configured"}, status_code=400)
-    body = await request.json()
-    config = iam_auth_bundle.config
-    if "mode" in body:
-        config.mode = body["mode"]
-    if "default_identity" in body:
-        config.default_identity = body["default_identity"]
-    from lws.config.loader import IamAuthServiceConfig  # pylint: disable=import-outside-toplevel
-
-    for svc, overrides in body.get("services", {}).items():
-        if svc not in config.services:
-            config.services[svc] = IamAuthServiceConfig()
-        svc_cfg = config.services[svc]
-        if "mode" in overrides:
-            svc_cfg.mode = overrides["mode"]
-        if "enabled" in overrides:
-            svc_cfg.enabled = overrides["enabled"]
-    for name, identity_def in body.get("identities", {}).items():
-        iam_auth_bundle.identity_store.register_identity(
-            name=name,
-            inline_policies=identity_def.get("inline_policies", []),
-            boundary_policy=identity_def.get("boundary_policy"),
-        )
-    return JSONResponse(content={"config": _serialize_iam_auth_config(config)})
-
-
-def _serialize_iam_auth_config(config: Any) -> dict[str, Any]:
-    """Serialize an IamAuthConfig to a JSON-safe dict."""
-    return {
-        "mode": config.mode,
-        "default_identity": config.default_identity,
-        "identity_header": config.identity_header,
-        "services": {
-            svc: {"mode": svc_cfg.mode, "enabled": svc_cfg.enabled}
-            for svc, svc_cfg in config.services.items()
-        },
-    }
-
-
-# ---------------------------------------------------------------------------
-# Lifecycle helpers
-# ---------------------------------------------------------------------------
-
-
-def _register_lifecycle_routes(
-    router: APIRouter,
-    lifecycle_configs: dict[str, ResourceLifecycleConfig],
-) -> None:
-    """Register lifecycle management routes on the router."""
-
-    @router.get("/lifecycle")
-    async def get_lifecycle() -> JSONResponse:
-        return _handle_get_lifecycle(lifecycle_configs)
-
-    @router.post("/lifecycle")
-    async def set_lifecycle(request: Request) -> JSONResponse:
-        return await _handle_set_lifecycle(request, lifecycle_configs)
-
-
-def _handle_get_lifecycle(lifecycle_configs: dict[str, ResourceLifecycleConfig]) -> JSONResponse:
-    """Return current lifecycle config for all services."""
-    result = {svc: _serialize_lifecycle(cfg) for svc, cfg in lifecycle_configs.items()}
-    return JSONResponse(content=result)
-
-
-async def _handle_set_lifecycle(
-    request: Request, lifecycle_configs: dict[str, ResourceLifecycleConfig]
-) -> JSONResponse:
-    """Update lifecycle config for one or more services."""
-    body = await request.json()
-    updated: list[str] = []
-    for svc, overrides in body.items():
-        if svc not in lifecycle_configs:
-            continue
-        _apply_lifecycle_overrides(lifecycle_configs[svc], overrides)
-        updated.append(svc)
-    result = {svc: _serialize_lifecycle(lifecycle_configs[svc]) for svc in updated}
-    return JSONResponse(content={"updated": updated, "lifecycle": result})
-
-
-def _serialize_lifecycle(cfg: ResourceLifecycleConfig) -> dict[str, Any]:
-    """Serialize a ResourceLifecycleConfig to a JSON-safe dict."""
-    return {
-        "enabled": cfg.enabled,
-        "create_dwell_ms": cfg.create_dwell_ms,
-        "delete_dwell_ms": cfg.delete_dwell_ms,
-    }
-
-
-def _apply_lifecycle_overrides(cfg: ResourceLifecycleConfig, overrides: dict[str, Any]) -> None:
-    """Apply partial overrides to an existing ResourceLifecycleConfig in place."""
-    if "enabled" in overrides:
-        cfg.enabled = bool(overrides["enabled"])
-    if "create_dwell_ms" in overrides:
-        cfg.create_dwell_ms = int(overrides["create_dwell_ms"])
-    if "delete_dwell_ms" in overrides:
-        cfg.delete_dwell_ms = int(overrides["delete_dwell_ms"])

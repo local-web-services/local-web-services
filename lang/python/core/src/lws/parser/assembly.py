@@ -9,11 +9,39 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Callable
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
+from lws.parser._assembly_collectors import (
+    collect_event_rules,
+    collect_queues,
+    collect_state_machines,
+    collect_user_pools,
+)
+from lws.parser._assembly_helpers import (
+    build_resource_map,
+    extract_website_configuration,
+    find_handler_for_integration,
+    resolve_code_path,
+    resolve_substitutions,
+    resolve_sm_definition,
+)
+from lws.parser._assembly_nodes import (
+    ApiDefinition,
+    ApiRoute,
+    AppModel,
+    CognitoUserPool,
+    DynamoTable,
+    EventBus,
+    EventRule,
+    LambdaFunction,
+    LambdaFunctionUrl,
+    S3Bucket,
+    SmSecret,
+    SnsTopic,
+    SqsQueue,
+    SsmParameter,
+    StateMachine,
+)
 from lws.parser.asset_parser import parse_assets
 from lws.parser.ref_resolver import RefResolver
 from lws.parser.template_parser import (
@@ -29,188 +57,27 @@ from lws.parser.tree_parser import parse_tree
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Domain model dataclasses
+# Re-exports so existing importers of assembly.py continue to work
 # ---------------------------------------------------------------------------
-
-
-@dataclass
-class LambdaFunction:
-    """Parsed Lambda function ready for local execution."""
-
-    name: str
-    handler: str
-    runtime: str
-    code_path: Path | None = None
-    timeout: int = 30
-    memory: int = 128
-    environment: dict[str, str] = field(default_factory=dict)
-
-    @property
-    def logical_id(self) -> str:
-        """Return the function name as its logical identifier."""
-        return self.name
-
-
-@dataclass
-class DynamoTable:
-    """Parsed DynamoDB table definition."""
-
-    name: str
-    key_schema: list[dict[str, str]] = field(default_factory=list)
-    gsi_definitions: list[dict[str, Any]] = field(default_factory=list)
-
-    @property
-    def logical_id(self) -> str:
-        """Return the table name as its logical identifier."""
-        return self.name
-
-    @property
-    def table_name(self) -> str:
-        """Return the DynamoDB table name."""
-        return self.name
-
-
-@dataclass
-class ApiRoute:
-    """A single API Gateway route."""
-
-    method: str
-    path: str
-    handler_name: str | None = None
-
-
-@dataclass
-class ApiDefinition:
-    """A collection of routes making up an API."""
-
-    name: str = "default"
-    routes: list[ApiRoute] = field(default_factory=list)
-
-    @property
-    def logical_id(self) -> str:
-        """Return the API name as its logical identifier."""
-        return self.name
-
-
-@dataclass
-class SqsQueue:
-    """Parsed SQS queue definition."""
-
-    name: str
-    is_fifo: bool = False
-    visibility_timeout: int = 30
-    content_based_dedup: bool = False
-    redrive_target: str | None = None
-    max_receive_count: int = 5
-
-
-@dataclass
-class S3Bucket:
-    """Parsed S3 bucket definition."""
-
-    name: str
-    website_configuration: dict[str, Any] | None = None
-
-
-@dataclass
-class SnsTopic:
-    """Parsed SNS topic definition."""
-
-    name: str
-    topic_arn: str = ""
-
-
-@dataclass
-class EventBus:
-    """Parsed EventBridge event bus definition."""
-
-    name: str
-    bus_arn: str = ""
-
-
-@dataclass
-class EventRule:
-    """Parsed EventBridge rule definition."""
-
-    rule_name: str
-    event_bus_name: str = "default"
-    event_pattern: dict[str, Any] | None = None
-    schedule_expression: str | None = None
-    targets: list[dict[str, Any]] = field(default_factory=list)
-
-
-@dataclass
-class StateMachine:
-    """Parsed Step Functions state machine definition."""
-
-    name: str
-    definition: str | dict[str, Any] = ""
-    workflow_type: str = "STANDARD"
-    role_arn: str = ""
-    definition_substitutions: dict[str, str] = field(default_factory=dict)
-
-
-@dataclass
-class CognitoUserPool:
-    """Parsed Cognito user pool definition."""
-
-    logical_id: str
-    user_pool_name: str = "default"
-    auto_confirm: bool = True
-    password_policy: dict[str, Any] = field(default_factory=dict)
-    pre_auth_trigger: str | None = None
-    post_confirm_trigger: str | None = None
-    client_id: str = ""
-
-
-@dataclass
-class SsmParameter:
-    """Parsed SSM Parameter Store parameter."""
-
-    name: str
-    type: str  # "String", "StringList", "SecureString"
-    value: str
-    description: str = ""
-
-
-@dataclass
-class SmSecret:
-    """Parsed Secrets Manager secret."""
-
-    name: str
-    description: str = ""
-    secret_string: str | None = None
-
-
-@dataclass
-class LambdaFunctionUrl:
-    """Parsed Lambda Function URL definition."""
-
-    logical_id: str
-    function_name: str
-    auth_type: str = "NONE"
-    cors: dict[str, Any] | None = None
-    invoke_mode: str = "BUFFERED"
-
-
-@dataclass
-class AppModel:
-    """Complete parsed representation of a CDK application."""
-
-    functions: list[LambdaFunction] = field(default_factory=list)
-    tables: list[DynamoTable] = field(default_factory=list)
-    apis: list[ApiDefinition] = field(default_factory=list)
-    queues: list[SqsQueue] = field(default_factory=list)
-    buckets: list[S3Bucket] = field(default_factory=list)
-    topics: list[SnsTopic] = field(default_factory=list)
-    event_buses: list[EventBus] = field(default_factory=list)
-    event_rules: list[EventRule] = field(default_factory=list)
-    state_machines: list[StateMachine] = field(default_factory=list)
-    user_pools: list[CognitoUserPool] = field(default_factory=list)
-    ecs_services: list[Any] = field(default_factory=list)
-    ssm_parameters: list[SsmParameter] = field(default_factory=list)
-    secrets: list[SmSecret] = field(default_factory=list)
-    function_urls: list[LambdaFunctionUrl] = field(default_factory=list)
+__all__ = [
+    "ApiDefinition",
+    "ApiRoute",
+    "AppModel",
+    "CognitoUserPool",
+    "DynamoTable",
+    "EventBus",
+    "EventRule",
+    "LambdaFunction",
+    "LambdaFunctionUrl",
+    "S3Bucket",
+    "SmSecret",
+    "SnsTopic",
+    "SqsQueue",
+    "SsmParameter",
+    "StateMachine",
+    "parse_assembly",
+    "_collect_lambda_urls",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -238,15 +105,12 @@ def parse_assembly(cdk_out_path: Path) -> AppModel:
     with open(manifest_path, encoding="utf-8") as fh:
         manifest = json.load(fh)
 
-    # Parse assets (hash -> filesystem path)
     asset_map = parse_assets(cdk_out_path)
 
-    # Parse tree.json if present
     tree_path = cdk_out_path / "tree.json"
     if tree_path.exists():
-        parse_tree(tree_path)  # Currently used for validation; future enrichment
+        parse_tree(tree_path)
 
-    # Collect all stack artifacts
     model = AppModel()
     for artifact_id, artifact in (manifest.get("artifacts") or {}).items():
         if artifact.get("type") != "aws:cloudformation:stack":
@@ -276,7 +140,7 @@ def _process_stack(
 
     resources = parse_template(template_path)
     resource_type_map = {r.logical_id: r.resource_type for r in resources}
-    resource_map = _build_resource_map(resources)
+    resource_map = build_resource_map(resources)
     resolver = RefResolver(resource_map=resource_map, resource_types=resource_type_map)
 
     model.functions.extend(_collect_lambdas(resources, asset_map, cdk_out_path, resolver))
@@ -284,95 +148,25 @@ def _process_stack(
     api_def = _collect_api_routes(resources, resolver, artifact_id)
     if api_def:
         model.apis.append(api_def)
-    model.queues.extend(_collect_queues(resources, resolver))
+    model.queues.extend(collect_queues(resources, resolver))
     model.buckets.extend(_collect_buckets(resources))
     model.topics.extend(_collect_topics(resources, resolver))
     model.event_buses.extend(_collect_event_buses(resources, resolver))
-    model.event_rules.extend(_collect_event_rules(resources, resolver))
-    model.state_machines.extend(_collect_state_machines(resources, resolver))
-    model.user_pools.extend(_collect_user_pools(resources, resolver))
+    model.event_rules.extend(collect_event_rules(resources, resolver))
+    model.state_machines.extend(collect_state_machines(resources, resolver))
+    model.user_pools.extend(collect_user_pools(resources, resolver))
     model.ssm_parameters.extend(_collect_ssm_parameters(resources, resolver))
     model.secrets.extend(_collect_secrets(resources, resolver))
     model.function_urls.extend(_collect_lambda_urls(resources, resolver))
 
-    # ECS needs the raw template dict
     with open(template_path, encoding="utf-8") as fh:
         raw_template = json.load(fh)
-    ecs_services = _collect_ecs_services(raw_template)
-    model.ecs_services.extend(ecs_services)
+    model.ecs_services.extend(_collect_ecs_services(raw_template))
 
 
-def _build_resource_map(resources: list[CfnResource]) -> dict[str, str]:
-    """Build a Ref resource_map so intrinsic ``Ref`` calls resolve to useful local values.
-
-    In real CloudFormation:
-    - ``Ref`` on an ``AWS::SQS::Queue`` returns the queue URL.
-    - ``Ref`` on an ``AWS::DynamoDB::Table`` returns the table name.
-
-    We reproduce this behaviour with deterministic local placeholders so that
-    Lambda environment variables like ``QUEUE_URL`` and ``TABLE_NAME`` resolve
-    to values the local providers can understand.
-    """
-    resource_map: dict[str, str] = {}
-    for r in resources:
-        ref = _resolve_ref_value(r)
-        if ref is not None:
-            resource_map[r.logical_id] = ref
-    return resource_map
-
-
-def _resolve_ref_value(r: CfnResource) -> str | None:
-    """Return the local Ref value for a single CloudFormation resource, or None."""
-    handler = _REF_RESOLVERS.get(r.resource_type)
-    if handler is not None:
-        return handler(r)
-    return None
-
-
-def _ref_sqs(r: CfnResource) -> str | None:
-    queue_name = r.properties.get("QueueName", r.logical_id)
-    if isinstance(queue_name, str):
-        return f"arn:ldk:sqs:local:000000000000:queue/{queue_name}"
-    return None
-
-
-def _ref_dynamodb(r: CfnResource) -> str | None:
-    table_name = r.properties.get("TableName", r.logical_id)
-    return table_name if isinstance(table_name, str) else None
-
-
-def _ref_s3(r: CfnResource) -> str:
-    bucket_name = r.properties.get("BucketName", r.logical_id)
-    return bucket_name if isinstance(bucket_name, str) else r.logical_id
-
-
-def _ref_sns(r: CfnResource) -> str | None:
-    topic_name = r.properties.get("TopicName", r.logical_id)
-    if isinstance(topic_name, str):
-        return f"arn:ldk:sns:local:000000000000:{topic_name}"
-    return None
-
-
-def _ref_ssm(r: CfnResource) -> str | None:
-    name = r.properties.get("Name", r.logical_id)
-    return name if isinstance(name, str) else None
-
-
-def _ref_secretsmanager(r: CfnResource) -> str | None:
-    name = r.properties.get("Name", r.logical_id)
-    if isinstance(name, str):
-        return f"arn:aws:secretsmanager:us-east-1:000000000000:secret:{name}"
-    return None
-
-
-_REF_RESOLVERS: dict[str, Callable[[CfnResource], str | None]] = {
-    "AWS::SQS::Queue": _ref_sqs,
-    "AWS::DynamoDB::Table": _ref_dynamodb,
-    "AWS::S3::Bucket": _ref_s3,
-    "AWS::SNS::Topic": _ref_sns,
-    "AWS::SSM::Parameter": _ref_ssm,
-    "AWS::SecretsManager::Secret": _ref_secretsmanager,
-}
+# ---------------------------------------------------------------------------
+# Collector functions
+# ---------------------------------------------------------------------------
 
 
 def _collect_lambdas(
@@ -386,7 +180,7 @@ def _collect_lambdas(
     lambda_props_list = extract_lambda_functions(resources)
     lambda_resources = [r for r in resources if r.resource_type == "AWS::Lambda::Function"]
     for r, props in zip(lambda_resources, lambda_props_list):
-        code_path = _resolve_code_path(props.code_uri, asset_map, cdk_out_path, resolver)
+        code_path = resolve_code_path(props.code_uri, asset_map, cdk_out_path, resolver)
         env = {k: str(resolver.resolve(v)) for k, v in props.environment.items()}
         functions.append(
             LambdaFunction(
@@ -435,7 +229,7 @@ def _collect_api_routes(
         return None
     routes: list[ApiRoute] = []
     for route_props in api_routes:
-        handler_name = _find_handler_for_integration(
+        handler_name = find_handler_for_integration(
             route_props.integration_uri, resources, resolver
         )
         routes.append(
@@ -448,122 +242,6 @@ def _collect_api_routes(
     return ApiDefinition(name=artifact_id, routes=routes)
 
 
-def _resolve_code_from_s3_key(s3_key: str, asset_map: dict[str, Path]) -> Path | None:
-    """Try to match an S3Key to an asset by hash."""
-    asset_hash = s3_key.replace(".zip", "")
-    if asset_hash in asset_map:
-        return asset_map[asset_hash]
-    for hash_key, path in asset_map.items():
-        if hash_key in s3_key:
-            return path
-    return None
-
-
-def _resolve_code_from_s3_bucket(
-    s3_bucket: dict, resolver: RefResolver, asset_map: dict[str, Path]
-) -> Path | None:
-    """Try to match an S3Bucket ref to an asset."""
-    resolved = str(resolver.resolve(s3_bucket))
-    for h, p in asset_map.items():
-        if h in resolved:
-            return p
-    return None
-
-
-def _resolve_code_path(
-    code_uri: Any,
-    asset_map: dict[str, Path],
-    cdk_out_path: Path,
-    resolver: RefResolver,
-) -> Path | None:
-    """Resolve a Lambda Code property to a local filesystem path."""
-    if code_uri is None:
-        return None
-
-    if isinstance(code_uri, dict):
-        s3_key = code_uri.get("S3Key")
-        if isinstance(s3_key, str):
-            result = _resolve_code_from_s3_key(s3_key, asset_map)
-            if result:
-                return result
-
-        s3_bucket = code_uri.get("S3Bucket")
-        if isinstance(s3_bucket, dict):
-            result = _resolve_code_from_s3_bucket(s3_bucket, resolver, asset_map)
-            if result:
-                return result
-
-    if isinstance(code_uri, str):
-        candidate = cdk_out_path / code_uri
-        if candidate.exists():
-            return candidate
-
-    return None
-
-
-def _find_handler_for_integration(
-    integration_uri: Any,
-    resources: list[CfnResource],
-    resolver: RefResolver,
-) -> str | None:
-    """Try to match an API integration URI back to a Lambda logical ID."""
-    if integration_uri is None:
-        return None
-
-    resolved = str(resolver.resolve(integration_uri))
-
-    # Look for a Lambda function logical ID in the resolved string
-    for r in resources:
-        if r.resource_type == "AWS::Lambda::Function":
-            if r.logical_id in resolved:
-                return r.logical_id
-
-    return None
-
-
-# ---------------------------------------------------------------------------
-# Collectors for new resource types
-# ---------------------------------------------------------------------------
-
-
-def _collect_queues(
-    resources: list[CfnResource],
-    resolver: RefResolver,
-) -> list[SqsQueue]:
-    """Extract SQS queues from parsed CloudFormation resources."""
-    queues: list[SqsQueue] = []
-    for r in resources:
-        if r.resource_type != "AWS::SQS::Queue":
-            continue
-        props = r.properties
-        name = props.get("QueueName", r.logical_id)
-        if isinstance(name, dict):
-            name = str(resolver.resolve(name))
-        is_fifo = bool(props.get("FifoQueue", False))
-        vis = int(props.get("VisibilityTimeout", 30))
-        dedup = bool(props.get("ContentBasedDeduplication", False))
-        redrive = props.get("RedrivePolicy")
-        redrive_target = None
-        max_receive = 5
-        if isinstance(redrive, dict):
-            dlq = redrive.get("deadLetterTargetArn", "")
-            if isinstance(dlq, dict):
-                dlq = str(resolver.resolve(dlq))
-            redrive_target = str(dlq) if dlq else None
-            max_receive = int(redrive.get("maxReceiveCount", 5))
-        queues.append(
-            SqsQueue(
-                name=name,
-                is_fifo=is_fifo,
-                visibility_timeout=vis,
-                content_based_dedup=dedup,
-                redrive_target=redrive_target,
-                max_receive_count=max_receive,
-            )
-        )
-    return queues
-
-
 def _collect_buckets(resources: list[CfnResource]) -> list[S3Bucket]:
     """Extract S3 buckets from parsed CloudFormation resources."""
     buckets: list[S3Bucket] = []
@@ -572,25 +250,10 @@ def _collect_buckets(resources: list[CfnResource]) -> list[S3Bucket]:
             continue
         name = r.properties.get("BucketName", r.logical_id)
         if isinstance(name, dict):
-            name = r.logical_id  # Can't resolve intrinsics for bucket names easily
-        website_config = _extract_website_configuration(r.properties)
+            name = r.logical_id
+        website_config = extract_website_configuration(r.properties)
         buckets.append(S3Bucket(name=name, website_configuration=website_config))
     return buckets
-
-
-def _extract_website_configuration(properties: dict[str, Any]) -> dict[str, Any] | None:
-    """Extract WebsiteConfiguration from CloudFormation S3 bucket properties."""
-    raw = properties.get("WebsiteConfiguration")
-    if not raw or not isinstance(raw, dict):
-        return None
-    config: dict[str, Any] = {}
-    index_doc = raw.get("IndexDocument")
-    if isinstance(index_doc, str):
-        config["index_document"] = index_doc
-    error_doc = raw.get("ErrorDocument")
-    if isinstance(error_doc, str):
-        config["error_document"] = error_doc
-    return config if config else None
 
 
 def _collect_topics(
@@ -627,140 +290,6 @@ def _collect_event_buses(
         arn = f"arn:aws:events:us-east-1:000000000000:event-bus/{name}"
         buses.append(EventBus(name=name, bus_arn=arn))
     return buses
-
-
-def _collect_event_rules(
-    resources: list[CfnResource],
-    resolver: RefResolver,
-) -> list[EventRule]:
-    """Extract EventBridge rules from parsed CloudFormation resources."""
-    rules: list[EventRule] = []
-    for r in resources:
-        if r.resource_type != "AWS::Events::Rule":
-            continue
-        props = r.properties
-        rule_name = props.get("Name", r.logical_id)
-        if isinstance(rule_name, dict):
-            rule_name = str(resolver.resolve(rule_name))
-        bus_name = props.get("EventBusName", "default")
-        if isinstance(bus_name, dict):
-            bus_name = str(resolver.resolve(bus_name))
-        pattern = props.get("EventPattern")
-        schedule = props.get("ScheduleExpression")
-        raw_targets = props.get("Targets", [])
-        targets: list[dict[str, Any]] = []
-        for t in raw_targets:
-            target_arn = t.get("Arn", "")
-            if isinstance(target_arn, dict):
-                target_arn = str(resolver.resolve(target_arn))
-            targets.append(
-                {
-                    "target_id": t.get("Id", ""),
-                    "arn": target_arn,
-                    "input_path": t.get("InputPath"),
-                    "input_template": t.get("InputTransformer", {}).get("InputTemplate"),
-                }
-            )
-        rules.append(
-            EventRule(
-                rule_name=rule_name,
-                event_bus_name=bus_name,
-                event_pattern=pattern,
-                schedule_expression=schedule,
-                targets=targets,
-            )
-        )
-    return rules
-
-
-def _resolve_sm_definition(definition: Any, resolver: RefResolver) -> Any:
-    """Resolve a Step Functions DefinitionString that may use intrinsic functions."""
-    if isinstance(definition, dict):
-        return resolver.resolve(definition)
-    return definition
-
-
-def _resolve_substitutions(subs: dict[str, Any], resolver: RefResolver) -> dict[str, str]:
-    """Resolve CloudFormation DefinitionSubstitutions to plain strings."""
-    return {k: str(resolver.resolve(v)) if isinstance(v, dict) else str(v) for k, v in subs.items()}
-
-
-def _collect_state_machines(
-    resources: list[CfnResource],
-    resolver: RefResolver,
-) -> list[StateMachine]:
-    """Extract Step Functions state machines from parsed CloudFormation resources."""
-    machines: list[StateMachine] = []
-    for r in resources:
-        if r.resource_type != "AWS::StepFunctions::StateMachine":
-            continue
-        props = r.properties
-        name = props.get("StateMachineName", r.logical_id)
-        if isinstance(name, dict):
-            name = str(resolver.resolve(name))
-        definition = props.get("DefinitionString", props.get("Definition", ""))
-        definition = _resolve_sm_definition(definition, resolver)
-        role_arn = props.get("RoleArn", "")
-        if isinstance(role_arn, dict):
-            role_arn = str(resolver.resolve(role_arn))
-        resolved_subs = _resolve_substitutions(props.get("DefinitionSubstitutions", {}), resolver)
-        machines.append(
-            StateMachine(
-                name=name,
-                definition=definition,
-                workflow_type=props.get("StateMachineType", "STANDARD"),
-                role_arn=role_arn,
-                definition_substitutions=resolved_subs,
-            )
-        )
-    return machines
-
-
-def _collect_user_pools(
-    resources: list[CfnResource],
-    resolver: RefResolver,
-) -> list[CognitoUserPool]:
-    """Extract Cognito user pools from parsed CloudFormation resources."""
-    pools: list[CognitoUserPool] = []
-    # First pass: collect user pool clients to map pool -> client_id
-    client_map: dict[str, str] = {}
-    for r in resources:
-        if r.resource_type != "AWS::Cognito::UserPoolClient":
-            continue
-        pool_ref = r.properties.get("UserPoolId", "")
-        if isinstance(pool_ref, dict):
-            pool_ref = str(resolver.resolve(pool_ref))
-        client_map[pool_ref] = r.logical_id
-
-    for r in resources:
-        if r.resource_type != "AWS::Cognito::UserPool":
-            continue
-        props = r.properties
-        name = props.get("UserPoolName", r.logical_id)
-        if isinstance(name, dict):
-            name = str(resolver.resolve(name))
-        auto_confirm = True
-        lambda_config = props.get("LambdaConfig", {})
-        pre_auth = lambda_config.get("PreAuthentication")
-        if isinstance(pre_auth, dict):
-            pre_auth = str(resolver.resolve(pre_auth))
-        post_confirm = lambda_config.get("PostConfirmation")
-        if isinstance(post_confirm, dict):
-            post_confirm = str(resolver.resolve(post_confirm))
-        pw_policy = props.get("Policies", {}).get("PasswordPolicy", {})
-        client_id = client_map.get(r.logical_id, "")
-        pools.append(
-            CognitoUserPool(
-                logical_id=r.logical_id,
-                user_pool_name=name,
-                auto_confirm=auto_confirm,
-                password_policy=pw_policy,
-                pre_auth_trigger=pre_auth,
-                post_confirm_trigger=post_confirm,
-                client_id=client_id,
-            )
-        )
-    return pools
 
 
 def _collect_ssm_parameters(
@@ -803,7 +332,6 @@ def _collect_secrets(
         description = props.get("Description", "")
         secret_string = props.get("SecretString")
         if secret_string is None:
-            # Try GenerateSecretString.SecretStringTemplate
             gen = props.get("GenerateSecretString", {})
             if isinstance(gen, dict):
                 secret_string = gen.get("SecretStringTemplate")
@@ -822,17 +350,13 @@ def _collect_lambda_urls(
     url_resources = [r for r in resources if r.resource_type == "AWS::Lambda::Url"]
     urls: list[LambdaFunctionUrl] = []
     for r, props in zip(url_resources, url_props_list):
-        # Resolve TargetFunctionArn to extract the function name
         target = props.target_function_arn
         if isinstance(target, dict):
             target = str(resolver.resolve(target))
-        # Extract function name from ARN or use directly
         function_name = target or r.logical_id
         if isinstance(function_name, str):
-            # Strip .Arn suffix from Fn::GetAtt resolution
             if function_name.endswith(".Arn"):
                 function_name = function_name[:-4]
-            # Extract name from ARN like arn:aws:lambda:...:function:name
             if ":function:" in function_name:
                 function_name = function_name.rsplit(":", 1)[-1]
         urls.append(

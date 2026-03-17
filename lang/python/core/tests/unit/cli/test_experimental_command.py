@@ -6,20 +6,25 @@ from __future__ import annotations
 class TestIsExperimentalCommand:
     def test_command_in_experimental_service_returns_true(self):
         # Arrange
-        from lws.cli.experimental import is_experimental_command
+        from lws.cli.experimental import EXPERIMENTAL_SERVICES, is_experimental_command
+
+        EXPERIMENTAL_SERVICES.add("test-service")
 
         # Act
-        actual = is_experimental_command("neptune", "create-db-cluster")
+        actual = is_experimental_command("test-service", "some-command")
 
         # Assert
         assert actual is True
+
+        # Cleanup
+        EXPERIMENTAL_SERVICES.discard("test-service")
 
     def test_command_in_stable_service_returns_false(self):
         # Arrange
         from lws.cli.experimental import is_experimental_command
 
         # Act
-        actual = is_experimental_command("dynamodb", "put-item")
+        actual = is_experimental_command("chaos", "enable")
 
         # Assert
         assert actual is False
@@ -28,13 +33,13 @@ class TestIsExperimentalCommand:
         # Arrange
         from lws.cli.experimental import EXPERIMENTAL_COMMANDS, is_experimental_command
 
-        EXPERIMENTAL_COMMANDS.add(("dynamodb", "test-cmd"))
+        EXPERIMENTAL_COMMANDS.add(("chaos", "test-cmd"))
 
         # Act
-        actual = is_experimental_command("dynamodb", "test-cmd")
+        actual = is_experimental_command("chaos", "test-cmd")
 
         # Assert
         assert actual is True
 
         # Cleanup
-        EXPERIMENTAL_COMMANDS.discard(("dynamodb", "test-cmd"))
+        EXPERIMENTAL_COMMANDS.discard(("chaos", "test-cmd"))

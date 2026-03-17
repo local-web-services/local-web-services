@@ -1,9 +1,9 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install lint format format-check complexity cpd pylint test test-e2e check
+.PHONY: help install lint format format-check complexity cpd pylint unit-test architecture-test e2e-test test check
 
 help: ## Show available targets
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 
 install: ## Install dependencies
 	uv sync --all-groups
@@ -30,9 +30,15 @@ cpd: ## Check for copy-pasted code (5+ similar lines)
 pylint: ## Run pylint checks
 	uvx --from pylint pylint src/lws_testing --recursive=y
 
-test: ## Run test suite
-	uv run pytest tests/ -v
+unit-test: ## Run unit tests
+	uv run pytest tests/unit
 
-test-e2e: test ## Run e2e tests
+architecture-test: ## Run architecture constraint tests
+	uv run pytest tests/architecture
+
+e2e-test: ## Run e2e tests (requires Docker)
+	uv run pytest tests/e2e -v -m "not internal"
+
+test: unit-test architecture-test ## Run all tests (unit + architecture)
 
 check: lint format-check complexity cpd pylint test ## Run all checks (what CI runs)

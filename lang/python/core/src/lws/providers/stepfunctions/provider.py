@@ -6,7 +6,6 @@ Supports both Standard (async) and Express (sync) workflow types.
 
 from __future__ import annotations
 
-import json
 import logging
 import time
 import uuid
@@ -14,8 +13,22 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from lws.interfaces.compute import ICompute, InvocationResult, LambdaContext
+from lws.interfaces.compute import ICompute
 from lws.interfaces.state_machine import IStateMachine
+from lws.providers.stepfunctions._provider_helpers import (
+    _WorkflowTypeParser,
+    _build_async_response,
+    _build_execution_arn,
+    _build_execution_history_events,
+    _build_state_machine_description,
+    _build_sync_response,
+    _extract_function_name,
+    _find_provider_by_arn,
+    _invoke_compute,
+    _parse_cloud_assembly_config,
+    _process_invocation_result,
+    _resolve_definition,
+)
 from lws.providers.stepfunctions.asl_parser import (
     StateMachineDefinition,
     parse_definition,
@@ -290,21 +303,9 @@ class StepFunctionsProvider(IStateMachine):
         """Describe a state machine. Raises KeyError if not found."""
         if name not in self._definitions:
             raise KeyError(f"State machine not found: {name}")
-        config = self._configs.get(name)
-        wf_type = self._workflow_types.get(name, WorkflowType.STANDARD)
-        definition = ""
-        if config:
-            raw = config.definition
-            definition = json.dumps(raw) if isinstance(raw, dict) else str(raw)
-        return {
-            "name": name,
-            "stateMachineArn": f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}",
-            "definition": definition,
-            "type": wf_type.value,
-            "roleArn": config.role_arn if config else "",
-            "status": "ACTIVE",
-            "creationDate": time.time(),
-        }
+        return _build_state_machine_description(
+            name, self._configs, self._workflow_types, WorkflowType.STANDARD
+        )
 
     def stop_execution(
         self,
@@ -384,51 +385,7 @@ class StepFunctionsProvider(IStateMachine):
         history = self._executions.get(execution_arn)
         if history is None:
             raise KeyError(f"Execution not found: {execution_arn}")
-
-        events: list[dict] = []
-
-        # Always include an ExecutionStarted event
-        events.append(
-            {
-                "timestamp": history.start_time,
-                "type": "ExecutionStarted",
-                "id": 1,
-                "previousEventId": 0,
-                "executionStartedEventDetails": {
-                    "input": json.dumps(history.input_data) if history.input_data else "{}",
-                    "roleArn": "",
-                },
-            }
-        )
-
-        # Add state transition events
-        event_id = 2
-        for transition in history.transitions:
-            events.append(
-                {
-                    "timestamp": transition.timestamp,
-                    "type": "StateEntered",
-                    "id": event_id,
-                    "previousEventId": event_id - 1,
-                    "stateEnteredEventDetails": {
-                        "name": transition.state_name,
-                        "input": (
-                            json.dumps(transition.input_data) if transition.input_data else "{}"
-                        ),
-                    },
-                }
-            )
-            event_id += 1
-
-        # Add terminal event if execution has completed
-        terminal = _build_terminal_event(history, event_id)
-        if terminal is not None:
-            events.append(terminal)
-
-        if max_results is not None:
-            events = events[:max_results]
-
-        return events
+        return _build_execution_history_events(history, max_results)
 
     # ------------------------------------------------------------------
     # Internal execution methods
@@ -513,128 +470,6 @@ class StepFunctionsProvider(IStateMachine):
 
 
 # ---------------------------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------------------------
-
-
-def _build_terminal_event(history: ExecutionHistory, event_id: int) -> dict | None:
-    """Build a terminal event dict for a completed execution, or None if still running."""
-    timestamp = history.end_time or history.start_time
-    base = {
-        "timestamp": timestamp,
-        "id": event_id,
-        "previousEventId": event_id - 1,
-    }
-    if history.status == ExecutionStatus.SUCCEEDED:
-        base["type"] = "ExecutionSucceeded"
-        base["executionSucceededEventDetails"] = {
-            "output": json.dumps(history.output_data) if history.output_data else "{}",
-        }
-        return base
-    if history.status == ExecutionStatus.FAILED:
-        base["type"] = "ExecutionFailed"
-        base["executionFailedEventDetails"] = {
-            "error": history.error or "",
-            "cause": history.cause or "",
-        }
-        return base
-    if history.status == ExecutionStatus.ABORTED:
-        base["type"] = "ExecutionAborted"
-        base["executionAbortedEventDetails"] = {
-            "error": history.error or "",
-            "cause": history.cause or "",
-        }
-        return base
-    return None
-
-
-def _extract_function_name(resource_arn: str) -> str:
-    """Extract the function name from a Lambda ARN or resource string."""
-    if ":function:" in resource_arn:
-        return resource_arn.split(":function:")[-1].split(":")[0]
-    # LDK-style ARN: arn:ldk:lambda:local:000000000000:function/Name
-    if "function/" in resource_arn:
-        return resource_arn.split("function/")[-1].split(":")[0]
-    # For simple names / aliases
-    return resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
-
-
-def _find_provider_by_arn(providers: dict[str, ICompute], arn: str) -> ICompute | None:
-    """Try to find a compute provider by matching the ARN against provider keys."""
-    for key, provider in providers.items():
-        if key in arn or arn.endswith(key):
-            return provider
-    return None
-
-
-async def _invoke_compute(compute: ICompute, function_name: str, payload: Any) -> InvocationResult:
-    """Invoke a compute provider with the given payload."""
-    context = LambdaContext(
-        function_name=function_name,
-        memory_limit_in_mb=128,
-        timeout_seconds=300,
-        aws_request_id=str(uuid.uuid4()),
-        invoked_function_arn=f"arn:aws:lambda:us-east-1:000000000000:function:{function_name}",
-    )
-    event = payload if isinstance(payload, dict) else {"input": payload}
-    return await compute.invoke(event, context)
-
-
-def _process_invocation_result(result: InvocationResult, _resource_arn: str) -> Any:
-    """Process an InvocationResult, raising on error."""
-    if result.error:
-        from lws.providers.stepfunctions.engine import (  # pylint: disable=import-outside-toplevel
-            StatesTaskFailed,
-        )
-
-        raise StatesTaskFailed(
-            error="States.TaskFailed",
-            cause=result.error,
-        )
-    return result.payload
-
-
-def _resolve_definition(config: StateMachineConfig) -> str | dict:
-    """Resolve definition substitutions if present."""
-    definition = config.definition
-    if not config.definition_substitutions:
-        return definition
-    if isinstance(definition, dict):
-        definition = json.dumps(definition)
-    for placeholder, value in config.definition_substitutions.items():
-        definition = definition.replace(f"${{{placeholder}}}", value)
-    return definition
-
-
-def _build_execution_arn(state_machine_name: str, execution_name: str) -> str:
-    """Build a fake execution ARN."""
-    return f"arn:aws:states:us-east-1:000000000000:execution:{state_machine_name}:{execution_name}"
-
-
-def _build_sync_response(history: ExecutionHistory) -> dict:
-    """Build the response dict for a synchronous (EXPRESS) execution."""
-    response: dict[str, Any] = {
-        "executionArn": history.execution_arn,
-        "startDate": history.start_time,
-        "status": history.status.value,
-    }
-    if history.status == ExecutionStatus.SUCCEEDED:
-        response["output"] = json.dumps(history.output_data) if history.output_data else "{}"
-    elif history.status == ExecutionStatus.FAILED:
-        response["error"] = history.error
-        response["cause"] = history.cause
-    return response
-
-
-def _build_async_response(execution_arn: str) -> dict:
-    """Build the response dict for an asynchronous (STANDARD) execution."""
-    return {
-        "executionArn": execution_arn,
-        "startDate": time.time(),
-    }
-
-
-# ---------------------------------------------------------------------------
 # Cloud Assembly parsing (P2-17)
 # ---------------------------------------------------------------------------
 
@@ -655,43 +490,6 @@ def parse_cloud_assembly_state_machine(
     resource_mapping:
         Optional mapping of Lambda ARNs to local function names.
     """
-    definition_string = resource_properties.get("DefinitionString", "{}")
-    substitutions = resource_properties.get("DefinitionSubstitutions", {})
-    workflow_type_str = resource_properties.get("StateMachineType", "STANDARD")
-    workflow_type = _parse_workflow_type(workflow_type_str)
-
-    definition = _apply_assembly_substitutions(definition_string, substitutions)
-    if resource_mapping:
-        definition = _remap_lambda_arns(definition, resource_mapping)
-
-    return StateMachineConfig(
-        name=logical_id,
-        definition=definition,
-        workflow_type=workflow_type,
-        role_arn=resource_properties.get("RoleArn", ""),
-        definition_substitutions={},
+    return _parse_cloud_assembly_config(
+        logical_id, resource_properties, resource_mapping, StateMachineConfig, WorkflowType
     )
-
-
-def _parse_workflow_type(type_str: str) -> WorkflowType:
-    """Parse a workflow type string into the enum."""
-    try:
-        return WorkflowType(type_str.upper())
-    except ValueError:
-        return WorkflowType.STANDARD
-
-
-def _apply_assembly_substitutions(definition_string: str, substitutions: dict[str, str]) -> str:
-    """Apply DefinitionSubstitutions to the definition string."""
-    if isinstance(definition_string, dict):
-        definition_string = json.dumps(definition_string)
-    for key, value in substitutions.items():
-        definition_string = definition_string.replace(f"${{{key}}}", str(value))
-    return definition_string
-
-
-def _remap_lambda_arns(definition: str, mapping: dict[str, str]) -> str:
-    """Replace Lambda ARNs in a definition string with local function names."""
-    for arn, local_name in mapping.items():
-        definition = definition.replace(arn, local_name)
-    return definition

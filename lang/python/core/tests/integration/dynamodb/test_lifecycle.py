@@ -129,9 +129,9 @@ class TestDynamoDbLifecycleCreating:
             actual_error_type == expected_error_type
         ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
-    async def test_describe_table_returns_creating_status_while_creating(self, client):
+    async def test_describe_table_blocked_when_table_is_creating(self, client):
         # Arrange
-        expected_status = "CREATING"
+        expected_error_type = "ResourceInUseException"
         await client.post("/", json=_CREATE_TABLE_PAYLOAD, headers=_CREATE_TABLE_HEADERS)
 
         # Act
@@ -143,11 +143,11 @@ class TestDynamoDbLifecycleCreating:
         )
 
         # Assert
-        assert resp.status_code == 200
-        actual_status = resp.json()["Table"]["TableStatus"]
+        assert resp.status_code == 400
+        actual_error_type = resp.json().get("__type", "")
         assert (
-            actual_status == expected_status
-        ), f"Expected TableStatus '{expected_status}' but got '{actual_status}'"
+            actual_error_type == expected_error_type
+        ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
     async def test_query_blocked_when_table_is_creating(self, client):
         # Arrange

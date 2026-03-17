@@ -1,7 +1,8 @@
 """LWS CLI entry point.
 
-Provides AWS CLI-style commands for interacting with local LDK resources.
-Requires a running ``ldk dev`` instance.
+Provides management commands for interacting with a running ``ldk dev`` instance.
+For AWS service operations, use the standard AWS CLI with ``--endpoint-url``
+pointing at the local service port shown by ``lws status``.
 """
 
 from __future__ import annotations
@@ -13,35 +14,15 @@ import typer
 
 from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.cli.init import init_command
-from lws.cli.services.apigateway import app as apigateway_app
 from lws.cli.services.aws_fake import app as aws_fake_app
 from lws.cli.services.chaos import app as chaos_app
 from lws.cli.services.client import exit_with_error, output_json
-from lws.cli.services.cognito import app as cognito_app
-from lws.cli.services.docdb import app as docdb_app
-from lws.cli.services.dynamodb import app as dynamodb_app
-from lws.cli.services.elasticache import app as elasticache_app
-from lws.cli.services.es import app as es_app
-from lws.cli.services.events import app as events_app
 from lws.cli.services.fake import app as fake_app
-from lws.cli.services.glacier import app as glacier_app
 from lws.cli.services.iam_auth import app as iam_auth_app
-from lws.cli.services.lambda_service import app as lambda_app
-from lws.cli.services.memorydb import app as memorydb_app
-from lws.cli.services.neptune import app as neptune_app
-from lws.cli.services.opensearch import app as opensearch_app
-from lws.cli.services.rds import app as rds_app
-from lws.cli.services.s3 import app as s3_app
-from lws.cli.services.s3tables import app as s3tables_app
-from lws.cli.services.secretsmanager import app as secretsmanager_app
-from lws.cli.services.sns import app as sns_app
-from lws.cli.services.sqs import app as sqs_app
-from lws.cli.services.ssm import app as ssm_app
-from lws.cli.services.stepfunctions import app as stepfunctions_app
 
 app = typer.Typer(
     name="lws",
-    help="AWS CLI-style commands for local LDK resources. Requires a running 'ldk dev' instance.",
+    help="Management commands for a running 'ldk dev' instance. Use the AWS CLI with --endpoint-url for service operations.",
 )
 
 
@@ -54,26 +35,6 @@ def _add_service(typer_app: typer.Typer, name: str) -> None:
         app.add_typer(typer_app, name=name)
 
 
-_add_service(apigateway_app, "apigateway")
-_add_service(stepfunctions_app, "stepfunctions")
-_add_service(sqs_app, "sqs")
-_add_service(sns_app, "sns")
-_add_service(s3_app, "s3api")
-_add_service(dynamodb_app, "dynamodb")
-_add_service(events_app, "events")
-_add_service(lambda_app, "lambda")
-_add_service(cognito_app, "cognito-idp")
-_add_service(ssm_app, "ssm")
-_add_service(secretsmanager_app, "secretsmanager")
-_add_service(elasticache_app, "elasticache")
-_add_service(memorydb_app, "memorydb")
-_add_service(docdb_app, "docdb")
-_add_service(neptune_app, "neptune")
-_add_service(es_app, "es")
-_add_service(opensearch_app, "opensearch")
-_add_service(rds_app, "rds")
-_add_service(glacier_app, "glacier")
-_add_service(s3tables_app, "s3tables")
 _add_service(fake_app, "fake")
 _add_service(aws_fake_app, "aws-fake")
 _add_service(chaos_app, "chaos")
