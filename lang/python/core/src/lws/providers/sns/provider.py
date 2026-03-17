@@ -155,10 +155,10 @@ class SnsProvider(Provider):
         return list(self._topics.values())
 
     async def create_topic(self, topic_name: str) -> str:
-        """Create a topic. Returns existing ARN if topic already exists (idempotent)."""
+        """Create a topic. Raises ValueError if topic already exists."""
         existing = self._topics.get(topic_name)
         if existing is not None:
-            return existing.topic_arn
+            raise ValueError(f"Topic '{topic_name}' already exists")
         topic_arn = f"arn:aws:sns:us-east-1:000000000000:{topic_name}"
         topic = LocalTopic(topic_name=topic_name, topic_arn=topic_arn)
         self._topics[topic_name] = topic

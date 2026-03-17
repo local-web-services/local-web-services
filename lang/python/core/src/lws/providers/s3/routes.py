@@ -752,7 +752,7 @@ async def _create_bucket(bucket: str, provider: S3Provider) -> Response:
     try:
         await provider.create_bucket(bucket)
     except ValueError:
-        pass
+        return _error_xml("BucketAlreadyOwnedByYou", f"Bucket already exists: {bucket}", 409)
     return Response(status_code=200)
 
 

@@ -292,13 +292,9 @@ class DynamoDbRouter:
 
     async def _describe_table(self, body: dict) -> Response:
         table_name = body.get("TableName", "")
-        status = self._tracker.get_state(table_name)
-        # DELETING means the table has been removed from the store — treat as not found
-        if status == "DELETING":
-            return _error_response(
-                "ResourceNotFoundException",
-                f"Requested resource not found: Table: {table_name} not found",
-            )
+        err = self._get_lifecycle_error(table_name)
+        if err is not None:
+            return err
         try:
             description = await self.store.describe_table(table_name)
         except KeyError:
@@ -306,10 +302,6 @@ class DynamoDbRouter:
                 "ResourceNotFoundException",
                 f"Requested resource not found: Table: {table_name} not found",
             )
-        # Override status from lifecycle tracker
-        if status is not None:
-            description = dict(description)
-            description["TableStatus"] = status
         return _json_response({"Table": description})
 
     async def _list_tables(self, _body: dict) -> Response:
