@@ -501,6 +501,36 @@ def _build_eventbridge_app(
     return app
 
 
+def _parse_eventbridge_body(raw_body: bytes) -> dict:
+    try:
+        return json.loads(raw_body) if raw_body else {}
+    except json.JSONDecodeError:
+        return {}
+
+
+def _check_sf_target_lifecycle(
+    target: str, body: dict, sf_tracker: ResourceStateTracker | None
+) -> Response | None:
+    if target != "AWSEvents.PutTargets" or sf_tracker is None:
+        return None
+    return _check_sf_targets(body, sf_tracker)
+
+
+async def _handle_eventbridge_lifecycle(
+    target: str,
+    handler: Any,
+    provider: EventBridgeProvider,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if target == "AWSEvents.CreateEventBus" and lc.create_dwell_ms > 0:
+        return await _lifecycle_create_event_bus(handler, provider, body, lc, tracker)
+    if target == "AWSEvents.DeleteEventBus":
+        return await _lifecycle_delete_event_bus(handler, provider, body, lc, tracker)
+    return None
+
+
 async def _eventbridge_dispatch(
     request: Request,
     provider: EventBridgeProvider,
@@ -510,20 +540,15 @@ async def _eventbridge_dispatch(
 ) -> Response:
     """Route a single EventBridge request."""
     target = request.headers.get("x-amz-target", "")
-    raw_body = await request.body()
-    try:
-        body = json.loads(raw_body) if raw_body else {}
-    except json.JSONDecodeError:
-        body = {}
+    body = _parse_eventbridge_body(await request.body())
 
     err = _check_bus_lifecycle(target, body, lc, tracker)
     if err is not None:
         return err
 
-    if target == "AWSEvents.PutTargets" and sf_tracker is not None:
-        err = _check_sf_targets(body, sf_tracker)
-        if err is not None:
-            return err
+    err = _check_sf_target_lifecycle(target, body, sf_tracker)
+    if err is not None:
+        return err
 
     handler = _TARGET_HANDLERS.get(target)
     if handler is None:
@@ -539,11 +564,10 @@ async def _eventbridge_dispatch(
             media_type="application/json",
         )
 
-    if target == "AWSEvents.CreateEventBus" and lc.enabled and lc.create_dwell_ms > 0:
-        return await _lifecycle_create_event_bus(handler, provider, body, lc, tracker)
-
-    if target == "AWSEvents.DeleteEventBus" and lc.enabled:
-        return await _lifecycle_delete_event_bus(handler, provider, body, lc, tracker)
+    if lc.enabled:
+        result = await _handle_eventbridge_lifecycle(target, handler, provider, body, lc, tracker)
+        if result is not None:
+            return result
 
     return await handler(provider, body)
 

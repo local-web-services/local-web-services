@@ -166,7 +166,7 @@ async def _handle_describe_clusters(state: _EcsState, body: dict) -> Response:
     return _json_response({"clusters": found, "failures": failures})
 
 
-async def _handle_list_clusters(state: _EcsState, body: dict | None = None) -> Response:
+async def _handle_list_clusters(state: _EcsState, _body: dict | None = None) -> Response:
     """Handle ListClusters."""
     arns = [c.cluster_arn for c in state.clusters.values()]
     return _json_response({"clusterArns": arns})
@@ -187,7 +187,7 @@ _TARGET_HANDLERS = {
 
 async def _lifecycle_describe_clusters(
     body: dict,
-    lc: ResourceLifecycleConfig,
+    _lc: ResourceLifecycleConfig,
     tracker: ResourceStateTracker,
 ) -> Response | None:
     """Return an error response if any requested cluster is in a transient state."""

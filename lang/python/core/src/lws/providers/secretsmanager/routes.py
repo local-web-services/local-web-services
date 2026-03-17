@@ -525,38 +525,72 @@ async def _secretsmanager_dispatch(
             f"lws: Secrets Manager operation '{action}' is not yet implemented",
         )
 
-    if action == "CreateSecret" and lc.enabled and lc.create_dwell_ms > 0:
-        resp = await handler(state, body)
-        if resp.status_code == 200:
-            secret_name = body.get("Name", "")
-            tracker.set_state(secret_name, "CREATING")
-            tracker.schedule_transition(secret_name, "ACTIVE", lc.create_dwell_ms)
-        return resp
-
-    if action == "DeleteSecret" and lc.enabled:
-        secret_id = body.get("SecretId", "")
-        secret_name = secret_id.rsplit(":", 1)[-1] if ":" in secret_id else secret_id
-        if tracker.get_state(secret_name) == "CREATING":
-            return Response(
-                content=json.dumps(
-                    {
-                        "__type": "ResourceInUseException",
-                        "message": f"Secret {secret_id} is still being created",
-                    }
-                ),
-                status_code=400,
-                media_type="application/json",
-            )
-        resp = await handler(state, body)
-        if resp.status_code == 200:
-            if lc.delete_dwell_ms > 0:
-                tracker.set_state(secret_name, "DELETING")
-                tracker.schedule_transition(secret_name, None, lc.delete_dwell_ms)
-            else:
-                tracker.remove(secret_name)
-        return resp
+    if lc.enabled:
+        result = await _handle_secretsmanager_lifecycle(action, handler, state, body, lc, tracker)
+        if result is not None:
+            return result
 
     return await handler(state, body)
+
+
+async def _handle_secretsmanager_lifecycle(
+    action: str,
+    handler: Any,
+    state: _SecretsState,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if action == "CreateSecret" and lc.create_dwell_ms > 0:
+        return await _lifecycle_create_secret(handler, state, body, lc, tracker)
+    if action == "DeleteSecret":
+        return await _lifecycle_delete_secret(handler, state, body, lc, tracker)
+    return None
+
+
+async def _lifecycle_create_secret(
+    handler: Any,
+    state: _SecretsState,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    resp = await handler(state, body)
+    if resp.status_code == 200:
+        secret_name = body.get("Name", "")
+        tracker.set_state(secret_name, "CREATING")
+        tracker.schedule_transition(secret_name, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _lifecycle_delete_secret(
+    handler: Any,
+    state: _SecretsState,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    secret_id = body.get("SecretId", "")
+    secret_name = secret_id.rsplit(":", 1)[-1] if ":" in secret_id else secret_id
+    if tracker.get_state(secret_name) == "CREATING":
+        return Response(
+            content=json.dumps(
+                {
+                    "__type": "ResourceInUseException",
+                    "message": f"Secret {secret_id} is still being created",
+                }
+            ),
+            status_code=400,
+            media_type="application/json",
+        )
+    resp = await handler(state, body)
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(secret_name, "DELETING")
+            tracker.schedule_transition(secret_name, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(secret_name)
+    return resp
 
 
 # ------------------------------------------------------------------

@@ -186,7 +186,7 @@ class CognitoRouter:
             )
         return None
 
-    async def _describe_user_pool(self, body: dict) -> Response:
+    async def _describe_user_pool(self, _body: dict) -> Response:
         """Handle DescribeUserPool operation."""
         config = self._provider.config
         pool_id = config.user_pool_id

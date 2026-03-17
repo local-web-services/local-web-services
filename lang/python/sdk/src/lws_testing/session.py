@@ -11,7 +11,7 @@ import threading
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 from lws_testing._spec import (
     DynamoTable,
@@ -24,7 +24,7 @@ from lws_testing._spec import (
 )
 
 # Union type for all typed resource specs accepted by LwsSession.
-ResourceSpec = Union[DynamoTable, SqsQueue, S3Bucket, SnsTopic, SsmParameter, Secret, StateMachine]
+ResourceSpec = DynamoTable | SqsQueue | S3Bucket | SnsTopic | SsmParameter | Secret | StateMachine
 
 # Maps boto3 service name → AWS SDK endpoint URL env var.
 # Setting these redirects *any* boto3 client created in the process to the
@@ -47,6 +47,50 @@ _TEST_CREDENTIALS: dict[str, str] = {
     "AWS_SECRET_ACCESS_KEY": "test",
     "AWS_DEFAULT_REGION": "us-east-1",
 }
+
+
+def _parse_typed_resources(resources: tuple) -> dict[str, list]:
+    """Convert typed resource objects into keyed lists for LwsSession._spec."""
+    tables: list[dict[str, Any]] = []
+    queues: list[str] = []
+    buckets: list[str] = []
+    topics: list[str] = []
+    state_machines: list[dict[str, Any]] = []
+    secrets: list[str] = []
+    parameters: list[str] = []
+    for resource in resources:
+        if isinstance(resource, DynamoTable):
+            entry: dict[str, Any] = {"name": resource.name, "partition_key": resource.hash_key}
+            if resource.sort_key is not None:
+                entry["sort_key"] = resource.sort_key
+            tables.append(entry)
+        elif isinstance(resource, SqsQueue):
+            queues.append(resource.name)
+        elif isinstance(resource, S3Bucket):
+            buckets.append(resource.name)
+        elif isinstance(resource, SnsTopic):
+            topics.append(resource.name)
+        elif isinstance(resource, StateMachine):
+            state_machines.append(
+                {
+                    "name": resource.name,
+                    "definition": resource.definition,
+                    "role_arn": resource.role_arn,
+                }
+            )
+        elif isinstance(resource, Secret):
+            secrets.append(resource.name)
+        elif isinstance(resource, SsmParameter):
+            parameters.append(resource.name)
+    return {
+        "tables": tables,
+        "queues": queues,
+        "buckets": buckets,
+        "topics": topics,
+        "state_machines": state_machines,
+        "secrets": secrets,
+        "parameters": parameters,
+    }
 
 
 def _free_port() -> int:
@@ -97,51 +141,15 @@ class LwsSession:
         secrets: list[str] | None = None,
         parameters: list[str] | None = None,
     ) -> None:
-        # Build spec from typed resource objects.
-        typed_tables: list[dict[str, Any]] = []
-        typed_queues: list[str] = []
-        typed_buckets: list[str] = []
-        typed_topics: list[str] = []
-        typed_state_machines: list[dict[str, Any]] = []
-        typed_secrets: list[str] = []
-        typed_parameters: list[str] = []
-
-        for resource in resources:
-            if isinstance(resource, DynamoTable):
-                entry: dict[str, Any] = {
-                    "name": resource.name,
-                    "partition_key": resource.hash_key,
-                }
-                if resource.sort_key is not None:
-                    entry["sort_key"] = resource.sort_key
-                typed_tables.append(entry)
-            elif isinstance(resource, SqsQueue):
-                typed_queues.append(resource.name)
-            elif isinstance(resource, S3Bucket):
-                typed_buckets.append(resource.name)
-            elif isinstance(resource, SnsTopic):
-                typed_topics.append(resource.name)
-            elif isinstance(resource, StateMachine):
-                typed_state_machines.append(
-                    {
-                        "name": resource.name,
-                        "definition": resource.definition,
-                        "role_arn": resource.role_arn,
-                    }
-                )
-            elif isinstance(resource, Secret):
-                typed_secrets.append(resource.name)
-            elif isinstance(resource, SsmParameter):
-                typed_parameters.append(resource.name)
-
+        typed = _parse_typed_resources(resources)
         self._spec: dict[str, Any] = {
-            "tables": (tables or []) + typed_tables,
-            "queues": (queues or []) + typed_queues,
-            "buckets": (buckets or []) + typed_buckets,
-            "topics": (topics or []) + typed_topics,
-            "state_machines": (state_machines or []) + typed_state_machines,
-            "secrets": (secrets or []) + typed_secrets,
-            "parameters": (parameters or []) + typed_parameters,
+            "tables": (tables or []) + typed["tables"],
+            "queues": (queues or []) + typed["queues"],
+            "buckets": (buckets or []) + typed["buckets"],
+            "topics": (topics or []) + typed["topics"],
+            "state_machines": (state_machines or []) + typed["state_machines"],
+            "secrets": (secrets or []) + typed["secrets"],
+            "parameters": (parameters or []) + typed["parameters"],
         }
         self._ports: dict[str, int] = {}
         self._mgmt_port: int = 0

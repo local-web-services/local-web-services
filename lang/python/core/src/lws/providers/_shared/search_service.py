@@ -261,7 +261,7 @@ async def _handle_list_domain_names(
     state: _SearchState,
     _body: dict,
     config: SearchServiceConfig,
-    tracker: ResourceStateTracker,
+    _tracker: ResourceStateTracker,
 ) -> Response:
     domain_names = [{"DomainName": name, **config.list_domain_extra} for name in state.domains]
     return _json_response({"DomainNames": domain_names})
@@ -271,7 +271,7 @@ async def _handle_list_tags(
     state: _SearchState,
     body: dict,
     _config: SearchServiceConfig,
-    tracker: ResourceStateTracker,
+    _tracker: ResourceStateTracker,
 ) -> Response:
     arn = body.get("ARN", "")
     domain = _find_domain_by_arn(state, arn)
@@ -288,7 +288,7 @@ async def _handle_add_tags(
     state: _SearchState,
     body: dict,
     _config: SearchServiceConfig,
-    tracker: ResourceStateTracker,
+    _tracker: ResourceStateTracker,
 ) -> Response:
     arn = body.get("ARN", "")
     tags_list = body.get("TagList", [])
@@ -307,7 +307,7 @@ async def _handle_remove_tags(
     state: _SearchState,
     body: dict,
     _config: SearchServiceConfig,
-    tracker: ResourceStateTracker,
+    _tracker: ResourceStateTracker,
 ) -> Response:
     arn = body.get("ARN", "")
     tag_keys = body.get("TagKeys", [])

@@ -927,8 +927,6 @@ def _register_object_routes(
     tracker: ResourceStateTracker | None = None,
 ) -> None:
     """Register object-level S3 routes on *app*."""
-    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-
     _lc = lc or ResourceLifecycleConfig()
     _tracker = tracker or ResourceStateTracker(_lc)
 
@@ -1025,8 +1023,6 @@ def _register_bucket_routes(
     tracker: ResourceStateTracker | None = None,
 ) -> None:
     """Register bucket-level S3 routes on *app*."""
-    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-
     _lc = lc or ResourceLifecycleConfig()
     _tracker = tracker or ResourceStateTracker(_lc)
 
@@ -1070,8 +1066,6 @@ def create_s3_app(
     lifecycle: ResourceLifecycleConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
-    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
 

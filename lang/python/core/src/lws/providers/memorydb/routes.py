@@ -14,7 +14,7 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
+from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
     error_response as _error_response_base,
@@ -179,7 +179,7 @@ async def _handle_delete_cluster(
 
 
 async def _handle_update_cluster(
-    state: _MemoryDBState, body: dict, tracker: ResourceStateTracker
+    state: _MemoryDBState, body: dict, _tracker: ResourceStateTracker
 ) -> Response:
     cluster_name = body.get("ClusterName", "")
     cluster = state.clusters.get(cluster_name)
@@ -203,7 +203,7 @@ async def _handle_update_cluster(
 
 
 async def _handle_list_tags(
-    state: _MemoryDBState, body: dict, tracker: ResourceStateTracker
+    state: _MemoryDBState, body: dict, _tracker: ResourceStateTracker
 ) -> Response:
     resource_arn = body.get("ResourceArn", "")
     cluster = _find_cluster_by_arn(state, resource_arn)
@@ -218,7 +218,7 @@ async def _handle_list_tags(
 
 
 async def _handle_tag_resource(
-    state: _MemoryDBState, body: dict, tracker: ResourceStateTracker
+    state: _MemoryDBState, body: dict, _tracker: ResourceStateTracker
 ) -> Response:
     resource_arn = body.get("ResourceArn", "")
     tags_list = body.get("Tags", [])
@@ -238,7 +238,7 @@ async def _handle_tag_resource(
 
 
 async def _handle_untag_resource(
-    state: _MemoryDBState, body: dict, tracker: ResourceStateTracker
+    state: _MemoryDBState, body: dict, _tracker: ResourceStateTracker
 ) -> Response:
     resource_arn = body.get("ResourceArn", "")
     tag_keys = body.get("TagKeys", [])
@@ -323,18 +323,8 @@ def create_memorydb_app(
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        target = request.headers.get("x-amz-target", "")
-        body = await parse_json_body(request)
-        action = resolve_api_action(target, body)
-
-        handler = _ACTION_HANDLERS.get(action)
-        if handler is None:
-            _logger.warning("Unknown MemoryDB action: %s", action)
-            return _error_response(
-                "InvalidAction",
-                f"lws: MemoryDB operation '{action}' is not yet implemented",
-            )
-
-        return await handler(state, body, _tracker)
+        return await _action_dispatch(
+            request, state, _tracker, _ACTION_HANDLERS, "MemoryDB", _logger, _error_response
+        )
 
     return app

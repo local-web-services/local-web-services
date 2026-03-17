@@ -73,42 +73,36 @@ class S3Provider(IObjectStore):
         Dynamically created buckets are removed entirely.
         Metadata, multipart uploads, tagging, policies, and notifications are cleared.
         """
-        # Determine which buckets were pre-configured at startup (fixed at init time)
-        preconfigured = self._preconfigured_buckets
-
-        # Remove dynamic buckets that are not in the pre-configured set
-        # We must work from the current filesystem state
         s3_dir = self._data_dir / "s3"
+        self._remove_dynamic_buckets(s3_dir)
+        self._buckets = list(self._preconfigured_buckets)
+        for bucket_name in self._preconfigured_buckets:
+            self._clear_preconfigured_bucket(s3_dir, bucket_name)
+        self._clear_dynamic_state()
+
+    def _remove_dynamic_buckets(self, s3_dir: Path) -> None:
         current_bucket_dirs = (
             {d.name for d in s3_dir.iterdir() if d.is_dir() and d.name != ".metadata"}
             if s3_dir.exists()
             else set()
         )
-
-        dynamic_buckets = current_bucket_dirs - preconfigured
-        for bucket_name in dynamic_buckets:
-            bucket_dir = s3_dir / bucket_name
-            shutil.rmtree(bucket_dir, ignore_errors=True)
+        for bucket_name in current_bucket_dirs - self._preconfigured_buckets:
+            shutil.rmtree(s3_dir / bucket_name, ignore_errors=True)
             self._bucket_created.pop(bucket_name, None)
 
-        # Reset _buckets to only the preconfigured set (remove all dynamic entries)
-        self._buckets = list(preconfigured)
+    def _clear_preconfigured_bucket(self, s3_dir: Path, bucket_name: str) -> None:
+        bucket_dir = s3_dir / bucket_name
+        if bucket_dir.exists():
+            for item in bucket_dir.iterdir():
+                if item.is_file():
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item)
+        meta_dir = s3_dir / ".metadata" / bucket_name
+        if meta_dir.exists():
+            shutil.rmtree(meta_dir)
 
-        # Clear all objects in pre-configured buckets (but keep the directory)
-        for bucket_name in preconfigured:
-            bucket_dir = s3_dir / bucket_name
-            if bucket_dir.exists():
-                for item in bucket_dir.iterdir():
-                    if item.is_file():
-                        item.unlink()
-                    elif item.is_dir():
-                        shutil.rmtree(item)
-            # Clear metadata for this bucket
-            meta_dir = s3_dir / ".metadata" / bucket_name
-            if meta_dir.exists():
-                shutil.rmtree(meta_dir)
-
-        # Clear dynamic state
+    def _clear_dynamic_state(self) -> None:
         self._bucket_tagging.clear()
         self._bucket_policies.clear()
         self._bucket_notification_configs.clear()

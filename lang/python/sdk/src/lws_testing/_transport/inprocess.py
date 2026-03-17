@@ -391,7 +391,9 @@ async def start_services(
     ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
     mgmt_port = _free_port()
 
-    service_apps, extra_providers = _build_service_apps(providers, ports, chaos_configs, fake_configs, lifecycle_configs, cfg)
+    service_apps, extra_providers = _build_service_apps(
+        providers, ports, chaos_configs, fake_configs, lifecycle_configs, cfg
+    )
     # Merge ssm/secretsmanager state wrappers so the management reset endpoint can reach them
     all_providers = {**providers, **extra_providers}
     await _start_providers(providers)

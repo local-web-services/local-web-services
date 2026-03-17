@@ -8,6 +8,7 @@ the operation.  Responses use the standard AWS SNS XML format.
 from __future__ import annotations
 
 import uuid
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
@@ -575,37 +576,71 @@ async def _sns_dispatch(
         )
         return Response(content=xml, status_code=400, media_type="text/xml")
 
-    if action == "CreateTopic" and lc.enabled and lc.create_dwell_ms > 0:
-        resp = await handler(provider, params)
-        if resp.status_code == 200:
-            topic_name = params.get("Name", "")
-            tracker.set_state(topic_name, "CREATING")
-            tracker.schedule_transition(topic_name, "ACTIVE", lc.create_dwell_ms)
-        return resp
-
-    if action == "DeleteTopic" and lc.enabled:
-        topic_arn = params.get("TopicArn", "")
-        topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
-        if tracker.get_state(topic_name) == "CREATING":
-            xml = (
-                "<ErrorResponse><Error>"
-                "<Code>ResourceInUseException</Code>"
-                f"<Message>Topic {topic_arn} is still being created</Message>"
-                "</Error>"
-                f"<RequestId>{uuid.uuid4()}</RequestId>"
-                "</ErrorResponse>"
-            )
-            return Response(content=xml, status_code=400, media_type="text/xml")
-        resp = await handler(provider, params)
-        if resp.status_code == 200:
-            if lc.delete_dwell_ms > 0:
-                tracker.set_state(topic_name, "DELETING")
-                tracker.schedule_transition(topic_name, None, lc.delete_dwell_ms)
-            else:
-                tracker.remove(topic_name)
-        return resp
+    if lc.enabled:
+        result = await _handle_sns_lifecycle(action, handler, provider, params, lc, tracker)
+        if result is not None:
+            return result
 
     return await handler(provider, params)
+
+
+async def _handle_sns_lifecycle(
+    action: str,
+    handler: Any,
+    provider: SnsProvider,
+    params: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if action == "CreateTopic" and lc.create_dwell_ms > 0:
+        return await _lifecycle_create_topic(handler, provider, params, lc, tracker)
+    if action == "DeleteTopic":
+        return await _lifecycle_delete_topic(handler, provider, params, lc, tracker)
+    return None
+
+
+async def _lifecycle_create_topic(
+    handler: Any,
+    provider: SnsProvider,
+    params: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    resp = await handler(provider, params)
+    if resp.status_code == 200:
+        topic_name = params.get("Name", "")
+        tracker.set_state(topic_name, "CREATING")
+        tracker.schedule_transition(topic_name, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _lifecycle_delete_topic(
+    handler: Any,
+    provider: SnsProvider,
+    params: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    topic_arn = params.get("TopicArn", "")
+    topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+    if tracker.get_state(topic_name) == "CREATING":
+        xml = (
+            "<ErrorResponse><Error>"
+            "<Code>ResourceInUseException</Code>"
+            f"<Message>Topic {topic_arn} is still being created</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=400, media_type="text/xml")
+    resp = await handler(provider, params)
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(topic_name, "DELETING")
+            tracker.schedule_transition(topic_name, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(topic_name)
+    return resp
 
 
 def create_sns_app(

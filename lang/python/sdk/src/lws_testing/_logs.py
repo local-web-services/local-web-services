@@ -34,6 +34,7 @@ class LogCapture:
         # log entries within the capture window land on our handler.
         try:
             from lws.logging.logger import set_ws_handler  # noqa: PLC0415
+
             set_ws_handler(self._handler)
         except Exception:  # noqa: BLE001
             pass
@@ -49,10 +50,7 @@ class LogCapture:
         raw = full_backlog[self._snapshot_len :]
         # Normalize: HTTP request logs emit 'handler' for the operation name;
         # copy it to 'operation' so assert_called() works for all log types.
-        self._entries = [
-            {**e, "operation": e.get("operation") or e.get("handler")}
-            for e in raw
-        ]
+        self._entries = [{**e, "operation": e.get("operation") or e.get("handler")} for e in raw]
 
     def _current_entries(self) -> list[dict[str, Any]]:
         """Return the current captured entries, flushing from the backlog first.

@@ -14,9 +14,16 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+    apply_delete_lifecycle,
+)
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers._shared.resource_container import ResourceContainerManager
+from lws.providers._shared.response_helpers import (
+    creating_guard as _creating_guard,
+)
 from lws.providers._shared.response_helpers import (
     error_response as _error_response,
 )
@@ -334,25 +341,42 @@ _CLUSTER_READ_ACTIONS = {"DescribeDBClusters"}
 _INSTANCE_READ_ACTIONS = {"DescribeDBInstances"}
 
 
+def check_db_resource_read_lifecycle(
+    action: str,
+    body: dict,
+    resource_id_key: str,
+    fault_code: str,
+    resource_type: str,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+    read_actions: set,
+) -> Response | None:
+    """Guard a DB read action when the resource is not yet available."""
+    if not lc.enabled or action not in read_actions:
+        return None
+    rid = body.get(resource_id_key, "")
+    if not rid:
+        return None
+    state = tracker.get_state(rid)
+    if state in ("CREATING", "DELETING"):
+        return _error_response(
+            fault_code,
+            f"{resource_type} {rid} is not in an available state (status: {state})",
+            status_code=400,
+        )
+    return None
+
+
 def _check_cluster_read_lifecycle(
     action: str,
     body: dict,
     lc: ResourceLifecycleConfig,
     tracker: ResourceStateTracker,
 ) -> Response | None:
-    if not lc.enabled or action not in _CLUSTER_READ_ACTIONS:
-        return None
-    cid = body.get("DBClusterIdentifier", "")
-    if not cid:
-        return None
-    cstate = tracker.get_state(cid)
-    if cstate in ("CREATING", "DELETING"):
-        return _error_response(
-            "InvalidDBClusterStateFault",
-            f"DB cluster {cid} is not in an available state (status: {cstate})",
-            status_code=400,
-        )
-    return None
+    key, fault, rtype = "DBClusterIdentifier", "InvalidDBClusterStateFault", "DB cluster"
+    return check_db_resource_read_lifecycle(
+        action, body, key, fault, rtype, lc, tracker, _CLUSTER_READ_ACTIONS
+    )
 
 
 def _check_instance_read_lifecycle(
@@ -361,19 +385,10 @@ def _check_instance_read_lifecycle(
     lc: ResourceLifecycleConfig,
     tracker: ResourceStateTracker,
 ) -> Response | None:
-    if not lc.enabled or action not in _INSTANCE_READ_ACTIONS:
-        return None
-    iid = body.get("DBInstanceIdentifier", "")
-    if not iid:
-        return None
-    istate = tracker.get_state(iid)
-    if istate in ("CREATING", "DELETING"):
-        return _error_response(
-            "InvalidDBInstanceStateFault",
-            f"DB instance {iid} is not in an available state (status: {istate})",
-            status_code=400,
-        )
-    return None
+    key, fault, rtype = "DBInstanceIdentifier", "InvalidDBInstanceStateFault", "DB instance"
+    return check_db_resource_read_lifecycle(
+        action, body, key, fault, rtype, lc, tracker, _INSTANCE_READ_ACTIONS
+    )
 
 
 async def _lifecycle_create_cluster(
@@ -401,20 +416,11 @@ async def _lifecycle_delete_cluster(
     tracker: ResourceStateTracker,
 ) -> Response:
     cid = body.get("DBClusterIdentifier", "")
-    if tracker.get_state(cid) == "CREATING":
-        return _error_response(
-            "InvalidDBClusterStateFault",
-            f"DB cluster {cid} is still being created",
-            status_code=400,
-        )
+    guard = _creating_guard(cid, "InvalidDBClusterStateFault", "DB cluster", tracker.get_state(cid))
+    if guard is not None:
+        return guard
     resp = await handler(state, body, config)
-    if resp.status_code == 200:
-        if lc.delete_dwell_ms > 0:
-            tracker.set_state(cid, "DELETING")
-            tracker.schedule_transition(cid, None, lc.delete_dwell_ms)
-        else:
-            tracker.remove(cid)
-    return resp
+    return apply_delete_lifecycle(resp, cid, lc, tracker)
 
 
 async def _lifecycle_create_instance(
@@ -442,20 +448,13 @@ async def _lifecycle_delete_instance(
     tracker: ResourceStateTracker,
 ) -> Response:
     iid = body.get("DBInstanceIdentifier", "")
-    if tracker.get_state(iid) == "CREATING":
-        return _error_response(
-            "InvalidDBInstanceStateFault",
-            f"DB instance {iid} is still being created",
-            status_code=400,
-        )
+    guard = _creating_guard(
+        iid, "InvalidDBInstanceStateFault", "DB instance", tracker.get_state(iid)
+    )
+    if guard is not None:
+        return guard
     resp = await handler(state, body, config)
-    if resp.status_code == 200:
-        if lc.delete_dwell_ms > 0:
-            tracker.set_state(iid, "DELETING")
-            tracker.schedule_transition(iid, None, lc.delete_dwell_ms)
-        else:
-            tracker.remove(iid)
-    return resp
+    return apply_delete_lifecycle(resp, iid, lc, tracker)
 
 
 # ------------------------------------------------------------------

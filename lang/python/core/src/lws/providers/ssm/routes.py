@@ -488,7 +488,7 @@ async def _lifecycle_delete_parameters(
 
 
 def _check_resource_tag_lifecycle(
-    body: dict, lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
+    body: dict, _lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
 ) -> Response | None:
     resource_id = body.get("ResourceId", "")
     resource_type = body.get("ResourceType", "Parameter")
@@ -551,23 +551,31 @@ async def _ssm_dispatch(
             f"lws: SSM operation '{action}' is not yet implemented",
         )
 
-    if action == "PutParameter" and lc.enabled:
-        result = await _lifecycle_put_parameter(handler, state, body, lc, tracker)
+    if lc.enabled:
+        result = await _handle_ssm_lifecycle(action, handler, state, body, lc, tracker)
         if result is not None:
             return result
 
-    if action == _DELETE_SINGLE_ACTION and lc.enabled:
-        return await _lifecycle_delete_parameter(handler, state, body, lc, tracker)
-
-    if action == _DELETE_MULTI_ACTION and lc.enabled:
-        return await _lifecycle_delete_parameters(handler, state, body, lc, tracker)
-
-    if action in ("AddTagsToResource", "ListTagsForResource") and lc.enabled:
-        err = _check_resource_tag_lifecycle(body, lc, tracker)
-        if err is not None:
-            return err
-
     return await handler(state, body)
+
+
+async def _handle_ssm_lifecycle(
+    action: str,
+    handler: Any,
+    state: _SsmState,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if action == "PutParameter":
+        return await _lifecycle_put_parameter(handler, state, body, lc, tracker)
+    if action == _DELETE_SINGLE_ACTION:
+        return await _lifecycle_delete_parameter(handler, state, body, lc, tracker)
+    if action == _DELETE_MULTI_ACTION:
+        return await _lifecycle_delete_parameters(handler, state, body, lc, tracker)
+    if action in ("AddTagsToResource", "ListTagsForResource"):
+        return _check_resource_tag_lifecycle(body, lc, tracker)
+    return None
 
 
 def create_ssm_app(

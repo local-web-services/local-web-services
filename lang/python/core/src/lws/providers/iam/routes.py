@@ -8,6 +8,7 @@ XML responses so that ``terraform apply`` succeeds.
 from __future__ import annotations
 
 import uuid
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
@@ -519,6 +520,85 @@ _ACTION_HANDLERS = {
 # ------------------------------------------------------------------
 
 
+def _check_iam_get_role_lifecycle(
+    action: str, params: dict, lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
+) -> Response | None:
+    if not lc.enabled or action != "GetRole":
+        return None
+    role_name = params.get("RoleName", "")
+    role_state = tracker.get_state(role_name)
+    if role_state not in ("CREATING", "DELETING"):
+        return None
+    xml = (
+        "<ErrorResponse>"
+        "<Error><Code>NoSuchEntity</Code>"
+        f"<Message>The role with name {role_name} cannot be found"
+        f" (status: {role_state}).</Message>"
+        "</Error>"
+        f"<RequestId>{_request_id()}</RequestId>"
+        "</ErrorResponse>"
+    )
+    return Response(content=xml, status_code=404, media_type="text/xml")
+
+
+async def _handle_iam_lifecycle(
+    action: str,
+    handler: Any,
+    state: _IamState,
+    params: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if action == "CreateRole" and lc.create_dwell_ms > 0:
+        return await _lifecycle_create_role(handler, state, params, lc, tracker)
+    if action == "DeleteRole":
+        return await _lifecycle_delete_role(handler, state, params, lc, tracker)
+    return None
+
+
+async def _lifecycle_create_role(
+    handler: Any,
+    state: _IamState,
+    params: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    resp = await handler(state, params)
+    if resp.status_code == 200:
+        role_name = params.get("RoleName", "")
+        tracker.set_state(role_name, "CREATING")
+        tracker.schedule_transition(role_name, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _lifecycle_delete_role(
+    handler: Any,
+    state: _IamState,
+    params: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    role_name = params.get("RoleName", "")
+    if tracker.get_state(role_name) == "CREATING":
+        xml = (
+            "<ErrorResponse>"
+            "<Error><Code>DeleteConflict</Code>"
+            f"<Message>Role {role_name} is still being created</Message>"
+            "</Error>"
+            f"<RequestId>{_request_id()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=409, media_type="text/xml")
+    resp = await handler(state, params)
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(role_name, "DELETING")
+            tracker.schedule_transition(role_name, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(role_name)
+    return resp
+
+
 async def _iam_dispatch(
     request: Request,
     state: _IamState,
@@ -529,20 +609,9 @@ async def _iam_dispatch(
     params = await _parse_form(request)
     action = params.get("Action", "")
 
-    if lc.enabled and action == "GetRole":
-        role_name = params.get("RoleName", "")
-        role_state = tracker.get_state(role_name)
-        if role_state in ("CREATING", "DELETING"):
-            xml = (
-                "<ErrorResponse>"
-                "<Error><Code>NoSuchEntity</Code>"
-                f"<Message>The role with name {role_name} cannot be found"
-                f" (status: {role_state}).</Message>"
-                "</Error>"
-                f"<RequestId>{_request_id()}</RequestId>"
-                "</ErrorResponse>"
-            )
-            return Response(content=xml, status_code=404, media_type="text/xml")
+    err = _check_iam_get_role_lifecycle(action, params, lc, tracker)
+    if err is not None:
+        return err
 
     handler = _ACTION_HANDLERS.get(action)
     if handler is None:
@@ -559,34 +628,10 @@ async def _iam_dispatch(
         )
         return Response(content=xml, status_code=400, media_type="text/xml")
 
-    if action == "CreateRole" and lc.enabled and lc.create_dwell_ms > 0:
-        resp = await handler(state, params)
-        if resp.status_code == 200:
-            role_name = params.get("RoleName", "")
-            tracker.set_state(role_name, "CREATING")
-            tracker.schedule_transition(role_name, "ACTIVE", lc.create_dwell_ms)
-        return resp
-
-    if action == "DeleteRole" and lc.enabled:
-        role_name = params.get("RoleName", "")
-        if tracker.get_state(role_name) == "CREATING":
-            xml = (
-                "<ErrorResponse>"
-                "<Error><Code>DeleteConflict</Code>"
-                f"<Message>Role {role_name} is still being created</Message>"
-                "</Error>"
-                f"<RequestId>{_request_id()}</RequestId>"
-                "</ErrorResponse>"
-            )
-            return Response(content=xml, status_code=409, media_type="text/xml")
-        resp = await handler(state, params)
-        if resp.status_code == 200:
-            if lc.delete_dwell_ms > 0:
-                tracker.set_state(role_name, "DELETING")
-                tracker.schedule_transition(role_name, None, lc.delete_dwell_ms)
-            else:
-                tracker.remove(role_name)
-        return resp
+    if lc.enabled:
+        result = await _handle_iam_lifecycle(action, handler, state, params, lc, tracker)
+        if result is not None:
+            return result
 
     return await handler(state, params)
 

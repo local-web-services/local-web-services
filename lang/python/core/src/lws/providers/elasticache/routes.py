@@ -14,7 +14,7 @@ from fastapi import FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
+from lws.providers._shared.request_helpers import action_dispatch as _action_dispatch
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
     error_response as _error_response_base,
@@ -210,7 +210,7 @@ async def _handle_delete_cache_cluster(
 
 
 async def _handle_modify_cache_cluster(
-    state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
+    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
 ) -> Response:
     cluster_id = body.get("CacheClusterId", "")
     cluster = state.clusters.get(cluster_id)
@@ -335,7 +335,7 @@ async def _handle_delete_replication_group(
 
 
 async def _handle_list_tags_for_resource(
-    state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
+    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
 ) -> Response:
     resource_arn = body.get("ResourceName", "")
     tags = _find_tags_by_arn(state, resource_arn)
@@ -349,7 +349,7 @@ async def _handle_list_tags_for_resource(
 
 
 async def _handle_add_tags_to_resource(
-    state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
+    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
 ) -> Response:
     resource_arn = body.get("ResourceName", "")
     tags_list = body.get("Tags", [])
@@ -369,7 +369,7 @@ async def _handle_add_tags_to_resource(
 
 
 async def _handle_remove_tags_from_resource(
-    state: _ElastiCacheState, body: dict, tracker: ResourceStateTracker
+    state: _ElastiCacheState, body: dict, _tracker: ResourceStateTracker
 ) -> Response:
     resource_arn = body.get("ResourceName", "")
     tag_keys = body.get("TagKeys", [])
@@ -472,18 +472,8 @@ def create_elasticache_app(
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        target = request.headers.get("x-amz-target", "")
-        body = await parse_json_body(request)
-        action = resolve_api_action(target, body)
-
-        handler = _ACTION_HANDLERS.get(action)
-        if handler is None:
-            _logger.warning("Unknown ElastiCache action: %s", action)
-            return _error_response(
-                "InvalidAction",
-                f"lws: ElastiCache operation '{action}' is not yet implemented",
-            )
-
-        return await handler(state, body, _tracker)
+        return await _action_dispatch(
+            request, state, _tracker, _ACTION_HANDLERS, "ElastiCache", _logger, _error_response
+        )
 
     return app

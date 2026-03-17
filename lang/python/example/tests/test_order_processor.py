@@ -164,17 +164,6 @@ def test_process_order_with_iam_enforce_mode(session, sfn_client, state_machine_
         session.iam.mode("disabled").apply()
 
 
-def test_session_accepts_reset(session, sfn_client, state_machine_arn):
-    # Arrange — process an order before reset
-    process_order("order-before-reset", state_machine_arn, sfn_client)
-
-    # Act — reset session state
-    session.reset()
-
-    # Assert — session accepts a second reset without error
-    session.reset()
-
-
 def test_log_capture_records_start_execution(session, sfn_client, state_machine_arn):
     # Arrange + Act
     with session.capture_logs() as logs:
@@ -183,6 +172,14 @@ def test_log_capture_records_start_execution(session, sfn_client, state_machine_
     # Assert
     logs.assert_called("stepfunctions", "StartExecution")
     logs.assert_no_errors()
+
+
+def test_session_accepts_reset(session):
+    # Act — reset session state
+    session.reset()
+
+    # Assert — session accepts a second reset without error
+    session.reset()
 
 
 def test_dynamodb_helper_seed_and_assert(session):

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from typing import Any
 
 from starlette.requests import Request
 
@@ -38,6 +39,29 @@ _BINARY_CONTENT_TYPES = frozenset(
         "application/grpc",
     }
 )
+
+
+async def action_dispatch(
+    request: Request,
+    state: Any,
+    tracker: Any,
+    action_handlers: dict,
+    service_name: str,
+    logger: Any,
+    error_factory: Any,
+) -> Any:
+    """Standard AWS action dispatch: parse request, look up handler, invoke it."""
+    target = request.headers.get("x-amz-target", "")
+    body = await parse_json_body(request)
+    action = resolve_api_action(target, body)
+    handler = action_handlers.get(action)
+    if handler is None:
+        logger.warning("Unknown %s action: %s", service_name, action)
+        return error_factory(
+            "InvalidAction",
+            f"lws: {service_name} operation '{action}' is not yet implemented",
+        )
+    return await handler(state, body, tracker)
 
 
 def is_binary_content_type(content_type: str) -> bool:

@@ -49,6 +49,7 @@ class ResourceStateTracker:
 
     @property
     def config(self) -> ResourceLifecycleConfig:
+        """Return the lifecycle configuration for this tracker."""
         return self._config
 
     def get_state(self, resource_id: str) -> str | None:
@@ -102,6 +103,27 @@ class ResourceStateTracker:
                 await on_complete()
 
         asyncio.ensure_future(_run())
+
+
+def apply_delete_lifecycle(
+    resp: Any,
+    resource_id: str,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Any:
+    """Apply delete lifecycle state transitions to *resp*.
+
+    If the response was successful (status_code 200), either schedules a
+    DELETING→removed transition (if delete_dwell_ms > 0) or removes the
+    resource immediately.  Returns *resp* unchanged.
+    """
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(resource_id, "DELETING")
+            tracker.schedule_transition(resource_id, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(resource_id)
+    return resp
 
 
 def parse_lifecycle_config(raw: dict[str, Any]) -> ResourceLifecycleConfig:
