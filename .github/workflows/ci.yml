@@ -73,7 +73,8 @@ jobs:
           curl -L https://github.com/fizzbee-io/fizzbee-mbt-releases/releases/download/v0.2.0/fizzbee-mbt-0.2.0-linux_x86.tar.gz -o fizzbee-mbt.tar.gz
           echo "14228be2ea9773178fc2cf6d6cddc4eb9728d2d6e4fd08c990210f8814169dba  fizzbee-mbt.tar.gz" | sha256sum -c
           tar -xzf fizzbee-mbt.tar.gz
-          sudo install -m 755 fizzbee-mbt-0.2.0-linux_x86/fizzbee-mbt /usr/local/bin/fizzbee-mbt
+          sudo install -m 755 fizzbee-mbt-0.2.0-linux_x86/fizzbee-mbt-runner /usr/local/bin/fizzbee-mbt-runner
+          sudo install -m 755 fizzbee-mbt-0.2.0-linux_x86/fizzbee-mbt-server /usr/local/bin/fizzbee-mbt-server
       - name: Run FizzBee model checker
         run: |
           failed=0

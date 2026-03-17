@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install lint format format-check complexity cpd pylint test check
+.PHONY: help install lint format format-check complexity cpd pylint test test-e2e check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
@@ -32,5 +32,7 @@ pylint: ## Run pylint checks
 
 test: ## Run test suite
 	uv run pytest tests/ -v
+
+test-e2e: test ## Run e2e tests
 
 check: lint format-check complexity cpd pylint test ## Run all checks (what CI runs)

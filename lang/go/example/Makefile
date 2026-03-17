@@ -6,7 +6,7 @@ help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
 test: ## Run test suite
-	./gradlew test
+	go test ./...
 
 test-e2e: test ## Run e2e tests
 
