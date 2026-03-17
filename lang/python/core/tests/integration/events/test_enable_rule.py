@@ -22,6 +22,11 @@ class TestEnableRule:
                 "EventPattern": json.dumps({"source": ["my.app"]}),
             },
         )
+        await client.post(
+            "/",
+            headers={"x-amz-target": "AWSEvents.DisableRule"},
+            json={"Name": expected_rule_name, "EventBusName": "default"},
+        )
 
         # Act
         resp = await client.post(

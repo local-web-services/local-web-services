@@ -209,13 +209,13 @@ class TestSnsRoutes:
         async with _client(app) as client:
             response = await client.post(
                 "/",
-                data={"Action": "CreateTopic", "Name": "my-topic"},
+                data={"Action": "CreateTopic", "Name": "new-topic"},
             )
 
         # Assert
         assert response.status_code == expected_status
         assert "<TopicArn>" in response.text
-        assert "my-topic" in response.text
+        assert "new-topic" in response.text
 
     @pytest.mark.asyncio
     async def test_unknown_action_returns_error(self) -> None:

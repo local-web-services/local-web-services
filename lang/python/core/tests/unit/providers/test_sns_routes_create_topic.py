@@ -48,22 +48,17 @@ class TestCreateTopic:
         assert actual_topics[0].topic_name == topic_name
 
     @pytest.mark.asyncio
-    async def test_create_topic_idempotent(
+    async def test_create_topic_duplicate_returns_error(
         self,
         client: httpx.AsyncClient,
-        provider: SnsProvider,
     ) -> None:
         # Arrange
         topic_name = "my-topic"
-        expected_status = 200
-        expected_topic_count = 1
+        expected_status = 400
+        await client.post("/", data={"Action": "CreateTopic", "Name": topic_name})
 
         # Act
-        resp1 = await client.post("/", data={"Action": "CreateTopic", "Name": topic_name})
         resp2 = await client.post("/", data={"Action": "CreateTopic", "Name": topic_name})
 
         # Assert
-        assert resp1.status_code == expected_status
         assert resp2.status_code == expected_status
-        actual_topics = provider.list_topics()
-        assert len(actual_topics) == expected_topic_count

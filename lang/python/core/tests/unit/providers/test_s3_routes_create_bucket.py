@@ -37,7 +37,7 @@ class TestCreateBucket:
         assert resp.status_code == expected_status
 
     @pytest.mark.asyncio
-    async def test_create_bucket_duplicate_is_idempotent(
+    async def test_create_bucket_duplicate_returns_error(
         self,
         client: httpx.AsyncClient,
         provider: S3Provider,
@@ -49,5 +49,5 @@ class TestCreateBucket:
         resp = await client.put("/my-bucket")
 
         # Assert
-        expected_status = 200
+        expected_status = 409
         assert resp.status_code == expected_status
