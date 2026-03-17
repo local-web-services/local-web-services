@@ -619,7 +619,9 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
 
     # Create all providers in always-on mode (no app model)
     iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
-    providers, ports, chaos_configs, aws_fake_configs, lifecycle_configs = _create_terraform_providers(
+    (
+        providers, ports, chaos_configs, aws_fake_configs, lifecycle_configs
+    ) = _create_terraform_providers(
         config, data_dir, project_dir, iam_auth_bundle=iam_auth_bundle
     )
 
@@ -1618,7 +1620,9 @@ def _create_providers(
     config: LdkConfig,
     data_dir: Path,
     iam_auth_bundle: IamAuthBundle | None = None,
-) -> tuple[dict[str, Provider], dict[str, AwsChaosConfig], dict[str, AwsFakeConfig], dict[str, Any]]:
+) -> tuple[
+    dict[str, Provider], dict[str, AwsChaosConfig], dict[str, AwsFakeConfig], dict[str, Any]
+]:
     """Instantiate providers from the parsed app model.
 
     Returns a provider map (including the Lambda HTTP server on port+9)
@@ -1944,7 +1948,9 @@ def _register_http_providers(
             ports["cognito-idp"],
             lambda p=cognito_provider, c=cc.get("cognito-idp"), m=mc.get(
                 "cognito-idp"
-            ), i=ia, l=lc.get("cognito"): create_cognito_app(p, chaos=c, aws_fake=m, iam_auth=i, lifecycle=l),
+            ), i=ia, lc_val=lc.get("cognito"): create_cognito_app(
+                p, chaos=c, aws_fake=m, iam_auth=i, lifecycle=lc_val
+            ),
         )
     )
 

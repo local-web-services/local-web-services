@@ -78,16 +78,11 @@ def sm_is_active_given():
 
 @given("the state machine is not \"ACTIVE\"")
 def sm_is_not_active_given(lws_session, world):
-    import httpx
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"stepfunctions": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("stepfunctions").create_dwell_ms(5000).apply()
     _create_sm(lws_session)
     world["result"] = None
     world["error"] = None
@@ -137,12 +132,7 @@ def topic_is_active_given():
 
 @given("the topic is not \"ACTIVE\"")
 def topic_is_not_active_given(lws_session, world):
-    import httpx
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"sns": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
     _create_topic(lws_session)
     world["result"] = None
     world["error"] = None
@@ -160,12 +150,7 @@ def target_topic_is_active():
 
 @given("the target topic is not \"ACTIVE\"")
 def target_topic_is_not_active(lws_session, world):
-    import httpx
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"sns": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
     _create_topic(lws_session)
     world["result"] = None
     world["error"] = None

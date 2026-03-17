@@ -8,6 +8,7 @@ selects the operation.  Responses use JSON format.
 from __future__ import annotations
 
 import json
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 
@@ -374,8 +375,177 @@ _TARGET_HANDLERS = {
 
 
 # ------------------------------------------------------------------
+# App factory helpers
+# ------------------------------------------------------------------
+
+_BUS_READ_ACTIONS = {
+    "AWSEvents.PutRule",
+    "AWSEvents.ListRules",
+    "AWSEvents.DescribeEventBus",
+    "AWSEvents.PutEvents",
+}
+
+
+def _resolve_bus_name(target: str, body: dict) -> str:
+    """Extract the event bus name from the request body."""
+    bus_name = body.get("EventBusName") or body.get("Name") or ""
+    if not bus_name and target == "AWSEvents.PutEvents":
+        entries = body.get("Entries", [])
+        if entries:
+            bus_name = entries[0].get("EventBusName", "")
+    return bus_name
+
+
+def _check_bus_lifecycle(
+    target: str,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    """Return an error response if the target bus is in a transient lifecycle state."""
+    if not lc.enabled or target not in _BUS_READ_ACTIONS:
+        return None
+    bus_name = _resolve_bus_name(target, body)
+    if bus_name and bus_name != "default":
+        bus_state = tracker.get_state(bus_name)
+        if bus_state in ("CREATING", "DELETING"):
+            return Response(
+                content=json.dumps(
+                    {"Error": f"Event bus not found: {bus_name} (status: {bus_state})"}
+                ),
+                status_code=400,
+                media_type="application/json",
+            )
+    return None
+
+
+def _check_sf_targets(
+    body: dict,
+    sf_tracker: ResourceStateTracker,
+) -> Response | None:
+    """Return an error response if any Step Functions target is not ACTIVE."""
+    for t in body.get("Targets", []):
+        arn = t.get("Arn", "")
+        if ":stateMachine:" in arn:
+            sm_name = arn.rsplit(":", 1)[-1]
+            sm_state = sf_tracker.get_state(sm_name)
+            if sm_state in ("CREATING", "DELETING"):
+                return Response(
+                    content=json.dumps(
+                        {"Error": f"State machine is not ACTIVE: {arn} (status: {sm_state})"}
+                    ),
+                    status_code=400,
+                    media_type="application/json",
+                )
+    return None
+
+
+async def _lifecycle_create_event_bus(
+    handler: Any,
+    provider: EventBridgeProvider,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware CreateEventBus."""
+    resp = await handler(provider, body)
+    if resp.status_code == 200:
+        bus_name = body.get("Name", "")
+        tracker.set_state(bus_name, "CREATING")
+        tracker.schedule_transition(bus_name, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _lifecycle_delete_event_bus(
+    handler: Any,
+    provider: EventBridgeProvider,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware DeleteEventBus."""
+    bus_name = body.get("Name", "")
+    if tracker.get_state(bus_name) == "CREATING":
+        return Response(
+            content=json.dumps({"Error": f"Event bus {bus_name} is still being created"}),
+            status_code=400,
+            media_type="application/json",
+        )
+    resp = await handler(provider, body)
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(bus_name, "DELETING")
+            tracker.schedule_transition(bus_name, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(bus_name)
+    return resp
+
+
+# ------------------------------------------------------------------
 # App factory
 # ------------------------------------------------------------------
+
+
+def _build_eventbridge_app(
+    chaos: AwsChaosConfig | None,
+    aws_fake: AwsFakeConfig | None,
+    iam_auth: IamAuthBundle | None,
+) -> FastAPI:
+    """Create and configure the FastAPI app with middleware."""
+    app = FastAPI(title="LDK EventBridge")
+    if aws_fake is not None:
+        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="events")
+    add_iam_auth_middleware(app, "events", iam_auth, ErrorFormat.JSON)
+    if chaos is not None:
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
+    return app
+
+
+async def _eventbridge_dispatch(
+    request: Request,
+    provider: EventBridgeProvider,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+    sf_tracker: ResourceStateTracker | None,
+) -> Response:
+    """Route a single EventBridge request."""
+    target = request.headers.get("x-amz-target", "")
+    raw_body = await request.body()
+    try:
+        body = json.loads(raw_body) if raw_body else {}
+    except json.JSONDecodeError:
+        body = {}
+
+    err = _check_bus_lifecycle(target, body, lc, tracker)
+    if err is not None:
+        return err
+
+    if target == "AWSEvents.PutTargets" and sf_tracker is not None:
+        err = _check_sf_targets(body, sf_tracker)
+        if err is not None:
+            return err
+
+    handler = _TARGET_HANDLERS.get(target)
+    if handler is None:
+        action = target.rsplit(".", 1)[-1] if "." in target else target
+        _logger.warning("Unknown EventBridge target: %s", target)
+        error_body = {
+            "__type": "UnknownOperationException",
+            "message": f"lws: EventBridge operation '{action}' is not yet implemented",
+        }
+        return Response(
+            content=json.dumps(error_body),
+            status_code=400,
+            media_type="application/json",
+        )
+
+    if target == "AWSEvents.CreateEventBus" and lc.enabled and lc.create_dwell_ms > 0:
+        return await _lifecycle_create_event_bus(handler, provider, body, lc, tracker)
+
+    if target == "AWSEvents.DeleteEventBus" and lc.enabled:
+        return await _lifecycle_delete_event_bus(handler, provider, body, lc, tracker)
+
+    return await handler(provider, body)
 
 
 def create_eventbridge_app(
@@ -383,8 +553,8 @@ def create_eventbridge_app(
     chaos: AwsChaosConfig | None = None,
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
-    lifecycle: "ResourceLifecycleConfig | None" = None,
-    sf_tracker: "ResourceStateTracker | None" = None,
+    lifecycle: ResourceLifecycleConfig | None = None,
+    sf_tracker: ResourceStateTracker | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the EventBridge wire protocol.
 
@@ -395,103 +565,12 @@ def create_eventbridge_app(
     """
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
-    _sf_tracker = sf_tracker
 
-    app = FastAPI(title="LDK EventBridge")
-    if aws_fake is not None:
-        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="events")
-    add_iam_auth_middleware(app, "events", iam_auth, ErrorFormat.JSON)
-    if chaos is not None:
-        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
+    app = _build_eventbridge_app(chaos, aws_fake, iam_auth)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="eventbridge")
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        target = request.headers.get("x-amz-target", "")
-        raw_body = await request.body()
-        try:
-            body = json.loads(raw_body) if raw_body else {}
-        except json.JSONDecodeError:
-            body = {}
-
-        # Lifecycle check for bus-based operations when lifecycle is enabled
-        _BUS_ACTIONS = {
-            "AWSEvents.PutRule", "AWSEvents.ListRules",
-            "AWSEvents.DescribeEventBus", "AWSEvents.PutEvents",
-        }
-        if _lc.enabled and target in _BUS_ACTIONS:
-            bus_name = body.get("EventBusName") or body.get("Name") or ""
-            # For PutEvents, each entry may have its own EventBusName
-            if not bus_name and target == "AWSEvents.PutEvents":
-                entries = body.get("Entries", [])
-                if entries:
-                    bus_name = entries[0].get("EventBusName", "")
-            if bus_name and bus_name != "default":
-                state = _tracker.get_state(bus_name)
-                if state in ("CREATING", "DELETING"):
-                    return Response(
-                        content=json.dumps({"Error": f"Event bus not found: {bus_name} (status: {state})"}),
-                        status_code=400,
-                        media_type="application/json",
-                    )
-
-        # Lifecycle check for Step Functions targets when sf_tracker is available
-        if target == "AWSEvents.PutTargets" and _sf_tracker is not None:
-            raw_targets = body.get("Targets", [])
-            for t in raw_targets:
-                arn = t.get("Arn", "")
-                if ":stateMachine:" in arn:
-                    sm_name = arn.rsplit(":", 1)[-1]
-                    sm_state = _sf_tracker.get_state(sm_name)
-                    if sm_state in ("CREATING", "DELETING"):
-                        return Response(
-                            content=json.dumps(
-                                {"Error": f"State machine is not ACTIVE: {arn} (status: {sm_state})"}
-                            ),
-                            status_code=400,
-                            media_type="application/json",
-                        )
-
-        handler = _TARGET_HANDLERS.get(target)
-        if handler is None:
-            action = target.rsplit(".", 1)[-1] if "." in target else target
-            _logger.warning("Unknown EventBridge target: %s", target)
-            error_body = {
-                "__type": "UnknownOperationException",
-                "message": f"lws: EventBridge operation '{action}' is not yet implemented",
-            }
-            return Response(
-                content=json.dumps(error_body),
-                status_code=400,
-                media_type="application/json",
-            )
-
-        # Lifecycle-aware create/delete handling
-        if target == "AWSEvents.CreateEventBus" and _lc.enabled and _lc.create_dwell_ms > 0:
-            resp = await handler(provider, body)
-            if resp.status_code == 200:
-                bus_name = body.get("Name", "")
-                _tracker.set_state(bus_name, "CREATING")
-                _tracker.schedule_transition(bus_name, "ACTIVE", _lc.create_dwell_ms)
-            return resp
-
-        if target == "AWSEvents.DeleteEventBus" and _lc.enabled:
-            bus_name = body.get("Name", "")
-            if _tracker.get_state(bus_name) == "CREATING":
-                return Response(
-                    content=json.dumps({"Error": f"Event bus {bus_name} is still being created"}),
-                    status_code=400,
-                    media_type="application/json",
-                )
-            resp = await handler(provider, body)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _tracker.set_state(bus_name, "DELETING")
-                    _tracker.schedule_transition(bus_name, None, _lc.delete_dwell_ms)
-                else:
-                    _tracker.remove(bus_name)
-            return resp
-
-        return await handler(provider, body)
+        return await _eventbridge_dispatch(request, provider, _lc, _tracker, sf_tracker)
 
     return app

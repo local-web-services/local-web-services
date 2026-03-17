@@ -23,8 +23,13 @@ async def provider():
             StateMachineConfig(
                 name="PassMachine",
                 definition=_DEFINITION,
+                workflow_type=WorkflowType.STANDARD,
+            ),
+            StateMachineConfig(
+                name="PassMachineExpress",
+                definition=_DEFINITION,
                 workflow_type=WorkflowType.EXPRESS,
-            )
+            ),
         ]
     )
     await p.start()

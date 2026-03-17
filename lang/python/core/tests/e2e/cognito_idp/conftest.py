@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import httpx
 import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when
@@ -51,11 +50,7 @@ def pool_is_active_given():
 
 @given('the user pool is not "ACTIVE"')
 def pool_is_not_active_given(lws_session, world):
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"cognito": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("cognito").create_dwell_ms(5000).apply()
     world["pool_id"] = _create_pool(lws_session)
 
 

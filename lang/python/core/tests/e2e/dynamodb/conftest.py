@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import httpx
 import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when
@@ -59,21 +58,14 @@ def table_is_active_given(lws_session):
 @given('the table is "CREATING"')
 def table_is_creating_given(lws_session):
     """Enable lifecycle simulation so the next CreateTable call returns CREATING."""
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"dynamodb": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
 
 
 @given('the table is not "ACTIVE"')
 def table_is_not_active_given(lws_session):
-    """Enable lifecycle dwell, delete the existing ACTIVE table, and recreate it so it stays in CREATING state."""
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"dynamodb": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    """Enable lifecycle dwell, delete the existing ACTIVE table, and recreate it so it stays
+    in CREATING state."""
+    lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
     _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
     _create_table(lws_session)
 
@@ -237,11 +229,7 @@ def transactions_table_is_active():
 
 @given('the transaction\'s table is not "ACTIVE"')
 def transactions_table_is_not_active(lws_session, world):
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"dynamodb": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
     _dynamo(lws_session).create_table(
         TableName=TEST_TABLE,
         KeySchema=[{"AttributeName": TEST_PK, "KeyType": "HASH"}],
@@ -288,11 +276,12 @@ def activate_table(lws_session, world):
 
     # Check the lifecycle config to determine whether the table is in CREATING state.
     # If lifecycle dwell is not active, the table was created ACTIVE (not CREATING).
-    lifecycle_resp = httpx.get(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        timeout=5.0,
-    )
-    lifecycle_cfg = lifecycle_resp.json().get("dynamodb", {})
+    import json as _json
+    import urllib.request as _urllib_req
+    with _urllib_req.urlopen(
+        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle"
+    ) as _resp:
+        lifecycle_cfg = _json.loads(_resp.read()).get("dynamodb", {})
     lifecycle_enabled = lifecycle_cfg.get("enabled", False)
     create_dwell_ms = lifecycle_cfg.get("create_dwell_ms", 0)
     if not lifecycle_enabled or create_dwell_ms == 0:
@@ -303,11 +292,7 @@ def activate_table(lws_session, world):
         world["result"] = None
         return
 
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"dynamodb": {"enabled": True, "create_dwell_ms": 0}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("dynamodb").create_dwell_ms(0).apply()
     time.sleep(0.2)  # brief wait for async transition to complete
     world["result"] = None
     world["error"] = None
@@ -504,7 +489,12 @@ def update_existing_item(lws_session, world):
         )
         if "Item" not in existing:
             raise ClientError(
-                {"Error": {"Code": "ConditionalCheckFailedException", "Message": "Item does not exist"}},
+                {
+                    "Error": {
+                        "Code": "ConditionalCheckFailedException",
+                        "Message": "Item does not exist",
+                    }
+                },
                 "UpdateItem",
             )
         world["result"] = _dynamo(lws_session).update_item(
@@ -529,7 +519,12 @@ def delete_existing_item(lws_session, world):
         )
         if "Item" not in existing:
             raise ClientError(
-                {"Error": {"Code": "ConditionalCheckFailedException", "Message": "Item does not exist"}},
+                {
+                    "Error": {
+                        "Code": "ConditionalCheckFailedException",
+                        "Message": "Item does not exist",
+                    }
+                },
                 "DeleteItem",
             )
         world["result"] = _dynamo(lws_session).delete_item(
@@ -703,7 +698,7 @@ def query_results_contain_item_then(lws_session):
         ExpressionAttributeValues={":pk": {"S": TEST_ITEM_KEY}},
     )
     assert resp.get("Count", 0) >= 1, (
-        f"Expected at least one item in query results"
+        "Expected at least one item in query results"
     )
 
 

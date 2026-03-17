@@ -1,8 +1,0 @@
-{
-  "options":  {
-    "maxActions":  "20",
-    "maxConcurrentActions":  "2",
-    "crashOnYield":  true
-  },
-  "deadlockDetection":  true
-}

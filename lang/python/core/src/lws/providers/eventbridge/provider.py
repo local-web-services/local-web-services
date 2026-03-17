@@ -346,8 +346,6 @@ class EventBridgeProvider(IEventBus):
             rule = self._rules.get(rule_name)
             if rule is None or rule.event_bus_name != event_bus_name:
                 raise KeyError(f"Rule not found: {rule_name}")
-            if rule.enabled:
-                raise ValueError(f"Rule '{rule_name}' is not DISABLED")
             rule.enabled = True
 
     async def disable_rule(
@@ -363,8 +361,6 @@ class EventBridgeProvider(IEventBus):
             rule = self._rules.get(rule_name)
             if rule is None or rule.event_bus_name != event_bus_name:
                 raise KeyError(f"Rule not found: {rule_name}")
-            if not rule.enabled:
-                raise ValueError(f"Rule '{rule_name}' is not ENABLED")
             rule.enabled = False
 
     def tag_resource(self, resource_arn: str, tags: list[dict]) -> None:

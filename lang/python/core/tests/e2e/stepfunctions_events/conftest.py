@@ -131,16 +131,11 @@ def bus_is_not_deleted_given(lws_session):
 
 @given("the bus is already \"DELETED\"")
 def bus_is_already_deleted(lws_session, world):
-    import httpx
     try:
         _create_bus(lws_session)
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"events": {"enabled": True, "delete_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("events").delete_dwell_ms(5000).apply()
     _events(lws_session).delete_event_bus(Name=TEST_BUS)
     world["result"] = None
     world["error"] = None
@@ -252,7 +247,10 @@ def execution_succeeds_event_delivered(world):
     pytest.skip("Cannot trigger internal execution completion with event delivery in lws")
 
 
-@when("a running execution succeeds but the \"SUCCEEDED\" event delivery fails because the bus is deleted")
+@when(
+    "a running execution succeeds but the \"SUCCEEDED\" event delivery"
+    " fails because the bus is deleted"
+)
 def execution_succeeds_event_fails(world):
     pytest.skip("Cannot trigger internal execution completion in lws")
 

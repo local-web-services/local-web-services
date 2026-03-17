@@ -6,7 +6,7 @@ import json
 
 import httpx
 
-_SM_ARN = "arn:aws:states:us-east-1:000000000000:stateMachine:PassMachine"
+_SM_ARN = "arn:aws:states:us-east-1:000000000000:stateMachine:PassMachineExpress"
 
 
 class TestStartSyncExecution:

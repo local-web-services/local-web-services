@@ -515,7 +515,9 @@ class SqliteDynamoProvider(IKeyValueStore):
         (recorded in _recycled_connections) to avoid the expensive thread
         start/stop that aiosqlite incurs on every connect()/close() call.
         """
-        dynamic_tables = [t for t in list(self._tables.keys()) if t not in self._initial_table_names]
+        dynamic_tables = [
+            t for t in list(self._tables.keys()) if t not in self._initial_table_names
+        ]
         for table_name in dynamic_tables:
             del self._tables[table_name]
             self._recycled_connections.add(table_name)

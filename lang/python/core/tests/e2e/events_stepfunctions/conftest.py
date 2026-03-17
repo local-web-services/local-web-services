@@ -82,16 +82,11 @@ def event_bus_is_active_given():
 
 @given("the event bus is not \"ACTIVE\"")
 def event_bus_is_not_active_given(lws_session, world):
-    import httpx
     try:
         _events(lws_session).delete_event_bus(Name=TEST_BUS)
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"events": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("events").create_dwell_ms(5000).apply()
     _create_bus(lws_session)
     world["result"] = None
     world["error"] = None
@@ -126,12 +121,7 @@ def sm_is_active_given():
 
 @given("the state machine is not \"ACTIVE\"")
 def sm_is_not_active_given(lws_session, world):
-    import httpx
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"stepfunctions": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("stepfunctions").create_dwell_ms(5000).apply()
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
     except Exception:  # noqa: BLE001
@@ -177,7 +167,9 @@ def enabled_rule_exists_targeting_sfn(lws_session, world):
 
 @given("no \"ENABLED\" rule exists on the bus targeting a state machine")
 def no_enabled_rule_targeting_sfn():
-    pytest.skip("lws does not reject put_events when no enabled rule exists targeting the state machine")
+    pytest.skip(
+        "lws does not reject put_events when no enabled rule exists targeting the state machine"
+    )
 
 
 # ── Given: execution state ─────────────────────────────────────────────

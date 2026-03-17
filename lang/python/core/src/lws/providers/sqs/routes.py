@@ -33,7 +33,9 @@ _FAKE_REGION = "us-east-1"
 class SqsRouter:
     """Route SQS wire-protocol requests to an ``SqsProvider`` backend."""
 
-    def __init__(self, provider: SqsProvider, lifecycle: ResourceLifecycleConfig | None = None) -> None:
+    def __init__(
+        self, provider: SqsProvider, lifecycle: ResourceLifecycleConfig | None = None
+    ) -> None:
         self.provider = provider
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
@@ -562,6 +564,20 @@ class SqsRouter:
             }
         )
 
+    def _apply_visibility_timeout(
+        self, queue_name: str, messages: list, visibility_timeout: str
+    ) -> None:
+        """Update in-flight visibility timeouts for received messages."""
+        queue = self.provider.get_queue(queue_name)
+        if queue is None:
+            return
+        vt = int(visibility_timeout)
+        now = time.monotonic()
+        for msg_dict in messages:
+            for m in queue.messages:
+                if m.message_id == msg_dict["MessageId"]:
+                    m.visibility_timeout_until = now + vt
+
     async def _json_receive_message(self, body: dict) -> Response:
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
         err = self._get_lifecycle_error_json(queue_name)
@@ -583,14 +599,7 @@ class SqsRouter:
         )
 
         if visibility_timeout is not None:
-            queue = self.provider.get_queue(queue_name)
-            if queue is not None:
-                vt = int(visibility_timeout)
-                now = time.monotonic()
-                for msg_dict in messages:
-                    for m in queue.messages:
-                        if m.message_id == msg_dict["MessageId"]:
-                            m.visibility_timeout_until = now + vt
+            self._apply_visibility_timeout(queue_name, messages, visibility_timeout)
 
         json_messages = []
         for msg in messages:

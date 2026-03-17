@@ -60,16 +60,11 @@ def bucket_is_active_given():
 
 @given('the bucket is not "ACTIVE"')
 def bucket_is_not_active_given(lws_session):
-    import httpx
     try:
         _s3(lws_session).delete_bucket(Bucket=TEST_BUCKET)
     except Exception:  # noqa: BLE001
         pass  # bucket may not exist yet — that's fine
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"s3": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
 
 
@@ -116,16 +111,11 @@ def source_bucket_is_active_given():
 
 @given('the source bucket is not "ACTIVE"')
 def source_bucket_is_not_active_given(lws_session):
-    import httpx
     try:
         _s3(lws_session).delete_bucket(Bucket=TEST_SRC_BUCKET)
     except Exception:  # noqa: BLE001
         pass  # bucket may not exist yet — that's fine
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"s3": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session, name=TEST_SRC_BUCKET)
 
 
@@ -142,16 +132,11 @@ def destination_bucket_does_not_exist():
 
 @given('the destination bucket is not "ACTIVE"')
 def destination_bucket_is_not_active_given(lws_session):
-    import httpx
     try:
         _s3(lws_session).delete_bucket(Bucket=TEST_BUCKET)
     except Exception:  # noqa: BLE001
         pass  # bucket may not exist yet — that's fine
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"s3": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
 
 
@@ -228,16 +213,11 @@ def object_is_active_given():
 
 @given('the object is not "ACTIVE"')
 def object_is_not_active_given(lws_session):
-    import httpx
     try:
         _s3(lws_session).delete_bucket(Bucket=TEST_BUCKET)
     except Exception:  # noqa: BLE001
         pass  # bucket may not exist yet — that's fine
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"s3": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
 
 

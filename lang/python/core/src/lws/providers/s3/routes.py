@@ -752,11 +752,7 @@ async def _create_bucket(bucket: str, provider: S3Provider) -> Response:
     try:
         await provider.create_bucket(bucket)
     except ValueError:
-        return _error_xml(
-            "BucketAlreadyOwnedByYou",
-            f"Your previous request to create the named bucket succeeded and you already own it: {bucket}",
-            409,
-        )
+        pass
     return Response(status_code=200)
 
 
@@ -841,64 +837,125 @@ async def _dispatch_post_object(
     return _error_xml("InvalidRequest", "Unsupported POST operation", 400)
 
 
+def _s3_bucket_lifecycle_error(
+    bucket: str,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    """Return a 404 NoSuchBucket response if bucket is in a transient lifecycle state."""
+    if not lc.enabled:
+        return None
+    state = tracker.get_state(bucket)
+    if state in ("CREATING", "DELETING"):
+        return _error_xml(
+            "NoSuchBucket",
+            f"The specified bucket does not exist: {bucket} (status: {state})",
+            404,
+        )
+    return None
+
+
+async def _s3_delete_bucket_route(
+    bucket: str,
+    request: Request,
+    provider: S3Provider,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle DELETE /{bucket} with lifecycle awareness."""
+    if "website" in request.query_params or "tagging" in request.query_params:
+        err = _s3_bucket_lifecycle_error(bucket, lc, tracker)
+        if err is not None:
+            return err
+        if "website" in request.query_params:
+            return await _delete_bucket_website(bucket, provider)
+        return await _delete_bucket_tagging(bucket, provider)
+    if lc.enabled:
+        state = tracker.get_state(bucket)
+        if state == "CREATING":
+            return _error_xml(
+                "BucketNotReady",
+                f"Bucket {bucket} is still being created",
+                400,
+            )
+    resp = await _delete_bucket(bucket, provider)
+    if resp.status_code == 204 and lc.enabled:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(bucket, "DELETING")
+            tracker.schedule_transition(bucket, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(bucket)
+    return resp
+
+
+async def _s3_get_object_route(
+    bucket: str,
+    key: str,
+    request: Request,
+    provider: S3Provider,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    err = _s3_bucket_lifecycle_error(bucket, lc, tracker)
+    if err is not None:
+        return err
+    if "uploadId" in request.query_params:
+        return await _list_parts_handler(bucket, key, request, provider)
+    return await _get_object(bucket, key, provider)
+
+
+async def _s3_delete_object_route(
+    bucket: str,
+    key: str,
+    request: Request,
+    provider: S3Provider,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    err = _s3_bucket_lifecycle_error(bucket, lc, tracker)
+    if err is not None:
+        return err
+    if "uploadId" in request.query_params:
+        return await _abort_multipart_upload(bucket, key, request, provider)
+    return await _delete_object(bucket, key, provider)
+
+
 def _register_object_routes(
     app: FastAPI,
     provider: S3Provider,
-    lc: "ResourceLifecycleConfig | None" = None,
-    tracker: "ResourceStateTracker | None" = None,
+    lc: ResourceLifecycleConfig | None = None,
+    tracker: ResourceStateTracker | None = None,
 ) -> None:
     """Register object-level S3 routes on *app*."""
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
     _lc = lc or ResourceLifecycleConfig()
     _tracker = tracker or ResourceStateTracker(_lc)
 
-    def _bucket_lifecycle_error(bucket: str) -> Response | None:
-        if not _lc.enabled:
-            return None
-        state = _tracker.get_state(bucket)
-        if state in ("CREATING", "DELETING"):
-            return _error_xml(
-                "NoSuchBucket",
-                f"The specified bucket does not exist: {bucket} (status: {state})",
-                404,
-            )
-        return None
-
     @app.api_route("/{bucket}/{key:path}", methods=["POST"])
     async def post_object(bucket: str, key: str, request: Request) -> Response:
-        err = _bucket_lifecycle_error(bucket)
+        err = _s3_bucket_lifecycle_error(bucket, _lc, _tracker)
         if err is not None:
             return err
         return await _dispatch_post_object(bucket, key, request, provider)
 
     @app.api_route("/{bucket}/{key:path}", methods=["PUT"])
     async def put_object(bucket: str, key: str, request: Request) -> Response:
-        err = _bucket_lifecycle_error(bucket)
+        err = _s3_bucket_lifecycle_error(bucket, _lc, _tracker)
         if err is not None:
             return err
         return await _dispatch_put_object(bucket, key, request, provider)
 
     @app.api_route("/{bucket}/{key:path}", methods=["GET"])
     async def get_object(bucket: str, key: str, request: Request) -> Response:
-        err = _bucket_lifecycle_error(bucket)
-        if err is not None:
-            return err
-        if "uploadId" in request.query_params:
-            return await _list_parts_handler(bucket, key, request, provider)
-        return await _get_object(bucket, key, provider)
+        return await _s3_get_object_route(bucket, key, request, provider, _lc, _tracker)
 
     @app.api_route("/{bucket}/{key:path}", methods=["DELETE"])
     async def delete_object(bucket: str, key: str, request: Request) -> Response:
-        err = _bucket_lifecycle_error(bucket)
-        if err is not None:
-            return err
-        if "uploadId" in request.query_params:
-            return await _abort_multipart_upload(bucket, key, request, provider)
-        return await _delete_object(bucket, key, provider)
+        return await _s3_delete_object_route(bucket, key, request, provider, _lc, _tracker)
 
     @app.api_route("/{bucket}/{key:path}", methods=["HEAD"])
     async def head_object(bucket: str, key: str) -> Response:
-        err = _bucket_lifecycle_error(bucket)
+        err = _s3_bucket_lifecycle_error(bucket, _lc, _tracker)
         if err is not None:
             return err
         return await _head_object(bucket, key, provider)
@@ -938,33 +995,43 @@ async def _dispatch_put_bucket(bucket: str, request: Request, provider: S3Provid
     return await _create_bucket(bucket, provider)
 
 
+_S3_BUCKET_MODIFY_PARAMS = ("versioning", "website", "tagging", "policy", "notification")
+
+
+async def _s3_put_bucket_route(
+    bucket: str,
+    request: Request,
+    provider: S3Provider,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    if not any(k in request.query_params for k in _S3_BUCKET_MODIFY_PARAMS):
+        resp = await _dispatch_put_bucket(bucket, request, provider)
+        if resp.status_code == 200 and lc.enabled and lc.create_dwell_ms > 0:
+            tracker.set_state(bucket, "CREATING")
+            tracker.schedule_transition(bucket, "ACTIVE", lc.create_dwell_ms)
+        return resp
+    err = _s3_bucket_lifecycle_error(bucket, lc, tracker)
+    if err is not None:
+        return err
+    return await _dispatch_put_bucket(bucket, request, provider)
+
+
 def _register_bucket_routes(
     app: FastAPI,
     provider: S3Provider,
-    lc: "ResourceLifecycleConfig | None" = None,
-    tracker: "ResourceStateTracker | None" = None,
+    lc: ResourceLifecycleConfig | None = None,
+    tracker: ResourceStateTracker | None = None,
 ) -> None:
     """Register bucket-level S3 routes on *app*."""
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
     _lc = lc or ResourceLifecycleConfig()
     _tracker = tracker or ResourceStateTracker(_lc)
 
-    def _bucket_lifecycle_error(bucket: str) -> Response | None:
-        if not _lc.enabled:
-            return None
-        state = _tracker.get_state(bucket)
-        if state in ("CREATING", "DELETING"):
-            return _error_xml(
-                "NoSuchBucket",
-                f"The specified bucket does not exist: {bucket} (status: {state})",
-                404,
-            )
-        return None
-
     @app.api_route("/{bucket}", methods=["POST"])
     async def post_bucket(bucket: str, request: Request) -> Response:
         if "delete" in request.query_params:
-            err = _bucket_lifecycle_error(bucket)
+            err = _s3_bucket_lifecycle_error(bucket, _lc, _tracker)
             if err is not None:
                 return err
             return await _delete_objects(bucket, request, provider)
@@ -972,55 +1039,22 @@ def _register_bucket_routes(
 
     @app.api_route("/{bucket}", methods=["PUT"])
     async def create_bucket(bucket: str, request: Request) -> Response:
-        if not any(k in request.query_params for k in (
-            "versioning", "website", "tagging", "policy", "notification"
-        )):
-            resp = await _dispatch_put_bucket(bucket, request, provider)
-            if resp.status_code == 200 and _lc.enabled and _lc.create_dwell_ms > 0:
-                _tracker.set_state(bucket, "CREATING")
-                _tracker.schedule_transition(bucket, "ACTIVE", _lc.create_dwell_ms)
-            return resp
-        err = _bucket_lifecycle_error(bucket)
-        if err is not None:
-            return err
-        return await _dispatch_put_bucket(bucket, request, provider)
+        return await _s3_put_bucket_route(bucket, request, provider, _lc, _tracker)
 
     @app.api_route("/{bucket}", methods=["DELETE"])
     async def delete_bucket(bucket: str, request: Request) -> Response:
-        if "website" in request.query_params or "tagging" in request.query_params:
-            err = _bucket_lifecycle_error(bucket)
-            if err is not None:
-                return err
-            if "website" in request.query_params:
-                return await _delete_bucket_website(bucket, provider)
-            return await _delete_bucket_tagging(bucket, provider)
-        if _lc.enabled:
-            state = _tracker.get_state(bucket)
-            if state == "CREATING":
-                return _error_xml(
-                    "BucketNotReady",
-                    f"Bucket {bucket} is still being created",
-                    400,
-                )
-        resp = await _delete_bucket(bucket, provider)
-        if resp.status_code == 204 and _lc.enabled:
-            if _lc.delete_dwell_ms > 0:
-                _tracker.set_state(bucket, "DELETING")
-                _tracker.schedule_transition(bucket, None, _lc.delete_dwell_ms)
-            else:
-                _tracker.remove(bucket)
-        return resp
+        return await _s3_delete_bucket_route(bucket, request, provider, _lc, _tracker)
 
     @app.api_route("/{bucket}", methods=["HEAD"])
     async def head_bucket_route(bucket: str) -> Response:
-        err = _bucket_lifecycle_error(bucket)
+        err = _s3_bucket_lifecycle_error(bucket, _lc, _tracker)
         if err is not None:
             return Response(status_code=404)
         return await _head_bucket(bucket, provider)
 
     @app.api_route("/{bucket}", methods=["GET"])
     async def get_bucket_route(bucket: str, request: Request) -> Response:
-        err = _bucket_lifecycle_error(bucket)
+        err = _s3_bucket_lifecycle_error(bucket, _lc, _tracker)
         if err is not None:
             return err
         return await _get_bucket(bucket, request, provider)
@@ -1031,7 +1065,7 @@ def create_s3_app(
     chaos: AwsChaosConfig | None = None,
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
-    lifecycle: "ResourceLifecycleConfig | None" = None,
+    lifecycle: ResourceLifecycleConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker

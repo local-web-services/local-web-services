@@ -27,7 +27,9 @@ _logger = get_logger("ldk.stepfunctions")
 class StepFunctionsRouter:
     """Route Step Functions API requests to a StepFunctionsProvider backend."""
 
-    def __init__(self, provider: StepFunctionsProvider, lifecycle: ResourceLifecycleConfig | None = None) -> None:
+    def __init__(
+        self, provider: StepFunctionsProvider, lifecycle: ResourceLifecycleConfig | None = None
+    ) -> None:
         self.provider = provider
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
@@ -382,9 +384,17 @@ class StepFunctionsRouter:
         definition = body.get("definition")
         role_arn = body.get("roleArn")
 
-        err = self._check_sm_lifecycle(sm_arn)
-        if err:
-            return err
+        lc_status = self._tracker.get_state(sm_name)
+        if lc_status == "DELETING":
+            return _error_response(
+                "StateMachineDoesNotExist",
+                f"State machine not found: {sm_arn}",
+            )
+        if lc_status == "CREATING":
+            return _error_response(
+                "StateMachineDeleting",
+                f"State machine is not ACTIVE: {sm_arn}",
+            )
 
         try:
             update_date = self.provider.update_state_machine(
@@ -505,7 +515,7 @@ def create_stepfunctions_app(
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
-    tracker_ref: "list[ResourceStateTracker] | None" = None,
+    tracker_ref: list[ResourceStateTracker] | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol.
 

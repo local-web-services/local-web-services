@@ -327,6 +327,138 @@ async def _handle_remove_tags(
 
 
 # ------------------------------------------------------------------
+# App factory helpers
+# ------------------------------------------------------------------
+
+_CLUSTER_READ_ACTIONS = {"DescribeDBClusters"}
+_INSTANCE_READ_ACTIONS = {"DescribeDBInstances"}
+
+
+def _check_cluster_read_lifecycle(
+    action: str,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if not lc.enabled or action not in _CLUSTER_READ_ACTIONS:
+        return None
+    cid = body.get("DBClusterIdentifier", "")
+    if not cid:
+        return None
+    cstate = tracker.get_state(cid)
+    if cstate in ("CREATING", "DELETING"):
+        return _error_response(
+            "InvalidDBClusterStateFault",
+            f"DB cluster {cid} is not in an available state (status: {cstate})",
+            status_code=400,
+        )
+    return None
+
+
+def _check_instance_read_lifecycle(
+    action: str,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if not lc.enabled or action not in _INSTANCE_READ_ACTIONS:
+        return None
+    iid = body.get("DBInstanceIdentifier", "")
+    if not iid:
+        return None
+    istate = tracker.get_state(iid)
+    if istate in ("CREATING", "DELETING"):
+        return _error_response(
+            "InvalidDBInstanceStateFault",
+            f"DB instance {iid} is not in an available state (status: {istate})",
+            status_code=400,
+        )
+    return None
+
+
+async def _lifecycle_create_cluster(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: ClusterDBConfig,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    resp = await handler(state, body, config)
+    if resp.status_code == 200:
+        cid = body.get("DBClusterIdentifier", "")
+        tracker.set_state(cid, "CREATING")
+        tracker.schedule_transition(cid, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _lifecycle_delete_cluster(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: ClusterDBConfig,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    cid = body.get("DBClusterIdentifier", "")
+    if tracker.get_state(cid) == "CREATING":
+        return _error_response(
+            "InvalidDBClusterStateFault",
+            f"DB cluster {cid} is still being created",
+            status_code=400,
+        )
+    resp = await handler(state, body, config)
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(cid, "DELETING")
+            tracker.schedule_transition(cid, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(cid)
+    return resp
+
+
+async def _lifecycle_create_instance(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: ClusterDBConfig,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    resp = await handler(state, body, config)
+    if resp.status_code == 200:
+        iid = body.get("DBInstanceIdentifier", "")
+        tracker.set_state(iid, "CREATING")
+        tracker.schedule_transition(iid, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _lifecycle_delete_instance(
+    handler: Any,
+    state: _ClusterDBState,
+    body: dict,
+    config: ClusterDBConfig,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    iid = body.get("DBInstanceIdentifier", "")
+    if tracker.get_state(iid) == "CREATING":
+        return _error_response(
+            "InvalidDBInstanceStateFault",
+            f"DB instance {iid} is still being created",
+            status_code=400,
+        )
+    resp = await handler(state, body, config)
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(iid, "DELETING")
+            tracker.schedule_transition(iid, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(iid)
+    return resp
+
+
+# ------------------------------------------------------------------
 # App factory
 # ------------------------------------------------------------------
 
@@ -355,44 +487,19 @@ def create_cluster_db_app(config: ClusterDBConfig) -> FastAPI:
     if config.include_remove_tags:
         action_handlers["RemoveTagsFromResource"] = _handle_remove_tags
 
-    # Actions that operate on a specific cluster (read/modify).
-    _CLUSTER_READ_ACTIONS = {"DescribeDBClusters"}
-    # Actions that operate on a specific instance (read/modify).
-    _INSTANCE_READ_ACTIONS = {"DescribeDBInstances"}
-
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         target = request.headers.get("x-amz-target", "")
         body = await parse_json_body(request)
         action = resolve_api_action(target, body)
 
-        # ------------------------------------------------------------------
-        # Lifecycle checks for cluster read operations
-        # ------------------------------------------------------------------
-        if _lc.enabled and action in _CLUSTER_READ_ACTIONS:
-            cid = body.get("DBClusterIdentifier", "")
-            if cid:
-                cstate = _cluster_tracker.get_state(cid)
-                if cstate in ("CREATING", "DELETING"):
-                    return _error_response(
-                        "InvalidDBClusterStateFault",
-                        f"DB cluster {cid} is not in an available state (status: {cstate})",
-                        status_code=400,
-                    )
+        err = _check_cluster_read_lifecycle(action, body, _lc, _cluster_tracker)
+        if err is not None:
+            return err
 
-        # ------------------------------------------------------------------
-        # Lifecycle checks for instance read operations
-        # ------------------------------------------------------------------
-        if _lc.enabled and action in _INSTANCE_READ_ACTIONS:
-            iid = body.get("DBInstanceIdentifier", "")
-            if iid:
-                istate = _instance_tracker.get_state(iid)
-                if istate in ("CREATING", "DELETING"):
-                    return _error_response(
-                        "InvalidDBInstanceStateFault",
-                        f"DB instance {iid} is not in an available state (status: {istate})",
-                        status_code=400,
-                    )
+        err = _check_instance_read_lifecycle(action, body, _lc, _instance_tracker)
+        if err is not None:
+            return err
 
         handler = action_handlers.get(action)
         if handler is None:
@@ -402,67 +509,25 @@ def create_cluster_db_app(config: ClusterDBConfig) -> FastAPI:
                 f"lws: {config.display_name} operation '{action}' is not yet implemented",
             )
 
-        # ------------------------------------------------------------------
-        # Lifecycle-aware CreateDBCluster
-        # ------------------------------------------------------------------
         if action == "CreateDBCluster" and _lc.enabled and _lc.create_dwell_ms > 0:
-            resp = await handler(state, body, config)
-            if resp.status_code == 200:
-                cid = body.get("DBClusterIdentifier", "")
-                _cluster_tracker.set_state(cid, "CREATING")
-                _cluster_tracker.schedule_transition(cid, "ACTIVE", _lc.create_dwell_ms)
-            return resp
+            return await _lifecycle_create_cluster(
+                handler, state, body, config, _lc, _cluster_tracker
+            )
 
-        # ------------------------------------------------------------------
-        # Lifecycle-aware DeleteDBCluster
-        # ------------------------------------------------------------------
         if action == "DeleteDBCluster" and _lc.enabled:
-            cid = body.get("DBClusterIdentifier", "")
-            if _cluster_tracker.get_state(cid) == "CREATING":
-                return _error_response(
-                    "InvalidDBClusterStateFault",
-                    f"DB cluster {cid} is still being created",
-                    status_code=400,
-                )
-            resp = await handler(state, body, config)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _cluster_tracker.set_state(cid, "DELETING")
-                    _cluster_tracker.schedule_transition(cid, None, _lc.delete_dwell_ms)
-                else:
-                    _cluster_tracker.remove(cid)
-            return resp
+            return await _lifecycle_delete_cluster(
+                handler, state, body, config, _lc, _cluster_tracker
+            )
 
-        # ------------------------------------------------------------------
-        # Lifecycle-aware CreateDBInstance
-        # ------------------------------------------------------------------
         if action == "CreateDBInstance" and _lc.enabled and _lc.create_dwell_ms > 0:
-            resp = await handler(state, body, config)
-            if resp.status_code == 200:
-                iid = body.get("DBInstanceIdentifier", "")
-                _instance_tracker.set_state(iid, "CREATING")
-                _instance_tracker.schedule_transition(iid, "ACTIVE", _lc.create_dwell_ms)
-            return resp
+            return await _lifecycle_create_instance(
+                handler, state, body, config, _lc, _instance_tracker
+            )
 
-        # ------------------------------------------------------------------
-        # Lifecycle-aware DeleteDBInstance
-        # ------------------------------------------------------------------
         if action == "DeleteDBInstance" and _lc.enabled:
-            iid = body.get("DBInstanceIdentifier", "")
-            if _instance_tracker.get_state(iid) == "CREATING":
-                return _error_response(
-                    "InvalidDBInstanceStateFault",
-                    f"DB instance {iid} is still being created",
-                    status_code=400,
-                )
-            resp = await handler(state, body, config)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _instance_tracker.set_state(iid, "DELETING")
-                    _instance_tracker.schedule_transition(iid, None, _lc.delete_dwell_ms)
-                else:
-                    _instance_tracker.remove(iid)
-            return resp
+            return await _lifecycle_delete_instance(
+                handler, state, body, config, _lc, _instance_tracker
+            )
 
         return await handler(state, body, config)
 

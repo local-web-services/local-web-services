@@ -6,7 +6,9 @@ import httpx
 
 
 class TestGetLifecycleReturnsAllServices:
-    async def test_get_lifecycle_returns_all_services(self, client: httpx.AsyncClient, lifecycle_configs):
+    async def test_get_lifecycle_returns_all_services(
+        self, client: httpx.AsyncClient, lifecycle_configs
+    ):
         # Arrange
         expected_status_code = 200
         expected_services = set(lifecycle_configs.keys())
@@ -55,7 +57,9 @@ class TestPostLifecycleUpdatesServiceConfig:
 
 
 class TestResetClearsLifecycleConfigs:
-    async def test_reset_clears_lifecycle_configs(self, client: httpx.AsyncClient, lifecycle_configs):
+    async def test_reset_clears_lifecycle_configs(
+        self, client: httpx.AsyncClient, lifecycle_configs
+    ):
         # Arrange
         setup_payload = {
             "dynamodb": {

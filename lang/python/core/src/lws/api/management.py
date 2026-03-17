@@ -162,7 +162,8 @@ def create_management_router(
         chaos_configs: Map of service name to mutable ``AwsChaosConfig`` for runtime updates.
         aws_fake_configs: Map of service name to mutable ``AwsFakeConfig`` for runtime updates.
         iam_auth_bundle: Optional IAM auth bundle for runtime IAM auth management.
-        lifecycle_configs: Map of service name to mutable ``ResourceLifecycleConfig`` for runtime updates.
+        lifecycle_configs: Map of service name to mutable ``ResourceLifecycleConfig``
+            for runtime updates.
 
     Returns:
         A FastAPI ``APIRouter`` to be included in the main application.
@@ -174,7 +175,10 @@ def create_management_router(
     _aws_fake_configs = aws_fake_configs or {}
     _lifecycle_configs = lifecycle_configs or {}
 
-    _register_core_routes(router, orchestrator, all_providers, _resource_metadata, _chaos_configs, _aws_fake_configs, _lifecycle_configs)
+    _register_core_routes(
+        router, orchestrator, all_providers, _resource_metadata,
+        _chaos_configs, _aws_fake_configs, _lifecycle_configs,
+    )
     _register_chaos_routes(router, _chaos_configs)
     _register_iam_auth_routes(router, iam_auth_bundle)
     _register_function_url_routes(router, all_providers)
@@ -197,7 +201,9 @@ def _register_core_routes(
 
     @router.post("/reset")
     async def reset_state() -> JSONResponse:
-        return await _handle_reset(all_providers, chaos_configs, aws_fake_configs, lifecycle_configs)
+        return await _handle_reset(
+            all_providers, chaos_configs, aws_fake_configs, lifecycle_configs
+        )
 
     @router.get("/status")
     async def get_status() -> JSONResponse:

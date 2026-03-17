@@ -359,8 +359,209 @@ _ACTION_HANDLERS: dict[str, Any] = {
 
 
 # ------------------------------------------------------------------
+# App factory helpers
+# ------------------------------------------------------------------
+
+_SINGLE_PARAM_READ_ACTIONS = {"GetParameter"}
+_MULTI_PARAM_READ_ACTIONS = {"GetParameters"}
+_DELETE_SINGLE_ACTION = "DeleteParameter"
+_DELETE_MULTI_ACTION = "DeleteParameters"
+
+
+def _ssm_param_not_found(name: str, param_state: str) -> Response:
+    return Response(
+        content=json.dumps({
+            "__type": "ParameterNotFound",
+            "message": f"Parameter {name} not found (status: {param_state})",
+        }),
+        status_code=400,
+        media_type="application/json",
+    )
+
+
+def _ssm_param_still_creating(name: str) -> Response:
+    return Response(
+        content=json.dumps({
+            "__type": "ParameterNotFound",
+            "message": f"Parameter {name} is still being created",
+        }),
+        status_code=400,
+        media_type="application/json",
+    )
+
+
+def _check_single_param_lifecycle(
+    action: str, body: dict, lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
+) -> Response | None:
+    if not lc.enabled or action not in _SINGLE_PARAM_READ_ACTIONS:
+        return None
+    name = body.get("Name", "")
+    if not name:
+        return None
+    param_state = tracker.get_state(name)
+    if param_state in ("CREATING", "DELETING"):
+        return _ssm_param_not_found(name, param_state)
+    return None
+
+
+def _check_multi_param_lifecycle(
+    action: str, body: dict, lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
+) -> Response | None:
+    if not lc.enabled or action not in _MULTI_PARAM_READ_ACTIONS:
+        return None
+    for name in body.get("Names", []):
+        param_state = tracker.get_state(name)
+        if param_state in ("CREATING", "DELETING"):
+            return _ssm_param_not_found(name, param_state)
+    return None
+
+
+async def _lifecycle_put_parameter(
+    handler: Any,
+    state: Any,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    """Handle lifecycle for PutParameter. Returns a Response or None to fall through."""
+    name = body.get("Name", "")
+    overwrite = body.get("Overwrite", False)
+    if overwrite and name:
+        param_state = tracker.get_state(name)
+        if param_state in ("CREATING", "DELETING"):
+            return _ssm_param_not_found(name, param_state)
+    if lc.create_dwell_ms > 0:
+        resp = await handler(state, body)
+        if resp.status_code == 200:
+            tracker.set_state(name, "CREATING")
+            tracker.schedule_transition(name, "ACTIVE", lc.create_dwell_ms)
+        return resp
+    return None
+
+
+async def _lifecycle_delete_parameter(
+    handler: Any,
+    state: Any,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware DeleteParameter."""
+    name = body.get("Name", "")
+    if tracker.get_state(name) == "CREATING":
+        return _ssm_param_still_creating(name)
+    resp = await handler(state, body)
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(name, "DELETING")
+            tracker.schedule_transition(name, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(name)
+    return resp
+
+
+async def _lifecycle_delete_parameters(
+    handler: Any,
+    state: Any,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware DeleteParameters."""
+    names = body.get("Names", [])
+    for name in names:
+        if tracker.get_state(name) == "CREATING":
+            return _ssm_param_still_creating(name)
+    resp = await handler(state, body)
+    if resp.status_code == 200:
+        for name in names:
+            if lc.delete_dwell_ms > 0:
+                tracker.set_state(name, "DELETING")
+                tracker.schedule_transition(name, None, lc.delete_dwell_ms)
+            else:
+                tracker.remove(name)
+    return resp
+
+
+def _check_resource_tag_lifecycle(
+    body: dict, lc: ResourceLifecycleConfig, tracker: ResourceStateTracker
+) -> Response | None:
+    resource_id = body.get("ResourceId", "")
+    resource_type = body.get("ResourceType", "Parameter")
+    if resource_type == "Parameter" and resource_id:
+        param_state = tracker.get_state(resource_id)
+        if param_state in ("CREATING", "DELETING"):
+            return Response(
+                content=json.dumps({
+                    "__type": "InvalidResourceId",
+                    "message": f"Parameter {resource_id} not found (status: {param_state})",
+                }),
+                status_code=400,
+                media_type="application/json",
+            )
+    return None
+
+
+# ------------------------------------------------------------------
 # App factory
 # ------------------------------------------------------------------
+
+
+def _populate_ssm_state(state: _SsmState, initial_parameters: list[dict]) -> None:
+    """Load initial parameters into the SSM state."""
+    for p in initial_parameters:
+        param = _Parameter(
+            name=p["name"],
+            value=p.get("value", ""),
+            param_type=p.get("type", "String"),
+            description=p.get("description", ""),
+        )
+        state.parameters[param.name] = param
+
+
+async def _ssm_dispatch(
+    request: Request,
+    state: _SsmState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    target = request.headers.get("x-amz-target", "")
+    body = await parse_json_body(request)
+    action = resolve_api_action(target, body)
+
+    err = _check_single_param_lifecycle(action, body, lc, tracker)
+    if err is not None:
+        return err
+
+    err = _check_multi_param_lifecycle(action, body, lc, tracker)
+    if err is not None:
+        return err
+
+    handler = _ACTION_HANDLERS.get(action)
+    if handler is None:
+        _logger.warning("Unknown SSM action: %s", action)
+        return _error_response(
+            "InvalidAction",
+            f"lws: SSM operation '{action}' is not yet implemented",
+        )
+
+    if action == "PutParameter" and lc.enabled:
+        result = await _lifecycle_put_parameter(handler, state, body, lc, tracker)
+        if result is not None:
+            return result
+
+    if action == _DELETE_SINGLE_ACTION and lc.enabled:
+        return await _lifecycle_delete_parameter(handler, state, body, lc, tracker)
+
+    if action == _DELETE_MULTI_ACTION and lc.enabled:
+        return await _lifecycle_delete_parameters(handler, state, body, lc, tracker)
+
+    if action in ("AddTagsToResource", "ListTagsForResource") and lc.enabled:
+        err = _check_resource_tag_lifecycle(body, lc, tracker)
+        if err is not None:
+            return err
+
+    return await handler(state, body)
 
 
 def create_ssm_app(
@@ -376,7 +577,6 @@ def create_ssm_app(
     Returns a tuple of (app, state) so callers can retain a reference to the
     state object for lifecycle management (e.g. reset).
     """
-    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
 
@@ -391,165 +591,10 @@ def create_ssm_app(
         state = _SsmState()
 
     if initial_parameters:
-        for p in initial_parameters:
-            param = _Parameter(
-                name=p["name"],
-                value=p.get("value", ""),
-                param_type=p.get("type", "String"),
-                description=p.get("description", ""),
-            )
-            state.parameters[param.name] = param
-
-    # Actions that read a single named parameter
-    _SINGLE_PARAM_READ_ACTIONS = {"GetParameter"}
-    # Actions that read multiple named parameters
-    _MULTI_PARAM_READ_ACTIONS = {"GetParameters"}
-    # Delete actions
-    _DELETE_SINGLE_ACTION = "DeleteParameter"
-    _DELETE_MULTI_ACTION = "DeleteParameters"
+        _populate_ssm_state(state, initial_parameters)
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        target = request.headers.get("x-amz-target", "")
-        body = await parse_json_body(request)
-        action = resolve_api_action(target, body)
-
-        # Lifecycle checks for read actions on a single named parameter
-        if _lc.enabled and action in _SINGLE_PARAM_READ_ACTIONS:
-            name = body.get("Name", "")
-            if name:
-                param_state = _tracker.get_state(name)
-                if param_state in ("CREATING", "DELETING"):
-                    return Response(
-                        content=json.dumps({
-                            "__type": "ParameterNotFound",
-                            "message": f"Parameter {name} not found (status: {param_state})",
-                        }),
-                        status_code=400,
-                        media_type="application/json",
-                    )
-
-        # Lifecycle checks for read actions on multiple named parameters
-        if _lc.enabled and action in _MULTI_PARAM_READ_ACTIONS:
-            names = body.get("Names", [])
-            for name in names:
-                param_state = _tracker.get_state(name)
-                if param_state in ("CREATING", "DELETING"):
-                    return Response(
-                        content=json.dumps({
-                            "__type": "ParameterNotFound",
-                            "message": f"Parameter {name} not found (status: {param_state})",
-                        }),
-                        status_code=400,
-                        media_type="application/json",
-                    )
-
-        handler = _ACTION_HANDLERS.get(action)
-        if handler is None:
-            _logger.warning("Unknown SSM action: %s", action)
-            return _error_response(
-                "InvalidAction",
-                f"lws: SSM operation '{action}' is not yet implemented",
-            )
-
-        # Lifecycle-aware PutParameter (create/update)
-        if action == "PutParameter" and _lc.enabled:
-            name = body.get("Name", "")
-            overwrite = body.get("Overwrite", False)
-            if overwrite and name:
-                param_state = _tracker.get_state(name)
-                if param_state in ("CREATING", "DELETING"):
-                    return Response(
-                        content=json.dumps({
-                            "__type": "ParameterNotFound",
-                            "message": f"Parameter {name} not found (status: {param_state})",
-                        }),
-                        status_code=400,
-                        media_type="application/json",
-                    )
-            if _lc.create_dwell_ms > 0:
-                resp = await handler(state, body)
-                if resp.status_code == 200:
-                    _tracker.set_state(name, "CREATING")
-                    _tracker.schedule_transition(name, "ACTIVE", _lc.create_dwell_ms)
-                return resp
-
-        # Lifecycle-aware DeleteParameter
-        if action == _DELETE_SINGLE_ACTION and _lc.enabled:
-            name = body.get("Name", "")
-            if _tracker.get_state(name) == "CREATING":
-                return Response(
-                    content=json.dumps({
-                        "__type": "ParameterNotFound",
-                        "message": f"Parameter {name} is still being created",
-                    }),
-                    status_code=400,
-                    media_type="application/json",
-                )
-            resp = await handler(state, body)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _tracker.set_state(name, "DELETING")
-                    _tracker.schedule_transition(name, None, _lc.delete_dwell_ms)
-                else:
-                    _tracker.remove(name)
-            return resp
-
-        # Lifecycle-aware DeleteParameters
-        if action == _DELETE_MULTI_ACTION and _lc.enabled:
-            names = body.get("Names", [])
-            for name in names:
-                if _tracker.get_state(name) == "CREATING":
-                    return Response(
-                        content=json.dumps({
-                            "__type": "ParameterNotFound",
-                            "message": f"Parameter {name} is still being created",
-                        }),
-                        status_code=400,
-                        media_type="application/json",
-                    )
-            resp = await handler(state, body)
-            if resp.status_code == 200:
-                for name in names:
-                    if _lc.delete_dwell_ms > 0:
-                        _tracker.set_state(name, "DELETING")
-                        _tracker.schedule_transition(name, None, _lc.delete_dwell_ms)
-                    else:
-                        _tracker.remove(name)
-            return resp
-
-        # Lifecycle-aware AddTagsToResource
-        if action == "AddTagsToResource" and _lc.enabled:
-            resource_id = body.get("ResourceId", "")
-            resource_type = body.get("ResourceType", "Parameter")
-            if resource_type == "Parameter" and resource_id:
-                param_state = _tracker.get_state(resource_id)
-                if param_state in ("CREATING", "DELETING"):
-                    return Response(
-                        content=json.dumps({
-                            "__type": "InvalidResourceId",
-                            "message": f"Parameter {resource_id} not found (status: {param_state})",
-                        }),
-                        status_code=400,
-                        media_type="application/json",
-                    )
-
-        # Lifecycle-aware ListTagsForResource
-        if action == "ListTagsForResource" and _lc.enabled:
-            resource_id = body.get("ResourceId", "")
-            resource_type = body.get("ResourceType", "Parameter")
-            if resource_type == "Parameter" and resource_id:
-                param_state = _tracker.get_state(resource_id)
-                if param_state in ("CREATING", "DELETING"):
-                    return Response(
-                        content=json.dumps({
-                            "__type": "InvalidResourceId",
-                            "message": f"Parameter {resource_id} not found (status: {param_state})",
-                        }),
-                        status_code=400,
-                        media_type="application/json",
-                    )
-
-        return await handler(state, body)
+        return await _ssm_dispatch(request, state, _lc, _tracker)
 
     return app, state

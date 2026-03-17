@@ -26,7 +26,9 @@ class TestProviderCreation:
         config = LdkConfig(port=9100)
 
         # Act
-        providers, _chaos_configs, _ = _create_providers(app_model, graph, config, tmp_path)
+        providers, _chaos_configs, _, _fake_configs = _create_providers(
+            app_model, graph, config, tmp_path
+        )
 
         # Assert
         assert len(providers) >= 1

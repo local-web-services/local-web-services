@@ -27,7 +27,9 @@ class TestCreateEventBus:
         bus_names = [b.bus_name for b in buses]
         assert "new-bus" in bus_names
 
-    async def test_create_raises_when_bus_already_exists(self, provider: EventBridgeProvider) -> None:
+    async def test_create_raises_when_bus_already_exists(
+        self, provider: EventBridgeProvider
+    ) -> None:
         """Creating a bus that already exists must raise ValueError."""
         await provider.create_event_bus("idem-bus")
         expected_error_type = ValueError

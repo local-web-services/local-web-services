@@ -1,4 +1,5 @@
-"""Load all Secrets Manager informal spec scenarios (excluding invariant-only and sequences files)."""
+"""Load all Secrets Manager informal spec scenarios
+(excluding invariant-only and sequences files)."""
 
 from __future__ import annotations
 

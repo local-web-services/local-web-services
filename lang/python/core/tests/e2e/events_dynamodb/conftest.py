@@ -177,17 +177,12 @@ def target_table_is_not_deleting():
 
 @given("the target table is \"DELETING\"")
 def target_table_is_deleting(lws_session, world):
-    import httpx
     try:
         _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
     except Exception:  # noqa: BLE001
         pass
     _create_table(lws_session)
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"dynamodb": {"enabled": True, "delete_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("dynamodb").delete_dwell_ms(5000).apply()
     _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
     world["result"] = None
     world["error"] = None
@@ -195,17 +190,12 @@ def target_table_is_deleting(lws_session, world):
 
 @given("the table is already \"DELETING\"")
 def table_is_already_deleting(lws_session, world):
-    import httpx
     try:
         _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
     except Exception:  # noqa: BLE001
         pass
     _create_table(lws_session)
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"dynamodb": {"enabled": True, "delete_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("dynamodb").delete_dwell_ms(5000).apply()
     _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
     world["result"] = None
     world["error"] = None
@@ -310,7 +300,10 @@ def enable_rule(lws_session, world):
         world["error"] = exc
 
 
-@when("an event matches an \"ENABLED\" rule but the DynamoDB write fails because the table is being deleted")
+@when(
+    "an event matches an \"ENABLED\" rule but the DynamoDB write fails"
+    " because the table is being deleted"
+)
 def event_matches_rule_but_table_deleting(world):
     pytest.skip("Cannot trigger internal event routing to a deleting table in lws")
 

@@ -501,6 +501,164 @@ _ACTION_HANDLERS: dict[str, Any] = {
 
 
 # ------------------------------------------------------------------
+# App factory helpers
+# ------------------------------------------------------------------
+
+_RDS_INSTANCE_READ_ACTIONS = {"DescribeDBInstances", "ModifyDBInstance"}
+_RDS_CLUSTER_READ_ACTIONS = {"DescribeDBClusters"}
+
+
+def _check_rds_instance_lifecycle(
+    action: str,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if not lc.enabled or action not in _RDS_INSTANCE_READ_ACTIONS:
+        return None
+    iid = body.get("DBInstanceIdentifier", "")
+    if not iid:
+        return None
+    istate = tracker.get_state(iid)
+    if istate in ("CREATING", "DELETING"):
+        return _error_response(
+            "InvalidDBInstanceStateFault",
+            f"DB instance {iid} is not in an available state (status: {istate})",
+            status_code=400,
+        )
+    return None
+
+
+def _check_rds_cluster_lifecycle(
+    action: str,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if not lc.enabled or action not in _RDS_CLUSTER_READ_ACTIONS:
+        return None
+    cid = body.get("DBClusterIdentifier", "")
+    if not cid:
+        return None
+    cstate = tracker.get_state(cid)
+    if cstate in ("CREATING", "DELETING"):
+        return _error_response(
+            "InvalidDBClusterStateFault",
+            f"DB cluster {cid} is not in an available state (status: {cstate})",
+            status_code=400,
+        )
+    return None
+
+
+async def _rds_lifecycle_instance(
+    action: str,
+    handler: Any,
+    state: _RdsState,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    """Handle lifecycle-aware instance create/delete. Returns None to fall through."""
+    if action == "CreateDBInstance" and lc.enabled and lc.create_dwell_ms > 0:
+        resp = await handler(state, body)
+        if resp.status_code == 200:
+            iid = body.get("DBInstanceIdentifier", "")
+            tracker.set_state(iid, "CREATING")
+            tracker.schedule_transition(iid, "ACTIVE", lc.create_dwell_ms)
+        return resp
+    if action == "DeleteDBInstance" and lc.enabled:
+        iid = body.get("DBInstanceIdentifier", "")
+        if tracker.get_state(iid) == "CREATING":
+            return _error_response(
+                "InvalidDBInstanceStateFault",
+                f"DB instance {iid} is still being created",
+                status_code=400,
+            )
+        resp = await handler(state, body)
+        if resp.status_code == 200:
+            if lc.delete_dwell_ms > 0:
+                tracker.set_state(iid, "DELETING")
+                tracker.schedule_transition(iid, None, lc.delete_dwell_ms)
+            else:
+                tracker.remove(iid)
+        return resp
+    return None
+
+
+async def _rds_lifecycle_cluster(
+    action: str,
+    handler: Any,
+    state: _RdsState,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    """Handle lifecycle-aware cluster create/delete. Returns None to fall through."""
+    if action == "CreateDBCluster" and lc.enabled and lc.create_dwell_ms > 0:
+        resp = await handler(state, body)
+        if resp.status_code == 200:
+            cid = body.get("DBClusterIdentifier", "")
+            tracker.set_state(cid, "CREATING")
+            tracker.schedule_transition(cid, "ACTIVE", lc.create_dwell_ms)
+        return resp
+    if action == "DeleteDBCluster" and lc.enabled:
+        cid = body.get("DBClusterIdentifier", "")
+        if tracker.get_state(cid) == "CREATING":
+            return _error_response(
+                "InvalidDBClusterStateFault",
+                f"DB cluster {cid} is still being created",
+                status_code=400,
+            )
+        resp = await handler(state, body)
+        if resp.status_code == 200:
+            if lc.delete_dwell_ms > 0:
+                tracker.set_state(cid, "DELETING")
+                tracker.schedule_transition(cid, None, lc.delete_dwell_ms)
+            else:
+                tracker.remove(cid)
+        return resp
+    return None
+
+
+async def _rds_dispatch(
+    request: Request,
+    state: _RdsState,
+    lc: ResourceLifecycleConfig,
+    instance_tracker: ResourceStateTracker,
+    cluster_tracker: ResourceStateTracker,
+) -> Response:
+    target = request.headers.get("x-amz-target", "")
+    body = await parse_json_body(request)
+    action = resolve_api_action(target, body)
+
+    err = _check_rds_instance_lifecycle(action, body, lc, instance_tracker)
+    if err is not None:
+        return err
+
+    err = _check_rds_cluster_lifecycle(action, body, lc, cluster_tracker)
+    if err is not None:
+        return err
+
+    handler = _ACTION_HANDLERS.get(action)
+    if handler is None:
+        _logger.warning("Unknown RDS action: %s", action)
+        return _error_response(
+            "InvalidAction",
+            f"lws: RDS operation '{action}' is not yet implemented",
+        )
+
+    result = await _rds_lifecycle_instance(action, handler, state, body, lc, instance_tracker)
+    if result is not None:
+        return result
+
+    result = await _rds_lifecycle_cluster(action, handler, state, body, lc, cluster_tracker)
+    if result is not None:
+        return result
+
+    return await handler(state, body)
+
+
+# ------------------------------------------------------------------
 # App factory
 # ------------------------------------------------------------------
 
@@ -523,115 +681,8 @@ def create_rds_app(
         mysql_container_manager=mysql_container_manager,
     )
 
-    # Actions that operate on a specific DB instance (read/modify).
-    _INSTANCE_READ_ACTIONS = {"DescribeDBInstances", "ModifyDBInstance"}
-    # Actions that operate on a specific DB cluster (read only; modify not yet in handlers).
-    _CLUSTER_READ_ACTIONS = {"DescribeDBClusters"}
-
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        target = request.headers.get("x-amz-target", "")
-        body = await parse_json_body(request)
-        action = resolve_api_action(target, body)
-
-        # ------------------------------------------------------------------
-        # Lifecycle checks for instance read/modify operations
-        # ------------------------------------------------------------------
-        if _lc.enabled and action in _INSTANCE_READ_ACTIONS:
-            iid = body.get("DBInstanceIdentifier", "")
-            if iid:
-                istate = _instance_tracker.get_state(iid)
-                if istate in ("CREATING", "DELETING"):
-                    return _error_response(
-                        "InvalidDBInstanceStateFault",
-                        f"DB instance {iid} is not in an available state (status: {istate})",
-                        status_code=400,
-                    )
-
-        # ------------------------------------------------------------------
-        # Lifecycle checks for cluster read operations
-        # ------------------------------------------------------------------
-        if _lc.enabled and action in _CLUSTER_READ_ACTIONS:
-            cid = body.get("DBClusterIdentifier", "")
-            if cid:
-                cstate = _cluster_tracker.get_state(cid)
-                if cstate in ("CREATING", "DELETING"):
-                    return _error_response(
-                        "InvalidDBClusterStateFault",
-                        f"DB cluster {cid} is not in an available state (status: {cstate})",
-                        status_code=400,
-                    )
-
-        handler = _ACTION_HANDLERS.get(action)
-        if handler is None:
-            _logger.warning("Unknown RDS action: %s", action)
-            return _error_response(
-                "InvalidAction",
-                f"lws: RDS operation '{action}' is not yet implemented",
-            )
-
-        # ------------------------------------------------------------------
-        # Lifecycle-aware CreateDBInstance
-        # ------------------------------------------------------------------
-        if action == "CreateDBInstance" and _lc.enabled and _lc.create_dwell_ms > 0:
-            resp = await handler(state, body)
-            if resp.status_code == 200:
-                iid = body.get("DBInstanceIdentifier", "")
-                _instance_tracker.set_state(iid, "CREATING")
-                _instance_tracker.schedule_transition(iid, "ACTIVE", _lc.create_dwell_ms)
-            return resp
-
-        # ------------------------------------------------------------------
-        # Lifecycle-aware DeleteDBInstance
-        # ------------------------------------------------------------------
-        if action == "DeleteDBInstance" and _lc.enabled:
-            iid = body.get("DBInstanceIdentifier", "")
-            if _instance_tracker.get_state(iid) == "CREATING":
-                return _error_response(
-                    "InvalidDBInstanceStateFault",
-                    f"DB instance {iid} is still being created",
-                    status_code=400,
-                )
-            resp = await handler(state, body)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _instance_tracker.set_state(iid, "DELETING")
-                    _instance_tracker.schedule_transition(iid, None, _lc.delete_dwell_ms)
-                else:
-                    _instance_tracker.remove(iid)
-            return resp
-
-        # ------------------------------------------------------------------
-        # Lifecycle-aware CreateDBCluster
-        # ------------------------------------------------------------------
-        if action == "CreateDBCluster" and _lc.enabled and _lc.create_dwell_ms > 0:
-            resp = await handler(state, body)
-            if resp.status_code == 200:
-                cid = body.get("DBClusterIdentifier", "")
-                _cluster_tracker.set_state(cid, "CREATING")
-                _cluster_tracker.schedule_transition(cid, "ACTIVE", _lc.create_dwell_ms)
-            return resp
-
-        # ------------------------------------------------------------------
-        # Lifecycle-aware DeleteDBCluster
-        # ------------------------------------------------------------------
-        if action == "DeleteDBCluster" and _lc.enabled:
-            cid = body.get("DBClusterIdentifier", "")
-            if _cluster_tracker.get_state(cid) == "CREATING":
-                return _error_response(
-                    "InvalidDBClusterStateFault",
-                    f"DB cluster {cid} is still being created",
-                    status_code=400,
-                )
-            resp = await handler(state, body)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _cluster_tracker.set_state(cid, "DELETING")
-                    _cluster_tracker.schedule_transition(cid, None, _lc.delete_dwell_ms)
-                else:
-                    _cluster_tracker.remove(cid)
-            return resp
-
-        return await handler(state, body)
+        return await _rds_dispatch(request, state, _lc, _instance_tracker, _cluster_tracker)
 
     return app

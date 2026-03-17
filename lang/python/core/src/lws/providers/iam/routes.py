@@ -519,6 +519,78 @@ _ACTION_HANDLERS = {
 # ------------------------------------------------------------------
 
 
+async def _iam_dispatch(
+    request: Request,
+    state: _IamState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Route a single IAM request."""
+    params = await _parse_form(request)
+    action = params.get("Action", "")
+
+    if lc.enabled and action == "GetRole":
+        role_name = params.get("RoleName", "")
+        role_state = tracker.get_state(role_name)
+        if role_state in ("CREATING", "DELETING"):
+            xml = (
+                "<ErrorResponse>"
+                "<Error><Code>NoSuchEntity</Code>"
+                f"<Message>The role with name {role_name} cannot be found"
+                f" (status: {role_state}).</Message>"
+                "</Error>"
+                f"<RequestId>{_request_id()}</RequestId>"
+                "</ErrorResponse>"
+            )
+            return Response(content=xml, status_code=404, media_type="text/xml")
+
+    handler = _ACTION_HANDLERS.get(action)
+    if handler is None:
+        _logger.warning("Unknown IAM action: %s", action)
+        xml = (
+            "<ErrorResponse>"
+            "<Error>"
+            "<Type>Sender</Type>"
+            "<Code>InvalidAction</Code>"
+            f"<Message>lws: IAM operation '{action}' is not yet implemented</Message>"
+            "</Error>"
+            f"<RequestId>{_request_id()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=400, media_type="text/xml")
+
+    if action == "CreateRole" and lc.enabled and lc.create_dwell_ms > 0:
+        resp = await handler(state, params)
+        if resp.status_code == 200:
+            role_name = params.get("RoleName", "")
+            tracker.set_state(role_name, "CREATING")
+            tracker.schedule_transition(role_name, "ACTIVE", lc.create_dwell_ms)
+        return resp
+
+    if action == "DeleteRole" and lc.enabled:
+        role_name = params.get("RoleName", "")
+        if tracker.get_state(role_name) == "CREATING":
+            xml = (
+                "<ErrorResponse>"
+                "<Error><Code>DeleteConflict</Code>"
+                f"<Message>Role {role_name} is still being created</Message>"
+                "</Error>"
+                f"<RequestId>{_request_id()}</RequestId>"
+                "</ErrorResponse>"
+            )
+            return Response(content=xml, status_code=409, media_type="text/xml")
+        resp = await handler(state, params)
+        if resp.status_code == 200:
+            if lc.delete_dwell_ms > 0:
+                tracker.set_state(role_name, "DELETING")
+                tracker.schedule_transition(role_name, None, lc.delete_dwell_ms)
+            else:
+                tracker.remove(role_name)
+        return resp
+
+    return await handler(state, params)
+
+
 def create_iam_app(
     chaos: AwsChaosConfig | None = None,
     aws_fake: AwsFakeConfig | None = None,
@@ -538,70 +610,6 @@ def create_iam_app(
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        params = await _parse_form(request)
-        action = params.get("Action", "")
-
-        # Lifecycle check for role read operations
-        if _lc.enabled and action == "GetRole":
-            role_name = params.get("RoleName", "")
-            role_state = _tracker.get_state(role_name)
-            if role_state in ("CREATING", "DELETING"):
-                xml = (
-                    "<ErrorResponse>"
-                    "<Error><Code>NoSuchEntity</Code>"
-                    f"<Message>The role with name {role_name} cannot be found"
-                    f" (status: {role_state}).</Message>"
-                    "</Error>"
-                    f"<RequestId>{_request_id()}</RequestId>"
-                    "</ErrorResponse>"
-                )
-                return Response(content=xml, status_code=404, media_type="text/xml")
-
-        handler = _ACTION_HANDLERS.get(action)
-        if handler is None:
-            _logger.warning("Unknown IAM action: %s", action)
-            xml = (
-                "<ErrorResponse>"
-                "<Error>"
-                "<Type>Sender</Type>"
-                "<Code>InvalidAction</Code>"
-                f"<Message>lws: IAM operation '{action}' is not yet implemented</Message>"
-                "</Error>"
-                f"<RequestId>{_request_id()}</RequestId>"
-                "</ErrorResponse>"
-            )
-            return Response(content=xml, status_code=400, media_type="text/xml")
-
-        # Lifecycle-aware create/delete handling for roles
-        if action == "CreateRole" and _lc.enabled and _lc.create_dwell_ms > 0:
-            resp = await handler(state, params)
-            if resp.status_code == 200:
-                role_name = params.get("RoleName", "")
-                _tracker.set_state(role_name, "CREATING")
-                _tracker.schedule_transition(role_name, "ACTIVE", _lc.create_dwell_ms)
-            return resp
-
-        if action == "DeleteRole" and _lc.enabled:
-            role_name = params.get("RoleName", "")
-            if _tracker.get_state(role_name) == "CREATING":
-                xml = (
-                    "<ErrorResponse>"
-                    "<Error><Code>DeleteConflict</Code>"
-                    f"<Message>Role {role_name} is still being created</Message>"
-                    "</Error>"
-                    f"<RequestId>{_request_id()}</RequestId>"
-                    "</ErrorResponse>"
-                )
-                return Response(content=xml, status_code=409, media_type="text/xml")
-            resp = await handler(state, params)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _tracker.set_state(role_name, "DELETING")
-                    _tracker.schedule_transition(role_name, None, _lc.delete_dwell_ms)
-                else:
-                    _tracker.remove(role_name)
-            return resp
-
-        return await handler(state, params)
+        return await _iam_dispatch(request, state, _lc, _tracker)
 
     return app

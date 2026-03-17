@@ -49,16 +49,11 @@ def topic_is_active_given():
 
 @given('the topic is not "ACTIVE"')
 def topic_is_not_active_given(lws_session, world):
-    import httpx
     try:
         _sns(lws_session).delete_topic(TopicArn=_get_topic_arn(lws_session))
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"sns": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
     world["topic_arn"] = _create_topic(lws_session)
 
 
@@ -109,7 +104,10 @@ def confirmed_subscription_exists(lws_session, world):
 @given("no confirmed subscription exists for the topic")
 def no_confirmed_subscription_exists():
     """Skip: SNS allows publishing to a topic with no confirmed subscriptions."""
-    pytest.skip("SNS allows publishing to a topic with no confirmed subscriptions; this constraint is not enforced")
+    pytest.skip(
+        "SNS allows publishing to a topic with no confirmed subscriptions;"
+        " this constraint is not enforced"
+    )
 
 
 @given("the subscription belongs to this topic")
@@ -151,7 +149,9 @@ def subscription_is_pending_given():
 
 @given('the subscription is not "PENDING_CONFIRMATION"')
 def subscription_is_not_pending_given():
-    pytest.skip("Cannot set subscription to non-PENDING_CONFIRMATION state without confirmation flow")
+    pytest.skip(
+        "Cannot set subscription to non-PENDING_CONFIRMATION state without confirmation flow"
+    )
 
 
 @given('the subscription is "CONFIRMED"')
@@ -175,7 +175,9 @@ def subscription_is_confirmed_given(lws_session, world):
 
 @given('the subscription is not "CONFIRMED"')
 def subscription_is_not_confirmed_given():
-    pytest.skip("Cannot reliably produce a non-CONFIRMED subscription without external confirmation flow")
+    pytest.skip(
+        "Cannot reliably produce a non-CONFIRMED subscription without external confirmation flow"
+    )
 
 
 @given("the subscription's topic exists")
@@ -195,16 +197,11 @@ def subscriptions_topic_does_not_exist():
 
 @given('the subscription\'s topic is not "ACTIVE"')
 def subscriptions_topic_is_not_active(lws_session, world):
-    import httpx
     try:
         _sns(lws_session).delete_topic(TopicArn=_get_topic_arn(lws_session))
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"sns": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
     world["topic_arn"] = _create_topic(lws_session)
 
 

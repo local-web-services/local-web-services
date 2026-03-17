@@ -11,6 +11,11 @@ class TestUntagResource:
     async def test_untag_resource(self, client: httpx.AsyncClient):
         # Arrange
         expected_status_code = 200
+        await client.post(
+            "/",
+            headers={"x-amz-target": "AWSStepFunctions.TagResource"},
+            json={"resourceArn": _SM_ARN, "tags": [{"key": "env", "value": "test"}]},
+        )
 
         # Act
         resp = await client.post(

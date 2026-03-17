@@ -1,13 +1,12 @@
 """Integration tests for DynamoDB lifecycle state simulation."""
 from __future__ import annotations
 
-import pytest
 import httpx
+import pytest
 
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
 from lws.providers.dynamodb.provider import SqliteDynamoProvider
 from lws.providers.dynamodb.routes import create_dynamodb_app
-
 
 _CREATE_TABLE_HEADERS = {
     "X-Amz-Target": "DynamoDB_20120810.CreateTable",

@@ -77,16 +77,11 @@ def event_bus_is_active_given():
 
 @given("the event bus is not \"ACTIVE\"")
 def event_bus_is_not_active_given(lws_session, world):
-    import httpx
     try:
         _events(lws_session).delete_event_bus(Name=TEST_BUS)
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"events": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("events").create_dwell_ms(5000).apply()
     _create_bus(lws_session)
     world["result"] = None
     world["error"] = None

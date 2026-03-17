@@ -50,16 +50,11 @@ def parameter_is_active():
 
 @given("the parameter is not active")
 def parameter_is_not_active(lws_session, world):
-    import httpx
     try:
         _ssm(lws_session).delete_parameter(Name=TEST_PARAM)
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"ssm": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("ssm").create_dwell_ms(5000).apply()
     _create_param(lws_session)
     world["result"] = None
     world["error"] = None
@@ -91,16 +86,11 @@ def tag_not_associated_with_parameter():
 
 @given("the tag association is not active")
 def tag_association_not_active(lws_session, world):
-    import httpx
     try:
         _ssm(lws_session).delete_parameter(Name=TEST_PARAM)
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"ssm": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("ssm").create_dwell_ms(5000).apply()
     _create_param(lws_session)
     world["result"] = None
     world["error"] = None
@@ -427,7 +417,7 @@ def no_parameter_exists_after_delete():
 
 @then("param_exists values are always valid booleans")
 def param_exists_values_valid_booleans():
-    """No-op invariant: param_exists values are always valid booleans in an isolated test context."""
+    """No-op invariant: param_exists values are always valid booleans in isolated test context."""
 
 
 @then("the error log only contains ParameterAlreadyExists entries")

@@ -460,6 +460,49 @@ async def _delete_table(
 # ------------------------------------------------------------------
 
 
+async def _s3tables_create_table_bucket(
+    request: Request,
+    state: _S3TablesState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    bucket_name = ""
+    if lc.enabled and lc.create_dwell_ms > 0:
+        try:
+            import json as _json
+            raw = await request.body()
+            bucket_name = _json.loads(raw).get("name", "")
+        except Exception:
+            bucket_name = ""
+    resp = await _create_table_bucket(request, state)
+    if lc.enabled and resp.status_code == 200 and lc.create_dwell_ms > 0 and bucket_name:
+        tracker.set_state(bucket_name, "CREATING")
+        tracker.schedule_transition(bucket_name, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _s3tables_delete_table_bucket(
+    table_bucket_arn: str,
+    state: _S3TablesState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    if lc.enabled and tracker.get_state(table_bucket_arn) == "CREATING":
+        return _error_response(
+            "ConflictException",
+            f"Table bucket '{table_bucket_arn}' is still being created",
+            status_code=409,
+        )
+    resp = await _delete_table_bucket(table_bucket_arn, state)
+    if lc.enabled and resp.status_code == 204:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(table_bucket_arn, "DELETING")
+            tracker.schedule_transition(table_bucket_arn, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(table_bucket_arn)
+    return resp
+
+
 def _register_bucket_routes(
     app: FastAPI, state: _S3TablesState, tracker: ResourceStateTracker, lc: ResourceLifecycleConfig
 ) -> None:
@@ -467,20 +510,7 @@ def _register_bucket_routes(
 
     @app.put("/table-buckets")
     async def create_table_bucket(request: Request) -> Response:
-        # Pre-read body (cached by FastAPI) so we can extract the name for lifecycle tracking
-        bucket_name = ""
-        if lc.enabled and lc.create_dwell_ms > 0:
-            try:
-                raw = await request.body()
-                import json as _json
-                bucket_name = _json.loads(raw).get("name", "")
-            except Exception:
-                bucket_name = ""
-        resp = await _create_table_bucket(request, state)
-        if lc.enabled and resp.status_code == 200 and lc.create_dwell_ms > 0 and bucket_name:
-            tracker.set_state(bucket_name, "CREATING")
-            tracker.schedule_transition(bucket_name, "ACTIVE", lc.create_dwell_ms)
-        return resp
+        return await _s3tables_create_table_bucket(request, state, lc, tracker)
 
     @app.get("/table-buckets")
     async def list_table_buckets() -> Response:
@@ -500,20 +530,7 @@ def _register_bucket_routes(
 
     @app.delete("/table-buckets/{tableBucketARN}")
     async def delete_table_bucket(tableBucketARN: str) -> Response:
-        if lc.enabled and tracker.get_state(tableBucketARN) == "CREATING":
-            return _error_response(
-                "ConflictException",
-                f"Table bucket '{tableBucketARN}' is still being created",
-                status_code=409,
-            )
-        resp = await _delete_table_bucket(tableBucketARN, state)
-        if lc.enabled and resp.status_code == 204:
-            if lc.delete_dwell_ms > 0:
-                tracker.set_state(tableBucketARN, "DELETING")
-                tracker.schedule_transition(tableBucketARN, None, lc.delete_dwell_ms)
-            else:
-                tracker.remove(tableBucketARN)
-        return resp
+        return await _s3tables_delete_table_bucket(tableBucketARN, state, lc, tracker)
 
 
 def _register_namespace_routes(app: FastAPI, state: _S3TablesState) -> None:

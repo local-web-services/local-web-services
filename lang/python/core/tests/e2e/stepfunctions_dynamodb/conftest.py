@@ -81,16 +81,11 @@ def sm_is_active_given():
 
 @given("the state machine is not \"ACTIVE\"")
 def sm_is_not_active_given(lws_session, world):
-    import httpx
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"stepfunctions": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("stepfunctions").create_dwell_ms(5000).apply()
     _create_sm(lws_session)
     world["result"] = None
     world["error"] = None
@@ -140,12 +135,7 @@ def table_is_active_given():
 
 @given("the table is not \"ACTIVE\"")
 def table_is_not_active_given(lws_session, world):
-    import httpx
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"dynamodb": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
     _create_table(lws_session)
     world["result"] = None
     world["error"] = None
@@ -163,12 +153,7 @@ def target_table_is_active():
 
 @given("the target table is not \"ACTIVE\"")
 def target_table_is_not_active(lws_session, world):
-    import httpx
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"dynamodb": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
     _create_table(lws_session)
     world["result"] = None
     world["error"] = None

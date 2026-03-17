@@ -135,7 +135,7 @@ async def _handle_delete_cluster(state: _EcsState, body: dict) -> Response:
     if obj is None:
         return _error_response_ecs(
             "ClusterNotFoundException",
-            f"The specified cluster was not found.",
+            "The specified cluster was not found.",
             status_code=400,
         )
     obj.status = "INACTIVE"
@@ -187,6 +187,67 @@ _TARGET_HANDLERS = {
 # ------------------------------------------------------------------
 
 
+async def _lifecycle_describe_clusters(
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    """Return an error response if any requested cluster is in a transient state."""
+    requested: list[str] = body.get("clusters", [])
+    for ref in requested:
+        cluster_name = ref.rsplit("/", 1)[-1] if "/" in ref else ref
+        cluster_state = tracker.get_state(cluster_name)
+        if cluster_state in ("CREATING", "DELETING"):
+            failures = [
+                {
+                    "arn": ref,
+                    "reason": "MISSING",
+                    "detail": f"Cluster not found: {ref} (status: {cluster_state})",
+                }
+            ]
+            return _json_response({"clusters": [], "failures": failures})
+    return None
+
+
+async def _lifecycle_create_cluster(
+    state: _EcsState,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware CreateCluster."""
+    resp = await _handle_create_cluster(state, body)
+    if resp.status_code == 200 and lc.create_dwell_ms > 0:
+        cluster_name = body.get("clusterName", "default")
+        tracker.set_state(cluster_name, "CREATING")
+        tracker.schedule_transition(cluster_name, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _lifecycle_delete_cluster(
+    state: _EcsState,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    """Handle lifecycle-aware DeleteCluster."""
+    cluster = body.get("cluster", "")
+    cluster_name = cluster.rsplit("/", 1)[-1] if "/" in cluster else cluster
+    if tracker.get_state(cluster_name) == "CREATING":
+        return _error_response_ecs(
+            "ClusterContainsContainerInstancesException",
+            f"Cluster {cluster_name} is still being created",
+        )
+    resp = await _handle_delete_cluster(state, body)
+    if resp.status_code == 200:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(cluster_name, "DELETING")
+            tracker.schedule_transition(cluster_name, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(cluster_name)
+    return resp
+
+
 def create_ecs_app(lifecycle: ResourceLifecycleConfig | None = None) -> FastAPI:
     """Create a FastAPI application that speaks the ECS JSON wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -204,21 +265,10 @@ def create_ecs_app(lifecycle: ResourceLifecycleConfig | None = None) -> FastAPI:
         except Exception:
             body = {}
 
-        # Lifecycle guard for DescribeClusters when lifecycle is enabled
         if _lc.enabled and target.endswith(".DescribeClusters"):
-            requested: list[str] = body.get("clusters", [])
-            for ref in requested:
-                cluster_name = ref.rsplit("/", 1)[-1] if "/" in ref else ref
-                cluster_state = _tracker.get_state(cluster_name)
-                if cluster_state in ("CREATING", "DELETING"):
-                    failures = [
-                        {
-                            "arn": ref,
-                            "reason": "MISSING",
-                            "detail": f"Cluster not found: {ref} (status: {cluster_state})",
-                        }
-                    ]
-                    return _json_response({"clusters": [], "failures": failures})
+            err = await _lifecycle_describe_clusters(body, _lc, _tracker)
+            if err is not None:
+                return err
 
         handler = _TARGET_HANDLERS.get(target)
         if handler is None:
@@ -228,31 +278,11 @@ def create_ecs_app(lifecycle: ResourceLifecycleConfig | None = None) -> FastAPI:
                 f"lws: ECS operation '{target}' is not yet implemented",
             )
 
-        # Lifecycle-aware create/delete handling
         if _lc.enabled and target.endswith(".CreateCluster"):
-            resp = await _handle_create_cluster(state, body)
-            if resp.status_code == 200 and _lc.create_dwell_ms > 0:
-                cluster_name = body.get("clusterName", "default")
-                _tracker.set_state(cluster_name, "CREATING")
-                _tracker.schedule_transition(cluster_name, "ACTIVE", _lc.create_dwell_ms)
-            return resp
+            return await _lifecycle_create_cluster(state, body, _lc, _tracker)
 
         if _lc.enabled and target.endswith(".DeleteCluster"):
-            cluster = body.get("cluster", "")
-            cluster_name = cluster.rsplit("/", 1)[-1] if "/" in cluster else cluster
-            if _tracker.get_state(cluster_name) == "CREATING":
-                return _error_response_ecs(
-                    "ClusterContainsContainerInstancesException",
-                    f"Cluster {cluster_name} is still being created",
-                )
-            resp = await _handle_delete_cluster(state, body)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _tracker.set_state(cluster_name, "DELETING")
-                    _tracker.schedule_transition(cluster_name, None, _lc.delete_dwell_ms)
-                else:
-                    _tracker.remove(cluster_name)
-            return resp
+            return await _lifecycle_delete_cluster(state, body, _lc, _tracker)
 
         return await handler(state, body)
 

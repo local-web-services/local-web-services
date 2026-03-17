@@ -269,13 +269,14 @@ class StepFunctionsProvider(IStateMachine):
             workflow_type=wf_type,
             role_arn=role_arn,
         )
+        arn = f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
         if name in self._definitions:
             raise ValueError(f"State machine already exists: {name}")
         self._configs[name] = config
         definition_data = _resolve_definition(config)
         self._definitions[name] = parse_definition(definition_data)
         self._workflow_types[name] = wf_type
-        return f"arn:aws:states:us-east-1:000000000000:stateMachine:{name}"
+        return arn
 
     def delete_state_machine(self, name: str) -> None:
         """Delete a state machine by name. Raises KeyError if not found."""

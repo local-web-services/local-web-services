@@ -420,6 +420,58 @@ async def _get_job_output(
 # ------------------------------------------------------------------
 
 
+async def _lifecycle_create_vault(
+    state: _GlacierState,
+    vault_name: str,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    resp = await _create_vault(state, vault_name)
+    if lc.enabled and resp.status_code == 201 and lc.create_dwell_ms > 0:
+        tracker.set_state(vault_name, "CREATING")
+        tracker.schedule_transition(vault_name, "ACTIVE", lc.create_dwell_ms)
+    return resp
+
+
+async def _lifecycle_delete_vault(
+    state: _GlacierState,
+    vault_name: str,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    if lc.enabled and tracker.get_state(vault_name) == "CREATING":
+        return _error_response(
+            "InvalidParameterValueException",
+            f"Vault {vault_name} is still being created",
+        )
+    resp = await _delete_vault(state, vault_name)
+    if lc.enabled and resp.status_code == 204:
+        if lc.delete_dwell_ms > 0:
+            tracker.set_state(vault_name, "DELETING")
+            tracker.schedule_transition(vault_name, None, lc.delete_dwell_ms)
+        else:
+            tracker.remove(vault_name)
+    return resp
+
+
+async def _lifecycle_describe_vault(
+    state: _GlacierState,
+    vault_name: str,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    if lc.enabled:
+        vault_state = tracker.get_state(vault_name)
+        if vault_state in ("CREATING", "DELETING"):
+            arn = f"arn:aws:glacier:{_REGION}:{_ACCOUNT_ID}:vaults/{vault_name}"
+            return _error_response(
+                "ResourceNotFoundException",
+                f"Vault not found for ARN: {arn} (status: {vault_state})",
+                status_code=404,
+            )
+    return await _describe_vault(state, vault_name)
+
+
 def create_glacier_app(lifecycle: ResourceLifecycleConfig | None = None) -> FastAPI:
     """Create a FastAPI application that speaks the Glacier REST wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -431,40 +483,15 @@ def create_glacier_app(lifecycle: ResourceLifecycleConfig | None = None) -> Fast
 
     @app.put("/-/vaults/{vault_name}")
     async def create_vault(vault_name: str) -> Response:
-        resp = await _create_vault(state, vault_name)
-        if _lc.enabled and resp.status_code == 201 and _lc.create_dwell_ms > 0:
-            _tracker.set_state(vault_name, "CREATING")
-            _tracker.schedule_transition(vault_name, "ACTIVE", _lc.create_dwell_ms)
-        return resp
+        return await _lifecycle_create_vault(state, vault_name, _lc, _tracker)
 
     @app.delete("/-/vaults/{vault_name}")
     async def delete_vault(vault_name: str) -> Response:
-        if _lc.enabled and _tracker.get_state(vault_name) == "CREATING":
-            return _error_response(
-                "InvalidParameterValueException",
-                f"Vault {vault_name} is still being created",
-            )
-        resp = await _delete_vault(state, vault_name)
-        if _lc.enabled and resp.status_code == 204:
-            if _lc.delete_dwell_ms > 0:
-                _tracker.set_state(vault_name, "DELETING")
-                _tracker.schedule_transition(vault_name, None, _lc.delete_dwell_ms)
-            else:
-                _tracker.remove(vault_name)
-        return resp
+        return await _lifecycle_delete_vault(state, vault_name, _lc, _tracker)
 
     @app.get("/-/vaults/{vault_name}")
     async def describe_vault(vault_name: str) -> Response:
-        if _lc.enabled:
-            vault_state = _tracker.get_state(vault_name)
-            if vault_state in ("CREATING", "DELETING"):
-                return _error_response(
-                    "ResourceNotFoundException",
-                    f"Vault not found for ARN: arn:aws:glacier:{_REGION}:{_ACCOUNT_ID}:vaults/{vault_name}"
-                    f" (status: {vault_state})",
-                    status_code=404,
-                )
-        return await _describe_vault(state, vault_name)
+        return await _lifecycle_describe_vault(state, vault_name, _lc, _tracker)
 
     @app.get("/-/vaults")
     async def list_vaults() -> Response:

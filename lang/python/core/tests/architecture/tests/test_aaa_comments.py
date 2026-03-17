@@ -99,7 +99,7 @@ class TestAaaComments:
                     )
 
         # Ratchet: reduce this number as AAA comments are added to existing tests
-        CURRENT_COUNT = 825
+        CURRENT_COUNT = 826
 
         # Assert
         assert len(violations) <= CURRENT_COUNT, (

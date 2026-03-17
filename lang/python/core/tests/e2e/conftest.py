@@ -5,10 +5,8 @@ from __future__ import annotations
 import json
 
 import pytest
-from botocore.exceptions import ClientError
-from pytest_bdd import given, parsers, then, when
-
 from lws_testing.session import LwsSession
+from pytest_bdd import given, parsers, then
 
 # ── Fixtures ────────────────────────────────────────────────────────────
 

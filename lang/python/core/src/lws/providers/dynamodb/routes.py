@@ -35,7 +35,9 @@ _TARGET_PREFIX = "DynamoDB_20120810."
 class DynamoDbRouter:
     """Route DynamoDB wire-protocol requests to an ``IKeyValueStore`` backend."""
 
-    def __init__(self, store: IKeyValueStore, lifecycle: ResourceLifecycleConfig | None = None) -> None:
+    def __init__(
+        self, store: IKeyValueStore, lifecycle: ResourceLifecycleConfig | None = None
+    ) -> None:
         self.store = store
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
@@ -290,12 +292,8 @@ class DynamoDbRouter:
 
     async def _describe_table(self, body: dict) -> Response:
         table_name = body.get("TableName", "")
-        # Reject if table is in a non-ACTIVE lifecycle state (CREATING or DELETING)
-        err = self._get_lifecycle_error(table_name)
-        if err is not None:
-            return err
-        # Check if table is in lifecycle DELETING state (already deleted from store)
         status = self._tracker.get_state(table_name)
+        # DELETING means the table has been removed from the store — treat as not found
         if status == "DELETING":
             return _error_response(
                 "ResourceNotFoundException",

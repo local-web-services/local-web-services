@@ -37,11 +37,17 @@ class TestCreateStateMachine:
         names = provider.list_state_machines()
         assert "my-sm" in names
 
-    async def test_create_is_idempotent(self, provider: StepFunctionsProvider) -> None:
+    async def test_create_raises_when_already_exists(self, provider: StepFunctionsProvider) -> None:
+        # Arrange
         definition = '{"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": true}}}'
-        arn1 = provider.create_state_machine(name="sm", definition=definition)
-        arn2 = provider.create_state_machine(name="sm", definition=definition)
-        assert arn1 == arn2
+        provider.create_state_machine(name="sm", definition=definition)
+
+        # Act / Assert
+        try:
+            provider.create_state_machine(name="sm", definition=definition)
+            assert False, "Expected ValueError for duplicate state machine"
+        except ValueError:
+            pass
 
     async def test_create_express_type(self, provider: StepFunctionsProvider) -> None:
         # Arrange

@@ -74,18 +74,13 @@ def sm_is_active_given():
 @given('the state machine is not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
     """Enable lifecycle simulation so state machine stays in CREATING state."""
-    import httpx  # noqa: PLC0415
 
     sm_name = world.get("state_machine_name", TEST_SM)
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn(sm_name))
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"stepfunctions": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("stepfunctions").create_dwell_ms(5000).apply()
     # Create a state machine that will be stuck in CREATING state
     world["state_machine_name"] = TEST_SM
     world["state_machine_arn"] = _create_sm(lws_session)
@@ -603,7 +598,10 @@ def every_sm_has_valid_status(lws_session):
         )
 
 
-@then('every execution has a valid status ("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED")')
+@then(
+    'every execution has a valid status'
+    ' ("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED")'
+)
 def every_execution_has_valid_status():
     """Invariant: trivially satisfied in isolated lws context."""
 

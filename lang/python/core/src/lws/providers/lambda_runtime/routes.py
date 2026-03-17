@@ -496,7 +496,9 @@ class LambdaManagementRouter:
         resp = _json_response(_format_function_config(func_config), 201)
         if self._lifecycle.enabled and self._lifecycle.create_dwell_ms > 0:
             self._tracker.set_state(function_name, "CREATING")
-            self._tracker.schedule_transition(function_name, "ACTIVE", self._lifecycle.create_dwell_ms)
+            self._tracker.schedule_transition(
+                function_name, "ACTIVE", self._lifecycle.create_dwell_ms
+            )
         return resp
 
     async def _list_functions(self, _request: Request) -> Response:
@@ -549,7 +551,9 @@ class LambdaManagementRouter:
         if self._lifecycle.enabled:
             if self._lifecycle.delete_dwell_ms > 0:
                 self._tracker.set_state(function_name, "DELETING")
-                self._tracker.schedule_transition(function_name, None, self._lifecycle.delete_dwell_ms)
+                self._tracker.schedule_transition(
+                    function_name, None, self._lifecycle.delete_dwell_ms
+                )
             else:
                 self._tracker.remove(function_name)
         return Response(status_code=204)

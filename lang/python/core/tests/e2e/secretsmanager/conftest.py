@@ -47,12 +47,7 @@ def secret_is_active_given():
 @given('the secret is not "ACTIVE"')
 def secret_is_not_active_given(lws_session, world):
     """Put the secret in CREATING state (not ACTIVE) via lifecycle simulation."""
-    import httpx
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"secretsmanager": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("secretsmanager").create_dwell_ms(5000).apply()
     try:
         _sm(lws_session).delete_secret(SecretId=TEST_SECRET, ForceDeleteWithoutRecovery=True)
     except Exception:  # noqa: BLE001
@@ -199,7 +194,10 @@ def tag_resource(lws_session, world):
                 {
                     "Error": {
                         "Code": "InvalidRequestException",
-                        "Message": f"Secret {TEST_SECRET} is scheduled for deletion and cannot be tagged",
+                        "Message": (
+                            f"Secret {TEST_SECRET} is scheduled for deletion"
+                            " and cannot be tagged"
+                        ),
                     }
                 },
                 "TagResource",
@@ -225,7 +223,10 @@ def untag_resource(lws_session, world):
                 {
                     "Error": {
                         "Code": "InvalidRequestException",
-                        "Message": f"Secret {TEST_SECRET} is scheduled for deletion and cannot be untagged",
+                        "Message": (
+                            f"Secret {TEST_SECRET} is scheduled for deletion"
+                            " and cannot be untagged"
+                        ),
                     }
                 },
                 "UntagResource",

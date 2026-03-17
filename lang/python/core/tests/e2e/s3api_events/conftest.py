@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
-import httpx
 import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when
@@ -60,11 +57,7 @@ def bucket_is_active_given():
 
 @given("the bucket is not \"ACTIVE\"")
 def bucket_is_not_active_given(lws_session, world):
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"s3": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
     world["result"] = None
     world["error"] = None
@@ -108,11 +101,7 @@ def bus_is_already_deleted(lws_session, world):
         _create_bus(lws_session)
     except Exception:  # noqa: BLE001
         pass  # bus may already exist from a prior Given step
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"events": {"enabled": True, "delete_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("events").delete_dwell_ms(5000).apply()
     _events(lws_session).delete_event_bus(Name=TEST_BUS)
     world["result"] = None
     world["error"] = None

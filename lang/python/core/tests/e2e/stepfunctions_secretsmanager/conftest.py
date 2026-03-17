@@ -75,16 +75,11 @@ def sm_is_active_given():
 
 @given("the state machine is not \"ACTIVE\"")
 def sm_is_not_active_given(lws_session, world):
-    import httpx
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"stepfunctions": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("stepfunctions").create_dwell_ms(5000).apply()
     _create_sm(lws_session)
     world["result"] = None
     world["error"] = None
@@ -129,16 +124,11 @@ def secret_is_active_given():
 
 @given("the secret is not \"ACTIVE\"")
 def secret_is_not_active_given(lws_session, world):
-    import httpx
     try:
         _sm_client(lws_session).delete_secret(SecretId=TEST_SECRET, ForceDeleteWithoutRecovery=True)
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"secretsmanager": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("secretsmanager").create_dwell_ms(5000).apply()
     _create_secret(lws_session)
     world["result"] = None
     world["error"] = None

@@ -1,4 +1,4 @@
-"""Load all Step Functions informal spec scenarios (excluding invariant-only and sequences files)."""
+"""Load all Step Functions informal spec scenarios (excluding invariant-only and sequences files)."""  # noqa: E501
 
 from __future__ import annotations
 

@@ -17,6 +17,7 @@ from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
+from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 
@@ -461,6 +462,93 @@ _ACTION_HANDLERS: dict[str, Any] = {
 }
 
 
+# Actions that require the secret to be ACTIVE (not in a transient lifecycle state)
+_SECRET_ID_ACTIONS = {
+    "GetSecretValue", "DescribeSecret", "PutSecretValue", "UpdateSecret",
+    "ListSecretVersionIds", "GetResourcePolicy", "TagResource", "UntagResource",
+    "RestoreSecret",
+}
+
+
+def _check_secret_lifecycle(
+    action: str,
+    body: dict,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response | None:
+    if not lc.enabled or action not in _SECRET_ID_ACTIONS:
+        return None
+    secret_id = body.get("SecretId", "")
+    if not secret_id:
+        return None
+    secret_name = secret_id.rsplit(":", 1)[-1] if ":" in secret_id else secret_id
+    state_val = tracker.get_state(secret_name)
+    if state_val in ("CREATING", "DELETING"):
+        return Response(
+            content=json.dumps({
+                "__type": "ResourceNotFoundException",
+                "message": f"Secret {secret_name} not found (status: {state_val})",
+            }),
+            status_code=400,
+            media_type="application/json",
+        )
+    return None
+
+
+async def _secretsmanager_dispatch(
+    request: Request,
+    state: _SecretsState,
+    lc: ResourceLifecycleConfig,
+    tracker: ResourceStateTracker,
+) -> Response:
+    target = request.headers.get("x-amz-target", "")
+    body = await parse_json_body(request)
+    action = resolve_api_action(target, body)
+
+    err = _check_secret_lifecycle(action, body, lc, tracker)
+    if err is not None:
+        return err
+
+    handler = _ACTION_HANDLERS.get(action)
+    if handler is None:
+        _logger.warning("Unknown Secrets Manager action: %s", action)
+        return _error_response(
+            "InvalidAction",
+            f"lws: Secrets Manager operation '{action}' is not yet implemented",
+        )
+
+    if action == "CreateSecret" and lc.enabled and lc.create_dwell_ms > 0:
+        resp = await handler(state, body)
+        if resp.status_code == 200:
+            secret_name = body.get("Name", "")
+            tracker.set_state(secret_name, "CREATING")
+            tracker.schedule_transition(secret_name, "ACTIVE", lc.create_dwell_ms)
+        return resp
+
+    if action == "DeleteSecret" and lc.enabled:
+        secret_id = body.get("SecretId", "")
+        secret_name = secret_id.rsplit(":", 1)[-1] if ":" in secret_id else secret_id
+        if tracker.get_state(secret_name) == "CREATING":
+            return Response(
+                content=json.dumps({
+                    "__type": "ResourceInUseException",
+                    "message": f"Secret {secret_id} is still being created",
+                }),
+                status_code=400,
+                media_type="application/json",
+            )
+        resp = await handler(state, body)
+        if resp.status_code == 200:
+            if lc.delete_dwell_ms > 0:
+                tracker.set_state(secret_name, "DELETING")
+                tracker.schedule_transition(secret_name, None, lc.delete_dwell_ms)
+            else:
+                tracker.remove(secret_name)
+        return resp
+
+    return await handler(state, body)
+
+
 # ------------------------------------------------------------------
 # App factory
 # ------------------------------------------------------------------
@@ -479,7 +567,6 @@ def create_secretsmanager_app(
     Returns a tuple of (app, state) so callers can retain a reference to the
     state object for lifecycle management (e.g. reset).
     """
-    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
 
@@ -513,75 +600,8 @@ def create_secretsmanager_app(
                 secret.current_version_id = version_id
             state.secrets[secret.name] = secret
 
-    # Actions that require the secret to be ACTIVE (not in a transient lifecycle state)
-    _SECRET_ID_ACTIONS = {
-        "GetSecretValue", "DescribeSecret", "PutSecretValue", "UpdateSecret",
-        "ListSecretVersionIds", "GetResourcePolicy", "TagResource", "UntagResource",
-        "RestoreSecret",
-    }
-
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        target = request.headers.get("x-amz-target", "")
-        body = await parse_json_body(request)
-        action = resolve_api_action(target, body)
-
-        # Lifecycle check for secret-based operations when lifecycle is enabled
-        if _lc.enabled and action in _SECRET_ID_ACTIONS:
-            secret_id = body.get("SecretId", "")
-            if secret_id:
-                # Resolve the name from ARN if needed
-                secret_name = secret_id.rsplit(":", 1)[-1] if ":" in secret_id else secret_id
-                state_val = _tracker.get_state(secret_name)
-                if state_val in ("CREATING", "DELETING"):
-                    return Response(
-                        content=json.dumps({
-                            "__type": "ResourceNotFoundException",
-                            "message": f"Secret {secret_name} not found (status: {state_val})",
-                        }),
-                        status_code=400,
-                        media_type="application/json",
-                    )
-
-        handler = _ACTION_HANDLERS.get(action)
-        if handler is None:
-            _logger.warning("Unknown Secrets Manager action: %s", action)
-            return _error_response(
-                "InvalidAction",
-                f"lws: Secrets Manager operation '{action}' is not yet implemented",
-            )
-
-        # Lifecycle-aware create handling
-        if action == "CreateSecret" and _lc.enabled and _lc.create_dwell_ms > 0:
-            resp = await handler(state, body)
-            if resp.status_code == 200:
-                secret_name = body.get("Name", "")
-                _tracker.set_state(secret_name, "CREATING")
-                _tracker.schedule_transition(secret_name, "ACTIVE", _lc.create_dwell_ms)
-            return resp
-
-        # Lifecycle-aware delete handling
-        if action == "DeleteSecret" and _lc.enabled:
-            secret_id = body.get("SecretId", "")
-            secret_name = secret_id.rsplit(":", 1)[-1] if ":" in secret_id else secret_id
-            if _tracker.get_state(secret_name) == "CREATING":
-                return Response(
-                    content=json.dumps({
-                        "__type": "ResourceInUseException",
-                        "message": f"Secret {secret_id} is still being created",
-                    }),
-                    status_code=400,
-                    media_type="application/json",
-                )
-            resp = await handler(state, body)
-            if resp.status_code == 200:
-                if _lc.delete_dwell_ms > 0:
-                    _tracker.set_state(secret_name, "DELETING")
-                    _tracker.schedule_transition(secret_name, None, _lc.delete_dwell_ms)
-                else:
-                    _tracker.remove(secret_name)
-            return resp
-
-        return await handler(state, body)
+        return await _secretsmanager_dispatch(request, state, _lc, _tracker)
 
     return app, state

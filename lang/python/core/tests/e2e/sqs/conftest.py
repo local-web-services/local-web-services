@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import httpx
 import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when
@@ -68,16 +67,11 @@ def queue_is_active_given():
 
 @given('the queue is not "ACTIVE"')
 def queue_is_not_active_given(lws_session):
-    import httpx
     try:
         _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session))
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"sqs": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
     _sqs(lws_session).create_queue(QueueName=TEST_QUEUE)
 
 
@@ -144,16 +138,11 @@ def messages_queue_does_not_exist():
 
 @given('the message\'s queue is not "ACTIVE"')
 def messages_queue_is_not_active(lws_session):
-    import httpx
     try:
         _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session))
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"sqs": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
     _sqs(lws_session).create_queue(QueueName=TEST_QUEUE)
 
 
@@ -206,16 +195,11 @@ def dlq_does_not_exist():
 
 @given('the dead-letter queue is not "ACTIVE"')
 def dlq_is_not_active(lws_session):
-    import httpx
     try:
         _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session, TEST_DLQ))
     except Exception:  # noqa: BLE001
         pass
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"sqs": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
     _sqs(lws_session).create_queue(QueueName=TEST_DLQ)
 
 

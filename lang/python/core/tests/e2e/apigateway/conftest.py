@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import httpx
 import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when
@@ -42,22 +41,14 @@ def api_is_active_given(lws_session):
 @given('the "API" is not "ACTIVE"')
 def api_is_not_active_given(lws_session):
     """Enable lifecycle simulation so the next CreateRestApi call returns CREATING."""
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"apigateway": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("apigateway").create_dwell_ms(5000).apply()
     _create_rest_api(lws_session)
 
 
 @given('the "API" is "CREATING"')
 def api_is_creating_given(lws_session):
     """Enable lifecycle simulation so the next CreateRestApi call returns CREATING."""
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"apigateway": {"enabled": True, "create_dwell_ms": 5000}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("apigateway").create_dwell_ms(5000).apply()
 
 
 @given('the "API" is not "CREATING"')
@@ -281,11 +272,7 @@ def create_rest_api(lws_session, world):
 def activate_rest_api(lws_session, world):
     """Disable lifecycle dwell so the REST API transitions to ACTIVE immediately."""
     import time
-    httpx.post(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle",
-        json={"apigateway": {"enabled": True, "create_dwell_ms": 0}},
-        timeout=5.0,
-    )
+    lws_session.lifecycle("apigateway").create_dwell_ms(0).apply()
     time.sleep(0.2)  # brief wait for async transition to complete
 
 
@@ -383,7 +370,7 @@ def rest_api_is_active_then(lws_session, world):
     resp = client.get_rest_apis()
     actual_apis = resp.get("items", [])
     assert len(actual_apis) >= 1, (
-        f"Expected at least one REST API to be ACTIVE but found none"
+        "Expected at least one REST API to be ACTIVE but found none"
     )
 
 
