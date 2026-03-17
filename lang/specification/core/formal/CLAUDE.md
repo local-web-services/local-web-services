@@ -5,6 +5,10 @@
 FizzBee is a formal methods language for distributed systems. Specs are `.fizz` files
 using Starlark (Python subset) syntax with model-checking extensions.
 
+**Required version: v0.4.0+** — earlier versions do not support `oneof var in collection:` syntax.
+Install: `brew install fizzbee` (ensure it is v0.4.0+, or download from the GitHub releases page).
+CI installs v0.4.0 via the release tarball in `.github/workflows/ci.yml`.
+
 ## Key Syntax
 
 ```fizzbee
