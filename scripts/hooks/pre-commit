@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# Pre-commit hook: runs the same checks as CI, scoped to staged paths.
+# Install via: make install-hooks
+# Bypass via:  git commit --no-verify
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+STAGED=$(git diff --cached --name-only)
+
+if [ -z "$STAGED" ]; then
+  exit 0
+fi
+
+# ── Path detection (mirrors CI dorny/paths-filter) ────────────────────────────
+
+PYTHON_CORE=false
+TYPESCRIPT=false
+JAVA=false
+GO=false
+SPECIFICATION=false
+
+echo "$STAGED" | grep -q "^lang/python/core/"              && PYTHON_CORE=true
+echo "$STAGED" | grep -q "^lang/typescript/"               && TYPESCRIPT=true
+echo "$STAGED" | grep -q "^lang/java/"                     && JAVA=true
+echo "$STAGED" | grep -q "^lang/go/"                       && GO=true
+echo "$STAGED" | grep -q "^lang/specification/core/formal/" && SPECIFICATION=true
+
+FAILED=0
+run() {
+  local label="$1"; shift
+  echo ""
+  echo "── $label ──────────────────────────────────────────"
+  if "$@"; then
+    echo "✓ $label passed"
+  else
+    echo "✗ $label FAILED"
+    FAILED=1
+  fi
+}
+
+# ── Python core ───────────────────────────────────────────────────────────────
+if $PYTHON_CORE; then
+  run "python-core lint"         make -C "$REPO_ROOT/lang/python/core" lint
+  run "python-core format-check" make -C "$REPO_ROOT/lang/python/core" format-check
+  run "python-core test"         make -C "$REPO_ROOT/lang/python/core" test
+  run "python-core test-e2e"     make -C "$REPO_ROOT/lang/python/core" test-e2e
+fi
+
+# ── TypeScript core ───────────────────────────────────────────────────────────
+if $TYPESCRIPT; then
+  run "typescript-core test"     make -C "$REPO_ROOT/lang/typescript/core" test
+fi
+
+# ── Go core ───────────────────────────────────────────────────────────────────
+if $GO; then
+  run "go-core test"             make -C "$REPO_ROOT/lang/go/core" test
+fi
+
+# ── Java core ─────────────────────────────────────────────────────────────────
+if $JAVA; then
+  run "java-core test"           make -C "$REPO_ROOT/lang/java/core" test
+fi
+
+# ── FizzBee formal specs ──────────────────────────────────────────────────────
+if $SPECIFICATION; then
+  if ! command -v fizz &>/dev/null; then
+    echo ""
+    echo "── fizzbee-check (SKIPPED — fizz not in PATH) ───────────────────────"
+  else
+    SPEC_FAILED=0
+    echo ""
+    echo "── fizzbee-check ─────────────────────────────────────────────────────"
+    while IFS= read -r spec; do
+      echo "  Checking: $spec"
+      if ! timeout 120 fizz "$REPO_ROOT/$spec"; then
+        echo "  FAILED: $spec"
+        SPEC_FAILED=1
+      fi
+    done < <(echo "$STAGED" | grep '\.fizz$')
+    if [ $SPEC_FAILED -eq 0 ]; then
+      echo "✓ fizzbee-check passed"
+    else
+      echo "✗ fizzbee-check FAILED"
+      FAILED=1
+    fi
+  fi
+fi
+
+# ── Result ────────────────────────────────────────────────────────────────────
+echo ""
+if [ $FAILED -ne 0 ]; then
+  echo "Pre-commit checks FAILED. Fix the issues above or use git commit --no-verify to skip."
+  exit 1
+fi
+echo "All pre-commit checks passed."

@@ -1,4 +1,4 @@
-.PHONY: gherkin gherkin-minimal gherkin-standard gherkin-exhaustive sloc test-e2e
+.PHONY: gherkin gherkin-minimal gherkin-standard gherkin-exhaustive sloc test-e2e install-hooks
 
 define run_gherkin
 	@for spec in lang/specification/core/formal/*/*.fizz lang/specification/core/formal/integrations/*/*.fizz; do \
@@ -24,6 +24,11 @@ test-e2e:
 	$(MAKE) -C lang/go test-e2e
 	$(MAKE) -C lang/java test-e2e
 	$(MAKE) -C lang/typescript test-e2e
+
+# Install git hooks from scripts/hooks/ into .git/hooks/
+install-hooks:
+	@ln -sf "$(shell pwd)/scripts/hooks/pre-commit" .git/hooks/pre-commit
+	@echo "Installed pre-commit hook."
 
 # Count source lines of code across the project
 sloc:
