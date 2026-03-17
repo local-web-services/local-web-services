@@ -470,6 +470,7 @@ async def _s3tables_create_table_bucket(
     if lc.enabled and lc.create_dwell_ms > 0:
         try:
             import json as _json
+
             raw = await request.body()
             bucket_name = _json.loads(raw).get("name", "")
         except Exception:

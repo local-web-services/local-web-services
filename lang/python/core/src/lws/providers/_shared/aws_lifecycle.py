@@ -22,8 +22,8 @@ class ResourceLifecycleConfig:
     """Lifecycle simulation configuration for an AWS service provider."""
 
     enabled: bool = False
-    create_dwell_ms: int = 0   # ms to spend in CREATING before ACTIVE
-    delete_dwell_ms: int = 0   # ms to spend in DELETING before removal
+    create_dwell_ms: int = 0  # ms to spend in CREATING before ACTIVE
+    delete_dwell_ms: int = 0  # ms to spend in DELETING before removal
     _trackers: list = field(default_factory=list, init=False, repr=False, compare=False)
 
     def reset_all_trackers(self) -> None:

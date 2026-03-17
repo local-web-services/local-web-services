@@ -726,9 +726,9 @@ async def _get_bucket(bucket: str, request: Request, provider: S3Provider) -> Re
         if status:
             body = (
                 '<?xml version="1.0" encoding="UTF-8"?>'
-                '<VersioningConfiguration>'
-                f'<Status>{_xml_escape(status)}</Status>'
-                '</VersioningConfiguration>'
+                "<VersioningConfiguration>"
+                f"<Status>{_xml_escape(status)}</Status>"
+                "</VersioningConfiguration>"
             )
         else:
             body = '<?xml version="1.0" encoding="UTF-8"?><VersioningConfiguration/>'
@@ -928,6 +928,7 @@ def _register_object_routes(
 ) -> None:
     """Register object-level S3 routes on *app*."""
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+
     _lc = lc or ResourceLifecycleConfig()
     _tracker = tracker or ResourceStateTracker(_lc)
 
@@ -1025,6 +1026,7 @@ def _register_bucket_routes(
 ) -> None:
     """Register bucket-level S3 routes on *app*."""
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+
     _lc = lc or ResourceLifecycleConfig()
     _tracker = tracker or ResourceStateTracker(_lc)
 
@@ -1069,6 +1071,7 @@ def create_s3_app(
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
 

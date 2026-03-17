@@ -23,6 +23,7 @@ def _create_rest_api(lws_session, name=TEST_API_NAME):
 
 # ── Given: API state setup ─────────────────────────────────────────────
 
+
 @given('the "API" does not exist')
 def api_does_not_exist():
     """No-op: fresh state after reset has no REST APIs."""
@@ -126,7 +127,7 @@ def resource_slot_unallocated():
     """No-op: fresh state has no allocated resource slots."""
 
 
-@given("the method \"EXISTS\"")
+@given('the method "EXISTS"')
 def method_exists(lws_session):
     """No-op: method existence is verified after API creation in the test."""
 
@@ -146,17 +147,17 @@ def method_does_not_have_integration():
     """No-op: fresh state has no integrations."""
 
 
-@given("the method has an \"API\" association")
+@given('the method has an "API" association')
 def method_has_api_association():
     """No-op: methods implicitly belong to an API in lws."""
 
 
-@given("the method does not have an \"API\" association")
+@given('the method does not have an "API" association')
 def method_does_not_have_api_association():
     pytest.skip("Cannot create a method without an API association in this abstract context")
 
 
-@given("the integration \"EXISTS\"")
+@given('the integration "EXISTS"')
 def integration_exists(lws_session):
     """No-op: integration existence is verified after setup in the test."""
 
@@ -166,22 +167,22 @@ def integration_does_not_exist():
     """No-op: fresh state has no integrations."""
 
 
-@given("the deployment is \"ACTIVE\"")
+@given('the deployment is "ACTIVE"')
 def deployment_is_active_given():
     """No-op: deployments are ACTIVE immediately after creation."""
 
 
-@given("the deployment is not \"ACTIVE\"")
+@given('the deployment is not "ACTIVE"')
 def deployment_is_not_active_given():
     pytest.skip("Cannot set deployment to non-ACTIVE state in this abstract context")
 
 
-@given("the dev stage already exists for this \"API\"")
+@given('the dev stage already exists for this "API"')
 def dev_stage_already_exists(lws_session):
     """No-op: stage existence is verified in the test setup."""
 
 
-@given("the dev stage does not already exist for this \"API\"")
+@given('the dev stage does not already exist for this "API"')
 def dev_stage_does_not_exist():
     """No-op: fresh state has no stages."""
 
@@ -206,12 +207,12 @@ def dev_stage_is_not_active():
     pytest.skip("Cannot set stage to non-active state in this abstract context")
 
 
-@given("the prod stage already exists for this \"API\"")
+@given('the prod stage already exists for this "API"')
 def prod_stage_already_exists(lws_session):
     """No-op: stage existence is verified in the test setup."""
 
 
-@given("the prod stage does not already exist for this \"API\"")
+@given('the prod stage does not already exist for this "API"')
 def prod_stage_does_not_exist():
     """No-op: fresh state has no stages."""
 
@@ -258,6 +259,7 @@ def throttling_not_enabled_prod():
 
 # ── When: actions ──────────────────────────────────────────────────────
 
+
 @when("a REST API is created")
 def create_rest_api(lws_session, world):
     try:
@@ -272,6 +274,7 @@ def create_rest_api(lws_session, world):
 def activate_rest_api(lws_session, world):
     """Disable lifecycle dwell so the REST API transitions to ACTIVE immediately."""
     import time
+
     lws_session.lifecycle("apigateway").create_dwell_ms(0).apply()
     time.sleep(0.2)  # brief wait for async transition to complete
 
@@ -320,13 +323,14 @@ def get_rest_api(lws_session, world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then("the REST API is created")
 def rest_api_is_created_then(world):
     expected_field = "id"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected REST API creation result with 'id' key but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected REST API creation result with 'id' key but got: {actual_result}"
 
 
 @then("the REST API is deleted")
@@ -334,27 +338,25 @@ def rest_api_is_deleted_then(lws_session):
     client = _apigw(lws_session)
     resp = client.get_rest_apis()
     actual_apis = resp.get("items", [])
-    assert len(actual_apis) == 0, (
-        f"Expected no REST APIs after deletion but found: {actual_apis}"
-    )
+    assert len(actual_apis) == 0, f"Expected no REST APIs after deletion but found: {actual_apis}"
 
 
 @then("all REST APIs are listed")
 def all_rest_apis_listed_then(world):
     expected_field = "items"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected REST API list with 'items' key but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected REST API list with 'items' key but got: {actual_result}"
 
 
 @then("the REST API is retrieved")
 def rest_api_is_retrieved_then(world):
     expected_field = "id"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected REST API retrieval result with 'id' key but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected REST API retrieval result with 'id' key but got: {actual_result}"
 
 
 @then('the REST API is in "CREATING" state')
@@ -369,9 +371,7 @@ def rest_api_is_active_then(lws_session, world):
     client = _apigw(lws_session)
     resp = client.get_rest_apis()
     actual_apis = resp.get("items", [])
-    assert len(actual_apis) >= 1, (
-        "Expected at least one REST API to be ACTIVE but found none"
-    )
+    assert len(actual_apis) >= 1, "Expected at least one REST API to be ACTIVE but found none"
 
 
 @then('every "API" has a valid status ("CREATING", "ACTIVE", or "DELETED")')
@@ -404,11 +404,11 @@ def all_active_deployments_belong_to_active_apis():
     """No-op: deployment-API membership is an internal invariant in lws; always passes."""
 
 
-@then("all active stages belong to \"ACTIVE\" APIs")
+@then('all active stages belong to "ACTIVE" APIs')
 def all_active_stages_belong_to_active_apis():
     """No-op: stage-API membership is an internal invariant in lws; always passes."""
 
 
-@then("all active stages reference \"ACTIVE\" deployments")
+@then('all active stages reference "ACTIVE" deployments')
 def all_active_stages_reference_active_deployments():
     """No-op: stage-deployment references are an internal invariant in lws; always passes."""

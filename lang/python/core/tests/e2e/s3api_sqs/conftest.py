@@ -34,6 +34,7 @@ def _create_queue(lws_session, name=TEST_QUEUE):
 
 # ── Given: bucket state ────────────────────────────────────────────────
 
+
 @given("the bucket does not already exist")
 def bucket_not_already_exist():
     """No-op: fresh state has no buckets."""
@@ -44,22 +45,22 @@ def bucket_already_exists(lws_session):
     _create_bucket(lws_session)
 
 
-@given("the bucket exists and is \"ACTIVE\"")
+@given('the bucket exists and is "ACTIVE"')
 def bucket_exists_and_is_active(lws_session):
     _create_bucket(lws_session)
 
 
-@given("the bucket does not exist or is not \"ACTIVE\"")
+@given('the bucket does not exist or is not "ACTIVE"')
 def bucket_not_exist_or_not_active():
     """No-op: fresh state has no buckets."""
 
 
-@given("the bucket is \"ACTIVE\"")
+@given('the bucket is "ACTIVE"')
 def bucket_is_active_given():
     """No-op: buckets are ACTIVE by default after creation."""
 
 
-@given("the bucket is not \"ACTIVE\"")
+@given('the bucket is not "ACTIVE"')
 def bucket_is_not_active_given(lws_session, world):
     lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
@@ -68,6 +69,7 @@ def bucket_is_not_active_given(lws_session, world):
 
 
 # ── Given: notification config state ──────────────────────────────────
+
 
 @given("the bucket has no notification configuration")
 def bucket_has_no_notification():
@@ -86,6 +88,7 @@ def bucket_has_notification():
 
 # ── Given: queue state ────────────────────────────────────────────────
 
+
 @given("the queue does not already exist")
 def queue_not_already_exist():
     """No-op: fresh state has no queues."""
@@ -101,22 +104,22 @@ def queue_exists(lws_session):
     _create_queue(lws_session)
 
 
-@given("the queue exists and is \"ACTIVE\"")
+@given('the queue exists and is "ACTIVE"')
 def queue_exists_and_is_active(lws_session):
     _create_queue(lws_session)
 
 
-@given("the queue does not exist or is not \"ACTIVE\"")
+@given('the queue does not exist or is not "ACTIVE"')
 def queue_not_exist_or_not_active():
     """No-op: fresh state has no queues."""
 
 
-@given("the queue is \"ACTIVE\"")
+@given('the queue is "ACTIVE"')
 def queue_is_active_given():
     """No-op: queues are ACTIVE by default after creation."""
 
 
-@given("the queue is already \"DELETED\"")
+@given('the queue is already "DELETED"')
 def queue_is_already_deleted(lws_session, world):
     try:
         _create_queue(lws_session)
@@ -133,12 +136,12 @@ def queue_does_not_exist():
     """No-op: fresh state has no queues."""
 
 
-@given("the target queue is \"ACTIVE\"")
+@given('the target queue is "ACTIVE"')
 def target_queue_is_active():
     """No-op: queues are ACTIVE by default after creation."""
 
 
-@given("the target queue is \"DELETED\"")
+@given('the target queue is "DELETED"')
 def target_queue_is_deleted(lws_session, world):
     try:
         _create_queue(lws_session)
@@ -150,12 +153,13 @@ def target_queue_is_deleted(lws_session, world):
     world["error"] = None
 
 
-@given("the target queue is not \"DELETED\"")
+@given('the target queue is not "DELETED"')
 def target_queue_is_not_deleted(lws_session):
     _create_queue(lws_session)
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an object slot is available")
 def object_slot_available():
@@ -179,6 +183,7 @@ def no_message_slot_available():
 
 # ── When: actions ──────────────────────────────────────────────────────
 
+
 @when("an S3 bucket is created")
 def create_s3_bucket(lws_session, world):
     try:
@@ -189,7 +194,7 @@ def create_s3_bucket(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SQS\" queue is created")
+@when('an "SQS" queue is created')
 def create_sqs_queue(lws_session, world):
     try:
         world["result"] = _sqs(lws_session).create_queue(QueueName=TEST_QUEUE)
@@ -199,7 +204,7 @@ def create_sqs_queue(lws_session, world):
         world["error"] = exc
 
 
-@when("the \"SQS\" queue is deleted")
+@when('the "SQS" queue is deleted')
 def delete_sqs_queue(lws_session, world):
     try:
         url = _queue_url(lws_session)
@@ -210,12 +215,12 @@ def delete_sqs_queue(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SQS\" notification configuration is added to the bucket")
+@when('an "SQS" notification configuration is added to the bucket')
 def add_sqs_notification_config(world):
     pytest.skip("Cannot configure SQS bucket notifications in lws")
 
 
-@when("an object is uploaded to the bucket and S3 delivers a notification to the \"SQS\" queue")
+@when('an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue')
 def put_object_with_sqs_notification(lws_session, world):
     pytest.skip("Cannot configure S3 SQS notifications in lws")
 
@@ -227,29 +232,28 @@ def put_object_notification_fails(lws_session, world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the bucket is \"ACTIVE\" with no notification configuration")
+
+@then('the bucket is "ACTIVE" with no notification configuration')
 def bucket_active_no_notification(lws_session):
     resp = _s3(lws_session).list_buckets()
     actual_buckets = [b["Name"] for b in resp.get("Buckets", [])]
-    assert TEST_BUCKET in actual_buckets, (
-        f"Expected bucket '{TEST_BUCKET}' to exist but not found in: {actual_buckets}"
-    )
+    assert (
+        TEST_BUCKET in actual_buckets
+    ), f"Expected bucket '{TEST_BUCKET}' to exist but not found in: {actual_buckets}"
 
 
-@then("the queue is \"ACTIVE\"")
+@then('the queue is "ACTIVE"')
 def queue_is_active_then(lws_session):
     url = _queue_url(lws_session)
     resp = _sqs(lws_session).get_queue_attributes(QueueUrl=url, AttributeNames=["All"])
-    assert resp.get("Attributes") is not None, (
-        f"Expected queue '{TEST_QUEUE}' to be ACTIVE but got no attributes"
-    )
+    assert (
+        resp.get("Attributes") is not None
+    ), f"Expected queue '{TEST_QUEUE}' to be ACTIVE but got no attributes"
 
 
-@then("the queue is \"DELETED\" and notification delivery to it will fail")
+@then('the queue is "DELETED" and notification delivery to it will fail')
 def queue_is_deleted_then(world):
-    assert world["error"] is None, (
-        f"Expected delete_queue to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected delete_queue to succeed but got: {world['error']}"
 
 
 @then("the bucket will send notifications to the queue when objects are uploaded")
@@ -257,13 +261,11 @@ def bucket_will_send_notifications(world):
     pytest.skip("Cannot observe SQS notification configuration in lws")
 
 
-@then("the object \"EXISTS\" but no notification message is delivered")
+@then('the object "EXISTS" but no notification message is delivered')
 def object_exists_but_no_notification(lws_session):
     pytest.skip("Cannot observe missing SQS notification in lws")
 
 
-@then("the object \"EXISTS\" and a notification message is \"QUEUED\"")
+@then('the object "EXISTS" and a notification message is "QUEUED"')
 def object_exists_and_notification_queued(lws_session):
     pytest.skip("Cannot observe SQS notification delivery in lws")
-
-

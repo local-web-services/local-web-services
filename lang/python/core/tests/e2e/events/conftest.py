@@ -42,6 +42,7 @@ def _put_target(lws_session, bus_name=TEST_BUS, rule_name=TEST_RULE):
 
 # ── Given: event bus state setup ───────────────────────────────────────
 
+
 @given("the event bus does not already exist")
 def bus_not_already_exist():
     """No-op: fresh state has no custom event buses."""
@@ -99,6 +100,7 @@ def bus_has_rules(lws_session):
 
 
 # ── Given: rule state setup ────────────────────────────────────────────
+
 
 @given("the rule does not already exist")
 def rule_not_already_exist():
@@ -217,6 +219,7 @@ def rule_has_active_targets(lws_session):
 
 # ── Given: target state setup ──────────────────────────────────────────
 
+
 @given("a target is associated with the rule")
 def target_associated_with_rule(lws_session):
     _put_target(lws_session)
@@ -251,9 +254,7 @@ def target_association_not_active():
 
     Skip the negative scenario as target associations are always active once created.
     """
-    pytest.skip(
-        "Target associations have no non-active state in this implementation"
-    )
+    pytest.skip("Target associations have no non-active state in this implementation")
 
 
 @given("the target is not associated with the rule")
@@ -262,6 +263,7 @@ def target_not_associated_with_rule():
 
 
 # ── Given: dead-letter queue state ────────────────────────────────────
+
 
 @given("the dead-letter queue is not empty")
 def dlq_not_empty():
@@ -274,6 +276,7 @@ def dlq_is_empty():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("an event bus is created")
 def create_event_bus(lws_session, world):
@@ -458,37 +461,36 @@ def retry_dead_letter(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then('the event bus is "ACTIVE"')
 def event_bus_is_active_then(lws_session):
     resp = _events(lws_session).list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]
-    assert TEST_BUS in actual_names, (
-        f"Expected event bus '{TEST_BUS}' to exist but not found in: {actual_names}"
-    )
+    assert (
+        TEST_BUS in actual_names
+    ), f"Expected event bus '{TEST_BUS}' to exist but not found in: {actual_names}"
 
 
 @then('the event bus is "DELETED"')
 def event_bus_is_deleted_then(lws_session):
     resp = _events(lws_session).list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]
-    assert TEST_BUS not in actual_names, (
-        f"Expected event bus '{TEST_BUS}' to be deleted but found in: {actual_names}"
-    )
+    assert (
+        TEST_BUS not in actual_names
+    ), f"Expected event bus '{TEST_BUS}' to be deleted but found in: {actual_names}"
 
 
 @then("the event bus details are returned")
 def event_bus_details_returned(world):
-    assert world["error"] is None, (
-        f"Expected describe_event_bus to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected describe_event_bus to succeed but got: {world['error']}"
     assert "Name" in world["result"], "Expected 'Name' key in response"
 
 
 @then("the list of event buses is returned")
 def list_of_event_buses_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_event_buses to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected list_event_buses to succeed but got: {world['error']}"
     assert "EventBuses" in world["result"], "Expected 'EventBuses' in response"
 
 
@@ -586,9 +588,9 @@ def rule_is_enabled_then(lws_session):
     resp = _events(lws_session).describe_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
     expected_state = "ENABLED"
     actual_state = resp.get("State", "")
-    assert actual_state == expected_state, (
-        f"Expected rule state '{expected_state}' but got '{actual_state}'"
-    )
+    assert (
+        actual_state == expected_state
+    ), f"Expected rule state '{expected_state}' but got '{actual_state}'"
 
 
 @then('the rule is "DISABLED"')
@@ -596,65 +598,51 @@ def rule_is_disabled_then(lws_session):
     resp = _events(lws_session).describe_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
     expected_state = "DISABLED"
     actual_state = resp.get("State", "")
-    assert actual_state == expected_state, (
-        f"Expected rule state '{expected_state}' but got '{actual_state}'"
-    )
+    assert (
+        actual_state == expected_state
+    ), f"Expected rule state '{expected_state}' but got '{actual_state}'"
 
 
 @then('the rule is "DELETED"')
 def rule_is_deleted_then(world):
-    assert world["error"] is None, (
-        f"Expected delete_rule to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected delete_rule to succeed but got: {world['error']}"
 
 
 @then("the rule details are returned")
 def rule_details_returned(world):
-    assert world["error"] is None, (
-        f"Expected describe_rule to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected describe_rule to succeed but got: {world['error']}"
     assert "Name" in world["result"], "Expected 'Name' key in response"
 
 
 @then("the list of rules is returned")
 def list_of_rules_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_rules to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected list_rules to succeed but got: {world['error']}"
     assert "Rules" in world["result"], "Expected 'Rules' in response"
 
 
 @then("the targets are associated with the rule")
 def targets_associated_with_rule(world):
-    assert world["error"] is None, (
-        f"Expected put_targets to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected put_targets to succeed but got: {world['error']}"
 
 
 @then("the list of targets is returned")
 def list_of_targets_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_targets_by_rule to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected list_targets_by_rule to succeed but got: {world['error']}"
     assert "Targets" in world["result"], "Expected 'Targets' in response"
 
 
 @then("the targets are disassociated from the rule")
 def targets_disassociated_from_rule(world):
-    assert world["error"] is None, (
-        f"Expected remove_targets to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected remove_targets to succeed but got: {world['error']}"
 
 
 @then("matching enabled rules route the event to their targets")
 def matching_rules_route_events(world):
-    assert world["error"] is None, (
-        f"Expected put_events to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected put_events to succeed but got: {world['error']}"
     actual_failed = world["result"].get("FailedEntryCount", -1)
-    assert actual_failed == 0, (
-        f"Expected FailedEntryCount == 0 but got: {actual_failed}"
-    )
+    assert actual_failed == 0, f"Expected FailedEntryCount == 0 but got: {actual_failed}"
 
 
 @then("the entry is removed from the dead-letter queue")

@@ -49,6 +49,7 @@ def _create_table(lws_session, name=TEST_TABLE):
 
 # ── Given: bus state ───────────────────────────────────────────────────
 
+
 @given("the bus does not already exist")
 def bus_not_already_exist():
     """No-op: fresh state has no custom buses."""
@@ -64,17 +65,18 @@ def bus_exists(lws_session):
     _create_bus(lws_session)
 
 
-@given("the bus exists and is \"ACTIVE\"")
+@given('the bus exists and is "ACTIVE"')
 def bus_exists_and_is_active(lws_session):
     _create_bus(lws_session)
 
 
-@given("the bus does not exist or is not \"ACTIVE\"")
+@given('the bus does not exist or is not "ACTIVE"')
 def bus_not_exist_or_not_active():
     """No-op: fresh state has no buses, which satisfies this precondition."""
 
 
 # ── Given: rule state ──────────────────────────────────────────────────
+
 
 @given("the rule does not already exist")
 def rule_not_already_exist():
@@ -97,38 +99,39 @@ def rule_does_not_exist():
     """No-op: fresh state has no rules."""
 
 
-@given("the rule is \"ENABLED\"")
+@given('the rule is "ENABLED"')
 def rule_is_enabled_given():
     """No-op: rules are ENABLED by default."""
 
 
-@given("the rule is \"DISABLED\"")
+@given('the rule is "DISABLED"')
 def rule_is_disabled_given(lws_session):
     _events(lws_session).disable_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
 
 
-@given("a rule is \"ENABLED\"")
+@given('a rule is "ENABLED"')
 def a_rule_is_enabled(lws_session):
     _create_bus(lws_session)
     _create_rule(lws_session)
 
 
-@given("no rule is \"ENABLED\"")
+@given('no rule is "ENABLED"')
 def no_rule_is_enabled():
     """No-op: fresh state has no rules."""
 
 
-@given("the rule is already \"DISABLED\"")
+@given('the rule is already "DISABLED"')
 def rule_is_already_disabled(lws_session):
     _events(lws_session).disable_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
 
 
-@given("the rule is already \"ENABLED\"")
+@given('the rule is already "ENABLED"')
 def rule_is_already_enabled():
     """No-op: rules are ENABLED by default after creation by 'the rule exists' step."""
 
 
 # ── Given: table state ─────────────────────────────────────────────────
+
 
 @given("the table does not already exist")
 def table_not_already_exist():
@@ -145,37 +148,37 @@ def table_exists(lws_session):
     _create_table(lws_session)
 
 
-@given("the table exists and is \"ACTIVE\"")
+@given('the table exists and is "ACTIVE"')
 def table_exists_and_is_active(lws_session):
     _create_table(lws_session)
 
 
-@given("the table does not exist or is not \"ACTIVE\"")
+@given('the table does not exist or is not "ACTIVE"')
 def table_not_exist_or_not_active():
     pytest.skip("lws does not validate DynamoDB target existence when creating a rule")
 
 
-@given("the table is \"ACTIVE\"")
+@given('the table is "ACTIVE"')
 def table_is_active_given():
     """No-op: tables are ACTIVE by default in lws."""
 
 
-@given("the target table is \"ACTIVE\"")
+@given('the target table is "ACTIVE"')
 def target_table_is_active():
     """No-op: tables are ACTIVE by default after creation."""
 
 
-@given("the target table is not \"ACTIVE\"")
+@given('the target table is not "ACTIVE"')
 def target_table_is_not_active():
     """No-op: no table exists, satisfies not-ACTIVE."""
 
 
-@given("the target table is not \"DELETING\"")
+@given('the target table is not "DELETING"')
 def target_table_is_not_deleting():
     """No-op: tables are never in DELETING state in lws."""
 
 
-@given("the target table is \"DELETING\"")
+@given('the target table is "DELETING"')
 def target_table_is_deleting(lws_session, world):
     try:
         _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
@@ -188,7 +191,7 @@ def target_table_is_deleting(lws_session, world):
     world["error"] = None
 
 
-@given("the table is already \"DELETING\"")
+@given('the table is already "DELETING"')
 def table_is_already_deleting(lws_session, world):
     try:
         _dynamo(lws_session).delete_table(TableName=TEST_TABLE)
@@ -207,6 +210,7 @@ def table_does_not_exist():
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an event slot is available")
 def event_slot_available():
@@ -229,6 +233,7 @@ def no_item_slot_available():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("an EventBridge event bus is created")
 def create_event_bus(lws_session, world):
@@ -301,79 +306,74 @@ def enable_rule(lws_session, world):
 
 
 @when(
-    "an event matches an \"ENABLED\" rule but the DynamoDB write fails"
+    'an event matches an "ENABLED" rule but the DynamoDB write fails'
     " because the table is being deleted"
 )
 def event_matches_rule_but_table_deleting(world):
     pytest.skip("Cannot trigger internal event routing to a deleting table in lws")
 
 
-@when("an event matches an \"ENABLED\" rule and EventBridge writes an item to the DynamoDB target")
+@when('an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target')
 def event_matches_rule_and_writes_item(world):
     pytest.skip("Cannot trigger internal EventBridge-to-DynamoDB routing in lws")
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the bus is \"ACTIVE\"")
+
+@then('the bus is "ACTIVE"')
 def bus_is_active_then(lws_session):
     resp = _events(lws_session).list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]
-    assert TEST_BUS in actual_names, (
-        f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
-    )
+    assert (
+        TEST_BUS in actual_names
+    ), f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
 
 
-@then("the table is \"ACTIVE\"")
+@then('the table is "ACTIVE"')
 def table_is_active_then(lws_session):
     resp = _dynamo(lws_session).list_tables()
     actual_tables = resp.get("TableNames", [])
-    assert TEST_TABLE in actual_tables, (
-        f"Expected table '{TEST_TABLE}' to be ACTIVE but not found in: {actual_tables}"
-    )
+    assert (
+        TEST_TABLE in actual_tables
+    ), f"Expected table '{TEST_TABLE}' to be ACTIVE but not found in: {actual_tables}"
 
 
-@then("the table is \"DELETING\" and item writes to it will fail")
+@then('the table is "DELETING" and item writes to it will fail')
 def table_is_deleting_then(world):
-    assert world["error"] is None, (
-        f"Expected delete_table to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected delete_table to succeed but got: {world['error']}"
 
 
-@then("the rule is \"DISABLED\" on the bus with the DynamoDB target configured")
+@then('the rule is "DISABLED" on the bus with the DynamoDB target configured')
 def rule_disabled_with_dynamo_target(world):
-    assert world["error"] is None, (
-        f"Expected put_rule to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected put_rule to succeed but got: {world['error']}"
 
 
-@then("the rule is \"DISABLED\" and will not match events")
+@then('the rule is "DISABLED" and will not match events')
 def rule_is_disabled_then(lws_session):
     resp = _events(lws_session).describe_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
     expected_state = "DISABLED"
     actual_state = resp.get("State", "")
-    assert actual_state == expected_state, (
-        f"Expected rule state '{expected_state}' but got '{actual_state}'"
-    )
+    assert (
+        actual_state == expected_state
+    ), f"Expected rule state '{expected_state}' but got '{actual_state}'"
 
 
-@then("the rule is \"ENABLED\" and will match events")
+@then('the rule is "ENABLED" and will match events')
 def rule_is_enabled_then(lws_session):
     resp = _events(lws_session).describe_rule(Name=TEST_RULE, EventBusName=TEST_BUS)
     expected_state = "ENABLED"
     actual_state = resp.get("State", "")
-    assert actual_state == expected_state, (
-        f"Expected rule state '{expected_state}' but got '{actual_state}'"
-    )
+    assert (
+        actual_state == expected_state
+    ), f"Expected rule state '{expected_state}' but got '{actual_state}'"
 
 
-@then("the event is \"MATCHED\" but no item is written")
+@then('the event is "MATCHED" but no item is written')
 def event_matched_but_no_item_written(world):
     pytest.skip("Cannot observe internal event matching state in lws")
 
 
-@then("the item \"EXISTS\" in the table and the event is recorded as \"MATCHED\"")
+@then('the item "EXISTS" in the table and the event is recorded as "MATCHED"')
 def item_exists_and_event_matched(world):
     pytest.skip("Cannot observe internal event routing result in lws")
-
-

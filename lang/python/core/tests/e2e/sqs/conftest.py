@@ -45,6 +45,7 @@ def _receive_message(lws_session, name=TEST_QUEUE):
 
 # ── Given: queue state setup ──────────────────────────────────────────
 
+
 @given("the queue does not already exist")
 def queue_not_already_exist():
     """No-op: fresh state after reset has no queues."""
@@ -86,6 +87,7 @@ def queue_does_not_exist(lws_session):
 
 
 # ── Given: message state setup ────────────────────────────────────────
+
 
 @given("the message does not exist")
 def message_does_not_exist():
@@ -158,6 +160,7 @@ def message_slot_not_available():
 
 # ── Given: DLQ / redrive setup ────────────────────────────────────────
 
+
 @given("the queue has a maximum receive count configured")
 def queue_has_max_receive_count():
     pytest.skip("Cannot configure DLQ redrive policy in this abstract context")
@@ -205,6 +208,7 @@ def dlq_is_not_active(lws_session):
 
 # ── When: actions ──────────────────────────────────────────────────────
 
+
 @when("a queue is created")
 def create_queue(lws_session, world):
     try:
@@ -218,9 +222,7 @@ def create_queue(lws_session, world):
 @when("a queue is deleted")
 def delete_queue(lws_session, world):
     try:
-        world["result"] = _sqs(lws_session).delete_queue(
-            QueueUrl=_queue_url(lws_session)
-        )
+        world["result"] = _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session))
         world["error"] = None
     except (ClientError, Exception) as exc:
         world["result"] = None
@@ -289,9 +291,7 @@ def change_message_visibility(lws_session, world):
 @when("all messages in a queue are purged")
 def purge_queue(lws_session, world):
     try:
-        world["result"] = _sqs(lws_session).purge_queue(
-            QueueUrl=_queue_url(lws_session)
-        )
+        world["result"] = _sqs(lws_session).purge_queue(QueueUrl=_queue_url(lws_session))
         world["error"] = None
     except (ClientError, Exception) as exc:
         world["result"] = None
@@ -333,14 +333,15 @@ def redrive_to_dlq(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then('the queue is "ACTIVE"')
 def queue_is_active_then(lws_session):
     client = _sqs(lws_session)
     resp = client.list_queues(QueueNamePrefix=TEST_QUEUE)
     actual_urls = resp.get("QueueUrls", [])
-    assert any(TEST_QUEUE in u for u in actual_urls), (
-        f"Expected queue '{TEST_QUEUE}' to be ACTIVE but not found in: {actual_urls}"
-    )
+    assert any(
+        TEST_QUEUE in u for u in actual_urls
+    ), f"Expected queue '{TEST_QUEUE}' to be ACTIVE but not found in: {actual_urls}"
 
 
 @then('the queue is "DELETED" and its messages are removed')
@@ -348,9 +349,9 @@ def queue_is_deleted_then(lws_session):
     client = _sqs(lws_session)
     resp = client.list_queues(QueueNamePrefix=TEST_QUEUE)
     actual_urls = resp.get("QueueUrls", [])
-    assert not any(TEST_QUEUE in u for u in actual_urls), (
-        f"Expected queue '{TEST_QUEUE}' to be deleted but found: {actual_urls}"
-    )
+    assert not any(
+        TEST_QUEUE in u for u in actual_urls
+    ), f"Expected queue '{TEST_QUEUE}' to be deleted but found: {actual_urls}"
 
 
 @then('the message is "AVAILABLE" for delivery')
@@ -358,9 +359,9 @@ def message_is_available_then(lws_session):
     msg = _receive_message(lws_session)
     expected_body = TEST_MESSAGE
     actual_body = msg["Body"] if msg else None
-    assert actual_body == expected_body, (
-        f"Expected message body '{expected_body}' but got '{actual_body}'"
-    )
+    assert (
+        actual_body == expected_body
+    ), f"Expected message body '{expected_body}' but got '{actual_body}'"
 
 
 @then('the message is "IN_FLIGHT"')
@@ -372,9 +373,7 @@ def message_is_in_flight_then(lws_session):
     )
     expected_count = "1"
     actual_count = resp["Attributes"].get("ApproximateNumberOfMessagesNotVisible", "0")
-    assert actual_count == expected_count, (
-        f"Expected 1 in-flight message but got {actual_count}"
-    )
+    assert actual_count == expected_count, f"Expected 1 in-flight message but got {actual_count}"
 
 
 @then("the message is removed from the queue")
@@ -385,9 +384,9 @@ def message_is_removed_then(lws_session):
 
 @then("the message visibility is updated")
 def message_visibility_updated_then(world):
-    assert world["error"] is None, (
-        f"Expected visibility update to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected visibility update to succeed but got: {world['error']}"
 
 
 @then('all messages in the queue are "DELETED"')
@@ -399,18 +398,16 @@ def all_messages_deleted_then(lws_session):
     )
     expected_count = "0"
     actual_count = resp["Attributes"].get("ApproximateNumberOfMessages", "0")
-    assert actual_count == expected_count, (
-        f"Expected 0 messages after purge but got {actual_count}"
-    )
+    assert actual_count == expected_count, f"Expected 0 messages after purge but got {actual_count}"
 
 
 @then("the queue attributes are returned")
 def queue_attributes_returned_then(world):
     expected_field = "Attributes"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected queue attributes in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected queue attributes in result but got: {actual_result}"
 
 
 @then('the message becomes "AVAILABLE" again')

@@ -464,8 +464,14 @@ _ACTION_HANDLERS: dict[str, Any] = {
 
 # Actions that require the secret to be ACTIVE (not in a transient lifecycle state)
 _SECRET_ID_ACTIONS = {
-    "GetSecretValue", "DescribeSecret", "PutSecretValue", "UpdateSecret",
-    "ListSecretVersionIds", "GetResourcePolicy", "TagResource", "UntagResource",
+    "GetSecretValue",
+    "DescribeSecret",
+    "PutSecretValue",
+    "UpdateSecret",
+    "ListSecretVersionIds",
+    "GetResourcePolicy",
+    "TagResource",
+    "UntagResource",
     "RestoreSecret",
 }
 
@@ -485,10 +491,12 @@ def _check_secret_lifecycle(
     state_val = tracker.get_state(secret_name)
     if state_val in ("CREATING", "DELETING"):
         return Response(
-            content=json.dumps({
-                "__type": "ResourceNotFoundException",
-                "message": f"Secret {secret_name} not found (status: {state_val})",
-            }),
+            content=json.dumps(
+                {
+                    "__type": "ResourceNotFoundException",
+                    "message": f"Secret {secret_name} not found (status: {state_val})",
+                }
+            ),
             status_code=400,
             media_type="application/json",
         )
@@ -530,10 +538,12 @@ async def _secretsmanager_dispatch(
         secret_name = secret_id.rsplit(":", 1)[-1] if ":" in secret_id else secret_id
         if tracker.get_state(secret_name) == "CREATING":
             return Response(
-                content=json.dumps({
-                    "__type": "ResourceInUseException",
-                    "message": f"Secret {secret_id} is still being created",
-                }),
+                content=json.dumps(
+                    {
+                        "__type": "ResourceInUseException",
+                        "message": f"Secret {secret_id} is still being created",
+                    }
+                ),
                 status_code=400,
                 media_type="application/json",
             )

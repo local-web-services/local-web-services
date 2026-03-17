@@ -49,6 +49,7 @@ def _subscribe_queue_to_topic(lws_session):
 
 # ── Given: topic state ────────────────────────────────────────────────
 
+
 @given("the topic does not already exist")
 def topic_not_already_exist():
     """No-op: fresh state has no topics."""
@@ -64,12 +65,12 @@ def topic_exists(lws_session):
     _create_topic(lws_session)
 
 
-@given("the topic is \"ACTIVE\"")
+@given('the topic is "ACTIVE"')
 def topic_is_active_given():
     """No-op: topics are ACTIVE immediately after creation."""
 
 
-@given("the topic is not \"ACTIVE\"")
+@given('the topic is not "ACTIVE"')
 def topic_is_not_active_given(lws_session, world):
     try:
         _sns(lws_session).delete_topic(TopicArn=_topic_arn())
@@ -88,6 +89,7 @@ def topic_does_not_exist():
 
 # ── Given: queue state ────────────────────────────────────────────────
 
+
 @given("the queue does not already exist")
 def queue_not_already_exist():
     """No-op: fresh state has no queues."""
@@ -103,30 +105,33 @@ def queue_exists(lws_session):
     _create_queue(lws_session)
 
 
-@given("the queue is \"ACTIVE\"")
+@given('the queue is "ACTIVE"')
 def queue_is_active_given():
     """No-op: queues are ACTIVE by default after creation."""
 
 
-@given("the queue is not \"ACTIVE\"")
+@given('the queue is not "ACTIVE"')
 def queue_is_not_active_given(lws_session, world):
     pytest.skip("lws does not enforce queue lifecycle state during SNS subscribe")
+
 
 @given("the queue does not exist")
 def queue_does_not_exist():
     pytest.skip("lws does not validate SQS queue existence when subscribing to an SNS topic")
 
 
-@given("the subscribed queue is \"ACTIVE\"")
+@given('the subscribed queue is "ACTIVE"')
 def subscribed_queue_is_active():
     """No-op: queues are ACTIVE by default after creation."""
 
 
-@given("the subscribed queue is not \"ACTIVE\"")
+@given('the subscribed queue is not "ACTIVE"')
 def subscribed_queue_is_not_active(lws_session, world):
     pytest.skip("lws does not enforce queue lifecycle state during SNS publish/deliver")
 
+
 # ── Given: subscription state ─────────────────────────────────────────
+
 
 @given("the subscription slot is available")
 def subscription_slot_available():
@@ -151,19 +156,21 @@ def no_confirmed_subscription_exists():
 
 # ── Given: message state ──────────────────────────────────────────────
 
-@given("an \"AVAILABLE\" message exists in the queue")
+
+@given('an "AVAILABLE" message exists in the queue')
 def available_message_exists_in_queue(lws_session):
     _create_queue(lws_session)
     url = _queue_url(lws_session)
     _sqs(lws_session).send_message(QueueUrl=url, MessageBody=TEST_MESSAGE)
 
 
-@given("no \"AVAILABLE\" message exists in the queue")
+@given('no "AVAILABLE" message exists in the queue')
 def no_available_message_exists():
     """No-op: fresh state has no messages."""
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("a message slot is available")
 def message_slot_available():
@@ -177,7 +184,8 @@ def no_message_slot_available():
 
 # ── When: actions ──────────────────────────────────────────────────────
 
-@when("an \"SNS\" topic is created")
+
+@when('an "SNS" topic is created')
 def create_sns_topic(lws_session, world):
     try:
         world["result"] = _sns(lws_session).create_topic(Name=TEST_TOPIC)
@@ -187,7 +195,7 @@ def create_sns_topic(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SQS\" queue is created")
+@when('an "SQS" queue is created')
 def create_sqs_queue(lws_session, world):
     try:
         world["result"] = _sqs(lws_session).create_queue(QueueName=TEST_QUEUE)
@@ -197,7 +205,7 @@ def create_sqs_queue(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SQS\" queue subscribes to an \"SNS\" topic")
+@when('an "SQS" queue subscribes to an "SNS" topic')
 def subscribe_queue_to_topic(lws_session, world):
     try:
         world["result"] = _sns(lws_session).subscribe(
@@ -211,7 +219,7 @@ def subscribe_queue_to_topic(lws_session, world):
         world["error"] = exc
 
 
-@when("a message is published to an \"SNS\" topic and delivered to the subscribed \"SQS\" queue")
+@when('a message is published to an "SNS" topic and delivered to the subscribed "SQS" queue')
 def publish_and_deliver(lws_session, world):
     try:
         world["result"] = _sns(lws_session).publish(
@@ -224,7 +232,7 @@ def publish_and_deliver(lws_session, world):
         world["error"] = exc
 
 
-@when("a message is consumed from the \"SQS\" queue")
+@when('a message is consumed from the "SQS" queue')
 def consume_message(lws_session, world):
     try:
         url = _queue_url(lws_session)
@@ -243,43 +251,40 @@ def consume_message(lws_session, world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the topic is \"ACTIVE\"")
+
+@then('the topic is "ACTIVE"')
 def topic_is_active_then(lws_session):
     resp = _sns(lws_session).list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
     expected_arn = _topic_arn()
-    assert expected_arn in actual_arns, (
-        f"Expected topic '{expected_arn}' to be ACTIVE but not found in: {actual_arns}"
-    )
+    assert (
+        expected_arn in actual_arns
+    ), f"Expected topic '{expected_arn}' to be ACTIVE but not found in: {actual_arns}"
 
 
-@then("the queue is \"ACTIVE\"")
+@then('the queue is "ACTIVE"')
 def queue_is_active_then(lws_session):
     url = _queue_url(lws_session)
     resp = _sqs(lws_session).get_queue_attributes(QueueUrl=url, AttributeNames=["All"])
-    assert resp.get("Attributes") is not None, (
-        f"Expected queue '{TEST_QUEUE}' to be ACTIVE but got no attributes"
-    )
+    assert (
+        resp.get("Attributes") is not None
+    ), f"Expected queue '{TEST_QUEUE}' to be ACTIVE but got no attributes"
 
 
-@then("the subscription is \"CONFIRMED\" and the queue will receive published messages")
+@then('the subscription is "CONFIRMED" and the queue will receive published messages')
 def subscription_confirmed(lws_session):
     resp = _sns(lws_session).list_subscriptions_by_topic(TopicArn=_topic_arn())
     subs = resp.get("Subscriptions", [])
-    assert len(subs) > 0, (
-        f"Expected at least one subscription for topic '{TEST_TOPIC}' but found none"
-    )
+    assert (
+        len(subs) > 0
+    ), f"Expected at least one subscription for topic '{TEST_TOPIC}' but found none"
 
 
-@then("the message is \"AVAILABLE\" in the queue")
+@then('the message is "AVAILABLE" in the queue')
 def message_available_in_queue(world):
     pytest.skip("lws does not support SNS-to-SQS message delivery")
 
 
-@then("the message is \"DELETED\"")
+@then('the message is "DELETED"')
 def message_is_deleted(world):
-    assert world["error"] is None, (
-        f"Expected consume to succeed but got: {world['error']}"
-    )
-
-
+    assert world["error"] is None, f"Expected consume to succeed but got: {world['error']}"

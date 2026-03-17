@@ -29,6 +29,7 @@ def _create_bus(lws_session, name=TEST_BUS):
 
 # ── Given: bus state ───────────────────────────────────────────────────
 
+
 @given("the bus does not already exist")
 def bus_not_already_exist():
     """No-op: fresh state has no custom buses."""
@@ -44,22 +45,22 @@ def bus_exists(lws_session):
     _create_bus(lws_session)
 
 
-@given("the bus is \"ACTIVE\"")
+@given('the bus is "ACTIVE"')
 def bus_is_active_given():
     """No-op: buses are ACTIVE by default after creation."""
 
 
-@given("the bus is \"DELETED\"")
+@given('the bus is "DELETED"')
 def bus_is_deleted_given():
     pytest.skip("lws does not reject SSM parameter operations when the event bus is deleted")
 
 
-@given("the bus is not \"DELETED\"")
+@given('the bus is not "DELETED"')
 def bus_is_not_deleted_given():
     pytest.skip("lws does not enforce event delivery failure when the bus is not deleted")
 
 
-@given("the bus is already \"DELETED\"")
+@given('the bus is already "DELETED"')
 def bus_is_already_deleted(lws_session, world):
     try:
         _create_bus(lws_session)
@@ -78,6 +79,7 @@ def bus_does_not_exist():
 
 # ── Given: parameter state ─────────────────────────────────────────────
 
+
 @given("the parameter does not already exist")
 def param_not_already_exist():
     """No-op: fresh state has no parameters."""
@@ -93,12 +95,12 @@ def param_exists(lws_session):
     _create_param(lws_session)
 
 
-@given("the parameter \"EXISTS\" (not already \"DELETED\")")
+@given('the parameter "EXISTS" (not already "DELETED")')
 def param_exists_not_deleted():
     """No-op: parameter already created by 'the parameter exists' step."""
 
 
-@given("the parameter is already \"DELETED\"")
+@given('the parameter is already "DELETED"')
 def param_is_already_deleted(lws_session, world):
     try:
         _create_param(lws_session)
@@ -117,6 +119,7 @@ def param_does_not_exist():
 
 # ── Given: slots ───────────────────────────────────────────────────────
 
+
 @given("an event slot is available")
 def event_slot_available():
     """No-op: always room for events."""
@@ -128,6 +131,7 @@ def no_event_slot_available():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("an EventBridge event bus is created")
 def create_event_bus(lws_session, world):
@@ -149,7 +153,7 @@ def delete_event_bus(lws_session, world):
         world["error"] = exc
 
 
-@when("a parameter is created and \"SSM\" delivers a \"CREATED\" event to the EventBridge bus")
+@when('a parameter is created and "SSM" delivers a "CREATED" event to the EventBridge bus')
 def put_parameter_event_delivered(lws_session, world):
     try:
         world["result"] = _ssm(lws_session).put_parameter(
@@ -163,7 +167,7 @@ def put_parameter_event_delivered(lws_session, world):
         world["error"] = exc
 
 
-@when("a parameter is created but the \"CREATED\" event delivery fails because the bus is deleted")
+@when('a parameter is created but the "CREATED" event delivery fails because the bus is deleted')
 def put_parameter_event_fails(lws_session, world):
     try:
         world["result"] = _ssm(lws_session).put_parameter(
@@ -177,7 +181,7 @@ def put_parameter_event_fails(lws_session, world):
         world["error"] = exc
 
 
-@when("a parameter is deleted and \"SSM\" delivers a \"DELETED\" event to the EventBridge bus")
+@when('a parameter is deleted and "SSM" delivers a "DELETED" event to the EventBridge bus')
 def delete_parameter_event_delivered(lws_session, world):
     try:
         world["result"] = _ssm(lws_session).delete_parameter(Name=TEST_PARAM)
@@ -189,51 +193,46 @@ def delete_parameter_event_delivered(lws_session, world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the bus is \"ACTIVE\"")
+
+@then('the bus is "ACTIVE"')
 def bus_is_active_then(lws_session):
     resp = _events(lws_session).list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]
-    assert TEST_BUS in actual_names, (
-        f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
-    )
+    assert (
+        TEST_BUS in actual_names
+    ), f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
 
 
-@then("the bus is \"DELETED\" and \"SSM\" event delivery will fail")
+@then('the bus is "DELETED" and "SSM" event delivery will fail')
 def bus_is_deleted_then(world):
-    assert world["error"] is None, (
-        f"Expected delete_event_bus to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected delete_event_bus to succeed but got: {world['error']}"
 
 
-@then("the parameter \"EXISTS\" and the \"CREATED\" event is \"DELIVERED\"")
+@then('the parameter "EXISTS" and the "CREATED" event is "DELIVERED"')
 def param_exists_and_created_event_delivered(lws_session):
     resp = _ssm(lws_session).get_parameter(Name=TEST_PARAM)
     actual_value = resp["Parameter"]["Value"]
-    assert actual_value == TEST_VALUE, (
-        f"Expected parameter value '{TEST_VALUE}' but got: {actual_value}"
-    )
+    assert (
+        actual_value == TEST_VALUE
+    ), f"Expected parameter value '{TEST_VALUE}' but got: {actual_value}"
 
 
-@then("the parameter \"EXISTS\" but no event is delivered")
+@then('the parameter "EXISTS" but no event is delivered')
 def param_exists_but_no_event(lws_session):
     resp = _ssm(lws_session).get_parameter(Name=TEST_PARAM)
     actual_value = resp["Parameter"]["Value"]
-    assert actual_value == TEST_VALUE, (
-        f"Expected parameter value '{TEST_VALUE}' but got: {actual_value}"
-    )
+    assert (
+        actual_value == TEST_VALUE
+    ), f"Expected parameter value '{TEST_VALUE}' but got: {actual_value}"
 
 
-@then("the parameter is \"DELETED\" and the \"DELETED\" event is \"DELIVERED\"")
+@then('the parameter is "DELETED" and the "DELETED" event is "DELIVERED"')
 def param_is_deleted_and_event_delivered(lws_session):
     try:
         _ssm(lws_session).get_parameter(Name=TEST_PARAM)
-        raise AssertionError(
-            f"Expected parameter '{TEST_PARAM}' to be deleted but it still exists"
-        )
+        raise AssertionError(f"Expected parameter '{TEST_PARAM}' to be deleted but it still exists")
     except ClientError as exc:
         error_code = exc.response["Error"]["Code"]
-        assert error_code == "ParameterNotFound", (
-            f"Expected ParameterNotFound but got: {error_code}"
-        )
-
-
+        assert (
+            error_code == "ParameterNotFound"
+        ), f"Expected ParameterNotFound but got: {error_code}"

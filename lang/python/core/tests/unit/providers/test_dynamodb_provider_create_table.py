@@ -89,9 +89,7 @@ class TestCreateTable:
         assert actual_data == expected_data
 
     @pytest.mark.asyncio
-    async def test_create_table_duplicate_raises(
-        self, provider: SqliteDynamoProvider
-    ) -> None:
+    async def test_create_table_duplicate_raises(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
         await provider.create_table(_simple_config())
 

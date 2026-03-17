@@ -1,4 +1,5 @@
 """Integration tests for DynamoDB lifecycle state simulation."""
+
 from __future__ import annotations
 
 import httpx
@@ -61,9 +62,9 @@ class TestDynamoDbLifecycleCreating:
         # Assert
         assert resp.status_code == 200
         actual_status = resp.json()["TableDescription"]["TableStatus"]
-        assert actual_status == expected_status, (
-            f"Expected TableStatus '{expected_status}' but got '{actual_status}'"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected TableStatus '{expected_status}' but got '{actual_status}'"
 
     async def test_put_item_blocked_when_table_is_creating(self, client):
         # Arrange
@@ -83,9 +84,9 @@ class TestDynamoDbLifecycleCreating:
 
         # Assert
         actual_error_type = resp.json().get("__type", "")
-        assert actual_error_type == expected_error_type, (
-            f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
     async def test_get_item_blocked_when_table_is_creating(self, client):
         # Arrange
@@ -105,9 +106,9 @@ class TestDynamoDbLifecycleCreating:
 
         # Assert
         actual_error_type = resp.json().get("__type", "")
-        assert actual_error_type == expected_error_type, (
-            f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
     async def test_delete_table_blocked_when_table_is_creating(self, client):
         # Arrange
@@ -124,9 +125,9 @@ class TestDynamoDbLifecycleCreating:
 
         # Assert
         actual_error_type = resp.json().get("__type", "")
-        assert actual_error_type == expected_error_type, (
-            f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
     async def test_describe_table_returns_creating_status_while_creating(self, client):
         # Arrange
@@ -144,9 +145,9 @@ class TestDynamoDbLifecycleCreating:
         # Assert
         assert resp.status_code == 200
         actual_status = resp.json()["Table"]["TableStatus"]
-        assert actual_status == expected_status, (
-            f"Expected TableStatus '{expected_status}' but got '{actual_status}'"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected TableStatus '{expected_status}' but got '{actual_status}'"
 
     async def test_query_blocked_when_table_is_creating(self, client):
         # Arrange
@@ -167,9 +168,9 @@ class TestDynamoDbLifecycleCreating:
 
         # Assert
         actual_error_type = resp.json().get("__type", "")
-        assert actual_error_type == expected_error_type, (
-            f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
     async def test_scan_blocked_when_table_is_creating(self, client):
         # Arrange
@@ -186,9 +187,9 @@ class TestDynamoDbLifecycleCreating:
 
         # Assert
         actual_error_type = resp.json().get("__type", "")
-        assert actual_error_type == expected_error_type, (
-            f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
 
 @pytest.fixture
@@ -234,9 +235,9 @@ class TestDynamoDbLifecycleDeleting:
         # Assert
         assert resp.status_code == 200
         actual_status = resp.json()["TableDescription"]["TableStatus"]
-        assert actual_status == expected_status, (
-            f"Expected TableStatus '{expected_status}' but got '{actual_status}'"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected TableStatus '{expected_status}' but got '{actual_status}'"
 
     async def test_describe_table_returns_not_found_when_table_is_deleting(self, delete_client):
         # Arrange
@@ -259,9 +260,9 @@ class TestDynamoDbLifecycleDeleting:
 
         # Assert
         actual_error_type = resp.json().get("__type", "")
-        assert actual_error_type == expected_error_type, (
-            f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
     async def test_put_item_blocked_when_table_is_deleting(self, delete_client):
         # Arrange
@@ -287,9 +288,9 @@ class TestDynamoDbLifecycleDeleting:
 
         # Assert
         actual_error_type = resp.json().get("__type", "")
-        assert actual_error_type == expected_error_type, (
-            f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected error '{expected_error_type}' but got '{actual_error_type}'"
 
 
 class TestDynamoDbLifecycleDisabled:
@@ -313,6 +314,6 @@ class TestDynamoDbLifecycleDisabled:
         await provider.stop()
         assert resp.status_code == 200
         actual_status = resp.json()["TableDescription"]["TableStatus"]
-        assert actual_status == expected_status, (
-            f"Expected TableStatus '{expected_status}' but got '{actual_status}'"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected TableStatus '{expected_status}' but got '{actual_status}'"

@@ -11,9 +11,7 @@ from pytest_bdd import given, then, when
 TEST_SM = "test-sm-1"
 TEST_TOPIC = "e2e-test-topic-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
-PASS_DEFINITION = json.dumps(
-    {"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}}
-)
+PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 TEST_INPUT = '{"key": "value"}'
 
 
@@ -56,6 +54,7 @@ def _start_execution(lws_session, name=TEST_SM):
 
 # ── Given: state machine state ────────────────────────────────────────
 
+
 @given("the state machine does not already exist")
 def sm_not_already_exist():
     """No-op: fresh state has no state machines."""
@@ -71,12 +70,12 @@ def sm_exists(lws_session):
     _create_sm(lws_session)
 
 
-@given("the state machine is \"ACTIVE\"")
+@given('the state machine is "ACTIVE"')
 def sm_is_active_given():
     """No-op: state machines are ACTIVE immediately after creation."""
 
 
-@given("the state machine is not \"ACTIVE\"")
+@given('the state machine is not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
@@ -93,22 +92,23 @@ def sm_does_not_exist():
     """No-op: fresh state has no state machines."""
 
 
-@given("the state machine has no \"SNS\" task configured")
+@given('the state machine has no "SNS" task configured')
 def sm_has_no_sns_task():
     pytest.skip("lws does not validate SNS task configuration before starting an execution")
 
 
-@given("the state machine has an \"SNS\" task configured")
+@given('the state machine has an "SNS" task configured')
 def sm_has_sns_task():
     pytest.skip("Cannot pre-configure SNS task on state machine in lws")
 
 
-@given("the state machine already has an \"SNS\" task configured")
+@given('the state machine already has an "SNS" task configured')
 def sm_already_has_sns_task():
     pytest.skip("Cannot pre-configure SNS task on state machine in this context")
 
 
 # ── Given: topic state ────────────────────────────────────────────────
+
 
 @given("the topic does not already exist")
 def topic_not_already_exist():
@@ -125,12 +125,12 @@ def topic_exists(lws_session):
     _create_topic(lws_session)
 
 
-@given("the topic is \"ACTIVE\"")
+@given('the topic is "ACTIVE"')
 def topic_is_active_given():
     """No-op: topics are ACTIVE immediately after creation."""
 
 
-@given("the topic is not \"ACTIVE\"")
+@given('the topic is not "ACTIVE"')
 def topic_is_not_active_given(lws_session, world):
     lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
     _create_topic(lws_session)
@@ -143,12 +143,12 @@ def topic_does_not_exist():
     """No-op: fresh state has no topics."""
 
 
-@given("the target topic is \"ACTIVE\"")
+@given('the target topic is "ACTIVE"')
 def target_topic_is_active():
     """No-op: topics are ACTIVE immediately after creation."""
 
 
-@given("the target topic is not \"ACTIVE\"")
+@given('the target topic is not "ACTIVE"')
 def target_topic_is_not_active(lws_session, world):
     lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
     _create_topic(lws_session)
@@ -158,18 +158,20 @@ def target_topic_is_not_active(lws_session, world):
 
 # ── Given: execution state ────────────────────────────────────────────
 
-@given("an execution is \"RUNNING\"")
+
+@given('an execution is "RUNNING"')
 def execution_is_running_given(lws_session):
     _create_sm(lws_session)
     _start_execution(lws_session)
 
 
-@given("no execution is \"RUNNING\"")
+@given('no execution is "RUNNING"')
 def no_execution_is_running():
     """No-op: fresh state has no executions."""
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an execution slot is available")
 def execution_slot_available():
@@ -182,6 +184,7 @@ def no_execution_slot_available():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("a Step Functions state machine is created")
 def create_state_machine(lws_session, world):
@@ -198,7 +201,7 @@ def create_state_machine(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SNS\" topic is created")
+@when('an "SNS" topic is created')
 def create_sns_topic(lws_session, world):
     try:
         world["result"] = _sns(lws_session).create_topic(Name=TEST_TOPIC)
@@ -208,7 +211,7 @@ def create_sns_topic(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SNS\" publish task is configured on the state machine")
+@when('an "SNS" publish task is configured on the state machine')
 def configure_sns_task(world):
     pytest.skip("Cannot configure SNS task on state machine in lws")
 
@@ -227,41 +230,42 @@ def start_execution(lws_session, world):
         world["error"] = exc
 
 
-@when("a running execution publishes a message to the \"SNS\" topic and succeeds")
+@when('a running execution publishes a message to the "SNS" topic and succeeds')
 def execution_publishes_to_topic(world):
     pytest.skip("Cannot trigger internal execution step that publishes to SNS")
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the state machine is \"ACTIVE\"")
+
+@then('the state machine is "ACTIVE"')
 def sm_is_active_then(lws_session):
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the state machine is \"ACTIVE\" with no \"SNS\" task configured")
+@then('the state machine is "ACTIVE" with no "SNS" task configured')
 def sm_is_active_with_no_sns_task(lws_session):
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the topic is \"ACTIVE\"")
+@then('the topic is "ACTIVE"')
 def topic_is_active_then(lws_session):
     resp = _sns(lws_session).list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
     expected_arn = _topic_arn()
-    assert expected_arn in actual_arns, (
-        f"Expected topic '{expected_arn}' to be ACTIVE but not found in: {actual_arns}"
-    )
+    assert (
+        expected_arn in actual_arns
+    ), f"Expected topic '{expected_arn}' to be ACTIVE but not found in: {actual_arns}"
 
 
 @then("the state machine will publish a message to the topic when it reaches the task state")
@@ -269,16 +273,12 @@ def sm_will_publish_to_topic(world):
     pytest.skip("Cannot observe SNS task configuration in lws")
 
 
-@then("the execution is \"RUNNING\"")
+@then('the execution is "RUNNING"')
 def execution_is_running_then(world):
-    assert world["error"] is None, (
-        f"Expected start_execution to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected start_execution to succeed but got: {world['error']}"
     assert "executionArn" in world["result"], "Expected 'executionArn' in response"
 
 
-@then("the execution is \"SUCCEEDED\" and the message has been published to the topic")
+@then('the execution is "SUCCEEDED" and the message has been published to the topic')
 def execution_succeeded_and_message_published(world):
     pytest.skip("Cannot observe internal execution SNS publish in lws")
-
-

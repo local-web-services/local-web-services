@@ -13,9 +13,7 @@ TEST_TABLE = "e2e-test-table-1"
 TEST_PK = "id"
 TEST_ITEM_KEY = "e2e-item-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
-PASS_DEFINITION = json.dumps(
-    {"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}}
-)
+PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 TEST_INPUT = '{"key": "value"}'
 
 
@@ -59,6 +57,7 @@ def _start_execution(lws_session, name=TEST_SM):
 
 # ── Given: state machine state ────────────────────────────────────────
 
+
 @given("the state machine does not already exist")
 def sm_not_already_exist():
     """No-op: fresh state has no state machines."""
@@ -74,12 +73,12 @@ def sm_exists(lws_session):
     _create_sm(lws_session)
 
 
-@given("the state machine is \"ACTIVE\"")
+@given('the state machine is "ACTIVE"')
 def sm_is_active_given():
     """No-op: state machines are ACTIVE immediately after creation."""
 
 
-@given("the state machine is not \"ACTIVE\"")
+@given('the state machine is not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
@@ -113,6 +112,7 @@ def sm_has_dynamodb_task():
 
 # ── Given: table state ────────────────────────────────────────────────
 
+
 @given("the table does not already exist")
 def table_not_already_exist():
     """No-op: fresh state has no tables."""
@@ -128,12 +128,12 @@ def table_exists(lws_session):
     _create_table(lws_session)
 
 
-@given("the table is \"ACTIVE\"")
+@given('the table is "ACTIVE"')
 def table_is_active_given():
     """No-op: tables are ACTIVE immediately after creation."""
 
 
-@given("the table is not \"ACTIVE\"")
+@given('the table is not "ACTIVE"')
 def table_is_not_active_given(lws_session, world):
     lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
     _create_table(lws_session)
@@ -146,12 +146,12 @@ def table_does_not_exist():
     """No-op: fresh state has no tables."""
 
 
-@given("the target table is \"ACTIVE\"")
+@given('the target table is "ACTIVE"')
 def target_table_is_active():
     """No-op: tables are ACTIVE immediately after creation."""
 
 
-@given("the target table is not \"ACTIVE\"")
+@given('the target table is not "ACTIVE"')
 def target_table_is_not_active(lws_session, world):
     lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
     _create_table(lws_session)
@@ -161,18 +161,20 @@ def target_table_is_not_active(lws_session, world):
 
 # ── Given: execution state ────────────────────────────────────────────
 
-@given("an execution is \"RUNNING\"")
+
+@given('an execution is "RUNNING"')
 def execution_is_running_given(lws_session):
     _create_sm(lws_session)
     _start_execution(lws_session)
 
 
-@given("no execution is \"RUNNING\"")
+@given('no execution is "RUNNING"')
 def no_execution_is_running():
     """No-op: fresh state has no executions."""
 
 
 # ── Given: item state ─────────────────────────────────────────────────
+
 
 @given("an item slot is available")
 def item_slot_available():
@@ -184,12 +186,12 @@ def no_item_slot_available():
     pytest.skip("Cannot exhaust item slot limit")
 
 
-@given("no item \"EXISTS\" in the target table")
+@given('no item "EXISTS" in the target table')
 def no_item_exists_in_target_table():
     """No-op: fresh table has no items."""
 
 
-@given("an item \"EXISTS\" in the target table")
+@given('an item "EXISTS" in the target table')
 def item_exists_in_target_table(lws_session):
     _create_table(lws_session)
     _ddb(lws_session).put_item(
@@ -199,6 +201,7 @@ def item_exists_in_target_table(lws_session):
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an execution slot is available")
 def execution_slot_available():
@@ -211,6 +214,7 @@ def no_execution_slot_available():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("a Step Functions state machine is created")
 def create_state_machine(lws_session, world):
@@ -273,24 +277,25 @@ def execution_gets_item_not_found(lws_session, world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the state machine is \"ACTIVE\" with no DynamoDB task configured")
+
+@then('the state machine is "ACTIVE" with no DynamoDB task configured')
 def sm_active_no_dynamodb_task(lws_session):
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the table is \"ACTIVE\"")
+@then('the table is "ACTIVE"')
 def table_is_active_then(lws_session):
     resp = _ddb(lws_session).describe_table(TableName=TEST_TABLE)
     expected_status = "ACTIVE"
     actual_status = resp["Table"]["TableStatus"]
-    assert actual_status == expected_status, (
-        f"Expected table status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected table status '{expected_status}' but got '{actual_status}'"
 
 
 @then("the state machine will write an item to the table when it reaches the task state")
@@ -298,21 +303,17 @@ def sm_will_write_item(world):
     pytest.skip("Cannot observe DynamoDB task configuration in lws")
 
 
-@then("the execution is \"RUNNING\"")
+@then('the execution is "RUNNING"')
 def execution_is_running_then(world):
-    assert world["error"] is None, (
-        f"Expected start_execution to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected start_execution to succeed but got: {world['error']}"
     assert "executionArn" in world["result"], "Expected 'executionArn' in response"
 
 
-@then("the item \"EXISTS\" in the table and the execution is \"SUCCEEDED\"")
+@then('the item "EXISTS" in the table and the execution is "SUCCEEDED"')
 def item_exists_and_execution_succeeded(world):
     pytest.skip("Cannot observe internal execution DynamoDB write in lws")
 
 
-@then("the execution is \"FAILED\" because the item was not found")
+@then('the execution is "FAILED" because the item was not found')
 def execution_failed_item_not_found(world):
     pytest.skip("Cannot observe internal execution DynamoDB read failure in lws")
-
-

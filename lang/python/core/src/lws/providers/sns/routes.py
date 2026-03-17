@@ -510,8 +510,14 @@ def _parse_message_attributes(params: dict[str, str]) -> dict:
 
 
 _SNS_TOPIC_ACTIONS = {
-    "Publish", "Subscribe", "GetTopicAttributes", "SetTopicAttributes",
-    "ListSubscriptionsByTopic", "ListTagsForResource", "TagResource", "UntagResource",
+    "Publish",
+    "Subscribe",
+    "GetTopicAttributes",
+    "SetTopicAttributes",
+    "ListSubscriptionsByTopic",
+    "ListTagsForResource",
+    "TagResource",
+    "UntagResource",
 }
 
 

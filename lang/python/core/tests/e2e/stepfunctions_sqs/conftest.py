@@ -11,9 +11,7 @@ from pytest_bdd import given, then, when
 TEST_SM = "test-sm-1"
 TEST_QUEUE = "e2e-test-q1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
-PASS_DEFINITION = json.dumps(
-    {"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}}
-)
+PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 TEST_INPUT = '{"key": "value"}'
 
 
@@ -56,6 +54,7 @@ def _start_execution(lws_session, name=TEST_SM):
 
 # ── Given: state machine state ────────────────────────────────────────
 
+
 @given("the state machine does not already exist")
 def sm_not_already_exist():
     """No-op: fresh state has no state machines."""
@@ -71,12 +70,12 @@ def sm_exists(lws_session):
     _create_sm(lws_session)
 
 
-@given("the state machine is \"ACTIVE\"")
+@given('the state machine is "ACTIVE"')
 def sm_is_active_given():
     """No-op: state machines are ACTIVE immediately after creation."""
 
 
-@given("the state machine is not \"ACTIVE\"")
+@given('the state machine is not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
@@ -93,22 +92,23 @@ def sm_does_not_exist():
     """No-op: fresh state has no state machines."""
 
 
-@given("the state machine has no \"SQS\" task configured")
+@given('the state machine has no "SQS" task configured')
 def sm_has_no_sqs_task():
     pytest.skip("lws does not validate SQS task configuration before starting an execution")
 
 
-@given("the state machine has an \"SQS\" task configured")
+@given('the state machine has an "SQS" task configured')
 def sm_has_sqs_task():
     pytest.skip("Cannot pre-configure SQS task on state machine in lws")
 
 
-@given("the state machine already has an \"SQS\" task configured")
+@given('the state machine already has an "SQS" task configured')
 def sm_already_has_sqs_task():
     pytest.skip("Cannot pre-configure SQS task on state machine in this context")
 
 
 # ── Given: queue state ────────────────────────────────────────────────
+
 
 @given("the queue does not already exist")
 def queue_not_already_exist():
@@ -125,12 +125,12 @@ def queue_exists(lws_session):
     _create_queue(lws_session)
 
 
-@given("the queue is \"ACTIVE\"")
+@given('the queue is "ACTIVE"')
 def queue_is_active_given():
     """No-op: queues are ACTIVE by default after creation."""
 
 
-@given("the queue is not \"ACTIVE\"")
+@given('the queue is not "ACTIVE"')
 def queue_is_not_active_given(lws_session, world):
     lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
     _create_queue(lws_session)
@@ -143,12 +143,12 @@ def queue_does_not_exist():
     """No-op: fresh state has no queues."""
 
 
-@given("the target queue is \"ACTIVE\"")
+@given('the target queue is "ACTIVE"')
 def target_queue_is_active():
     """No-op: queues are ACTIVE by default after creation."""
 
 
-@given("the target queue is not \"ACTIVE\"")
+@given('the target queue is not "ACTIVE"')
 def target_queue_is_not_active(lws_session, world):
     lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
     _create_queue(lws_session)
@@ -158,28 +158,30 @@ def target_queue_is_not_active(lws_session, world):
 
 # ── Given: execution state ────────────────────────────────────────────
 
-@given("an execution is \"RUNNING\"")
+
+@given('an execution is "RUNNING"')
 def execution_is_running_given(lws_session):
     _create_sm(lws_session)
     _start_execution(lws_session)
 
 
-@given("no execution is \"RUNNING\"")
+@given('no execution is "RUNNING"')
 def no_execution_is_running():
     """No-op: fresh state has no executions."""
 
 
-@given("the execution's state machine has a configured \"SQS\" task")
+@given('the execution\'s state machine has a configured "SQS" task')
 def execution_sm_has_sqs_task():
     pytest.skip("Cannot pre-configure SQS task on state machine in this context")
 
 
-@given("the execution's state machine has no \"SQS\" task configured")
+@given('the execution\'s state machine has no "SQS" task configured')
 def execution_sm_has_no_sqs_task():
     """No-op: state machines have no SQS task by default."""
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an execution slot is available")
 def execution_slot_available():
@@ -203,6 +205,7 @@ def no_message_slot_available():
 
 # ── When: actions ──────────────────────────────────────────────────────
 
+
 @when("a Step Functions state machine is created")
 def create_state_machine(lws_session, world):
     try:
@@ -218,7 +221,7 @@ def create_state_machine(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SQS\" queue is created")
+@when('an "SQS" queue is created')
 def create_sqs_queue(lws_session, world):
     try:
         world["result"] = _sqs(lws_session).create_queue(QueueName=TEST_QUEUE)
@@ -228,7 +231,7 @@ def create_sqs_queue(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SQS\" send-message task is configured on the state machine")
+@when('an "SQS" send-message task is configured on the state machine')
 def configure_sqs_task(world):
     pytest.skip("Cannot configure SQS task on state machine in lws")
 
@@ -247,40 +250,41 @@ def start_execution(lws_session, world):
         world["error"] = exc
 
 
-@when("a running execution reaches the \"SQS\" task state and sends a message to the queue")
+@when('a running execution reaches the "SQS" task state and sends a message to the queue')
 def execution_sends_message(world):
     pytest.skip("Cannot trigger internal execution step that sends message to SQS")
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the state machine is \"ACTIVE\"")
+
+@then('the state machine is "ACTIVE"')
 def sm_is_active_then(lws_session):
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the state machine is \"ACTIVE\" with no \"SQS\" task configured")
+@then('the state machine is "ACTIVE" with no "SQS" task configured')
 def sm_is_active_with_no_sqs_task(lws_session):
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the queue is \"ACTIVE\"")
+@then('the queue is "ACTIVE"')
 def queue_is_active_then(lws_session):
     url = _queue_url(lws_session)
     resp = _sqs(lws_session).get_queue_attributes(QueueUrl=url, AttributeNames=["All"])
-    assert resp.get("Attributes") is not None, (
-        f"Expected queue '{TEST_QUEUE}' to be ACTIVE but got no attributes"
-    )
+    assert (
+        resp.get("Attributes") is not None
+    ), f"Expected queue '{TEST_QUEUE}' to be ACTIVE but got no attributes"
 
 
 @then("the state machine will enqueue a message when it reaches the task state")
@@ -288,16 +292,12 @@ def sm_will_enqueue_message(world):
     pytest.skip("Cannot observe SQS task configuration in lws")
 
 
-@then("the execution is \"RUNNING\"")
+@then('the execution is "RUNNING"')
 def execution_is_running_then(world):
-    assert world["error"] is None, (
-        f"Expected start_execution to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected start_execution to succeed but got: {world['error']}"
     assert "executionArn" in world["result"], "Expected 'executionArn' in response"
 
 
-@then("the message is \"AVAILABLE\" in the queue and the execution is \"SUCCEEDED\"")
+@then('the message is "AVAILABLE" in the queue and the execution is "SUCCEEDED"')
 def message_available_and_execution_succeeded(world):
     pytest.skip("Cannot observe internal execution SQS send in lws")
-
-

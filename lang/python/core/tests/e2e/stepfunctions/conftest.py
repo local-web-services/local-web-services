@@ -12,9 +12,7 @@ from pytest_bdd import given, then, when
 TEST_SM = "test-sm-1"
 TEST_SM_EXPRESS = "test-sm-express-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
-PASS_DEFINITION = json.dumps(
-    {"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}}
-)
+PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 UPDATED_DEFINITION = json.dumps(
     {"StartAt": "PassV2", "States": {"PassV2": {"Type": "Pass", "End": True}}}
 )
@@ -48,6 +46,7 @@ def _start_execution(lws_session, sm_name=TEST_SM):
 
 
 # ── Given: state machine state setup ──────────────────────────────────
+
 
 @given("the state machine does not already exist")
 def sm_not_already_exist():
@@ -189,6 +188,7 @@ def tag_association_not_active():
 
 # ── When: actions ──────────────────────────────────────────────────────
 
+
 @when("a Step Functions state machine is created")
 def create_state_machine(lws_session, world):
     try:
@@ -281,9 +281,7 @@ def list_tags_for_sm(lws_session, world):
 def start_execution(lws_session, world):
     try:
         sm_name = world.get("state_machine_name", TEST_SM)
-        resp = _sfn(lws_session).start_execution(
-            stateMachineArn=_sm_arn(sm_name), input=TEST_INPUT
-        )
+        resp = _sfn(lws_session).start_execution(stateMachineArn=_sm_arn(sm_name), input=TEST_INPUT)
         world["result"] = resp
         world["execution_arn"] = resp["executionArn"]
         world["error"] = None
@@ -394,9 +392,11 @@ def validate_state_machine_definition(lws_session, world):
         )
     sm_name = world.get("state_machine_name", TEST_SM)
     try:
-        status = _sfn(lws_session).describe_state_machine(
-            stateMachineArn=_sm_arn(sm_name)
-        ).get("status", "ACTIVE")
+        status = (
+            _sfn(lws_session)
+            .describe_state_machine(stateMachineArn=_sm_arn(sm_name))
+            .get("status", "ACTIVE")
+        )
     except Exception:
         status = None
     if status != "ACTIVE":
@@ -430,158 +430,142 @@ def execution_timeout(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then('the state machine is "ACTIVE"')
 def sm_is_active_then(lws_session, world):
     sm_name = world.get("state_machine_name", TEST_SM)
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn(sm_name))
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
 @then('the state machine is in "DELETING" state')
 def sm_is_deleting_then(world):
-    assert world["error"] is None, (
-        f"Expected delete_state_machine to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected delete_state_machine to succeed but got: {world['error']}"
 
 
 @then('the state machine is "DELETED"')
 def sm_is_deleted_then(world):
-    assert world["error"] is None, (
-        f"Expected finalization to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected finalization to succeed but got: {world['error']}"
 
 
 @then("the state machine details are returned")
 def sm_details_returned(world):
-    assert world["error"] is None, (
-        f"Expected describe_state_machine to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected describe_state_machine to succeed but got: {world['error']}"
     assert "name" in world["result"], "Expected 'name' key in response"
 
 
 @then("the list of state machines is returned")
 def list_of_sms_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_state_machines to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected list_state_machines to succeed but got: {world['error']}"
     assert "stateMachines" in world["result"], "Expected 'stateMachines' in response"
 
 
 @then("the list of executions is returned")
 def list_of_executions_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_executions to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected list_executions to succeed but got: {world['error']}"
     assert "executions" in world["result"], "Expected 'executions' in response"
 
 
 @then("the list of state machine versions is returned")
 def list_of_sm_versions_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_state_machine_versions to succeed but got: {world['error']}"
-    )
-    assert "stateMachineVersions" in world["result"], (
-        "Expected 'stateMachineVersions' in response"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected list_state_machine_versions to succeed but got: {world['error']}"
+    assert "stateMachineVersions" in world["result"], "Expected 'stateMachineVersions' in response"
 
 
 @then("the list of tags is returned")
 def list_of_tags_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_tags_for_resource to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected list_tags_for_resource to succeed but got: {world['error']}"
     assert "tags" in world["result"], "Expected 'tags' key in response"
 
 
 @then('the execution is "RUNNING"')
 def execution_is_running_then(world):
-    assert world["error"] is None, (
-        f"Expected start_execution to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected start_execution to succeed but got: {world['error']}"
     assert "executionArn" in world["result"], "Expected 'executionArn' in response"
 
 
 @then('the execution is "ABORTED"')
 def execution_is_aborted_then(lws_session, world):
-    assert world["error"] is None, (
-        f"Expected stop_execution to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected stop_execution to succeed but got: {world['error']}"
     execution_arn = world.get("execution_arn", "")
     resp = _sfn(lws_session).describe_execution(executionArn=execution_arn)
     expected_status = "ABORTED"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected execution status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected execution status '{expected_status}' but got '{actual_status}'"
 
 
 @then('the execution is "SUCCEEDED" or "FAILED"')
 def execution_is_succeeded_or_failed_then(world):
-    assert world["error"] is None, (
-        f"Expected execution to complete but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected execution to complete but got: {world['error']}"
     actual_status = world["result"].get("status", "")
-    assert actual_status in ("SUCCEEDED", "FAILED"), (
-        f"Expected execution status SUCCEEDED or FAILED but got '{actual_status}'"
-    )
+    assert actual_status in (
+        "SUCCEEDED",
+        "FAILED",
+    ), f"Expected execution status SUCCEEDED or FAILED but got '{actual_status}'"
 
 
 @then("the execution details are returned")
 def execution_details_returned(world):
-    assert world["error"] is None, (
-        f"Expected describe_execution to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected describe_execution to succeed but got: {world['error']}"
     assert "executionArn" in world["result"], "Expected 'executionArn' in response"
 
 
 @then("the execution history is returned")
 def execution_history_returned(world):
-    assert world["error"] is None, (
-        f"Expected get_execution_history to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected get_execution_history to succeed but got: {world['error']}"
     assert "events" in world["result"], "Expected 'events' in response"
 
 
 @then("the state machine version is incremented")
 def sm_version_incremented(world):
-    assert world["error"] is None, (
-        f"Expected update_state_machine to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected update_state_machine to succeed but got: {world['error']}"
 
 
 @then("the tags are associated with the state machine")
 def tags_associated_with_sm(world):
-    assert world["error"] is None, (
-        f"Expected tag_resource to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected tag_resource to succeed but got: {world['error']}"
 
 
 @then("the tags are disassociated from the state machine")
 def tags_disassociated_from_sm(world):
-    assert world["error"] is None, (
-        f"Expected untag_resource to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected untag_resource to succeed but got: {world['error']}"
 
 
 @then("the definition is valid or invalid")
 def definition_is_valid_or_invalid(world):
-    assert world["error"] is None, (
-        f"Expected validate_state_machine_definition to succeed but got: {world['error']}"
-    )
-    assert "result" in world["result"] or "validationErrors" in world["result"], (
-        "Expected 'result' or 'validationErrors' in response"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected validate_state_machine_definition to succeed but got: {world['error']}"
+    assert (
+        "result" in world["result"] or "validationErrors" in world["result"]
+    ), "Expected 'result' or 'validationErrors' in response"
 
 
 @then('the execution is "TIMED_OUT"')
 def execution_is_timed_out_then(world):
-    assert world["error"] is None, (
-        f"Expected timeout event to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected timeout event to succeed but got: {world['error']}"
 
 
 @then('every state machine has a valid status ("ACTIVE", "DELETING", or "DELETED")')
@@ -599,7 +583,7 @@ def every_sm_has_valid_status(lws_session):
 
 
 @then(
-    'every execution has a valid status'
+    "every execution has a valid status"
     ' ("RUNNING", "SUCCEEDED", "FAILED", "TIMED_OUT", or "ABORTED")'
 )
 def every_execution_has_valid_status():

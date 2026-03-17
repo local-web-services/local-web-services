@@ -29,6 +29,7 @@ def _create_bus(lws_session, name=TEST_BUS):
 
 # ── Given: bus state ───────────────────────────────────────────────────
 
+
 @given("the bus does not already exist")
 def bus_not_already_exist():
     """No-op: fresh state has no custom buses."""
@@ -44,32 +45,32 @@ def bus_exists(lws_session):
     _create_bus(lws_session)
 
 
-@given("the bus exists and is \"ACTIVE\"")
+@given('the bus exists and is "ACTIVE"')
 def bus_exists_and_is_active(lws_session):
     _create_bus(lws_session)
 
 
-@given("the bus does not exist or is \"DELETED\"")
+@given('the bus does not exist or is "DELETED"')
 def bus_not_exist_or_deleted():
     pytest.skip("lws does not reject create_secret when the event bus does not exist or is deleted")
 
 
-@given("the bus is \"ACTIVE\"")
+@given('the bus is "ACTIVE"')
 def bus_is_active_given():
     """No-op: buses are ACTIVE by default after creation."""
 
 
-@given("the bus is \"DELETED\"")
+@given('the bus is "DELETED"')
 def bus_is_deleted_given():
     pytest.skip("lws does not reject delete_secret when the event bus is deleted")
 
 
-@given("the bus is not \"DELETED\"")
+@given('the bus is not "DELETED"')
 def bus_is_not_deleted_given():
     pytest.skip("lws does not enforce event delivery failure when the bus is not deleted")
 
 
-@given("the bus is already \"DELETED\"")
+@given('the bus is already "DELETED"')
 def bus_is_already_deleted(lws_session, world):
     try:
         _create_bus(lws_session)
@@ -88,6 +89,7 @@ def bus_does_not_exist():
 
 # ── Given: secret state ────────────────────────────────────────────────
 
+
 @given("the secret does not already exist")
 def secret_not_already_exist():
     """No-op: fresh state has no secrets."""
@@ -98,17 +100,18 @@ def secret_already_exists(lws_session):
     _create_secret(lws_session)
 
 
-@given("the secret exists and is \"ACTIVE\"")
+@given('the secret exists and is "ACTIVE"')
 def secret_exists_and_is_active(lws_session):
     _create_secret(lws_session)
 
 
-@given("the secret does not exist or is not \"ACTIVE\"")
+@given('the secret does not exist or is not "ACTIVE"')
 def secret_not_exist_or_not_active():
     """No-op: fresh state has no secrets."""
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an event slot is available")
 def event_slot_available():
@@ -121,6 +124,7 @@ def no_event_slot_available():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("an EventBridge event bus is created")
 def create_event_bus(lws_session, world):
@@ -142,7 +146,7 @@ def delete_event_bus(lws_session, world):
         world["error"] = exc
 
 
-@when("a secret is created and Secrets Manager delivers a \"CREATED\" event to the EventBridge bus")
+@when('a secret is created and Secrets Manager delivers a "CREATED" event to the EventBridge bus')
 def create_secret_event_delivered(lws_session, world):
     try:
         world["result"] = _sm(lws_session).create_secret(
@@ -155,7 +159,7 @@ def create_secret_event_delivered(lws_session, world):
         world["error"] = exc
 
 
-@when("a secret is created but the \"CREATED\" event delivery fails because the bus is deleted")
+@when('a secret is created but the "CREATED" event delivery fails because the bus is deleted')
 def create_secret_event_fails(lws_session, world):
     try:
         world["result"] = _sm(lws_session).create_secret(
@@ -169,7 +173,7 @@ def create_secret_event_fails(lws_session, world):
 
 
 @when(
-    "a secret is scheduled for deletion and Secrets Manager delivers a \"DELETED\" event to the bus"
+    'a secret is scheduled for deletion and Secrets Manager delivers a "DELETED" event to the bus'
 )
 def delete_secret_event_delivered(lws_session, world):
     try:
@@ -180,48 +184,47 @@ def delete_secret_event_delivered(lws_session, world):
         world["error"] = exc
 
 
-@when("a secret rotation occurs and Secrets Manager delivers a \"ROTATED\" event to the bus")
+@when('a secret rotation occurs and Secrets Manager delivers a "ROTATED" event to the bus')
 def rotate_secret_event_delivered(lws_session, world):
     pytest.skip("Cannot trigger secret rotation in lws")
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the bus is \"ACTIVE\"")
+
+@then('the bus is "ACTIVE"')
 def bus_is_active_then(lws_session):
     resp = _events(lws_session).list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]
-    assert TEST_BUS in actual_names, (
-        f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
-    )
+    assert (
+        TEST_BUS in actual_names
+    ), f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
 
 
-@then("the bus is \"DELETED\" and Secrets Manager event delivery will fail")
+@then('the bus is "DELETED" and Secrets Manager event delivery will fail')
 def bus_is_deleted_then(world):
-    assert world["error"] is None, (
-        f"Expected delete_event_bus to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected delete_event_bus to succeed but got: {world['error']}"
 
 
-@then("the secret is \"ACTIVE\" and the \"CREATED\" event is \"DELIVERED\"")
+@then('the secret is "ACTIVE" and the "CREATED" event is "DELIVERED"')
 def secret_active_and_created_event_delivered(lws_session):
     resp = _sm(lws_session).list_secrets()
     actual_names = [s["Name"] for s in resp.get("SecretList", [])]
-    assert TEST_SECRET in actual_names, (
-        f"Expected secret '{TEST_SECRET}' to exist but not found in: {actual_names}"
-    )
+    assert (
+        TEST_SECRET in actual_names
+    ), f"Expected secret '{TEST_SECRET}' to exist but not found in: {actual_names}"
 
 
-@then("the secret is \"ACTIVE\" but no event is delivered")
+@then('the secret is "ACTIVE" but no event is delivered')
 def secret_active_but_no_event(lws_session):
     resp = _sm(lws_session).list_secrets()
     actual_names = [s["Name"] for s in resp.get("SecretList", [])]
-    assert TEST_SECRET in actual_names, (
-        f"Expected secret '{TEST_SECRET}' to exist but not found in: {actual_names}"
-    )
+    assert (
+        TEST_SECRET in actual_names
+    ), f"Expected secret '{TEST_SECRET}' to exist but not found in: {actual_names}"
 
 
-@then("the secret is \"PENDING_DELETION\" and the \"DELETED\" event is \"DELIVERED\"")
+@then('the secret is "PENDING_DELETION" and the "DELETED" event is "DELIVERED"')
 def secret_pending_deletion_and_deleted_event(lws_session):
     resp = _sm(lws_session).list_secrets(IncludePlannedDeletion=True)
     actual_names = [s["Name"] for s in resp.get("SecretList", [])]
@@ -231,8 +234,6 @@ def secret_pending_deletion_and_deleted_event(lws_session):
     )
 
 
-@then("the secret is \"ACTIVE\" with a new version and the \"ROTATED\" event is \"DELIVERED\"")
+@then('the secret is "ACTIVE" with a new version and the "ROTATED" event is "DELIVERED"')
 def secret_active_with_new_version_and_rotated_event():
     pytest.skip("Cannot verify secret rotation in lws")
-
-

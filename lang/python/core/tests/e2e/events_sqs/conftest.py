@@ -55,6 +55,7 @@ def _create_rule_targeting_sqs(lws_session, bus=TEST_BUS, rule=TEST_RULE):
 
 # ── Given: bus state ───────────────────────────────────────────────────
 
+
 @given("the event bus does not already exist")
 def event_bus_not_already_exist():
     """No-op: fresh state has no custom buses."""
@@ -70,12 +71,12 @@ def event_bus_exists(lws_session):
     _create_bus(lws_session)
 
 
-@given("the event bus is \"ACTIVE\"")
+@given('the event bus is "ACTIVE"')
 def event_bus_is_active_given():
     """No-op: buses are ACTIVE by default."""
 
 
-@given("the event bus is not \"ACTIVE\"")
+@given('the event bus is not "ACTIVE"')
 def event_bus_is_not_active_given(lws_session, world):
     try:
         _events(lws_session).delete_event_bus(Name=TEST_BUS)
@@ -94,6 +95,7 @@ def event_bus_does_not_exist():
 
 # ── Given: rule state ──────────────────────────────────────────────────
 
+
 @given("the rule does not already exist")
 def rule_not_already_exist():
     """No-op: fresh state has no rules."""
@@ -105,6 +107,7 @@ def rule_already_exists(lws_session):
 
 
 # ── Given: queue state ─────────────────────────────────────────────────
+
 
 @given("the queue does not already exist")
 def queue_not_already_exist():
@@ -121,12 +124,12 @@ def queue_exists(lws_session):
     _create_queue(lws_session)
 
 
-@given("the queue is \"ACTIVE\"")
+@given('the queue is "ACTIVE"')
 def queue_is_active_given():
     """No-op: queues are ACTIVE by default."""
 
 
-@given("the queue is not \"ACTIVE\"")
+@given('the queue is not "ACTIVE"')
 def queue_is_not_active_given(lws_session, world):
     pytest.skip("lws does not reject put_rule when the queue is not ACTIVE")
 
@@ -136,32 +139,34 @@ def queue_does_not_exist():
     pytest.skip("lws does not validate SQS queue target existence when creating a rule")
 
 
-@given("the target queue is \"ACTIVE\"")
+@given('the target queue is "ACTIVE"')
 def target_queue_is_active():
     """No-op: queues are ACTIVE by default after creation."""
 
 
-@given("the target queue is not \"ACTIVE\"")
+@given('the target queue is not "ACTIVE"')
 def target_queue_is_not_active():
     pytest.skip("lws does not reject put_events when the target queue is not ACTIVE")
 
 
 # ── Given: rule targeting queue ────────────────────────────────────────
 
-@given("an \"ENABLED\" rule exists on the bus targeting a queue")
+
+@given('an "ENABLED" rule exists on the bus targeting a queue')
 def enabled_rule_exists_targeting_queue(lws_session):
     _create_queue(lws_session)
     _create_rule_targeting_sqs(lws_session)
 
 
-@given("no \"ENABLED\" rule exists on the bus targeting a queue")
+@given('no "ENABLED" rule exists on the bus targeting a queue')
 def no_enabled_rule_targeting_queue():
     pytest.skip("lws does not reject put_events when no enabled rule exists targeting the queue")
 
 
 # ── Given: message/slot state ──────────────────────────────────────────
 
-@given("an \"AVAILABLE\" message exists in the queue")
+
+@given('an "AVAILABLE" message exists in the queue')
 def available_message_exists_in_queue(lws_session):
     _create_queue(lws_session)
     _sqs(lws_session).send_message(
@@ -170,7 +175,7 @@ def available_message_exists_in_queue(lws_session):
     )
 
 
-@given("no \"AVAILABLE\" message exists in the queue")
+@given('no "AVAILABLE" message exists in the queue')
 def no_available_message_in_queue():
     pytest.skip("Cannot ensure no messages exist in an empty queue without creating it first")
 
@@ -187,6 +192,7 @@ def no_message_slot_available():
 
 # ── When: actions ──────────────────────────────────────────────────────
 
+
 @when("an EventBridge event bus is created")
 def create_event_bus(lws_session, world):
     try:
@@ -197,7 +203,7 @@ def create_event_bus(lws_session, world):
         world["error"] = exc
 
 
-@when("an \"SQS\" queue is created")
+@when('an "SQS" queue is created')
 def create_queue(lws_session, world):
     try:
         world["result"] = _sqs(lws_session).create_queue(QueueName=TEST_QUEUE)
@@ -207,7 +213,7 @@ def create_queue(lws_session, world):
         world["error"] = exc
 
 
-@when("an EventBridge rule is created to route matching events to the \"SQS\" queue")
+@when('an EventBridge rule is created to route matching events to the "SQS" queue')
 def put_rule_targeting_sqs(lws_session, world):
     try:
         world["result"] = _events(lws_session).put_rule(
@@ -222,7 +228,7 @@ def put_rule_targeting_sqs(lws_session, world):
         world["error"] = exc
 
 
-@when("an event is published to the bus and routed to the target \"SQS\" queue")
+@when('an event is published to the bus and routed to the target "SQS" queue')
 def put_event_routed_to_sqs(lws_session, world):
     try:
         world["result"] = _events(lws_session).put_events(
@@ -241,7 +247,7 @@ def put_event_routed_to_sqs(lws_session, world):
         world["error"] = exc
 
 
-@when("a message is consumed from the \"SQS\" queue")
+@when('a message is consumed from the "SQS" queue')
 def consume_message_from_sqs(lws_session, world):
     try:
         resp = _sqs(lws_session).receive_message(
@@ -264,42 +270,35 @@ def consume_message_from_sqs(lws_session, world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the event bus is \"ACTIVE\"")
+
+@then('the event bus is "ACTIVE"')
 def event_bus_is_active_then(lws_session):
     resp = _events(lws_session).list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]
-    assert TEST_BUS in actual_names, (
-        f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
-    )
+    assert (
+        TEST_BUS in actual_names
+    ), f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
 
 
-@then("the queue is \"ACTIVE\"")
+@then('the queue is "ACTIVE"')
 def queue_is_active_then(lws_session):
     resp = _sqs(lws_session).list_queues(QueueNamePrefix=TEST_QUEUE)
     actual_urls = resp.get("QueueUrls", [])
-    assert any(TEST_QUEUE in u for u in actual_urls), (
-        f"Expected queue '{TEST_QUEUE}' to be ACTIVE but not found in: {actual_urls}"
-    )
+    assert any(
+        TEST_QUEUE in u for u in actual_urls
+    ), f"Expected queue '{TEST_QUEUE}' to be ACTIVE but not found in: {actual_urls}"
 
 
-@then("the rule is \"ENABLED\" and will forward matching events to the queue")
+@then('the rule is "ENABLED" and will forward matching events to the queue')
 def rule_enabled_targeting_queue(world):
-    assert world["error"] is None, (
-        f"Expected put_rule to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected put_rule to succeed but got: {world['error']}"
 
 
-@then("the message is \"AVAILABLE\" in the target queue")
+@then('the message is "AVAILABLE" in the target queue')
 def message_available_in_target_queue(world):
-    assert world["error"] is None, (
-        f"Expected put_events to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected put_events to succeed but got: {world['error']}"
 
 
-@then("the message is \"DELETED\"")
+@then('the message is "DELETED"')
 def message_is_deleted(world):
-    assert world["error"] is None, (
-        f"Expected consume message to succeed but got: {world['error']}"
-    )
-
-
+    assert world["error"] is None, f"Expected consume message to succeed but got: {world['error']}"

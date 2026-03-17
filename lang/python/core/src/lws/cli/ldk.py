@@ -619,10 +619,8 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
 
     # Create all providers in always-on mode (no app model)
     iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
-    (
-        providers, ports, chaos_configs, aws_fake_configs, lifecycle_configs
-    ) = _create_terraform_providers(
-        config, data_dir, project_dir, iam_auth_bundle=iam_auth_bundle
+    providers, ports, chaos_configs, aws_fake_configs, lifecycle_configs = (
+        _create_terraform_providers(config, data_dir, project_dir, iam_auth_bundle=iam_auth_bundle)
     )
 
     orchestrator = Orchestrator()

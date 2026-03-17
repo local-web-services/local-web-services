@@ -78,9 +78,7 @@ class _Cluster:
 
     def __init__(self, cluster_name: str) -> None:
         self.cluster_name = cluster_name
-        self.cluster_arn = (
-            f"arn:aws:ecs:{_REGION}:{_ACCOUNT_ID}:cluster/{cluster_name}"
-        )
+        self.cluster_arn = f"arn:aws:ecs:{_REGION}:{_ACCOUNT_ID}:cluster/{cluster_name}"
         self.status = "ACTIVE"
 
     def to_dict(self) -> dict[str, Any]:

@@ -237,9 +237,7 @@ class EventBridgeProvider(IEventBus):
                 raise KeyError(f"Event bus not found: {bus_name}")
             rules_on_bus = [r for r in self._rules.values() if r.event_bus_name == bus_name]
             if rules_on_bus:
-                raise ValueError(
-                    f"Cannot delete event bus '{bus_name}': it has associated rules"
-                )
+                raise ValueError(f"Cannot delete event bus '{bus_name}': it has associated rules")
             del self._buses[bus_name]
 
     def describe_event_bus(self, bus_name: str) -> dict:
@@ -263,9 +261,7 @@ class EventBridgeProvider(IEventBus):
                 raise KeyError(f"Rule not found: {rule_name}")
             rule = self._rules[rule_name]
             if rule.targets:
-                raise ValueError(
-                    f"Cannot delete rule '{rule_name}': it has active targets"
-                )
+                raise ValueError(f"Cannot delete rule '{rule_name}': it has active targets")
             del self._rules[rule_name]
 
     def describe_rule(
@@ -327,9 +323,7 @@ class EventBridgeProvider(IEventBus):
             ids_set = set(ids)
             missing = ids_set - existing_ids
             if missing:
-                raise ValueError(
-                    f"Target(s) not found on rule '{rule_name}': {missing}"
-                )
+                raise ValueError(f"Target(s) not found on rule '{rule_name}': {missing}")
             rule.targets = [t for t in rule.targets if t.target_id not in ids_set]
         return []
 

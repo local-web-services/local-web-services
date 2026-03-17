@@ -176,8 +176,13 @@ def create_management_router(
     _lifecycle_configs = lifecycle_configs or {}
 
     _register_core_routes(
-        router, orchestrator, all_providers, _resource_metadata,
-        _chaos_configs, _aws_fake_configs, _lifecycle_configs,
+        router,
+        orchestrator,
+        all_providers,
+        _resource_metadata,
+        _chaos_configs,
+        _aws_fake_configs,
+        _lifecycle_configs,
     )
     _register_chaos_routes(router, _chaos_configs)
     _register_iam_auth_routes(router, iam_auth_bundle)

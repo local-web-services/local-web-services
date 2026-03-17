@@ -809,9 +809,7 @@ class ApiGatewayV2Router:
         # Lifecycle: set CREATING status if dwell time configured
         if self._lifecycle.enabled and self._lifecycle.create_dwell_ms > 0:
             self._tracker.set_state(api.api_id, "CREATING")
-            self._tracker.schedule_transition(
-                api.api_id, "ACTIVE", self._lifecycle.create_dwell_ms
-            )
+            self._tracker.schedule_transition(api.api_id, "ACTIVE", self._lifecycle.create_dwell_ms)
         return _json_response(_format_http_api(api), 201)
 
     async def _list_apis(self, _request: Request) -> Response:

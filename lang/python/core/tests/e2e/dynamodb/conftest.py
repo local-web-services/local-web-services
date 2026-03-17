@@ -35,6 +35,7 @@ def _put_item(lws_session, name=TEST_TABLE):
 
 # ── Given: table state setup ───────────────────────────────────────────
 
+
 @given("the table does not already exist")
 def table_not_already_exist():
     """No-op: fresh state after reset has no tables."""
@@ -130,7 +131,7 @@ def condition_is_not_satisfied():
     """No-op: empty table means condition on existing item is not satisfied."""
 
 
-@given("the \"GSI\" exists")
+@given('the "GSI" exists')
 def gsi_exists():
     pytest.skip("Cannot configure GSI in this abstract context")
 
@@ -242,6 +243,7 @@ def transactions_table_is_not_active(lws_session, world):
 
 # ── When: actions ──────────────────────────────────────────────────────
 
+
 @when("a table is created")
 def create_table(lws_session, world):
     try:
@@ -278,9 +280,8 @@ def activate_table(lws_session, world):
     # If lifecycle dwell is not active, the table was created ACTIVE (not CREATING).
     import json as _json
     import urllib.request as _urllib_req
-    with _urllib_req.urlopen(
-        f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle"
-    ) as _resp:
+
+    with _urllib_req.urlopen(f"http://127.0.0.1:{lws_session._mgmt_port}/_ldk/lifecycle") as _resp:
         lifecycle_cfg = _json.loads(_resp.read()).get("dynamodb", {})
     lifecycle_enabled = lifecycle_cfg.get("enabled", False)
     create_dwell_ms = lifecycle_cfg.get("create_dwell_ms", 0)
@@ -588,15 +589,17 @@ def clear_committed_transaction(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then('the table is in "CREATING" state')
 def table_is_creating_then(lws_session):
     """In lws, tables may be CREATING or ACTIVE. Accept either."""
     client = _dynamo(lws_session)
     resp = client.describe_table(TableName=TEST_TABLE)
     actual_status = resp["Table"]["TableStatus"]
-    assert actual_status in ("CREATING", "ACTIVE"), (
-        f"Expected table to be CREATING or ACTIVE but got: {actual_status}"
-    )
+    assert actual_status in (
+        "CREATING",
+        "ACTIVE",
+    ), f"Expected table to be CREATING or ACTIVE but got: {actual_status}"
 
 
 @then('the table is "ACTIVE" and ready for reads and writes')
@@ -604,9 +607,9 @@ def table_is_active_then(lws_session):
     client = _dynamo(lws_session)
     resp = client.list_tables()
     actual_tables = resp.get("TableNames", [])
-    assert TEST_TABLE in actual_tables, (
-        f"Expected table '{TEST_TABLE}' to be ACTIVE but not found in: {actual_tables}"
-    )
+    assert (
+        TEST_TABLE in actual_tables
+    ), f"Expected table '{TEST_TABLE}' to be ACTIVE but not found in: {actual_tables}"
 
 
 @then("the table is deleted")
@@ -614,27 +617,27 @@ def table_is_deleted_then(lws_session):
     client = _dynamo(lws_session)
     resp = client.list_tables()
     actual_tables = resp.get("TableNames", [])
-    assert TEST_TABLE not in actual_tables, (
-        f"Expected table '{TEST_TABLE}' to be deleted but found in: {actual_tables}"
-    )
+    assert (
+        TEST_TABLE not in actual_tables
+    ), f"Expected table '{TEST_TABLE}' to be deleted but found in: {actual_tables}"
 
 
 @then("the table description is returned")
 def table_description_returned_then(world):
     expected_field = "Table"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected table description with 'Table' key but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected table description with 'Table' key but got: {actual_result}"
 
 
 @then("all tables are listed")
 def all_tables_listed_then(world):
     expected_field = "TableNames"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected TableNames in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected TableNames in result but got: {actual_result}"
 
 
 @then('the item exists in the table and "GSI" propagation is pending')
@@ -645,9 +648,7 @@ def item_exists_and_gsi_pending_then(lws_session):
         TableName=TEST_TABLE,
         Key={TEST_PK: {"S": TEST_ITEM_KEY}},
     )
-    assert resp.get("Item"), (
-        f"Expected item with key '{TEST_ITEM_KEY}' to exist in table"
-    )
+    assert resp.get("Item"), f"Expected item with key '{TEST_ITEM_KEY}' to exist in table"
 
 
 @then("the item does not exist in the table")
@@ -657,9 +658,7 @@ def item_does_not_exist_then(lws_session):
         TableName=TEST_TABLE,
         Key={TEST_PK: {"S": TEST_ITEM_KEY}},
     )
-    assert not resp.get("Item"), (
-        f"Expected item with key '{TEST_ITEM_KEY}' to not exist in table"
-    )
+    assert not resp.get("Item"), f"Expected item with key '{TEST_ITEM_KEY}' to not exist in table"
 
 
 @then("the item is updated in the table")
@@ -671,9 +670,9 @@ def item_is_updated_then(lws_session):
     )
     expected_val = TEST_UPDATED_VAL
     actual_val = resp.get("Item", {}).get("data", {}).get("S")
-    assert actual_val == expected_val, (
-        f"Expected item data to be '{expected_val}' but got '{actual_val}'"
-    )
+    assert (
+        actual_val == expected_val
+    ), f"Expected item data to be '{expected_val}' but got '{actual_val}'"
 
 
 @then("the item is deleted from the table")
@@ -683,9 +682,7 @@ def item_is_deleted_then(lws_session):
         TableName=TEST_TABLE,
         Key={TEST_PK: {"S": TEST_ITEM_KEY}},
     )
-    assert not resp.get("Item"), (
-        f"Expected item with key '{TEST_ITEM_KEY}' to be deleted"
-    )
+    assert not resp.get("Item"), f"Expected item with key '{TEST_ITEM_KEY}' to be deleted"
 
 
 @then("the query results contain the item")
@@ -697,9 +694,7 @@ def query_results_contain_item_then(lws_session):
         ExpressionAttributeNames={"#pk": TEST_PK},
         ExpressionAttributeValues={":pk": {"S": TEST_ITEM_KEY}},
     )
-    assert resp.get("Count", 0) >= 1, (
-        "Expected at least one item in query results"
-    )
+    assert resp.get("Count", 0) >= 1, "Expected at least one item in query results"
 
 
 @then("the scan results contain the item")
@@ -714,16 +709,12 @@ def scan_results_contain_item_then(lws_session):
 @then('the transaction is "PENDING"')
 def transaction_is_pending_then(world):
     """transact_write_items returns synchronously in lws; accept success."""
-    assert world["error"] is None, (
-        f"Expected transaction to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected transaction to succeed but got: {world['error']}"
 
 
 @then('the transaction is "COMMITTED"')
 def transaction_is_committed_then(world):
-    assert world["error"] is None, (
-        f"Expected transaction to be committed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected transaction to be committed but got: {world['error']}"
 
 
 @then('the transaction is "ROLLED_BACK"')
@@ -765,36 +756,36 @@ def every_table_has_valid_status(lws_session):
 def table_metadata_returned_then(world):
     expected_field = "Table"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected table metadata with 'Table' key but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected table metadata with 'Table' key but got: {actual_result}"
 
 
 @then("the list of tables is returned")
 def list_of_tables_returned_then(world):
     expected_field = "TableNames"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected TableNames in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected TableNames in result but got: {actual_result}"
 
 
 @then("all items are returned")
 def all_items_returned_then(world):
     expected_field = "Items"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected Items in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected Items in result but got: {actual_result}"
 
 
 @then("the item value is returned")
 def item_value_returned_then(world):
     expected_field = "Item"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected Item in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected Item in result but got: {actual_result}"
 
 
 @then('the table is marked as "DELETED" and all its items are removed')
@@ -802,9 +793,9 @@ def table_marked_deleted_then(lws_session):
     client = _dynamo(lws_session)
     resp = client.list_tables()
     actual_tables = resp.get("TableNames", [])
-    assert TEST_TABLE not in actual_tables, (
-        f"Expected table '{TEST_TABLE}' to be deleted but found in: {actual_tables}"
-    )
+    assert (
+        TEST_TABLE not in actual_tables
+    ), f"Expected table '{TEST_TABLE}' to be deleted but found in: {actual_tables}"
 
 
 @then("the item is updated or unchanged (conditional update)")
@@ -814,27 +805,25 @@ def item_updated_or_unchanged_then(lws_session):
         TableName=TEST_TABLE,
         Key={TEST_PK: {"S": TEST_ITEM_KEY}},
     )
-    assert resp.get("Item"), (
-        f"Expected item with key '{TEST_ITEM_KEY}' to exist in table"
-    )
+    assert resp.get("Item"), f"Expected item with key '{TEST_ITEM_KEY}' to exist in table"
 
 
 @then("the item is deleted or unchanged (conditional delete)")
 def item_deleted_or_unchanged_then(lws_session, world):
     """After a delete attempt, the item is either gone or was never there."""
     actual_error = world["error"]
-    assert actual_error is None, (
-        f"Expected delete to succeed (item deleted or not present) but got: {actual_error}"
-    )
+    assert (
+        actual_error is None
+    ), f"Expected delete to succeed (item deleted or not present) but got: {actual_error}"
 
 
 @then("matching items are returned")
 def matching_items_returned_then(world):
     expected_field = "Items"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected Items in query result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected Items in query result but got: {actual_result}"
 
 
 @then("the item is written if the condition holds, otherwise the write is rejected")
@@ -843,12 +832,10 @@ def item_written_if_condition_holds_then(world):
     actual_error = world["error"]
     if actual_error is not None:
         expected_error_code = "ConditionalCheckFailedException"
-        actual_error_code = getattr(actual_error, "response", {}).get(
-            "Error", {}
-        ).get("Code", "")
-        assert actual_error_code == expected_error_code, (
-            f"Expected ConditionalCheckFailedException or success but got: {actual_error}"
-        )
+        actual_error_code = getattr(actual_error, "response", {}).get("Error", {}).get("Code", "")
+        assert (
+            actual_error_code == expected_error_code
+        ), f"Expected ConditionalCheckFailedException or success but got: {actual_error}"
 
 
 @then('"GSI" pending write count is never negative')

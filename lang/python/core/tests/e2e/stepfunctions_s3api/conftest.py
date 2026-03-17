@@ -13,9 +13,7 @@ TEST_BUCKET = "e2e-test-bucket-1"
 TEST_KEY = "e2e-test-key-1"
 TEST_BODY = b"test-data-content-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
-PASS_DEFINITION = json.dumps(
-    {"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}}
-)
+PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 TEST_INPUT = '{"key": "value"}'
 
 
@@ -54,6 +52,7 @@ def _start_execution(lws_session, name=TEST_SM):
 
 # ── Given: state machine state ────────────────────────────────────────
 
+
 @given("the state machine does not already exist")
 def sm_not_already_exist():
     """No-op: fresh state has no state machines."""
@@ -69,12 +68,12 @@ def sm_exists(lws_session):
     _create_sm(lws_session)
 
 
-@given("the state machine is \"ACTIVE\"")
+@given('the state machine is "ACTIVE"')
 def sm_is_active_given():
     """No-op: state machines are ACTIVE immediately after creation."""
 
 
-@given("the state machine is not \"ACTIVE\"")
+@given('the state machine is not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
@@ -108,6 +107,7 @@ def sm_already_has_s3_task():
 
 # ── Given: bucket state ────────────────────────────────────────────────
 
+
 @given("the bucket does not already exist")
 def bucket_not_already_exist():
     """No-op: fresh state has no buckets."""
@@ -123,12 +123,12 @@ def bucket_exists(lws_session):
     _create_bucket(lws_session)
 
 
-@given("the bucket is \"ACTIVE\"")
+@given('the bucket is "ACTIVE"')
 def bucket_is_active_given():
     """No-op: buckets are ACTIVE by default after creation."""
 
 
-@given("the bucket is not \"ACTIVE\"")
+@given('the bucket is not "ACTIVE"')
 def bucket_is_not_active_given(lws_session, world):
     lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
@@ -141,12 +141,12 @@ def bucket_does_not_exist():
     """No-op: fresh state has no buckets."""
 
 
-@given("the target bucket is \"ACTIVE\"")
+@given('the target bucket is "ACTIVE"')
 def target_bucket_is_active():
     """No-op: buckets are ACTIVE by default after creation."""
 
 
-@given("the target bucket is not \"ACTIVE\"")
+@given('the target bucket is not "ACTIVE"')
 def target_bucket_is_not_active(lws_session, world):
     lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
@@ -156,18 +156,20 @@ def target_bucket_is_not_active(lws_session, world):
 
 # ── Given: execution state ────────────────────────────────────────────
 
-@given("an execution is \"RUNNING\"")
+
+@given('an execution is "RUNNING"')
 def execution_is_running_given(lws_session):
     _create_sm(lws_session)
     _start_execution(lws_session)
 
 
-@given("no execution is \"RUNNING\"")
+@given('no execution is "RUNNING"')
 def no_execution_is_running():
     """No-op: fresh state has no executions."""
 
 
 # ── Given: object state ───────────────────────────────────────────────
+
 
 @given("an object slot is available")
 def object_slot_available():
@@ -179,18 +181,19 @@ def no_object_slot_available():
     pytest.skip("Cannot exhaust object slot limit")
 
 
-@given("an object \"EXISTS\" in the target bucket")
+@given('an object "EXISTS" in the target bucket')
 def object_exists_in_target_bucket(lws_session):
     _create_bucket(lws_session)
     _s3(lws_session).put_object(Bucket=TEST_BUCKET, Key=TEST_KEY, Body=TEST_BODY)
 
 
-@given("no object \"EXISTS\" in the target bucket")
+@given('no object "EXISTS" in the target bucket')
 def no_object_exists_in_target_bucket():
     """No-op: fresh bucket has no objects."""
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an execution slot is available")
 def execution_slot_available():
@@ -203,6 +206,7 @@ def no_execution_slot_available():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("a Step Functions state machine is created")
 def create_state_machine(lws_session, world):
@@ -265,33 +269,34 @@ def execution_reads_object_not_found(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the state machine is \"ACTIVE\"")
+
+@then('the state machine is "ACTIVE"')
 def sm_is_active_then(lws_session):
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the state machine is \"ACTIVE\" with no S3 task configured")
+@then('the state machine is "ACTIVE" with no S3 task configured')
 def sm_is_active_with_no_s3_task(lws_session):
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the bucket is \"ACTIVE\"")
+@then('the bucket is "ACTIVE"')
 def bucket_is_active_then(lws_session):
     resp = _s3(lws_session).list_buckets()
     actual_buckets = [b["Name"] for b in resp.get("Buckets", [])]
-    assert TEST_BUCKET in actual_buckets, (
-        f"Expected bucket '{TEST_BUCKET}' to exist but not found in: {actual_buckets}"
-    )
+    assert (
+        TEST_BUCKET in actual_buckets
+    ), f"Expected bucket '{TEST_BUCKET}' to exist but not found in: {actual_buckets}"
 
 
 @then("the state machine will read or write objects to the bucket when it reaches the task state")
@@ -299,26 +304,22 @@ def sm_will_read_write_objects(world):
     pytest.skip("Cannot observe S3 task configuration in lws")
 
 
-@then("the execution is \"RUNNING\"")
+@then('the execution is "RUNNING"')
 def execution_is_running_then(world):
-    assert world["error"] is None, (
-        f"Expected start_execution to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected start_execution to succeed but got: {world['error']}"
     assert "executionArn" in world["result"], "Expected 'executionArn' in response"
 
 
-@then("the object \"EXISTS\" in the bucket and the execution is \"SUCCEEDED\"")
+@then('the object "EXISTS" in the bucket and the execution is "SUCCEEDED"')
 def object_exists_and_execution_succeeded(world):
     pytest.skip("Cannot observe internal execution S3 write in lws")
 
 
-@then("the execution is \"SUCCEEDED\"")
+@then('the execution is "SUCCEEDED"')
 def execution_is_succeeded_then(world):
     pytest.skip("Cannot observe internal execution S3 read success in lws")
 
 
-@then("the execution is \"FAILED\" with a NoSuchKey error")
+@then('the execution is "FAILED" with a NoSuchKey error')
 def execution_failed_no_such_key(world):
     pytest.skip("Cannot observe internal execution S3 read failure in lws")
-
-

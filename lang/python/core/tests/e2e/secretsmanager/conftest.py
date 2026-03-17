@@ -24,6 +24,7 @@ def _create_secret(lws_session, name=TEST_SECRET):
 
 # ── Given: secret state setup ──────────────────────────────────────────
 
+
 @given("the secret does not already exist")
 def secret_not_already_exist():
     """No-op: fresh state has no secrets."""
@@ -81,6 +82,7 @@ def recovery_window_not_open_given():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("a secret is created")
 def create_secret(lws_session, world):
@@ -163,9 +165,7 @@ def describe_secret(lws_session, world):
 @when("metadata or description for an active secret is updated")
 def update_secret(lws_session, world):
     try:
-        resp = _sm(lws_session).update_secret(
-            SecretId=TEST_SECRET, Description=TEST_DESCRIPTION
-        )
+        resp = _sm(lws_session).update_secret(SecretId=TEST_SECRET, Description=TEST_DESCRIPTION)
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:
@@ -251,62 +251,53 @@ def recovery_window_expires(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then('the secret is "ACTIVE" with an initial version')
 def secret_is_active_with_initial_version(lws_session):
     resp = _sm(lws_session).describe_secret(SecretId=TEST_SECRET)
-    assert "DeletedDate" not in resp, (
-        f"Expected secret to be ACTIVE but got DeletedDate: {resp.get('DeletedDate')}"
-    )
-    assert resp.get("Name") == TEST_SECRET, (
-        f"Expected secret name '{TEST_SECRET}' but got: {resp.get('Name')}"
-    )
+    assert (
+        "DeletedDate" not in resp
+    ), f"Expected secret to be ACTIVE but got DeletedDate: {resp.get('DeletedDate')}"
+    assert (
+        resp.get("Name") == TEST_SECRET
+    ), f"Expected secret name '{TEST_SECRET}' but got: {resp.get('Name')}"
 
 
 @then('the secret is "DELETED" and the recovery window is open')
 def secret_is_deleted_and_window_open(world):
-    assert world["error"] is None, (
-        f"Expected delete_secret to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected delete_secret to succeed but got: {world['error']}"
 
 
 @then("the current secret value is returned")
 def current_secret_value_returned(world):
-    assert world["error"] is None, (
-        f"Expected get_secret_value to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected get_secret_value to succeed but got: {world['error']}"
     expected_value = TEST_VALUE
     actual_value = world["result"].get("SecretString", "")
-    assert actual_value == expected_value, (
-        f"Expected secret value '{expected_value}' but got '{actual_value}'"
-    )
+    assert (
+        actual_value == expected_value
+    ), f"Expected secret value '{expected_value}' but got '{actual_value}'"
 
 
 @then("the secret has a new current version and the previous version is retained")
 def secret_has_new_version(world):
-    assert world["error"] is None, (
-        f"Expected put_secret_value to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected put_secret_value to succeed but got: {world['error']}"
     assert "VersionId" in world["result"], "Expected 'VersionId' in response"
 
 
 @then("the list of secrets is returned")
 def list_of_secrets_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_secrets to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected list_secrets to succeed but got: {world['error']}"
     assert "SecretList" in world["result"], "Expected 'SecretList' in response"
 
 
 @then("the secret metadata is returned")
 def secret_metadata_returned(world):
-    assert world["error"] is None, (
-        f"Expected describe_secret to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected describe_secret to succeed but got: {world['error']}"
     expected_name = TEST_SECRET
     actual_name = world["result"].get("Name", "")
-    assert actual_name == expected_name, (
-        f"Expected secret name '{expected_name}' but got '{actual_name}'"
-    )
+    assert (
+        actual_name == expected_name
+    ), f"Expected secret name '{expected_name}' but got '{actual_name}'"
 
 
 @then("the secret metadata is updated")
@@ -314,38 +305,34 @@ def secret_metadata_updated(lws_session):
     resp = _sm(lws_session).describe_secret(SecretId=TEST_SECRET)
     expected_description = TEST_DESCRIPTION
     actual_description = resp.get("Description", "")
-    assert actual_description == expected_description, (
-        f"Expected description '{expected_description}' but got '{actual_description}'"
-    )
+    assert (
+        actual_description == expected_description
+    ), f"Expected description '{expected_description}' but got '{actual_description}'"
 
 
 @then('the secret is "ACTIVE" again and the recovery window is closed')
 def secret_is_active_again(lws_session):
     resp = _sm(lws_session).describe_secret(SecretId=TEST_SECRET)
-    assert "DeletedDate" not in resp, (
-        f"Expected secret to be ACTIVE (no DeletedDate) but got: {resp.get('DeletedDate')}"
-    )
+    assert (
+        "DeletedDate" not in resp
+    ), f"Expected secret to be ACTIVE (no DeletedDate) but got: {resp.get('DeletedDate')}"
 
 
 @then("the secret can no longer be restored")
 def secret_cannot_be_restored(world):
-    assert world["error"] is None, (
-        f"Expected recovery_window_expires action to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected recovery_window_expires action to succeed but got: {world['error']}"
 
 
 @then("the specified tags are associated with the secret")
 def specified_tags_associated(world):
-    assert world["error"] is None, (
-        f"Expected tag_resource to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected tag_resource to succeed but got: {world['error']}"
 
 
 @then("the specified tags are no longer associated with the secret")
 def specified_tags_disassociated(world):
-    assert world["error"] is None, (
-        f"Expected untag_resource to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected untag_resource to succeed but got: {world['error']}"
 
 
 @then("a new secret version is created and the previous version is retained")

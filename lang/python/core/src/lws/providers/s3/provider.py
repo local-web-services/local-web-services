@@ -79,9 +79,11 @@ class S3Provider(IObjectStore):
         # Remove dynamic buckets that are not in the pre-configured set
         # We must work from the current filesystem state
         s3_dir = self._data_dir / "s3"
-        current_bucket_dirs = {
-            d.name for d in s3_dir.iterdir() if d.is_dir() and d.name != ".metadata"
-        } if s3_dir.exists() else set()
+        current_bucket_dirs = (
+            {d.name for d in s3_dir.iterdir() if d.is_dir() and d.name != ".metadata"}
+            if s3_dir.exists()
+            else set()
+        )
 
         dynamic_buckets = current_bucket_dirs - preconfigured
         for bucket_name in dynamic_buckets:

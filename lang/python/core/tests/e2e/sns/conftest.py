@@ -27,6 +27,7 @@ def _get_topic_arn(lws_session, name=TEST_TOPIC):
 
 # ── Given: topic state setup ───────────────────────────────────────────
 
+
 @given("the topic does not already exist")
 def topic_not_already_exist():
     """No-op: fresh state has no topics."""
@@ -69,6 +70,7 @@ def topic_does_not_exist(lws_session, world):
 
 
 # ── Given: subscription state setup ───────────────────────────────────
+
 
 @given("the subscription slot is available")
 def subscription_slot_available():
@@ -212,6 +214,7 @@ def subscription_does_not_exist():
 
 # ── Given: delivery state setup ────────────────────────────────────────
 
+
 @given("the delivery exists")
 def delivery_exists():
     pytest.skip("Cannot create in-flight delivery programmatically")
@@ -263,6 +266,7 @@ def confirmation_token_expired():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when('an "SNS" topic is created')
 def create_topic(lws_session, world):
@@ -381,15 +385,16 @@ def confirmation_token_expires_when(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then('the topic is "ACTIVE"')
 def topic_is_active_then(lws_session):
     client = _sns(lws_session)
     resp = client.list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
     expected_topic = TEST_TOPIC
-    assert any(expected_topic in arn for arn in actual_arns), (
-        f"Expected topic '{expected_topic}' to exist but not found in: {actual_arns}"
-    )
+    assert any(
+        expected_topic in arn for arn in actual_arns
+    ), f"Expected topic '{expected_topic}' to exist but not found in: {actual_arns}"
 
 
 @then('the topic is "DELETED" and its subscriptions are removed')
@@ -397,9 +402,9 @@ def topic_is_deleted_and_subscriptions_removed_then(lws_session):
     client = _sns(lws_session)
     resp = client.list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
-    assert not any(TEST_TOPIC in arn for arn in actual_arns), (
-        f"Expected topic '{TEST_TOPIC}' to be deleted but found in: {actual_arns}"
-    )
+    assert not any(
+        TEST_TOPIC in arn for arn in actual_arns
+    ), f"Expected topic '{TEST_TOPIC}' to be deleted but found in: {actual_arns}"
 
 
 @then("the topic is deleted")
@@ -407,9 +412,9 @@ def topic_is_deleted_then(lws_session):
     client = _sns(lws_session)
     resp = client.list_topics()
     actual_arns = [t["TopicArn"] for t in resp.get("Topics", [])]
-    assert not any(TEST_TOPIC in arn for arn in actual_arns), (
-        f"Expected topic '{TEST_TOPIC}' to be deleted but found in: {actual_arns}"
-    )
+    assert not any(
+        TEST_TOPIC in arn for arn in actual_arns
+    ), f"Expected topic '{TEST_TOPIC}' to be deleted but found in: {actual_arns}"
 
 
 @then('the subscription is "PENDING_CONFIRMATION" or "CONFIRMED"')
@@ -425,16 +430,12 @@ def subscription_is_confirmed_then(world):
 
 @then("the subscription is deleted")
 def subscription_is_deleted_then(world):
-    assert world["error"] is None, (
-        f"Expected unsubscribe to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected unsubscribe to succeed but got: {world['error']}"
 
 
 @then("the message is delivered to confirmed subscriptions")
 def message_delivered_then(world):
-    assert world["error"] is None, (
-        f"Expected publish to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected publish to succeed but got: {world['error']}"
 
 
 @then('the delivery is "DONE"')
@@ -464,9 +465,9 @@ def delivery_retry_count_within_limit():
 
 @then('the subscription is "DELETED"')
 def subscription_is_deleted_by_removal_then(world):
-    assert world["error"] is None, (
-        f"Expected subscription removal to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected subscription removal to succeed but got: {world['error']}"
 
 
 @then("the delivery retry count is incremented")

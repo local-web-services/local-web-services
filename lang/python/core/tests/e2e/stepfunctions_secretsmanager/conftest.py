@@ -12,9 +12,7 @@ TEST_SM = "test-sm-1"
 TEST_SECRET = "e2e-test-secret-1"
 TEST_SECRET_VALUE = "e2e-test-secret-value-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
-PASS_DEFINITION = json.dumps(
-    {"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}}
-)
+PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 TEST_INPUT = '{"key": "value"}'
 
 
@@ -53,6 +51,7 @@ def _start_execution(lws_session, name=TEST_SM):
 
 # ── Given: state machine state ────────────────────────────────────────
 
+
 @given("the state machine does not already exist")
 def sm_not_already_exist():
     """No-op: fresh state has no state machines."""
@@ -68,12 +67,12 @@ def sm_exists(lws_session):
     _create_sm(lws_session)
 
 
-@given("the state machine is \"ACTIVE\"")
+@given('the state machine is "ACTIVE"')
 def sm_is_active_given():
     """No-op: state machines are ACTIVE immediately after creation."""
 
 
-@given("the state machine is not \"ACTIVE\"")
+@given('the state machine is not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
@@ -92,6 +91,7 @@ def sm_does_not_exist():
 
 # ── Given: secret state ────────────────────────────────────────────────
 
+
 @given("the secret does not already exist")
 def secret_not_already_exist():
     """No-op: fresh state has no secrets."""
@@ -107,22 +107,22 @@ def secret_exists(lws_session):
     _create_secret(lws_session)
 
 
-@given("the secret exists and is \"ACTIVE\"")
+@given('the secret exists and is "ACTIVE"')
 def secret_exists_and_is_active(lws_session):
     _create_secret(lws_session)
 
 
-@given("the secret does not exist or is not \"ACTIVE\"")
+@given('the secret does not exist or is not "ACTIVE"')
 def secret_not_exist_or_not_active():
     """No-op: fresh state has no secrets."""
 
 
-@given("the secret is \"ACTIVE\"")
+@given('the secret is "ACTIVE"')
 def secret_is_active_given():
     """No-op: secrets are ACTIVE immediately after creation."""
 
 
-@given("the secret is not \"ACTIVE\"")
+@given('the secret is not "ACTIVE"')
 def secret_is_not_active_given(lws_session, world):
     try:
         _sm_client(lws_session).delete_secret(SecretId=TEST_SECRET, ForceDeleteWithoutRecovery=True)
@@ -139,7 +139,7 @@ def secret_does_not_exist():
     """No-op: fresh state has no secrets."""
 
 
-@given("the secret is \"PENDING_DELETION\"")
+@given('the secret is "PENDING_DELETION"')
 def secret_is_pending_deletion(lws_session):
     _create_secret(lws_session)
     _sm_client(lws_session).delete_secret(SecretId=TEST_SECRET)
@@ -152,18 +152,20 @@ def secret_is_not_pending_deletion(lws_session):
 
 # ── Given: execution state ────────────────────────────────────────────
 
-@given("an execution is \"RUNNING\"")
+
+@given('an execution is "RUNNING"')
 def execution_is_running_given(lws_session):
     _create_sm(lws_session)
     _start_execution(lws_session)
 
 
-@given("no execution is \"RUNNING\"")
+@given('no execution is "RUNNING"')
 def no_execution_is_running():
     """No-op: fresh state has no executions."""
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an execution slot is available")
 def execution_slot_available():
@@ -176,6 +178,7 @@ def no_execution_slot_available():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("a Step Functions state machine is created")
 def create_state_machine(lws_session, world):
@@ -229,7 +232,7 @@ def start_execution(lws_session, world):
         world["error"] = exc
 
 
-@when("a running execution reads an \"ACTIVE\" secret and the task succeeds")
+@when('a running execution reads an "ACTIVE" secret and the task succeeds')
 def execution_reads_secret_succeeds(world):
     pytest.skip("Cannot trigger internal execution step that reads from Secrets Manager")
 
@@ -241,26 +244,27 @@ def execution_reads_secret_fails(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the state machine is \"ACTIVE\"")
+
+@then('the state machine is "ACTIVE"')
 def sm_is_active_then(lws_session):
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=_sm_arn())
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the secret is \"ACTIVE\"")
+@then('the secret is "ACTIVE"')
 def secret_is_active_then(lws_session):
     resp = _sm_client(lws_session).list_secrets()
     actual_names = [s["Name"] for s in resp.get("SecretList", [])]
-    assert TEST_SECRET in actual_names, (
-        f"Expected secret '{TEST_SECRET}' to exist but not found in: {actual_names}"
-    )
+    assert (
+        TEST_SECRET in actual_names
+    ), f"Expected secret '{TEST_SECRET}' to exist but not found in: {actual_names}"
 
 
-@then("the secret is \"PENDING_DELETION\" and will cause task failures when read")
+@then('the secret is "PENDING_DELETION" and will cause task failures when read')
 def secret_is_pending_deletion_then(lws_session):
     resp = _sm_client(lws_session).list_secrets(IncludePlannedDeletion=True)
     actual_names = [s["Name"] for s in resp.get("SecretList", [])]
@@ -270,21 +274,17 @@ def secret_is_pending_deletion_then(lws_session):
     )
 
 
-@then("the execution is \"RUNNING\"")
+@then('the execution is "RUNNING"')
 def execution_is_running_then(world):
-    assert world["error"] is None, (
-        f"Expected start_execution to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected start_execution to succeed but got: {world['error']}"
     assert "executionArn" in world["result"], "Expected 'executionArn' in response"
 
 
-@then("the execution is \"SUCCEEDED\"")
+@then('the execution is "SUCCEEDED"')
 def execution_is_succeeded_then(world):
     pytest.skip("Cannot observe internal execution Secrets Manager read success in lws")
 
 
-@then("the execution is \"FAILED\" with a ResourceNotFoundException")
+@then('the execution is "FAILED" with a ResourceNotFoundException')
 def execution_failed_resource_not_found(world):
     pytest.skip("Cannot observe internal execution Secrets Manager read failure in lws")
-
-

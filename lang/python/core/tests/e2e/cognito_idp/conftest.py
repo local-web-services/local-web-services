@@ -179,9 +179,9 @@ def pool_is_active_then(lws_session):
     resp = client.list_user_pools(MaxResults=10)
     actual_pools = [p["Name"] for p in resp.get("UserPools", [])]
     expected_pool = TEST_POOL_NAME
-    assert any(expected_pool == name for name in actual_pools), (
-        f"Expected pool '{expected_pool}' to exist but not found in: {actual_pools}"
-    )
+    assert any(
+        expected_pool == name for name in actual_pools
+    ), f"Expected pool '{expected_pool}' to exist but not found in: {actual_pools}"
 
 
 @then('the user pool is "DELETED"')
@@ -189,9 +189,9 @@ def pool_is_deleted_then(lws_session):
     client = _cognito(lws_session)
     resp = client.list_user_pools(MaxResults=10)
     actual_pools = [p["Name"] for p in resp.get("UserPools", [])]
-    assert TEST_POOL_NAME not in actual_pools, (
-        f"Expected pool '{TEST_POOL_NAME}' to be deleted but found in: {actual_pools}"
-    )
+    assert (
+        TEST_POOL_NAME not in actual_pools
+    ), f"Expected pool '{TEST_POOL_NAME}' to be deleted but found in: {actual_pools}"
 
 
 @then("the user pool is deleted")
@@ -199,9 +199,9 @@ def pool_is_deleted_simple_then(lws_session):
     client = _cognito(lws_session)
     resp = client.list_user_pools(MaxResults=10)
     actual_pools = [p["Name"] for p in resp.get("UserPools", [])]
-    assert TEST_POOL_NAME not in actual_pools, (
-        f"Expected pool '{TEST_POOL_NAME}' to be deleted but found in: {actual_pools}"
-    )
+    assert (
+        TEST_POOL_NAME not in actual_pools
+    ), f"Expected pool '{TEST_POOL_NAME}' to be deleted but found in: {actual_pools}"
 
 
 @then('the user is "FORCE_CHANGE_PASSWORD"')
@@ -211,13 +211,11 @@ def user_is_force_change_password_then(lws_session, world):
     resp = _cognito(lws_session).admin_get_user(UserPoolId=pool_id, Username=username)
     actual_status = resp.get("UserStatus", "")
     expected_status = "FORCE_CHANGE_PASSWORD"
-    assert actual_status == expected_status, (
-        f"Expected user status '{expected_status}' but got: '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected user status '{expected_status}' but got: '{actual_status}'"
 
 
 @then("the user is deleted")
 def user_is_deleted_then(world):
-    assert world["error"] is None, (
-        f"Expected user deletion to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected user deletion to succeed but got: {world['error']}"

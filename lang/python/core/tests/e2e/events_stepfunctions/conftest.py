@@ -12,9 +12,7 @@ TEST_BUS = "e2e-test-bus-1"
 TEST_RULE = "test-rule-1"
 TEST_SM = "test-sm-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
-PASS_DEFINITION = json.dumps(
-    {"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}}
-)
+PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 EVENT_PATTERN = json.dumps({"source": ["test.source"]})
 TEST_INPUT = '{"key": "value"}'
 
@@ -60,6 +58,7 @@ def _create_rule_targeting_sfn(lws_session, bus=TEST_BUS, rule=TEST_RULE):
 
 # ── Given: bus state ───────────────────────────────────────────────────
 
+
 @given("the event bus does not already exist")
 def event_bus_not_already_exist():
     """No-op: fresh state has no custom buses."""
@@ -75,12 +74,12 @@ def event_bus_exists(lws_session):
     _create_bus(lws_session)
 
 
-@given("the event bus is \"ACTIVE\"")
+@given('the event bus is "ACTIVE"')
 def event_bus_is_active_given():
     """No-op: buses are ACTIVE by default."""
 
 
-@given("the event bus is not \"ACTIVE\"")
+@given('the event bus is not "ACTIVE"')
 def event_bus_is_not_active_given(lws_session, world):
     try:
         _events(lws_session).delete_event_bus(Name=TEST_BUS)
@@ -99,6 +98,7 @@ def event_bus_does_not_exist():
 
 # ── Given: state machine state ─────────────────────────────────────────
 
+
 @given("the state machine does not already exist")
 def sm_not_already_exist():
     """No-op: fresh state has no state machines."""
@@ -114,12 +114,12 @@ def sm_exists(lws_session, world):
     world["state_machine_arn"] = _create_sm(lws_session)
 
 
-@given("the state machine is \"ACTIVE\"")
+@given('the state machine is "ACTIVE"')
 def sm_is_active_given():
     """No-op: state machines are ACTIVE by default."""
 
 
-@given("the state machine is not \"ACTIVE\"")
+@given('the state machine is not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
     lws_session.lifecycle("stepfunctions").create_dwell_ms(5000).apply()
     try:
@@ -136,17 +136,18 @@ def sm_does_not_exist():
     pytest.skip("lws does not validate state machine target existence when creating a rule")
 
 
-@given("the target state machine is \"ACTIVE\"")
+@given('the target state machine is "ACTIVE"')
 def target_sm_is_active():
     """No-op: state machines are ACTIVE by default after creation."""
 
 
-@given("the target state machine is not \"ACTIVE\"")
+@given('the target state machine is not "ACTIVE"')
 def target_sm_is_not_active():
     pytest.skip("lws does not reject put_events when the target state machine is not ACTIVE")
 
 
 # ── Given: rule targeting state machine ────────────────────────────────
+
 
 @given("the rule does not already exist")
 def rule_not_already_exist():
@@ -159,13 +160,13 @@ def rule_already_exists(lws_session, world):
     _create_rule_targeting_sfn(lws_session)
 
 
-@given("an \"ENABLED\" rule exists on the bus targeting a state machine")
+@given('an "ENABLED" rule exists on the bus targeting a state machine')
 def enabled_rule_exists_targeting_sfn(lws_session, world):
     world["state_machine_arn"] = _create_sm(lws_session)
     _create_rule_targeting_sfn(lws_session)
 
 
-@given("no \"ENABLED\" rule exists on the bus targeting a state machine")
+@given('no "ENABLED" rule exists on the bus targeting a state machine')
 def no_enabled_rule_targeting_sfn():
     pytest.skip(
         "lws does not reject put_events when no enabled rule exists targeting the state machine"
@@ -174,7 +175,8 @@ def no_enabled_rule_targeting_sfn():
 
 # ── Given: execution state ─────────────────────────────────────────────
 
-@given("an execution is \"RUNNING\"")
+
+@given('an execution is "RUNNING"')
 def execution_is_running(lws_session, world):
     world["state_machine_arn"] = _create_sm(lws_session)
     resp = _sfn(lws_session).start_execution(
@@ -184,12 +186,13 @@ def execution_is_running(lws_session, world):
     world["execution_arn"] = resp["executionArn"]
 
 
-@given("no execution is \"RUNNING\"")
+@given('no execution is "RUNNING"')
 def no_execution_is_running():
     pytest.skip("Cannot test failure when no execution is RUNNING in isolated context")
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
+
 
 @given("an execution slot is available")
 def execution_slot_available():
@@ -202,6 +205,7 @@ def no_execution_slot_available():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("an EventBridge event bus is created")
 def create_event_bus(lws_session, world):
@@ -281,47 +285,42 @@ def running_execution_succeeds(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
-@then("the event bus is \"ACTIVE\"")
+
+@then('the event bus is "ACTIVE"')
 def event_bus_is_active_then(lws_session):
     resp = _events(lws_session).list_event_buses()
     actual_names = [b["Name"] for b in resp.get("EventBuses", [])]
-    assert TEST_BUS in actual_names, (
-        f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
-    )
+    assert (
+        TEST_BUS in actual_names
+    ), f"Expected event bus '{TEST_BUS}' to be ACTIVE but not found in: {actual_names}"
 
 
-@then("the state machine is \"ACTIVE\"")
+@then('the state machine is "ACTIVE"')
 def sm_is_active_then(lws_session, world):
     sm_arn = world.get("state_machine_arn", _sm_arn())
     resp = _sfn(lws_session).describe_state_machine(stateMachineArn=sm_arn)
     expected_status = "ACTIVE"
     actual_status = resp.get("status", "")
-    assert actual_status == expected_status, (
-        f"Expected state machine status '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected state machine status '{expected_status}' but got '{actual_status}'"
 
 
-@then("the rule is \"ENABLED\" and will trigger an execution when matching events are published")
+@then('the rule is "ENABLED" and will trigger an execution when matching events are published')
 def rule_enabled_targeting_sfn(world):
-    assert world["error"] is None, (
-        f"Expected put_rule to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected put_rule to succeed but got: {world['error']}"
 
 
-@then("the execution is \"RUNNING\"")
+@then('the execution is "RUNNING"')
 def execution_is_running_then(world):
-    assert world["error"] is None, (
-        f"Expected put_events to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected put_events to succeed but got: {world['error']}"
 
 
-@then("the execution is \"FAILED\"")
+@then('the execution is "FAILED"')
 def execution_is_failed_then(world):
     pytest.skip("Cannot observe internal execution failure in lws")
 
 
-@then("the execution is \"SUCCEEDED\"")
+@then('the execution is "SUCCEEDED"')
 def execution_is_succeeded_then(world):
     pytest.skip("Cannot observe internal execution success in lws")
-
-

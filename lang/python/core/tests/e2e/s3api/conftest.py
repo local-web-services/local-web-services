@@ -27,12 +27,14 @@ def _put_object(lws_session, bucket=TEST_BUCKET, key=TEST_KEY):
 
 # ── Given: system initialization ──────────────────────────────────────
 
+
 @given("the system is initialized")
 def system_is_initialized():
     """No-op: the system is already initialized by the test fixture."""
 
 
 # ── Given: bucket state setup ──────────────────────────────────────────
+
 
 @given("the bucket does not already exist")
 def bucket_not_already_exist(lws_session):
@@ -89,6 +91,7 @@ def bucket_is_not_empty(lws_session):
 
 # ── Given: source/destination bucket setup ────────────────────────────
 
+
 @given("the source bucket exists")
 def source_bucket_exists(lws_session):
     _create_bucket(lws_session, name=TEST_SRC_BUCKET)
@@ -142,6 +145,7 @@ def destination_bucket_is_not_active_given(lws_session):
 
 # ── Given: versioning state setup ─────────────────────────────────────
 
+
 @given("versioning is disabled")
 def versioning_is_disabled():
     """No-op: versioning is disabled by default."""
@@ -169,6 +173,7 @@ def versioning_is_not_disabled(lws_session):
 
 
 # ── Given: object state setup ──────────────────────────────────────────
+
 
 @given("the object does not already exist")
 def object_not_already_exist():
@@ -264,6 +269,7 @@ def lifecycle_policy_has_expiry():
 
 # ── Given: multipart upload state setup ────────────────────────────────
 
+
 @given("the upload does not already exist")
 def upload_not_already_exist():
     """No-op: no uploads in progress."""
@@ -287,7 +293,7 @@ def upload_already_exists(lws_session, world):
     pytest.skip("S3 allows multiple concurrent multipart uploads for the same key")
 
 
-@given("the upload is \"IN_PROGRESS\"")
+@given('the upload is "IN_PROGRESS"')
 def upload_is_in_progress_given(world):
     """No-op: upload was already created in the upload_exists step."""
 
@@ -301,9 +307,7 @@ def upload_has_at_least_one_part(lws_session, world):
         PartNumber=1,
         Body=TEST_BODY,
     )
-    world.setdefault("etags", []).append(
-        {"ETag": part_resp["ETag"], "PartNumber": 1}
-    )
+    world.setdefault("etags", []).append({"ETag": part_resp["ETag"], "PartNumber": 1})
 
 
 @given("the upload has no parts")
@@ -311,7 +315,7 @@ def upload_has_no_parts():
     """No-op: freshly created upload has no parts."""
 
 
-@given("the upload is \"IN_PROGRESS\" with at least one part uploaded")
+@given('the upload is "IN_PROGRESS" with at least one part uploaded')
 def upload_in_progress_with_part(lws_session, world):
     resp = _s3(lws_session).create_multipart_upload(Bucket=TEST_BUCKET, Key=TEST_KEY)
     world["upload_id"] = resp["UploadId"]
@@ -325,12 +329,13 @@ def upload_in_progress_with_part(lws_session, world):
     world["etags"] = [{"ETag": part_resp["ETag"], "PartNumber": 1}]
 
 
-@given("the upload is not \"IN_PROGRESS\"")
+@given('the upload is not "IN_PROGRESS"')
 def upload_is_not_in_progress():
     pytest.skip("Cannot set upload to non-IN_PROGRESS state")
 
 
 # ── Given: sequences.feature symbolic preconditions ───────────────────
+
 
 @given("bname not in bucket_status")
 def bname_not_in_bucket_status():
@@ -338,6 +343,7 @@ def bname_not_in_bucket_status():
 
 
 # ── When: actions ──────────────────────────────────────────────────────
+
 
 @when("a bucket is created")
 def create_bucket(lws_session, world):
@@ -587,9 +593,7 @@ def upload_part(lws_session, world):
             Body=TEST_BODY,
         )
         world["result"] = part_resp
-        world.setdefault("etags", []).append(
-            {"ETag": part_resp["ETag"], "PartNumber": 1}
-        )
+        world.setdefault("etags", []).append({"ETag": part_resp["ETag"], "PartNumber": 1})
         world["error"] = None
     except (ClientError, Exception) as exc:
         world["result"] = None
@@ -603,9 +607,7 @@ def complete_multipart_upload_old(lws_session, world):
             Bucket=TEST_BUCKET,
             Key=TEST_KEY,
             UploadId=world.get("upload_id", "invalid"),
-            MultipartUpload={
-                "Parts": [{"ETag": "etag1", "PartNumber": 1}]
-            },
+            MultipartUpload={"Parts": [{"ETag": "etag1", "PartNumber": 1}]},
         )
         world["error"] = None
     except (ClientError, Exception) as exc:
@@ -669,12 +671,13 @@ def lifecycle_expire_object(world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then("the operation is rejected")
 def operation_is_rejected(world):
     actual_error = world.get("error")
-    assert actual_error is not None, (
-        f"Expected the operation to be rejected but it succeeded with: {world.get('result')}"
-    )
+    assert (
+        actual_error is not None
+    ), f"Expected the operation to be rejected but it succeeded with: {world.get('result')}"
 
 
 @then('the bucket is "ACTIVE" with versioning disabled')
@@ -682,9 +685,9 @@ def bucket_active_with_versioning_disabled(lws_session):
     client = _s3(lws_session)
     resp = client.list_buckets()
     actual_buckets = [b["Name"] for b in resp.get("Buckets", [])]
-    assert TEST_BUCKET in actual_buckets, (
-        f"Expected bucket '{TEST_BUCKET}' to exist but not found in: {actual_buckets}"
-    )
+    assert (
+        TEST_BUCKET in actual_buckets
+    ), f"Expected bucket '{TEST_BUCKET}' to exist but not found in: {actual_buckets}"
 
 
 @then('the bucket is "DELETED"')
@@ -692,9 +695,9 @@ def bucket_is_deleted_status_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_buckets()
     actual_buckets = [b["Name"] for b in resp.get("Buckets", [])]
-    assert TEST_BUCKET not in actual_buckets, (
-        f"Expected bucket '{TEST_BUCKET}' to be deleted but found in: {actual_buckets}"
-    )
+    assert (
+        TEST_BUCKET not in actual_buckets
+    ), f"Expected bucket '{TEST_BUCKET}' to be deleted but found in: {actual_buckets}"
 
 
 @then("the bucket is deleted")
@@ -702,27 +705,27 @@ def bucket_is_deleted_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_buckets()
     actual_buckets = [b["Name"] for b in resp.get("Buckets", [])]
-    assert TEST_BUCKET not in actual_buckets, (
-        f"Expected bucket '{TEST_BUCKET}' to be deleted but found in: {actual_buckets}"
-    )
+    assert (
+        TEST_BUCKET not in actual_buckets
+    ), f"Expected bucket '{TEST_BUCKET}' to be deleted but found in: {actual_buckets}"
 
 
 @then("all buckets are returned")
 def all_buckets_returned_then(world):
     expected_field = "Buckets"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected Buckets in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected Buckets in result but got: {actual_result}"
 
 
 @then("the available buckets are returned")
 def available_buckets_returned_then(world):
     expected_field = "Buckets"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected Buckets in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected Buckets in result but got: {actual_result}"
 
 
 @then('versioning is "ENABLED"')
@@ -731,9 +734,9 @@ def versioning_is_enabled_then(lws_session):
     resp = client.get_bucket_versioning(Bucket=TEST_BUCKET)
     expected_status = "Enabled"
     actual_status = resp.get("Status", "")
-    assert actual_status == expected_status, (
-        f"Expected versioning to be '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected versioning to be '{expected_status}' but got '{actual_status}'"
 
 
 @then('versioning is "SUSPENDED"')
@@ -742,9 +745,9 @@ def versioning_is_suspended_then(lws_session):
     resp = client.get_bucket_versioning(Bucket=TEST_BUCKET)
     expected_status = "Suspended"
     actual_status = resp.get("Status", "")
-    assert actual_status == expected_status, (
-        f"Expected versioning to be '{expected_status}' but got '{actual_status}'"
-    )
+    assert (
+        actual_status == expected_status
+    ), f"Expected versioning to be '{expected_status}' but got '{actual_status}'"
 
 
 @then('the bucket versioning state is "ENABLED" or "SUSPENDED" non-deterministically')
@@ -753,9 +756,9 @@ def bucket_versioning_enabled_or_suspended_then(lws_session):
     resp = client.get_bucket_versioning(Bucket=TEST_BUCKET)
     actual_status = resp.get("Status", "")
     expected_statuses = {"Enabled", "Suspended"}
-    assert actual_status in expected_statuses, (
-        f"Expected versioning to be one of {expected_statuses} but got '{actual_status}'"
-    )
+    assert (
+        actual_status in expected_statuses
+    ), f"Expected versioning to be one of {expected_statuses} but got '{actual_status}'"
 
 
 @then('the object "EXISTS" in the bucket')
@@ -763,9 +766,7 @@ def object_exists_in_bucket_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_objects_v2(Bucket=TEST_BUCKET)
     keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    assert TEST_KEY in keys, (
-        f"Expected object '{TEST_KEY}' to exist in bucket but found: {keys}"
-    )
+    assert TEST_KEY in keys, f"Expected object '{TEST_KEY}' to exist in bucket but found: {keys}"
 
 
 @then('the object "EXISTS" in the destination bucket')
@@ -773,25 +774,25 @@ def object_exists_in_destination_bucket_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_objects_v2(Bucket=TEST_BUCKET)
     keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    assert TEST_KEY2 in keys, (
-        f"Expected copied object '{TEST_KEY2}' to exist in destination bucket but found: {keys}"
-    )
+    assert (
+        TEST_KEY2 in keys
+    ), f"Expected copied object '{TEST_KEY2}' to exist in destination bucket but found: {keys}"
 
 
 @then("the object is returned")
 def object_is_returned_then(world):
     actual_result = world["result"]
-    assert actual_result is not None and "Body" in actual_result, (
-        f"Expected object body in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and "Body" in actual_result
+    ), f"Expected object body in result but got: {actual_result}"
 
 
 @then("the object data is returned")
 def object_data_is_returned_then(world):
     actual_result = world["result"]
-    assert actual_result is not None and "Body" in actual_result, (
-        f"Expected object body in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and "Body" in actual_result
+    ), f"Expected object body in result but got: {actual_result}"
 
 
 @then("the object is deleted from the bucket")
@@ -799,9 +800,7 @@ def object_is_deleted_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_objects_v2(Bucket=TEST_BUCKET)
     keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    assert TEST_KEY not in keys, (
-        f"Expected object '{TEST_KEY}' to be deleted but found in: {keys}"
-    )
+    assert TEST_KEY not in keys, f"Expected object '{TEST_KEY}' to be deleted but found in: {keys}"
 
 
 @then('the object is "DELETED"')
@@ -809,9 +808,7 @@ def object_is_deleted_status_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_objects_v2(Bucket=TEST_BUCKET)
     keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    assert TEST_KEY not in keys, (
-        f"Expected object '{TEST_KEY}' to be deleted but found in: {keys}"
-    )
+    assert TEST_KEY not in keys, f"Expected object '{TEST_KEY}' to be deleted but found in: {keys}"
 
 
 @then('the object is "DELETED" by the lifecycle policy')
@@ -822,9 +819,9 @@ def object_deleted_by_lifecycle_then(lws_session):
 @then("the object metadata is returned")
 def object_metadata_returned_then(world):
     actual_result = world["result"]
-    assert actual_result is not None and "ContentLength" in actual_result, (
-        f"Expected object metadata in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and "ContentLength" in actual_result
+    ), f"Expected object metadata in result but got: {actual_result}"
 
 
 @then("the object listing is returned")
@@ -844,33 +841,27 @@ def copy_succeeds_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_objects_v2(Bucket=TEST_BUCKET)
     keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    assert TEST_KEY2 in keys, (
-        f"Expected copied object '{TEST_KEY2}' to exist but found: {keys}"
-    )
+    assert TEST_KEY2 in keys, f"Expected copied object '{TEST_KEY2}' to exist but found: {keys}"
 
 
 @then('the upload is "IN_PROGRESS" with no parts')
 def upload_in_progress_no_parts_then(world):
     expected_field = "UploadId"
     actual_result = world["result"]
-    assert actual_result is not None and expected_field in actual_result, (
-        f"Expected UploadId in result but got: {actual_result}"
-    )
+    assert (
+        actual_result is not None and expected_field in actual_result
+    ), f"Expected UploadId in result but got: {actual_result}"
 
 
 @then("the upload has at least one part")
 def upload_has_at_least_one_part_then(world):
     actual_error = world.get("error")
-    assert actual_error is None, (
-        f"Expected part upload to succeed but got: {actual_error}"
-    )
+    assert actual_error is None, f"Expected part upload to succeed but got: {actual_error}"
 
 
 @then("the part is uploaded and the upload is still in progress")
 def part_uploaded_then(world):
-    assert world["error"] is None, (
-        f"Expected part upload to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected part upload to succeed but got: {world['error']}"
 
 
 @then('the upload is "COMPLETED" and the object exists')
@@ -878,9 +869,9 @@ def upload_completed_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_objects_v2(Bucket=TEST_BUCKET)
     keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    assert TEST_KEY in keys, (
-        f"Expected completed upload object '{TEST_KEY}' to exist but found: {keys}"
-    )
+    assert (
+        TEST_KEY in keys
+    ), f"Expected completed upload object '{TEST_KEY}' to exist but found: {keys}"
 
 
 @then('the upload is "COMPLETED" and the assembled object "EXISTS" in the bucket')
@@ -888,16 +879,14 @@ def upload_completed_assembled_then(lws_session):
     client = _s3(lws_session)
     resp = client.list_objects_v2(Bucket=TEST_BUCKET)
     keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    assert TEST_KEY in keys, (
-        f"Expected assembled object '{TEST_KEY}' to exist in bucket but found: {keys}"
-    )
+    assert (
+        TEST_KEY in keys
+    ), f"Expected assembled object '{TEST_KEY}' to exist in bucket but found: {keys}"
 
 
 @then('the upload is "ABORTED"')
 def upload_aborted_then(world):
-    assert world["error"] is None, (
-        f"Expected abort to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected abort to succeed but got: {world['error']}"
 
 
 @then("the object is expired and removed from the bucket")
@@ -906,6 +895,7 @@ def object_expired_then(lws_session):
 
 
 # ── Then: invariant assertions (no-op — always pass in lws) ───────────
+
 
 @then('every bucket has a valid status ("ACTIVE" or "DELETED")')
 def every_bucket_has_valid_status():

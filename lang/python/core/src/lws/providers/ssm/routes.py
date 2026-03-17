@@ -370,10 +370,12 @@ _DELETE_MULTI_ACTION = "DeleteParameters"
 
 def _ssm_param_not_found(name: str, param_state: str) -> Response:
     return Response(
-        content=json.dumps({
-            "__type": "ParameterNotFound",
-            "message": f"Parameter {name} not found (status: {param_state})",
-        }),
+        content=json.dumps(
+            {
+                "__type": "ParameterNotFound",
+                "message": f"Parameter {name} not found (status: {param_state})",
+            }
+        ),
         status_code=400,
         media_type="application/json",
     )
@@ -381,10 +383,12 @@ def _ssm_param_not_found(name: str, param_state: str) -> Response:
 
 def _ssm_param_still_creating(name: str) -> Response:
     return Response(
-        content=json.dumps({
-            "__type": "ParameterNotFound",
-            "message": f"Parameter {name} is still being created",
-        }),
+        content=json.dumps(
+            {
+                "__type": "ParameterNotFound",
+                "message": f"Parameter {name} is still being created",
+            }
+        ),
         status_code=400,
         media_type="application/json",
     )
@@ -492,10 +496,12 @@ def _check_resource_tag_lifecycle(
         param_state = tracker.get_state(resource_id)
         if param_state in ("CREATING", "DELETING"):
             return Response(
-                content=json.dumps({
-                    "__type": "InvalidResourceId",
-                    "message": f"Parameter {resource_id} not found (status: {param_state})",
-                }),
+                content=json.dumps(
+                    {
+                        "__type": "InvalidResourceId",
+                        "message": f"Parameter {resource_id} not found (status: {param_state})",
+                    }
+                ),
                 status_code=400,
                 media_type="application/json",
             )

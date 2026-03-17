@@ -23,6 +23,7 @@ def _create_param(lws_session, name=TEST_PARAM):
 
 # ── Given: parameter state setup ──────────────────────────────────────
 
+
 @given("the parameter does not already exist")
 def parameter_not_already_exist():
     """No-op: fresh state has no parameters."""
@@ -98,12 +99,11 @@ def tag_association_not_active(lws_session, world):
 
 # ── When: actions ──────────────────────────────────────────────────────
 
+
 @when('a parameter is stored in "SSM"')
 def put_parameter_create(lws_session, world):
     try:
-        resp = _ssm(lws_session).put_parameter(
-            Name=TEST_PARAM, Value=TEST_VALUE, Type="String"
-        )
+        resp = _ssm(lws_session).put_parameter(Name=TEST_PARAM, Value=TEST_VALUE, Type="String")
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:
@@ -276,9 +276,7 @@ def put_parameter_no_overwrite(lws_session, world):
                 },
                 "PutParameter",
             )
-        resp = _ssm(lws_session).put_parameter(
-            Name=TEST_PARAM, Value=TEST_VALUE2, Type="String"
-        )
+        resp = _ssm(lws_session).put_parameter(Name=TEST_PARAM, Value=TEST_VALUE2, Type="String")
         world["result"] = resp
         world["error"] = None
     except (ClientError, Exception) as exc:
@@ -315,79 +313,78 @@ def put_parameter_overwrite(lws_session, world):
 
 # ── Then: assertions ───────────────────────────────────────────────────
 
+
 @then("the parameter value is returned")
 def parameter_value_returned(world):
     assert world["error"] is None, f"Expected get_parameter to succeed but got: {world['error']}"
     param = world["result"]["Parameter"]
     expected_value = TEST_VALUE
     actual_value = param["Value"]
-    assert actual_value == expected_value, (
-        f"Expected parameter value '{expected_value}' but got '{actual_value}'"
-    )
+    assert (
+        actual_value == expected_value
+    ), f"Expected parameter value '{expected_value}' but got '{actual_value}'"
 
 
 @then("the parameter no longer exists")
 def parameter_no_longer_exists(lws_session):
     resp = _ssm(lws_session).describe_parameters()
     actual_names = [p["Name"] for p in resp.get("Parameters", [])]
-    assert TEST_PARAM not in actual_names, (
-        f"Expected parameter '{TEST_PARAM}' to be deleted but found in: {actual_names}"
-    )
+    assert (
+        TEST_PARAM not in actual_names
+    ), f"Expected parameter '{TEST_PARAM}' to be deleted but found in: {actual_names}"
 
 
 @then("the parameters no longer exist")
 def parameters_no_longer_exist(lws_session):
     resp = _ssm(lws_session).describe_parameters()
     actual_names = [p["Name"] for p in resp.get("Parameters", [])]
-    assert TEST_PARAM not in actual_names, (
-        f"Expected parameter '{TEST_PARAM}' to be deleted but found in: {actual_names}"
-    )
+    assert (
+        TEST_PARAM not in actual_names
+    ), f"Expected parameter '{TEST_PARAM}' to be deleted but found in: {actual_names}"
 
 
 @then("the parameter metadata is returned")
 def parameter_metadata_returned(world):
-    assert world["error"] is None, (
-        f"Expected describe_parameters to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected describe_parameters to succeed but got: {world['error']}"
     assert "Parameters" in world["result"], "Expected 'Parameters' key in response"
 
 
 @then("the parameter values are returned")
 def parameter_values_returned(world):
-    assert world["error"] is None, (
-        f"Expected get_parameters to succeed but got: {world['error']}"
-    )
+    assert world["error"] is None, f"Expected get_parameters to succeed but got: {world['error']}"
     assert "Parameters" in world["result"], "Expected 'Parameters' key in response"
 
 
 @then("the parameters under the path are returned")
 def parameters_under_path_returned(world):
-    assert world["error"] is None, (
-        f"Expected get_parameters_by_path to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected get_parameters_by_path to succeed but got: {world['error']}"
     assert "Parameters" in world["result"], "Expected 'Parameters' key in response"
 
 
 @then("the tags are associated with the parameter")
 def tags_associated_with_parameter(world):
-    assert world["error"] is None, (
-        f"Expected add_tags_to_resource to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected add_tags_to_resource to succeed but got: {world['error']}"
 
 
 @then("the list of tags is returned")
 def list_of_tags_returned(world):
-    assert world["error"] is None, (
-        f"Expected list_tags_for_resource to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected list_tags_for_resource to succeed but got: {world['error']}"
     assert "TagList" in world["result"], "Expected 'TagList' key in response"
 
 
 @then("the tags are disassociated from the parameter")
 def tags_disassociated_from_parameter(world):
-    assert world["error"] is None, (
-        f"Expected remove_tags_from_resource to succeed but got: {world['error']}"
-    )
+    assert (
+        world["error"] is None
+    ), f"Expected remove_tags_from_resource to succeed but got: {world['error']}"
 
 
 @then("the parameter exists with version 1")
@@ -395,9 +392,9 @@ def parameter_exists_with_version_1(lws_session):
     resp = _ssm(lws_session).get_parameter(Name=TEST_PARAM)
     expected_version = 1
     actual_version = resp["Parameter"]["Version"]
-    assert actual_version == expected_version, (
-        f"Expected parameter version '{expected_version}' but got '{actual_version}'"
-    )
+    assert (
+        actual_version == expected_version
+    ), f"Expected parameter version '{expected_version}' but got '{actual_version}'"
 
 
 @then("every parameter version is a positive integer")
@@ -427,9 +424,9 @@ def error_log_only_parameter_already_exists():
 
 @then("a ParameterAlreadyExists error is recorded")
 def parameter_already_exists_error(world):
-    assert world["error"] is not None, (
-        "Expected a ParameterAlreadyExists error but no error was raised"
-    )
+    assert (
+        world["error"] is not None
+    ), "Expected a ParameterAlreadyExists error but no error was raised"
 
 
 @then("the parameter has a new value and an incremented version")
@@ -437,10 +434,8 @@ def parameter_has_new_value_and_version(lws_session):
     resp = _ssm(lws_session).get_parameter(Name=TEST_PARAM)
     expected_value = TEST_VALUE2
     actual_value = resp["Parameter"]["Value"]
-    assert actual_value == expected_value, (
-        f"Expected parameter value '{expected_value}' but got '{actual_value}'"
-    )
+    assert (
+        actual_value == expected_value
+    ), f"Expected parameter value '{expected_value}' but got '{actual_value}'"
     actual_version = resp["Parameter"]["Version"]
-    assert actual_version >= 2, (
-        f"Expected version >= 2 after overwrite but got: {actual_version}"
-    )
+    assert actual_version >= 2, f"Expected version >= 2 after overwrite but got: {actual_version}"

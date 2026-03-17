@@ -58,9 +58,7 @@ EVENT_PATTERN = json.dumps({"source": ["test.source"]})
 # Step Functions
 TEST_SM = "test-sm-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
-PASS_DEFINITION = json.dumps(
-    {"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}}
-)
+PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 TEST_INPUT = '{"key": "value"}'
 
 # DynamoDB
@@ -83,6 +81,7 @@ TEST_SECRET_VALUE = "e2e-test-secret-value-1"
 
 
 # ── Shared client helpers ────────────────────────────────────────────────
+
 
 def _sqs(lws_session):
     return lws_session.client("sqs")
@@ -203,9 +202,9 @@ def system_initialized():
 def operation_is_rejected(world):
     expected_error = "an error"
     actual_error = world["error"]
-    assert actual_error is not None, (
-        f"Expected {expected_error} but the operation succeeded with result: {world['result']}"
-    )
+    assert (
+        actual_error is not None
+    ), f"Expected {expected_error} but the operation succeeded with result: {world['result']}"
 
 
 @then(parsers.re(r"^every .+"))
