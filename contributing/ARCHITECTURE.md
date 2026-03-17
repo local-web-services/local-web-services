@@ -354,22 +354,34 @@ All three invoke `orchestrator.request_shutdown()`, which flushes state and stop
 
 ## Testing
 
+See `lang/python/CLAUDE.md` for the full testing strategy, Makefile targets, and
+CI structure. Summary:
+
 ```
-tests/
+core/tests/
   unit/           Fast, isolated tests per module
-  integration/    Tests with multiple modules via the API layer
-  e2e/            Full stack via ldk dev and the lws CLI
-  architecture/   Architecture decision record tests
-  fixtures/       Sample CDK applications for testing
+  integration/    Wire-protocol tests via ASGI transport (no running server)
+  architecture/   Architecture constraint tests (+ shared arch_tests package)
+
+sdk/tests/
+  unit/           SDK unit tests
+  e2e/            Full-stack BDD scenarios via lws_testing fixtures
+  architecture/   Architecture constraint tests (+ shared arch_tests package)
+
+example/tests/
+  unit/           Example unit tests
+  e2e/            Acceptance scenarios via lws_testing fixtures
+  architecture/   Architecture constraint tests (+ shared arch_tests package)
 ```
 
 | Command | What it runs |
-|---------|-------------|
-| `make test` | Unit + integration + architecture tests |
-| `make test-e2e` | E2E tests (starts `ldk dev` automatically) |
-| `make check` | Lint + format + complexity + tests |
-
-See [TESTING.md](TESTING.md) for full testing standards, patterns, and examples.
+|---|---|
+| `make unit-test` | Unit tests |
+| `make integration-test` | Integration tests (core only) |
+| `make architecture-test` | Architecture constraint tests |
+| `make e2e-test` | E2E tests (sdk and example; requires Docker) |
+| `make test` | `unit-test` + `integration-test` + `architecture-test` |
+| `make check` | Lint + format-check + complexity + cpd + pylint + `test` |
 
 ## Key Dependencies
 
