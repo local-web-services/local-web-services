@@ -56,7 +56,7 @@ func TestMain(m *testing.M) {
 			"../../../../lang/specification/core/informal/stepfunctions_sqs",
 			"../../../../lang/specification/core/informal/stepfunctions_ssm",
 		},
-		Tags: "(@minimal or @standard) and not @internal",
+		Tags: "@minimal,@standard&&~@internal",
 	}
 	status := godog.TestSuite{
 		Name:                "lws-go-core",

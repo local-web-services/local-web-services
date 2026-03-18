@@ -88,9 +88,20 @@ type World struct {
 	// sqsQueueCreated tracks whether the main SQS test queue has been created (for cross-service validation).
 	sqsQueueCreated bool
 
+	// s3NotificationConfigured tracks whether the S3 bucket notification configuration has been set up (for cross-service validation).
+	s3NotificationConfigured bool
+
 	// sfnNoTaskConfigured tracks when a scenario explicitly states "no X task configured"
 	// (used to make StartExecution fail for cross-service validation).
 	sfnNoTaskConfigured bool
+
+	// s3BucketCreated tracks whether the main S3 test bucket has been explicitly created
+	// in the Given steps (used for stepfunctions_s3api bucket-validation scenarios).
+	s3BucketCreated bool
+
+	// s3ObjectExists tracks whether an object has been pre-placed in the target bucket
+	// in the Given steps (used for stepfunctions_s3api get-object scenarios).
+	s3ObjectExists bool
 
 	awsCfg aws.Config
 }

@@ -748,6 +748,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "StateMachineDoesNotExist", "State machine not found: "+smArn, 400)
 			return
 		}
+		if sm.Type != "STANDARD" {
+			writeErr(w, "StateMachineTypeNotSupported", "StartExecution is only supported for STANDARD state machines. Use StartSyncExecution for EXPRESS state machines.", 400)
+			return
+		}
 
 		h.store.mu.Lock()
 		h.store.execCounter++
@@ -801,6 +805,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		h.store.mu.RUnlock()
 		if !smExists {
 			writeErr(w, "StateMachineDoesNotExist", "State machine not found: "+smArn, 400)
+			return
+		}
+		if sm.Type != "EXPRESS" {
+			writeErr(w, "StateMachineTypeNotSupported", "StartSyncExecution is only supported for EXPRESS state machines. Use StartExecution for STANDARD state machines.", 400)
 			return
 		}
 

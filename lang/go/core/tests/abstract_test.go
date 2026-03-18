@@ -337,7 +337,9 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the message's queue does not exist$`, func() error {
-		return godog.ErrSkip
+		// Default state: no queue has been created. The queue URL resolves to a
+		// non-existent queue and ReceiveMessage will return QueueDoesNotExist.
+		return nil
 	})
 
 	sc.Step(`^the message's queue is "ACTIVE"$`, func() error {
@@ -917,10 +919,18 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the bucket exists$`, func() error {
-		return s3CreateBucket(world, testS3Bucket)
+		if err := s3CreateBucket(world, testS3Bucket); err != nil {
+			return err
+		}
+		world.s3BucketCreated = true
+		return nil
 	})
 
 	sc.Step(`^the bucket is "ACTIVE"$`, func() error {
+		if err := s3CreateBucket(world, testS3Bucket); err != nil {
+			return err
+		}
+		world.s3BucketCreated = true
 		return nil
 	})
 
@@ -1106,7 +1116,30 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the upload is not "IN_PROGRESS"$`, func() error {
-		return godog.ErrSkip
+		// If a multipart upload was already created (by "the upload exists"),
+		// abort it so its status is ABORTED (not IN_PROGRESS).
+		// If no upload exists yet, create one and then abort it.
+		if world.lastUploadId == "" {
+			if err := s3CreateBucket(world, testS3Bucket); err != nil {
+				return err
+			}
+			result, err := world.S3Client().CreateMultipartUpload(context.Background(), &s3.CreateMultipartUploadInput{
+				Bucket: aws.String(testS3Bucket),
+				Key:    aws.String(testS3Key),
+			})
+			if err != nil {
+				return err
+			}
+			world.lastUploadId = aws.ToString(result.UploadId)
+			world.lastBucket = testS3Bucket
+			world.lastKey = testS3Key
+		}
+		_, err := world.S3Client().AbortMultipartUpload(context.Background(), &s3.AbortMultipartUploadInput{
+			Bucket:   aws.String(world.lastBucket),
+			Key:      aws.String(world.lastKey),
+			UploadId: aws.String(world.lastUploadId),
+		})
+		return err
 	})
 
 	sc.Step(`^the upload has no parts$`, func() error {
@@ -1637,7 +1670,14 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the event bus is not "ACTIVE"$`, func() error {
-		return godog.ErrSkip
+		// Create the bus then delete it so it is in DELETED (not ACTIVE) state.
+		if err := ebCreateBus(world); err != nil {
+			return err
+		}
+		_, err := world.EventBridgeClient().DeleteEventBus(context.Background(), &eventbridge.DeleteEventBusInput{
+			Name: aws.String(testEventBus),
+		})
+		return err
 	})
 
 	sc.Step(`^the event bus does not exist$`, func() error {
@@ -1679,7 +1719,18 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the rule is "DELETED"$`, func() error {
-		return godog.ErrSkip
+		// Create bus+rule then delete the rule so it is in DELETED state.
+		if err := ebCreateBus(world); err != nil {
+			return err
+		}
+		if err := ebPutRule(world); err != nil {
+			return err
+		}
+		_, err := world.EventBridgeClient().DeleteRule(context.Background(), &eventbridge.DeleteRuleInput{
+			Name:         aws.String(testEventRule),
+			EventBusName: aws.String(testEventBus),
+		})
+		return err
 	})
 
 	// "the rule is DISABLED":
@@ -1715,7 +1766,18 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the rule is already "DELETED"$`, func() error {
-		return godog.ErrSkip
+		// Create bus+rule then delete the rule so it is already in DELETED state.
+		if err := ebCreateBus(world); err != nil {
+			return err
+		}
+		if err := ebPutRule(world); err != nil {
+			return err
+		}
+		_, err := world.EventBridgeClient().DeleteRule(context.Background(), &eventbridge.DeleteRuleInput{
+			Name:         aws.String(testEventRule),
+			EventBusName: aws.String(testEventBus),
+		})
+		return err
 	})
 
 	sc.Step(`^the rule is not "DISABLED"$`, func() error {
@@ -2050,7 +2112,9 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the state machine is not a "STANDARD" type$`, func() error {
-		return godog.ErrSkip
+		// Create an EXPRESS state machine (not STANDARD) so StartExecution
+		// targeting a STANDARD machine fails with the wrong type error.
+		return sfnCreateExpressSM(world)
 	})
 
 	sc.Step(`^the state machine is an "EXPRESS" type$`, func() error {
@@ -2058,7 +2122,9 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the state machine is not an "EXPRESS" type$`, func() error {
-		return godog.ErrSkip
+		// Create a STANDARD state machine (not EXPRESS) so StartSyncExecution
+		// targeting an EXPRESS machine fails with the wrong type error.
+		return sfnCreateStandardSM(world)
 	})
 
 	sc.Step(`^the execution slot is available$`, func() error {
@@ -2450,7 +2516,21 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the parameter is not active$`, func() error {
-		return godog.ErrSkip
+		// Create a parameter then delete it so it is inactive (does not exist).
+		// This state is reachable via public APIs.
+		_, err := world.SSMClient().PutParameter(context.Background(), &ssm.PutParameterInput{
+			Name:      aws.String(testSSMParam),
+			Value:     aws.String(testSSMValue),
+			Type:      ssmtypes.ParameterTypeString,
+			Overwrite: aws.Bool(true),
+		})
+		if err != nil {
+			return err
+		}
+		_, err = world.SSMClient().DeleteParameter(context.Background(), &ssm.DeleteParameterInput{
+			Name: aws.String(testSSMParam),
+		})
+		return err
 	})
 
 	sc.Step(`^the parameter does not exist$`, func() error {

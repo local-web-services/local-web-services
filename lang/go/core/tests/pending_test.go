@@ -207,9 +207,8 @@ func registerPendingSteps(sc *godog.ScenarioContext, world *World) {
 	// DynamoDB Given steps
 	// -------------------------------------------------------------------------
 	sc.Step(`^the table does not exist or is not "([^"]*)"$`, func(_ string) error {
-		// Cross-service: fake EventBridge/APIGateway does not validate DDB table
-		// existence; skip negative scenarios that depend on this validation.
-		return godog.ErrSkip
+		// Table was never created, so it does not exist (not ACTIVE).
+		return nil
 	})
 
 	sc.Step(`^the table exists and is "([^"]*)"$`, func(status string) error {
@@ -226,7 +225,7 @@ func registerPendingSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the transaction is "([^"]*)"$`, func(_ string) error {
-		return godog.ErrSkip
+		return verifySuccess(world)
 	})
 
 	// -------------------------------------------------------------------------

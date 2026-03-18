@@ -98,8 +98,9 @@ func StartServer(basePort int) (*Server, error) {
 	}
 
 	// S3
+	ebPort := basePort + ServiceOffsets["eventbridge"]
 	s3Mux := http.NewServeMux()
-	s3Mux.Handle("/", s3.NewHandler(state))
+	s3Mux.Handle("/", s3.NewHandler(state, sqsPort, ebPort))
 	if err := srv.startService(s3Mux, basePort+ServiceOffsets["s3"]); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("s3 server: %w", err)

@@ -1,6 +1,8 @@
 package s3
 
 import (
+	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -64,6 +66,12 @@ type MultipartUpload struct {
 	Parts       map[int]*MultipartPart
 }
 
+// NotificationConfig stores the bucket notification configuration.
+type NotificationConfig struct {
+	Type   string // "sns", "sqs", or "eventbridge"
+	Target string // ARN or bus name
+}
+
 // S3Bucket holds all state for a single bucket.
 type S3Bucket struct {
 	Name              string
@@ -72,6 +80,7 @@ type S3Bucket struct {
 	Policy            string
 	VersioningEnabled bool
 	LifecycleRules    []LifecycleRule
+	Notification      *NotificationConfig
 }
 
 // Store is the in-memory store for S3.
@@ -141,15 +150,85 @@ func (s *Store) newVersionID() string {
 
 // Handler is the HTTP handler for the S3 provider.
 type Handler struct {
-	state *state.ServerState
-	store *Store
+	state   *state.ServerState
+	store   *Store
+	sqsPort int
+	ebPort  int
 }
 
 // NewHandler creates a new S3 handler and registers the reset callback.
-func NewHandler(ss *state.ServerState) *Handler {
+func NewHandler(ss *state.ServerState, sqsPort, ebPort int) *Handler {
 	store := NewStore()
 	ss.AddResetCallback(store.Reset)
-	return &Handler{state: ss, store: store}
+	return &Handler{state: ss, store: store, sqsPort: sqsPort, ebPort: ebPort}
+}
+
+// dispatchNotification fires an S3 event notification to the configured target.
+func (h *Handler) dispatchNotification(bucket, key string) error {
+	h.store.mu.RLock()
+	b := h.store.buckets[bucket]
+	var nc *NotificationConfig
+	if b != nil {
+		nc = b.Notification
+	}
+	h.store.mu.RUnlock()
+
+	if nc == nil {
+		return nil
+	}
+
+	event := map[string]interface{}{
+		"Records": []map[string]interface{}{
+			{
+				"eventSource": "aws:s3",
+				"eventName":   "ObjectCreated:Put",
+				"s3": map[string]interface{}{
+					"bucket": map[string]string{"name": bucket},
+					"object": map[string]string{"key": key},
+				},
+			},
+		},
+	}
+	eventBody, _ := json.Marshal(event)
+
+	switch nc.Type {
+	case "sqs":
+		parts := strings.Split(nc.Target, ":")
+		queueName := parts[len(parts)-1]
+		queueURL := fmt.Sprintf("http://127.0.0.1:%d/000000000000/%s", h.sqsPort, queueName)
+		payload, _ := json.Marshal(map[string]string{
+			"QueueUrl":    queueURL,
+			"MessageBody": string(eventBody),
+		})
+		req, _ := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.sqsPort), bytes.NewReader(payload))
+		req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+		req.Header.Set("X-Amz-Target", "AmazonSQS.SendMessage")
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return err
+		}
+		resp.Body.Close()
+	case "eventbridge":
+		payload, _ := json.Marshal(map[string]interface{}{
+			"Entries": []map[string]string{
+				{
+					"Source":       "aws.s3",
+					"DetailType":   "Object Created",
+					"Detail":       string(eventBody),
+					"EventBusName": nc.Target,
+				},
+			},
+		})
+		req, _ := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.ebPort), bytes.NewReader(payload))
+		req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+		req.Header.Set("X-Amz-Target", "AWSEvents.PutEvents")
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return err
+		}
+		resp.Body.Close()
+	}
+	return nil
 }
 
 func xmlReply(w http.ResponseWriter, content string, status int) {
@@ -439,6 +518,7 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		b.Objects[key] = newObj
 		h.store.mu.Unlock()
 
+		h.dispatchNotification(bucket, key) //nolint:errcheck
 		w.Header().Set("ETag", etag)
 		w.WriteHeader(200)
 
@@ -741,12 +821,16 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		etag := fmt.Sprintf("\"%x\"", len(data))
 
 		h.store.mu.Lock()
-		if mp, ok := h.store.multiparts[uploadID]; ok {
-			mp.Parts[partNumber] = &MultipartPart{
-				PartNumber: partNumber,
-				Data:       data,
-				ETag:       etag,
-			}
+		mp, ok := h.store.multiparts[uploadID]
+		if !ok {
+			h.store.mu.Unlock()
+			xmlErr(w, "NoSuchUpload", "The specified upload does not exist: "+uploadID, 404)
+			return
+		}
+		mp.Parts[partNumber] = &MultipartPart{
+			PartNumber: partNumber,
+			Data:       data,
+			ETag:       etag,
 		}
 		h.store.mu.Unlock()
 
@@ -810,6 +894,11 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 	case "AbortMultipartUpload":
 		uploadID := r.URL.Query().Get("uploadId")
 		h.store.mu.Lock()
+		if _, ok := h.store.multiparts[uploadID]; !ok {
+			h.store.mu.Unlock()
+			xmlErr(w, "NoSuchUpload", "The specified upload does not exist: "+uploadID, 404)
+			return
+		}
 		delete(h.store.multiparts, uploadID)
 		h.store.mu.Unlock()
 		w.WriteHeader(204)
@@ -918,6 +1007,74 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		xmlReply(w, `<NotificationConfiguration></NotificationConfiguration>`, 200)
 
 	case "PutBucketNotificationConfiguration":
+		b := h.store.getBucket(bucket)
+		if b == nil {
+			xmlErr(w, "NoSuchBucket", "The bucket does not exist", 404)
+			return
+		}
+		var xmlConfig struct {
+			QueueConfig *struct {
+				QueueArn string `xml:"Queue"`
+			} `xml:"QueueConfiguration"`
+			TopicConfig *struct {
+				TopicArn string `xml:"Topic"`
+			} `xml:"TopicConfiguration"`
+			EventBridgeConfig *struct{} `xml:"EventBridgeConfiguration"`
+		}
+		body, _ := io.ReadAll(r.Body)
+		if err := xml.Unmarshal(body, &xmlConfig); err != nil {
+			xmlErr(w, "MalformedXML", "Malformed notification configuration XML", 400)
+			return
+		}
+		var nc NotificationConfig
+		if xmlConfig.QueueConfig != nil {
+			nc.Type = "sqs"
+			nc.Target = xmlConfig.QueueConfig.QueueArn
+		} else if xmlConfig.TopicConfig != nil {
+			nc.Type = "sns"
+			nc.Target = xmlConfig.TopicConfig.TopicArn
+		} else if xmlConfig.EventBridgeConfig != nil {
+			nc.Type = "eventbridge"
+			nc.Target = "default"
+		}
+		if nc.Type == "sqs" {
+			parts := strings.Split(nc.Target, ":")
+			queueName := parts[len(parts)-1]
+			queueURL := fmt.Sprintf("http://127.0.0.1:%d/000000000000/%s", h.sqsPort, queueName)
+			payload, _ := json.Marshal(map[string]string{
+				"QueueUrl":       queueURL,
+				"AttributeNames": "All",
+			})
+			req, _ := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.sqsPort), bytes.NewReader(payload))
+			req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+			req.Header.Set("X-Amz-Target", "AmazonSQS.GetQueueAttributes")
+			resp, err := http.DefaultClient.Do(req)
+			if err == nil {
+				vbody, _ := io.ReadAll(resp.Body)
+				resp.Body.Close()
+				if resp.StatusCode != 200 {
+					xmlErr(w, "InvalidArgument", "SQS queue not found or not active: "+string(vbody), 400)
+					return
+				}
+			}
+		} else if nc.Type == "eventbridge" {
+			payload, _ := json.Marshal(map[string]string{"Name": nc.Target})
+			req, _ := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.ebPort), bytes.NewReader(payload))
+			req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+			req.Header.Set("X-Amz-Target", "AWSEvents.DescribeEventBus")
+			resp, err := http.DefaultClient.Do(req)
+			if err == nil {
+				vbody, _ := io.ReadAll(resp.Body)
+				resp.Body.Close()
+				if resp.StatusCode != 200 {
+					xmlErr(w, "InvalidArgument", "EventBridge bus not found or not active: "+string(vbody), 400)
+					return
+				}
+			}
+		}
+		h.store.mu.Lock()
+		b.Notification = &nc
+		h.store.mu.Unlock()
 		w.WriteHeader(200)
 
 	case "GetBucketWebsite":
