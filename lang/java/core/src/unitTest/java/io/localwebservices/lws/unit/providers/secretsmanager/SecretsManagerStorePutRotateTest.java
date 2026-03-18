@@ -107,4 +107,32 @@ public class SecretsManagerStorePutRotateTest {
     // Assert
     assertTrue(actualSecrets.stream().anyMatch(e -> e.containsKey("DeletedDate")));
   }
+
+  @Test
+  public void deleteSecret_softDelete_nonExistentName_doesNotThrow() {
+    // Arrange
+    SecretsManagerStore store = new SecretsManagerStore();
+    String missingName = "no-such-secret";
+
+    // Act — soft delete on non-existent secret must be a no-op
+    store.deleteSecret(missingName, false);
+
+    // Assert — no exception thrown and store still empty
+    assertEquals(0, store.listSecrets().size());
+  }
+
+  @Test
+  public void findSecret_withSecretsPresent_wrongArn_returnsNull() {
+    // Arrange
+    SecretsManagerStore store = new SecretsManagerStore();
+    store.createSecret("existing-secret", "value", null, null);
+    String wrongArn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:nonexistent";
+
+    // Act
+    java.util.Map<String, Object> actualSecret = store.findSecret(wrongArn);
+
+    // Assert
+    assertNull(actualSecret);
+  }
+
 }
