@@ -475,22 +475,23 @@ public class LwsSession implements AutoCloseable {
   }
 
   static int findFreePort() throws IOException {
+    int maxOffset = SERVICE_OFFSETS.values().stream().mapToInt(Integer::intValue).max().orElse(20);
     for (int attempt = 0; attempt < 20; attempt++) {
-      int base;
-      try (ServerSocket s = new ServerSocket(0)) {
-        s.setReuseAddress(true);
-        base = s.getLocalPort();
-      }
-      boolean allFree = true;
-      for (int offset = 1; offset <= 14; offset++) {
-        try (ServerSocket check = new ServerSocket(base + offset)) {
-          check.setReuseAddress(true);
-        } catch (IOException e) {
-          allFree = false;
-          break;
+      List<ServerSocket> held = new ArrayList<>();
+      try {
+        held.add(new ServerSocket(0));
+        int base = held.get(0).getLocalPort();
+        for (int offset = 1; offset <= maxOffset; offset++) {
+          try {
+            held.add(new ServerSocket(base + offset));
+          } catch (IOException e) {
+            break;
+          }
         }
+        if (held.size() == maxOffset + 1) return base;
+      } finally {
+        for (ServerSocket s : held) s.close();
       }
-      if (allFree) return base;
     }
     throw new IOException("Could not find a free contiguous port range after 20 attempts");
   }
