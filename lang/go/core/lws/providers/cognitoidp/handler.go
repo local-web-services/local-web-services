@@ -29,11 +29,11 @@ type UserPool struct {
 type UserStatus string
 
 const (
-	StatusUnconfirmed        UserStatus = "UNCONFIRMED"
-	StatusConfirmed          UserStatus = "CONFIRMED"
+	StatusUnconfirmed         UserStatus = "UNCONFIRMED"
+	StatusConfirmed           UserStatus = "CONFIRMED"
 	StatusForceChangePassword UserStatus = "FORCE_CHANGE_PASSWORD"
-	StatusDisabled           UserStatus = "DISABLED"
-	StatusCompromised        UserStatus = "COMPROMISED"
+	StatusDisabled            UserStatus = "DISABLED"
+	StatusCompromised         UserStatus = "COMPROMISED"
 )
 
 type User struct {
@@ -76,10 +76,10 @@ type AuthSession struct {
 type Store struct {
 	mu           sync.RWMutex
 	pools        map[string]*UserPool
-	users        map[string]map[string]*User        // poolID → username → user
-	groups       map[string]map[string]*Group       // poolID → groupName → group
+	users        map[string]map[string]*User           // poolID → username → user
+	groups       map[string]map[string]*Group          // poolID → groupName → group
 	groupMembers map[string]map[string]map[string]bool // poolID → groupName → username → bool
-	clients      map[string]*UserPoolClient         // clientID → client
+	clients      map[string]*UserPoolClient            // clientID → client
 	authSessions map[string]*AuthSession
 }
 
@@ -625,9 +625,9 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 	case "ForgotPassword":
 		jsonOK(w, map[string]interface{}{
 			"CodeDeliveryDetails": map[string]interface{}{
-				"Destination":   "***@example.com",
+				"Destination":    "***@example.com",
 				"DeliveryMedium": "EMAIL",
-				"AttributeName": "email",
+				"AttributeName":  "email",
 			},
 		})
 

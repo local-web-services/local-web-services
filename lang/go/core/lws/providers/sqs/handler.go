@@ -36,14 +36,14 @@ type RedrivePolicy struct {
 
 // LocalQueue is an in-memory SQS queue.
 type LocalQueue struct {
-	mu               sync.Mutex
-	Name             string
-	URL              string
-	IsFifo           bool
+	mu                sync.Mutex
+	Name              string
+	URL               string
+	IsFifo            bool
 	VisibilityTimeout int
-	RedrivePolicy    *RedrivePolicy
-	messages         []*SqsMessage
-	msgCounter       int
+	RedrivePolicy     *RedrivePolicy
+	messages          []*SqsMessage
+	msgCounter        int
 	// FIFO deduplication: deduplicationId -> expiry
 	deduplicationIds map[string]time.Time
 }

@@ -687,15 +687,6 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 		return nil
 	})
 
-	// events_stepfunctions: running execution outcomes (internal transitions)
-	sc.Step(`^a running execution fails$`, func() error {
-		return godog.ErrSkip
-	})
-
-	sc.Step(`^a running execution completes successfully$`, func() error {
-		return godog.ErrSkip
-	})
-
 	// events_dynamodb: create EventBridge event bus (different phrasing — uses "bus")
 	sc.Step(`^an EventBridge event bus is created$`, func() error {
 		out, err := world.EventBridgeClient().CreateEventBus(context.Background(), &eventbridge.CreateEventBusInput{

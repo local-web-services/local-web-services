@@ -31,19 +31,19 @@ type EventBus struct {
 
 // DeliveryRecord records an event delivery to a target (for test verification).
 type DeliveryRecord struct {
-	TargetArn   string
-	TargetId    string
-	RuleName    string
+	TargetArn    string
+	TargetId     string
+	RuleName     string
 	EventBusName string
 	Event        map[string]interface{}
 	DeliveredAt  time.Time
 }
 
 type Store struct {
-	mu           sync.RWMutex
-	eventBuses   map[string]*EventBus
-	rules        map[string]*Rule // key: busName/ruleName
-	deliveries   []DeliveryRecord
+	mu         sync.RWMutex
+	eventBuses map[string]*EventBus
+	rules      map[string]*Rule // key: busName/ruleName
+	deliveries []DeliveryRecord
 }
 
 func NewStore() *Store {

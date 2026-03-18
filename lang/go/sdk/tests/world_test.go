@@ -18,7 +18,6 @@ import (
 	"github.com/local-web-services/local-web-services-go-sdk/lws"
 )
 
-
 const basePort = 19401
 
 var sharedServer *core.Server

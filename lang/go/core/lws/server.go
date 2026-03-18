@@ -22,10 +22,10 @@ import (
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/s3"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/s3tables"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/secretsmanager"
-	"github.com/local-web-services/local-web-services-go-core/lws/providers/stepfunctions"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/sns"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/sqs"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/ssm"
+	"github.com/local-web-services/local-web-services-go-core/lws/providers/stepfunctions"
 )
 
 // ServiceOffsets defines port offsets for each service.
@@ -54,11 +54,11 @@ var ServiceOffsets = map[string]int{
 
 // Server represents a running local AWS services server.
 type Server struct {
-	BasePort    int
-	State       *ServerState
-	listeners   []net.Listener
-	servers     []*http.Server
-	shutdownCh  chan struct{}
+	BasePort   int
+	State      *ServerState
+	listeners  []net.Listener
+	servers    []*http.Server
+	shutdownCh chan struct{}
 }
 
 // StartServer starts all service HTTP servers on basePort offsets.

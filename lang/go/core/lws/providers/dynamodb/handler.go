@@ -187,15 +187,15 @@ func tableDesc(t *Table) map[string]interface{} {
 	}
 	arn := fmt.Sprintf("arn:aws:dynamodb:%s:%s:table/%s", region, accountID, t.Name)
 	return map[string]interface{}{
-		"TableName":            t.Name,
-		"TableArn":             arn,
-		"TableStatus":          "ACTIVE",
-		"KeySchema":            keySchema,
-		"AttributeDefinitions": attrDefs,
-		"CreationDateTime":     t.CreatedAt.Unix(),
-		"ItemCount":            len(t.Items),
-		"TableSizeBytes":       0,
-		"BillingModeSummary":   map[string]string{"BillingMode": "PAY_PER_REQUEST"},
+		"TableName":             t.Name,
+		"TableArn":              arn,
+		"TableStatus":           "ACTIVE",
+		"KeySchema":             keySchema,
+		"AttributeDefinitions":  attrDefs,
+		"CreationDateTime":      t.CreatedAt.Unix(),
+		"ItemCount":             len(t.Items),
+		"TableSizeBytes":        0,
+		"BillingModeSummary":    map[string]string{"BillingMode": "PAY_PER_REQUEST"},
 		"ProvisionedThroughput": map[string]interface{}{"ReadCapacityUnits": 0, "WriteCapacityUnits": 0},
 	}
 }
@@ -288,12 +288,12 @@ var tokenRe = regexp.MustCompile(`(?i)(attribute_exists|attribute_not_exists|beg
 type tokenType int
 
 const (
-	tokIdent    tokenType = iota // attribute name or value placeholder
-	tokOp                        // =, <>, <, <=, >, >=
-	tokAnd                       // AND
-	tokOr                        // OR
-	tokNot                       // NOT
-	tokFunc                      // attribute_exists, begins_with, etc.
+	tokIdent tokenType = iota // attribute name or value placeholder
+	tokOp                     // =, <>, <, <=, >, >=
+	tokAnd                    // AND
+	tokOr                     // OR
+	tokNot                    // NOT
+	tokFunc                   // attribute_exists, begins_with, etc.
 	tokLParen
 	tokRParen
 	tokComma

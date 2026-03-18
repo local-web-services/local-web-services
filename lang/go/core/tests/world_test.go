@@ -70,16 +70,16 @@ type World struct {
 	timedResult    TimedResult
 
 	// Multi-step storage
-	lastReceiptHandle string
-	lastQueueUrl      string
-	lastUploadId      string
-	lastBucket        string
-	lastKey           string
-	lastETag          string
-	lastExecutionArn  string
+	lastReceiptHandle   string
+	lastQueueUrl        string
+	lastUploadId        string
+	lastBucket          string
+	lastKey             string
+	lastETag            string
+	lastExecutionArn    string
 	lastStateMachineArn string
 	lastSubscriptionArn string
-	lastTopicArn      string
+	lastTopicArn        string
 
 	// uploadNoParts indicates that the current multipart upload scenario
 	// should NOT auto-upload parts before completing (tests the "no parts" failure case).

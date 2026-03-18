@@ -132,12 +132,12 @@ func getString(m map[string]interface{}, key string) string {
 
 func clusterDesc(c *Cluster) map[string]interface{} {
 	return map[string]interface{}{
-		"Name":        c.Name,
-		"Status":      c.Status,
-		"NodeType":    c.NodeType,
+		"Name":          c.Name,
+		"Status":        c.Status,
+		"NodeType":      c.NodeType,
 		"EngineVersion": c.Engine,
-		"Description": c.Description,
-		"ARN":         fmt.Sprintf("arn:aws:memorydb:%s:%s:cluster/%s", region, accountID, c.Name),
+		"Description":   c.Description,
+		"ARN":           fmt.Sprintf("arn:aws:memorydb:%s:%s:cluster/%s", region, accountID, c.Name),
 	}
 }
 

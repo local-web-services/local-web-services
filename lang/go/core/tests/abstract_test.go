@@ -44,22 +44,22 @@ const (
 	testEventRule   = "test-rule-1"
 	testEventTarget = "arn:aws:sqs:us-east-1:000000000000:test-q-1"
 
-	testSFNStandardSM  = "test-sm-1"
-	testSFNExpressSM   = "test-sm-express-1"
-	testSFNRoleArn     = "arn:aws:iam::000000000000:role/StepFunctionsRole"
-	testSFNDefinition  = `{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}`
-	testSFNInput       = `{}`
-	testSSMParam       = "/test/param/1"
-	testSSMParam2      = "/test/param/2"
-	testSSMValue       = "test-value-1"
-	testSSMValue2      = "test-value-2"
-	testSSMTagKey      = "env"
-	testSSMTagVal      = "test"
-	testSMSecret       = "test-secret-1"
-	testSMValue        = "test-secret-value-1"
-	testSMValue2       = "test-secret-value-2"
-	testSMTagKey       = "env"
-	testSMTagVal       = "test"
+	testSFNStandardSM = "test-sm-1"
+	testSFNExpressSM  = "test-sm-express-1"
+	testSFNRoleArn    = "arn:aws:iam::000000000000:role/StepFunctionsRole"
+	testSFNDefinition = `{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}`
+	testSFNInput      = `{}`
+	testSSMParam      = "/test/param/1"
+	testSSMParam2     = "/test/param/2"
+	testSSMValue      = "test-value-1"
+	testSSMValue2     = "test-value-2"
+	testSSMTagKey     = "env"
+	testSSMTagVal     = "test"
+	testSMSecret      = "test-secret-1"
+	testSMValue       = "test-secret-value-1"
+	testSMValue2      = "test-secret-value-2"
+	testSMTagKey      = "env"
+	testSMTagVal      = "test"
 )
 
 func sfnArn(name string) string {

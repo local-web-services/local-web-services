@@ -23,39 +23,39 @@ type Vault struct {
 }
 
 type Archive struct {
-	ArchiveId          string
-	VaultName          string
-	Description        string
-	CreationDate       time.Time
-	Size               int64
-	SHA256TreeHash     string
+	ArchiveId      string
+	VaultName      string
+	Description    string
+	CreationDate   time.Time
+	Size           int64
+	SHA256TreeHash string
 }
 
 type Job struct {
-	JobId              string
-	VaultName          string
-	JobDescription     string
-	Action             string
-	StatusCode         string
-	ArchiveId          string
-	CreationDate       time.Time
-	CompletionDate     time.Time
-	Completed          bool
+	JobId          string
+	VaultName      string
+	JobDescription string
+	Action         string
+	StatusCode     string
+	ArchiveId      string
+	CreationDate   time.Time
+	CompletionDate time.Time
+	Completed      bool
 }
 
 type MultipartUpload struct {
-	MultipartUploadId string
-	VaultName         string
+	MultipartUploadId  string
+	VaultName          string
 	ArchiveDescription string
-	PartSizeInBytes   int64
-	CreationDate      time.Time
+	PartSizeInBytes    int64
+	CreationDate       time.Time
 }
 
 type Store struct {
 	mu               sync.RWMutex
-	vaults           map[string]*Vault          // key: vaultName
-	archives         map[string]*Archive        // key: archiveId
-	jobs             map[string]*Job            // key: vaultName/jobId
+	vaults           map[string]*Vault           // key: vaultName
+	archives         map[string]*Archive         // key: archiveId
+	jobs             map[string]*Job             // key: vaultName/jobId
 	multipartUploads map[string]*MultipartUpload // key: uploadId
 	counter          int64
 }
@@ -184,12 +184,12 @@ func sendError(w http.ResponseWriter, status int, code, msg string) {
 
 func vaultDesc(v *Vault) map[string]interface{} {
 	return map[string]interface{}{
-		"VaultARN":             v.VaultARN,
-		"VaultName":            v.VaultName,
-		"CreationDate":         v.CreatedAt.Format(time.RFC3339),
-		"NumberOfArchives":     v.ArchiveCount,
-		"SizeInBytes":          v.SizeInBytes,
-		"LastInventoryDate":    nil,
+		"VaultARN":          v.VaultARN,
+		"VaultName":         v.VaultName,
+		"CreationDate":      v.CreatedAt.Format(time.RFC3339),
+		"NumberOfArchives":  v.ArchiveCount,
+		"SizeInBytes":       v.SizeInBytes,
+		"LastInventoryDate": nil,
 	}
 }
 
@@ -305,12 +305,12 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, operation strin
 		for key, job := range h.store.jobs {
 			if strings.HasPrefix(key, prefix) {
 				jobs = append(jobs, map[string]interface{}{
-					"JobId":          job.JobId,
-					"VaultARN":       fmt.Sprintf("arn:aws:glacier:%s:%s:vaults/%s", region, accountID, vaultName),
-					"Action":         job.Action,
-					"StatusCode":     job.StatusCode,
-					"Completed":      job.Completed,
-					"CreationDate":   job.CreationDate.Format(time.RFC3339),
+					"JobId":        job.JobId,
+					"VaultARN":     fmt.Sprintf("arn:aws:glacier:%s:%s:vaults/%s", region, accountID, vaultName),
+					"Action":       job.Action,
+					"StatusCode":   job.StatusCode,
+					"Completed":    job.Completed,
+					"CreationDate": job.CreationDate.Format(time.RFC3339),
 				})
 			}
 		}

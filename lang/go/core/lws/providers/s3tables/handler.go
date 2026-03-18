@@ -27,19 +27,19 @@ type Namespace struct {
 }
 
 type Table struct {
-	Name        string
-	Namespace   string
-	Bucket      string
-	ARN         string
-	TableType   string
-	CreatedAt   time.Time
+	Name      string
+	Namespace string
+	Bucket    string
+	ARN       string
+	TableType string
+	CreatedAt time.Time
 }
 
 type Store struct {
 	mu         sync.RWMutex
-	buckets    map[string]*TableBucket       // key: bucketName
-	namespaces map[string]*Namespace         // key: bucketName/namespaceName
-	tables     map[string]*Table             // key: bucketName/namespace/tableName
+	buckets    map[string]*TableBucket // key: bucketName
+	namespaces map[string]*Namespace   // key: bucketName/namespaceName
+	tables     map[string]*Table       // key: bucketName/namespace/tableName
 }
 
 func NewStore() *Store {
@@ -172,12 +172,12 @@ func nsDesc(ns *Namespace) map[string]interface{} {
 
 func tableDesc(t *Table) map[string]interface{} {
 	return map[string]interface{}{
-		"name":        t.Name,
-		"namespace":   t.Namespace,
-		"bucketName":  t.Bucket,
-		"arn":         t.ARN,
-		"tableType":   t.TableType,
-		"createdAt":   t.CreatedAt.Format(time.RFC3339),
+		"name":       t.Name,
+		"namespace":  t.Namespace,
+		"bucketName": t.Bucket,
+		"arn":        t.ARN,
+		"tableType":  t.TableType,
+		"createdAt":  t.CreatedAt.Format(time.RFC3339),
 	}
 }
 

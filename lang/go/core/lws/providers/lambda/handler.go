@@ -20,47 +20,47 @@ const region = "us-east-1"
 type FunctionState string
 
 const (
-	FunctionStateActive FunctionState = "Active"
+	FunctionStateActive  FunctionState = "Active"
 	FunctionStatePending FunctionState = "Pending"
 	FunctionStateFailed  FunctionState = "Failed"
 )
 
 type Function struct {
-	Name            string
-	ARN             string
-	Runtime         string
-	Role            string
-	Handler         string
-	Description     string
-	Timeout         int
-	MemorySize      int
-	State           FunctionState
-	CodeSize        int64
-	CodeSha256      string
-	Version         string
-	Environment     map[string]string
-	Tags            map[string]string
-	LastModified    string
-	RevisionID      string
-	PackageType     string
+	Name         string
+	ARN          string
+	Runtime      string
+	Role         string
+	Handler      string
+	Description  string
+	Timeout      int
+	MemorySize   int
+	State        FunctionState
+	CodeSize     int64
+	CodeSha256   string
+	Version      string
+	Environment  map[string]string
+	Tags         map[string]string
+	LastModified string
+	RevisionID   string
+	PackageType  string
 }
 
 type EventSourceMapping struct {
-	UUID              string
-	EventSourceArn    string
-	FunctionArn       string
-	State             string
-	BatchSize         int
-	StartingPosition  string
-	LastModified      float64
+	UUID             string
+	EventSourceArn   string
+	FunctionArn      string
+	State            string
+	BatchSize        int
+	StartingPosition string
+	LastModified     float64
 }
 
 // ── Store ────────────────────────────────────────────────────────────────────
 
 type Store struct {
 	mu                  sync.RWMutex
-	functions           map[string]*Function           // name → function
-	eventSourceMappings map[string]*EventSourceMapping // uuid → mapping
+	functions           map[string]*Function                // name → function
+	eventSourceMappings map[string]*EventSourceMapping      // uuid → mapping
 	permissions         map[string][]map[string]interface{} // functionName → permissions
 }
 
@@ -397,7 +397,7 @@ func (h *Handler) getPolicy(w http.ResponseWriter, name string) {
 	}
 	policyBytes, _ := json.Marshal(policy)
 	jsonOK(w, map[string]interface{}{
-		"Policy":   string(policyBytes),
+		"Policy":     string(policyBytes),
 		"RevisionId": genID(),
 	})
 }
@@ -476,35 +476,35 @@ func functionToMap(fn *Function) map[string]interface{} {
 		envVars[k] = v
 	}
 	return map[string]interface{}{
-		"FunctionName": fn.Name,
-		"FunctionArn":  fn.ARN,
-		"Runtime":      fn.Runtime,
-		"Role":         fn.Role,
-		"Handler":      fn.Handler,
-		"Description":  fn.Description,
-		"Timeout":      fn.Timeout,
-		"MemorySize":   fn.MemorySize,
-		"State":        string(fn.State),
-		"CodeSize":     fn.CodeSize,
-		"CodeSha256":   fn.CodeSha256,
-		"Version":      fn.Version,
-		"LastModified": fn.LastModified,
-		"RevisionId":   fn.RevisionID,
-		"PackageType":  fn.PackageType,
-		"Environment":  map[string]interface{}{"Variables": envVars},
+		"FunctionName":  fn.Name,
+		"FunctionArn":   fn.ARN,
+		"Runtime":       fn.Runtime,
+		"Role":          fn.Role,
+		"Handler":       fn.Handler,
+		"Description":   fn.Description,
+		"Timeout":       fn.Timeout,
+		"MemorySize":    fn.MemorySize,
+		"State":         string(fn.State),
+		"CodeSize":      fn.CodeSize,
+		"CodeSha256":    fn.CodeSha256,
+		"Version":       fn.Version,
+		"LastModified":  fn.LastModified,
+		"RevisionId":    fn.RevisionID,
+		"PackageType":   fn.PackageType,
+		"Environment":   map[string]interface{}{"Variables": envVars},
 		"Architectures": []string{"x86_64"},
 	}
 }
 
 func mappingToMap(m *EventSourceMapping) map[string]interface{} {
 	return map[string]interface{}{
-		"UUID":             m.UUID,
-		"EventSourceArn":   m.EventSourceArn,
-		"FunctionArn":      m.FunctionArn,
-		"State":            m.State,
-		"BatchSize":        m.BatchSize,
-		"StartingPosition": m.StartingPosition,
-		"LastModified":     m.LastModified,
+		"UUID":                  m.UUID,
+		"EventSourceArn":        m.EventSourceArn,
+		"FunctionArn":           m.FunctionArn,
+		"State":                 m.State,
+		"BatchSize":             m.BatchSize,
+		"StartingPosition":      m.StartingPosition,
+		"LastModified":          m.LastModified,
 		"StateTransitionReason": "User action",
 	}
 }

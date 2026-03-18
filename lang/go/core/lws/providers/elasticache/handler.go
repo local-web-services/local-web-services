@@ -24,13 +24,13 @@ type CacheCluster struct {
 }
 
 type ReplicationGroup struct {
-	ReplicationGroupId          string
-	Description                 string
-	Status                      string
-	AutomaticFailover            string
-	AtRestEncryptionEnabled     bool
-	TransitEncryptionEnabled    bool
-	CreatedAt                   time.Time
+	ReplicationGroupId       string
+	Description              string
+	Status                   string
+	AutomaticFailover        string
+	AtRestEncryptionEnabled  bool
+	TransitEncryptionEnabled bool
+	CreatedAt                time.Time
 }
 
 type CacheSubnetGroup struct {
@@ -41,10 +41,10 @@ type CacheSubnetGroup struct {
 }
 
 type Store struct {
-	mu               sync.RWMutex
-	clusters         map[string]*CacheCluster
+	mu                sync.RWMutex
+	clusters          map[string]*CacheCluster
 	replicationGroups map[string]*ReplicationGroup
-	subnetGroups     map[string]*CacheSubnetGroup
+	subnetGroups      map[string]*CacheSubnetGroup
 }
 
 func NewStore() *Store {
