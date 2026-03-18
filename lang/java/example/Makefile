@@ -3,7 +3,7 @@
 GRADLE_OPTS := -Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example
 export GRADLE_OPTS
 
-.PHONY: help test test-e2e lint format format-check cpd spotbugs architecture-test check
+.PHONY: help test test-e2e e2e-test lint format format-check cpd spotbugs architecture-test check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -12,6 +12,8 @@ test: ## Run test suite
 	./gradlew test
 
 test-e2e: test ## Run e2e tests
+
+e2e-test: test ## Run e2e tests
 
 lint: ## Check style, imports, and complexity (Checkstyle)
 	./gradlew checkstyleMain checkstyleTest
