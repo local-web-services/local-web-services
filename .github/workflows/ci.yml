@@ -23,7 +23,9 @@ jobs:
       typescript-core: ${{ steps.filter.outputs.typescript-core }}
       typescript-sdk: ${{ steps.filter.outputs.typescript-sdk }}
       typescript-example: ${{ steps.filter.outputs.typescript-example }}
-      java: ${{ steps.filter.outputs.java }}
+      java-core: ${{ steps.filter.outputs.java-core }}
+      java-sdk: ${{ steps.filter.outputs.java-sdk }}
+      java-example: ${{ steps.filter.outputs.java-example }}
       go: ${{ steps.filter.outputs.go }}
       sample-cdk: ${{ steps.filter.outputs.sample-cdk }}
       sample-hcl: ${{ steps.filter.outputs.sample-hcl }}
@@ -63,8 +65,23 @@ jobs:
               - 'lang/typescript/sdk/**'
               - 'lang/typescript/core/**'
               - 'lang/typescript/arch_tests/**'
-            java:
-              - 'lang/java/**'
+            java-core:
+              - 'lang/java/core/**'
+              - 'lang/java/arch_tests/**'
+              - 'lang/java/config/**'
+              - 'lang/specification/**'
+            java-sdk:
+              - 'lang/java/sdk/**'
+              - 'lang/java/core/**'
+              - 'lang/java/arch_tests/**'
+              - 'lang/java/config/**'
+              - 'lang/specification/**'
+            java-example:
+              - 'lang/java/example/**'
+              - 'lang/java/sdk/**'
+              - 'lang/java/core/**'
+              - 'lang/java/arch_tests/**'
+              - 'lang/java/config/**'
               - 'lang/specification/**'
             go:
               - 'lang/go/**'
@@ -479,7 +496,7 @@ jobs:
   # ── Java Core ───────────────────────────────────────────────────────────────
   java-core-test:
     needs: [changes]
-    if: needs.changes.outputs.java == 'true'
+    if: needs.changes.outputs.java-core == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -496,7 +513,7 @@ jobs:
     needs: [changes, java-core-test]
     if: |
       always() &&
-      needs.changes.outputs.java == 'true' &&
+      needs.changes.outputs.java-sdk == 'true' &&
       (needs.java-core-test.result == 'success' || needs.java-core-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
@@ -507,7 +524,7 @@ jobs:
           distribution: "temurin"
       - name: Build Java core JAR
         working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
+        run: ./gradlew jar
       - name: Test
         working-directory: lang/java/sdk
         run: ./gradlew test
@@ -611,8 +628,8 @@ jobs:
     needs: [changes, java-sdk-test]
     if: |
       always() &&
-      needs.changes.outputs.java == 'true' &&
-      needs.java-sdk-test.result == 'success'
+      needs.changes.outputs.java-example == 'true' &&
+      (needs.java-sdk-test.result == 'success' || needs.java-sdk-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -633,7 +650,7 @@ jobs:
   # ── Java Core Lint ──────────────────────────────────────────────────────────
   java-core-lint:
     needs: [changes]
-    if: needs.changes.outputs.java == 'true'
+    if: needs.changes.outputs.java-core == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -650,7 +667,7 @@ jobs:
     needs: [changes, java-core-test]
     if: |
       always() &&
-      needs.changes.outputs.java == 'true' &&
+      needs.changes.outputs.java-core == 'true' &&
       (needs.java-core-test.result == 'success' || needs.java-core-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
@@ -668,8 +685,11 @@ jobs:
 
   # ── Java SDK Lint ───────────────────────────────────────────────────────────
   java-sdk-lint:
-    needs: [changes]
-    if: needs.changes.outputs.java == 'true'
+    needs: [changes, java-core-lint]
+    if: |
+      always() &&
+      needs.changes.outputs.java-sdk == 'true' &&
+      (needs.java-core-lint.result == 'success' || needs.java-core-lint.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -679,18 +699,19 @@ jobs:
           distribution: "temurin"
       - name: Build Java core JAR
         working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
+        run: ./gradlew jar
       - name: Lint
         working-directory: lang/java/sdk
         run: make lint format-check cpd spotbugs
 
   # ── Java SDK Architecture Test ──────────────────────────────────────────────
   java-sdk-architecture-test:
-    needs: [changes, java-sdk-test]
+    needs: [changes, java-sdk-test, java-core-architecture-test]
     if: |
       always() &&
-      needs.changes.outputs.java == 'true' &&
-      (needs.java-sdk-test.result == 'success' || needs.java-sdk-test.result == 'skipped')
+      needs.changes.outputs.java-sdk == 'true' &&
+      (needs.java-sdk-test.result == 'success' || needs.java-sdk-test.result == 'skipped') &&
+      (needs.java-core-architecture-test.result == 'success' || needs.java-core-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -703,15 +724,18 @@ jobs:
         run: ./gradlew jar
       - name: Build Java core JAR
         working-directory: lang/java/core
-        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
+        run: ./gradlew jar
       - name: Architecture Test
         working-directory: lang/java/sdk
         run: ./gradlew architectureTest
 
   # ── Java Example Lint ───────────────────────────────────────────────────────
   java-example-lint:
-    needs: [changes]
-    if: needs.changes.outputs.java == 'true'
+    needs: [changes, java-sdk-lint]
+    if: |
+      always() &&
+      needs.changes.outputs.java-example == 'true' &&
+      (needs.java-sdk-lint.result == 'success' || needs.java-sdk-lint.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -725,11 +749,12 @@ jobs:
 
   # ── Java Example Architecture Test ──────────────────────────────────────────
   java-example-architecture-test:
-    needs: [changes, java-example-test]
+    needs: [changes, java-example-test, java-sdk-architecture-test]
     if: |
       always() &&
-      needs.changes.outputs.java == 'true' &&
-      needs.java-example-test.result == 'success'
+      needs.changes.outputs.java-example == 'true' &&
+      (needs.java-example-test.result == 'success' || needs.java-example-test.result == 'skipped') &&
+      (needs.java-sdk-architecture-test.result == 'success' || needs.java-sdk-architecture-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

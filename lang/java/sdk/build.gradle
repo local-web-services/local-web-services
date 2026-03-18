@@ -64,7 +64,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
 
     // Java core in-process server — available in main source for direct type reference
-    implementation files('../core/build/libs/lws-java-core-0.1.0.jar')
+    implementation files('/tmp/gradle-build-lws-java-core/libs/lws-java-core-0.1.0.jar')
 
     // JUnit 5 API — compileOnly so the extension classes compile without requiring
     // users to add JUnit as a runtime dependency (they already have it for testing)
