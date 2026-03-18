@@ -80,8 +80,14 @@ function makeJwt(header: object, payload: object): string {
 export function makeTokens(
   poolId: string,
   username: string,
-  attributes: UserAttribute[]
-): { IdToken: string; AccessToken: string; RefreshToken: string; ExpiresIn: number; TokenType: string } {
+  attributes: UserAttribute[],
+): {
+  IdToken: string;
+  AccessToken: string;
+  RefreshToken: string;
+  ExpiresIn: number;
+  TokenType: string;
+} {
   const now = Math.floor(Date.now() / 1000);
   const exp = now + 3600;
   const sub = uuidv4();
@@ -102,7 +108,7 @@ export function makeTokens(
       email: attrMap["email"] ?? `${username}@example.com`,
       iat: now,
       exp,
-    }
+    },
   );
 
   const accessToken = makeJwt(
@@ -115,7 +121,7 @@ export function makeTokens(
       scope: "aws.cognito.signin.user.admin",
       iat: now,
       exp,
-    }
+    },
   );
 
   const refreshToken = `lws-refresh-${uuidv4()}`;
@@ -214,7 +220,9 @@ export class CognitoStore {
   describeUserPoolClient(userPoolId: string, clientId: string): UserPoolClient {
     const client = this.clients.get(clientId);
     if (!client || client.poolId !== userPoolId) {
-      throw new Error(`ResourceNotFoundException: Client ${clientId} not found in pool ${userPoolId}`);
+      throw new Error(
+        `ResourceNotFoundException: Client ${clientId} not found in pool ${userPoolId}`,
+      );
     }
     return client;
   }
@@ -244,7 +252,7 @@ export class CognitoStore {
     poolId: string,
     username: string,
     attributes: UserAttribute[],
-    temporaryPassword?: string
+    temporaryPassword?: string,
   ): CognitoUser {
     const poolUsers = this.poolUsers(poolId);
     if (poolUsers.has(username)) {
@@ -274,7 +282,8 @@ export class CognitoStore {
 
   adminDeleteUser(poolId: string, username: string): void {
     const poolUsers = this.poolUsers(poolId);
-    if (!poolUsers.has(username)) throw new Error(`UserNotFoundException: User ${username} not found`);
+    if (!poolUsers.has(username))
+      throw new Error(`UserNotFoundException: User ${username} not found`);
     poolUsers.delete(username);
   }
 
@@ -287,7 +296,7 @@ export class CognitoStore {
       if (match) {
         const [, attrName, attrValue] = match;
         users = users.filter((u) =>
-          u.attributes.some((a) => a.Name === attrName && a.Value === attrValue)
+          u.attributes.some((a) => a.Name === attrName && a.Value === attrValue),
         );
       }
     }
@@ -313,7 +322,12 @@ export class CognitoStore {
     user.lastModifiedDate = Date.now() / 1000;
   }
 
-  adminSetUserPassword(poolId: string, username: string, password: string, permanent: boolean): void {
+  adminSetUserPassword(
+    poolId: string,
+    username: string,
+    password: string,
+    permanent: boolean,
+  ): void {
     const user = this.adminGetUser(poolId, username);
     user.password = password;
     if (permanent) {
@@ -370,10 +384,11 @@ export class CognitoStore {
     poolId: string,
     groupName: string,
     description?: string,
-    precedence?: number
+    precedence?: number,
   ): CognitoGroup {
     const groups = this.poolGroups(poolId);
-    if (groups.has(groupName)) throw new Error(`GroupExistsException: Group ${groupName} already exists`);
+    if (groups.has(groupName))
+      throw new Error(`GroupExistsException: Group ${groupName} already exists`);
     const now = Date.now() / 1000;
     const group: CognitoGroup = {
       name: groupName,
@@ -396,7 +411,8 @@ export class CognitoStore {
 
   deleteGroup(poolId: string, groupName: string): void {
     const groups = this.poolGroups(poolId);
-    if (!groups.has(groupName)) throw new Error(`ResourceNotFoundException: Group ${groupName} not found`);
+    if (!groups.has(groupName))
+      throw new Error(`ResourceNotFoundException: Group ${groupName} not found`);
     groups.delete(groupName);
     this.poolGroupMembers(poolId).delete(groupName);
   }
@@ -443,8 +459,13 @@ export class CognitoStore {
   adminInitiateAuth(
     poolId: string,
     authFlow: string,
-    authParameters: Record<string, string>
-  ): { tokens?: ReturnType<typeof makeTokens>; challengeName?: string; session?: string; challengeParameters?: Record<string, string> } {
+    authParameters: Record<string, string>,
+  ): {
+    tokens?: ReturnType<typeof makeTokens>;
+    challengeName?: string;
+    session?: string;
+    challengeParameters?: Record<string, string>;
+  } {
     this.describeUserPool(poolId);
     if (authFlow === "ADMIN_USER_PASSWORD_AUTH") {
       const username = authParameters["USERNAME"];
@@ -486,8 +507,13 @@ export class CognitoStore {
   initiateAuth(
     clientId: string,
     authFlow: string,
-    authParameters: Record<string, string>
-  ): { tokens?: ReturnType<typeof makeTokens>; challengeName?: string; session?: string; challengeParameters?: Record<string, string> } {
+    authParameters: Record<string, string>,
+  ): {
+    tokens?: ReturnType<typeof makeTokens>;
+    challengeName?: string;
+    session?: string;
+    challengeParameters?: Record<string, string>;
+  } {
     const client = this.clients.get(clientId);
     if (!client) throw new Error(`ResourceNotFoundException: Client ${clientId} not found`);
     return this.adminInitiateAuth(client.poolId, authFlow, authParameters);
@@ -497,7 +523,7 @@ export class CognitoStore {
     clientId: string,
     challengeName: string,
     session: string,
-    challengeResponses: Record<string, string>
+    challengeResponses: Record<string, string>,
   ): { tokens?: ReturnType<typeof makeTokens> } {
     const authSession = this.authSessions.get(session);
     if (!authSession) throw new Error(`NotAuthorizedException: Invalid session`);

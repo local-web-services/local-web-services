@@ -1,12 +1,6 @@
 /** Cucumber World for the LWS TypeScript SDK BDD tests. */
 
-import {
-  setWorldConstructor,
-  Before,
-  After,
-  World,
-  IWorldOptions,
-} from "@cucumber/cucumber";
+import { setWorldConstructor, Before, After, World, IWorldOptions } from "@cucumber/cucumber";
 import { LwsSession } from "../../src/session";
 import type { LogCapture } from "../../src/logs";
 
@@ -41,14 +35,11 @@ export class SdkWorld extends World {
     const { SFNClient, ListStateMachinesCommand } = require("@aws-sdk/client-sfn");
     const client = this.session.client<typeof SFNClient>("stepfunctions");
     const result = await client.send(new ListStateMachinesCommand({}));
-    const machines: Array<{ name: string; stateMachineArn: string }> =
-      result.stateMachines ?? [];
+    const machines: Array<{ name: string; stateMachineArn: string }> = result.stateMachines ?? [];
     const match = machines.find((m) => m.name === name);
     if (!match) {
       throw new Error(
-        `State machine "${name}" not found. Available: ${machines
-          .map((m) => m.name)
-          .join(", ")}`
+        `State machine "${name}" not found. Available: ${machines.map((m) => m.name).join(", ")}`,
       );
     }
     return match.stateMachineArn;

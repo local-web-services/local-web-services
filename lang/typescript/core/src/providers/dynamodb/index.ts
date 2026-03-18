@@ -11,10 +11,7 @@ import { createRequestContext, recordLog } from "../../middleware/logging";
 const TARGET_PREFIX = "DynamoDB_20120810.";
 
 function jsonReply(reply: FastifyReply, data: unknown, status = 200): void {
-  reply
-    .status(status)
-    .header("Content-Type", "application/x-amz-json-1.0")
-    .send(data);
+  reply.status(status).header("Content-Type", "application/x-amz-json-1.0").send(data);
 }
 
 function errorReply(reply: FastifyReply, code: string, message: string, status = 400): void {
@@ -82,7 +79,7 @@ async function handleDynamoOperation(
   operation: string,
   body: Record<string, unknown>,
   store: DynamoStore,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<void> {
   switch (operation) {
     case "GetItem": {
@@ -102,7 +99,11 @@ async function handleDynamoOperation(
       const key = body.Key as Record<string, unknown>;
       const existingForDelete = store.getItem(tableName, key);
       if (!existingForDelete) {
-        errorReply(reply, "com.amazonaws.dynamodb.v20120810#ConditionalCheckFailedException", "The conditional request failed");
+        errorReply(
+          reply,
+          "com.amazonaws.dynamodb.v20120810#ConditionalCheckFailedException",
+          "The conditional request failed",
+        );
         break;
       }
       store.deleteItem(tableName, key);
@@ -115,7 +116,11 @@ async function handleDynamoOperation(
       const key = body.Key as Record<string, unknown>;
       const existingForUpdate = store.getItem(tableName, key);
       if (!existingForUpdate) {
-        errorReply(reply, "com.amazonaws.dynamodb.v20120810#ConditionalCheckFailedException", "The conditional request failed");
+        errorReply(
+          reply,
+          "com.amazonaws.dynamodb.v20120810#ConditionalCheckFailedException",
+          "The conditional request failed",
+        );
         break;
       }
       const updated = store.updateItem(
@@ -123,7 +128,7 @@ async function handleDynamoOperation(
         key,
         (body.UpdateExpression as string) ?? "",
         body.ExpressionAttributeNames as Record<string, string> | undefined,
-        body.ExpressionAttributeValues as Record<string, Record<string, unknown>> | undefined
+        body.ExpressionAttributeValues as Record<string, Record<string, unknown>> | undefined,
       );
       jsonReply(reply, { Attributes: updated });
       break;
@@ -139,7 +144,7 @@ async function handleDynamoOperation(
         body.FilterExpression as string | undefined,
         body.ScanIndexForward !== false,
         body.Limit as number | undefined,
-        body.ExclusiveStartKey as Record<string, unknown> | undefined
+        body.ExclusiveStartKey as Record<string, unknown> | undefined,
       );
       const result: Record<string, unknown> = { Items: items, Count: items.length };
       if (lastEvaluatedKey) result.LastEvaluatedKey = lastEvaluatedKey;
@@ -154,7 +159,7 @@ async function handleDynamoOperation(
         body.ExpressionAttributeNames as Record<string, string> | undefined,
         body.ExpressionAttributeValues as Record<string, Record<string, unknown>> | undefined,
         body.Limit as number | undefined,
-        body.ExclusiveStartKey as Record<string, unknown> | undefined
+        body.ExclusiveStartKey as Record<string, unknown> | undefined,
       );
       const result: Record<string, unknown> = { Items: items, Count: items.length };
       if (lastEvaluatedKey) result.LastEvaluatedKey = lastEvaluatedKey;
@@ -174,13 +179,22 @@ async function handleDynamoOperation(
     }
 
     case "BatchWriteItem": {
-      const requestItems = (body.RequestItems ?? {}) as Record<string, Array<Record<string, unknown>>>;
+      const requestItems = (body.RequestItems ?? {}) as Record<
+        string,
+        Array<Record<string, unknown>>
+      >;
       for (const [tableName, requests] of Object.entries(requestItems)) {
         const putItems: Array<Record<string, unknown>> = [];
         const deleteKeys: Array<Record<string, unknown>> = [];
         for (const req of requests) {
-          if ("PutRequest" in req) putItems.push((req.PutRequest as Record<string, unknown>).Item as Record<string, unknown>);
-          else if ("DeleteRequest" in req) deleteKeys.push((req.DeleteRequest as Record<string, unknown>).Key as Record<string, unknown>);
+          if ("PutRequest" in req)
+            putItems.push(
+              (req.PutRequest as Record<string, unknown>).Item as Record<string, unknown>,
+            );
+          else if ("DeleteRequest" in req)
+            deleteKeys.push(
+              (req.DeleteRequest as Record<string, unknown>).Key as Record<string, unknown>,
+            );
         }
         store.batchWriteItems(tableName, putItems, deleteKeys);
       }
@@ -191,7 +205,11 @@ async function handleDynamoOperation(
     case "CreateTable": {
       const tableName = body.TableName as string;
       if (store.tableExists(tableName)) {
-        errorReply(reply, "com.amazonaws.dynamodb.v20120810#ResourceInUseException", `Table already exists: ${tableName}`);
+        errorReply(
+          reply,
+          "com.amazonaws.dynamodb.v20120810#ResourceInUseException",
+          `Table already exists: ${tableName}`,
+        );
         break;
       }
       const config = parseTableConfig(body);
@@ -233,10 +251,19 @@ async function handleDynamoOperation(
           const cc = txItem.ConditionCheck as Record<string, unknown>;
           const condExpr = cc.ConditionExpression as string | undefined;
           if (condExpr) {
-            const existingItem = store.getItem(cc.TableName as string, cc.Key as Record<string, unknown>);
+            const existingItem = store.getItem(
+              cc.TableName as string,
+              cc.Key as Record<string, unknown>,
+            );
             const exprNames = (cc.ExpressionAttributeNames as Record<string, string>) ?? {};
-            const exprValues = (cc.ExpressionAttributeValues as Record<string, Record<string, unknown>>) ?? {};
-            const conditionMet = evaluateFilter(existingItem ?? {}, condExpr, exprNames, exprValues);
+            const exprValues =
+              (cc.ExpressionAttributeValues as Record<string, Record<string, unknown>>) ?? {};
+            const conditionMet = evaluateFilter(
+              existingItem ?? {},
+              condExpr,
+              exprNames,
+              exprValues,
+            );
             if (!conditionMet) {
               transactionCancelled = true;
               cancellationReasons.push({ Code: "ConditionalCheckFailed" });
@@ -251,11 +278,16 @@ async function handleDynamoOperation(
         }
       }
       if (transactionCancelled) {
-        jsonReply(reply, {
-          __type: "TransactionCanceledException",
-          message: "Transaction cancelled, please refer cancellationReasons for specific reasons [ConditionalCheckFailed]",
-          CancellationReasons: cancellationReasons,
-        }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "TransactionCanceledException",
+            message:
+              "Transaction cancelled, please refer cancellationReasons for specific reasons [ConditionalCheckFailed]",
+            CancellationReasons: cancellationReasons,
+          },
+          400,
+        );
         break;
       }
       // Second pass: apply writes
@@ -273,7 +305,7 @@ async function handleDynamoOperation(
             upd.Key as Record<string, unknown>,
             (upd.UpdateExpression as string) ?? "",
             upd.ExpressionAttributeNames as Record<string, string> | undefined,
-            upd.ExpressionAttributeValues as Record<string, Record<string, unknown>> | undefined
+            upd.ExpressionAttributeValues as Record<string, Record<string, unknown>> | undefined,
           );
         }
       }
@@ -333,7 +365,10 @@ async function handleDynamoOperation(
       reply
         .status(400)
         .header("Content-Type", "application/x-amz-json-1.0")
-        .send({ __type: "UnknownOperationException", message: `lws: DynamoDB operation '${operation}' is not yet implemented` });
+        .send({
+          __type: "UnknownOperationException",
+          message: `lws: DynamoDB operation '${operation}' is not yet implemented`,
+        });
     }
   }
 }

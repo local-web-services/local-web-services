@@ -1,7 +1,6 @@
 /** MemoryDB wire-protocol Fastify plugin (JSON protocol, X-Amz-Target). */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { v4 as uuidv4 } from "uuid";
 import type { ServerState } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
@@ -66,18 +65,23 @@ export function registerMemoryDb(app: FastifyInstance, state: ServerState): void
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
     const target = (req.headers["x-amz-target"] as string) ?? "";
-    const operation = target.startsWith(TARGET_PREFIX) ? target.slice(TARGET_PREFIX.length) : target;
+    const operation = target.startsWith(TARGET_PREFIX)
+      ? target.slice(TARGET_PREFIX.length)
+      : target;
     const body = req.body as Record<string, unknown>;
     const ctx = createRequestContext("memorydb", operation);
 
     if (await applyIamAuth(state, "memorydb", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "memorydb", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "memorydb", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     switch (operation) {
@@ -205,10 +209,14 @@ export function registerMemoryDb(app: FastifyInstance, state: ServerState): void
       }
 
       default: {
-        jsonReply(reply, {
-          __type: "UnknownOperationException",
-          message: `lws: MemoryDB operation '${operation}' is not yet implemented`,
-        }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "UnknownOperationException",
+            message: `lws: MemoryDB operation '${operation}' is not yet implemented`,
+          },
+          400,
+        );
       }
     }
 

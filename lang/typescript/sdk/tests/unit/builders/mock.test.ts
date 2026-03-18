@@ -25,7 +25,7 @@ describe("FakeBuilder", () => {
         expect.objectContaining({
           method: "POST",
           headers: { "Content-Type": "application/json" },
-        })
+        }),
       );
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.enabled).toBe(false);
@@ -86,9 +86,7 @@ describe("FakeRuleBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.rules[0].response.body).toBe(
-        JSON.stringify(expectedPayload)
-      );
+      expect(actualBody.dynamodb.rules[0].response.body).toBe(JSON.stringify(expectedPayload));
     });
 
     it("uses default status 200 when not specified", async () => {
@@ -124,9 +122,7 @@ describe("FakeRuleBuilder", () => {
       const expectedStatus = 400;
 
       // Act
-      await builder
-        .operation("GetItem")
-        .error(expectedErrorType, expectedMessage, expectedStatus);
+      await builder.operation("GetItem").error(expectedErrorType, expectedMessage, expectedStatus);
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
@@ -153,8 +149,7 @@ describe("FakeRuleBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      const actualMatchHeaders =
-        actualBody.dynamodb.rules[0].match_headers;
+      const actualMatchHeaders = actualBody.dynamodb.rules[0].match_headers;
       expect(actualMatchHeaders[expectedHeaderName]).toBe(expectedHeaderValue);
     });
   });

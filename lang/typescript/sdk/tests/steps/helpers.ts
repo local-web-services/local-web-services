@@ -12,7 +12,7 @@ Given(
   async function (this: SdkWorld, tableName: string, partitionKey: string) {
     this._pendingSpec = { tables: [{ name: tableName, partitionKey }] };
     this.session = await LwsSession.create(this._pendingSpec);
-  }
+  },
 );
 
 Given(
@@ -20,25 +20,20 @@ Given(
   async function (this: SdkWorld, queueName: string) {
     this._pendingSpec = { queues: [queueName] };
     this.session = await LwsSession.create(this._pendingSpec);
-  }
+  },
 );
 
 // ── DynamoDB helper steps ──────────────────────────────────────────────────────
 
 When(
   "I put item with orderId {string} and status {string} into {string}",
-  async function (
-    this: SdkWorld,
-    orderId: string,
-    status: string,
-    tableName: string
-  ) {
+  async function (this: SdkWorld, orderId: string, status: string, tableName: string) {
     assert.ok(this.session, "No session");
     await this.session!.dynamodb(tableName).put({
       orderId: { S: orderId },
       status: { S: status },
     });
-  }
+  },
 );
 
 Then(
@@ -46,7 +41,7 @@ Then(
   async function (this: SdkWorld, tableName: string, expectedCount: number) {
     assert.ok(this.session, "No session");
     await this.session!.dynamodb(tableName).assertItemCount(expectedCount);
-  }
+  },
 );
 
 Then(
@@ -56,7 +51,7 @@ Then(
     await this.session!.dynamodb(tableName).assertItemExists({
       orderId: { S: orderId },
     });
-  }
+  },
 );
 
 Then(
@@ -69,9 +64,9 @@ Then(
     assert.strictEqual(
       item,
       undefined,
-      `Expected item with orderId "${orderId}" to not exist in table "${tableName}"`
+      `Expected item with orderId "${orderId}" to not exist in table "${tableName}"`,
     );
-  }
+  },
 );
 
 // ── SQS helper steps ───────────────────────────────────────────────────────────
@@ -81,30 +76,22 @@ When(
   async function (this: SdkWorld, body: string, queueName: string) {
     assert.ok(this.session, "No session");
     await this.session!.sqs(queueName).send(body);
-  }
+  },
 );
 
 Then(
   "receiving {int} message from {string} returns body {string}",
-  async function (
-    this: SdkWorld,
-    count: number,
-    queueName: string,
-    expectedBody: string
-  ) {
+  async function (this: SdkWorld, count: number, queueName: string, expectedBody: string) {
     assert.ok(this.session, "No session");
     const messages = await this.session!.sqs(queueName).receive(count);
-    assert.ok(
-      messages.length > 0,
-      `Expected at least 1 message from queue "${queueName}"`
-    );
+    assert.ok(messages.length > 0, `Expected at least 1 message from queue "${queueName}"`);
     const actualBody = messages[0].Body ?? "";
     assert.strictEqual(
       actualBody,
       expectedBody,
-      `Expected message body "${expectedBody}" but got "${actualBody}"`
+      `Expected message body "${expectedBody}" but got "${actualBody}"`,
     );
-  }
+  },
 );
 
 When(
@@ -112,19 +99,16 @@ When(
   async function (this: SdkWorld, count: number, queueName: string) {
     assert.ok(this.session, "No session");
     this.lastMessages = await this.session!.sqs(queueName).receive(count);
-  }
+  },
 );
 
-Then(
-  "exactly {int} message is returned",
-  function (this: SdkWorld, expectedCount: number) {
-    assert.strictEqual(
-      this.lastMessages.length,
-      expectedCount,
-      `Expected exactly ${expectedCount} message(s) but got ${this.lastMessages.length}`
-    );
-  }
-);
+Then("exactly {int} message is returned", function (this: SdkWorld, expectedCount: number) {
+  assert.strictEqual(
+    this.lastMessages.length,
+    expectedCount,
+    `Expected exactly ${expectedCount} message(s) but got ${this.lastMessages.length}`,
+  );
+});
 
 // ── session_reset data steps ───────────────────────────────────────────────────
 
@@ -136,7 +120,7 @@ Given(
       orderId: { S: orderId },
       status: { S: "pending" },
     });
-  }
+  },
 );
 
 Then(
@@ -144,21 +128,18 @@ Then(
   async function (this: SdkWorld, tableName: string, expectedCount: number) {
     assert.ok(this.session, "No session");
     await this.session!.dynamodb(tableName).assertItemCount(expectedCount);
-  }
+  },
 );
 
-Given(
-  "a message has been sent to {string}",
-  async function (this: SdkWorld, queueName: string) {
-    assert.ok(this.session, "No session");
-    await this.session!.sqs(queueName).send("test-message");
-  }
-);
+Given("a message has been sent to {string}", async function (this: SdkWorld, queueName: string) {
+  assert.ok(this.session, "No session");
+  await this.session!.sqs(queueName).send("test-message");
+});
 
 Then(
   "{string} contains {int} messages",
   async function (this: SdkWorld, queueName: string, expectedCount: number) {
     assert.ok(this.session, "No session");
     await this.session!.sqs(queueName).assertMessageCount(expectedCount);
-  }
+  },
 );

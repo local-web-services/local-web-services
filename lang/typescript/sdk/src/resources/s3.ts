@@ -13,7 +13,7 @@ import {
 export class S3Helper {
   constructor(
     private readonly bucketName: string,
-    private readonly client: S3Client
+    private readonly client: S3Client,
   ) {}
 
   async put(key: string, body: Buffer | string, contentType?: string): Promise<void> {
@@ -23,13 +23,13 @@ export class S3Helper {
         Key: key,
         Body: typeof body === "string" ? Buffer.from(body) : body,
         ...(contentType ? { ContentType: contentType } : {}),
-      })
+      }),
     );
   }
 
   async get(key: string): Promise<Buffer> {
     const result = await this.client.send(
-      new GetObjectCommand({ Bucket: this.bucketName, Key: key })
+      new GetObjectCommand({ Bucket: this.bucketName, Key: key }),
     );
     const chunks: Uint8Array[] = [];
     for await (const chunk of result.Body as AsyncIterable<Uint8Array>) {
@@ -43,9 +43,7 @@ export class S3Helper {
   }
 
   async delete(key: string): Promise<void> {
-    await this.client.send(
-      new DeleteObjectCommand({ Bucket: this.bucketName, Key: key })
-    );
+    await this.client.send(new DeleteObjectCommand({ Bucket: this.bucketName, Key: key }));
   }
 
   async listKeys(prefix?: string): Promise<string[]> {
@@ -57,7 +55,7 @@ export class S3Helper {
           Bucket: this.bucketName,
           ...(prefix ? { Prefix: prefix } : {}),
           ...(token ? { ContinuationToken: token } : {}),
-        })
+        }),
       );
       keys.push(...(result.Contents ?? []).map((obj) => obj.Key!));
       token = result.NextContinuationToken;
@@ -70,7 +68,7 @@ export class S3Helper {
     if (!keys.includes(key)) {
       throw new Error(
         `Expected object "${key}" to exist in bucket "${this.bucketName}", ` +
-          `but it was not found. Existing keys: ${JSON.stringify(keys)}`
+          `but it was not found. Existing keys: ${JSON.stringify(keys)}`,
       );
     }
   }
@@ -81,7 +79,7 @@ export class S3Helper {
       throw new Error(
         `Expected ${expectedCount} object(s) in bucket "${this.bucketName}"` +
           (prefix ? ` with prefix "${prefix}"` : "") +
-          `, but found ${keys.length}.`
+          `, but found ${keys.length}.`,
       );
     }
   }

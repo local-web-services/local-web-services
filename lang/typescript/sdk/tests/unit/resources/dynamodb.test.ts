@@ -1,7 +1,4 @@
-import {
-  DynamoDBClient,
-  AttributeValue,
-} from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, AttributeValue } from "@aws-sdk/client-dynamodb";
 import { DynamoDBHelper } from "../../../src/resources/dynamodb";
 
 function makeFakeClient(): { send: jest.Mock; client: DynamoDBClient } {
@@ -148,9 +145,7 @@ describe("DynamoDBHelper", () => {
       const expectedKey = { id: { S: "missing" } };
 
       // Act & Assert
-      await expect(helper.assertItemExists(expectedKey)).rejects.toThrow(
-        'Expected item with key'
-      );
+      await expect(helper.assertItemExists(expectedKey)).rejects.toThrow("Expected item with key");
     });
   });
 
@@ -176,9 +171,7 @@ describe("DynamoDBHelper", () => {
       const expectedCount = 1;
 
       // Act & Assert
-      await expect(helper.assertItemCount(expectedCount)).rejects.toThrow(
-        "Expected 1 item(s)"
-      );
+      await expect(helper.assertItemCount(expectedCount)).rejects.toThrow("Expected 1 item(s)");
     });
   });
 });

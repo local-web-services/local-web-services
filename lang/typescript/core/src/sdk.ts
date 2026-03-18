@@ -18,7 +18,10 @@ export class LwsManagementSdk {
   readonly chaos: {
     enable(service: string): Promise<void>;
     disable(service: string): Promise<void>;
-    set(service: string, options: { errorRate?: number; latencyMin?: number; latencyMax?: number }): Promise<void>;
+    set(
+      service: string,
+      options: { errorRate?: number; latencyMin?: number; latencyMax?: number },
+    ): Promise<void>;
     status(): Promise<unknown>;
   };
 
@@ -27,7 +30,7 @@ export class LwsManagementSdk {
     disable(service: string): Promise<void>;
     setIdentity(identity: string): Promise<void>;
     registerIdentities(
-      identities: Record<string, { inline_policies?: IamPolicy[]; boundary_policy?: IamPolicy }>
+      identities: Record<string, { inline_policies?: IamPolicy[]; boundary_policy?: IamPolicy }>,
     ): Promise<void>;
     status(): Promise<unknown>;
   };

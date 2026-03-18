@@ -12,7 +12,7 @@ function normalizeOp(op: string): string {
 export function registerManagementApi(
   app: FastifyInstance,
   state: ServerState,
-  wsServer: WebSocketServer
+  wsServer: WebSocketServer,
 ): void {
   // GET /_ldk/status
   app.get("/_ldk/status", async (_req: FastifyRequest, reply: FastifyReply) => {
@@ -49,8 +49,15 @@ export function registerManagementApi(
 
   // GET /_ldk/chaos
   const ALL_SERVICES = [
-    "dynamodb", "sqs", "s3", "sns", "stepfunctions",
-    "events", "cognito-idp", "ssm", "secretsmanager",
+    "dynamodb",
+    "sqs",
+    "s3",
+    "sns",
+    "stepfunctions",
+    "events",
+    "cognito-idp",
+    "ssm",
+    "secretsmanager",
   ];
   app.get("/_ldk/chaos", async (_req: FastifyRequest, reply: FastifyReply) => {
     const result: Record<string, unknown> = {};
@@ -91,7 +98,7 @@ export function registerManagementApi(
       }
 
       // enabled: true with no other keys = mark service as enabled with empty rules
-      if (Object.keys(config).filter(k => k !== "enabled").length === 0) {
+      if (Object.keys(config).filter((k) => k !== "enabled").length === 0) {
         if (!state.chaosRules.has(service)) {
           state.chaosRules.set(service, new Map());
         }
@@ -135,7 +142,10 @@ export function registerManagementApi(
   // POST /_ldk/aws-fake
   // SDK sends: { "service": { "enabled": bool, "rules": [{ "operation": "...", "match_headers": {}, "response": { "status": 200, "content_type": "...", "delay_ms": 0, "body": "..." } }] } }
   app.post("/_ldk/aws-fake", async (req: FastifyRequest, reply: FastifyReply) => {
-    const body = req.body as Record<string, { enabled?: boolean; rules?: Array<Record<string, unknown>> }>;
+    const body = req.body as Record<
+      string,
+      { enabled?: boolean; rules?: Array<Record<string, unknown>> }
+    >;
 
     for (const [service, config] of Object.entries(body)) {
       const enabled = config.enabled !== false;
@@ -199,11 +209,14 @@ export function registerManagementApi(
       mode?: string;
       default_identity?: string;
       enforce?: boolean;
-      identities?: Record<string, {
-        inline_policies?: IamPolicy[];
-        boundary_policy?: IamPolicy;
-        permission_boundary?: IamPolicy;
-      }>;
+      identities?: Record<
+        string,
+        {
+          inline_policies?: IamPolicy[];
+          boundary_policy?: IamPolicy;
+          permission_boundary?: IamPolicy;
+        }
+      >;
       resource_policies?: Record<string, IamPolicy>;
     };
 

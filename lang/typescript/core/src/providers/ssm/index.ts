@@ -29,7 +29,12 @@ export class SsmStore {
     this.params.clear();
   }
 
-  putParameter(name: string, value: string, type: string = "String", description?: string): SsmParameter {
+  putParameter(
+    name: string,
+    value: string,
+    type: string = "String",
+    description?: string,
+  ): SsmParameter {
     const existing = this.params.get(name);
     const param: SsmParameter = {
       name,
@@ -108,18 +113,23 @@ export function registerSsm(app: FastifyInstance, state: ServerState): SsmStore 
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
     const target = (req.headers["x-amz-target"] as string) ?? "";
-    const operation = target.startsWith(TARGET_PREFIX) ? target.slice(TARGET_PREFIX.length) : target;
+    const operation = target.startsWith(TARGET_PREFIX)
+      ? target.slice(TARGET_PREFIX.length)
+      : target;
     const body = req.body as Record<string, unknown>;
     const ctx = createRequestContext("ssm", operation);
 
     if (await applyIamAuth(state, "ssm", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "ssm", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "ssm", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     try {
@@ -139,14 +149,21 @@ function handleSsmOp(
   operation: string,
   body: Record<string, unknown>,
   store: SsmStore,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): void {
   switch (operation) {
     case "PutParameter": {
       const overwrite = body.Overwrite as boolean | undefined;
       const existing = store.getParameter(body.Name as string);
       if (existing && overwrite !== true) {
-        jsonReply(reply, { __type: "ParameterAlreadyExists", message: `Parameter ${body.Name as string} already exists` }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "ParameterAlreadyExists",
+            message: `Parameter ${body.Name as string} already exists`,
+          },
+          400,
+        );
         return;
       }
       if (!existing && overwrite === true) {
@@ -161,7 +178,7 @@ function handleSsmOp(
         body.Name as string,
         body.Value as string,
         (body.Type as string) ?? "String",
-        body.Description as string | undefined
+        body.Description as string | undefined,
       );
       jsonReply(reply, { Version: param.version, Tier: "Standard" });
       break;
@@ -170,7 +187,9 @@ function handleSsmOp(
     case "GetParameter": {
       const param = store.getParameter(body.Name as string, body.WithDecryption as boolean);
       if (!param) {
-        reply.status(400).send({ __type: "ParameterNotFound", message: `Parameter ${body.Name} not found` });
+        reply
+          .status(400)
+          .send({ __type: "ParameterNotFound", message: `Parameter ${body.Name} not found` });
         return;
       }
       jsonReply(reply, {
@@ -243,7 +262,7 @@ function handleSsmOp(
 
     case "DescribeParameters": {
       const params = store.describeParameters(
-        body.ParameterFilters as Array<{ Key: string; Values: string[] }> | undefined
+        body.ParameterFilters as Array<{ Key: string; Values: string[] }> | undefined,
       );
       jsonReply(reply, {
         Parameters: params.map((p) => ({
@@ -260,7 +279,11 @@ function handleSsmOp(
     case "AddTagsToResource": {
       const resourceId = body.ResourceId as string;
       if (!store.getParameter(resourceId)) {
-        jsonReply(reply, { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." }, 400);
+        jsonReply(
+          reply,
+          { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." },
+          400,
+        );
         return;
       }
       const tagsToAdd = (body.Tags as Array<{ Key: string; Value: string }>) ?? [];
@@ -272,13 +295,24 @@ function handleSsmOp(
     case "RemoveTagsFromResource": {
       const resourceId = body.ResourceId as string;
       if (!store.getParameter(resourceId)) {
-        jsonReply(reply, { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." }, 400);
+        jsonReply(
+          reply,
+          { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." },
+          400,
+        );
         return;
       }
       const tagKeys = (body.TagKeys as string[]) ?? [];
       for (const key of tagKeys) {
         if (!store.hasTag(resourceId, key)) {
-          jsonReply(reply, { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." }, 400);
+          jsonReply(
+            reply,
+            {
+              __type: "InvalidResourceId",
+              message: "The resource ID you provided does not exist.",
+            },
+            400,
+          );
           return;
         }
       }
@@ -290,7 +324,11 @@ function handleSsmOp(
     case "ListTagsForResource": {
       const resourceId = body.ResourceId as string;
       if (!store.getParameter(resourceId)) {
-        jsonReply(reply, { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." }, 400);
+        jsonReply(
+          reply,
+          { __type: "InvalidResourceId", message: "The resource ID you provided does not exist." },
+          400,
+        );
         return;
       }
       jsonReply(reply, { TagList: store.getTags(resourceId) });

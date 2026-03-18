@@ -50,7 +50,7 @@ export function discoverHcl(projectDir: string): ResourceSpec {
   if (tfFiles.length === 0) {
     throw new Error(
       `No .tf files found in ${projectDir}. ` +
-        "Make sure you point to the directory containing your Terraform files."
+        "Make sure you point to the directory containing your Terraform files.",
     );
   }
 
@@ -83,10 +83,7 @@ function parseTfFile(filePath: string): ParsedResource[] {
   return results;
 }
 
-function collectBlock(
-  lines: string[],
-  start: number
-): [Record<string, string>, number] {
+function collectBlock(lines: string[], start: number): [Record<string, string>, number] {
   const attrs: Record<string, string> = {};
   let depth = 1;
   let i = start;
@@ -212,24 +209,18 @@ function buildSqsQueue(attrs: Record<string, string>): QueueSpec | null {
   return queue;
 }
 
-function buildS3Bucket(
-  attrs: Record<string, string>
-): { name: string } | null {
+function buildS3Bucket(attrs: Record<string, string>): { name: string } | null {
   const name = attrs["bucket"] ?? attrs["name"];
   if (!name) return null;
   return { name };
 }
 
-function buildSnsTopic(
-  attrs: Record<string, string>
-): { name: string } | null {
+function buildSnsTopic(attrs: Record<string, string>): { name: string } | null {
   if (!attrs["name"]) return null;
   return { name: attrs["name"] };
 }
 
-function buildStateMachine(
-  attrs: Record<string, string>
-): StateMachineSpec | null {
+function buildStateMachine(attrs: Record<string, string>): StateMachineSpec | null {
   if (!attrs["name"]) return null;
   return {
     name: attrs["name"],
@@ -238,9 +229,7 @@ function buildStateMachine(
   };
 }
 
-function buildSsmParameter(
-  attrs: Record<string, string>
-): ParameterSpec | null {
+function buildSsmParameter(attrs: Record<string, string>): ParameterSpec | null {
   if (!attrs["name"]) return null;
   const param: ParameterSpec = { name: attrs["name"] };
   if (attrs["value"]) param.value = attrs["value"];
@@ -248,9 +237,7 @@ function buildSsmParameter(
   return param;
 }
 
-function buildSecretsManagerSecret(
-  attrs: Record<string, string>
-): SecretSpec | null {
+function buildSecretsManagerSecret(attrs: Record<string, string>): SecretSpec | null {
   if (!attrs["name"]) return null;
   const secret: SecretSpec = { name: attrs["name"] };
   if (attrs["description"]) secret.description = attrs["description"];

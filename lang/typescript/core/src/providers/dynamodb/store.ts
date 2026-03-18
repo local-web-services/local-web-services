@@ -123,7 +123,7 @@ export function evaluateFilter(
   item: Record<string, unknown>,
   expr: string,
   names: ExprNames,
-  values: ExprValues
+  values: ExprValues,
 ): boolean {
   try {
     return evalExpr(item, expr.trim(), names, values);
@@ -136,7 +136,7 @@ function evalExpr(
   item: Record<string, unknown>,
   expr: string,
   names: ExprNames,
-  values: ExprValues
+  values: ExprValues,
 ): boolean {
   // Handle OR (lowest precedence)
   const orParts = splitTopLevel(expr, /\bOR\b/i);
@@ -217,13 +217,19 @@ function evalExpr(
     const rhs = resolveValue(cmpMatch[3], values);
     const lhs = getNestedAttr(item, name);
     switch (op) {
-      case "=": return lhs === rhs;
+      case "=":
+        return lhs === rhs;
       case "<>":
-      case "!=": return lhs !== rhs;
-      case "<": return dynamoCompare(lhs, rhs) < 0;
-      case ">": return dynamoCompare(lhs, rhs) > 0;
-      case "<=": return dynamoCompare(lhs, rhs) <= 0;
-      case ">=": return dynamoCompare(lhs, rhs) >= 0;
+      case "!=":
+        return lhs !== rhs;
+      case "<":
+        return dynamoCompare(lhs, rhs) < 0;
+      case ">":
+        return dynamoCompare(lhs, rhs) > 0;
+      case "<=":
+        return dynamoCompare(lhs, rhs) <= 0;
+      case ">=":
+        return dynamoCompare(lhs, rhs) >= 0;
     }
   }
 
@@ -299,7 +305,7 @@ interface KeyCondition {
 export function parseKeyCondition(
   expr: string,
   names: ExprNames,
-  values: ExprValues
+  values: ExprValues,
 ): KeyCondition {
   const andParts = expr.split(/\bAND\b/i);
   const sqlParts: string[] = [];
@@ -355,7 +361,7 @@ export function applyUpdateExpression(
   existing: Record<string, unknown>,
   updateExpr: string,
   names: ExprNames,
-  values: ExprValues
+  values: ExprValues,
 ): Record<string, unknown> {
   const item = { ...existing };
 
@@ -371,7 +377,10 @@ export function applyUpdateExpression(
 
   for (let i = 0; i < positions.length; i++) {
     const start = positions[i].start;
-    const end = i + 1 < positions.length ? positions[i + 1].start - positions[i + 1].type.length - 1 : updateExpr.length;
+    const end =
+      i + 1 < positions.length
+        ? positions[i + 1].start - positions[i + 1].type.length - 1
+        : updateExpr.length;
     clauses.push({ type: positions[i].type, content: updateExpr.slice(start, end).trim() });
   }
 
@@ -392,7 +401,10 @@ export function applyUpdateExpression(
         if (listAppendMatch) {
           const existingList = (item[resolveName(listAppendMatch[1], names)] ?? []) as unknown[];
           const appendVal = resolveValue(listAppendMatch[2], values);
-          item[attrName] = [...existingList, ...(Array.isArray(appendVal) ? appendVal : [appendVal])];
+          item[attrName] = [
+            ...existingList,
+            ...(Array.isArray(appendVal) ? appendVal : [appendVal]),
+          ];
           continue;
         }
 
@@ -529,14 +541,16 @@ export class DynamoStore {
   }
 
   listTables(): string[] {
-    const rows = this.db.prepare("SELECT name FROM _tables ORDER BY name").all() as Array<{ name: string }>;
+    const rows = this.db.prepare("SELECT name FROM _tables ORDER BY name").all() as Array<{
+      name: string;
+    }>;
     return rows.map((r) => r.name);
   }
 
   tableExists(tableName: string): boolean {
-    const row = this.db
-      .prepare("SELECT name FROM _tables WHERE name = ?")
-      .get(tableName) as { name: string } | undefined;
+    const row = this.db.prepare("SELECT name FROM _tables WHERE name = ?").get(tableName) as
+      | { name: string }
+      | undefined;
     return row !== undefined;
   }
 
@@ -570,9 +584,7 @@ export class DynamoStore {
     const pkVal = extractKeyValue(key, config.pk.name);
     const skVal = config.sk ? extractKeyValue(key, config.sk.name) : "";
     const safe = safeName(tableName);
-    this.db
-      .prepare(`DELETE FROM "items_${safe}" WHERE pk = ? AND sk = ?`)
-      .run(pkVal, skVal);
+    this.db.prepare(`DELETE FROM "items_${safe}" WHERE pk = ? AND sk = ?`).run(pkVal, skVal);
     this._updateGsis(config, key, "delete");
   }
 
@@ -581,7 +593,7 @@ export class DynamoStore {
     key: Record<string, unknown>,
     updateExpr: string,
     names: ExprNames,
-    values: ExprValues
+    values: ExprValues,
   ): Record<string, unknown> {
     const existing = this.getItem(tableName, key) ?? toDynamoItem(key);
     const existingPlain = fromDynamoItem(existing as Record<string, unknown>);
@@ -608,7 +620,7 @@ export class DynamoStore {
     filterExpression?: string,
     scanIndexForward: boolean = true,
     limit?: number,
-    exclusiveStartKey?: Record<string, unknown>
+    exclusiveStartKey?: Record<string, unknown>,
   ): { items: Array<Record<string, unknown>>; lastEvaluatedKey?: Record<string, unknown> } {
     const config = this._getConfig(tableName);
     const safe = safeName(tableName);
@@ -631,9 +643,9 @@ export class DynamoStore {
 
     // Apply filter expression
     if (filterExpression) {
-      const plainValues = values ? Object.fromEntries(
-        Object.entries(values).map(([k, v]) => [k, v])
-      ) : undefined;
+      const plainValues = values
+        ? Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v]))
+        : undefined;
       items = items.filter((item) => {
         const plain = fromDynamoItem(item);
         return evaluateFilter(plain, filterExpression, names, plainValues as ExprValues);
@@ -670,7 +682,7 @@ export class DynamoStore {
     names?: ExprNames,
     values?: ExprValues,
     limit?: number,
-    exclusiveStartKey?: Record<string, unknown>
+    exclusiveStartKey?: Record<string, unknown>,
   ): { items: Array<Record<string, unknown>>; lastEvaluatedKey?: Record<string, unknown> } {
     const config = this._getConfig(tableName);
     const safe = safeName(tableName);
@@ -712,15 +724,17 @@ export class DynamoStore {
 
   batchGetItems(
     tableName: string,
-    keys: Array<Record<string, unknown>>
+    keys: Array<Record<string, unknown>>,
   ): Array<Record<string, unknown>> {
-    return keys.map((key) => this.getItem(tableName, key)).filter(Boolean) as Array<Record<string, unknown>>;
+    return keys.map((key) => this.getItem(tableName, key)).filter(Boolean) as Array<
+      Record<string, unknown>
+    >;
   }
 
   batchWriteItems(
     tableName: string,
     putItems: Array<Record<string, unknown>>,
-    deleteKeys: Array<Record<string, unknown>>
+    deleteKeys: Array<Record<string, unknown>>,
   ): void {
     for (const item of putItems) this.putItem(tableName, item);
     for (const key of deleteKeys) this.deleteItem(tableName, key);
@@ -729,14 +743,18 @@ export class DynamoStore {
   // ── Private helpers ───────────────────────────────────────────────────────
 
   private _getConfig(tableName: string): TableConfig {
-    const row = this.db
-      .prepare("SELECT config_json FROM _tables WHERE name = ?")
-      .get(tableName) as { config_json: string } | undefined;
+    const row = this.db.prepare("SELECT config_json FROM _tables WHERE name = ?").get(tableName) as
+      | { config_json: string }
+      | undefined;
     if (!row) throw new Error(`ResourceNotFoundException: Table ${tableName} not found`);
     return JSON.parse(row.config_json) as TableConfig;
   }
 
-  private _updateGsis(config: TableConfig, item: Record<string, unknown>, op: "put" | "delete"): void {
+  private _updateGsis(
+    config: TableConfig,
+    item: Record<string, unknown>,
+    op: "put" | "delete",
+  ): void {
     const safe = safeName(config.name);
     for (const gsi of config.gsis) {
       const gsiSafe = safeName(gsi.name);
@@ -747,7 +765,9 @@ export class DynamoStore {
 
       if (op === "put") {
         this.db
-          .prepare(`INSERT OR REPLACE INTO "gsi_${safe}_${gsiSafe}" (pk, sk, item_json) VALUES (?, ?, ?)`)
+          .prepare(
+            `INSERT OR REPLACE INTO "gsi_${safe}_${gsiSafe}" (pk, sk, item_json) VALUES (?, ?, ?)`,
+          )
           .run(pkVal, skVal, JSON.stringify(normalized));
       } else {
         this.db

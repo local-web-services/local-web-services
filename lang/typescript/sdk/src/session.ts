@@ -102,16 +102,12 @@ function mergeSpec(target: ResourceSpec, source: ResourceSpec): void {
   if (source.topics) target.topics = [...(target.topics ?? []), ...source.topics];
   if (source.stateMachines)
     target.stateMachines = [...(target.stateMachines ?? []), ...source.stateMachines];
-  if (source.parameters)
-    target.parameters = [...(target.parameters ?? []), ...source.parameters];
+  if (source.parameters) target.parameters = [...(target.parameters ?? []), ...source.parameters];
   if (source.secrets) target.secrets = [...(target.secrets ?? []), ...source.secrets];
 }
 
 /** Declare a DynamoDB table resource. */
-export function table(
-  name: string,
-  options?: { hashKey?: string; sortKey?: string }
-): Resource {
+export function table(name: string, options?: { hashKey?: string; sortKey?: string }): Resource {
   const spec: import("./types").TableSpec = {
     name,
     partitionKey: options?.hashKey ?? "id",
@@ -123,7 +119,7 @@ export function table(
 /** Declare an SQS queue resource. */
 export function queue(
   name: string,
-  options?: { isFifo?: boolean; visibilityTimeout?: number }
+  options?: { isFifo?: boolean; visibilityTimeout?: number },
 ): Resource {
   return { _spec: { queues: [{ name, ...options }] } };
 }
@@ -142,7 +138,7 @@ export function topic(name: string): Resource {
 export function stateMachine(
   name: string,
   definition: string | object,
-  roleArn?: string
+  roleArn?: string,
 ): Resource {
   return { _spec: { stateMachines: [{ name, definition, roleArn }] } };
 }
@@ -155,11 +151,7 @@ export class LwsSession {
   private _tempDir: string | null = null;
   private _savedEnv: Record<string, string | undefined> = {};
 
-  private constructor(
-    basePort: number,
-    projectDir: string,
-    spec: ResourceSpec
-  ) {
+  private constructor(basePort: number, projectDir: string, spec: ResourceSpec) {
     this._basePort = basePort;
     this._projectDir = projectDir;
     this._spec = spec;
@@ -316,7 +308,7 @@ export class LwsSession {
     const offset = SERVICE_OFFSETS[service.toLowerCase()];
     if (offset === undefined) {
       throw new Error(
-        `Service "${service}" is not supported. Available: ${Object.keys(SERVICE_OFFSETS).join(", ")}`
+        `Service "${service}" is not supported. Available: ${Object.keys(SERVICE_OFFSETS).join(", ")}`,
       );
     }
     const port = this._basePort + offset;
@@ -362,8 +354,14 @@ export class LwsSession {
         return new SFNClient({ endpoint: endpointUrl, credentials, region }) as T;
       }
       case "cognitoidp": {
-        const { CognitoIdentityProviderClient } = require("@aws-sdk/client-cognito-identity-provider");
-        return new CognitoIdentityProviderClient({ endpoint: endpointUrl, credentials, region }) as T;
+        const {
+          CognitoIdentityProviderClient,
+        } = require("@aws-sdk/client-cognito-identity-provider");
+        return new CognitoIdentityProviderClient({
+          endpoint: endpointUrl,
+          credentials,
+          region,
+        }) as T;
       }
       case "lambda": {
         const { LambdaClient } = require("@aws-sdk/client-lambda");
@@ -459,10 +457,7 @@ export class LwsSession {
     const region = "us-east-1";
 
     if ((spec.tables ?? []).length > 0) {
-      const {
-        DynamoDBClient,
-        CreateTableCommand,
-      } = require("@aws-sdk/client-dynamodb");
+      const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
       const port = this._basePort + SERVICE_OFFSETS.dynamodb;
       const ddb = new DynamoDBClient({
         endpoint: `http://127.0.0.1:${port}`,
@@ -489,7 +484,7 @@ export class LwsSession {
             KeySchema: keySchema,
             AttributeDefinitions: attrDefs,
             BillingMode: "PAY_PER_REQUEST",
-          })
+          }),
         );
       }
     }
@@ -508,7 +503,10 @@ export class LwsSession {
         const attrs: Record<string, string> = {};
         if (isFifo) attrs["FifoQueue"] = "true";
         await sqsClient.send(
-          new CreateQueueCommand({ QueueName: name, Attributes: Object.keys(attrs).length ? attrs : undefined })
+          new CreateQueueCommand({
+            QueueName: name,
+            Attributes: Object.keys(attrs).length ? attrs : undefined,
+          }),
         );
       }
     }
@@ -559,8 +557,7 @@ export class LwsSession {
           body: JSON.stringify({
             name: sm.name,
             definition,
-            roleArn:
-              sm.roleArn ?? "arn:aws:iam::000000000000:role/StepFunctionsRole",
+            roleArn: sm.roleArn ?? "arn:aws:iam::000000000000:role/StepFunctionsRole",
             type: "STANDARD",
           }),
         });
@@ -635,9 +632,5 @@ export function useLws(...resources: Resource[]): { session(): LwsSession } {
 async function generateTerraformConfig(dir: string): Promise<void> {
   // ldk requires at least one .tf file to detect the project as Terraform mode.
   // Resources are created explicitly via _preCreateResources after ldk starts.
-  await fs.writeFile(
-    path.join(dir, "main.tf"),
-    "# local-web-services testing session\n",
-    "utf8"
-  );
+  await fs.writeFile(path.join(dir, "main.tf"), "# local-web-services testing session\n", "utf8");
 }

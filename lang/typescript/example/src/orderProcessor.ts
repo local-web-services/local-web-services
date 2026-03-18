@@ -11,7 +11,7 @@ import { SFNClient, StartExecutionCommand, DescribeExecutionCommand } from "@aws
 export async function processOrder(
   orderId: string,
   stateMachineArn: string,
-  sfnClient?: SFNClient
+  sfnClient?: SFNClient,
 ): Promise<Record<string, unknown>> {
   const sfn = sfnClient ?? new SFNClient({ region: "us-east-1" });
 
@@ -19,7 +19,7 @@ export async function processOrder(
     new StartExecutionCommand({
       stateMachineArn,
       input: JSON.stringify({ orderId }),
-    })
+    }),
   );
 
   return pollUntilComplete(sfn, executionArn!);
@@ -27,7 +27,7 @@ export async function processOrder(
 
 async function pollUntilComplete(
   sfn: SFNClient,
-  executionArn: string
+  executionArn: string,
 ): Promise<Record<string, unknown>> {
   while (true) {
     const result = await sfn.send(new DescribeExecutionCommand({ executionArn }));

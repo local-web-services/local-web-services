@@ -37,7 +37,7 @@ export class LocalQueue {
       contentBasedDedup?: boolean;
       dlq?: LocalQueue;
       maxReceiveCount?: number;
-    } = {}
+    } = {},
   ) {
     this.name = name;
     this.url = url;
@@ -59,7 +59,7 @@ export class LocalQueue {
       delaySeconds?: number;
       messageGroupId?: string;
       messageDedupId?: string;
-    } = {}
+    } = {},
   ): string {
     this._purgeDedupCache();
 
@@ -103,7 +103,7 @@ export class LocalQueue {
     void waitTimeSeconds; // long polling not supported in-memory (sync)
     const now = Date.now();
     const visible = this._messages.filter(
-      (m) => m.visibilityTimeoutUntil === 0 || m.visibilityTimeoutUntil <= now
+      (m) => m.visibilityTimeoutUntil === 0 || m.visibilityTimeoutUntil <= now,
     );
 
     const toReturn = visible.slice(0, maxMessages);
@@ -153,7 +153,9 @@ export class LocalQueue {
 
   approximateMessageCount(): number {
     const now = Date.now();
-    return this._messages.filter((m) => m.visibilityTimeoutUntil === 0 || m.visibilityTimeoutUntil <= now).length;
+    return this._messages.filter(
+      (m) => m.visibilityTimeoutUntil === 0 || m.visibilityTimeoutUntil <= now,
+    ).length;
   }
 
   private _purgeDedupCache(): void {

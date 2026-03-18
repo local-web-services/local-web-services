@@ -8,14 +8,13 @@ export async function applyChaos(
   service: string,
   operation: string,
   _req: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<boolean> {
   const serviceRules = state.chaosRules.get(service);
   if (!serviceRules) return false;
 
   // Check operation-specific rule first, then wildcard "*"
-  const rule: ChaosRule | undefined =
-    serviceRules.get(operation) ?? serviceRules.get("*");
+  const rule: ChaosRule | undefined = serviceRules.get(operation) ?? serviceRules.get("*");
   if (!rule) return false;
 
   // Latency-only mode: when no error_rate is set but latency is, apply delay and let the request through

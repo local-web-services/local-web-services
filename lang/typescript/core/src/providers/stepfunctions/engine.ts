@@ -142,7 +142,7 @@ export interface Execution {
 class StatesError extends Error {
   constructor(
     public readonly errorCode: string,
-    public readonly cause?: string
+    public readonly cause?: string,
   ) {
     super(errorCode);
   }
@@ -166,7 +166,8 @@ function setPath(data: unknown, path: string | undefined, value: unknown): unkno
   if (!path || path === "$") return value;
   if (!path.startsWith("$.")) return data;
   const keys = path.slice(2).split(".");
-  const result = typeof data === "object" && data !== null ? { ...(data as Record<string, unknown>) } : {};
+  const result =
+    typeof data === "object" && data !== null ? { ...(data as Record<string, unknown>) } : {};
   let cur: Record<string, unknown> = result;
   for (let i = 0; i < keys.length - 1; i++) {
     const key = keys[i];
@@ -220,8 +221,10 @@ function evaluateChoice(rule: ChoiceRule, data: unknown): boolean {
   if (rule.StringEquals !== undefined) return variable === rule.StringEquals;
   if (rule.StringLessThan !== undefined) return String(variable) < rule.StringLessThan;
   if (rule.StringGreaterThan !== undefined) return String(variable) > rule.StringGreaterThan;
-  if (rule.StringLessThanOrEquals !== undefined) return String(variable) <= rule.StringLessThanOrEquals;
-  if (rule.StringGreaterThanOrEquals !== undefined) return String(variable) >= rule.StringGreaterThanOrEquals;
+  if (rule.StringLessThanOrEquals !== undefined)
+    return String(variable) <= rule.StringLessThanOrEquals;
+  if (rule.StringGreaterThanOrEquals !== undefined)
+    return String(variable) >= rule.StringGreaterThanOrEquals;
   if (rule.StringMatches !== undefined) {
     const pattern = rule.StringMatches.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*");
     return new RegExp(`^${pattern}$`).test(String(variable));
@@ -229,8 +232,10 @@ function evaluateChoice(rule: ChoiceRule, data: unknown): boolean {
   if (rule.NumericEquals !== undefined) return Number(variable) === rule.NumericEquals;
   if (rule.NumericLessThan !== undefined) return Number(variable) < rule.NumericLessThan;
   if (rule.NumericGreaterThan !== undefined) return Number(variable) > rule.NumericGreaterThan;
-  if (rule.NumericLessThanOrEquals !== undefined) return Number(variable) <= rule.NumericLessThanOrEquals;
-  if (rule.NumericGreaterThanOrEquals !== undefined) return Number(variable) >= rule.NumericGreaterThanOrEquals;
+  if (rule.NumericLessThanOrEquals !== undefined)
+    return Number(variable) <= rule.NumericLessThanOrEquals;
+  if (rule.NumericGreaterThanOrEquals !== undefined)
+    return Number(variable) >= rule.NumericGreaterThanOrEquals;
   if (rule.BooleanEquals !== undefined) return Boolean(variable) === rule.BooleanEquals;
   if (rule.IsNull !== undefined) return (variable === null) === rule.IsNull;
   if (rule.IsPresent !== undefined) return (variable !== undefined) === rule.IsPresent;
@@ -260,7 +265,7 @@ export async function runStateMachine(
   definition: StateMachineDefinition,
   input: unknown,
   executionArn: string,
-  invoker: TaskInvoker = defaultInvoker
+  invoker: TaskInvoker = defaultInvoker,
 ): Promise<{ output: unknown; error?: string; cause?: string }> {
   let currentStateName = definition.StartAt;
   let currentData = input;
@@ -302,18 +307,27 @@ async function executeState(
   state: AslState,
   data: unknown,
   definition: StateMachineDefinition,
-  invoker: TaskInvoker
+  invoker: TaskInvoker,
 ): Promise<StateResult> {
   switch (state.Type) {
-    case "Pass": return executePass(state as PassState, data);
-    case "Task": return executeTask(state as TaskState, data, invoker);
-    case "Choice": return executeChoice(state as ChoiceState, data);
-    case "Wait": return executeWait(state as WaitState, data);
-    case "Succeed": return executeSucceed(state as SucceedState, data);
-    case "Fail": return executeFail(state as FailState);
-    case "Parallel": return executeParallel(state as ParallelState, data, invoker);
-    case "Map": return executeMap(state as MapState, data, invoker);
-    default: throw new StatesError("States.Runtime", `Unknown state type: ${(state as AslState).Type}`);
+    case "Pass":
+      return executePass(state as PassState, data);
+    case "Task":
+      return executeTask(state as TaskState, data, invoker);
+    case "Choice":
+      return executeChoice(state as ChoiceState, data);
+    case "Wait":
+      return executeWait(state as WaitState, data);
+    case "Succeed":
+      return executeSucceed(state as SucceedState, data);
+    case "Fail":
+      return executeFail(state as FailState);
+    case "Parallel":
+      return executeParallel(state as ParallelState, data, invoker);
+    case "Map":
+      return executeMap(state as MapState, data, invoker);
+    default:
+      throw new StatesError("States.Runtime", `Unknown state type: ${(state as AslState).Type}`);
   }
 }
 
@@ -331,7 +345,7 @@ function executePass(state: PassState, data: unknown): StateResult {
 async function executeTask(
   state: TaskState,
   data: unknown,
-  invoker: TaskInvoker
+  invoker: TaskInvoker,
 ): Promise<StateResult> {
   const effectiveInput = applyInputPath(data, state.InputPath);
   const params = applyParameters(state.Parameters, effectiveInput);
@@ -402,14 +416,19 @@ function executeFail(state: FailState): StateResult {
 async function executeParallel(
   state: ParallelState,
   data: unknown,
-  invoker: TaskInvoker
+  invoker: TaskInvoker,
 ): Promise<StateResult> {
   const effectiveInput = applyInputPath(data, state.InputPath);
 
   const results = await Promise.all(
     state.Branches.map((branch) =>
-      runStateMachine({ StartAt: branch.StartAt, States: branch.States }, effectiveInput, uuidv4(), invoker)
-    )
+      runStateMachine(
+        { StartAt: branch.StartAt, States: branch.States },
+        effectiveInput,
+        uuidv4(),
+        invoker,
+      ),
+    ),
   );
 
   const outputs = results.map((r) => r.output);
@@ -423,7 +442,7 @@ async function executeParallel(
 async function executeMap(
   state: MapState,
   data: unknown,
-  invoker: TaskInvoker
+  invoker: TaskInvoker,
 ): Promise<StateResult> {
   const effectiveInput = applyInputPath(data, state.InputPath);
   const items = state.ItemsPath ? resolvePath(effectiveInput, state.ItemsPath) : effectiveInput;
@@ -435,9 +454,9 @@ async function executeMap(
         { StartAt: state.Iterator.StartAt, States: state.Iterator.States },
         item,
         uuidv4(),
-        invoker
-      )
-    )
+        invoker,
+      ),
+    ),
   );
 
   const outputs = results.map((r) => r.output);

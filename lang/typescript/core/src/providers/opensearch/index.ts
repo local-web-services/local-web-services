@@ -1,7 +1,6 @@
 /** OpenSearch wire-protocol Fastify plugin (JSON protocol, X-Amz-Target). */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { v4 as uuidv4 } from "uuid";
 import type { ServerState } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
@@ -44,18 +43,23 @@ export function registerOpenSearch(app: FastifyInstance, state: ServerState): vo
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
     const target = (req.headers["x-amz-target"] as string) ?? "";
-    const operation = target.startsWith(TARGET_PREFIX) ? target.slice(TARGET_PREFIX.length) : target;
+    const operation = target.startsWith(TARGET_PREFIX)
+      ? target.slice(TARGET_PREFIX.length)
+      : target;
     const body = req.body as Record<string, unknown>;
     const ctx = createRequestContext("opensearch", operation);
 
     if (await applyIamAuth(state, "opensearch", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "opensearch", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "opensearch", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     switch (operation) {
@@ -145,10 +149,14 @@ export function registerOpenSearch(app: FastifyInstance, state: ServerState): vo
       }
 
       default: {
-        jsonReply(reply, {
-          __type: "UnknownOperationException",
-          message: `lws: OpenSearch operation '${operation}' is not yet implemented`,
-        }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "UnknownOperationException",
+            message: `lws: OpenSearch operation '${operation}' is not yet implemented`,
+          },
+          400,
+        );
       }
     }
 

@@ -92,7 +92,7 @@ if $TYPESCRIPT; then
   run_in "typescript-sdk build tsc" "lang/typescript/sdk" npm run build
   run_in "typescript-example test"  "lang/typescript/example" npm ci
   run_in "typescript-example jest"  "lang/typescript/example" npm test
-  run_in "typescript-example bdd"   "lang/typescript/example" npm run test:bdd
+  run_in "typescript-example bdd"   "lang/typescript/example" npm run test:e2e
 fi
 
 # ── Go core + SDK + example ───────────────────────────────────────────────────

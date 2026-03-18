@@ -77,7 +77,9 @@ export class SnsStore {
     if (sub) {
       const topic = this.topics.get(sub.topicArn);
       if (topic) {
-        topic.subscriptions = topic.subscriptions.filter((s) => s.subscriptionArn !== subscriptionArn);
+        topic.subscriptions = topic.subscriptions.filter(
+          (s) => s.subscriptionArn !== subscriptionArn,
+        );
       }
       this.subscriptions.delete(subscriptionArn);
     }
@@ -142,12 +144,12 @@ export function registerSns(app: FastifyInstance, state: ServerState): SnsStore 
     { parseAs: "string" },
     (_req, body, done) => {
       done(null, qs.parse(body as string));
-    }
+    },
   );
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
     const body = req.body as Record<string, unknown>;
-    const action = body.Action as string ?? "";
+    const action = (body.Action as string) ?? "";
     const ctx = createRequestContext("sns", action);
 
     if (await applyIamAuth(state, "sns", action, req, reply)) {
@@ -167,7 +169,11 @@ export function registerSns(app: FastifyInstance, state: ServerState): SnsStore 
       handleSnsAction(action, body, store, reply);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      xmlResponse(`<ErrorResponse><Error><Code>InvalidParameter</Code><Message>${msg}</Message></Error></ErrorResponse>`, 400, reply);
+      xmlResponse(
+        `<ErrorResponse><Error><Code>InvalidParameter</Code><Message>${msg}</Message></Error></ErrorResponse>`,
+        400,
+        reply,
+      );
     }
 
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
@@ -180,7 +186,7 @@ function handleSnsAction(
   action: string,
   body: Record<string, unknown>,
   store: SnsStore,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): void {
   switch (action) {
     case "CreateTopic": {
@@ -189,7 +195,8 @@ function handleSnsAction(
       if (topic === null) {
         xmlResponse(
           `<ErrorResponse><Error><Code>TopicLimitExceeded</Code><Message>Topic already exists with different attributes</Message></Error></ErrorResponse>`,
-          400, reply
+          400,
+          reply,
         );
         return;
       }
@@ -198,7 +205,8 @@ function handleSnsAction(
   <CreateTopicResult><TopicArn>${topic.arn}</TopicArn></CreateTopicResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </CreateTopicResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -208,7 +216,8 @@ function handleSnsAction(
       if (!store.getTopic(topicArnToDelete)) {
         xmlResponse(
           `<ErrorResponse><Error><Code>NotFound</Code><Message>Topic does not exist</Message></Error></ErrorResponse>`,
-          400, reply
+          400,
+          reply,
         );
         return;
       }
@@ -217,7 +226,8 @@ function handleSnsAction(
         `<DeleteTopicResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </DeleteTopicResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -232,7 +242,8 @@ function handleSnsAction(
   <ListTopicsResult><Topics>${membersXml}</Topics></ListTopicsResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </ListTopicsResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -248,7 +259,8 @@ function handleSnsAction(
   <GetTopicAttributesResult><Attributes>${attrsXml}</Attributes></GetTopicAttributesResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </GetTopicAttributesResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -258,21 +270,23 @@ function handleSnsAction(
       if (!store.getTopic(topicArnToSubscribe)) {
         xmlResponse(
           `<ErrorResponse><Error><Code>NotFound</Code><Message>Topic does not exist</Message></Error></ErrorResponse>`,
-          400, reply
+          400,
+          reply,
         );
         return;
       }
       const sub = store.subscribe(
         topicArnToSubscribe,
         body.Protocol as string,
-        body.Endpoint as string
+        body.Endpoint as string,
       );
       xmlResponse(
         `<SubscribeResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <SubscribeResult><SubscriptionArn>${sub.subscriptionArn}</SubscriptionArn></SubscribeResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </SubscribeResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -281,7 +295,8 @@ function handleSnsAction(
       if (!store.getSubscription(body.SubscriptionArn as string)) {
         xmlResponse(
           `<ErrorResponse><Error><Code>NotFound</Code><Message>Subscription does not exist</Message></Error></ErrorResponse>`,
-          400, reply
+          400,
+          reply,
         );
         return;
       }
@@ -290,7 +305,8 @@ function handleSnsAction(
         `<UnsubscribeResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </UnsubscribeResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -300,7 +316,8 @@ function handleSnsAction(
       if (!store.getTopic(topicArnToPublish)) {
         xmlResponse(
           `<ErrorResponse><Error><Code>NotFound</Code><Message>Topic does not exist</Message></Error></ErrorResponse>`,
-          400, reply
+          400,
+          reply,
         );
         return;
       }
@@ -308,21 +325,23 @@ function handleSnsAction(
       if (confirmedSubs.length === 0) {
         xmlResponse(
           `<ErrorResponse><Error><Code>KMSAccessDenied</Code><Message>No confirmed subscriptions exist for the topic</Message></Error></ErrorResponse>`,
-          400, reply
+          400,
+          reply,
         );
         return;
       }
       const messageId = store.publish(
         topicArnToPublish,
         body.Message as string,
-        body.Subject as string | undefined
+        body.Subject as string | undefined,
       );
       xmlResponse(
         `<PublishResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <PublishResult><MessageId>${messageId}</MessageId></PublishResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </PublishResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -330,20 +349,23 @@ function handleSnsAction(
     case "ListSubscriptions": {
       const subscriptions = store.listSubscriptions();
       const membersXml = subscriptions
-        .map((s) => `<member>
+        .map(
+          (s) => `<member>
   <SubscriptionArn>${s.subscriptionArn}</SubscriptionArn>
   <TopicArn>${s.topicArn}</TopicArn>
   <Protocol>${s.protocol}</Protocol>
   <Endpoint>${s.endpoint ?? ""}</Endpoint>
   <Owner>${ACCOUNT_ID}</Owner>
-</member>`)
+</member>`,
+        )
         .join("\n");
       xmlResponse(
         `<ListSubscriptionsResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ListSubscriptionsResult><Subscriptions>${membersXml}</Subscriptions></ListSubscriptionsResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </ListSubscriptionsResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -351,33 +373,38 @@ function handleSnsAction(
     case "ListSubscriptionsByTopic": {
       const subscriptions = store.listSubscriptionsByTopic(body.TopicArn as string);
       const membersXml = subscriptions
-        .map((s) => `<member>
+        .map(
+          (s) => `<member>
   <SubscriptionArn>${s.subscriptionArn}</SubscriptionArn>
   <TopicArn>${s.topicArn}</TopicArn>
   <Protocol>${s.protocol}</Protocol>
   <Endpoint>${s.endpoint ?? ""}</Endpoint>
   <Owner>${ACCOUNT_ID}</Owner>
-</member>`)
+</member>`,
+        )
         .join("\n");
       xmlResponse(
         `<ListSubscriptionsByTopicResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ListSubscriptionsByTopicResult><Subscriptions>${membersXml}</Subscriptions></ListSubscriptionsByTopicResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </ListSubscriptionsByTopicResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
 
     case "GetSubscriptionAttributes": {
       const sub = store.getSubscription(body.SubscriptionArn as string);
-      const baseAttrs: Record<string, string> = sub ? {
-        SubscriptionArn: sub.subscriptionArn,
-        TopicArn: sub.topicArn,
-        Protocol: sub.protocol,
-        Endpoint: sub.endpoint ?? "",
-        ...sub.attributes,
-      } : {};
+      const baseAttrs: Record<string, string> = sub
+        ? {
+            SubscriptionArn: sub.subscriptionArn,
+            TopicArn: sub.topicArn,
+            Protocol: sub.protocol,
+            Endpoint: sub.endpoint ?? "",
+            ...sub.attributes,
+          }
+        : {};
       const attrsXml = Object.entries(baseAttrs)
         .map(([k, v]) => `<entry><key>${k}</key><value>${v}</value></entry>`)
         .join("\n  ");
@@ -386,7 +413,8 @@ function handleSnsAction(
   <GetSubscriptionAttributesResult><Attributes>${attrsXml}</Attributes></GetSubscriptionAttributesResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </GetSubscriptionAttributesResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -395,13 +423,14 @@ function handleSnsAction(
       store.setSubscriptionAttribute(
         body.SubscriptionArn as string,
         body.AttributeName as string,
-        body.AttributeValue as string
+        body.AttributeValue as string,
       );
       xmlResponse(
         `<SetSubscriptionAttributesResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </SetSubscriptionAttributesResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -415,7 +444,8 @@ function handleSnsAction(
   <ConfirmSubscriptionResult><SubscriptionArn>${confirmedArn}</SubscriptionArn></ConfirmSubscriptionResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </ConfirmSubscriptionResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -430,7 +460,8 @@ function handleSnsAction(
   <ListTagsForResourceResult><Tags>${tagsXml}</Tags></ListTagsForResourceResult>
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </ListTagsForResourceResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -448,7 +479,7 @@ function handleSnsAction(
         }
         for (const idx of Array.from(indices).sort()) {
           const Key = body[`Tags.member.${idx}.Key`] as string;
-          const Value = body[`Tags.member.${idx}.Value`] as string ?? "";
+          const Value = (body[`Tags.member.${idx}.Value`] as string) ?? "";
           if (Key) tags.push({ Key, Value });
         }
       }
@@ -457,7 +488,8 @@ function handleSnsAction(
         `<TagResourceResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </TagResourceResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -477,7 +509,8 @@ function handleSnsAction(
         `<UntagResourceResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </UntagResourceResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -486,13 +519,14 @@ function handleSnsAction(
       store.setTopicAttributes(
         body.TopicArn as string,
         body.AttributeName as string,
-        body.AttributeValue as string
+        body.AttributeValue as string,
       );
       xmlResponse(
         `<SetTopicAttributesResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </SetTopicAttributesResponse>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -503,7 +537,8 @@ function handleSnsAction(
         `<${action}Response xmlns="http://sns.amazonaws.com/doc/2010-03-31/">
   <ResponseMetadata><RequestId>${uuidv4()}</RequestId></ResponseMetadata>
 </${action}Response>`,
-        200, reply
+        200,
+        reply,
       );
       break;
     }
@@ -511,7 +546,8 @@ function handleSnsAction(
     default: {
       xmlResponse(
         `<ErrorResponse><Error><Code>InvalidAction</Code><Message>Unknown action: ${action}</Message></Error></ErrorResponse>`,
-        400, reply
+        400,
+        reply,
       );
     }
   }

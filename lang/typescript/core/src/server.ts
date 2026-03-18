@@ -83,7 +83,7 @@ function createApp(rawBody = false): FastifyInstance {
         } catch {
           done(new Error("Invalid JSON"), undefined);
         }
-      }
+      },
     );
   }
 

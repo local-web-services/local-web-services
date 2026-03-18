@@ -41,7 +41,7 @@ export function recordLog(
   ctx: RequestContext,
   method: string,
   path: string,
-  status: number
+  status: number,
 ): void {
   const entry: LogEntry = {
     timestamp: new Date().toISOString(),

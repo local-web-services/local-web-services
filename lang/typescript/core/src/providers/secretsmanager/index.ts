@@ -31,10 +31,17 @@ export class SecretsManagerStore {
     this.secrets.clear();
   }
 
-  createSecret(name: string, secretString?: string, secretBinary?: string, description?: string): Secret {
+  createSecret(
+    name: string,
+    secretString?: string,
+    secretBinary?: string,
+    description?: string,
+  ): Secret {
     const existing = this.secrets.get(name);
     if (existing && existing.deletedDate === undefined) {
-      throw new Error(`ResourceExistsException: A resource with the ID you requested already exists.`);
+      throw new Error(
+        `ResourceExistsException: A resource with the ID you requested already exists.`,
+      );
     }
     const now = Date.now() / 1000;
     const secret: Secret = {
@@ -53,20 +60,27 @@ export class SecretsManagerStore {
   }
 
   getSecret(secretId: string): Secret | undefined {
-    const s = this.secrets.get(secretId) ?? Array.from(this.secrets.values()).find((s) => s.arn === secretId);
+    const s =
+      this.secrets.get(secretId) ??
+      Array.from(this.secrets.values()).find((s) => s.arn === secretId);
     // Treat deleted secrets as not found (like real AWS behavior)
     if (s?.deletedDate !== undefined) return undefined;
     return s;
   }
 
   getSecretIncludingDeleted(secretId: string): Secret | undefined {
-    return this.secrets.get(secretId) ?? Array.from(this.secrets.values()).find((s) => s.arn === secretId);
+    return (
+      this.secrets.get(secretId) ??
+      Array.from(this.secrets.values()).find((s) => s.arn === secretId)
+    );
   }
 
   putSecretValue(secretId: string, secretString?: string, secretBinary?: string): Secret {
     const secret = this.getSecret(secretId);
     if (!secret) {
-      throw new Error(`ResourceNotFoundException: Secrets Manager can't find the specified secret.`);
+      throw new Error(
+        `ResourceNotFoundException: Secrets Manager can't find the specified secret.`,
+      );
     }
     secret.secretString = secretString ?? secret.secretString;
     secret.secretBinary = secretBinary ?? secret.secretBinary;
@@ -75,7 +89,12 @@ export class SecretsManagerStore {
     return secret;
   }
 
-  updateSecret(secretId: string, secretString?: string, secretBinary?: string, description?: string): Secret {
+  updateSecret(
+    secretId: string,
+    secretString?: string,
+    secretBinary?: string,
+    description?: string,
+  ): Secret {
     const secret = this.getSecret(secretId);
     if (!secret) throw new Error(`ResourceNotFoundException: Secret ${secretId} not found`);
     if (secretString !== undefined) secret.secretString = secretString;
@@ -88,9 +107,14 @@ export class SecretsManagerStore {
 
   restoreSecret(secretId: string): Secret {
     const secret = this.getSecretIncludingDeleted(secretId);
-    if (!secret) throw new Error(`ResourceNotFoundException: Secrets Manager can't find the specified secret.`);
+    if (!secret)
+      throw new Error(
+        `ResourceNotFoundException: Secrets Manager can't find the specified secret.`,
+      );
     if (secret.deletedDate === undefined) {
-      throw new Error(`InvalidRequestException: You can't restore a secret that isn't scheduled for deletion.`);
+      throw new Error(
+        `InvalidRequestException: You can't restore a secret that isn't scheduled for deletion.`,
+      );
     }
     // Recovery window: simulate that if deletedDate is set, window is still open (we never auto-close it in tests)
     delete secret.deletedDate;
@@ -99,25 +123,40 @@ export class SecretsManagerStore {
 
   addTags(secretId: string, tags: Array<{ Key: string; Value: string }>): void {
     const secret = this.getSecret(secretId);
-    if (!secret) throw new Error(`ResourceNotFoundException: Secrets Manager can't find the specified secret.`);
+    if (!secret)
+      throw new Error(
+        `ResourceNotFoundException: Secrets Manager can't find the specified secret.`,
+      );
     for (const tag of tags) secret.tags[tag.Key] = tag.Value;
   }
 
   removeTags(secretId: string, tagKeys: string[]): void {
     const secret = this.getSecret(secretId);
-    if (!secret) throw new Error(`ResourceNotFoundException: Secrets Manager can't find the specified secret.`);
+    if (!secret)
+      throw new Error(
+        `ResourceNotFoundException: Secrets Manager can't find the specified secret.`,
+      );
     for (const key of tagKeys) delete secret.tags[key];
   }
 
   listSecretVersionIds(secretId: string): Array<Record<string, unknown>> {
     const secret = this.getSecret(secretId);
     if (!secret) throw new Error(`ResourceNotFoundException: Secret ${secretId} not found`);
-    return [{ VersionId: secret.versionId, VersionStages: ["AWSCURRENT"], CreatedDate: secret.createdDate }];
+    return [
+      {
+        VersionId: secret.versionId,
+        VersionStages: ["AWSCURRENT"],
+        CreatedDate: secret.createdDate,
+      },
+    ];
   }
 
   deleteSecret(secretId: string, forceDelete = false): void {
     const secret = this.getSecret(secretId);
-    if (!secret) throw new Error(`ResourceNotFoundException: Secrets Manager can't find the specified secret.`);
+    if (!secret)
+      throw new Error(
+        `ResourceNotFoundException: Secrets Manager can't find the specified secret.`,
+      );
     if (forceDelete) {
       this.secrets.delete(secret.name);
     } else {
@@ -136,24 +175,32 @@ function jsonReply(reply: FastifyReply, data: unknown, status = 200): void {
 
 const TARGET_PREFIX = "secretsmanager.";
 
-export function registerSecretsManager(app: FastifyInstance, state: ServerState): SecretsManagerStore {
+export function registerSecretsManager(
+  app: FastifyInstance,
+  state: ServerState,
+): SecretsManagerStore {
   const store = new SecretsManagerStore();
   state.resetCallbacks.push(() => store.reset());
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
     const target = (req.headers["x-amz-target"] as string) ?? "";
-    const operation = target.startsWith(TARGET_PREFIX) ? target.slice(TARGET_PREFIX.length) : target;
+    const operation = target.startsWith(TARGET_PREFIX)
+      ? target.slice(TARGET_PREFIX.length)
+      : target;
     const body = req.body as Record<string, unknown>;
     const ctx = createRequestContext("secretsmanager", operation);
 
     if (await applyIamAuth(state, "secretsmanager", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "secretsmanager", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "secretsmanager", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     try {
@@ -179,7 +226,7 @@ function handleOperation(
   operation: string,
   body: Record<string, unknown>,
   store: SecretsManagerStore,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): void {
   switch (operation) {
     case "CreateSecret": {
@@ -187,7 +234,7 @@ function handleOperation(
         body.Name as string,
         body.SecretString as string | undefined,
         body.SecretBinary as string | undefined,
-        body.Description as string | undefined
+        body.Description as string | undefined,
       );
       jsonReply(reply, {
         ARN: secret.arn,
@@ -200,11 +247,26 @@ function handleOperation(
     case "GetSecretValue": {
       const secretIncDeleted = store.getSecretIncludingDeleted(body.SecretId as string);
       if (!secretIncDeleted) {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: "Secrets Manager can't find the specified secret." }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "ResourceNotFoundException",
+            message: "Secrets Manager can't find the specified secret.",
+          },
+          400,
+        );
         return;
       }
       if (secretIncDeleted.deletedDate !== undefined) {
-        jsonReply(reply, { __type: "InvalidRequestException", message: "You can't perform this operation on the secret because it was marked for deletion." }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "InvalidRequestException",
+            message:
+              "You can't perform this operation on the secret because it was marked for deletion.",
+          },
+          400,
+        );
         return;
       }
       const secret = secretIncDeleted;
@@ -224,7 +286,7 @@ function handleOperation(
       const secret = store.putSecretValue(
         body.SecretId as string,
         body.SecretString as string | undefined,
-        body.SecretBinary as string | undefined
+        body.SecretBinary as string | undefined,
       );
       jsonReply(reply, {
         ARN: secret.arn,
@@ -239,14 +301,14 @@ function handleOperation(
         body.SecretId as string,
         body.SecretString as string | undefined,
         body.SecretBinary as string | undefined,
-        body.Description as string | undefined
+        body.Description as string | undefined,
       );
       jsonReply(reply, { ARN: secret.arn, Name: secret.name, VersionId: secret.versionId });
       break;
     }
 
     case "DeleteSecret": {
-      const forceDelete = !!(body.ForceDeleteWithoutRecovery);
+      const forceDelete = !!body.ForceDeleteWithoutRecovery;
       store.deleteSecret(body.SecretId as string, forceDelete);
       jsonReply(reply, {});
       break;
@@ -269,7 +331,11 @@ function handleOperation(
     case "DescribeSecret": {
       const secret = store.getSecret(body.SecretId as string);
       if (!secret) {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: `Secret ${body.SecretId} not found` }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceNotFoundException", message: `Secret ${body.SecretId} not found` },
+          400,
+        );
         return;
       }
       jsonReply(reply, {
@@ -326,7 +392,11 @@ function handleOperation(
     case "GetResourcePolicy": {
       const secret = store.getSecret(body.SecretId as string);
       if (!secret) {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: `Secret ${body.SecretId} not found` }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceNotFoundException", message: `Secret ${body.SecretId} not found` },
+          400,
+        );
         return;
       }
       jsonReply(reply, { ARN: secret.arn, Name: secret.name, ResourcePolicy: "" });
@@ -340,10 +410,14 @@ function handleOperation(
     }
 
     default: {
-      jsonReply(reply, {
-        __type: "UnknownOperationException",
-        message: `lws: SecretsManager operation '${operation}' is not yet implemented`,
-      }, 400);
+      jsonReply(
+        reply,
+        {
+          __type: "UnknownOperationException",
+          message: `lws: SecretsManager operation '${operation}' is not yet implemented`,
+        },
+        400,
+      );
     }
   }
 }

@@ -45,7 +45,7 @@ export class IdentityBuilder {
 
   constructor(
     private readonly parent: IamBuilder,
-    private readonly name: string
+    private readonly name: string,
   ) {}
 
   allow(actions: string[], resource = "*"): IdentityBuilder {

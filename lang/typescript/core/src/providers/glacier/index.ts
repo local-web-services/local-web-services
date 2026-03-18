@@ -71,13 +71,16 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
     const ctx = createRequestContext("glacier", "CreateVault");
 
     if (await applyIamAuth(state, "glacier", "CreateVault", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "glacier", "CreateVault", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "glacier", "CreateVault", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const vault: Vault = {
@@ -99,10 +102,12 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
     const ctx = createRequestContext("glacier", "DeleteVault");
 
     if (await applyIamAuth(state, "glacier", "DeleteVault", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "glacier", "DeleteVault", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     vaults.delete(vaultName);
@@ -116,12 +121,17 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
     const ctx = createRequestContext("glacier", "DescribeVault");
 
     if (await applyIamAuth(state, "glacier", "DescribeVault", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const vault = vaults.get(vaultName);
     if (!vault) {
-      jsonReply(reply, { code: "ResourceNotFoundException", message: `Vault ${vaultName} not found` }, 404);
+      jsonReply(
+        reply,
+        { code: "ResourceNotFoundException", message: `Vault ${vaultName} not found` },
+        404,
+      );
     } else {
       jsonReply(reply, vault);
     }
@@ -133,7 +143,8 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
     const ctx = createRequestContext("glacier", "ListVaults");
 
     if (await applyIamAuth(state, "glacier", "ListVaults", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     jsonReply(reply, { VaultList: Array.from(vaults.values()) });
@@ -141,162 +152,207 @@ export function registerGlacier(app: FastifyInstance, state: ServerState): void 
   });
 
   // Upload archive
-  app.post("/:accountId/vaults/:vaultName/archives", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { vaultName } = req.params as { vaultName: string };
-    const ctx = createRequestContext("glacier", "UploadArchive");
+  app.post(
+    "/:accountId/vaults/:vaultName/archives",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { vaultName } = req.params as { vaultName: string };
+      const ctx = createRequestContext("glacier", "UploadArchive");
 
-    if (await applyIamAuth(state, "glacier", "UploadArchive", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
-    if (await applyChaos(state, "glacier", "UploadArchive", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "glacier", "UploadArchive", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      if (await applyChaos(state, "glacier", "UploadArchive", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    const archiveId = uuidv4();
-    const archive: Archive = {
-      archiveId,
-      vaultName,
-      description: (req.headers["x-amz-archive-description"] as string) ?? "",
-      size: parseInt((req.headers["content-length"] as string) ?? "0", 10),
-      checksum: (req.headers["x-amz-sha256-tree-hash"] as string) ?? "",
-      creationDate: new Date().toISOString(),
-    };
-    archives.set(archiveId, archive);
-    const vault = vaults.get(vaultName);
-    if (vault) {
-      vault.NumberOfArchives++;
-      vault.SizeInBytes += archive.size;
-    }
-    reply.status(201)
-      .header("x-amz-archive-id", archiveId)
-      .header("x-amz-sha256-tree-hash", archive.checksum)
-      .send();
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      const archiveId = uuidv4();
+      const archive: Archive = {
+        archiveId,
+        vaultName,
+        description: (req.headers["x-amz-archive-description"] as string) ?? "",
+        size: parseInt((req.headers["content-length"] as string) ?? "0", 10),
+        checksum: (req.headers["x-amz-sha256-tree-hash"] as string) ?? "",
+        creationDate: new Date().toISOString(),
+      };
+      archives.set(archiveId, archive);
+      const vault = vaults.get(vaultName);
+      if (vault) {
+        vault.NumberOfArchives++;
+        vault.SizeInBytes += archive.size;
+      }
+      reply
+        .status(201)
+        .header("x-amz-archive-id", archiveId)
+        .header("x-amz-sha256-tree-hash", archive.checksum)
+        .send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // Delete archive
-  app.delete("/:accountId/vaults/:vaultName/archives/:archiveId", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { vaultName, archiveId } = req.params as { vaultName: string; archiveId: string };
-    const ctx = createRequestContext("glacier", "DeleteArchive");
+  app.delete(
+    "/:accountId/vaults/:vaultName/archives/:archiveId",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { vaultName, archiveId } = req.params as { vaultName: string; archiveId: string };
+      const ctx = createRequestContext("glacier", "DeleteArchive");
 
-    if (await applyIamAuth(state, "glacier", "DeleteArchive", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "glacier", "DeleteArchive", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    const archive = archives.get(archiveId);
-    archives.delete(archiveId);
-    const vault = vaults.get(vaultName);
-    if (vault && archive) {
-      vault.NumberOfArchives = Math.max(0, vault.NumberOfArchives - 1);
-      vault.SizeInBytes = Math.max(0, vault.SizeInBytes - archive.size);
-    }
-    reply.status(204).send();
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      const archive = archives.get(archiveId);
+      archives.delete(archiveId);
+      const vault = vaults.get(vaultName);
+      if (vault && archive) {
+        vault.NumberOfArchives = Math.max(0, vault.NumberOfArchives - 1);
+        vault.SizeInBytes = Math.max(0, vault.SizeInBytes - archive.size);
+      }
+      reply.status(204).send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // Initiate multipart upload
-  app.post("/:accountId/vaults/:vaultName/multipart-uploads", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { vaultName } = req.params as { vaultName: string };
-    const ctx = createRequestContext("glacier", "InitiateMultipartUpload");
+  app.post(
+    "/:accountId/vaults/:vaultName/multipart-uploads",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { vaultName } = req.params as { vaultName: string };
+      const ctx = createRequestContext("glacier", "InitiateMultipartUpload");
 
-    if (await applyIamAuth(state, "glacier", "InitiateMultipartUpload", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "glacier", "InitiateMultipartUpload", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    const uploadId = uuidv4();
-    const upload: MultipartUpload = {
-      MultipartUploadId: uploadId,
-      VaultARN: `arn:aws:glacier:${REGION}:${ACCOUNT_ID}:vaults/${vaultName}`,
-      PartSizeInBytes: parseInt((req.headers["x-amz-part-size"] as string) ?? "4194304", 10),
-      CreationDate: new Date().toISOString(),
-    };
-    multipartUploads.set(uploadId, upload);
-    reply.status(201)
-      .header("x-amz-multipart-upload-id", uploadId)
-      .header("Location", `/${ACCOUNT_ID}/vaults/${vaultName}/multipart-uploads/${uploadId}`)
-      .send();
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      const uploadId = uuidv4();
+      const upload: MultipartUpload = {
+        MultipartUploadId: uploadId,
+        VaultARN: `arn:aws:glacier:${REGION}:${ACCOUNT_ID}:vaults/${vaultName}`,
+        PartSizeInBytes: parseInt((req.headers["x-amz-part-size"] as string) ?? "4194304", 10),
+        CreationDate: new Date().toISOString(),
+      };
+      multipartUploads.set(uploadId, upload);
+      reply
+        .status(201)
+        .header("x-amz-multipart-upload-id", uploadId)
+        .header("Location", `/${ACCOUNT_ID}/vaults/${vaultName}/multipart-uploads/${uploadId}`)
+        .send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // Initiate job
-  app.post("/:accountId/vaults/:vaultName/jobs", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { vaultName } = req.params as { vaultName: string };
-    const ctx = createRequestContext("glacier", "InitiateJob");
+  app.post(
+    "/:accountId/vaults/:vaultName/jobs",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { vaultName } = req.params as { vaultName: string };
+      const ctx = createRequestContext("glacier", "InitiateJob");
 
-    if (await applyIamAuth(state, "glacier", "InitiateJob", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
-    if (await applyChaos(state, "glacier", "InitiateJob", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "glacier", "InitiateJob", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      if (await applyChaos(state, "glacier", "InitiateJob", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    const body = req.body as Record<string, unknown>;
-    const jobParams = (body.jobParameters ?? body) as Record<string, unknown>;
-    const jobId = uuidv4();
-    const job: Job = {
-      JobId: jobId,
-      VaultARN: `arn:aws:glacier:${REGION}:${ACCOUNT_ID}:vaults/${vaultName}`,
-      Action: (jobParams.Type as string) ?? "InventoryRetrieval",
-      StatusCode: "Succeeded",
-      StatusMessage: "Succeeded",
-      CreationDate: new Date().toISOString(),
-      Completed: true,
-      ArchiveId: jobParams.ArchiveId as string | undefined,
-      RetrievalByteRange: jobParams.RetrievalByteRange as string | undefined,
-    };
-    jobs.set(jobId, job);
-    reply.status(202)
-      .header("x-amz-job-id", jobId)
-      .header("Location", `/${ACCOUNT_ID}/vaults/${vaultName}/jobs/${jobId}`)
-      .send();
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      const body = req.body as Record<string, unknown>;
+      const jobParams = (body.jobParameters ?? body) as Record<string, unknown>;
+      const jobId = uuidv4();
+      const job: Job = {
+        JobId: jobId,
+        VaultARN: `arn:aws:glacier:${REGION}:${ACCOUNT_ID}:vaults/${vaultName}`,
+        Action: (jobParams.Type as string) ?? "InventoryRetrieval",
+        StatusCode: "Succeeded",
+        StatusMessage: "Succeeded",
+        CreationDate: new Date().toISOString(),
+        Completed: true,
+        ArchiveId: jobParams.ArchiveId as string | undefined,
+        RetrievalByteRange: jobParams.RetrievalByteRange as string | undefined,
+      };
+      jobs.set(jobId, job);
+      reply
+        .status(202)
+        .header("x-amz-job-id", jobId)
+        .header("Location", `/${ACCOUNT_ID}/vaults/${vaultName}/jobs/${jobId}`)
+        .send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // List jobs
-  app.get("/:accountId/vaults/:vaultName/jobs", async (req: FastifyRequest, reply: FastifyReply) => {
-    const ctx = createRequestContext("glacier", "ListJobs");
+  app.get(
+    "/:accountId/vaults/:vaultName/jobs",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const ctx = createRequestContext("glacier", "ListJobs");
 
-    if (await applyIamAuth(state, "glacier", "ListJobs", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "glacier", "ListJobs", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    jsonReply(reply, { JobList: Array.from(jobs.values()) });
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      jsonReply(reply, { JobList: Array.from(jobs.values()) });
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // Describe job
-  app.get("/:accountId/vaults/:vaultName/jobs/:jobId", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { jobId } = req.params as { jobId: string };
-    const ctx = createRequestContext("glacier", "DescribeJob");
+  app.get(
+    "/:accountId/vaults/:vaultName/jobs/:jobId",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { jobId } = req.params as { jobId: string };
+      const ctx = createRequestContext("glacier", "DescribeJob");
 
-    if (await applyIamAuth(state, "glacier", "DescribeJob", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "glacier", "DescribeJob", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    const job = jobs.get(jobId);
-    if (!job) {
-      jsonReply(reply, { code: "ResourceNotFoundException", message: `Job ${jobId} not found` }, 404);
-    } else {
-      jsonReply(reply, job);
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      const job = jobs.get(jobId);
+      if (!job) {
+        jsonReply(
+          reply,
+          { code: "ResourceNotFoundException", message: `Job ${jobId} not found` },
+          404,
+        );
+      } else {
+        jsonReply(reply, job);
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // Get job output
-  app.get("/:accountId/vaults/:vaultName/jobs/:jobId/output", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { jobId } = req.params as { jobId: string };
-    const ctx = createRequestContext("glacier", "GetJobOutput");
+  app.get(
+    "/:accountId/vaults/:vaultName/jobs/:jobId/output",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { jobId } = req.params as { jobId: string };
+      const ctx = createRequestContext("glacier", "GetJobOutput");
 
-    if (await applyIamAuth(state, "glacier", "GetJobOutput", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "glacier", "GetJobOutput", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    const job = jobs.get(jobId);
-    if (!job) {
-      jsonReply(reply, { code: "ResourceNotFoundException", message: `Job ${jobId} not found` }, 404);
-    } else {
-      jsonReply(reply, { VaultARN: job.VaultARN, InventoryDate: new Date().toISOString(), ArchiveList: [] });
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      const job = jobs.get(jobId);
+      if (!job) {
+        jsonReply(
+          reply,
+          { code: "ResourceNotFoundException", message: `Job ${jobId} not found` },
+          404,
+        );
+      } else {
+        jsonReply(reply, {
+          VaultARN: job.VaultARN,
+          InventoryDate: new Date().toISOString(),
+          ArchiveList: [],
+        });
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 }

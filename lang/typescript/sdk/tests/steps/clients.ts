@@ -8,14 +8,11 @@ import type { SdkWorld } from "../support/world";
 let lastClient: unknown = null;
 let lastService: string = "";
 
-When(
-  "I request a client for {string}",
-  function (this: SdkWorld, service: string) {
-    assert.ok(this.session, "No session running");
-    lastClient = this.session!.client(service);
-    lastService = service;
-  }
-);
+When("I request a client for {string}", function (this: SdkWorld, service: string) {
+  assert.ok(this.session, "No session running");
+  lastClient = this.session!.client(service);
+  lastService = service;
+});
 
 Then("a configured client is returned", function (this: SdkWorld) {
   assert.ok(lastClient !== null && lastClient !== undefined, "Expected a non-null client");
@@ -73,5 +70,5 @@ Then(
       default:
         throw new Error(`No test call implemented for service "${service}"`);
     }
-  }
+  },
 );

@@ -5,17 +5,14 @@ import type { ServerState, IamPolicy, IamStatement } from "../types";
 
 function wildcardMatch(pattern: string, value: string): boolean {
   const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(
-    "^" + escaped.replace(/\*/g, ".*").replace(/\?/g, ".") + "$",
-    "i"
-  );
+  const regex = new RegExp("^" + escaped.replace(/\*/g, ".*").replace(/\?/g, ".") + "$", "i");
   return regex.test(value);
 }
 
 function evaluateStatement(
   stmt: IamStatement,
   action: string,
-  resource: string
+  resource: string,
 ): "allow" | "deny" | "no_match" {
   const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
   const resources = Array.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
@@ -30,7 +27,7 @@ function evaluateStatement(
 function evaluatePolicy(
   policy: IamPolicy,
   action: string,
-  resource: string
+  resource: string,
 ): "allow" | "deny" | "no_match" {
   let result: "allow" | "deny" | "no_match" = "no_match";
   for (const stmt of policy.Statement ?? []) {
@@ -41,7 +38,12 @@ function evaluatePolicy(
   return result;
 }
 
-function isAuthorized(state: ServerState, accessKeyId: string, action: string, resource: string): boolean {
+function isAuthorized(
+  state: ServerState,
+  accessKeyId: string,
+  action: string,
+  resource: string,
+): boolean {
   const { iamConfig } = state;
 
   // Determine which identity to use
@@ -90,7 +92,7 @@ export async function applyIamAuth(
   operation: string,
   req: FastifyRequest,
   reply: FastifyReply,
-  xmlProtocol = false
+  xmlProtocol = false,
 ): Promise<boolean> {
   if (!state.iamConfig.enforce) return false;
 
@@ -105,9 +107,12 @@ export async function applyIamAuth(
 
   if (!isAuthorized(state, accessKeyId, action, resource)) {
     if (xmlProtocol) {
-      reply.status(403)
+      reply
+        .status(403)
         .header("Content-Type", "application/xml")
-        .send(`<?xml version="1.0" encoding="UTF-8"?><Error><Code>AccessDenied</Code><Message>Access Denied: User is not authorized to perform: ${action}</Message></Error>`);
+        .send(
+          `<?xml version="1.0" encoding="UTF-8"?><Error><Code>AccessDenied</Code><Message>Access Denied: User is not authorized to perform: ${action}</Message></Error>`,
+        );
     } else {
       reply.status(403).send({
         __type: "AccessDeniedException",

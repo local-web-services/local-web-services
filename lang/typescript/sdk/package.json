@@ -1,7 +1,7 @@
 {
   "name": "local-web-services-typescript-sdk",
   "version": "0.2.2",
-  "description": "TypeScript testing SDK for local-web-services — subprocess-based AWS service fixtures for testing",
+  "description": "TypeScript testing SDK for local-web-services \u2014 subprocess-based AWS service fixtures for testing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -9,10 +9,16 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "cucumber-js",
-    "test:jest": "jest --forceExit",
+    "test:unit": "jest --forceExit --testPathPattern tests/unit",
+    "test:e2e": "cucumber-js",
+    "test:architecture": "jest --forceExit --config tests/architecture/jest.config.ts",
+    "test": "npm run test:unit && npm run test:architecture",
     "lint": "eslint src --ext .ts",
-    "format": "prettier --write src/**/*.ts",
+    "format": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
+    "format-check": "prettier --check 'src/**/*.ts' 'tests/**/*.ts'",
+    "complexity": "npm run lint",
+    "cpd": "jscpd src --min-lines 5 --reporters console",
+    "type-check": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -60,7 +66,9 @@
     "ts-jest": "^29.2.0",
     "ts-node": "^10.9.0",
     "tsup": "^8.5.1",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "jscpd": "^3.5.0",
+    "lws-arch-tests": "file:../arch_tests"
   },
   "engines": {
     "node": ">=18.0.0"

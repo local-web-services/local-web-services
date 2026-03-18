@@ -17,7 +17,7 @@ Given(
       .fake(service)
       .operation(operation)
       .respond({ body: { executionArn: FAKE_EXECUTION_ARN, startDate: 0 } });
-  }
+  },
 );
 
 // ── Fake configuration ─────────────────────────────────────────────────────────
@@ -26,47 +26,37 @@ When(
   "I configure a fake success response for {string} {string}",
   async function (this: SdkWorld, service: string, operation: string) {
     assert.ok(this.session, "No session");
-    await this.session!
-      .fake(service)
+    await this.session!.fake(service)
       .operation(operation)
       .respond({ body: { executionArn: FAKE_EXECUTION_ARN, startDate: 0 } });
-  }
+  },
 );
 
 When(
   "I configure a fake error {string} for {string} {string}",
-  async function (
-    this: SdkWorld,
-    errorCode: string,
-    service: string,
-    operation: string
-  ) {
+  async function (this: SdkWorld, errorCode: string, service: string, operation: string) {
     assert.ok(this.session, "No session");
     await this.session!.fake(service).operation(operation).error(errorCode);
-  }
+  },
 );
 
 When(
   "I configure a fake success response for {string} {string} with a 50ms delay",
   async function (this: SdkWorld, service: string, operation: string) {
     assert.ok(this.session, "No session");
-    await this.session!
-      .fake(service)
+    await this.session!.fake(service)
       .operation(operation)
       .respond({
         body: { executionArn: FAKE_EXECUTION_ARN, startDate: 0 },
         delayMs: 50,
       });
-  }
+  },
 );
 
-When(
-  "I clear fakes for {string}",
-  async function (this: SdkWorld, service: string) {
-    assert.ok(this.session, "No session");
-    await this.session!.fake(service).clear();
-  }
-);
+When("I clear fakes for {string}", async function (this: SdkWorld, service: string) {
+  assert.ok(this.session, "No session");
+  await this.session!.fake(service).clear();
+});
 
 // ── Calls that use fake or real responses ──────────────────────────────────────
 
@@ -96,8 +86,11 @@ When(
             type: "STANDARD",
           }),
         });
-        const { SFNClient, ListStateMachinesCommand, StartExecutionCommand } =
-          require("@aws-sdk/client-sfn");
+        const {
+          SFNClient,
+          ListStateMachinesCommand,
+          StartExecutionCommand,
+        } = require("@aws-sdk/client-sfn");
         const client = this.session!.client<typeof SFNClient>("stepfunctions");
         const listResult = await client.send(new ListStateMachinesCommand({}));
         const machines: Array<{ name: string; stateMachineArn: string }> =
@@ -110,7 +103,7 @@ When(
           new StartExecutionCommand({
             stateMachineArn: sm.stateMachineArn,
             input: JSON.stringify({ test: true }),
-          })
+          }),
         );
       } else if (service === "stepfunctions" && operation === "ListStateMachines") {
         const { SFNClient, ListStateMachinesCommand } = require("@aws-sdk/client-sfn");
@@ -123,7 +116,7 @@ When(
     } catch (err: unknown) {
       this.lastCallResult = { success: false, output: null, error: err };
     }
-  }
+  },
 );
 
 // ── Assertions ─────────────────────────────────────────────────────────────────
@@ -132,40 +125,34 @@ Then("the faked response body is returned", function (this: SdkWorld) {
   assert.strictEqual(
     this.lastCallResult.success,
     true,
-    `Expected faked call to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`
+    `Expected faked call to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`,
   );
   const output = JSON.stringify(this.lastCallResult.output);
   assert.ok(
     output.includes(FAKE_EXECUTION_ARN),
-    `Expected faked executionArn "${FAKE_EXECUTION_ARN}" in output but got: ${output}`
+    `Expected faked executionArn "${FAKE_EXECUTION_ARN}" in output but got: ${output}`,
   );
 });
 
-Then(
-  "an AWS error {string} is returned",
-  function (this: SdkWorld, errorCode: string) {
-    assert.strictEqual(
-      this.lastCallResult.success,
-      false,
-      `Expected error "${errorCode}" but the call succeeded`
-    );
-    const errStr = JSON.stringify(this.lastCallResult.error);
-    assert.ok(
-      errStr.includes(errorCode),
-      `Expected error code "${errorCode}" but got: ${errStr}`
-    );
-  }
-);
+Then("an AWS error {string} is returned", function (this: SdkWorld, errorCode: string) {
+  assert.strictEqual(
+    this.lastCallResult.success,
+    false,
+    `Expected error "${errorCode}" but the call succeeded`,
+  );
+  const errStr = JSON.stringify(this.lastCallResult.error);
+  assert.ok(errStr.includes(errorCode), `Expected error code "${errorCode}" but got: ${errStr}`);
+});
 
 Then("the real response is returned", function (this: SdkWorld) {
   assert.strictEqual(
     this.lastCallResult.success,
     true,
-    `Expected real response but got error: ${JSON.stringify(this.lastCallResult.error)}`
+    `Expected real response but got error: ${JSON.stringify(this.lastCallResult.error)}`,
   );
   const output = JSON.stringify(this.lastCallResult.output);
   assert.ok(
     !output.includes(FAKE_EXECUTION_ARN),
-    `Expected a real (non-faked) response but got the fake ARN: ${output}`
+    `Expected a real (non-faked) response but got the fake ARN: ${output}`,
   );
 });

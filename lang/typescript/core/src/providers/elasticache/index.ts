@@ -1,7 +1,6 @@
 /** ElastiCache wire-protocol Fastify plugin (AWS Query protocol). */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { v4 as uuidv4 } from "uuid";
 import type { ServerState } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
@@ -68,7 +67,7 @@ export function registerElastiCache(app: FastifyInstance, state: ServerState): v
   app.addContentTypeParser(
     "application/x-www-form-urlencoded",
     { parseAs: "string" },
-    (_req, body, done) => done(null, body)
+    (_req, body, done) => done(null, body),
   );
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
@@ -77,13 +76,16 @@ export function registerElastiCache(app: FastifyInstance, state: ServerState): v
     const ctx = createRequestContext("elasticache", action);
 
     if (await applyIamAuth(state, "elasticache", action, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "elasticache", action, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "elasticache", action, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     switch (action) {
@@ -194,10 +196,14 @@ export function registerElastiCache(app: FastifyInstance, state: ServerState): v
       }
 
       default: {
-        jsonReply(reply, {
-          __type: "UnknownOperationException",
-          message: `lws: ElastiCache action '${action}' is not yet implemented`,
-        }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "UnknownOperationException",
+            message: `lws: ElastiCache action '${action}' is not yet implemented`,
+          },
+          400,
+        );
       }
     }
 

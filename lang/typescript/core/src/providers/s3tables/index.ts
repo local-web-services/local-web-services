@@ -59,13 +59,16 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     const ctx = createRequestContext("s3tables", "CreateTableBucket");
 
     if (await applyIamAuth(state, "s3tables", "CreateTableBucket", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "s3tables", "CreateTableBucket", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "s3tables", "CreateTableBucket", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const body = req.body as Record<string, unknown>;
@@ -86,7 +89,8 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     const ctx = createRequestContext("s3tables", "DeleteTableBucket");
 
     if (await applyIamAuth(state, "s3tables", "DeleteTableBucket", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     buckets.delete(bucket);
@@ -98,7 +102,8 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     const ctx = createRequestContext("s3tables", "ListTableBuckets");
 
     if (await applyIamAuth(state, "s3tables", "ListTableBuckets", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     jsonReply(reply, { tableBuckets: Array.from(buckets.values()) });
@@ -110,7 +115,8 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     const ctx = createRequestContext("s3tables", "GetTableBucket");
 
     if (await applyIamAuth(state, "s3tables", "GetTableBucket", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const b = buckets.get(bucket);
@@ -129,13 +135,16 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     const ctx = createRequestContext("s3tables", "CreateNamespace");
 
     if (await applyIamAuth(state, "s3tables", "CreateNamespace", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "s3tables", "CreateNamespace", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "s3tables", "CreateNamespace", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const body = req.body as Record<string, unknown>;
@@ -148,29 +157,37 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
       ownerAccountId: ACCOUNT_ID,
     };
     namespaces.set(`${bucket}/${namespaceName}`, ns);
-    jsonReply(reply, { tableBucketARN: `arn:aws:s3tables:${REGION}:${ACCOUNT_ID}:bucket/${bucket}`, namespace: namespaceParts });
+    jsonReply(reply, {
+      tableBucketARN: `arn:aws:s3tables:${REGION}:${ACCOUNT_ID}:bucket/${bucket}`,
+      namespace: namespaceParts,
+    });
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
 
-  app.delete("/buckets/:bucket/namespaces/:namespace", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { bucket, namespace } = req.params as { bucket: string; namespace: string };
-    const ctx = createRequestContext("s3tables", "DeleteNamespace");
+  app.delete(
+    "/buckets/:bucket/namespaces/:namespace",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { bucket, namespace } = req.params as { bucket: string; namespace: string };
+      const ctx = createRequestContext("s3tables", "DeleteNamespace");
 
-    if (await applyIamAuth(state, "s3tables", "DeleteNamespace", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "s3tables", "DeleteNamespace", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    namespaces.delete(`${bucket}/${namespace}`);
-    reply.status(204).send();
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      namespaces.delete(`${bucket}/${namespace}`);
+      reply.status(204).send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   app.get("/buckets/:bucket/namespaces", async (req: FastifyRequest, reply: FastifyReply) => {
     const { bucket } = req.params as { bucket: string };
     const ctx = createRequestContext("s3tables", "ListNamespaces");
 
     if (await applyIamAuth(state, "s3tables", "ListNamespaces", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const prefix = `${bucket}/`;
@@ -181,22 +198,26 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
 
-  app.get("/buckets/:bucket/namespaces/:namespace", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { bucket, namespace } = req.params as { bucket: string; namespace: string };
-    const ctx = createRequestContext("s3tables", "GetNamespace");
+  app.get(
+    "/buckets/:bucket/namespaces/:namespace",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { bucket, namespace } = req.params as { bucket: string; namespace: string };
+      const ctx = createRequestContext("s3tables", "GetNamespace");
 
-    if (await applyIamAuth(state, "s3tables", "GetNamespace", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "s3tables", "GetNamespace", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    const ns = namespaces.get(`${bucket}/${namespace}`);
-    if (!ns) {
-      jsonReply(reply, { message: `Namespace ${namespace} not found` }, 404);
-    } else {
-      jsonReply(reply, ns);
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      const ns = namespaces.get(`${bucket}/${namespace}`);
+      if (!ns) {
+        jsonReply(reply, { message: `Namespace ${namespace} not found` }, 404);
+      } else {
+        jsonReply(reply, ns);
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // ── Tables ─────────────────────────────────────────────────────────────────
 
@@ -205,13 +226,16 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     const ctx = createRequestContext("s3tables", "CreateTable");
 
     if (await applyIamAuth(state, "s3tables", "CreateTable", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "s3tables", "CreateTable", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "s3tables", "CreateTable", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const body = req.body as Record<string, unknown>;
@@ -234,25 +258,34 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
 
-  app.delete("/buckets/:bucket/tables/:namespace/:table", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { bucket, namespace, table } = req.params as { bucket: string; namespace: string; table: string };
-    const ctx = createRequestContext("s3tables", "DeleteTable");
+  app.delete(
+    "/buckets/:bucket/tables/:namespace/:table",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { bucket, namespace, table } = req.params as {
+        bucket: string;
+        namespace: string;
+        table: string;
+      };
+      const ctx = createRequestContext("s3tables", "DeleteTable");
 
-    if (await applyIamAuth(state, "s3tables", "DeleteTable", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "s3tables", "DeleteTable", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    tables.delete(`${bucket}/${namespace}/${table}`);
-    reply.status(204).send();
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      tables.delete(`${bucket}/${namespace}/${table}`);
+      reply.status(204).send();
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   app.get("/buckets/:bucket/tables", async (req: FastifyRequest, reply: FastifyReply) => {
     const { bucket } = req.params as { bucket: string };
     const ctx = createRequestContext("s3tables", "ListTables");
 
     if (await applyIamAuth(state, "s3tables", "ListTables", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const prefix = `${bucket}/`;
@@ -263,20 +296,28 @@ export function registerS3Tables(app: FastifyInstance, state: ServerState): void
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
 
-  app.get("/buckets/:bucket/tables/:namespace/:table", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { bucket, namespace, table } = req.params as { bucket: string; namespace: string; table: string };
-    const ctx = createRequestContext("s3tables", "GetTable");
+  app.get(
+    "/buckets/:bucket/tables/:namespace/:table",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { bucket, namespace, table } = req.params as {
+        bucket: string;
+        namespace: string;
+        table: string;
+      };
+      const ctx = createRequestContext("s3tables", "GetTable");
 
-    if (await applyIamAuth(state, "s3tables", "GetTable", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
+      if (await applyIamAuth(state, "s3tables", "GetTable", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
 
-    const t = tables.get(`${bucket}/${namespace}/${table}`);
-    if (!t) {
-      jsonReply(reply, { message: `Table ${table} not found` }, 404);
-    } else {
-      jsonReply(reply, t);
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      const t = tables.get(`${bucket}/${namespace}/${table}`);
+      if (!t) {
+        jsonReply(reply, { message: `Table ${table} not found` }, 404);
+      } else {
+        jsonReply(reply, t);
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 }

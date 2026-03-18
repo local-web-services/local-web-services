@@ -10,6 +10,7 @@ before writing or modifying anything under `lang/typescript/`.
 
 ```
 lang/typescript/
+├── arch_tests/      Shared architecture test package (installed as dev dep in all three projects)
 ├── core/            AWS emulator server — Fastify-based HTTP providers
 ├── sdk/             Testing SDK for user projects (lws_testing npm package)
 ├── example/         Reference project demonstrating SDK usage
@@ -30,17 +31,18 @@ or higher. Do not hard-code a version anywhere else.
 
 | Test type | Core | SDK | Example |
 |---|---|---|---|
-| `unit` | — | `tests/unit/` (Jest) | — |
-| `bdd` | `tests/` (Cucumber.js) | `tests/` (Cucumber.js) | `tests/` (Cucumber.js) |
-| `e2e / acceptance` | — | — | Cucumber.js BDD |
+| `unit` | — | `tests/unit/` (Jest) | `tests/*.test.ts` (Jest) |
+| `integration` | `tests/` (Cucumber.js) | — | — |
+| `e2e` | — | `tests/` (Cucumber.js) | `tests/acceptance-tests/` (Cucumber.js) |
+| `architecture` | `tests/architecture/` | `tests/architecture/` | `tests/architecture/` |
 
-**Core** uses Cucumber.js (`npm test`) as its primary test suite. No separate unit tests.
+**Core** uses Cucumber.js as its integration test suite — the BDD scenarios exercise
+the HTTP server directly. No separate unit tests exist in core.
 
-**SDK** has both Jest unit tests (`npm run test:jest`) and Cucumber.js BDD tests (`npm test`).
-CI runs `npm test` (Cucumber.js).
+**SDK** has Jest unit tests (`tests/unit/`) and Cucumber.js e2e tests (`tests/`).
 
-**Example** runs Jest tests (`npm test`) and Cucumber BDD acceptance tests (`npm run test:bdd`).
-CI runs both in sequence.
+**Example** has Jest unit tests (`tests/*.test.ts`) and Cucumber.js acceptance tests
+(`tests/acceptance-tests/`).
 
 ---
 
@@ -50,24 +52,74 @@ CI runs both in sequence.
 
 | Target | Description |
 |---|---|
-| `test` | `npm ci && npm test` |
-| `test-e2e` | `npm run test:bdd` (example); same as `test` for core and sdk |
-| `check` | `test` (and `test-e2e` for example) |
+| `unit-test` | Jest unit tests (sdk: `npm run test:unit`, example: `npm test`, core: N/A — prints skip message) |
+| `integration-test` | Cucumber BDD (core only: `npm test`; no-op in sdk and example) |
+| `e2e-test` | Cucumber BDD (sdk + example: `npm run test:e2e`; no-op in core) |
+| `architecture-test` | Architecture constraint tests (`npm run test:architecture`) |
+| `test` | `unit-test` + `integration-test` + `architecture-test` |
+| `lint` | `npm run lint` → ESLint over `src/` and `tests/` |
+| `format` | `npm run format` → Prettier write |
+| `format-check` | `npm run format-check` → Prettier check |
+| `complexity` | `npm run complexity` → ESLint max-complexity rule check |
+| `cpd` | `npm run cpd` → jscpd copy-paste detection |
+| `type-check` | `npm run type-check` → `tsc --noEmit` |
+| `check` | `lint` + `format-check` + `complexity` + `cpd` + `type-check` + `test` |
+| `install` | `npm ci` |
+| `help` | Print available targets |
 
 ### Root `lang/typescript/Makefile` cascading behaviour
 
+Calling a target at the root delegates to each sub-project in order:
+
 | Root target | Delegates to |
 |---|---|
+| `unit-test` | core, sdk, example |
+| `integration-test` | core |
+| `architecture-test` | core, sdk, example |
+| `e2e-test` | sdk, example |
 | `check` | core, sdk, example |
-| `test-e2e` | core, sdk, example |
 
 Example:
 
 ```sh
 # From repo root
-make -C lang/typescript check        # runs check in core, sdk, example
-make -C lang/typescript/core test    # runs npm test in core only
+make -C lang/typescript unit-test          # runs unit-test in core, sdk, example
+make -C lang/typescript e2e-test           # runs e2e-test in sdk, example
+make -C lang/typescript/sdk e2e-test       # runs sdk e2e only
 ```
+
+---
+
+## Architecture Tests Package
+
+`lang/typescript/arch_tests/` is an npm package containing tests that enforce
+coding and testing standards across all three projects. It is added as a dev
+dependency in `core/`, `sdk/`, and `example/`.
+
+### Universal tests (run in all three projects)
+
+| File | What it enforces |
+|---|---|
+| `src/tests/aaa-comments.test.ts` | All test functions have `// Arrange` / `// Act` / `// Assert` comments |
+| `src/tests/no-magic-strings.test.ts` | Assertions use `expected*` / `actual*` variables, no string literals |
+| `src/tests/no-skipped-tests.test.ts` | No `xit`, `xdescribe`, `test.skip`, `it.skip` in test files |
+| `src/tests/file-naming.test.ts` | Test files named `*.test.ts` or `*Steps.ts` or `*steps.ts` |
+
+### Universal e2e tests (run in sdk and example only)
+
+| File | What it enforces |
+|---|---|
+| `src/tests/e2e/no-skipped-scenarios.test.ts` | No `@skip` / `@wip` in Gherkin scenarios |
+| `src/tests/e2e/resource-naming.test.ts` | E2E resource names follow `test-<service>-<n>` conventions |
+
+The architecture tests detect which project they are running in by reading
+the `LWS_ARCH_PROJECT_ROOT` environment variable set in each project's
+`tests/architecture/jest.config.ts` before the shared tests run.
+
+### SDK-specific architecture tests (in `sdk/tests/architecture/` only)
+
+- `provider-e2e-coverage.test.ts` — verifies every core provider has a
+  corresponding e2e suite in `sdk/tests/`
 
 ---
 
@@ -78,55 +130,61 @@ make -C lang/typescript/core test    # runs npm test in core only
 | TypeScript | Language | `tsconfig.json` |
 | ts-node | Runtime execution | — |
 | tsup | SDK bundling | `tsup.config.ts` |
-| ESLint | Linting | `.eslintrc` / `eslint.config.js` |
-| Prettier | Formatting | `.prettierrc` |
-| Cucumber.js | BDD tests (core, sdk, example) | `.cucumber.yml` |
-| Jest | Unit tests (sdk, example) | `jest.config.ts` |
-
----
-
-## Test Framework: Cucumber.js (BDD)
-
-All three packages use Cucumber.js for behavioural tests. Feature files
-(`.feature`) live in `lang/specification/core/informal/<service>/`.
-
-Step definitions live in:
-- `core/tests/steps/` — core-specific step implementations
-- `sdk/tests/steps/` — sdk-specific step implementations
-- `example/tests/steps/` — example-specific step implementations
-
-Support files (world, hooks) live in the corresponding `tests/support/` directories.
+| ESLint | Linting + complexity | `.eslintrc.json` |
+| Prettier | Formatting | `../.prettierrc` (shared) |
+| jscpd | Copy-paste detection | — |
+| Cucumber.js | Integration / e2e tests | `cucumber.yml` |
+| Jest | Unit + architecture tests | `jest.config.ts` |
 
 ---
 
 ## CI Job Naming and Structure
 
-Job name format: `typescript-{project}-test`
+Job name format: `typescript-{project}-{target}`
 
-### Jobs
+### Core jobs
 
-| Job | Command | Needs Docker | Depends on |
+| Job | Make target | Needs Docker | Depends on |
 |---|---|---|---|
-| `typescript-core-test` | `npm ci && npm test` in `lang/typescript/core` | No | — |
-| `typescript-sdk-test` | `npm ci && npm test` in `lang/typescript/sdk` | No | `typescript-core-test` |
-| `typescript-example-test` | Jest + Cucumber BDD in `lang/typescript/example` | No | `typescript-sdk-test` |
+| `typescript-core-lint` | `make -C lang/typescript/core lint format-check complexity cpd type-check` | No | — |
+| `typescript-core-integration-test` | `make -C lang/typescript/core integration-test` | No | — |
+| `typescript-core-architecture-test` | `make -C lang/typescript/core architecture-test` | No | — |
 
-The example job runs two steps:
-1. Build the SDK: `npm ci && npm run build` in `lang/typescript/sdk`
-2. Jest: `npm ci && npm test` in `lang/typescript/example`
-3. BDD: `npm run test:bdd` in `lang/typescript/example`
+### SDK jobs
+
+| Job | Make target | Needs Docker | Depends on |
+|---|---|---|---|
+| `typescript-sdk-lint` | `make -C lang/typescript/sdk lint format-check complexity cpd type-check` | No | — |
+| `typescript-sdk-unit-test` | `make -C lang/typescript/sdk unit-test` | No | — |
+| `typescript-sdk-architecture-test` | `make -C lang/typescript/sdk architecture-test` | No | — |
+| `typescript-sdk-e2e-test` | `make -C lang/typescript/sdk e2e-test` | No | `typescript-core-integration-test` |
+
+### Example jobs
+
+| Job | Make target | Needs Docker | Depends on |
+|---|---|---|---|
+| `typescript-example-lint` | `make -C lang/typescript/example lint format-check complexity cpd type-check` | No | — |
+| `typescript-example-unit-test` | `make -C lang/typescript/example unit-test` | No | — |
+| `typescript-example-architecture-test` | `make -C lang/typescript/example architecture-test` | No | — |
+| `typescript-example-e2e-test` | `make -C lang/typescript/example e2e-test` | No | `typescript-sdk-e2e-test` |
 
 ### Change detection gating
 
-All three jobs are gated on the `typescript` filter:
+| Gate | Triggered by changes to |
+|---|---|
+| `typescript-core-*` | `lang/typescript/core/**` or `lang/typescript/arch_tests/**` |
+| `typescript-sdk-*` | `lang/typescript/sdk/**` or `lang/typescript/core/**` or `lang/typescript/arch_tests/**` |
+| `typescript-example-*` | `lang/typescript/example/**` or `lang/typescript/sdk/**` or `lang/typescript/core/**` or `lang/typescript/arch_tests/**` |
 
-```
-lang/typescript/core/**
-lang/typescript/sdk/**
-lang/typescript/example/**
-```
+---
 
-A change to any file under `lang/typescript/` triggers all three jobs.
+## Feature Files Are Read-Only
+
+Feature files in `lang/specification/` are the **canonical source of truth**
+for behaviour across all language implementations. **Never edit them to work
+around a limitation in a specific language's fake** — fix the fake instead.
+The only permitted reason to modify a feature file is a deliberate change to
+the shared specification itself.
 
 ---
 
@@ -139,4 +197,5 @@ Each new service needs:
 3. Registration in `lang/typescript/core/src/server.ts` with a port offset
 4. SDK client builder in `lang/typescript/sdk/src/session.ts`
 5. A Gherkin feature file in `lang/specification/core/informal/<service>/`
-6. Step definitions wired into `lang/typescript/sdk/tests/steps/`
+6. Step definitions wired into `lang/typescript/core/tests/steps/`
+7. E2e step definitions wired into `lang/typescript/sdk/tests/steps/`

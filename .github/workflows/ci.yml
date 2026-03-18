@@ -338,7 +338,7 @@ jobs:
 
   # ── TypeScript SDK ─────────────────────────────────────────────────────────
   typescript-sdk-lint:
-    needs: [changes]
+    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
     if: needs.changes.outputs.typescript-sdk == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -354,7 +354,7 @@ jobs:
         run: make lint format-check complexity cpd type-check
 
   typescript-sdk-unit-test:
-    needs: [changes]
+    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
     if: needs.changes.outputs.typescript-sdk == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -373,7 +373,7 @@ jobs:
         run: make unit-test
 
   typescript-sdk-architecture-test:
-    needs: [changes]
+    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
     if: needs.changes.outputs.typescript-sdk == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -392,11 +392,8 @@ jobs:
         run: make architecture-test
 
   typescript-sdk-e2e-test:
-    needs: [changes, typescript-core-integration-test]
-    if: |
-      always() &&
-      needs.changes.outputs.typescript-sdk == 'true' &&
-      (needs.typescript-core-integration-test.result == 'success' || needs.typescript-core-integration-test.result == 'skipped')
+    needs: [changes, typescript-core-lint, typescript-core-integration-test, typescript-core-architecture-test]
+    if: needs.changes.outputs.typescript-sdk == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -415,7 +412,7 @@ jobs:
 
   # ── TypeScript Example ──────────────────────────────────────────────────────
   typescript-example-lint:
-    needs: [changes]
+    needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
     if: needs.changes.outputs.typescript-example == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -431,7 +428,7 @@ jobs:
         run: make lint format-check complexity cpd type-check
 
   typescript-example-unit-test:
-    needs: [changes]
+    needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
     if: needs.changes.outputs.typescript-example == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -450,7 +447,7 @@ jobs:
         run: make unit-test
 
   typescript-example-architecture-test:
-    needs: [changes]
+    needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
     if: needs.changes.outputs.typescript-example == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -469,11 +466,8 @@ jobs:
         run: make architecture-test
 
   typescript-example-e2e-test:
-    needs: [changes, typescript-sdk-e2e-test]
-    if: |
-      always() &&
-      needs.changes.outputs.typescript-example == 'true' &&
-      (needs.typescript-sdk-e2e-test.result == 'success' || needs.typescript-sdk-e2e-test.result == 'skipped')
+    needs: [changes, typescript-sdk-lint, typescript-sdk-unit-test, typescript-sdk-architecture-test, typescript-sdk-e2e-test]
+    if: needs.changes.outputs.typescript-example == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

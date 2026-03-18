@@ -158,7 +158,7 @@ describe("SQSHelper", () => {
 
       // Act & Assert
       await expect(helper.assertMessageCount(expectedCount)).rejects.toThrow(
-        `Expected 2 message(s) in queue "${EXPECTED_QUEUE_NAME}"`
+        `Expected 2 message(s) in queue "${EXPECTED_QUEUE_NAME}"`,
       );
     });
   });

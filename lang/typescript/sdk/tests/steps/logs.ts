@@ -17,7 +17,7 @@ async function makeCall(world: SdkWorld, service: string, operation: string): Pr
       new StartExecutionCommand({
         stateMachineArn: arn,
         input: JSON.stringify({ test: true }),
-      })
+      }),
     );
   }
 
@@ -49,7 +49,7 @@ When(
       await capture.stop();
     }
     this.lastLogCapture = capture;
-  }
+  },
 );
 
 When(
@@ -59,7 +59,7 @@ When(
     service1: string,
     operation1: string,
     service2: string,
-    operation2: string
+    operation2: string,
   ) {
     assert.ok(this.session, "No session");
     const capture = await this.session!.captureLogsStart();
@@ -70,7 +70,7 @@ When(
       await capture.stop();
     }
     this.lastLogCapture = capture;
-  }
+  },
 );
 
 When(
@@ -85,7 +85,7 @@ When(
       await capture.stop();
     }
     this.lastLogCapture = capture;
-  }
+  },
 );
 
 // ── Log assertions ─────────────────────────────────────────────────────────────
@@ -95,7 +95,7 @@ Then(
   function (this: SdkWorld, service: string, operation: string) {
     assert.ok(this.lastLogCapture, "No log capture available");
     this.lastLogCapture!.assertCalled(service, operation);
-  }
+  },
 );
 
 Then("no errors will appear in the log capture", function (this: SdkWorld) {
@@ -108,19 +108,16 @@ Then(
   function (this: SdkWorld, service: string) {
     assert.ok(this.lastLogCapture, "No log capture available");
     const entries = this.lastLogCapture!.forService(service);
-    assert.ok(
-      entries.length > 0,
-      `Expected at least one ${service} entry but found none`
-    );
+    assert.ok(entries.length > 0, `Expected at least one ${service} entry but found none`);
     for (const entry of entries) {
       const entryService = (entry.service ?? "").toLowerCase();
       assert.strictEqual(
         entryService,
         service.toLowerCase(),
-        `Expected all entries to be for "${service}" but found "${entryService}"`
+        `Expected all entries to be for "${service}" but found "${entryService}"`,
       );
     }
-  }
+  },
 );
 
 Then(
@@ -128,19 +125,16 @@ Then(
   function (this: SdkWorld, service: string) {
     assert.ok(this.lastLogCapture, "No log capture available");
     const entries = this.lastLogCapture!.forService(service);
-    assert.ok(
-      entries.length > 0,
-      `Expected at least one ${service} entry but found none`
-    );
+    assert.ok(entries.length > 0, `Expected at least one ${service} entry but found none`);
     for (const entry of entries) {
       const entryService = (entry.service ?? "").toLowerCase();
       assert.strictEqual(
         entryService,
         service.toLowerCase(),
-        `Expected all entries to be for "${service}" but found "${entryService}"`
+        `Expected all entries to be for "${service}" but found "${entryService}"`,
       );
     }
-  }
+  },
 );
 
 Then(
@@ -151,34 +145,27 @@ Then(
     assert.ok(
       entries.length > 0,
       `Expected at least one "${operation}" entry but found none. All entries: ${JSON.stringify(
-        this.lastLogCapture!.all
-      )}`
+        this.lastLogCapture!.all,
+      )}`,
     );
-  }
+  },
 );
 
 Then(
   "the log capture will contain exactly {int} {string} {string} entries",
-  function (
-    this: SdkWorld,
-    expectedCount: number,
-    service: string,
-    operation: string
-  ) {
+  function (this: SdkWorld, expectedCount: number, service: string, operation: string) {
     assert.ok(this.lastLogCapture, "No log capture available");
     const entries = this.lastLogCapture!.all.filter(
-      (e) =>
-        (e.service ?? "").toLowerCase() === service.toLowerCase() &&
-        e.operation === operation
+      (e) => (e.service ?? "").toLowerCase() === service.toLowerCase() && e.operation === operation,
     );
     assert.strictEqual(
       entries.length,
       expectedCount,
       `Expected exactly ${expectedCount} "${service}" "${operation}" entries but found ${
         entries.length
-      }. All: ${JSON.stringify(this.lastLogCapture!.all)}`
+      }. All: ${JSON.stringify(this.lastLogCapture!.all)}`,
     );
-  }
+  },
 );
 
 Then("recent logs are non-empty", async function (this: SdkWorld) {

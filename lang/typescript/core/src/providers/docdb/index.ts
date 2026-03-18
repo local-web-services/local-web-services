@@ -1,7 +1,6 @@
 /** DocDB wire-protocol Fastify plugin (AWS Query protocol). */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { v4 as uuidv4 } from "uuid";
 import type { ServerState } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
@@ -65,7 +64,7 @@ export function registerDocDb(app: FastifyInstance, state: ServerState): void {
   app.addContentTypeParser(
     "application/x-www-form-urlencoded",
     { parseAs: "string" },
-    (_req, body, done) => done(null, body)
+    (_req, body, done) => done(null, body),
   );
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
@@ -74,13 +73,16 @@ export function registerDocDb(app: FastifyInstance, state: ServerState): void {
     const ctx = createRequestContext("docdb", action);
 
     if (await applyIamAuth(state, "docdb", action, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "docdb", action, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "docdb", action, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     switch (action) {
@@ -192,10 +194,14 @@ export function registerDocDb(app: FastifyInstance, state: ServerState): void {
       }
 
       default: {
-        jsonReply(reply, {
-          __type: "UnknownOperationException",
-          message: `lws: DocDB action '${action}' is not yet implemented`,
-        }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "UnknownOperationException",
+            message: `lws: DocDB action '${action}' is not yet implemented`,
+          },
+          400,
+        );
       }
     }
 

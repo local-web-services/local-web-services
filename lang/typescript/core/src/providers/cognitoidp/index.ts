@@ -58,17 +58,22 @@ export function registerCognitoIdp(app: FastifyInstance, state: ServerState): Co
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
     const target = (req.headers["x-amz-target"] as string) ?? "";
-    const rawOperation = target.startsWith(TARGET_PREFIX) ? target.slice(TARGET_PREFIX.length) : target;
+    const rawOperation = target.startsWith(TARGET_PREFIX)
+      ? target.slice(TARGET_PREFIX.length)
+      : target;
     const ctx = createRequestContext("cognitoidp", rawOperation);
 
     if (await applyIamAuth(state, "cognito-idp", rawOperation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "cognito-idp", rawOperation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "cognito-idp", rawOperation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const body = (req.body as Record<string, unknown>) ?? {};
@@ -104,7 +109,7 @@ function handleOperation(
   operation: string,
   body: Record<string, unknown>,
   store: CognitoStore,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): void {
   switch (operation) {
     // ── User Pools ────────────────────────────────────────────────────────────
@@ -112,7 +117,7 @@ function handleOperation(
     case "CreateUserPool": {
       const pool = store.createUserPool(
         body.PoolName as string,
-        body.Policies as Record<string, unknown> | undefined
+        body.Policies as Record<string, unknown> | undefined,
       );
       jsonReply(reply, {
         UserPool: {
@@ -173,7 +178,7 @@ function handleOperation(
     case "CreateUserPoolClient": {
       const client = store.createUserPoolClient(
         body.UserPoolId as string,
-        body.ClientName as string
+        body.ClientName as string,
       );
       jsonReply(reply, {
         UserPoolClient: {
@@ -190,7 +195,7 @@ function handleOperation(
     case "DescribeUserPoolClient": {
       const client = store.describeUserPoolClient(
         body.UserPoolId as string,
-        body.ClientId as string
+        body.ClientId as string,
       );
       jsonReply(reply, {
         UserPoolClient: {
@@ -234,7 +239,7 @@ function handleOperation(
         body.UserPoolId as string,
         body.Username as string,
         attrs,
-        body.TemporaryPassword as string | undefined
+        body.TemporaryPassword as string | undefined,
       );
       jsonReply(reply, { User: formatUser(user) });
       break;
@@ -263,7 +268,7 @@ function handleOperation(
       const users = store.listUsers(
         body.UserPoolId as string,
         body.Filter as string | undefined,
-        body.Limit as number | undefined
+        body.Limit as number | undefined,
       );
       jsonReply(reply, { Users: users.map(formatUserShort) });
       break;
@@ -292,7 +297,7 @@ function handleOperation(
         body.UserPoolId as string,
         body.Username as string,
         body.Password as string,
-        !!(body.Permanent)
+        !!body.Permanent,
       );
       jsonReply(reply, {});
       break;
@@ -308,7 +313,7 @@ function handleOperation(
       store.adminUpdateUserAttributes(
         body.UserPoolId as string,
         body.Username as string,
-        (body.UserAttributes as UserAttribute[]) ?? []
+        (body.UserAttributes as UserAttribute[]) ?? [],
       );
       jsonReply(reply, {});
       break;
@@ -333,7 +338,7 @@ function handleOperation(
         body.UserPoolId as string,
         body.GroupName as string,
         body.Description as string | undefined,
-        body.Precedence as number | undefined
+        body.Precedence as number | undefined,
       );
       jsonReply(reply, { Group: formatGroup(group) });
       break;
@@ -361,7 +366,7 @@ function handleOperation(
       store.adminAddUserToGroup(
         body.UserPoolId as string,
         body.Username as string,
-        body.GroupName as string
+        body.GroupName as string,
       );
       jsonReply(reply, {});
       break;
@@ -371,7 +376,7 @@ function handleOperation(
       store.adminRemoveUserFromGroup(
         body.UserPoolId as string,
         body.Username as string,
-        body.GroupName as string
+        body.GroupName as string,
       );
       jsonReply(reply, {});
       break;
@@ -386,7 +391,7 @@ function handleOperation(
     case "AdminListGroupsForUser": {
       const groups = store.adminListGroupsForUser(
         body.UserPoolId as string,
-        body.Username as string
+        body.Username as string,
       );
       jsonReply(reply, { Groups: groups.map(formatGroup) });
       break;
@@ -398,7 +403,7 @@ function handleOperation(
       const result = store.adminInitiateAuth(
         body.UserPoolId as string,
         body.AuthFlow as string,
-        (body.AuthParameters as Record<string, string>) ?? {}
+        (body.AuthParameters as Record<string, string>) ?? {},
       );
       if (result.tokens) {
         jsonReply(reply, { AuthenticationResult: result.tokens });
@@ -416,7 +421,7 @@ function handleOperation(
       const result = store.initiateAuth(
         body.ClientId as string,
         body.AuthFlow as string,
-        (body.AuthParameters as Record<string, string>) ?? {}
+        (body.AuthParameters as Record<string, string>) ?? {},
       );
       if (result.tokens) {
         jsonReply(reply, { AuthenticationResult: result.tokens });
@@ -435,7 +440,7 @@ function handleOperation(
         body.ClientId as string,
         body.ChallengeName as string,
         body.Session as string,
-        (body.ChallengeResponses as Record<string, string>) ?? {}
+        (body.ChallengeResponses as Record<string, string>) ?? {},
       );
       jsonReply(reply, { AuthenticationResult: result.tokens });
       break;
@@ -446,7 +451,7 @@ function handleOperation(
         body.ClientId as string,
         body.ChallengeName as string,
         body.Session as string,
-        (body.ChallengeResponses as Record<string, string>) ?? {}
+        (body.ChallengeResponses as Record<string, string>) ?? {},
       );
       jsonReply(reply, { AuthenticationResult: result.tokens });
       break;
@@ -502,7 +507,7 @@ function handleOperation(
         client2.poolId,
         body.Username as string,
         body.Password as string,
-        true
+        true,
       );
       jsonReply(reply, {});
       break;
@@ -547,7 +552,7 @@ function handleOperation(
         reply,
         "UnknownOperationException",
         `lws: CognitoIDP operation '${operation}' is not yet implemented`,
-        400
+        400,
       );
     }
   }

@@ -86,7 +86,13 @@ export class ApiGatewayStore {
 
   createRestApi(name: string, description: string, tags: Record<string, string>): RestApi {
     const id = uuidv4().replace(/-/g, "").slice(0, 10);
-    const api: RestApi = { id, name, description: description ?? "", createdDate: Math.floor(Date.now() / 1000), tags: tags ?? {} };
+    const api: RestApi = {
+      id,
+      name,
+      description: description ?? "",
+      createdDate: Math.floor(Date.now() / 1000),
+      tags: tags ?? {},
+    };
     this.apis.set(id, api);
     // Create root resource "/"
     const rootResourceId = uuidv4().replace(/-/g, "").slice(0, 10);
@@ -146,7 +152,8 @@ export class ApiGatewayStore {
   deleteResource(apiId: string, resourceId: string): void {
     const resourceMap = this.resources.get(apiId);
     if (!resourceMap) throw new Error(`NotFoundException: Rest API ${apiId} not found`);
-    if (!resourceMap.has(resourceId)) throw new Error(`NotFoundException: Resource ${resourceId} not found`);
+    if (!resourceMap.has(resourceId))
+      throw new Error(`NotFoundException: Resource ${resourceId} not found`);
     resourceMap.delete(resourceId);
   }
 
@@ -157,7 +164,7 @@ export class ApiGatewayStore {
     resourceId: string,
     httpMethod: string,
     authorizationType: string,
-    apiKeyRequired: boolean
+    apiKeyRequired: boolean,
   ): ResourceMethod {
     const resource = this.getResource(apiId, resourceId);
     if (!resource) throw new Error(`NotFoundException: Resource ${resourceId} not found`);
@@ -186,7 +193,7 @@ export class ApiGatewayStore {
     apiId: string,
     resourceId: string,
     httpMethod: string,
-    statusCode: string
+    statusCode: string,
   ): MethodResponse {
     const method = this.getMethod(apiId, resourceId, httpMethod);
     if (!method) throw new Error(`NotFoundException: Method ${httpMethod} not found`);
@@ -203,7 +210,7 @@ export class ApiGatewayStore {
     httpMethod: string,
     type: string,
     uri: string,
-    integrationHttpMethod: string
+    integrationHttpMethod: string,
   ): MethodIntegration {
     const method = this.getMethod(apiId, resourceId, httpMethod);
     if (!method) throw new Error(`NotFoundException: Method ${httpMethod} not found`);
@@ -219,7 +226,11 @@ export class ApiGatewayStore {
     return integration;
   }
 
-  getIntegration(apiId: string, resourceId: string, httpMethod: string): MethodIntegration | undefined {
+  getIntegration(
+    apiId: string,
+    resourceId: string,
+    httpMethod: string,
+  ): MethodIntegration | undefined {
     return this.getMethod(apiId, resourceId, httpMethod)?.methodIntegration;
   }
 
@@ -233,7 +244,7 @@ export class ApiGatewayStore {
     apiId: string,
     resourceId: string,
     httpMethod: string,
-    statusCode: string
+    statusCode: string,
   ): IntegrationResponse {
     const integration = this.getIntegration(apiId, resourceId, httpMethod);
     if (!integration) throw new Error(`NotFoundException: Integration not found`);
@@ -248,7 +259,12 @@ export class ApiGatewayStore {
     const deploymentMap = this.deployments.get(apiId);
     if (!deploymentMap) throw new Error(`NotFoundException: Rest API ${apiId} not found`);
     const id = uuidv4().replace(/-/g, "").slice(0, 10);
-    const deployment: Deployment = { id, description: description ?? "", createdDate: Math.floor(Date.now() / 1000), stageName };
+    const deployment: Deployment = {
+      id,
+      description: description ?? "",
+      createdDate: Math.floor(Date.now() / 1000),
+      stageName,
+    };
     deploymentMap.set(id, deployment);
     if (stageName) {
       this.createOrUpdateStage(apiId, stageName, id, description ?? "");
@@ -276,7 +292,12 @@ export class ApiGatewayStore {
 
   // ── Stages ─────────────────────────────────────────────────────────────────
 
-  private createOrUpdateStage(apiId: string, stageName: string, deploymentId: string, description: string): Stage {
+  private createOrUpdateStage(
+    apiId: string,
+    stageName: string,
+    deploymentId: string,
+    description: string,
+  ): Stage {
     const stageMap = this.stages.get(apiId)!;
     const existing = stageMap.get(stageName);
     if (existing) {
@@ -327,7 +348,8 @@ export class ApiGatewayStore {
     if (updates.description !== undefined) stage.description = updates.description;
     if (updates.deploymentId !== undefined) stage.deploymentId = updates.deploymentId;
     if (updates.variables !== undefined) stage.variables = updates.variables;
-    if (updates.defaultRouteSettings !== undefined) stage.defaultRouteSettings = updates.defaultRouteSettings;
+    if (updates.defaultRouteSettings !== undefined)
+      stage.defaultRouteSettings = updates.defaultRouteSettings;
     stage.lastUpdatedDate = Math.floor(Date.now() / 1000);
     return stage;
   }

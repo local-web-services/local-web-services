@@ -35,7 +35,10 @@ export class S3Store {
   // multipart parts: key = "uploadId#partNumber", value = Buffer
   private parts: Map<string, Buffer> = new Map();
   // active multipart uploads: uploadId -> { bucket, key, status }
-  private uploads: Map<string, { bucket: string; key: string; status: "IN_PROGRESS" | "COMPLETED" | "ABORTED" }> = new Map();
+  private uploads: Map<
+    string,
+    { bucket: string; key: string; status: "IN_PROGRESS" | "COMPLETED" | "ABORTED" }
+  > = new Map();
 
   reset(): void {
     this.buckets.clear();
@@ -56,7 +59,9 @@ export class S3Store {
     return uploadId;
   }
 
-  getUpload(uploadId: string): { bucket: string; key: string; status: "IN_PROGRESS" | "COMPLETED" | "ABORTED" } | undefined {
+  getUpload(
+    uploadId: string,
+  ): { bucket: string; key: string; status: "IN_PROGRESS" | "COMPLETED" | "ABORTED" } | undefined {
     return this.uploads.get(uploadId);
   }
 
@@ -161,7 +166,12 @@ export class S3Store {
     return Array.from(this.buckets.values());
   }
 
-  putObject(bucketName: string, key: string, body: Buffer, headers: Record<string, string>): S3Object {
+  putObject(
+    bucketName: string,
+    key: string,
+    body: Buffer,
+    headers: Record<string, string>,
+  ): S3Object {
     const bucket = this.buckets.get(bucketName);
     if (!bucket) throw new Error(`NoSuchBucket: ${bucketName}`);
     const { createHash } = require("crypto") as typeof import("crypto");
@@ -187,7 +197,11 @@ export class S3Store {
     this.buckets.get(bucketName)?.objects.delete(key);
   }
 
-  listObjects(bucketName: string, prefix?: string, delimiter?: string): {
+  listObjects(
+    bucketName: string,
+    prefix?: string,
+    delimiter?: string,
+  ): {
     objects: S3Object[];
     prefixes: string[];
   } {
@@ -213,7 +227,10 @@ export class S3Store {
       filtered = result;
     }
 
-    return { objects: filtered.sort((a, b) => a.key.localeCompare(b.key)), prefixes: Array.from(prefixes) };
+    return {
+      objects: filtered.sort((a, b) => a.key.localeCompare(b.key)),
+      prefixes: Array.from(prefixes),
+    };
   }
 
   copyObject(srcBucket: string, srcKey: string, dstBucket: string, dstKey: string): S3Object {
@@ -224,14 +241,17 @@ export class S3Store {
 }
 
 function xmlReply(reply: FastifyReply, content: string, status = 200): void {
-  reply.status(status).header("Content-Type", "application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>${content}`);
+  reply
+    .status(status)
+    .header("Content-Type", "application/xml")
+    .send(`<?xml version="1.0" encoding="UTF-8"?>${content}`);
 }
 
 function s3Error(reply: FastifyReply, code: string, message: string, status = 400): void {
   xmlReply(
     reply,
     `<Error><Code>${code}</Code><Message>${message}</Message><RequestId>${uuidv4()}</RequestId></Error>`,
-    status
+    status,
   );
 }
 
@@ -266,14 +286,17 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
 
     const buckets = store.listBuckets();
     const bucketsXml = buckets
-      .map((b) => `<Bucket><Name>${b.name}</Name><CreationDate>${b.createdAt.toISOString()}</CreationDate></Bucket>`)
+      .map(
+        (b) =>
+          `<Bucket><Name>${b.name}</Name><CreationDate>${b.createdAt.toISOString()}</CreationDate></Bucket>`,
+      )
       .join("");
     xmlReply(
       reply,
       `<ListAllMyBucketsResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
   <Owner><ID>${ACCOUNT_ID}</ID><DisplayName>test</DisplayName></Owner>
   <Buckets>${bucketsXml}</Buckets>
-</ListAllMyBucketsResult>`
+</ListAllMyBucketsResult>`,
     );
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
@@ -283,10 +306,16 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
     const { bucket } = req.params as { bucket: string };
     const ctx = createRequestContext("s3", "CreateBucket");
     if (await applyChaos(state, "s3", "CreateBucket", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (store.getBucket(bucket)) {
-      s3Error(reply, "BucketAlreadyOwnedByYou", "Your previous request to create the named bucket succeeded and you already own it.", 409);
+      s3Error(
+        reply,
+        "BucketAlreadyOwnedByYou",
+        "Your previous request to create the named bucket succeeded and you already own it.",
+        409,
+      );
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
     }
@@ -320,18 +349,16 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
     const ctx = createRequestContext("s3", "ListObjectsV2");
 
     if (await applyChaos(state, "s3", "ListObjectsV2", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "s3", "ListObjectsV2", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     try {
-      const { objects, prefixes } = store.listObjects(
-        bucket,
-        query.prefix,
-        query.delimiter
-      );
+      const { objects, prefixes } = store.listObjects(bucket, query.prefix, query.delimiter);
       const maxKeys = parseInt(query["max-keys"] ?? "1000", 10);
       const truncated = objects.length > maxKeys;
       const sliced = objects.slice(0, maxKeys);
@@ -345,7 +372,7 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
   <ETag>${o.etag}</ETag>
   <Size>${o.size}</Size>
   <StorageClass>STANDARD</StorageClass>
-</Contents>`
+</Contents>`,
         )
         .join("");
 
@@ -363,7 +390,7 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
   <KeyCount>${sliced.length}</KeyCount>
   ${objectsXml}
   ${prefixesXml}
-</ListBucketResult>`
+</ListBucketResult>`,
       );
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -388,7 +415,9 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         const ctx = createRequestContext("s3", "PutBucketTagging");
         const bodyBuf = (req.body as Buffer) ?? Buffer.alloc(0);
         const bodyStr = bodyBuf.toString();
-        const tagMatches = [...bodyStr.matchAll(/<Tag>\s*<Key>([^<]+)<\/Key>\s*<Value>([^<]*)<\/Value>\s*<\/Tag>/g)];
+        const tagMatches = [
+          ...bodyStr.matchAll(/<Tag>\s*<Key>([^<]+)<\/Key>\s*<Value>([^<]*)<\/Value>\s*<\/Tag>/g),
+        ];
         const tags = tagMatches.map((m) => ({ Key: m[1], Value: m[2] }));
         store.setBucketTags(bucket, tags);
         reply.status(200).send("");
@@ -440,7 +469,17 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         return;
       }
 
-      if ("acl" in query || "cors" in query || "accelerate" in query || "logging" in query || "replication" in query || "lifecycle" in query || "encryption" in query || "ownershipControls" in query || "publicAccessBlock" in query) {
+      if (
+        "acl" in query ||
+        "cors" in query ||
+        "accelerate" in query ||
+        "logging" in query ||
+        "replication" in query ||
+        "lifecycle" in query ||
+        "encryption" in query ||
+        "ownershipControls" in query ||
+        "publicAccessBlock" in query
+      ) {
         // No-op bucket configuration PUT operations
         reply.status(200).send("");
         return;
@@ -449,10 +488,16 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
       // SDK sends PUT /bucket/ (trailing slash) for CreateBucket — treat empty key as bucket creation
       const ctx = createRequestContext("s3", "CreateBucket");
       if (await applyChaos(state, "s3", "CreateBucket", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       if (store.getBucket(bucket)) {
-        s3Error(reply, "BucketAlreadyOwnedByYou", "Your previous request to create the named bucket succeeded and you already own it.", 409);
+        s3Error(
+          reply,
+          "BucketAlreadyOwnedByYou",
+          "Your previous request to create the named bucket succeeded and you already own it.",
+          409,
+        );
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
       }
@@ -468,7 +513,8 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
     if ("partNumber" in query && "uploadId" in query) {
       const ctx = createRequestContext("s3", "UploadPart");
       if (await applyChaos(state, "s3", "UploadPart", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       const partBody = (req.body as Buffer) ?? Buffer.alloc(0);
       const etag = store.storePart(query.uploadId, query.partNumber, partBody);
@@ -480,24 +526,31 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
     const ctx = createRequestContext("s3", "PutObject");
 
     if (await applyChaos(state, "s3", "PutObject", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "s3", "PutObject", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     // Check if this is a copy operation
     const copySource = req.headers["x-amz-copy-source"] as string | undefined;
     if (copySource) {
-      const decoded = decodeURIComponent(copySource.startsWith("/") ? copySource.slice(1) : copySource);
+      const decoded = decodeURIComponent(
+        copySource.startsWith("/") ? copySource.slice(1) : copySource,
+      );
       const slashIdx = decoded.indexOf("/");
       const srcBucket = decoded.slice(0, slashIdx);
       const srcKey = decoded.slice(slashIdx + 1);
       try {
         const obj = store.copyObject(srcBucket, srcKey, bucket, key);
-        reply.status(200).header("Content-Type", "application/xml").send(
-          `<?xml version="1.0"?><CopyObjectResult><ETag>${obj.etag}</ETag><LastModified>${obj.lastModified.toISOString()}</LastModified></CopyObjectResult>`
-        );
+        reply
+          .status(200)
+          .header("Content-Type", "application/xml")
+          .send(
+            `<?xml version="1.0"?><CopyObjectResult><ETag>${obj.etag}</ETag><LastModified>${obj.lastModified.toISOString()}</LastModified></CopyObjectResult>`,
+          );
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         s3Error(reply, "NoSuchKey", msg, 404);
@@ -509,10 +562,7 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
     try {
       const body = (req.body as Buffer) ?? Buffer.alloc(0);
       const obj = store.putObject(bucket, key, body, req.headers as Record<string, string>);
-      reply
-        .status(200)
-        .header("ETag", obj.etag)
-        .send("");
+      reply.status(200).header("ETag", obj.etag).send("");
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       s3Error(reply, "NoSuchBucket", msg, 404);
@@ -539,8 +589,15 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
       if ("tagging" in query) {
         const ctx = createRequestContext("s3", "GetBucketTagging");
         const tags = store.getBucketTags(bucket);
-        const tagsXml = tags.map((t) => `<Tag><Key>${escapeXml(t.Key)}</Key><Value>${escapeXml(t.Value)}</Value></Tag>`).join("");
-        xmlReply(reply, `<Tagging xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><TagSet>${tagsXml}</TagSet></Tagging>`);
+        const tagsXml = tags
+          .map(
+            (t) => `<Tag><Key>${escapeXml(t.Key)}</Key><Value>${escapeXml(t.Value)}</Value></Tag>`,
+          )
+          .join("");
+        xmlReply(
+          reply,
+          `<Tagging xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><TagSet>${tagsXml}</TagSet></Tagging>`,
+        );
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
       }
@@ -557,7 +614,10 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
       }
       if ("notification" in query) {
         const ctx = createRequestContext("s3", "GetBucketNotificationConfiguration");
-        xmlReply(reply, `<NotificationConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"/>`);
+        xmlReply(
+          reply,
+          `<NotificationConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"/>`,
+        );
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
       }
@@ -565,14 +625,35 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         const ctx = createRequestContext("s3", "GetBucketWebsite");
         const website = store.getBucketWebsite(bucket);
         if (!website) {
-          s3Error(reply, "NoSuchWebsiteConfiguration", `The specified bucket does not have a website configuration: ${bucket}`, 404);
+          s3Error(
+            reply,
+            "NoSuchWebsiteConfiguration",
+            `The specified bucket does not have a website configuration: ${bucket}`,
+            404,
+          );
         } else {
-          xmlReply(reply, `<WebsiteConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><IndexDocument><Suffix>${escapeXml(website.indexDocument)}</Suffix></IndexDocument></WebsiteConfiguration>`);
+          xmlReply(
+            reply,
+            `<WebsiteConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><IndexDocument><Suffix>${escapeXml(website.indexDocument)}</Suffix></IndexDocument></WebsiteConfiguration>`,
+          );
         }
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
       }
-      if ("acl" in query || "cors" in query || "versioning" in query || "accelerate" in query || "requestPayment" in query || "logging" in query || "replication" in query || "lifecycle" in query || "encryption" in query || "ownershipControls" in query || "publicAccessBlock" in query || "intelligentTieringConfiguration" in query) {
+      if (
+        "acl" in query ||
+        "cors" in query ||
+        "versioning" in query ||
+        "accelerate" in query ||
+        "requestPayment" in query ||
+        "logging" in query ||
+        "replication" in query ||
+        "lifecycle" in query ||
+        "encryption" in query ||
+        "ownershipControls" in query ||
+        "publicAccessBlock" in query ||
+        "intelligentTieringConfiguration" in query
+      ) {
         // No-op bucket configuration operations - return empty/default response
         xmlReply(reply, `<Empty xmlns="http://s3.amazonaws.com/doc/2006-03-01/"/>`);
         return;
@@ -580,19 +661,31 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
       // Default: ListObjectsV2
       const ctx = createRequestContext("s3", "ListObjectsV2");
       if (await applyChaos(state, "s3", "ListObjectsV2", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       if (await applyFake(state, "s3", "ListObjectsV2", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       try {
         const { objects, prefixes } = store.listObjects(bucket, query.prefix, query.delimiter);
         const maxKeys = parseInt(query["max-keys"] ?? "1000", 10);
         const truncated = objects.length > maxKeys;
         const sliced = objects.slice(0, maxKeys);
-        const objectsXml = sliced.map((o) => `<Contents><Key>${escapeXml(o.key)}</Key><LastModified>${o.lastModified.toISOString()}</LastModified><ETag>${o.etag}</ETag><Size>${o.size}</Size><StorageClass>STANDARD</StorageClass></Contents>`).join("");
-        const prefixesXml = prefixes.map((p) => `<CommonPrefixes><Prefix>${escapeXml(p)}</Prefix></CommonPrefixes>`).join("");
-        xmlReply(reply, `<ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name>${bucket}</Name><Prefix>${escapeXml(query.prefix ?? "")}</Prefix><MaxKeys>${maxKeys}</MaxKeys><IsTruncated>${truncated}</IsTruncated><KeyCount>${sliced.length}</KeyCount>${objectsXml}${prefixesXml}</ListBucketResult>`);
+        const objectsXml = sliced
+          .map(
+            (o) =>
+              `<Contents><Key>${escapeXml(o.key)}</Key><LastModified>${o.lastModified.toISOString()}</LastModified><ETag>${o.etag}</ETag><Size>${o.size}</Size><StorageClass>STANDARD</StorageClass></Contents>`,
+          )
+          .join("");
+        const prefixesXml = prefixes
+          .map((p) => `<CommonPrefixes><Prefix>${escapeXml(p)}</Prefix></CommonPrefixes>`)
+          .join("");
+        xmlReply(
+          reply,
+          `<ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name>${bucket}</Name><Prefix>${escapeXml(query.prefix ?? "")}</Prefix><MaxKeys>${maxKeys}</MaxKeys><IsTruncated>${truncated}</IsTruncated><KeyCount>${sliced.length}</KeyCount>${objectsXml}${prefixesXml}</ListBucketResult>`,
+        );
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         s3Error(reply, "NoSuchBucket", msg, 404);
@@ -605,7 +698,8 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
     if ("uploadId" in query) {
       const ctx = createRequestContext("s3", "ListParts");
       if (await applyChaos(state, "s3", "ListParts", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       xmlReply(
         reply,
@@ -614,7 +708,7 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
   <Key>${escapeXml(key)}</Key>
   <UploadId>${query.uploadId}</UploadId>
   <IsTruncated>false</IsTruncated>
-</ListPartsResult>`
+</ListPartsResult>`,
       );
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
@@ -623,10 +717,12 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
     const ctx = createRequestContext("s3", "GetObject");
 
     if (await applyChaos(state, "s3", "GetObject", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "s3", "GetObject", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     const obj = store.getObject(bucket, key);
@@ -667,7 +763,15 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
       }
-      if ("policy" in query || "cors" in query || "lifecycle" in query || "replication" in query || "encryption" in query || "ownershipControls" in query || "publicAccessBlock" in query) {
+      if (
+        "policy" in query ||
+        "cors" in query ||
+        "lifecycle" in query ||
+        "replication" in query ||
+        "encryption" in query ||
+        "ownershipControls" in query ||
+        "publicAccessBlock" in query
+      ) {
         reply.status(204).send();
         return;
       }
@@ -772,8 +876,13 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         store.deleteObject(bucket, objKey);
         deleted.push(objKey);
       }
-      const deletedXml = deleted.map((k) => `<Deleted><Key>${escapeXml(k)}</Key></Deleted>`).join("");
-      xmlReply(reply, `<DeleteResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${deletedXml}</DeleteResult>`);
+      const deletedXml = deleted
+        .map((k) => `<Deleted><Key>${escapeXml(k)}</Key></Deleted>`)
+        .join("");
+      xmlReply(
+        reply,
+        `<DeleteResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${deletedXml}</DeleteResult>`,
+      );
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
     }
@@ -782,10 +891,12 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
       // CreateMultipartUpload
       const ctx = createRequestContext("s3", "CreateMultipartUpload");
       if (await applyChaos(state, "s3", "CreateMultipartUpload", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       if (await applyFake(state, "s3", "CreateMultipartUpload", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       if (!store.getBucket(bucket)) {
         s3Error(reply, "NoSuchBucket", "The specified bucket does not exist", 404);
@@ -793,7 +904,12 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         return;
       }
       if (store.hasActiveUpload(bucket, key)) {
-        s3Error(reply, "MultipartUploadAlreadyExists", "An active multipart upload already exists for this key", 409);
+        s3Error(
+          reply,
+          "MultipartUploadAlreadyExists",
+          "An active multipart upload already exists for this key",
+          409,
+        );
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
       }
@@ -804,7 +920,7 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
   <Bucket>${bucket}</Bucket>
   <Key>${escapeXml(key)}</Key>
   <UploadId>${uploadId}</UploadId>
-</InitiateMultipartUploadResult>`
+</InitiateMultipartUploadResult>`,
       );
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
@@ -814,10 +930,12 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
       // CompleteMultipartUpload
       const ctx = createRequestContext("s3", "CompleteMultipartUpload");
       if (await applyChaos(state, "s3", "CompleteMultipartUpload", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       if (await applyFake(state, "s3", "CompleteMultipartUpload", req, reply)) {
-        recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
       }
       const upload = store.getUpload(query.uploadId);
       if (!upload || upload.status !== "IN_PROGRESS") {
@@ -844,7 +962,7 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
   <Bucket>${bucket}</Bucket>
   <Key>${escapeXml(key)}</Key>
   <ETag>"${uuidv4().replace(/-/g, "")}"</ETag>
-</CompleteMultipartUploadResult>`
+</CompleteMultipartUploadResult>`,
       );
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
@@ -875,7 +993,7 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         .join("");
       xmlReply(
         reply,
-        `<DeleteResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${deletedXml}</DeleteResult>`
+        `<DeleteResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${deletedXml}</DeleteResult>`,
       );
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
@@ -884,7 +1002,8 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
     reply.status(400).send();
   });
 
-  void ACCOUNT_ID; void REGION;
+  void ACCOUNT_ID;
+  void REGION;
 
   return store;
 }

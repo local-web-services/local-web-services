@@ -52,9 +52,7 @@ export class LogCapture {
   }
 
   forService(service: string): LogEntry[] {
-    return this.entries.filter(
-      (e) => (e.service ?? "").toLowerCase() === service.toLowerCase()
-    );
+    return this.entries.filter((e) => (e.service ?? "").toLowerCase() === service.toLowerCase());
   }
 
   forOperation(operation: string): LogEntry[] {
@@ -63,28 +61,24 @@ export class LogCapture {
 
   assertCalled(service: string, operation: string): void {
     const matching = this.entries.filter(
-      (e) =>
-        (e.service ?? "").toLowerCase() === service.toLowerCase() &&
-        e.operation === operation
+      (e) => (e.service ?? "").toLowerCase() === service.toLowerCase() && e.operation === operation,
     );
     if (matching.length === 0) {
       throw new Error(
         `Expected ${service}.${operation} to have been called, ` +
-          `but no matching log entry was found. Captured: ${JSON.stringify(this.entries)}`
+          `but no matching log entry was found. Captured: ${JSON.stringify(this.entries)}`,
       );
     }
   }
 
   assertNotCalled(service: string, operation: string): void {
     const matching = this.entries.filter(
-      (e) =>
-        (e.service ?? "").toLowerCase() === service.toLowerCase() &&
-        e.operation === operation
+      (e) => (e.service ?? "").toLowerCase() === service.toLowerCase() && e.operation === operation,
     );
     if (matching.length > 0) {
       throw new Error(
         `Expected ${service}.${operation} NOT to have been called, ` +
-          `but found ${matching.length} matching log entry/entries.`
+          `but found ${matching.length} matching log entry/entries.`,
       );
     }
   }
@@ -93,7 +87,7 @@ export class LogCapture {
     const errors = this.entries.filter((e) => e.level === "ERROR");
     if (errors.length > 0) {
       throw new Error(
-        `Expected no ERROR log entries, but found ${errors.length}: ${JSON.stringify(errors)}`
+        `Expected no ERROR log entries, but found ${errors.length}: ${JSON.stringify(errors)}`,
       );
     }
   }

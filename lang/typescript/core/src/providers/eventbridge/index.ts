@@ -98,7 +98,7 @@ export class EventBridgeStore {
     name: string,
     eventPattern?: string,
     scheduleExpression?: string,
-    state: string = "ENABLED"
+    state: string = "ENABLED",
   ): Rule | "bus_not_found" | "rule_exists" {
     const bus = this.getActiveEventBus(busName ?? "default");
     if (!bus) return "bus_not_found";
@@ -123,7 +123,8 @@ export class EventBridgeStore {
    *   "rule_not_found" if the rule does not exist or is DELETED
    */
   putTargets(busName: string, ruleName: string, targets: Target[]): null | "rule_not_found" {
-    const bus = this.getActiveEventBus(busName ?? "default") ?? this.buses.get(busName ?? "default");
+    const bus =
+      this.getActiveEventBus(busName ?? "default") ?? this.buses.get(busName ?? "default");
     const rule = bus?.rules.find((r) => r.name === ruleName && r.state !== "DELETED");
     if (!rule) return "rule_not_found";
     for (const target of targets) {
@@ -145,7 +146,10 @@ export class EventBridgeStore {
    *   "rule_deleted" if the rule is already DELETED
    *   "has_targets" if the rule has active targets
    */
-  deleteRule(busName: string, ruleName: string): null | "rule_not_found" | "rule_deleted" | "has_targets" {
+  deleteRule(
+    busName: string,
+    ruleName: string,
+  ): null | "rule_not_found" | "rule_deleted" | "has_targets" {
     const bus = this._getBusRaw(busName ?? "default");
     const rule = bus?.rules.find((r) => r.name === ruleName);
     if (!rule) return "rule_not_found";
@@ -186,7 +190,11 @@ export class EventBridgeStore {
    *   "rule_not_found" if rule doesn't exist or is DELETED
    *   "already_state" if the rule is already in that state
    */
-  setRuleState(busName: string, ruleName: string, state: string): null | "rule_not_found" | "already_state" {
+  setRuleState(
+    busName: string,
+    ruleName: string,
+    state: string,
+  ): null | "rule_not_found" | "already_state" {
     const bus = this._getBusRaw(busName ?? "default");
     const rule = bus?.rules.find((r) => r.name === ruleName);
     if (!rule || rule.state === "DELETED") return "rule_not_found";
@@ -221,7 +229,10 @@ export class EventBridgeStore {
    *   "no_enabled_rule" if no ENABLED rule is on that bus
    *   "no_target" if no enabled rule has any targets
    */
-  putEvents(busName: string, events: Array<Record<string, unknown>>): null | "bus_not_found" | "no_enabled_rule" | "no_target" {
+  putEvents(
+    busName: string,
+    events: Array<Record<string, unknown>>,
+  ): null | "bus_not_found" | "no_enabled_rule" | "no_target" {
     const bus = this.getActiveEventBus(busName);
     if (!bus) return "bus_not_found";
     const enabledRules = bus.rules.filter((r) => r.state === "ENABLED");
@@ -260,20 +271,24 @@ export function registerEventBridge(app: FastifyInstance, state: ServerState): E
     const ctx = createRequestContext("eventbridge", operation);
 
     if (await applyIamAuth(state, "events", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "events", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "events", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     handleOperation(operation, body, store, state, reply);
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
 
-  void ACCOUNT_ID; void REGION;
+  void ACCOUNT_ID;
+  void REGION;
 
   return store;
 }
@@ -283,14 +298,18 @@ function handleOperation(
   body: Record<string, unknown>,
   store: EventBridgeStore,
   state: ServerState,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): void {
   switch (operation) {
     case "CreateEventBus": {
       const name = body.Name as string;
       const bus = store.createEventBus(name);
       if (bus === null) {
-        jsonReply(reply, { __type: "EventBusAlreadyExists", message: `Event bus ${name} already exists.` }, 400);
+        jsonReply(
+          reply,
+          { __type: "EventBusAlreadyExists", message: `Event bus ${name} already exists.` },
+          400,
+        );
         return;
       }
       jsonReply(reply, { EventBusArn: bus.arn });
@@ -301,15 +320,30 @@ function handleOperation(
       const deleteName = body.Name as string;
       const deleteError = store.deleteEventBus(deleteName);
       if (deleteError === "default") {
-        jsonReply(reply, { __type: "OperationDisabledException", message: "Operation not permitted on default event bus." }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "OperationDisabledException",
+            message: "Operation not permitted on default event bus.",
+          },
+          400,
+        );
         return;
       }
       if (deleteError === "not_found") {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: "Event bus not found." }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceNotFoundException", message: "Event bus not found." },
+          400,
+        );
         return;
       }
       if (deleteError === "has_rules") {
-        jsonReply(reply, { __type: "IllegalStatusException", message: "Event bus has active rules." }, 400);
+        jsonReply(
+          reply,
+          { __type: "IllegalStatusException", message: "Event bus has active rules." },
+          400,
+        );
         return;
       }
       jsonReply(reply, {});
@@ -331,14 +365,22 @@ function handleOperation(
         body.Name as string,
         body.EventPattern as string | undefined,
         body.ScheduleExpression as string | undefined,
-        (body.State as string) ?? "ENABLED"
+        (body.State as string) ?? "ENABLED",
       );
       if (result === "bus_not_found") {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: "Event bus not found." }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceNotFoundException", message: "Event bus not found." },
+          400,
+        );
         return;
       }
       if (result === "rule_exists") {
-        jsonReply(reply, { __type: "ResourceAlreadyExistsException", message: "Rule already exists." }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceAlreadyExistsException", message: "Rule already exists." },
+          400,
+        );
         return;
       }
       const rule = result;
@@ -359,7 +401,14 @@ function handleOperation(
           const service = arnParts[2] ?? "";
           const checker = state.arnExistsCheckers.get(service);
           if (checker && !checker(t.Arn)) {
-            jsonReply(reply, { __type: "ResourceNotFoundException", message: `Target resource not found: ${t.Arn}` }, 400);
+            jsonReply(
+              reply,
+              {
+                __type: "ResourceNotFoundException",
+                message: `Target resource not found: ${t.Arn}`,
+              },
+              400,
+            );
             return;
           }
         }
@@ -379,15 +428,33 @@ function handleOperation(
       const eventBusName = (entries[0]?.EventBusName as string) ?? "default";
       const putEventsError = store.putEvents(eventBusName, entries);
       if (putEventsError === "bus_not_found") {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: "Event bus not found." }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceNotFoundException", message: "Event bus not found." },
+          400,
+        );
         return;
       }
       if (putEventsError === "no_enabled_rule") {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: "No rule is associated with the event bus." }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "ResourceNotFoundException",
+            message: "No rule is associated with the event bus.",
+          },
+          400,
+        );
         return;
       }
       if (putEventsError === "no_target") {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: "No target is associated with the rule." }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "ResourceNotFoundException",
+            message: "No target is associated with the rule.",
+          },
+          400,
+        );
         return;
       }
       jsonReply(reply, {
@@ -403,7 +470,11 @@ function handleOperation(
       const busName = (body.EventBusName as string) ?? "default";
       const bus = store.getEventBus(busName);
       if (!bus) {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: "Event bus not found." }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceNotFoundException", message: "Event bus not found." },
+          400,
+        );
         return;
       }
       const activeRules = bus.rules.filter((r) => r.state !== "DELETED");
@@ -428,7 +499,11 @@ function handleOperation(
       const busName = (body.Name as string) ?? "default";
       const bus = store.getEventBus(busName);
       if (!bus) {
-        jsonReply(reply, { __type: "ResourceNotFoundException", message: `Event bus ${busName} not found` }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceNotFoundException", message: `Event bus ${busName} not found` },
+          400,
+        );
         return;
       }
       jsonReply(reply, { Name: bus.name, Arn: bus.arn });
@@ -447,7 +522,11 @@ function handleOperation(
         return;
       }
       if (drError === "has_targets") {
-        jsonReply(reply, { __type: "ManagedRuleException", message: "Rule has active targets." }, 400);
+        jsonReply(
+          reply,
+          { __type: "ManagedRuleException", message: "Rule has active targets." },
+          400,
+        );
         return;
       }
       jsonReply(reply, {});
@@ -467,7 +546,11 @@ function handleOperation(
 
     case "RemoveTargets": {
       const rtBusName = (body.EventBusName as string) ?? "default";
-      const rtError = store.removeTargets(rtBusName, body.Rule as string, (body.Ids as string[]) ?? []);
+      const rtError = store.removeTargets(
+        rtBusName,
+        body.Rule as string,
+        (body.Ids as string[]) ?? [],
+      );
       if (rtError === "rule_not_found") {
         jsonReply(reply, { __type: "ResourceNotFoundException", message: "Rule not found." }, 400);
         return;
@@ -477,13 +560,21 @@ function handleOperation(
     }
 
     case "EnableRule": {
-      const enError = store.setRuleState((body.EventBusName as string) ?? "default", body.Name as string, "ENABLED");
+      const enError = store.setRuleState(
+        (body.EventBusName as string) ?? "default",
+        body.Name as string,
+        "ENABLED",
+      );
       if (enError === "rule_not_found") {
         jsonReply(reply, { __type: "ResourceNotFoundException", message: "Rule not found." }, 400);
         return;
       }
       if (enError === "already_state") {
-        jsonReply(reply, { __type: "InvalidParameterException", message: "Rule is already enabled." }, 400);
+        jsonReply(
+          reply,
+          { __type: "InvalidParameterException", message: "Rule is already enabled." },
+          400,
+        );
         return;
       }
       jsonReply(reply, {});
@@ -491,13 +582,21 @@ function handleOperation(
     }
 
     case "DisableRule": {
-      const disError = store.setRuleState((body.EventBusName as string) ?? "default", body.Name as string, "DISABLED");
+      const disError = store.setRuleState(
+        (body.EventBusName as string) ?? "default",
+        body.Name as string,
+        "DISABLED",
+      );
       if (disError === "rule_not_found") {
         jsonReply(reply, { __type: "ResourceNotFoundException", message: "Rule not found." }, 400);
         return;
       }
       if (disError === "already_state") {
-        jsonReply(reply, { __type: "InvalidParameterException", message: "Rule is already disabled." }, 400);
+        jsonReply(
+          reply,
+          { __type: "InvalidParameterException", message: "Rule is already disabled." },
+          400,
+        );
         return;
       }
       jsonReply(reply, {});
@@ -507,7 +606,7 @@ function handleOperation(
     case "TagResource": {
       store.tagResource(
         body.ResourceARN as string,
-        (body.Tags as Array<{ Key: string; Value: string }>) ?? []
+        (body.Tags as Array<{ Key: string; Value: string }>) ?? [],
       );
       jsonReply(reply, {});
       break;
@@ -526,10 +625,14 @@ function handleOperation(
     }
 
     default: {
-      jsonReply(reply, {
-        __type: "UnknownOperationException",
-        message: `lws: EventBridge operation '${operation}' not implemented`,
-      }, 400);
+      jsonReply(
+        reply,
+        {
+          __type: "UnknownOperationException",
+          message: `lws: EventBridge operation '${operation}' not implemented`,
+        },
+        400,
+      );
     }
   }
 }

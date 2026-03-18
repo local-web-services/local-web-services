@@ -51,7 +51,7 @@ export class StepFunctionsStore {
     name: string,
     definition: string | StateMachineDefinition,
     roleArn: string,
-    type: string = "STANDARD"
+    type: string = "STANDARD",
   ): StateMachine {
     const arn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${name}`;
     if (this.stateMachines.has(arn)) {
@@ -84,11 +84,7 @@ export class StepFunctionsStore {
     return Array.from(this.stateMachines.values());
   }
 
-  async startExecution(
-    stateMachineArn: string,
-    input: string,
-    name?: string
-  ): Promise<Execution> {
+  async startExecution(stateMachineArn: string, input: string, name?: string): Promise<Execution> {
     const sm = this.stateMachines.get(stateMachineArn);
     if (!sm) throw new Error(`StateMachineDoesNotExist: ${stateMachineArn}`);
 
@@ -140,7 +136,7 @@ export class StepFunctionsStore {
 
   listExecutions(stateMachineArn: string): Execution[] {
     return Array.from(this.executions.values()).filter(
-      (e) => e.stateMachineArn === stateMachineArn
+      (e) => e.stateMachineArn === stateMachineArn,
     );
   }
 
@@ -175,26 +171,37 @@ function jsonReply(reply: FastifyReply, data: unknown, status = 200): void {
 
 const TARGET_PREFIX = "AWSStepFunctions.";
 
-export function registerStepFunctions(app: FastifyInstance, state: ServerState): StepFunctionsStore {
+export function registerStepFunctions(
+  app: FastifyInstance,
+  state: ServerState,
+): StepFunctionsStore {
   const store = new StepFunctionsStore();
   state.resetCallbacks.push(() => store.reset());
   // Register ARN existence checker for state machines
-  state.arnExistsCheckers.set("states", (arn: string) => store.describeStateMachine(arn) !== undefined);
+  state.arnExistsCheckers.set(
+    "states",
+    (arn: string) => store.describeStateMachine(arn) !== undefined,
+  );
 
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
     const target = (req.headers["x-amz-target"] as string) ?? "";
-    const operation = target.startsWith(TARGET_PREFIX) ? target.slice(TARGET_PREFIX.length) : target;
+    const operation = target.startsWith(TARGET_PREFIX)
+      ? target.slice(TARGET_PREFIX.length)
+      : target;
     const body = req.body as Record<string, unknown>;
     const ctx = createRequestContext("stepfunctions", operation);
 
-    if (await applyIamAuth(state, "stepfunctions", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+    if (await applyIamAuth(state, "states", operation, req, reply)) {
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "stepfunctions", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "stepfunctions", operation, req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
 
     try {
@@ -203,7 +210,14 @@ export function registerStepFunctions(app: FastifyInstance, state: ServerState):
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes("StateMachineAlreadyExists")) {
         const name = msg.replace(/^StateMachineAlreadyExists:\s*/, "");
-        jsonReply(reply, { __type: "StateMachineAlreadyExists", message: `State Machine Already Exists: '${name}'` }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "StateMachineAlreadyExists",
+            message: `State Machine Already Exists: '${name}'`,
+          },
+          400,
+        );
       } else if (msg.includes("StateMachineDoesNotExist")) {
         jsonReply(reply, { __type: "StateMachineDoesNotExist", message: msg }, 400);
       } else {
@@ -221,7 +235,7 @@ async function handleOperation(
   operation: string,
   body: Record<string, unknown>,
   store: StepFunctionsStore,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<void> {
   switch (operation) {
     case "CreateStateMachine": {
@@ -229,7 +243,7 @@ async function handleOperation(
         body.name as string,
         body.definition as string,
         (body.roleArn as string) ?? "",
-        (body.type as string) ?? "STANDARD"
+        (body.type as string) ?? "STANDARD",
       );
       jsonReply(reply, {
         stateMachineArn: sm.arn,
@@ -241,7 +255,11 @@ async function handleOperation(
     case "DeleteStateMachine": {
       const sm = store.describeStateMachine(body.stateMachineArn as string);
       if (!sm) {
-        jsonReply(reply, { __type: "StateMachineDoesNotExist", message: "State machine not found" }, 400);
+        jsonReply(
+          reply,
+          { __type: "StateMachineDoesNotExist", message: "State machine not found" },
+          400,
+        );
         return;
       }
       store.deleteStateMachine(body.stateMachineArn as string);
@@ -252,7 +270,11 @@ async function handleOperation(
     case "DescribeStateMachine": {
       const sm = store.describeStateMachine(body.stateMachineArn as string);
       if (!sm) {
-        jsonReply(reply, { __type: "StateMachineDoesNotExist", message: "State machine not found" }, 400);
+        jsonReply(
+          reply,
+          { __type: "StateMachineDoesNotExist", message: "State machine not found" },
+          400,
+        );
         return;
       }
       jsonReply(reply, {
@@ -284,7 +306,7 @@ async function handleOperation(
       const execution = await store.startExecution(
         body.stateMachineArn as string,
         (body.input as string) ?? "{}",
-        body.name as string | undefined
+        body.name as string | undefined,
       );
       jsonReply(reply, {
         executionArn: execution.executionArn,
@@ -317,7 +339,11 @@ async function handleOperation(
     case "ListExecutions": {
       const smForList = store.describeStateMachine(body.stateMachineArn as string);
       if (!smForList) {
-        jsonReply(reply, { __type: "StateMachineDoesNotExist", message: "State machine not found" }, 400);
+        jsonReply(
+          reply,
+          { __type: "StateMachineDoesNotExist", message: "State machine not found" },
+          400,
+        );
         return;
       }
       const executions = store.listExecutions(body.stateMachineArn as string);
@@ -348,11 +374,18 @@ async function handleOperation(
     case "UpdateStateMachine": {
       const sm = store.describeStateMachine(body.stateMachineArn as string);
       if (!sm) {
-        jsonReply(reply, { __type: "StateMachineDoesNotExist", message: "State machine not found" }, 400);
+        jsonReply(
+          reply,
+          { __type: "StateMachineDoesNotExist", message: "State machine not found" },
+          400,
+        );
         return;
       }
       if (body.definition) {
-        sm.definition = typeof body.definition === "string" ? JSON.parse(body.definition as string) : body.definition as StateMachineDefinition;
+        sm.definition =
+          typeof body.definition === "string"
+            ? JSON.parse(body.definition as string)
+            : (body.definition as StateMachineDefinition);
       }
       jsonReply(reply, { updateDate: Date.now() / 1000 });
       break;
@@ -371,7 +404,11 @@ async function handleOperation(
     case "ListStateMachineVersions": {
       const smForVersions = store.describeStateMachine(body.stateMachineArn as string);
       if (!smForVersions) {
-        jsonReply(reply, { __type: "StateMachineDoesNotExist", message: "State machine not found" }, 400);
+        jsonReply(
+          reply,
+          { __type: "StateMachineDoesNotExist", message: "State machine not found" },
+          400,
+        );
         return;
       }
       // Return empty list - lws does not version state machines
@@ -410,7 +447,11 @@ async function handleOperation(
       const currentTags = store.listTagsForResource(arn);
       const missingKeys = tagKeys.filter((k) => !(k in currentTags));
       if (missingKeys.length > 0) {
-        jsonReply(reply, { __type: "ResourceNotFound", message: `Tag not associated: ${missingKeys[0]}` }, 400);
+        jsonReply(
+          reply,
+          { __type: "ResourceNotFound", message: `Tag not associated: ${missingKeys[0]}` },
+          400,
+        );
         return;
       }
       store.untagResource(arn, tagKeys);
@@ -436,7 +477,14 @@ async function handleOperation(
       // Run synchronously and return result
       const sm = store.describeStateMachine(body.stateMachineArn as string);
       if (!sm) {
-        jsonReply(reply, { __type: "StateMachineDoesNotExist", message: `State machine not found: ${body.stateMachineArn}` }, 400);
+        jsonReply(
+          reply,
+          {
+            __type: "StateMachineDoesNotExist",
+            message: `State machine not found: ${body.stateMachineArn}`,
+          },
+          400,
+        );
         return;
       }
       const inputStr = (body.input as string) ?? "{}";
@@ -487,12 +535,17 @@ async function handleOperation(
     }
 
     default: {
-      jsonReply(reply, {
-        __type: "UnknownOperationException",
-        message: `lws: StepFunctions operation '${operation}' not implemented`,
-      }, 400);
+      jsonReply(
+        reply,
+        {
+          __type: "UnknownOperationException",
+          message: `lws: StepFunctions operation '${operation}' not implemented`,
+        },
+        400,
+      );
     }
   }
 }
 
-void REGION; void ACCOUNT_ID;
+void REGION;
+void ACCOUNT_ID;

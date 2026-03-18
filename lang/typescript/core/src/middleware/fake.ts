@@ -7,10 +7,7 @@ function normalizeOp(op: string): string {
   return op.replace(/[-_]/g, "").toLowerCase();
 }
 
-function findRule(
-  serviceRules: Map<string, FakeRule>,
-  operation: string
-): FakeRule | undefined {
+function findRule(serviceRules: Map<string, FakeRule>, operation: string): FakeRule | undefined {
   // Exact match first
   const exact = serviceRules.get(operation);
   if (exact) return exact;
@@ -35,7 +32,7 @@ export async function applyFake(
   service: string,
   operation: string,
   req: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<boolean> {
   const serviceRules = state.fakeRules.get(service);
   if (!serviceRules) return false;
@@ -82,7 +79,8 @@ export async function applyFake(
   if (rule.body !== undefined) {
     if (typeof rule.body === "string") {
       // If the content type is XML or the body looks like XML, send as raw string
-      const isXml = contentType?.includes("xml") || (rule.body as string).trimStart().startsWith("<");
+      const isXml =
+        contentType?.includes("xml") || (rule.body as string).trimStart().startsWith("<");
       if (isXml) {
         reply.status(status).send(rule.body);
       } else {

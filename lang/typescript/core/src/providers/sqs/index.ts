@@ -24,7 +24,7 @@ function sendMessageResponse(msg: { MessageId: string; MD5OfMessageBody: string 
     <MD5OfMessageBody>${msg.MD5OfMessageBody}</MD5OfMessageBody>
   </SendMessageResult>
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</SendMessageResponse>`
+</SendMessageResponse>`,
   );
 }
 
@@ -37,11 +37,9 @@ function receiveMessageResponse(messages: SqsMessage[], queueUrl: string): strin
       <MD5OfBody>${md5(m.body)}</MD5OfBody>
       <Body>${escapeXml(m.body)}</Body>
       ${Object.entries(m.attributes)
-        .map(
-          ([k, v]) => `<Attribute><Name>${k}</Name><Value>${v}</Value></Attribute>`
-        )
+        .map(([k, v]) => `<Attribute><Name>${k}</Name><Value>${v}</Value></Attribute>`)
         .join("\n      ")}
-    </Message>`
+    </Message>`,
     )
     .join("\n");
 
@@ -52,7 +50,7 @@ function receiveMessageResponse(messages: SqsMessage[], queueUrl: string): strin
 ${msgsXml}
   </ReceiveMessageResult>
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</ReceiveMessageResponse>`
+</ReceiveMessageResponse>`,
   );
 }
 
@@ -60,7 +58,7 @@ function simpleResponse(action: string): string {
   return xmlResponse(
     `${action}Response xmlns="http://queue.amazonaws.com/doc/2012-11-05/">
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</${action}Response>`
+</${action}Response>`,
   );
 }
 
@@ -71,7 +69,7 @@ function createQueueResponse(url: string): string {
     <QueueUrl>${url}</QueueUrl>
   </CreateQueueResult>
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</CreateQueueResponse>`
+</CreateQueueResponse>`,
   );
 }
 
@@ -82,7 +80,7 @@ function getQueueUrlResponse(url: string): string {
     <QueueUrl>${url}</QueueUrl>
   </GetQueueUrlResult>
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</GetQueueUrlResponse>`
+</GetQueueUrlResponse>`,
   );
 }
 
@@ -94,7 +92,7 @@ function listQueuesResponse(urls: string[]): string {
 ${urlsXml}
   </ListQueuesResult>
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</ListQueuesResponse>`
+</ListQueuesResponse>`,
   );
 }
 
@@ -108,7 +106,7 @@ function getQueueAttributesResponse(attrs: Record<string, string>): string {
 ${attrsXml}
   </GetQueueAttributesResult>
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</GetQueueAttributesResponse>`
+</GetQueueAttributesResponse>`,
   );
 }
 
@@ -120,7 +118,7 @@ function errorXmlResponse(code: string, message: string): string {
     <Message>${escapeXml(message)}</Message>
   </Error>
   <RequestId>00000000-0000-0000-0000-000000000000</RequestId>
-</ErrorResponse>`
+</ErrorResponse>`,
   );
 }
 
@@ -179,10 +177,7 @@ export class SqsStore {
     return `http://127.0.0.1:${this.port}/${ACCOUNT_ID}/${name}`;
   }
 
-  createQueue(
-    name: string,
-    attributes: Record<string, string> = {}
-  ): LocalQueue {
+  createQueue(name: string, attributes: Record<string, string> = {}): LocalQueue {
     const isFifo = attributes["FifoQueue"] === "true" || name.endsWith(".fifo");
     const visTimeout = parseInt(attributes["VisibilityTimeout"] ?? "30", 10);
     const contentBasedDedup = attributes["ContentBasedDeduplication"] === "true";
@@ -238,7 +233,7 @@ export function registerSqs(app: FastifyInstance, state: ServerState, port: numb
     { parseAs: "string" },
     (_req, body, done) => {
       done(null, qs.parse(body as string));
-    }
+    },
   );
 
   // Handle path-based routing: POST /{AccountId}/{QueueName}
@@ -249,7 +244,8 @@ export function registerSqs(app: FastifyInstance, state: ServerState, port: numb
 
     // Detect whether the SDK is using JSON protocol (new SDK v3) or form-encoded (legacy)
     const contentType = req.headers["content-type"] ?? "";
-    const isJsonProtocol = contentType.includes("application/x-amz-json-1.0") || !!req.headers["x-amz-target"];
+    const isJsonProtocol =
+      contentType.includes("application/x-amz-json-1.0") || !!req.headers["x-amz-target"];
 
     // Determine action
     let action = (body.Action as string) ?? "";
@@ -264,7 +260,7 @@ export function registerSqs(app: FastifyInstance, state: ServerState, port: numb
     const queueUrlMatch = /^\/\d+\/(.+)$/.exec(path);
     if (queueUrlMatch && !action) {
       // Legacy path-based requests
-      action = body.Action as string ?? "SendMessage";
+      action = (body.Action as string) ?? "SendMessage";
     }
 
     const ctx = createRequestContext("sqs", action);
@@ -290,7 +286,9 @@ export function registerSqs(app: FastifyInstance, state: ServerState, port: numb
         reply
           .status(400)
           .header("Content-Type", "application/x-amz-json-1.0")
-          .send(JSON.stringify({ __type: "AWS.SimpleQueueService.NonExistentQueue", message: msg }));
+          .send(
+            JSON.stringify({ __type: "AWS.SimpleQueueService.NonExistentQueue", message: msg }),
+          );
       } else {
         reply
           .status(400)
@@ -311,7 +309,7 @@ async function handleSqsAction(
   path: string,
   store: SqsStore,
   reply: FastifyReply,
-  isJsonProtocol = false
+  isJsonProtocol = false,
 ): Promise<void> {
   const xmlReply = (content: string, status = 200) => {
     reply.status(status).header("Content-Type", "text/xml").send(content);
@@ -334,7 +332,10 @@ async function handleSqsAction(
     case "CreateQueue": {
       const name = body.QueueName as string;
       if (store.getQueue(name)) {
-        errorReply("QueueAlreadyExists", "A queue already exists with the same name and a different value for attribute MessageRetentionPeriod");
+        errorReply(
+          "QueueAlreadyExists",
+          "A queue already exists with the same name and a different value for attribute MessageRetentionPeriod",
+        );
         return;
       }
       const attrs = extractAttributes(body);
@@ -418,31 +419,33 @@ async function handleSqsAction(
       const successXml: string[] = [];
 
       for (const entry of entries) {
-        const messageId = queue.sendMessage(entry.MessageBody as string ?? "", {
+        const messageId = queue.sendMessage((entry.MessageBody as string) ?? "", {
           delaySeconds: parseInt(String(entry.DelaySeconds ?? "0"), 10),
         });
-        const md5Val = md5(entry.MessageBody as string ?? "");
+        const md5Val = md5((entry.MessageBody as string) ?? "");
         successEntries.push({ Id: entry.Id, MessageId: messageId, MD5OfMessageBody: md5Val });
         successXml.push(
           `<SendMessageBatchResultEntry>
             <Id>${entry.Id}</Id>
             <MessageId>${messageId}</MessageId>
             <MD5OfMessageBody>${md5Val}</MD5OfMessageBody>
-          </SendMessageBatchResultEntry>`
+          </SendMessageBatchResultEntry>`,
         );
       }
 
       if (isJsonProtocol) {
         jsonReply({ Successful: successEntries, Failed: [] });
       } else {
-        xmlReply(xmlResponse(
-          `SendMessageBatchResponse xmlns="http://queue.amazonaws.com/doc/2012-11-05/">
+        xmlReply(
+          xmlResponse(
+            `SendMessageBatchResponse xmlns="http://queue.amazonaws.com/doc/2012-11-05/">
   <SendMessageBatchResult>
     ${successXml.join("\n    ")}
   </SendMessageBatchResult>
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</SendMessageBatchResponse>`
-        ));
+</SendMessageBatchResponse>`,
+          ),
+        );
       }
       break;
     }
@@ -508,20 +511,24 @@ async function handleSqsAction(
       for (const entry of entries) {
         if (queue) queue.deleteMessage(entry.ReceiptHandle as string);
         successItems.push({ Id: entry.Id });
-        successXml.push(`<DeleteMessageBatchResultEntry><Id>${entry.Id}</Id></DeleteMessageBatchResultEntry>`);
+        successXml.push(
+          `<DeleteMessageBatchResultEntry><Id>${entry.Id}</Id></DeleteMessageBatchResultEntry>`,
+        );
       }
 
       if (isJsonProtocol) {
         jsonReply({ Successful: successItems, Failed: [] });
       } else {
-        xmlReply(xmlResponse(
-          `DeleteMessageBatchResponse xmlns="http://queue.amazonaws.com/doc/2012-11-05/">
+        xmlReply(
+          xmlResponse(
+            `DeleteMessageBatchResponse xmlns="http://queue.amazonaws.com/doc/2012-11-05/">
   <DeleteMessageBatchResult>
     ${successXml.join("\n    ")}
   </DeleteMessageBatchResult>
   <ResponseMetadata><RequestId>00000000-0000-0000-0000-000000000000</RequestId></ResponseMetadata>
-</DeleteMessageBatchResponse>`
-        ));
+</DeleteMessageBatchResponse>`,
+          ),
+        );
       }
       break;
     }
@@ -589,7 +596,7 @@ async function handleSqsAction(
       }
       queue.changeMessageVisibility(
         receiptHandle,
-        parseInt(String(body.VisibilityTimeout ?? "0"), 10)
+        parseInt(String(body.VisibilityTimeout ?? "0"), 10),
       );
       if (isJsonProtocol) {
         jsonReply({});
@@ -608,7 +615,7 @@ async function handleSqsAction(
         if (queue) {
           queue.changeMessageVisibility(
             entry.ReceiptHandle as string,
-            parseInt(String(entry.VisibilityTimeout ?? "0"), 10)
+            parseInt(String(entry.VisibilityTimeout ?? "0"), 10),
           );
         }
         successItems.push({ Id: entry.Id });
@@ -709,7 +716,7 @@ function extractAttributes(body: Record<string, unknown>): Record<string, string
 
 function extractBatchEntries(
   body: Record<string, unknown>,
-  prefix: string
+  prefix: string,
 ): Array<Record<string, unknown>> {
   const entries: Array<Record<string, unknown>> = [];
   // Form-encoded: SendMessageBatchRequestEntry.1.Id=...

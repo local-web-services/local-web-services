@@ -64,7 +64,7 @@ export class LambdaStore {
     memorySize: number,
     environment: Record<string, string>,
     tags: Record<string, string>,
-    packageType: string
+    packageType: string,
   ): LambdaFunction {
     const fn: LambdaFunction = {
       name,
@@ -122,7 +122,7 @@ export class LambdaStore {
       runtime?: string;
       handler?: string;
       role?: string;
-    }
+    },
   ): LambdaFunction {
     const fn = this.functions.get(name);
     if (!fn) throw new Error(`ResourceNotFoundException: Function ${name} not found`);
@@ -142,7 +142,7 @@ export class LambdaStore {
     eventSourceArn: string,
     functionArn: string,
     batchSize: number,
-    startingPosition: string
+    startingPosition: string,
   ): EventSourceMapping {
     const mapping: EventSourceMapping = {
       uuid: uuidv4(),
@@ -163,7 +163,8 @@ export class LambdaStore {
 
   deleteEventSourceMapping(uuid: string): EventSourceMapping {
     const mapping = this.eventSourceMappings.get(uuid);
-    if (!mapping) throw new Error(`ResourceNotFoundException: Event source mapping ${uuid} not found`);
+    if (!mapping)
+      throw new Error(`ResourceNotFoundException: Event source mapping ${uuid} not found`);
     this.eventSourceMappings.delete(uuid);
     return mapping;
   }
@@ -173,8 +174,7 @@ export class LambdaStore {
     if (!functionName) return all;
     return all.filter(
       (m) =>
-        m.functionArn.includes(functionName) ||
-        m.functionArn.endsWith(`:function:${functionName}`)
+        m.functionArn.includes(functionName) || m.functionArn.endsWith(`:function:${functionName}`),
     );
   }
 
@@ -249,7 +249,7 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
   app.addContentTypeParser(
     ["application/octet-stream"],
     { parseAs: "buffer" },
-    (_req, body, done) => done(null, body)
+    (_req, body, done) => done(null, body),
   );
 
   // ── Functions ──────────────────────────────────────────────────────────────
@@ -257,13 +257,16 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
   app.post("/2015-03-31/functions", async (req: FastifyRequest, reply: FastifyReply) => {
     const ctx = createRequestContext("lambda", "CreateFunction");
     if (await applyIamAuth(state, "lambda", "CreateFunction", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyChaos(state, "lambda", "CreateFunction", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     if (await applyFake(state, "lambda", "CreateFunction", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     const body = (req.body as Record<string, unknown>) ?? {};
     const env = (body.Environment as Record<string, unknown>) ?? {};
@@ -279,12 +282,15 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
         (body.MemorySize as number) ?? 128,
         envVars,
         (body.Tags as Record<string, string>) ?? {},
-        (body.PackageType as string) ?? "Zip"
+        (body.PackageType as string) ?? "Zip",
       );
       reply.status(201).header("Content-Type", "application/json").send(functionToConfig(fn));
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      reply.status(400).header("Content-Type", "application/json").send({ __type: "InvalidParameterValueException", message: msg });
+      reply
+        .status(400)
+        .header("Content-Type", "application/json")
+        .send({ __type: "InvalidParameterValueException", message: msg });
     }
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
@@ -292,9 +298,12 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
   app.get("/2015-03-31/functions", async (req: FastifyRequest, reply: FastifyReply) => {
     const ctx = createRequestContext("lambda", "ListFunctions");
     if (await applyIamAuth(state, "lambda", "ListFunctions", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
-    reply.header("Content-Type", "application/json").send({ Functions: store.listFunctions().map(functionToConfig) });
+    reply
+      .header("Content-Type", "application/json")
+      .send({ Functions: store.listFunctions().map(functionToConfig) });
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
 
@@ -302,11 +311,15 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
     const { name } = req.params as { name: string };
     const ctx = createRequestContext("lambda", "GetFunction");
     if (await applyIamAuth(state, "lambda", "GetFunction", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     const fn = store.getFunction(name);
     if (!fn) {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+      reply
+        .status(404)
+        .header("Content-Type", "application/json")
+        .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
     } else {
       reply.header("Content-Type", "application/json").send({
         Configuration: functionToConfig(fn),
@@ -321,13 +334,17 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
     const { name } = req.params as { name: string };
     const ctx = createRequestContext("lambda", "DeleteFunction");
     if (await applyIamAuth(state, "lambda", "DeleteFunction", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
     }
     try {
       store.deleteFunction(name);
       reply.status(204).send();
     } catch {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+      reply
+        .status(404)
+        .header("Content-Type", "application/json")
+        .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
     }
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
@@ -339,85 +356,115 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
       const fn = store.updateFunctionCode(name);
       reply.header("Content-Type", "application/json").send(functionToConfig(fn));
     } catch {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+      reply
+        .status(404)
+        .header("Content-Type", "application/json")
+        .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
     }
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
 
-  app.put("/2015-03-31/functions/:name/configuration", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { name } = req.params as { name: string };
-    const ctx = createRequestContext("lambda", "UpdateFunctionConfiguration");
-    const body = (req.body as Record<string, unknown>) ?? {};
-    try {
-      const fn = store.updateFunctionConfiguration(name, {
-        timeout: body.Timeout as number | undefined,
-        memorySize: body.MemorySize as number | undefined,
-        description: body.Description as string | undefined,
-        runtime: body.Runtime as string | undefined,
-        handler: body.Handler as string | undefined,
-        role: body.Role as string | undefined,
-      });
-      reply.header("Content-Type", "application/json").send(functionToConfig(fn));
-    } catch {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+  app.put(
+    "/2015-03-31/functions/:name/configuration",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { name } = req.params as { name: string };
+      const ctx = createRequestContext("lambda", "UpdateFunctionConfiguration");
+      const body = (req.body as Record<string, unknown>) ?? {};
+      try {
+        const fn = store.updateFunctionConfiguration(name, {
+          timeout: body.Timeout as number | undefined,
+          memorySize: body.MemorySize as number | undefined,
+          description: body.Description as string | undefined,
+          runtime: body.Runtime as string | undefined,
+          handler: body.Handler as string | undefined,
+          role: body.Role as string | undefined,
+        });
+        reply.header("Content-Type", "application/json").send(functionToConfig(fn));
+      } catch {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
-  app.get("/2015-03-31/functions/:name/configuration", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { name } = req.params as { name: string };
-    const ctx = createRequestContext("lambda", "GetFunctionConfiguration");
-    const fn = store.getFunction(name);
-    if (!fn) {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
-    } else {
-      reply.header("Content-Type", "application/json").send(functionToConfig(fn));
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+  app.get(
+    "/2015-03-31/functions/:name/configuration",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { name } = req.params as { name: string };
+      const ctx = createRequestContext("lambda", "GetFunctionConfiguration");
+      const fn = store.getFunction(name);
+      if (!fn) {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+      } else {
+        reply.header("Content-Type", "application/json").send(functionToConfig(fn));
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // ── Invocations ────────────────────────────────────────────────────────────
 
-  app.post("/2015-03-31/functions/:name/invocations", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { name } = req.params as { name: string };
-    const ctx = createRequestContext("lambda", "Invoke");
-    if (await applyIamAuth(state, "lambda", "Invoke", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
-    if (await applyChaos(state, "lambda", "Invoke", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
-    if (await applyFake(state, "lambda", "Invoke", req, reply)) {
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
-    if (!store.getFunction(name)) {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
-    const invType = (req.headers["x-amz-invocation-type"] as string) ?? "RequestResponse";
-    if (invType === "Event") {
-      reply.status(202).send();
-    } else {
-      const payload = Buffer.from(JSON.stringify({ statusCode: 200, body: "lws-mock-response" })).toString("base64");
-      reply.status(200).header("Content-Type", "application/json").send(payload);
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+  app.post(
+    "/2015-03-31/functions/:name/invocations",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { name } = req.params as { name: string };
+      const ctx = createRequestContext("lambda", "Invoke");
+      if (await applyIamAuth(state, "lambda", "Invoke", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      if (await applyChaos(state, "lambda", "Invoke", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      if (await applyFake(state, "lambda", "Invoke", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      if (!store.getFunction(name)) {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({ __type: "ResourceNotFoundException", message: `Function ${name} not found` });
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      const invType = (req.headers["x-amz-invocation-type"] as string) ?? "RequestResponse";
+      if (invType === "Event") {
+        reply.status(202).send();
+      } else {
+        const payload = Buffer.from(
+          JSON.stringify({ statusCode: 200, body: "lws-mock-response" }),
+        ).toString("base64");
+        reply.status(200).header("Content-Type", "application/json").send(payload);
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // ── Event source mappings ──────────────────────────────────────────────────
 
-  app.post("/2015-03-31/event-source-mappings", async (req: FastifyRequest, reply: FastifyReply) => {
-    const ctx = createRequestContext("lambda", "CreateEventSourceMapping");
-    const body = (req.body as Record<string, unknown>) ?? {};
-    const mapping = store.createEventSourceMapping(
-      body.EventSourceArn as string,
-      body.FunctionArn as string,
-      body.BatchSize as number,
-      body.StartingPosition as string
-    );
-    reply.status(202).header("Content-Type", "application/json").send(mappingToResponse(mapping));
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+  app.post(
+    "/2015-03-31/event-source-mappings",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const ctx = createRequestContext("lambda", "CreateEventSourceMapping");
+      const body = (req.body as Record<string, unknown>) ?? {};
+      const mapping = store.createEventSourceMapping(
+        body.EventSourceArn as string,
+        body.FunctionArn as string,
+        body.BatchSize as number,
+        body.StartingPosition as string,
+      );
+      reply.status(202).header("Content-Type", "application/json").send(mappingToResponse(mapping));
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   app.get("/2015-03-31/event-source-mappings", async (req: FastifyRequest, reply: FastifyReply) => {
     const ctx = createRequestContext("lambda", "ListEventSourceMappings");
@@ -428,67 +475,104 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
     recordLog(state, ctx, req.method, req.url, reply.statusCode);
   });
 
-  app.get("/2015-03-31/event-source-mappings/:uuid", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { uuid } = req.params as { uuid: string };
-    const ctx = createRequestContext("lambda", "GetEventSourceMapping");
-    const mapping = store.getEventSourceMapping(uuid);
-    if (!mapping) {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Event source mapping ${uuid} not found` });
-    } else {
+  app.get(
+    "/2015-03-31/event-source-mappings/:uuid",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { uuid } = req.params as { uuid: string };
+      const ctx = createRequestContext("lambda", "GetEventSourceMapping");
+      const mapping = store.getEventSourceMapping(uuid);
+      if (!mapping) {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({
+            __type: "ResourceNotFoundException",
+            message: `Event source mapping ${uuid} not found`,
+          });
+      } else {
+        reply.header("Content-Type", "application/json").send(mappingToResponse(mapping));
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
+
+  app.delete(
+    "/2015-03-31/event-source-mappings/:uuid",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { uuid } = req.params as { uuid: string };
+      const ctx = createRequestContext("lambda", "DeleteEventSourceMapping");
+      try {
+        const mapping = store.deleteEventSourceMapping(uuid);
+        reply
+          .status(202)
+          .header("Content-Type", "application/json")
+          .send(mappingToResponse(mapping));
+      } catch {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({
+            __type: "ResourceNotFoundException",
+            message: `Event source mapping ${uuid} not found`,
+          });
+      }
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
+
+  app.put(
+    "/2015-03-31/event-source-mappings/:uuid",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { uuid } = req.params as { uuid: string };
+      const ctx = createRequestContext("lambda", "UpdateEventSourceMapping");
+      const mapping = store.getEventSourceMapping(uuid);
+      if (!mapping) {
+        reply
+          .status(404)
+          .header("Content-Type", "application/json")
+          .send({
+            __type: "ResourceNotFoundException",
+            message: `Event source mapping ${uuid} not found`,
+          });
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      const body = (req.body as Record<string, unknown>) ?? {};
+      if (body.Enabled === false) mapping.state = "Disabled";
+      else if (body.Enabled === true) mapping.state = "Enabled";
+      mapping.lastModified = Date.now() / 1000;
       reply.header("Content-Type", "application/json").send(mappingToResponse(mapping));
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
-
-  app.delete("/2015-03-31/event-source-mappings/:uuid", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { uuid } = req.params as { uuid: string };
-    const ctx = createRequestContext("lambda", "DeleteEventSourceMapping");
-    try {
-      const mapping = store.deleteEventSourceMapping(uuid);
-      reply.status(202).header("Content-Type", "application/json").send(mappingToResponse(mapping));
-    } catch {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Event source mapping ${uuid} not found` });
-    }
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
-
-  app.put("/2015-03-31/event-source-mappings/:uuid", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { uuid } = req.params as { uuid: string };
-    const ctx = createRequestContext("lambda", "UpdateEventSourceMapping");
-    const mapping = store.getEventSourceMapping(uuid);
-    if (!mapping) {
-      reply.status(404).header("Content-Type", "application/json").send({ __type: "ResourceNotFoundException", message: `Event source mapping ${uuid} not found` });
-      recordLog(state, ctx, req.method, req.url, reply.statusCode); return;
-    }
-    const body = (req.body as Record<string, unknown>) ?? {};
-    if (body.Enabled === false) mapping.state = "Disabled";
-    else if (body.Enabled === true) mapping.state = "Enabled";
-    mapping.lastModified = Date.now() / 1000;
-    reply.header("Content-Type", "application/json").send(mappingToResponse(mapping));
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // ── Permissions ────────────────────────────────────────────────────────────
 
-  app.post("/2015-03-31/functions/:name/policy", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { name } = req.params as { name: string };
-    const ctx = createRequestContext("lambda", "AddPermission");
-    const body = (req.body as Record<string, unknown>) ?? {};
-    store.addPermission(name, body);
-    const statement = JSON.stringify(body);
-    reply.header("Content-Type", "application/json").send({ Statement: statement });
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+  app.post(
+    "/2015-03-31/functions/:name/policy",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { name } = req.params as { name: string };
+      const ctx = createRequestContext("lambda", "AddPermission");
+      const body = (req.body as Record<string, unknown>) ?? {};
+      store.addPermission(name, body);
+      const statement = JSON.stringify(body);
+      reply.header("Content-Type", "application/json").send({ Statement: statement });
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
-  app.get("/2015-03-31/functions/:name/policy", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { name } = req.params as { name: string };
-    const ctx = createRequestContext("lambda", "GetPolicy");
-    reply.header("Content-Type", "application/json").send({
-      Policy: store.getPolicy(name),
-      RevisionId: uuidv4(),
-    });
-    recordLog(state, ctx, req.method, req.url, reply.statusCode);
-  });
+  app.get(
+    "/2015-03-31/functions/:name/policy",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { name } = req.params as { name: string };
+      const ctx = createRequestContext("lambda", "GetPolicy");
+      reply.header("Content-Type", "application/json").send({
+        Policy: store.getPolicy(name),
+        RevisionId: uuidv4(),
+      });
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+    },
+  );
 
   // ── Tags ───────────────────────────────────────────────────────────────────
 
@@ -502,20 +586,29 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
 
   // ── Concurrency ────────────────────────────────────────────────────────────
 
-  app.put("/2017-10-31/functions/:name/concurrency", async (req: FastifyRequest, reply: FastifyReply) => {
-    const body = (req.body as Record<string, unknown>) ?? {};
-    reply.header("Content-Type", "application/json").send({
-      ReservedConcurrentExecutions: body.ReservedConcurrentExecutions ?? 0,
-    });
-  });
+  app.put(
+    "/2017-10-31/functions/:name/concurrency",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const body = (req.body as Record<string, unknown>) ?? {};
+      reply.header("Content-Type", "application/json").send({
+        ReservedConcurrentExecutions: body.ReservedConcurrentExecutions ?? 0,
+      });
+    },
+  );
 
-  app.delete("/2017-10-31/functions/:name/concurrency", async (_req: FastifyRequest, reply: FastifyReply) => {
-    reply.status(204).send();
-  });
+  app.delete(
+    "/2017-10-31/functions/:name/concurrency",
+    async (_req: FastifyRequest, reply: FastifyReply) => {
+      reply.status(204).send();
+    },
+  );
 
-  app.get("/2017-10-31/functions/:name/concurrency", async (_req: FastifyRequest, reply: FastifyReply) => {
-    reply.header("Content-Type", "application/json").send({ ReservedConcurrentExecutions: 0 });
-  });
+  app.get(
+    "/2017-10-31/functions/:name/concurrency",
+    async (_req: FastifyRequest, reply: FastifyReply) => {
+      reply.header("Content-Type", "application/json").send({ ReservedConcurrentExecutions: 0 });
+    },
+  );
 
   return store;
 }

@@ -5,7 +5,7 @@ export class FakeBuilder {
 
   constructor(
     private readonly service: string,
-    private readonly mgmtPort: number
+    private readonly mgmtPort: number,
   ) {}
 
   operation(operationName: string): FakeRuleBuilder {
@@ -40,7 +40,7 @@ export class FakeRuleBuilder {
 
   constructor(
     private readonly parent: FakeBuilder,
-    private readonly operation: string
+    private readonly operation: string,
   ) {}
 
   withHeader(name: string, value: string): FakeRuleBuilder {
@@ -54,8 +54,7 @@ export class FakeRuleBuilder {
     contentType?: string;
     delayMs?: number;
   }): Promise<FakeBuilder> {
-    const body =
-      typeof opts.body === "object" ? JSON.stringify(opts.body) : opts.body ?? "";
+    const body = typeof opts.body === "object" ? JSON.stringify(opts.body) : (opts.body ?? "");
     const rule = {
       operation: this.operation,
       match_headers: this.matchHeaders,

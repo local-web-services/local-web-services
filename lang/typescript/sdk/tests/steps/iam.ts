@@ -7,19 +7,16 @@ import type { SdkWorld } from "../support/world";
 
 // ── Compound Given ─────────────────────────────────────────────────────────────
 
-Given(
-  "a running session with IAM enforce mode active",
-  async function (this: SdkWorld) {
-    this.session = await LwsSession.create();
-    await this.session.iam
-      .mode("enforce")
-      .defaultIdentity("test-user")
-      .identity("test-user")
-      .allow(["stepfunctions:*"])
-      .apply()
-      .apply();
-  }
-);
+Given("a running session with IAM enforce mode active", async function (this: SdkWorld) {
+  this.session = await LwsSession.create();
+  await this.session.iam
+    .mode("enforce")
+    .defaultIdentity("test-user")
+    .identity("test-user")
+    .allow(["stepfunctions:*"])
+    .apply()
+    .apply();
+});
 
 // ── IAM configuration ──────────────────────────────────────────────────────────
 
@@ -32,34 +29,27 @@ Given(
     const normalizedPattern = actionPattern
       .replace(/^states:/, "stepfunctions:")
       .replace(/^execute-api:/, "apigateway:");
-    await this.session!.iam
-      .mode("enforce")
+    await this.session!.iam.mode("enforce")
       .defaultIdentity(identityName)
       .identity(identityName)
       .allow([normalizedPattern])
       .apply()
       .apply();
-  }
+  },
 );
 
 Given(
   "IAM is in enforce mode with identity {string} and no permissions",
   async function (this: SdkWorld, identityName: string) {
     assert.ok(this.session, "No session");
-    await this.session!.iam
-      .mode("enforce")
-      .defaultIdentity(identityName)
-      .apply();
-  }
+    await this.session!.iam.mode("enforce").defaultIdentity(identityName).apply();
+  },
 );
 
-When(
-  "I set IAM mode to {string}",
-  async function (this: SdkWorld, mode: string) {
-    assert.ok(this.session, "No session");
-    await this.session!.iam.mode(mode as "enforce" | "audit" | "disabled").apply();
-  }
-);
+When("I set IAM mode to {string}", async function (this: SdkWorld, mode: string) {
+  assert.ok(this.session, "No session");
+  await this.session!.iam.mode(mode as "enforce" | "audit" | "disabled").apply();
+});
 
 // ── Assertions ─────────────────────────────────────────────────────────────────
 
@@ -68,8 +58,8 @@ Then("an IAM access denied error is returned", function (this: SdkWorld) {
     this.lastCallResult.success,
     false,
     `Expected IAM access denied but the call succeeded with: ${JSON.stringify(
-      this.lastCallResult.output
-    )}`
+      this.lastCallResult.output,
+    )}`,
   );
   const errStr = JSON.stringify(this.lastCallResult.error);
   const hasAccessDenied =
@@ -77,8 +67,5 @@ Then("an IAM access denied error is returned", function (this: SdkWorld) {
     errStr.includes("NotAuthorizedException") ||
     errStr.includes("403") ||
     errStr.includes("access denied");
-  assert.ok(
-    hasAccessDenied,
-    `Expected an IAM access denied error but got: ${errStr}`
-  );
+  assert.ok(hasAccessDenied, `Expected an IAM access denied error but got: ${errStr}`);
 });

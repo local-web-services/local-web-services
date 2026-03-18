@@ -46,7 +46,7 @@ export async function chaosDisable(port: number, service: string): Promise<void>
 export async function chaosSet(
   port: number,
   service: string,
-  options: { errorRate?: number; latencyMin?: number; latencyMax?: number }
+  options: { errorRate?: number; latencyMin?: number; latencyMax?: number },
 ): Promise<void> {
   const config: Record<string, unknown> = { enabled: true };
   if (options.errorRate !== undefined) config.error_rate = options.errorRate;
@@ -83,7 +83,7 @@ export async function iamSetIdentity(port: number, identity: string): Promise<vo
 /** Register identity definitions and optionally set mode/default_identity. */
 export async function iamRegisterIdentities(
   port: number,
-  identities: Record<string, { inline_policies?: IamPolicy[]; boundary_policy?: IamPolicy }>
+  identities: Record<string, { inline_policies?: IamPolicy[]; boundary_policy?: IamPolicy }>,
 ): Promise<void> {
   await post(`${BASE_URL(port)}/_ldk/iam-auth`, { identities });
 }
@@ -97,7 +97,7 @@ export async function reset(port: number): Promise<void> {
 export async function lifecycleSet(
   port: number,
   service: string,
-  options: { createDwellMs?: number; deleteDwellMs?: number }
+  options: { createDwellMs?: number; deleteDwellMs?: number },
 ): Promise<void> {
   const config: Record<string, unknown> = { enabled: true };
   if (options.createDwellMs !== undefined) config.create_dwell_ms = options.createDwellMs;
