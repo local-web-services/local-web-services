@@ -24,7 +24,7 @@ Feature: S3tables - A Policy Is Attached To A Table
     When a policy is attached to a table
     Then the operation is rejected
 
-  @standard @negative @put_table_policy @lifecycle @internal
+  @standard @negative @put_table_policy @lifecycle
   Scenario: a policy is attached to a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

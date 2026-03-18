@@ -54,6 +54,11 @@ atomic action DeleteUserPool:
                     if user_id in user_pool:
                         if user_pool[user_id] == pool_id:
                             user_status[user_id] = "DELETED"
+                            for session_id in SESSION_IDS:
+                                if session_id in session_user:
+                                    if session_user[session_id] == user_id:
+                                        if session_status[session_id] == "AUTHENTICATED":
+                                            session_status[session_id] = "EXPIRED"
                 for group_id in GROUP_IDS:
                     if group_id in group_pool:
                         if group_pool[group_id] == pool_id:

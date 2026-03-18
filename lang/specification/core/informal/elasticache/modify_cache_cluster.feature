@@ -25,7 +25,7 @@ Feature: Elasticache - A Cache Cluster Configuration Is Modified
     When a cache cluster configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_cache_cluster @lifecycle @internal
+  @standard @negative @modify_cache_cluster @lifecycle
   Scenario: a cache cluster configuration is modified fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

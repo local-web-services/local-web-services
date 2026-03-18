@@ -27,7 +27,7 @@ Feature: ApigatewayCognito - A Cognito User Pool Authorizer Is Configured On The
     When a Cognito User Pool authorizer is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_authorizer @lifecycle @internal
+  @standard @negative @configure_authorizer @lifecycle
   Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
@@ -51,7 +51,7 @@ Feature: ApigatewayCognito - A Cognito User Pool Authorizer Is Configured On The
     When a Cognito User Pool authorizer is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_authorizer @lifecycle @internal
+  @standard @negative @configure_authorizer @lifecycle
   Scenario: a Cognito User Pool authorizer is configured on the "REST" "API" fails when the pool is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"

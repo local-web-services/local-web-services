@@ -25,14 +25,14 @@ Feature: EventsSns - An Event Is Published To The Bus And Routed To The Target S
     When an event is published to the bus and routed to the target "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle @internal
+  @standard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
     When an event is published to the bus and routed to the target "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle @internal
+  @standard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when no "ENABLED" rule exists on the bus targeting a topic
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -40,7 +40,7 @@ Feature: EventsSns - An Event Is Published To The Bus And Routed To The Target S
     When an event is published to the bus and routed to the target "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle @internal
+  @standard @negative @put_event @lifecycle
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when the target topic is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -49,7 +49,7 @@ Feature: EventsSns - An Event Is Published To The Bus And Routed To The Target S
     When an event is published to the bus and routed to the target "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_event @capacity @internal
+  @standard @negative @put_event @capacity
   Scenario: an event is published to the bus and routed to the target "SNS" topic fails when no message slot is available
     Given the event bus exists
     And the event bus is "ACTIVE"

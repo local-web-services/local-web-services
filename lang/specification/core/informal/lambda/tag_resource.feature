@@ -28,14 +28,14 @@ Feature: Lambda - A Tag Is Added To A Function
     When a tag is added to a function
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle @internal
+  @standard @negative @tag_resource @lifecycle
   Scenario: a tag is added to a function fails when the function is "DELETING"
     Given the function exists
     And the function is "DELETING"
     When a tag is added to a function
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle @internal
+  @standard @negative @tag_resource @lifecycle
   Scenario: a tag is added to a function fails when the function is "DELETED"
     Given the function exists
     And the function is not "DELETING"

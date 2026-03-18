@@ -16,13 +16,13 @@ Feature: LambdaStepfunctions - The Lambda Function Fails To Start An Execution B
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "RUNNING" execution references a state machine that exists
 
-  @standard @negative @invocation_fails_state_machine_deleted @lifecycle @internal
+  @standard @negative @invocation_fails_state_machine_deleted @lifecycle
   Scenario: the Lambda function fails to start an execution because the state machine has been deleted fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function fails to start an execution because the state machine has been deleted
     Then the operation is rejected
 
-  @standard @negative @invocation_fails_state_machine_deleted @lifecycle @internal
+  @standard @negative @invocation_fails_state_machine_deleted @lifecycle
   Scenario: the Lambda function fails to start an execution because the state machine has been deleted fails when the state machine is not "DELETED"
     Given an invocation is "IN_PROGRESS"
     And the state machine is not "DELETED"

@@ -28,7 +28,7 @@ Feature: Secretsmanager - Metadata Or Description For An Active Secret Is Update
     When metadata or description for an active secret is updated
     Then the operation is rejected
 
-  @standard @negative @update_secret @lifecycle @internal
+  @standard @negative @update_secret @lifecycle
   Scenario: metadata or description for an active secret is updated fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

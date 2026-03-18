@@ -22,7 +22,7 @@ Feature: RdsLambda - The Lambda Function Is Deleted
     When the Lambda function is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_function @lifecycle @internal
+  @standard @negative @delete_function @lifecycle
   Scenario: the Lambda function is deleted fails when the function is already "DELETED"
     Given the function exists
     And the function is already "DELETED"

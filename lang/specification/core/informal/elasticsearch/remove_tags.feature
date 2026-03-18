@@ -25,7 +25,7 @@ Feature: Elasticsearch - Tags Are Removed From A Domain
     When tags are removed from a domain
     Then the operation is rejected
 
-  @standard @negative @remove_tags @lifecycle @internal
+  @standard @negative @remove_tags @lifecycle
   Scenario: tags are removed from a domain fails when the domain is being deleted
     Given the domain exists
     And the domain is being deleted

@@ -28,7 +28,7 @@ Feature: S3api - An Object Is Copied From One Bucket To Another
     When an object is copied from one bucket to another
     Then the operation is rejected
 
-  @standard @negative @copy_object @lifecycle @internal
+  @standard @negative @copy_object @lifecycle
   Scenario: an object is copied from one bucket to another fails when the source bucket is not "ACTIVE"
     Given the source bucket exists
     And the source bucket is not "ACTIVE"
@@ -62,7 +62,7 @@ Feature: S3api - An Object Is Copied From One Bucket To Another
     When an object is copied from one bucket to another
     Then the operation is rejected
 
-  @standard @negative @copy_object @lifecycle @internal
+  @standard @negative @copy_object @lifecycle
   Scenario: an object is copied from one bucket to another fails when the destination bucket is not "ACTIVE"
     Given the source bucket exists
     And the source bucket is "ACTIVE"

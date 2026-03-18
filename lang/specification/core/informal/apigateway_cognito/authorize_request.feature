@@ -28,7 +28,7 @@ Feature: ApigatewayCognito - A Request With A Valid Token From A User In The Api
     When a request with a valid token from a user in the "API"'s configured pool is authorized
     Then the operation is rejected
 
-  @standard @negative @authorize_request @lifecycle @internal
+  @standard @negative @authorize_request @lifecycle
   Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
@@ -43,7 +43,7 @@ Feature: ApigatewayCognito - A Request With A Valid Token From A User In The Api
     When a request with a valid token from a user in the "API"'s configured pool is authorized
     Then the operation is rejected
 
-  @standard @negative @authorize_request @lifecycle @internal
+  @standard @negative @authorize_request @lifecycle
   Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized fails when no "VALID" token exists
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -52,7 +52,7 @@ Feature: ApigatewayCognito - A Request With A Valid Token From A User In The Api
     When a request with a valid token from a user in the "API"'s configured pool is authorized
     Then the operation is rejected
 
-  @standard @negative @authorize_request @lifecycle @internal
+  @standard @negative @authorize_request @lifecycle
   Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized fails when the token does not belong to a "CONFIRMED" user in the configured pool
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -62,7 +62,7 @@ Feature: ApigatewayCognito - A Request With A Valid Token From A User In The Api
     When a request with a valid token from a user in the "API"'s configured pool is authorized
     Then the operation is rejected
 
-  @standard @negative @authorize_request @capacity @internal
+  @standard @negative @authorize_request @capacity
   Scenario: a request with a valid token from a user in the "API"'s configured pool is authorized fails when no request slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"

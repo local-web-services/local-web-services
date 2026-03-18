@@ -22,7 +22,7 @@ Feature: StepfunctionsSecretsmanager - A Secret Is Scheduled For Deletion
     When a secret is scheduled for deletion
     Then the operation is rejected
 
-  @standard @negative @schedule_secret_deletion @lifecycle @internal
+  @standard @negative @schedule_secret_deletion @lifecycle
   Scenario: a secret is scheduled for deletion fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

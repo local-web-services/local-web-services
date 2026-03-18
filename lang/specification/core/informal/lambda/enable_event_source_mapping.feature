@@ -27,7 +27,7 @@ Feature: Lambda - A Disabled Event Source Mapping Is Enabled
     When a disabled event source mapping is enabled
     Then the operation is rejected
 
-  @standard @negative @enable_event_source_mapping @lifecycle @internal
+  @standard @negative @enable_event_source_mapping @lifecycle
   Scenario: a disabled event source mapping is enabled fails when the mapping is not "DISABLED"
     Given the event source mapping exists
     And the mapping is not "DISABLED"

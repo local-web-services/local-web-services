@@ -27,7 +27,7 @@ Feature: Apigateway - A Deployment Is Deleted When No Stage References It
     When a deployment is deleted when no stage references it
     Then the operation is rejected
 
-  @standard @negative @delete_deployment @lifecycle @internal
+  @standard @negative @delete_deployment @lifecycle
   Scenario: a deployment is deleted when no stage references it fails when the deployment is not "ACTIVE"
     Given the deployment exists
     And the deployment is not "ACTIVE"
