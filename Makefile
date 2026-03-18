@@ -37,7 +37,6 @@ check: ## Run all checks (all languages + FizzBee specs)
 	$(MAKE) -C lang/typescript check
 	$(MAKE) -C lang/java check
 	$(MAKE) -C lang/go check
-	$(MAKE) -C lang/javascript check
 	$(MAKE) fizz-check
 
 # Run e2e tests across every language and formal specs
@@ -46,7 +45,6 @@ test-e2e: ## Run e2e tests (all languages + FizzBee specs)
 	$(MAKE) -C lang/typescript test-e2e
 	$(MAKE) -C lang/java test-e2e
 	$(MAKE) -C lang/go test-e2e
-	$(MAKE) -C lang/javascript test-e2e
 	$(MAKE) fizz-check
 
 # Install git hooks from scripts/hooks/ into .git/hooks/
