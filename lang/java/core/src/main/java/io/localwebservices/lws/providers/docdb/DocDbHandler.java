@@ -10,7 +10,6 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** DocDB wire-protocol HTTP handler (AWS Query protocol). */
 public class DocDbHandler implements HttpHandler {
@@ -18,19 +17,12 @@ public class DocDbHandler implements HttpHandler {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private final ServerState state;
-  private final Map<String, Map<String, Object>> clusters = new ConcurrentHashMap<>();
-  private final Map<String, Map<String, Object>> instances = new ConcurrentHashMap<>();
-  private final Map<String, Map<String, Object>> snapshots = new ConcurrentHashMap<>();
+  private final DocDbStore store;
 
   public DocDbHandler(ServerState state) {
     this.state = state;
-    state.resetCallbacks.add(this::reset);
-  }
-
-  private void reset() {
-    clusters.clear();
-    instances.clear();
-    snapshots.clear();
+    this.store = new DocDbStore();
+    state.resetCallbacks.add(store::reset);
   }
 
   @Override
@@ -75,23 +67,14 @@ public class DocDbHandler implements HttpHandler {
     switch (action) {
       case "CreateDBCluster":
         {
-          String id = params.get("DBClusterIdentifier");
-          Map<String, Object> cluster = new LinkedHashMap<>();
-          cluster.put("DBClusterIdentifier", id);
-          cluster.put("Status", "available");
-          cluster.put("Engine", params.getOrDefault("Engine", "docdb"));
-          cluster.put("Endpoint", "localhost");
-          cluster.put("ReaderEndpoint", "localhost");
-          cluster.put("Port", 27017);
-          cluster.put("MasterUsername", params.getOrDefault("MasterUsername", "admin"));
-          clusters.put(id, cluster);
+          Map<String, Object> cluster = store.createCluster(params);
           sendJson(exchange, 200, Map.of("CreateDBClusterResult", Map.of("DBCluster", cluster)));
           break;
         }
       case "DeleteDBCluster":
         {
           String id = params.get("DBClusterIdentifier");
-          Map<String, Object> cluster = clusters.remove(id);
+          Map<String, Object> cluster = store.deleteCluster(id);
           if (cluster == null) {
             sendJson(
                 exchange,
@@ -106,34 +89,20 @@ public class DocDbHandler implements HttpHandler {
       case "DescribeDBClusters":
         {
           String id = params.get("DBClusterIdentifier");
-          List<Map<String, Object>> list = new ArrayList<>();
-          if (id != null) {
-            Map<String, Object> cluster = clusters.get(id);
-            if (cluster != null) list.add(cluster);
-          } else {
-            list.addAll(clusters.values());
-          }
+          List<Map<String, Object>> list = store.describeClusters(id);
           sendJson(exchange, 200, Map.of("DescribeDBClustersResult", Map.of("DBClusters", list)));
           break;
         }
       case "CreateDBInstance":
         {
-          String id = params.get("DBInstanceIdentifier");
-          Map<String, Object> inst = new LinkedHashMap<>();
-          inst.put("DBInstanceIdentifier", id);
-          inst.put("DBClusterIdentifier", params.getOrDefault("DBClusterIdentifier", ""));
-          inst.put("DBInstanceClass", params.getOrDefault("DBInstanceClass", "db.r5.large"));
-          inst.put("Engine", params.getOrDefault("Engine", "docdb"));
-          inst.put("DBInstanceStatus", "available");
-          inst.put("Endpoint", Map.of("Address", "localhost", "Port", 27017));
-          instances.put(id, inst);
+          Map<String, Object> inst = store.createInstance(params);
           sendJson(exchange, 200, Map.of("CreateDBInstanceResult", Map.of("DBInstance", inst)));
           break;
         }
       case "DeleteDBInstance":
         {
           String id = params.get("DBInstanceIdentifier");
-          Map<String, Object> inst = instances.remove(id);
+          Map<String, Object> inst = store.deleteInstance(id);
           if (inst == null) {
             sendJson(
                 exchange,
@@ -147,26 +116,13 @@ public class DocDbHandler implements HttpHandler {
       case "DescribeDBInstances":
         {
           String id = params.get("DBInstanceIdentifier");
-          List<Map<String, Object>> list = new ArrayList<>();
-          if (id != null) {
-            Map<String, Object> inst = instances.get(id);
-            if (inst != null) list.add(inst);
-          } else {
-            list.addAll(instances.values());
-          }
+          List<Map<String, Object>> list = store.describeInstances(id);
           sendJson(exchange, 200, Map.of("DescribeDBInstancesResult", Map.of("DBInstances", list)));
           break;
         }
       case "CreateDBClusterSnapshot":
         {
-          String snapshotId = params.get("DBClusterSnapshotIdentifier");
-          String clusterId = params.get("DBClusterIdentifier");
-          Map<String, Object> snap = new LinkedHashMap<>();
-          snap.put("DBClusterSnapshotIdentifier", snapshotId);
-          snap.put("DBClusterIdentifier", clusterId);
-          snap.put("Status", "available");
-          snap.put("Engine", "docdb");
-          snapshots.put(snapshotId, snap);
+          Map<String, Object> snap = store.createSnapshot(params);
           sendJson(
               exchange,
               200,
@@ -176,7 +132,7 @@ public class DocDbHandler implements HttpHandler {
       case "DeleteDBClusterSnapshot":
         {
           String snapshotId = params.get("DBClusterSnapshotIdentifier");
-          Map<String, Object> snap = snapshots.remove(snapshotId);
+          Map<String, Object> snap = store.deleteSnapshot(snapshotId);
           if (snap == null) {
             sendJson(
                 exchange,
@@ -197,13 +153,7 @@ public class DocDbHandler implements HttpHandler {
       case "DescribeDBClusterSnapshots":
         {
           String snapshotId = params.get("DBClusterSnapshotIdentifier");
-          List<Map<String, Object>> list = new ArrayList<>();
-          if (snapshotId != null) {
-            Map<String, Object> snap = snapshots.get(snapshotId);
-            if (snap != null) list.add(snap);
-          } else {
-            list.addAll(snapshots.values());
-          }
+          List<Map<String, Object>> list = store.describeSnapshots(snapshotId);
           sendJson(
               exchange,
               200,

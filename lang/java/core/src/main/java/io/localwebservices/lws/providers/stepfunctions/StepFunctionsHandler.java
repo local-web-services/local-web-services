@@ -10,29 +10,19 @@ import io.localwebservices.lws.middleware.IamMiddleware;
 import java.io.*;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** Step Functions wire-protocol HTTP handler. */
 public class StepFunctionsHandler implements HttpHandler {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
-  private static final String ACCOUNT = "000000000000";
-  private static final String REGION = "us-east-1";
 
   private final ServerState state;
-  private final Map<String, Map<String, Object>> stateMachines = new ConcurrentHashMap<>();
-  private final Map<String, Map<String, Object>> executions = new ConcurrentHashMap<>();
-  private final Map<String, List<Map<String, String>>> resourceTags = new ConcurrentHashMap<>();
+  private final StepFunctionsStore store;
 
   public StepFunctionsHandler(ServerState state) {
     this.state = state;
-    state.resetCallbacks.add(this::reset);
-  }
-
-  private void reset() {
-    stateMachines.clear();
-    executions.clear();
-    resourceTags.clear();
+    this.store = new StepFunctionsStore();
+    state.resetCallbacks.add(store::reset);
   }
 
   @Override
@@ -101,8 +91,8 @@ public class StepFunctionsHandler implements HttpHandler {
       case "CreateStateMachine":
         {
           String name = (String) body.get("name");
-          String arn = "arn:aws:states:" + REGION + ":" + ACCOUNT + ":stateMachine:" + name;
-          if (stateMachines.containsKey(arn)) {
+          String arn = store.stateMachineArn(name);
+          if (store.stateMachineExists(arn)) {
             sendJson(
                 exchange,
                 400,
@@ -113,11 +103,7 @@ public class StepFunctionsHandler implements HttpHandler {
                     "State Machine Already Exists"));
             break;
           }
-          Map<String, Object> sm = new LinkedHashMap<>(body);
-          sm.put("stateMachineArn", arn);
-          sm.put("creationDate", Instant.now().getEpochSecond() * 1.0);
-          sm.put("status", "ACTIVE");
-          stateMachines.put(arn, sm);
+          Map<String, Object> sm = store.createStateMachine(name, body);
           sendJson(
               exchange,
               200,
@@ -127,7 +113,7 @@ public class StepFunctionsHandler implements HttpHandler {
       case "DeleteStateMachine":
         {
           String arn = (String) body.get("stateMachineArn");
-          if (!stateMachines.containsKey(arn)) {
+          if (!store.stateMachineExists(arn)) {
             sendJson(
                 exchange,
                 400,
@@ -138,14 +124,14 @@ public class StepFunctionsHandler implements HttpHandler {
                     "State machine does not exist: " + arn));
             break;
           }
-          stateMachines.remove(arn);
+          store.deleteStateMachine(arn);
           sendJson(exchange, 200, Map.of());
           break;
         }
       case "DescribeStateMachine":
         {
           String arn = (String) body.get("stateMachineArn");
-          Map<String, Object> sm = stateMachines.get(arn);
+          Map<String, Object> sm = store.getStateMachine(arn);
           if (sm == null) {
             sendJson(
                 exchange,
@@ -162,28 +148,14 @@ public class StepFunctionsHandler implements HttpHandler {
         }
       case "ListStateMachines":
         {
-          List<Map<String, Object>> list = new ArrayList<>();
-          for (Map<String, Object> sm : stateMachines.values()) {
-            list.add(
-                Map.of(
-                    "stateMachineArn",
-                    sm.get("stateMachineArn"),
-                    "name",
-                    sm.get("name"),
-                    "creationDate",
-                    sm.get("creationDate"),
-                    "type",
-                    sm.getOrDefault("type", "STANDARD")));
-          }
+          List<Map<String, Object>> list = store.listStateMachines();
           sendJson(exchange, 200, Map.of("stateMachines", list));
           break;
         }
       case "UpdateStateMachine":
         {
           String arn = (String) body.get("stateMachineArn");
-          if (stateMachines.containsKey(arn)) {
-            stateMachines.get(arn).putAll(body);
-          }
+          store.updateStateMachine(arn, body);
           sendJson(exchange, 200, Map.of("updateDate", Instant.now().getEpochSecond() * 1.0));
           break;
         }
@@ -195,7 +167,7 @@ public class StepFunctionsHandler implements HttpHandler {
       case "ListStateMachineVersions":
         {
           String smArn = (String) body.get("stateMachineArn");
-          if (!stateMachines.containsKey(smArn)) {
+          if (!store.stateMachineExists(smArn)) {
             sendJson(
                 exchange,
                 400,
@@ -212,7 +184,7 @@ public class StepFunctionsHandler implements HttpHandler {
       case "StartExecution":
         {
           String smArn = (String) body.get("stateMachineArn");
-          if (!stateMachines.containsKey(smArn)) {
+          if (!store.stateMachineExists(smArn)) {
             sendJson(
                 exchange,
                 400,
@@ -225,37 +197,18 @@ public class StepFunctionsHandler implements HttpHandler {
           }
           String execName =
               body.containsKey("name") ? (String) body.get("name") : UUID.randomUUID().toString();
-          String execArn =
-              "arn:aws:states:"
-                  + REGION
-                  + ":"
-                  + ACCOUNT
-                  + ":execution:"
-                  + (smArn.contains(":") ? smArn.substring(smArn.lastIndexOf(':') + 1) : smArn)
-                  + ":"
-                  + execName;
-          double startDate = Instant.now().getEpochSecond() * 1.0;
-
-          // Simple pass-through execution: copy input to output
           String input = (String) body.getOrDefault("input", "{}");
-          Map<String, Object> exec = new LinkedHashMap<>();
-          exec.put("executionArn", execArn);
-          exec.put("stateMachineArn", smArn);
-          exec.put("name", execName);
-          exec.put("status", "SUCCEEDED");
-          exec.put("startDate", startDate);
-          exec.put("stopDate", startDate);
-          exec.put("input", input);
-          exec.put("output", input);
-          executions.put(execArn, exec);
-
-          sendJson(exchange, 200, Map.of("executionArn", execArn, "startDate", startDate));
+          Map<String, Object> exec = store.startExecution(smArn, execName, input);
+          sendJson(
+              exchange,
+              200,
+              Map.of("executionArn", exec.get("executionArn"), "startDate", exec.get("startDate")));
           break;
         }
       case "StartSyncExecution":
         {
           String smArn = (String) body.get("stateMachineArn");
-          if (!stateMachines.containsKey(smArn)) {
+          if (!store.stateMachineExists(smArn)) {
             sendJson(
                 exchange,
                 400,
@@ -269,12 +222,10 @@ public class StepFunctionsHandler implements HttpHandler {
           String execName =
               body.containsKey("name") ? (String) body.get("name") : UUID.randomUUID().toString();
           String execArn =
-              "arn:aws:states:"
-                  + REGION
-                  + ":"
-                  + ACCOUNT
-                  + ":express:"
-                  + (smArn.contains(":") ? smArn.substring(smArn.lastIndexOf(':') + 1) : smArn)
+              "arn:aws:states:us-east-1:000000000000:express:"
+                  + (smArn.contains(":")
+                      ? smArn.substring(smArn.lastIndexOf(':') + 1)
+                      : smArn)
                   + ":"
                   + execName;
           double now = Instant.now().getEpochSecond() * 1.0;
@@ -296,7 +247,7 @@ public class StepFunctionsHandler implements HttpHandler {
       case "StopExecution":
         {
           String execArn = (String) body.get("executionArn");
-          if (!executions.containsKey(execArn)) {
+          if (!store.executionExists(execArn)) {
             sendJson(
                 exchange,
                 400,
@@ -308,15 +259,14 @@ public class StepFunctionsHandler implements HttpHandler {
             break;
           }
           double stopDate = Instant.now().getEpochSecond() * 1.0;
-          executions.get(execArn).put("status", "ABORTED");
-          executions.get(execArn).put("stopDate", stopDate);
+          store.stopExecution(execArn, stopDate);
           sendJson(exchange, 200, Map.of("stopDate", stopDate));
           break;
         }
       case "DescribeExecution":
         {
           String execArn = (String) body.get("executionArn");
-          Map<String, Object> exec = executions.get(execArn);
+          Map<String, Object> exec = store.getExecution(execArn);
           if (exec == null) {
             exec =
                 Map.of(
@@ -335,7 +285,7 @@ public class StepFunctionsHandler implements HttpHandler {
       case "ListExecutions":
         {
           String smArn = (String) body.get("stateMachineArn");
-          if (!stateMachines.containsKey(smArn)) {
+          if (!store.stateMachineExists(smArn)) {
             sendJson(
                 exchange,
                 400,
@@ -346,30 +296,14 @@ public class StepFunctionsHandler implements HttpHandler {
                     "State machine does not exist: " + smArn));
             break;
           }
-          List<Map<String, Object>> list = new ArrayList<>();
-          for (Map<String, Object> exec : executions.values()) {
-            if (smArn.equals(exec.get("stateMachineArn"))) {
-              list.add(
-                  Map.of(
-                      "executionArn",
-                      exec.get("executionArn"),
-                      "stateMachineArn",
-                      exec.get("stateMachineArn"),
-                      "name",
-                      exec.get("name"),
-                      "status",
-                      exec.get("status"),
-                      "startDate",
-                      exec.get("startDate")));
-            }
-          }
+          List<Map<String, Object>> list = store.listExecutions(smArn);
           sendJson(exchange, 200, Map.of("executions", list));
           break;
         }
       case "GetExecutionHistory":
         {
           String execArn = (String) body.get("executionArn");
-          if (execArn == null || !executions.containsKey(execArn)) {
+          if (execArn == null || !store.executionExists(execArn)) {
             sendJson(
                 exchange,
                 400,
@@ -386,7 +320,7 @@ public class StepFunctionsHandler implements HttpHandler {
       case "ListTagsForResource":
         {
           String resourceArn = (String) body.get("resourceArn");
-          if (!stateMachines.containsKey(resourceArn)) {
+          if (!store.stateMachineExists(resourceArn)) {
             sendJson(
                 exchange,
                 400,
@@ -394,14 +328,14 @@ public class StepFunctionsHandler implements HttpHandler {
                     "__type", "ResourceNotFound", "message", "Resource not found: " + resourceArn));
             break;
           }
-          List<Map<String, String>> tags = resourceTags.getOrDefault(resourceArn, List.of());
+          List<Map<String, String>> tags = store.listTags(resourceArn);
           sendJson(exchange, 200, Map.of("tags", tags));
           break;
         }
       case "TagResource":
         {
           String resourceArn = (String) body.get("resourceArn");
-          if (!stateMachines.containsKey(resourceArn)) {
+          if (!store.stateMachineExists(resourceArn)) {
             sendJson(
                 exchange,
                 400,
@@ -411,19 +345,14 @@ public class StepFunctionsHandler implements HttpHandler {
           }
           List<Map<String, Object>> newTags =
               (List<Map<String, Object>>) body.getOrDefault("tags", List.of());
-          List<Map<String, String>> existing =
-              resourceTags.computeIfAbsent(resourceArn, k -> new ArrayList<>());
-          for (Map<String, Object> tag : newTags) {
-            existing.add(
-                Map.of("key", (String) tag.get("key"), "value", (String) tag.get("value")));
-          }
+          store.tagResource(resourceArn, newTags);
           sendJson(exchange, 200, Map.of());
           break;
         }
       case "UntagResource":
         {
           String resourceArn = (String) body.get("resourceArn");
-          if (!stateMachines.containsKey(resourceArn)) {
+          if (!store.stateMachineExists(resourceArn)) {
             sendJson(
                 exchange,
                 400,
@@ -432,12 +361,7 @@ public class StepFunctionsHandler implements HttpHandler {
             break;
           }
           List<String> tagKeys = (List<String>) body.getOrDefault("tagKeys", List.of());
-          List<Map<String, String>> existing =
-              resourceTags.getOrDefault(resourceArn, new ArrayList<>());
-          boolean allFound =
-              tagKeys.stream()
-                  .allMatch(k -> existing.stream().anyMatch(t -> k.equals(t.get("key"))));
-          if (!allFound) {
+          if (!store.allTagsFound(resourceArn, tagKeys)) {
             sendJson(
                 exchange,
                 400,
@@ -448,7 +372,7 @@ public class StepFunctionsHandler implements HttpHandler {
                     "Tag not found on resource: " + resourceArn));
             break;
           }
-          existing.removeIf(t -> tagKeys.contains(t.get("key")));
+          store.untagResource(resourceArn, tagKeys);
           sendJson(exchange, 200, Map.of());
           break;
         }

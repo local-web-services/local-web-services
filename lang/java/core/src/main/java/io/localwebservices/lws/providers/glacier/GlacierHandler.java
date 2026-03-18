@@ -9,7 +9,6 @@ import io.localwebservices.lws.middleware.IamMiddleware;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** Glacier wire-protocol HTTP handler (REST JSON). */
 public class GlacierHandler implements HttpHandler {
@@ -17,19 +16,12 @@ public class GlacierHandler implements HttpHandler {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private final ServerState state;
-  private final Map<String, Map<String, Object>> vaults = new ConcurrentHashMap<>();
-  private final Map<String, Map<String, Map<String, Object>>> archives = new ConcurrentHashMap<>();
-  private final Map<String, Map<String, Map<String, Object>>> jobs = new ConcurrentHashMap<>();
+  private final GlacierStore store;
 
   public GlacierHandler(ServerState state) {
     this.state = state;
-    state.resetCallbacks.add(this::reset);
-  }
-
-  private void reset() {
-    vaults.clear();
-    archives.clear();
-    jobs.clear();
+    this.store = new GlacierStore();
+    state.resetCallbacks.add(store::reset);
   }
 
   @Override
@@ -98,26 +90,14 @@ public class GlacierHandler implements HttpHandler {
       String archiveId = len >= 6 ? segments[5] : null;
       if ("POST".equals(method) && archiveId == null) {
         // UploadArchive
-        String newArchiveId = UUID.randomUUID().toString();
-        Map<String, Object> archive = new LinkedHashMap<>();
-        archive.put("ArchiveId", newArchiveId);
-        archive.put("VaultName", vaultName);
-        archive.put(
-            "ArchiveDescription",
-            exchange.getRequestHeaders().getFirst("x-amz-archive-description"));
-        archive.put("Size", bodyBytes.length);
-        archive.put("CreationDate", new java.util.Date().toString());
-        archives
-            .computeIfAbsent(vaultName, k -> new ConcurrentHashMap<>())
-            .put(newArchiveId, archive);
+        String description = exchange.getRequestHeaders().getFirst("x-amz-archive-description");
+        String newArchiveId = store.uploadArchive(vaultName, description, bodyBytes.length);
         exchange.getResponseHeaders().set("x-amz-archive-id", newArchiveId);
         sendJson(exchange, 201, Map.of("archiveId", newArchiveId));
         return;
       }
       if ("DELETE".equals(method) && archiveId != null) {
-        Map<String, Map<String, Object>> vaultArchives =
-            archives.getOrDefault(vaultName, new ConcurrentHashMap<>());
-        vaultArchives.remove(archiveId);
+        store.deleteArchive(vaultName, archiveId);
         exchange.sendResponseHeaders(204, -1);
         return;
       }
@@ -143,13 +123,7 @@ public class GlacierHandler implements HttpHandler {
         // InitiateJob
         Map<String, Object> jobBody =
             bodyBytes.length > 0 ? MAPPER.readValue(bodyBytes, Map.class) : new LinkedHashMap<>();
-        String newJobId = UUID.randomUUID().toString();
-        Map<String, Object> job = new LinkedHashMap<>();
-        job.put("JobId", newJobId);
-        job.put("VaultName", vaultName);
-        job.put("StatusCode", "Succeeded");
-        job.put("Action", jobBody.getOrDefault("Type", "InventoryRetrieval"));
-        jobs.computeIfAbsent(vaultName, k -> new ConcurrentHashMap<>()).put(newJobId, job);
+        String newJobId = store.initiateJob(vaultName, jobBody);
         exchange.getResponseHeaders().set("x-amz-job-id", newJobId);
         sendJson(exchange, 202, Map.of("jobId", newJobId));
         return;
@@ -157,8 +131,7 @@ public class GlacierHandler implements HttpHandler {
 
       if ("GET".equals(method) && jobId != null) {
         // DescribeJob
-        Map<String, Object> job =
-            jobs.getOrDefault(vaultName, new ConcurrentHashMap<>()).get(jobId);
+        Map<String, Object> job = store.getJob(vaultName, jobId);
         if (job == null) {
           sendJson(
               exchange,
@@ -172,8 +145,7 @@ public class GlacierHandler implements HttpHandler {
 
       if ("GET".equals(method) && jobId == null) {
         // ListJobs
-        List<Map<String, Object>> jobList =
-            new ArrayList<>(jobs.getOrDefault(vaultName, new ConcurrentHashMap<>()).values());
+        List<Map<String, Object>> jobList = store.listJobs(vaultName);
         sendJson(exchange, 200, Map.of("JobList", jobList));
         return;
       }
@@ -183,23 +155,17 @@ public class GlacierHandler implements HttpHandler {
     if (len >= 4 && vaultName != null) {
       if ("PUT".equals(method)) {
         // CreateVault
-        Map<String, Object> vault = new LinkedHashMap<>();
-        vault.put("VaultName", vaultName);
-        vault.put("VaultARN", "arn:aws:glacier:us-east-1:000000000000:vaults/" + vaultName);
-        vault.put("CreationDate", new java.util.Date().toString());
-        vault.put("NumberOfArchives", 0);
-        vault.put("SizeInBytes", 0);
-        vaults.put(vaultName, vault);
+        store.createVault(vaultName);
         sendJson(exchange, 201, Map.of());
         return;
       }
       if ("DELETE".equals(method)) {
-        vaults.remove(vaultName);
+        store.deleteVault(vaultName);
         exchange.sendResponseHeaders(204, -1);
         return;
       }
       if ("GET".equals(method)) {
-        Map<String, Object> vault = vaults.get(vaultName);
+        Map<String, Object> vault = store.getVault(vaultName);
         if (vault == null) {
           sendJson(
               exchange,
@@ -215,7 +181,7 @@ public class GlacierHandler implements HttpHandler {
 
     if ("GET".equals(method) && len <= 3) {
       // ListVaults
-      List<Map<String, Object>> vaultList = new ArrayList<>(vaults.values());
+      List<Map<String, Object>> vaultList = store.listVaults();
       sendJson(exchange, 200, Map.of("VaultList", vaultList));
       return;
     }

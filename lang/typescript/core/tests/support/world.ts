@@ -1,6 +1,13 @@
 /** Cucumber World — session-scoped server, per-scenario reset. */
 
-import { setWorldConstructor, BeforeAll, AfterAll, Before, World, IWorldOptions } from "@cucumber/cucumber";
+import {
+  setWorldConstructor,
+  BeforeAll,
+  AfterAll,
+  Before,
+  World,
+  IWorldOptions,
+} from "@cucumber/cucumber";
 import { startServer } from "../../src/index";
 import type { LwsServer } from "../../src/server";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";

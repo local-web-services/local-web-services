@@ -8,7 +8,6 @@ import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** SSM wire-protocol HTTP handler. */
 public class SsmHandler implements HttpHandler {
@@ -17,17 +16,12 @@ public class SsmHandler implements HttpHandler {
   private static final String TARGET_PREFIX = "AmazonSSM.";
 
   private final ServerState state;
-  private final Map<String, Map<String, Object>> parameters = new ConcurrentHashMap<>();
-  private final Map<String, List<Map<String, String>>> resourceTags = new ConcurrentHashMap<>();
+  private final SsmStore store;
 
   public SsmHandler(ServerState state) {
     this.state = state;
-    state.resetCallbacks.add(this::reset);
-  }
-
-  private void reset() {
-    parameters.clear();
-    resourceTags.clear();
+    this.store = new SsmStore();
+    state.resetCallbacks.add(store::reset);
   }
 
   @Override
@@ -73,14 +67,14 @@ public class SsmHandler implements HttpHandler {
         {
           String name = (String) body.get("Name");
           boolean overwrite = Boolean.TRUE.equals(body.get("Overwrite"));
-          if (!overwrite && parameters.containsKey(name)) {
+          if (!overwrite && store.containsParameter(name)) {
             sendJson(
                 exchange,
                 400,
                 Map.of("__type", "ParameterAlreadyExists", "message", "Parameter already exists"));
             break;
           }
-          if (overwrite && !parameters.containsKey(name)) {
+          if (overwrite && !store.containsParameter(name)) {
             sendJson(
                 exchange,
                 400,
@@ -88,20 +82,15 @@ public class SsmHandler implements HttpHandler {
                     "__type", "ParameterNotFound", "message", "Parameter " + name + " not found"));
             break;
           }
-          Map<String, Object> param = new LinkedHashMap<>();
-          param.put("Name", name);
-          param.put("Value", body.get("Value"));
-          param.put("Type", body.getOrDefault("Type", "String"));
-          param.put("Version", 1);
-          param.put("LastModifiedDate", System.currentTimeMillis() / 1000.0);
-          parameters.put(name, param);
+          store.putParameter(
+              name, (String) body.get("Value"), (String) body.get("Type"), overwrite);
           sendJson(exchange, 200, Map.of("Version", 1, "Tier", "Standard"));
           break;
         }
       case "GetParameter":
         {
           String name = (String) body.get("Name");
-          Map<String, Object> param = parameters.get(name);
+          Map<String, Object> param = store.getParameter(name);
           if (param == null) {
             sendJson(
                 exchange,
@@ -125,54 +114,22 @@ public class SsmHandler implements HttpHandler {
       case "GetParameters":
         {
           List<String> names = (List<String>) body.getOrDefault("Names", List.of());
-          List<Map<String, Object>> found = new ArrayList<>();
-          List<String> invalid = new ArrayList<>();
-          for (String name : names) {
-            Map<String, Object> param = parameters.get(name);
-            if (param != null) {
-              found.add(
-                  Map.of(
-                      "Name",
-                      param.get("Name"),
-                      "Value",
-                      param.get("Value"),
-                      "Type",
-                      param.get("Type"),
-                      "Version",
-                      param.get("Version")));
-            } else {
-              invalid.add(name);
-            }
-          }
+          List<Map<String, Object>> found = store.getParameters(names);
+          List<String> invalid = store.getInvalidParameters(names);
           sendJson(exchange, 200, Map.of("Parameters", found, "InvalidParameters", invalid));
           break;
         }
       case "GetParametersByPath":
         {
           String path = (String) body.get("Path");
-          List<Map<String, Object>> found = new ArrayList<>();
-          for (Map.Entry<String, Map<String, Object>> entry : parameters.entrySet()) {
-            if (entry.getKey().startsWith(path)) {
-              Map<String, Object> param = entry.getValue();
-              found.add(
-                  Map.of(
-                      "Name",
-                      param.get("Name"),
-                      "Value",
-                      param.get("Value"),
-                      "Type",
-                      param.get("Type"),
-                      "Version",
-                      param.get("Version")));
-            }
-          }
+          List<Map<String, Object>> found = store.getParametersByPath(path);
           sendJson(exchange, 200, Map.of("Parameters", found));
           break;
         }
       case "DeleteParameter":
         {
           String name = (String) body.get("Name");
-          if (!parameters.containsKey(name)) {
+          if (!store.deleteParameter(name)) {
             sendJson(
                 exchange,
                 400,
@@ -180,19 +137,15 @@ public class SsmHandler implements HttpHandler {
                     "__type", "ParameterNotFound", "message", "Parameter " + name + " not found"));
             break;
           }
-          parameters.remove(name);
           sendJson(exchange, 200, Map.of());
           break;
         }
       case "DeleteParameters":
         {
           List<String> names = (List<String>) body.getOrDefault("Names", List.of());
-          List<String> deleted = new ArrayList<>();
-          List<String> invalid = new ArrayList<>();
-          for (String name : names) {
-            if (parameters.remove(name) != null) deleted.add(name);
-            else invalid.add(name);
-          }
+          List<String> deleted = store.deleteParameters(names);
+          List<String> invalid = new ArrayList<>(names);
+          invalid.removeAll(deleted);
           if (!invalid.isEmpty()) {
             sendJson(
                 exchange,
@@ -214,17 +167,14 @@ public class SsmHandler implements HttpHandler {
         }
       case "DescribeParameters":
         {
-          List<Map<String, Object>> params = new ArrayList<>();
-          for (Map<String, Object> p : parameters.values()) {
-            params.add(Map.of("Name", p.get("Name"), "Type", p.get("Type")));
-          }
+          List<Map<String, Object>> params = store.describeParameters();
           sendJson(exchange, 200, Map.of("Parameters", params));
           break;
         }
       case "AddTagsToResource":
         {
           String resourceId = (String) body.get("ResourceId");
-          if (!parameters.containsKey(resourceId)) {
+          if (!store.containsParameter(resourceId)) {
             sendJson(
                 exchange,
                 400,
@@ -237,19 +187,14 @@ public class SsmHandler implements HttpHandler {
           }
           List<Map<String, Object>> newTags =
               (List<Map<String, Object>>) body.getOrDefault("Tags", List.of());
-          List<Map<String, String>> existing =
-              resourceTags.computeIfAbsent(resourceId, k -> new ArrayList<>());
-          for (Map<String, Object> tag : newTags) {
-            existing.add(
-                Map.of("Key", (String) tag.get("Key"), "Value", (String) tag.get("Value")));
-          }
+          store.addTags(resourceId, newTags);
           sendJson(exchange, 200, Map.of());
           break;
         }
       case "RemoveTagsFromResource":
         {
           String resourceId = (String) body.get("ResourceId");
-          if (!parameters.containsKey(resourceId)) {
+          if (!store.containsParameter(resourceId)) {
             sendJson(
                 exchange,
                 400,
@@ -261,9 +206,7 @@ public class SsmHandler implements HttpHandler {
             break;
           }
           List<String> tagKeys = (List<String>) body.getOrDefault("TagKeys", List.of());
-          List<Map<String, String>> existing =
-              resourceTags.getOrDefault(resourceId, new ArrayList<>());
-          if (existing.stream().noneMatch(t -> tagKeys.contains(t.get("Key")))) {
+          if (!store.hasTagAssociated(resourceId, tagKeys)) {
             sendJson(
                 exchange,
                 400,
@@ -274,14 +217,14 @@ public class SsmHandler implements HttpHandler {
                     "Tag not associated with resource: " + resourceId));
             break;
           }
-          existing.removeIf(t -> tagKeys.contains(t.get("Key")));
+          store.removeTags(resourceId, tagKeys);
           sendJson(exchange, 200, Map.of());
           break;
         }
       case "ListTagsForResource":
         {
           String resourceId = (String) body.get("ResourceId");
-          if (!parameters.containsKey(resourceId)) {
+          if (!store.containsParameter(resourceId)) {
             sendJson(
                 exchange,
                 400,
@@ -292,7 +235,7 @@ public class SsmHandler implements HttpHandler {
                     "Invalid resource id: " + resourceId));
             break;
           }
-          List<Map<String, String>> tags = resourceTags.getOrDefault(resourceId, List.of());
+          List<Map<String, String>> tags = store.listTags(resourceId);
           sendJson(exchange, 200, Map.of("TagList", tags));
           break;
         }

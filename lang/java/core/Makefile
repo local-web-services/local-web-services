@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help test test-e2e integration-test lint format format-check cpd spotbugs architecture-test check
+.PHONY: help test test-e2e integration-test lint format format-check cpd spotbugs architecture-test unit-test check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -30,4 +30,7 @@ spotbugs: ## Static analysis (SpotBugs)
 architecture-test: ## Run architecture constraint tests
 	GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew architectureTest
 
-check: lint format-check cpd spotbugs architecture-test test ## Run all checks
+unit-test: ## Run unit tests with coverage enforcement
+	GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew unitTest
+
+check: lint format-check cpd spotbugs architecture-test unit-test test ## Run all checks

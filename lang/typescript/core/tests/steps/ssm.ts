@@ -20,121 +20,122 @@ async function putParameter(
   world: LwsWorld,
   name: string,
   value: string,
-  type: string
+  type: string,
 ): Promise<void> {
   const client = world.ssmClient();
   await client.send(
-    new PutParameterCommand({ Name: name, Value: value, Type: type as "String" | "SecureString" | "StringList" })
+    new PutParameterCommand({
+      Name: name,
+      Value: value,
+      Type: type as "String" | "SecureString" | "StringList",
+    }),
   );
 }
 
 // --- Given -----------------------------------------------------------------
 
-Given("a parameter {string} was created with value {string} and type {string}", async function (
-  this: LwsWorld,
-  name: string,
-  value: string,
-  type: string
-) {
-  await putParameter(this, name, value, type);
-});
+Given(
+  "a parameter {string} was created with value {string} and type {string}",
+  async function (this: LwsWorld, name: string, value: string, type: string) {
+    await putParameter(this, name, value, type);
+  },
+);
 
-Given("tags [\\{{string}: {string}, {string}: {string}}] were added to parameter {string}", async function (
-  this: LwsWorld,
-  _k1: string,
-  _v1: string,
-  _k2: string,
-  _v2: string,
-  name: string
-) {
-  const client = this.ssmClient();
-  await client.send(
-    new AddTagsToResourceCommand({
-      ResourceType: "Parameter",
-      ResourceId: name,
-      Tags: [{ Key: "env", Value: "test" }],
-    })
-  );
-});
+Given(
+  "tags [\\{{string}: {string}, {string}: {string}}] were added to parameter {string}",
+  async function (
+    this: LwsWorld,
+    _k1: string,
+    _v1: string,
+    _k2: string,
+    _v2: string,
+    name: string,
+  ) {
+    const client = this.ssmClient();
+    await client.send(
+      new AddTagsToResourceCommand({
+        ResourceType: "Parameter",
+        ResourceId: name,
+        Tags: [{ Key: "env", Value: "test" }],
+      }),
+    );
+  },
+);
 
-Given("tags [{string}] were added to parameter {string}", async function (
-  this: LwsWorld,
-  _tagsStr: string,
-  name: string
-) {
-  const client = this.ssmClient();
-  await client.send(
-    new AddTagsToResourceCommand({
-      ResourceType: "Parameter",
-      ResourceId: name,
-      Tags: [{ Key: "env", Value: "test" }],
-    })
-  );
-});
+Given(
+  "tags [{string}] were added to parameter {string}",
+  async function (this: LwsWorld, _tagsStr: string, name: string) {
+    const client = this.ssmClient();
+    await client.send(
+      new AddTagsToResourceCommand({
+        ResourceType: "Parameter",
+        ResourceId: name,
+        Tags: [{ Key: "env", Value: "test" }],
+      }),
+    );
+  },
+);
 
 // --- When ------------------------------------------------------------------
 
-When("I put parameter {string} with value {string} and type {string}", async function (
-  this: LwsWorld,
-  name: string,
-  value: string,
-  type: string
-) {
-  const client = this.ssmClient();
-  try {
-    const result = await client.send(
-      new PutParameterCommand({ Name: name, Value: value, Type: type as "String" | "SecureString" | "StringList" })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "I put parameter {string} with value {string} and type {string}",
+  async function (this: LwsWorld, name: string, value: string, type: string) {
+    const client = this.ssmClient();
+    try {
+      const result = await client.send(
+        new PutParameterCommand({
+          Name: name,
+          Value: value,
+          Type: type as "String" | "SecureString" | "StringList",
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
-When("I put parameter {string} with value {string} and type {string} and description {string}", async function (
-  this: LwsWorld,
-  name: string,
-  value: string,
-  type: string,
-  description: string
-) {
-  const client = this.ssmClient();
-  try {
-    const result = await client.send(
-      new PutParameterCommand({
-        Name: name,
-        Value: value,
-        Type: type as "String" | "SecureString" | "StringList",
-        Description: description,
-      })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "I put parameter {string} with value {string} and type {string} and description {string}",
+  async function (this: LwsWorld, name: string, value: string, type: string, description: string) {
+    const client = this.ssmClient();
+    try {
+      const result = await client.send(
+        new PutParameterCommand({
+          Name: name,
+          Value: value,
+          Type: type as "String" | "SecureString" | "StringList",
+          Description: description,
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
-When("I put parameter {string} with value {string} and type {string} with overwrite", async function (
-  this: LwsWorld,
-  name: string,
-  value: string,
-  type: string
-) {
-  const client = this.ssmClient();
-  try {
-    const result = await client.send(
-      new PutParameterCommand({
-        Name: name,
-        Value: value,
-        Type: type as "String" | "SecureString" | "StringList",
-        Overwrite: true,
-      })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "I put parameter {string} with value {string} and type {string} with overwrite",
+  async function (this: LwsWorld, name: string, value: string, type: string) {
+    const client = this.ssmClient();
+    try {
+      const result = await client.send(
+        new PutParameterCommand({
+          Name: name,
+          Value: value,
+          Type: type as "String" | "SecureString" | "StringList",
+          Overwrite: true,
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
 When("I get parameter {string}", async function (this: LwsWorld, name: string) {
   const client = this.ssmClient();
@@ -146,19 +147,18 @@ When("I get parameter {string}", async function (this: LwsWorld, name: string) {
   }
 });
 
-When("I get parameters [{string}, {string}]", async function (
-  this: LwsWorld,
-  name1: string,
-  name2: string
-) {
-  const client = this.ssmClient();
-  try {
-    const result = await client.send(new GetParametersCommand({ Names: [name1, name2] }));
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "I get parameters [{string}, {string}]",
+  async function (this: LwsWorld, name1: string, name2: string) {
+    const client = this.ssmClient();
+    try {
+      const result = await client.send(new GetParametersCommand({ Names: [name1, name2] }));
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
 When("I get parameters {string}", async function (this: LwsWorld, namesJson: string) {
   const client = this.ssmClient();
@@ -222,95 +222,95 @@ When("I describe parameters", async function (this: LwsWorld) {
   }
 });
 
-When("I add tags [\\{{string}: {string}, {string}: {string}}] to parameter {string}", async function (
-  this: LwsWorld,
-  _k1: string,
-  _v1: string,
-  _k2: string,
-  _v2: string,
-  name: string
-) {
-  const client = this.ssmClient();
-  try {
-    const result = await client.send(
-      new AddTagsToResourceCommand({
-        ResourceType: "Parameter",
-        ResourceId: name,
-        Tags: [{ Key: "env", Value: "test" }],
-      })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "I add tags [\\{{string}: {string}, {string}: {string}}] to parameter {string}",
+  async function (
+    this: LwsWorld,
+    _k1: string,
+    _v1: string,
+    _k2: string,
+    _v2: string,
+    name: string,
+  ) {
+    const client = this.ssmClient();
+    try {
+      const result = await client.send(
+        new AddTagsToResourceCommand({
+          ResourceType: "Parameter",
+          ResourceId: name,
+          Tags: [{ Key: "env", Value: "test" }],
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
-When("I add tags [{string}] to parameter {string}", async function (
-  this: LwsWorld,
-  _tagsStr: string,
-  name: string
-) {
-  const client = this.ssmClient();
-  try {
-    const result = await client.send(
-      new AddTagsToResourceCommand({
-        ResourceType: "Parameter",
-        ResourceId: name,
-        Tags: [{ Key: "env", Value: "test" }],
-      })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "I add tags [{string}] to parameter {string}",
+  async function (this: LwsWorld, _tagsStr: string, name: string) {
+    const client = this.ssmClient();
+    try {
+      const result = await client.send(
+        new AddTagsToResourceCommand({
+          ResourceType: "Parameter",
+          ResourceId: name,
+          Tags: [{ Key: "env", Value: "test" }],
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
-When("I remove tag keys [{string}] from parameter {string}", async function (
-  this: LwsWorld,
-  _tagKeysStr: string,
-  name: string
-) {
-  const client = this.ssmClient();
-  try {
-    const result = await client.send(
-      new RemoveTagsFromResourceCommand({
-        ResourceType: "Parameter",
-        ResourceId: name,
-        TagKeys: ["env"],
-      })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "I remove tag keys [{string}] from parameter {string}",
+  async function (this: LwsWorld, _tagKeysStr: string, name: string) {
+    const client = this.ssmClient();
+    try {
+      const result = await client.send(
+        new RemoveTagsFromResourceCommand({
+          ResourceType: "Parameter",
+          ResourceId: name,
+          TagKeys: ["env"],
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
-When("I remove tag keys {string} from parameter {string}", async function (
-  this: LwsWorld,
-  tagKeysJson: string,
-  name: string
-) {
-  const client = this.ssmClient();
-  const tagKeys = JSON.parse(tagKeysJson) as string[];
-  try {
-    const result = await client.send(
-      new RemoveTagsFromResourceCommand({
-        ResourceType: "Parameter",
-        ResourceId: name,
-        TagKeys: tagKeys,
-      })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "I remove tag keys {string} from parameter {string}",
+  async function (this: LwsWorld, tagKeysJson: string, name: string) {
+    const client = this.ssmClient();
+    const tagKeys = JSON.parse(tagKeysJson) as string[];
+    try {
+      const result = await client.send(
+        new RemoveTagsFromResourceCommand({
+          ResourceType: "Parameter",
+          ResourceId: name,
+          TagKeys: tagKeys,
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
 When("I list tags for parameter {string}", async function (this: LwsWorld, name: string) {
   const client = this.ssmClient();
   try {
     const result = await client.send(
-      new ListTagsForResourceCommand({ ResourceType: "Parameter", ResourceId: name })
+      new ListTagsForResourceCommand({ ResourceType: "Parameter", ResourceId: name }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -342,16 +342,15 @@ When("I describe SSM parameters", async function (this: LwsWorld) {
 
 // --- Then ------------------------------------------------------------------
 
-Then("parameter {string} will have value {string}", async function (
-  this: LwsWorld,
-  name: string,
-  expectedValue: string
-) {
-  const client = this.ssmClient();
-  const result = await client.send(new GetParameterCommand({ Name: name }));
-  const actualValue = result.Parameter?.Value;
-  assert.strictEqual(actualValue, expectedValue);
-});
+Then(
+  "parameter {string} will have value {string}",
+  async function (this: LwsWorld, name: string, expectedValue: string) {
+    const client = this.ssmClient();
+    const result = await client.send(new GetParameterCommand({ Name: name }));
+    const actualValue = result.Parameter?.Value;
+    assert.strictEqual(actualValue, expectedValue);
+  },
+);
 
 Then("the parameter list will include {string}", function (this: LwsWorld, expectedName: string) {
   const output = this.lastResult.output as {
@@ -360,25 +359,25 @@ Then("the parameter list will include {string}", function (this: LwsWorld, expec
   const names = (output?.Parameters ?? []).map((p) => p.Name ?? "");
   assert.ok(
     names.includes(expectedName),
-    `Expected parameter list to include "${expectedName}" but got: ${names.join(", ")}`
+    `Expected parameter list to include "${expectedName}" but got: ${names.join(", ")}`,
   );
 });
 
-Then("parameter {string} will not appear in describe-parameters", async function (
-  this: LwsWorld,
-  name: string
-) {
-  const client = this.ssmClient();
-  const result = await client.send(new DescribeParametersCommand({}));
-  const names = (result.Parameters ?? []).map((p) => p.Name ?? "");
-  assert.ok(!names.includes(name), `Expected parameter "${name}" to not exist`);
-});
+Then(
+  "parameter {string} will not appear in describe-parameters",
+  async function (this: LwsWorld, name: string) {
+    const client = this.ssmClient();
+    const result = await client.send(new DescribeParametersCommand({}));
+    const names = (result.Parameters ?? []).map((p) => p.Name ?? "");
+    assert.ok(!names.includes(name), `Expected parameter "${name}" to not exist`);
+  },
+);
 
-Then("the output will contain parameter value {string}", function (
-  this: LwsWorld,
-  expectedValue: string
-) {
-  const output = this.lastResult.output as { Parameter?: { Value?: string } };
-  const actualValue = output?.Parameter?.Value;
-  assert.strictEqual(actualValue, expectedValue);
-});
+Then(
+  "the output will contain parameter value {string}",
+  function (this: LwsWorld, expectedValue: string) {
+    const output = this.lastResult.output as { Parameter?: { Value?: string } };
+    const actualValue = output?.Parameter?.Value;
+    assert.strictEqual(actualValue, expectedValue);
+  },
+);

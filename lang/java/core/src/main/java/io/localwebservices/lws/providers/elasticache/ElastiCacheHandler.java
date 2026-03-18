@@ -10,7 +10,6 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** ElastiCache wire-protocol HTTP handler (AWS Query protocol). */
 public class ElastiCacheHandler implements HttpHandler {
@@ -18,19 +17,12 @@ public class ElastiCacheHandler implements HttpHandler {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private final ServerState state;
-  private final Map<String, Map<String, Object>> cacheClusters = new ConcurrentHashMap<>();
-  private final Map<String, Map<String, Object>> replicationGroups = new ConcurrentHashMap<>();
-  private final Map<String, Map<String, Object>> subnetGroups = new ConcurrentHashMap<>();
+  private final ElastiCacheStore store;
 
   public ElastiCacheHandler(ServerState state) {
     this.state = state;
-    state.resetCallbacks.add(this::reset);
-  }
-
-  private void reset() {
-    cacheClusters.clear();
-    replicationGroups.clear();
-    subnetGroups.clear();
+    this.store = new ElastiCacheStore();
+    state.resetCallbacks.add(store::reset);
   }
 
   @Override
@@ -75,20 +67,7 @@ public class ElastiCacheHandler implements HttpHandler {
     switch (action) {
       case "CreateCacheCluster":
         {
-          String id = params.get("CacheClusterId");
-          Map<String, Object> cluster = new LinkedHashMap<>();
-          cluster.put("CacheClusterId", id);
-          cluster.put("CacheClusterStatus", "available");
-          cluster.put("Engine", params.getOrDefault("Engine", "redis"));
-          cluster.put("EngineVersion", params.getOrDefault("EngineVersion", "7.0.7"));
-          cluster.put("NumCacheNodes", Integer.parseInt(params.getOrDefault("NumCacheNodes", "1")));
-          cluster.put("CacheNodeType", params.getOrDefault("CacheNodeType", "cache.t3.micro"));
-          Map<String, Object> node = new LinkedHashMap<>();
-          node.put("CacheNodeId", "0001");
-          node.put("CacheNodeStatus", "available");
-          node.put("Endpoint", Map.of("Address", "localhost", "Port", 6379));
-          cluster.put("CacheNodes", List.of(node));
-          cacheClusters.put(id, cluster);
+          Map<String, Object> cluster = store.createCacheCluster(params);
           sendJson(
               exchange, 200, Map.of("CreateCacheClusterResult", Map.of("CacheCluster", cluster)));
           break;
@@ -96,7 +75,7 @@ public class ElastiCacheHandler implements HttpHandler {
       case "DeleteCacheCluster":
         {
           String id = params.get("CacheClusterId");
-          Map<String, Object> cluster = cacheClusters.remove(id);
+          Map<String, Object> cluster = store.deleteCacheCluster(id);
           if (cluster == null) {
             sendJson(
                 exchange,
@@ -112,31 +91,14 @@ public class ElastiCacheHandler implements HttpHandler {
       case "DescribeCacheClusters":
         {
           String id = params.get("CacheClusterId");
-          List<Map<String, Object>> list = new ArrayList<>();
-          if (id != null) {
-            Map<String, Object> cluster = cacheClusters.get(id);
-            if (cluster != null) list.add(cluster);
-          } else {
-            list.addAll(cacheClusters.values());
-          }
+          List<Map<String, Object>> list = store.describeCacheClusters(id);
           sendJson(
               exchange, 200, Map.of("DescribeCacheClustersResult", Map.of("CacheClusters", list)));
           break;
         }
       case "CreateReplicationGroup":
         {
-          String id = params.get("ReplicationGroupId");
-          Map<String, Object> rg = new LinkedHashMap<>();
-          rg.put("ReplicationGroupId", id);
-          rg.put("Status", "available");
-          rg.put("Description", params.getOrDefault("ReplicationGroupDescription", ""));
-          rg.put("MemberClusters", List.of(id + "-001"));
-          Map<String, Object> nodeGroup = new LinkedHashMap<>();
-          nodeGroup.put("NodeGroupId", "0001");
-          nodeGroup.put("Status", "available");
-          nodeGroup.put("PrimaryEndpoint", Map.of("Address", "localhost", "Port", 6379));
-          rg.put("NodeGroups", List.of(nodeGroup));
-          replicationGroups.put(id, rg);
+          Map<String, Object> rg = store.createReplicationGroup(params);
           sendJson(
               exchange,
               200,
@@ -146,7 +108,7 @@ public class ElastiCacheHandler implements HttpHandler {
       case "DeleteReplicationGroup":
         {
           String id = params.get("ReplicationGroupId");
-          Map<String, Object> rg = replicationGroups.remove(id);
+          Map<String, Object> rg = store.deleteReplicationGroup(id);
           if (rg == null) {
             sendJson(
                 exchange,
@@ -167,13 +129,7 @@ public class ElastiCacheHandler implements HttpHandler {
       case "DescribeReplicationGroups":
         {
           String id = params.get("ReplicationGroupId");
-          List<Map<String, Object>> list = new ArrayList<>();
-          if (id != null) {
-            Map<String, Object> rg = replicationGroups.get(id);
-            if (rg != null) list.add(rg);
-          } else {
-            list.addAll(replicationGroups.values());
-          }
+          List<Map<String, Object>> list = store.describeReplicationGroups(id);
           sendJson(
               exchange,
               200,
@@ -182,15 +138,7 @@ public class ElastiCacheHandler implements HttpHandler {
         }
       case "CreateCacheSubnetGroup":
         {
-          String name = params.get("CacheSubnetGroupName");
-          Map<String, Object> sg = new LinkedHashMap<>();
-          sg.put("CacheSubnetGroupName", name);
-          sg.put(
-              "CacheSubnetGroupDescription",
-              params.getOrDefault("CacheSubnetGroupDescription", ""));
-          sg.put("VpcId", "vpc-00000000");
-          sg.put("Subnets", List.of());
-          subnetGroups.put(name, sg);
+          Map<String, Object> sg = store.createCacheSubnetGroup(params);
           sendJson(
               exchange,
               200,
@@ -200,20 +148,14 @@ public class ElastiCacheHandler implements HttpHandler {
       case "DeleteCacheSubnetGroup":
         {
           String name = params.get("CacheSubnetGroupName");
-          subnetGroups.remove(name);
+          store.deleteCacheSubnetGroup(name);
           sendJson(exchange, 200, Map.of());
           break;
         }
       case "DescribeCacheSubnetGroups":
         {
           String name = params.get("CacheSubnetGroupName");
-          List<Map<String, Object>> list = new ArrayList<>();
-          if (name != null) {
-            Map<String, Object> sg = subnetGroups.get(name);
-            if (sg != null) list.add(sg);
-          } else {
-            list.addAll(subnetGroups.values());
-          }
+          List<Map<String, Object>> list = store.describeCacheSubnetGroups(name);
           sendJson(
               exchange,
               200,

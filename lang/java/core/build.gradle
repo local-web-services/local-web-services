@@ -5,6 +5,7 @@ plugins {
     id 'pmd'
     id 'com.github.spotbugs' version '6.1.7'
     id 'com.diffplug.spotless' version '6.25.0'
+    id 'jacoco'
 }
 
 group = 'io.localwebservices'
@@ -38,11 +39,18 @@ sourceSets {
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
     }
+    unitTest {
+        java { srcDir 'src/unitTest/java' }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
 }
 
 configurations {
     architectureTestImplementation.extendsFrom testImplementation
     architectureTestRuntimeOnly.extendsFrom testRuntimeOnly
+    unitTestImplementation.extendsFrom testImplementation
+    unitTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 dependencies {
@@ -69,6 +77,9 @@ dependencies {
     architectureTestImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     architectureTestImplementation 'org.junit.platform:junit-platform-launcher:1.10.2'
     architectureTestImplementation files('../arch_tests/build/libs/arch_tests.jar')
+
+    unitTestImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    unitTestRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
 }
 
 checkstyle {
@@ -112,3 +123,37 @@ task architectureTest(type: Test) {
     systemProperty 'arch.src.root', "${projectDir}/src/main/java"
     systemProperty 'arch.tests.root', "${projectDir}/src/test/java"
 }
+
+task unitTest(type: Test) {
+    testClassesDirs = sourceSets.unitTest.output.classesDirs
+    classpath = sourceSets.unitTest.runtimeClasspath
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}
+
+task jacocoUnitTestReport(type: JacocoReport) {
+    executionData unitTest
+    sourceSets sourceSets.main
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, include: ['**/*Store.class', '**/ServerState.class'])
+    }))
+}
+
+task jacocoUnitTestCoverageVerification(type: JacocoCoverageVerification) {
+    executionData unitTest
+    sourceSets sourceSets.main
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, include: ['**/*Store.class', '**/ServerState.class'])
+    }))
+    violationRules {
+        rule {
+            limit { counter = 'LINE'; value = 'COVEREDRATIO'; minimum = 0.95 }
+            limit { counter = 'BRANCH'; value = 'COVEREDRATIO'; minimum = 0.95 }
+        }
+    }
+}
+
+unitTest.finalizedBy jacocoUnitTestReport
+unitTest.finalizedBy jacocoUnitTestCoverageVerification

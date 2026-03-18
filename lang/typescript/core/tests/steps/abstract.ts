@@ -175,7 +175,7 @@ Then("the operation is rejected", function (this: LwsWorld) {
   assert.strictEqual(
     this.lastResult.success,
     false,
-    "Expected operation to be rejected but it succeeded"
+    "Expected operation to be rejected but it succeeded",
   );
 });
 
@@ -183,7 +183,7 @@ Then(/^every .+$/, function (this: LwsWorld) {
   // no-op: invariant check — not verifiable via API
 });
 
-Then("\"GSI\" pending write count is never negative", function (this: LwsWorld) {
+Then('"GSI" pending write count is never negative', function (this: LwsWorld) {
   // no-op: invariant
 });
 
@@ -231,9 +231,12 @@ Then("synchronous executions only run on express state machines", function (this
   // no-op: invariant
 });
 
-Then("a deleted secret with a closed recovery window cannot be restored", function (this: LwsWorld) {
-  // no-op: invariant
-});
+Then(
+  "a deleted secret with a closed recovery window cannot be restored",
+  function (this: LwsWorld) {
+    // no-op: invariant
+  },
+);
 
 Then("all secret names are unique", function (this: LwsWorld) {
   // no-op: invariant
@@ -260,7 +263,9 @@ Given("the queue is already {string}", async function (this: LwsWorld, state: st
     const client = this.sqsClient();
     try {
       await client.send(new CreateQueueCommand({ QueueName: TEST_SQS_QUEUE }));
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return;
   }
   if (state === "CREATING") {
@@ -304,7 +309,11 @@ Given("the queue exists", async function (this: LwsWorld) {
 
 Given("the queue is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected queue to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected queue to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: queue is ACTIVE by default when it exists
@@ -320,7 +329,9 @@ Given("the queue is not {string}", async function (this: LwsWorld, state: string
     const client = this.sqsClient();
     try {
       await client.send(new CreateQueueCommand({ QueueName: TEST_SQS_QUEUE }));
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -351,21 +362,25 @@ Given("the message exists", async function (this: LwsWorld) {
   }
   const queueUrl = this.sqsQueueUrl(TEST_SQS_QUEUE);
   const sendResult = await client.send(
-    new SendMessageCommand({ QueueUrl: queueUrl, MessageBody: TEST_SQS_MSG })
+    new SendMessageCommand({ QueueUrl: queueUrl, MessageBody: TEST_SQS_MSG }),
   );
   void sendResult;
 });
 
 Given("the message is {string}", async function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected message to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected message to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   if (state === "IN_FLIGHT") {
     const client = this.sqsClient();
     const queueUrl = this.sqsQueueUrl(TEST_SQS_QUEUE);
     const result = await client.send(
-      new ReceiveMessageCommand({ QueueUrl: queueUrl, MaxNumberOfMessages: 1, WaitTimeSeconds: 0 })
+      new ReceiveMessageCommand({ QueueUrl: queueUrl, MaxNumberOfMessages: 1, WaitTimeSeconds: 0 }),
     );
     this.lastReceiptHandle = result.Messages?.[0]?.ReceiptHandle;
     return;
@@ -378,7 +393,9 @@ Given("the message is not {string}", async function (this: LwsWorld, _state: str
   const client = this.sqsClient();
   const queueUrl = this.sqsQueueUrl(TEST_SQS_QUEUE);
   try {
-    await client.send(new ReceiveMessageCommand({ QueueUrl: queueUrl, MaxNumberOfMessages: 1, WaitTimeSeconds: 0 }));
+    await client.send(
+      new ReceiveMessageCommand({ QueueUrl: queueUrl, MaxNumberOfMessages: 1, WaitTimeSeconds: 0 }),
+    );
   } catch {
     // ignore
   }
@@ -404,7 +421,9 @@ Given("the message's queue is not {string}", async function (this: LwsWorld, sta
     const client = this.sqsClient();
     try {
       await client.send(new CreateQueueCommand({ QueueName: TEST_SQS_QUEUE }));
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -412,7 +431,6 @@ Given("the message's queue is not {string}", async function (this: LwsWorld, sta
   }
   return "pending";
 });
-
 
 Given("the queue has a maximum receive count configured", function (this: LwsWorld) {
   return "pending";
@@ -451,7 +469,9 @@ Given("the dead-letter queue is not {string}", async function (this: LwsWorld, s
     const client = this.sqsClient();
     try {
       await client.send(new CreateQueueCommand({ QueueName: TEST_SQS_DLQ }));
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -494,7 +514,7 @@ When("a message is sent to the queue", async function (this: LwsWorld) {
   const queueUrl = this.sqsQueueUrl(TEST_SQS_QUEUE);
   try {
     const result = await client.send(
-      new SendMessageCommand({ QueueUrl: queueUrl, MessageBody: TEST_SQS_MSG })
+      new SendMessageCommand({ QueueUrl: queueUrl, MessageBody: TEST_SQS_MSG }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -507,7 +527,7 @@ When("a message is received from the queue", async function (this: LwsWorld) {
   const queueUrl = this.sqsQueueUrl(TEST_SQS_QUEUE);
   try {
     const result = await client.send(
-      new ReceiveMessageCommand({ QueueUrl: queueUrl, MaxNumberOfMessages: 1, WaitTimeSeconds: 0 })
+      new ReceiveMessageCommand({ QueueUrl: queueUrl, MaxNumberOfMessages: 1, WaitTimeSeconds: 0 }),
     );
     this.lastReceiptHandle = (result.Messages ?? [])[0]?.ReceiptHandle;
     this.lastResult = { success: true, output: result };
@@ -521,7 +541,7 @@ When("an in-flight message is deleted", async function (this: LwsWorld) {
   const queueUrl = this.sqsQueueUrl(TEST_SQS_QUEUE);
   try {
     const result = await client.send(
-      new DeleteMessageCommand({ QueueUrl: queueUrl, ReceiptHandle: this.lastReceiptHandle! })
+      new DeleteMessageCommand({ QueueUrl: queueUrl, ReceiptHandle: this.lastReceiptHandle! }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -534,7 +554,7 @@ When("queue attributes are retrieved", async function (this: LwsWorld) {
   const queueUrl = this.sqsQueueUrl(TEST_SQS_QUEUE);
   try {
     const result = await client.send(
-      new GetQueueAttributesCommand({ QueueUrl: queueUrl, AttributeNames: ["All"] })
+      new GetQueueAttributesCommand({ QueueUrl: queueUrl, AttributeNames: ["All"] }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -562,7 +582,7 @@ When("message visibility timeout is changed", async function (this: LwsWorld) {
         QueueUrl: queueUrl,
         ReceiptHandle: this.lastReceiptHandle!,
         VisibilityTimeout: 60,
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -570,9 +590,12 @@ When("message visibility timeout is changed", async function (this: LwsWorld) {
   }
 });
 
-When("a message exceeding its receive count is moved to the dead-letter queue", function (this: LwsWorld) {
-  return "pending";
-});
+When(
+  "a message exceeding its receive count is moved to the dead-letter queue",
+  function (this: LwsWorld) {
+    return "pending";
+  },
+);
 
 When("a message visibility timeout expires", function (this: LwsWorld) {
   return "pending";
@@ -582,37 +605,59 @@ When("a message visibility timeout expires", function (this: LwsWorld) {
 // SQS — Then
 // ---------------------------------------------------------------------------
 
-
-Then("the queue is \"DELETED\" and its messages are removed", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected queue deletion to succeed but got: ${JSON.stringify(this.lastResult.output)}`);
+Then('the queue is "DELETED" and its messages are removed', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected queue deletion to succeed but got: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the message is \"AVAILABLE\" for delivery", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected message send to succeed but got: ${JSON.stringify(this.lastResult.output)}`);
+Then('the message is "AVAILABLE" for delivery', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected message send to succeed but got: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
-
 
 Then("the message is removed from the queue", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected delete message to succeed but got: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected delete message to succeed but got: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the queue attributes are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected get queue attributes to succeed but got: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected get queue attributes to succeed but got: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("all messages in the queue are \"DELETED\"", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected purge to succeed but got: ${JSON.stringify(this.lastResult.output)}`);
+Then('all messages in the queue are "DELETED"', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected purge to succeed but got: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the message visibility is updated", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected visibility change to succeed but got: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected visibility change to succeed but got: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the message is \"AVAILABLE\" in the dead-letter queue", function (this: LwsWorld) {
+Then('the message is "AVAILABLE" in the dead-letter queue', function (this: LwsWorld) {
   return "pending";
 });
 
-Then("the message becomes \"AVAILABLE\" again", function (this: LwsWorld) {
+Then('the message becomes "AVAILABLE" again', function (this: LwsWorld) {
   return "pending";
 });
 
@@ -638,7 +683,7 @@ Given("the table exists and is {string}", async function (this: LwsWorld, state:
         KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
-      })
+      }),
     );
   } catch {
     // ignore if already exists
@@ -652,24 +697,30 @@ Given("the table is already {string}", async function (this: LwsWorld, state: st
   if (state === "ACTIVE") {
     const client = this.dynamodbClient();
     try {
-      await client.send(new CreateTableCommand({
-        TableName: TEST_DDB_TABLE,
-        KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
-        AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
-        BillingMode: "PAY_PER_REQUEST",
-      }));
-    } catch { /* ignore */ }
+      await client.send(
+        new CreateTableCommand({
+          TableName: TEST_DDB_TABLE,
+          KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
+          AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
+          BillingMode: "PAY_PER_REQUEST",
+        }),
+      );
+    } catch {
+      /* ignore */
+    }
     return;
   }
   if (state === "CREATING") {
     await cli.lifecycleSet(this.managementPort, "dynamodb", { createDwellMs: 10000 });
     const client = this.dynamodbClient();
-    await client.send(new CreateTableCommand({
-      TableName: TEST_DDB_TABLE,
-      KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
-      AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
-      BillingMode: "PAY_PER_REQUEST",
-    }));
+    await client.send(
+      new CreateTableCommand({
+        TableName: TEST_DDB_TABLE,
+        KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
+        AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
+        BillingMode: "PAY_PER_REQUEST",
+      }),
+    );
     return;
   }
   if (state === "DELETING") {
@@ -695,7 +746,7 @@ Given("the table already exists", async function (this: LwsWorld) {
       KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
       AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
       BillingMode: "PAY_PER_REQUEST",
-    })
+    }),
   );
 });
 
@@ -708,7 +759,7 @@ Given("the table exists", async function (this: LwsWorld) {
         KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
-      })
+      }),
     );
   } catch {
     // ignore if already exists
@@ -730,13 +781,17 @@ Given("the table is not {string}", async function (this: LwsWorld, state: string
   if (state === "CREATING" || state === "DELETING") {
     const client = this.dynamodbClient();
     try {
-      await client.send(new CreateTableCommand({
-        TableName: TEST_DDB_TABLE,
-        KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
-        AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
-        BillingMode: "PAY_PER_REQUEST",
-      }));
-    } catch { /* ignore if already exists */ }
+      await client.send(
+        new CreateTableCommand({
+          TableName: TEST_DDB_TABLE,
+          KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
+          AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
+          BillingMode: "PAY_PER_REQUEST",
+        }),
+      );
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -745,11 +800,11 @@ Given("the table is not {string}", async function (this: LwsWorld, state: string
   return "pending";
 });
 
-Given("the table does not have pending \"GSI\" propagation", function (this: LwsWorld) {
+Given('the table does not have pending "GSI" propagation', function (this: LwsWorld) {
   // no-op
 });
 
-Given("the table has pending \"GSI\" propagation", function (this: LwsWorld) {
+Given('the table has pending "GSI" propagation', function (this: LwsWorld) {
   return "pending";
 });
 
@@ -766,7 +821,7 @@ Given("the item exists", async function (this: LwsWorld) {
         KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
-      })
+      }),
     );
   } catch {
     // ignore
@@ -775,7 +830,7 @@ Given("the item exists", async function (this: LwsWorld) {
     new PutItemCommand({
       TableName: TEST_DDB_TABLE,
       Item: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
-    })
+    }),
   );
 });
 
@@ -786,7 +841,7 @@ Given("the item is not present", async function (this: LwsWorld) {
       new DeleteItemCommand({
         TableName: TEST_DDB_TABLE,
         Key: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
-      })
+      }),
     );
   } catch {
     // ignore
@@ -802,7 +857,7 @@ Given("the item is present", async function (this: LwsWorld) {
         KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
-      })
+      }),
     );
   } catch {
     // ignore
@@ -811,31 +866,31 @@ Given("the item is present", async function (this: LwsWorld) {
     new PutItemCommand({
       TableName: TEST_DDB_TABLE,
       Item: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
-    })
+    }),
   );
 });
 
-Given("a transaction is \"PENDING\"", function (this: LwsWorld) {
+Given('a transaction is "PENDING"', function (this: LwsWorld) {
   return "pending";
 });
 
-Given("no transaction is \"PENDING\"", function (this: LwsWorld) {
+Given('no transaction is "PENDING"', function (this: LwsWorld) {
   // no-op
 });
 
-Given("the transaction is \"COMMITTED\"", function (this: LwsWorld) {
+Given('the transaction is "COMMITTED"', function (this: LwsWorld) {
   return "pending";
 });
 
-Given("the transaction is \"ROLLED_BACK\"", function (this: LwsWorld) {
+Given('the transaction is "ROLLED_BACK"', function (this: LwsWorld) {
   return "pending";
 });
 
-Given("the transaction is not \"COMMITTED\"", function (this: LwsWorld) {
+Given('the transaction is not "COMMITTED"', function (this: LwsWorld) {
   // no-op
 });
 
-Given("the transaction is not \"ROLLED_BACK\"", function (this: LwsWorld) {
+Given('the transaction is not "ROLLED_BACK"', function (this: LwsWorld) {
   // no-op
 });
 
@@ -852,14 +907,14 @@ Given("the transaction's table exists", async function (this: LwsWorld) {
         KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
-      })
+      }),
     );
   } catch {
     // ignore
   }
 });
 
-Given("the transaction's table is \"ACTIVE\"", async function (this: LwsWorld) {
+Given('the transaction\'s table is "ACTIVE"', async function (this: LwsWorld) {
   const client = this.dynamodbClient();
   try {
     await client.send(
@@ -868,22 +923,24 @@ Given("the transaction's table is \"ACTIVE\"", async function (this: LwsWorld) {
         KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
-      })
+      }),
     );
   } catch {
     // ignore
   }
 });
 
-Given("the transaction's table is not \"ACTIVE\"", async function (this: LwsWorld) {
+Given('the transaction\'s table is not "ACTIVE"', async function (this: LwsWorld) {
   await cli.lifecycleSet(this.managementPort, "dynamodb", { createDwellMs: 10000 });
   const client = this.dynamodbClient();
-  await client.send(new CreateTableCommand({
-    TableName: TEST_DDB_TABLE,
-    KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
-    AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
-    BillingMode: "PAY_PER_REQUEST",
-  }));
+  await client.send(
+    new CreateTableCommand({
+      TableName: TEST_DDB_TABLE,
+      KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
+      AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
+      BillingMode: "PAY_PER_REQUEST",
+    }),
+  );
 });
 
 Given("reads are not throttled", function (this: LwsWorld) {
@@ -910,11 +967,11 @@ Given("a transaction is currently in progress", function (this: LwsWorld) {
   return "pending";
 });
 
-Given("there are no writes pending propagation to the \"GSI\"", function (this: LwsWorld) {
+Given('there are no writes pending propagation to the "GSI"', function (this: LwsWorld) {
   // no-op
 });
 
-Given("there are writes pending propagation to the \"GSI\"", function (this: LwsWorld) {
+Given('there are writes pending propagation to the "GSI"', function (this: LwsWorld) {
   return "pending";
 });
 
@@ -931,7 +988,7 @@ When("a table is created", async function (this: LwsWorld) {
         KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -948,7 +1005,7 @@ When("a DynamoDB table is created", async function (this: LwsWorld) {
         KeySchema: [{ AttributeName: TEST_DDB_KEY, KeyType: "HASH" }],
         AttributeDefinitions: [{ AttributeName: TEST_DDB_KEY, AttributeType: "S" }],
         BillingMode: "PAY_PER_REQUEST",
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -993,7 +1050,7 @@ When("an item is written to the table", async function (this: LwsWorld) {
       new PutItemCommand({
         TableName: TEST_DDB_TABLE,
         Item: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1008,7 +1065,7 @@ When("an item is read from the table", async function (this: LwsWorld) {
       new GetItemCommand({
         TableName: TEST_DDB_TABLE,
         Key: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1025,7 +1082,7 @@ When("an existing item is deleted from the table", async function (this: LwsWorl
         Key: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
         ConditionExpression: "attribute_exists(#pk)",
         ExpressionAttributeNames: { "#pk": TEST_DDB_KEY },
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1044,7 +1101,7 @@ When("an existing item is updated in the table", async function (this: LwsWorld)
         ExpressionAttributeNames: { "#v": "val", "#pk": TEST_DDB_KEY },
         ExpressionAttributeValues: { ":v": { S: "updated" } },
         ConditionExpression: "attribute_exists(#pk)",
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1071,7 +1128,7 @@ When("items are queried from the table by key", async function (this: LwsWorld) 
         KeyConditionExpression: "#k = :v",
         ExpressionAttributeNames: { "#k": TEST_DDB_KEY },
         ExpressionAttributeValues: { ":v": { S: TEST_DDB_KEY_VAL } },
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1088,7 +1145,7 @@ When("an item is conditionally written to the table", async function (this: LwsW
         Item: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
         ConditionExpression: "attribute_not_exists(#k)",
         ExpressionAttributeNames: { "#k": TEST_DDB_KEY },
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1096,32 +1153,35 @@ When("an item is conditionally written to the table", async function (this: LwsW
   }
 });
 
-When("a transactional write is initiated across one or more items", async function (this: LwsWorld) {
-  const client = this.dynamodbClient();
-  try {
-    const result = await client.send(
-      new TransactWriteItemsCommand({
-        TransactItems: [
-          {
-            Put: {
-              TableName: TEST_DDB_TABLE,
-              Item: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
+When(
+  "a transactional write is initiated across one or more items",
+  async function (this: LwsWorld) {
+    const client = this.dynamodbClient();
+    try {
+      const result = await client.send(
+        new TransactWriteItemsCommand({
+          TransactItems: [
+            {
+              Put: {
+                TableName: TEST_DDB_TABLE,
+                Item: { [TEST_DDB_KEY]: { S: TEST_DDB_KEY_VAL } },
+              },
             },
-          },
-        ],
-      })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+          ],
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
 When("a table finishes creating and becomes active", function (this: LwsWorld) {
   return "pending";
 });
 
-When("a \"GSI\" catches up with pending write propagation", function (this: LwsWorld) {
+When('a "GSI" catches up with pending write propagation', function (this: LwsWorld) {
   return "pending";
 });
 
@@ -1149,32 +1209,56 @@ When("write throttling is toggled on or off", function (this: LwsWorld) {
 // DynamoDB — Then
 // ---------------------------------------------------------------------------
 
-Then("the table is \"ACTIVE\" and ready for reads and writes", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected table to be ACTIVE: ${JSON.stringify(this.lastResult.output)}`);
+Then('the table is "ACTIVE" and ready for reads and writes', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected table to be ACTIVE: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the table is in \"CREATING\" state", function (this: LwsWorld) {
+Then('the table is in "CREATING" state', function (this: LwsWorld) {
   return "pending";
 });
 
-Then("the table is marked as \"DELETED\"", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected delete to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the table is marked as "DELETED"', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected delete to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the table metadata is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected describe table to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected describe table to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of tables is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list tables to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list tables to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the item value is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected get item to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected get item to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the item is deleted or unchanged (conditional delete)", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected delete to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected delete to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the item is deleted or unchanged \\(conditional delete)", function (this: LwsWorld) {
@@ -1182,7 +1266,11 @@ Then("the item is deleted or unchanged \\(conditional delete)", function (this: 
 });
 
 Then("the item is updated or unchanged (conditional update)", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected update to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected update to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the item is updated or unchanged \\(conditional update)", function (this: LwsWorld) {
@@ -1193,27 +1281,41 @@ Then("items only exist in non-deleted tables", function (this: LwsWorld) {
   // no-op: invariant maintained by implementation
 });
 
-Then("the table is marked as {string} and all its items are removed", function (this: LwsWorld, _state: string) {
-  // no-op: invariant check
-});
+Then(
+  "the table is marked as {string} and all its items are removed",
+  function (this: LwsWorld, _state: string) {
+    // no-op: invariant check
+  },
+);
 
-Then("the item is written if the condition holds, otherwise the write is rejected", function (this: LwsWorld) {
-  // May succeed or fail — both are valid outcomes for conditional write
-});
+Then(
+  "the item is written if the condition holds, otherwise the write is rejected",
+  function (this: LwsWorld) {
+    // May succeed or fail — both are valid outcomes for conditional write
+  },
+);
 
 Then("matching items are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected query to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected query to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("all items are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected scan to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected scan to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the transaction is \"PENDING\"", function (this: LwsWorld) {
+Then('the transaction is "PENDING"', function (this: LwsWorld) {
   return "pending";
 });
 
-Then("the transaction is \"COMMITTED\" or \"ROLLED_BACK\"", function (this: LwsWorld) {
+Then('the transaction is "COMMITTED" or "ROLLED_BACK"', function (this: LwsWorld) {
   return "pending";
 });
 
@@ -1221,11 +1323,11 @@ Then("the transaction slot is free", function (this: LwsWorld) {
   return "pending";
 });
 
-Then("the \"GSI\" is consistent with the table", function (this: LwsWorld) {
+Then('the "GSI" is consistent with the table', function (this: LwsWorld) {
   return "pending";
 });
 
-Then("the item exists in the table and \"GSI\" propagation is pending", function (this: LwsWorld) {
+Then('the item exists in the table and "GSI" propagation is pending', function (this: LwsWorld) {
   return "pending";
 });
 
@@ -1286,7 +1388,11 @@ Given("the bucket does not exist", function (this: LwsWorld) {
 
 Given("the bucket is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected bucket to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected bucket to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: bucket is ACTIVE by default when it exists
@@ -1300,7 +1406,9 @@ Given("the bucket is not {string}", async function (this: LwsWorld, state: strin
     const client = this.s3Client();
     try {
       await client.send(new CreateBucketCommand({ Bucket: TEST_S3_BUCKET }));
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -1334,7 +1442,9 @@ Given("the source bucket is not {string}", async function (this: LwsWorld, state
     const client = this.s3Client();
     try {
       await client.send(new CreateBucketCommand({ Bucket: TEST_S3_SRC_BUCKET }));
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -1368,7 +1478,9 @@ Given("the destination bucket is not {string}", async function (this: LwsWorld, 
     const client = this.s3Client();
     try {
       await client.send(new CreateBucketCommand({ Bucket: TEST_S3_DST_BUCKET }));
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -1389,7 +1501,11 @@ Given("the object exists in the bucket", async function (this: LwsWorld) {
     // ignore
   }
   await client.send(
-    new PutObjectCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY, Body: Buffer.from(TEST_S3_BODY) })
+    new PutObjectCommand({
+      Bucket: TEST_S3_BUCKET,
+      Key: TEST_S3_KEY,
+      Body: Buffer.from(TEST_S3_BODY),
+    }),
   );
 });
 
@@ -1413,7 +1529,11 @@ Given("the source object exists", async function (this: LwsWorld) {
     // ignore
   }
   await client.send(
-    new PutObjectCommand({ Bucket: TEST_S3_SRC_BUCKET, Key: TEST_S3_KEY, Body: Buffer.from(TEST_S3_BODY) })
+    new PutObjectCommand({
+      Bucket: TEST_S3_SRC_BUCKET,
+      Key: TEST_S3_KEY,
+      Body: Buffer.from(TEST_S3_BODY),
+    }),
   );
 });
 
@@ -1437,7 +1557,7 @@ Given("the upload already exists", async function (this: LwsWorld) {
     // ignore
   }
   const result = await client.send(
-    new CreateMultipartUploadCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY })
+    new CreateMultipartUploadCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }),
   );
   this.lastUploadId = result.UploadId;
   this.lastBucket = TEST_S3_BUCKET;
@@ -1456,7 +1576,7 @@ Given("the upload exists", async function (this: LwsWorld) {
     // ignore
   }
   const result = await client.send(
-    new CreateMultipartUploadCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY })
+    new CreateMultipartUploadCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }),
   );
   this.lastUploadId = result.UploadId;
   this.lastBucket = TEST_S3_BUCKET;
@@ -1465,7 +1585,11 @@ Given("the upload exists", async function (this: LwsWorld) {
 
 Given("the upload has at least one part", async function (this: LwsWorld) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected upload part to succeed but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected upload part to succeed but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   const client = this.s3Client();
@@ -1476,7 +1600,7 @@ Given("the upload has at least one part", async function (this: LwsWorld) {
       UploadId: this.lastUploadId!,
       PartNumber: 1,
       Body: Buffer.from(TEST_S3_BODY),
-    })
+    }),
   );
   this.lastETag = JSON.stringify([{ PartNumber: 1, ETag: partResult.ETag ?? "" }]);
 });
@@ -1487,7 +1611,11 @@ Given("the upload has no parts", function (this: LwsWorld) {
 
 Given("the upload is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected upload to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected upload to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: upload is IN_PROGRESS by default when it exists
@@ -1545,7 +1673,11 @@ When("an object is uploaded to a bucket", async function (this: LwsWorld) {
   const client = this.s3Client();
   try {
     const result = await client.send(
-      new PutObjectCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY, Body: Buffer.from(TEST_S3_BODY) })
+      new PutObjectCommand({
+        Bucket: TEST_S3_BUCKET,
+        Key: TEST_S3_KEY,
+        Body: Buffer.from(TEST_S3_BODY),
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1556,7 +1688,9 @@ When("an object is uploaded to a bucket", async function (this: LwsWorld) {
 When("an object is retrieved from a bucket", async function (this: LwsWorld) {
   const client = this.s3Client();
   try {
-    const result = await client.send(new GetObjectCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }));
+    const result = await client.send(
+      new GetObjectCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }),
+    );
     const bodyStream = result.Body as Readable;
     const chunks: Buffer[] = [];
     for await (const chunk of bodyStream) {
@@ -1574,7 +1708,9 @@ When("an object is retrieved from a bucket", async function (this: LwsWorld) {
 When("an object is deleted from a bucket", async function (this: LwsWorld) {
   const client = this.s3Client();
   try {
-    const result = await client.send(new DeleteObjectCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }));
+    const result = await client.send(
+      new DeleteObjectCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }),
+    );
     this.lastResult = { success: true, output: result };
   } catch (err) {
     this.lastResult = { success: false, output: err, error: err };
@@ -1584,7 +1720,9 @@ When("an object is deleted from a bucket", async function (this: LwsWorld) {
 When("object metadata is retrieved from a bucket", async function (this: LwsWorld) {
   const client = this.s3Client();
   try {
-    const result = await client.send(new HeadObjectCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }));
+    const result = await client.send(
+      new HeadObjectCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }),
+    );
     this.lastResult = { success: true, output: result };
   } catch (err) {
     this.lastResult = { success: false, output: err, error: err };
@@ -1609,7 +1747,7 @@ When("an object is copied from one bucket to another", async function (this: Lws
         Bucket: TEST_S3_DST_BUCKET,
         Key: TEST_S3_KEY,
         CopySource: `${TEST_S3_SRC_BUCKET}/${TEST_S3_KEY}`,
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1621,7 +1759,7 @@ When("a multipart upload is initiated", async function (this: LwsWorld) {
   const client = this.s3Client();
   try {
     const result = await client.send(
-      new CreateMultipartUploadCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY })
+      new CreateMultipartUploadCommand({ Bucket: TEST_S3_BUCKET, Key: TEST_S3_KEY }),
     );
     this.lastUploadId = result.UploadId;
     this.lastBucket = TEST_S3_BUCKET;
@@ -1642,7 +1780,7 @@ When("a part is uploaded for a multipart upload", async function (this: LwsWorld
         UploadId: this.lastUploadId!,
         PartNumber: 1,
         Body: Buffer.from(TEST_S3_BODY),
-      })
+      }),
     );
     this.lastETag = JSON.stringify([{ PartNumber: 1, ETag: result.ETag ?? "" }]);
     this.lastResult = { success: true, output: result };
@@ -1668,7 +1806,7 @@ When("a multipart upload is completed", async function (this: LwsWorld) {
         Key: this.lastKey!,
         UploadId: this.lastUploadId!,
         MultipartUpload: { Parts: parts },
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1684,7 +1822,7 @@ When("a multipart upload is aborted", async function (this: LwsWorld) {
         Bucket: this.lastBucket!,
         Key: this.lastKey!,
         UploadId: this.lastUploadId!,
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1699,7 +1837,7 @@ When("versioning is configured on a bucket", async function (this: LwsWorld) {
       new PutBucketVersioningCommand({
         Bucket: TEST_S3_BUCKET,
         VersioningConfiguration: { Status: "Enabled" },
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -1715,54 +1853,101 @@ When("a lifecycle rule expires an object", function (this: LwsWorld) {
 // S3 — Then
 // ---------------------------------------------------------------------------
 
-Then("the bucket is \"ACTIVE\" with versioning disabled", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected bucket create to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the bucket is "ACTIVE" with versioning disabled', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected bucket create to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
-
 
 Then("the available buckets are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list buckets to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list buckets to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the object \"EXISTS\" in the bucket", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected put object to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the object "EXISTS" in the bucket', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected put object to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the object data is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected get object to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected get object to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the object is \"DELETED\"", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected delete object to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the object is "DELETED"', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected delete object to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the object metadata is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected head object to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected head object to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of objects in the bucket is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list objects to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list objects to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the object \"EXISTS\" in the destination bucket", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected copy object to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the object "EXISTS" in the destination bucket', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected copy object to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the upload is \"IN_PROGRESS\" with no parts", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected create multipart upload to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the upload is "IN_PROGRESS" with no parts', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected create multipart upload to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
+Then(
+  'the upload is "COMPLETED" and the assembled object "EXISTS" in the bucket',
+  function (this: LwsWorld) {
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected complete multipart upload to succeed: ${JSON.stringify(this.lastResult.output)}`,
+    );
+  },
+);
 
-Then("the upload is \"COMPLETED\" and the assembled object \"EXISTS\" in the bucket", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected complete multipart upload to succeed: ${JSON.stringify(this.lastResult.output)}`);
-});
+Then(
+  'the bucket versioning state is "ENABLED" or "SUSPENDED" non-deterministically',
+  function (this: LwsWorld) {
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected put bucket versioning to succeed: ${JSON.stringify(this.lastResult.output)}`,
+    );
+  },
+);
 
-
-Then("the bucket versioning state is \"ENABLED\" or \"SUSPENDED\" non-deterministically", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected put bucket versioning to succeed: ${JSON.stringify(this.lastResult.output)}`);
-});
-
-Then("the object is \"DELETED\" by the lifecycle policy", function (this: LwsWorld) {
+Then('the object is "DELETED" by the lifecycle policy', function (this: LwsWorld) {
   return "pending";
 });
 
@@ -1776,7 +1961,9 @@ Given("the topic is already {string}", async function (this: LwsWorld, state: st
     try {
       const result = await client.send(new CreateTopicCommand({ Name: TEST_SNS_TOPIC }));
       this.lastTopicArn = result.TopicArn;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return;
   }
   if (state === "CREATING") {
@@ -1826,7 +2013,11 @@ Given("the topic does not exist", function (this: LwsWorld) {
 
 Given("the topic is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected topic to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected topic to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: topic is ACTIVE by default when it exists
@@ -1840,7 +2031,9 @@ Given("the topic is not {string}", async function (this: LwsWorld, state: string
     const client = this.snsClient();
     try {
       await client.send(new CreateTopicCommand({ Name: TEST_SNS_TOPIC }));
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -1863,7 +2056,11 @@ Given("the subscription exists", async function (this: LwsWorld) {
   }
   try {
     const result = await client.send(
-      new SubscribeCommand({ TopicArn: topicArn, Protocol: TEST_SNS_PROTOCOL, Endpoint: TEST_SNS_ENDPOINT })
+      new SubscribeCommand({
+        TopicArn: topicArn,
+        Protocol: TEST_SNS_PROTOCOL,
+        Endpoint: TEST_SNS_ENDPOINT,
+      }),
     );
     this.lastSubscriptionArn = result.SubscriptionArn;
   } catch {
@@ -1873,7 +2070,11 @@ Given("the subscription exists", async function (this: LwsWorld) {
 
 Given("the subscription is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected subscription to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected subscription to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: subscription is CONFIRMED by default when it exists
@@ -1923,7 +2124,11 @@ Given("a confirmed subscription exists for the topic", async function (this: Lws
   const topicArn = snsTopicArn(TEST_SNS_TOPIC);
   try {
     const result = await client.send(
-      new SubscribeCommand({ TopicArn: topicArn, Protocol: TEST_SNS_PROTOCOL, Endpoint: TEST_SNS_ENDPOINT })
+      new SubscribeCommand({
+        TopicArn: topicArn,
+        Protocol: TEST_SNS_PROTOCOL,
+        Endpoint: TEST_SNS_ENDPOINT,
+      }),
     );
     this.lastSubscriptionArn = result.SubscriptionArn;
   } catch {
@@ -1953,7 +2158,11 @@ Given("the delivery exists", function (this: LwsWorld) {
 
 Given("the delivery is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected delivery to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected delivery to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   return "pending";
@@ -1975,7 +2184,7 @@ Given("the retry count is below the limit", function (this: LwsWorld) {
 // SNS — When
 // ---------------------------------------------------------------------------
 
-When("an \"SNS\" topic is created", async function (this: LwsWorld) {
+When('an "SNS" topic is created', async function (this: LwsWorld) {
   const client = this.snsClient();
   try {
     const result = await client.send(new CreateTopicCommand({ Name: TEST_SNS_TOPIC }));
@@ -1986,7 +2195,7 @@ When("an \"SNS\" topic is created", async function (this: LwsWorld) {
   }
 });
 
-When("an \"SNS\" topic is deleted", async function (this: LwsWorld) {
+When('an "SNS" topic is deleted', async function (this: LwsWorld) {
   const client = this.snsClient();
   const topicArn = snsTopicArn(TEST_SNS_TOPIC);
   try {
@@ -2002,7 +2211,11 @@ When("an endpoint subscribes to a topic", async function (this: LwsWorld) {
   const topicArn = snsTopicArn(TEST_SNS_TOPIC);
   try {
     const result = await client.send(
-      new SubscribeCommand({ TopicArn: topicArn, Protocol: TEST_SNS_PROTOCOL, Endpoint: TEST_SNS_ENDPOINT })
+      new SubscribeCommand({
+        TopicArn: topicArn,
+        Protocol: TEST_SNS_PROTOCOL,
+        Endpoint: TEST_SNS_ENDPOINT,
+      }),
     );
     this.lastSubscriptionArn = result.SubscriptionArn;
     this.lastResult = { success: true, output: result };
@@ -2019,7 +2232,7 @@ When("a subscription is removed", async function (this: LwsWorld) {
   const client = this.snsClient();
   try {
     const result = await client.send(
-      new UnsubscribeCommand({ SubscriptionArn: this.lastSubscriptionArn! })
+      new UnsubscribeCommand({ SubscriptionArn: this.lastSubscriptionArn! }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2032,7 +2245,7 @@ When("a message is published to a topic", async function (this: LwsWorld) {
   const topicArn = snsTopicArn(TEST_SNS_TOPIC);
   try {
     const result = await client.send(
-      new PublishCommand({ TopicArn: topicArn, Message: "test-message" })
+      new PublishCommand({ TopicArn: topicArn, Message: "test-message" }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2060,26 +2273,35 @@ When("a subscription confirmation token expires", function (this: LwsWorld) {
 // SNS — Then
 // ---------------------------------------------------------------------------
 
-
-Then("the topic is \"DELETED\" and its subscriptions are removed", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected topic delete to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the topic is "DELETED" and its subscriptions are removed', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected topic delete to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the subscription is \"PENDING_CONFIRMATION\" or \"CONFIRMED\"", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected subscribe to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the subscription is "PENDING_CONFIRMATION" or "CONFIRMED"', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected subscribe to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-
-Then("the pending subscription is \"DELETED\"", function (this: LwsWorld) {
+Then('the pending subscription is "DELETED"', function (this: LwsWorld) {
   return "pending";
 });
 
 Then("the message is delivered to confirmed subscriptions", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected publish to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected publish to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-
-Then("the delivery is marked \"DONE\"", function (this: LwsWorld) {
+Then('the delivery is marked "DONE"', function (this: LwsWorld) {
   return "pending";
 });
 
@@ -2109,7 +2331,7 @@ Given("the event bus has rules", async function (this: LwsWorld) {
         EventBusName: TEST_EVENT_BUS,
         ScheduleExpression: "rate(1 day)",
         State: "ENABLED",
-      })
+      }),
     );
   } catch {
     // ignore
@@ -2131,7 +2353,7 @@ Given("the rule has active targets", async function (this: LwsWorld) {
         Rule: TEST_EVENT_RULE,
         EventBusName: TEST_EVENT_BUS,
         Targets: [{ Id: "target1", Arn: TEST_EVENT_TARGET }],
-      })
+      }),
     );
   } catch {
     // ignore
@@ -2172,7 +2394,11 @@ Given("the event bus does not exist", async function (this: LwsWorld) {
 
 Given("the event bus is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected event bus to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected event bus to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: event bus is ACTIVE by default when it exists
@@ -2186,7 +2412,9 @@ Given("the event bus is not {string}", async function (this: LwsWorld, state: st
     const client = this.eventbridgeClient();
     try {
       await client.send(new CreateEventBusCommand({ Name: TEST_EVENT_BUS }));
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -2225,7 +2453,7 @@ Given("the rule already exists", async function (this: LwsWorld) {
       EventBusName: TEST_EVENT_BUS,
       ScheduleExpression: "rate(1 day)",
       State: "ENABLED",
-    })
+    }),
   );
 });
 
@@ -2247,7 +2475,7 @@ Given("the rule exists", async function (this: LwsWorld) {
         EventBusName: TEST_EVENT_BUS,
         ScheduleExpression: "rate(1 day)",
         State: "ENABLED",
-      })
+      }),
     );
   } catch {
     // ignore
@@ -2258,7 +2486,9 @@ Given("the rule is {string}", async function (this: LwsWorld, state: string) {
   const client = this.eventbridgeClient();
   if (state === "DISABLED") {
     try {
-      await client.send(new DisableRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }));
+      await client.send(
+        new DisableRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
+      );
     } catch {
       // ignore
     }
@@ -2266,7 +2496,9 @@ Given("the rule is {string}", async function (this: LwsWorld, state: string) {
   }
   if (state === "DELETED") {
     try {
-      await client.send(new DeleteRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }));
+      await client.send(
+        new DeleteRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
+      );
     } catch {
       // ignore
     }
@@ -2275,7 +2507,9 @@ Given("the rule is {string}", async function (this: LwsWorld, state: string) {
   if (state === "ENABLED") {
     // no-op: rule is ENABLED by default when it exists; if previously disabled, enable it
     try {
-      await client.send(new EnableRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }));
+      await client.send(
+        new EnableRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
+      );
     } catch {
       // ignore: may already be enabled
     }
@@ -2287,16 +2521,18 @@ Given("the rule is not {string}", function (this: LwsWorld, _state: string) {
   return "pending";
 });
 
-Given("the rule is already \"DELETED\"", async function (this: LwsWorld) {
+Given('the rule is already "DELETED"', async function (this: LwsWorld) {
   const client = this.eventbridgeClient();
   try {
-    await client.send(new DeleteRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }));
+    await client.send(
+      new DeleteRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
+    );
   } catch {
     // ignore
   }
 });
 
-Given("the rule is not already \"DELETED\"", function (this: LwsWorld) {
+Given('the rule is not already "DELETED"', function (this: LwsWorld) {
   // no-op
 });
 
@@ -2314,7 +2550,7 @@ Given("a rule is associated with the event bus", async function (this: LwsWorld)
         EventBusName: TEST_EVENT_BUS,
         ScheduleExpression: "rate(1 day)",
         State: "ENABLED",
-      })
+      }),
     );
   } catch {
     // ignore
@@ -2340,7 +2576,7 @@ Given("a target is associated with the rule", async function (this: LwsWorld) {
         Rule: TEST_EVENT_RULE,
         EventBusName: TEST_EVENT_BUS,
         Targets: [{ Id: "target1", Arn: TEST_EVENT_TARGET }],
-      })
+      }),
     );
   } catch {
     // ignore
@@ -2382,7 +2618,7 @@ Given("the target is associated with the rule", async function (this: LwsWorld) 
         Rule: TEST_EVENT_RULE,
         EventBusName: TEST_EVENT_BUS,
         Targets: [{ Id: "target1", Arn: TEST_EVENT_TARGET }],
-      })
+      }),
     );
   } catch {
     // ignore
@@ -2454,7 +2690,7 @@ When("an EventBridge rule is created", async function (this: LwsWorld) {
         EventBusName: TEST_EVENT_BUS,
         ScheduleExpression: "rate(1 day)",
         State: "ENABLED",
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2466,7 +2702,7 @@ When("an EventBridge rule is deleted", async function (this: LwsWorld) {
   const client = this.eventbridgeClient();
   try {
     const result = await client.send(
-      new DeleteRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS })
+      new DeleteRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2478,7 +2714,7 @@ When("an EventBridge rule is described", async function (this: LwsWorld) {
   const client = this.eventbridgeClient();
   try {
     const result = await client.send(
-      new DescribeRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS })
+      new DescribeRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2500,7 +2736,7 @@ When("a rule is enabled", async function (this: LwsWorld) {
   const client = this.eventbridgeClient();
   try {
     const result = await client.send(
-      new EnableRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS })
+      new EnableRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2512,7 +2748,7 @@ When("a rule is disabled", async function (this: LwsWorld) {
   const client = this.eventbridgeClient();
   try {
     const result = await client.send(
-      new DisableRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS })
+      new DisableRuleCommand({ Name: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2535,7 +2771,7 @@ When("targets are added to a rule", async function (this: LwsWorld) {
         Rule: TEST_EVENT_RULE,
         EventBusName: TEST_EVENT_BUS,
         Targets: [{ Id: "target1", Arn: TEST_EVENT_TARGET }],
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2547,7 +2783,11 @@ When("targets are removed from a rule", async function (this: LwsWorld) {
   const client = this.eventbridgeClient();
   try {
     const result = await client.send(
-      new RemoveTargetsCommand({ Rule: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS, Ids: ["target1"] })
+      new RemoveTargetsCommand({
+        Rule: TEST_EVENT_RULE,
+        EventBusName: TEST_EVENT_BUS,
+        Ids: ["target1"],
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2559,7 +2799,7 @@ When("targets for a rule are listed", async function (this: LwsWorld) {
   const client = this.eventbridgeClient();
   try {
     const result = await client.send(
-      new ListTargetsByRuleCommand({ Rule: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS })
+      new ListTargetsByRuleCommand({ Rule: TEST_EVENT_RULE, EventBusName: TEST_EVENT_BUS }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2580,7 +2820,7 @@ When("events are published to an event bus", async function (this: LwsWorld) {
             Detail: JSON.stringify({ message: "hello" }),
           },
         ],
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2596,38 +2836,68 @@ When("a dead-letter queue entry is retried or discarded", function (this: LwsWor
 // EventBridge — Then
 // ---------------------------------------------------------------------------
 
-
 Then("the list of event buses is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list event buses to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list event buses to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the event bus details are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected describe event bus to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected describe event bus to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-
 Then("the rule details are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected describe rule to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected describe rule to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of rules is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list rules to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list rules to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the targets are associated with the rule", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected put targets to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected put targets to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the targets are disassociated from the rule", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected remove targets to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected remove targets to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of targets is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list targets to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list targets to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("matching enabled rules route the event to their targets", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected put events to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected put events to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the entry is removed from the dead-letter queue", function (this: LwsWorld) {
@@ -2658,7 +2928,7 @@ Given("the state machine already exists", async function (this: LwsWorld) {
       definition: TEST_SFN_DEFINITION,
       roleArn: TEST_SFN_ROLE_ARN,
       type: "STANDARD",
-    })
+    }),
   );
   this.lastStateMachineArn = result.stateMachineArn;
 });
@@ -2672,7 +2942,7 @@ Given("the state machine exists", async function (this: LwsWorld) {
         definition: TEST_SFN_DEFINITION,
         roleArn: TEST_SFN_ROLE_ARN,
         type: "STANDARD",
-      })
+      }),
     );
     this.lastStateMachineArn = result.stateMachineArn;
   } catch {
@@ -2686,7 +2956,11 @@ Given("the state machine does not exist", function (this: LwsWorld) {
 
 Given("the state machine is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected state machine to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected state machine to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: state machine is ACTIVE by default when it exists
@@ -2699,14 +2973,18 @@ Given("the state machine is not {string}", async function (this: LwsWorld, state
   if (state === "CREATING" || state === "DELETING") {
     const client = this.sfnClient();
     try {
-      const result = await client.send(new CreateStateMachineCommand({
-        name: TEST_SFN_SM,
-        definition: TEST_SFN_DEFINITION,
-        roleArn: TEST_SFN_ROLE_ARN,
-        type: "STANDARD",
-      }));
+      const result = await client.send(
+        new CreateStateMachineCommand({
+          name: TEST_SFN_SM,
+          definition: TEST_SFN_DEFINITION,
+          roleArn: TEST_SFN_ROLE_ARN,
+          type: "STANDARD",
+        }),
+      );
       this.lastStateMachineArn = result.stateMachineArn;
-    } catch { /* ignore if already exists */ }
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -2744,7 +3022,7 @@ Given("the execution exists", async function (this: LwsWorld) {
         definition: TEST_SFN_DEFINITION,
         roleArn: TEST_SFN_ROLE_ARN,
         type: "STANDARD",
-      })
+      }),
     );
     this.lastStateMachineArn = result.stateMachineArn;
   } catch {
@@ -2753,7 +3031,7 @@ Given("the execution exists", async function (this: LwsWorld) {
   const smArn = sfnArn(TEST_SFN_SM);
   try {
     const result = await client.send(
-      new StartExecutionCommand({ stateMachineArn: smArn, input: TEST_SFN_INPUT })
+      new StartExecutionCommand({ stateMachineArn: smArn, input: TEST_SFN_INPUT }),
     );
     this.lastExecutionArn = result.executionArn;
   } catch {
@@ -2763,7 +3041,11 @@ Given("the execution exists", async function (this: LwsWorld) {
 
 Given("the execution is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected execution to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected execution to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: execution is RUNNING by default when it exists
@@ -2793,7 +3075,12 @@ Given("the tag is associated with the state machine", async function (this: LwsW
   const client = this.sfnClient();
   const smArn = sfnArn(TEST_SFN_SM);
   try {
-    await client.send(new SfnTagResourceCommand({ resourceArn: smArn, tags: [{ key: TEST_SSM_TAG_KEY, value: TEST_SSM_TAG_VAL }] }));
+    await client.send(
+      new SfnTagResourceCommand({
+        resourceArn: smArn,
+        tags: [{ key: TEST_SSM_TAG_KEY, value: TEST_SSM_TAG_VAL }],
+      }),
+    );
   } catch {
     // ignore
   }
@@ -2816,7 +3103,7 @@ When("a Step Functions state machine is created", async function (this: LwsWorld
         definition: TEST_SFN_DEFINITION,
         roleArn: TEST_SFN_ROLE_ARN,
         type: "STANDARD",
-      })
+      }),
     );
     this.lastStateMachineArn = result.stateMachineArn;
     this.lastResult = { success: true, output: result };
@@ -2862,7 +3149,7 @@ When("an execution is started on a standard state machine", async function (this
   const smArn = sfnArn(TEST_SFN_SM);
   try {
     const result = await client.send(
-      new StartExecutionCommand({ stateMachineArn: smArn, input: TEST_SFN_INPUT })
+      new StartExecutionCommand({ stateMachineArn: smArn, input: TEST_SFN_INPUT }),
     );
     this.lastExecutionArn = result.executionArn;
     this.lastResult = { success: true, output: result };
@@ -2871,24 +3158,27 @@ When("an execution is started on a standard state machine", async function (this
   }
 });
 
-When("a synchronous execution is started on an express state machine", async function (this: LwsWorld) {
-  const client = this.sfnClient();
-  const smArn = this.lastStateMachineArn ?? sfnArn(TEST_SFN_EXPRESS_SM);
-  try {
-    const result = await client.send(
-      new StartSyncExecutionCommand({ stateMachineArn: smArn, input: TEST_SFN_INPUT })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "a synchronous execution is started on an express state machine",
+  async function (this: LwsWorld) {
+    const client = this.sfnClient();
+    const smArn = this.lastStateMachineArn ?? sfnArn(TEST_SFN_EXPRESS_SM);
+    try {
+      const result = await client.send(
+        new StartSyncExecutionCommand({ stateMachineArn: smArn, input: TEST_SFN_INPUT }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
 When("a running execution is stopped", async function (this: LwsWorld) {
   const client = this.sfnClient();
   try {
     const result = await client.send(
-      new StopExecutionCommand({ executionArn: this.lastExecutionArn! })
+      new StopExecutionCommand({ executionArn: this.lastExecutionArn! }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2900,7 +3190,7 @@ When("an execution is described", async function (this: LwsWorld) {
   const client = this.sfnClient();
   try {
     const result = await client.send(
-      new DescribeExecutionCommand({ executionArn: this.lastExecutionArn! })
+      new DescribeExecutionCommand({ executionArn: this.lastExecutionArn! }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2912,7 +3202,7 @@ When("the event history of an execution is retrieved", async function (this: Lws
   const client = this.sfnClient();
   try {
     const result = await client.send(
-      new GetExecutionHistoryCommand({ executionArn: this.lastExecutionArn! })
+      new GetExecutionHistoryCommand({ executionArn: this.lastExecutionArn! }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2935,7 +3225,9 @@ When("versions of a state machine are listed", async function (this: LwsWorld) {
   const client = this.sfnClient();
   const smArn = sfnArn(TEST_SFN_SM);
   try {
-    const result = await client.send(new ListStateMachineVersionsCommand({ stateMachineArn: smArn }));
+    const result = await client.send(
+      new ListStateMachineVersionsCommand({ stateMachineArn: smArn }),
+    );
     this.lastResult = { success: true, output: result };
   } catch (err) {
     this.lastResult = { success: false, output: err, error: err };
@@ -2947,7 +3239,10 @@ When("tags are added to a state machine", async function (this: LwsWorld) {
   const smArn = sfnArn(TEST_SFN_SM);
   try {
     const result = await client.send(
-      new SfnTagResourceCommand({ resourceArn: smArn, tags: [{ key: TEST_SSM_TAG_KEY, value: TEST_SSM_TAG_VAL }] })
+      new SfnTagResourceCommand({
+        resourceArn: smArn,
+        tags: [{ key: TEST_SSM_TAG_KEY, value: TEST_SSM_TAG_VAL }],
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2960,7 +3255,7 @@ When("tags are removed from a state machine", async function (this: LwsWorld) {
   const smArn = sfnArn(TEST_SFN_SM);
   try {
     const result = await client.send(
-      new SfnUntagResourceCommand({ resourceArn: smArn, tagKeys: [TEST_SSM_TAG_KEY] })
+      new SfnUntagResourceCommand({ resourceArn: smArn, tagKeys: [TEST_SSM_TAG_KEY] }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2984,7 +3279,7 @@ When("a state machine definition is updated", async function (this: LwsWorld) {
   const smArn = sfnArn(TEST_SFN_SM);
   try {
     const result = await client.send(
-      new UpdateStateMachineCommand({ stateMachineArn: smArn, definition: TEST_SFN_DEFINITION })
+      new UpdateStateMachineCommand({ stateMachineArn: smArn, definition: TEST_SFN_DEFINITION }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -2996,7 +3291,7 @@ When("a state machine definition is validated", async function (this: LwsWorld) 
   const client = this.sfnClient();
   try {
     const result = await client.send(
-      new ValidateStateMachineDefinitionCommand({ definition: TEST_SFN_DEFINITION })
+      new ValidateStateMachineDefinitionCommand({ definition: TEST_SFN_DEFINITION }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3020,55 +3315,92 @@ When("a state machine deletion is finalized", function (this: LwsWorld) {
 // StepFunctions — Then
 // ---------------------------------------------------------------------------
 
-
-Then("the state machine is in \"DELETING\" state", function (this: LwsWorld) {
+Then('the state machine is in "DELETING" state', function (this: LwsWorld) {
   return "pending";
 });
 
 Then("the state machine details are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected describe state machine to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected describe state machine to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of state machines is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list state machines to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list state machines to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-
-Then("the execution is \"SUCCEEDED\" or \"FAILED\"", function (this: LwsWorld) {
+Then('the execution is "SUCCEEDED" or "FAILED"', function (this: LwsWorld) {
   return "pending";
 });
 
-
 Then("the execution details are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected describe execution to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected describe execution to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the execution history is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected get execution history to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected get execution history to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of executions is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list executions to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list executions to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of state machine versions is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list state machine versions to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list state machine versions to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the tags are associated with the state machine", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected tag resource to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected tag resource to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the tags are disassociated from the state machine", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected untag resource to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected untag resource to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of tags is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list tags to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list tags to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the state machine version is incremented", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected update state machine to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected update state machine to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the definition is valid or invalid", function (this: LwsWorld) {
@@ -3079,9 +3411,12 @@ Then("the definition is valid or invalid", function (this: LwsWorld) {
 // SSM — Given
 // ---------------------------------------------------------------------------
 
-Given("the parameter {string} \\(not already {string})", function (this: LwsWorld, _name: string, _state: string) {
-  // no-op: parameter is absent by default
-});
+Given(
+  "the parameter {string} \\(not already {string})",
+  function (this: LwsWorld, _name: string, _state: string) {
+    // no-op: parameter is absent by default
+  },
+);
 
 Given("the parameter does not already exist", function (this: LwsWorld) {
   // no-op
@@ -3094,7 +3429,7 @@ Given("the parameter does not already exist or has been deleted", function (this
 Given("the parameter already exists", async function (this: LwsWorld) {
   const client = this.ssmClient();
   await client.send(
-    new PutParameterCommand({ Name: TEST_SSM_PARAM, Value: TEST_SSM_VALUE, Type: "String" })
+    new PutParameterCommand({ Name: TEST_SSM_PARAM, Value: TEST_SSM_VALUE, Type: "String" }),
   );
 });
 
@@ -3102,7 +3437,7 @@ Given("the parameter exists", async function (this: LwsWorld) {
   const client = this.ssmClient();
   try {
     await client.send(
-      new PutParameterCommand({ Name: TEST_SSM_PARAM, Value: TEST_SSM_VALUE, Type: "String" })
+      new PutParameterCommand({ Name: TEST_SSM_PARAM, Value: TEST_SSM_VALUE, Type: "String" }),
     );
   } catch {
     // ignore
@@ -3129,7 +3464,7 @@ Given("the tag is associated with the parameter", async function (this: LwsWorld
         ResourceType: "Parameter",
         ResourceId: TEST_SSM_PARAM,
         Tags: [{ Key: TEST_SSM_TAG_KEY, Value: TEST_SSM_TAG_VAL }],
-      })
+      }),
     );
   } catch {
     // ignore
@@ -3148,11 +3483,11 @@ Given("all tag keys are strings", function (this: LwsWorld) {
 // SSM — When
 // ---------------------------------------------------------------------------
 
-When("a parameter is stored in \"SSM\"", async function (this: LwsWorld) {
+When('a parameter is stored in "SSM"', async function (this: LwsWorld) {
   const client = this.ssmClient();
   try {
     const result = await client.send(
-      new PutParameterCommand({ Name: TEST_SSM_PARAM, Value: TEST_SSM_VALUE, Type: "String" })
+      new PutParameterCommand({ Name: TEST_SSM_PARAM, Value: TEST_SSM_VALUE, Type: "String" }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3160,17 +3495,25 @@ When("a parameter is stored in \"SSM\"", async function (this: LwsWorld) {
   }
 });
 
-When("a parameter is written without overwrite when it already exists", async function (this: LwsWorld) {
-  const client = this.ssmClient();
-  try {
-    const result = await client.send(
-      new PutParameterCommand({ Name: TEST_SSM_PARAM, Value: TEST_SSM_VALUE2, Type: "String", Overwrite: false })
-    );
-    this.lastResult = { success: true, output: result };
-  } catch (err) {
-    this.lastResult = { success: false, output: err, error: err };
-  }
-});
+When(
+  "a parameter is written without overwrite when it already exists",
+  async function (this: LwsWorld) {
+    const client = this.ssmClient();
+    try {
+      const result = await client.send(
+        new PutParameterCommand({
+          Name: TEST_SSM_PARAM,
+          Value: TEST_SSM_VALUE2,
+          Type: "String",
+          Overwrite: false,
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
+  },
+);
 
 When("an existing parameter value is updated", async function (this: LwsWorld) {
   const client = this.ssmClient();
@@ -3181,7 +3524,7 @@ When("an existing parameter value is updated", async function (this: LwsWorld) {
         Value: TEST_SSM_VALUE2,
         Type: "String",
         Overwrite: true,
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3189,7 +3532,7 @@ When("an existing parameter value is updated", async function (this: LwsWorld) {
   }
 });
 
-When("a parameter is retrieved from \"SSM\"", async function (this: LwsWorld) {
+When('a parameter is retrieved from "SSM"', async function (this: LwsWorld) {
   const client = this.ssmClient();
   try {
     const result = await client.send(new GetParameterCommand({ Name: TEST_SSM_PARAM }));
@@ -3199,11 +3542,11 @@ When("a parameter is retrieved from \"SSM\"", async function (this: LwsWorld) {
   }
 });
 
-When("multiple parameters are retrieved from \"SSM\"", async function (this: LwsWorld) {
+When('multiple parameters are retrieved from "SSM"', async function (this: LwsWorld) {
   const client = this.ssmClient();
   try {
     const result = await client.send(
-      new GetParametersCommand({ Names: [TEST_SSM_PARAM, TEST_SSM_PARAM2] })
+      new GetParametersCommand({ Names: [TEST_SSM_PARAM, TEST_SSM_PARAM2] }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3211,7 +3554,7 @@ When("multiple parameters are retrieved from \"SSM\"", async function (this: Lws
   }
 });
 
-When("parameters under a path are retrieved from \"SSM\"", async function (this: LwsWorld) {
+When('parameters under a path are retrieved from "SSM"', async function (this: LwsWorld) {
   const client = this.ssmClient();
   try {
     const result = await client.send(new GetParametersByPathCommand({ Path: "/test/param" }));
@@ -3221,7 +3564,7 @@ When("parameters under a path are retrieved from \"SSM\"", async function (this:
   }
 });
 
-When("a parameter is deleted from \"SSM\"", async function (this: LwsWorld) {
+When('a parameter is deleted from "SSM"', async function (this: LwsWorld) {
   const client = this.ssmClient();
   try {
     const result = await client.send(new DeleteParameterCommand({ Name: TEST_SSM_PARAM }));
@@ -3231,11 +3574,11 @@ When("a parameter is deleted from \"SSM\"", async function (this: LwsWorld) {
   }
 });
 
-When("multiple parameters are deleted from \"SSM\"", async function (this: LwsWorld) {
+When('multiple parameters are deleted from "SSM"', async function (this: LwsWorld) {
   const client = this.ssmClient();
   try {
     const result = await client.send(
-      new DeleteParametersCommand({ Names: [TEST_SSM_PARAM, TEST_SSM_PARAM2] })
+      new DeleteParametersCommand({ Names: [TEST_SSM_PARAM, TEST_SSM_PARAM2] }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3261,7 +3604,7 @@ When("tags are added to a parameter", async function (this: LwsWorld) {
         ResourceType: "Parameter",
         ResourceId: TEST_SSM_PARAM,
         Tags: [{ Key: TEST_SSM_TAG_KEY, Value: TEST_SSM_TAG_VAL }],
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3277,7 +3620,7 @@ When("tags are removed from a parameter", async function (this: LwsWorld) {
         ResourceType: "Parameter",
         ResourceId: TEST_SSM_PARAM,
         TagKeys: [TEST_SSM_TAG_KEY],
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3289,7 +3632,7 @@ When("tags for a parameter are listed", async function (this: LwsWorld) {
   const client = this.ssmClient();
   try {
     const result = await client.send(
-      new SsmListTagsForResourceCommand({ ResourceType: "Parameter", ResourceId: TEST_SSM_PARAM })
+      new SsmListTagsForResourceCommand({ ResourceType: "Parameter", ResourceId: TEST_SSM_PARAM }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3302,11 +3645,19 @@ When("tags for a parameter are listed", async function (this: LwsWorld) {
 // ---------------------------------------------------------------------------
 
 Then("the parameter exists with version 1", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected put parameter to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected put parameter to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("a ParameterAlreadyExists error is recorded", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, false, `Expected ParameterAlreadyExists but got success: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    false,
+    `Expected ParameterAlreadyExists but got success: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("param_exists values are always valid booleans", function (this: LwsWorld) {
@@ -3318,39 +3669,75 @@ Then("the error log only contains ParameterAlreadyExists entries", function (thi
 });
 
 Then("the parameter has a new value and an incremented version", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected update parameter to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected update parameter to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the parameter value is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected get parameter to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected get parameter to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the parameter values are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected get parameters to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected get parameters to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the parameters under the path are returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected get parameters by path to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected get parameters by path to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the parameter no longer exists", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected delete parameter to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected delete parameter to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the parameters no longer exist", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected delete parameters to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected delete parameters to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the parameter metadata is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected describe parameters to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected describe parameters to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the tags are associated with the parameter", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected add tags to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected add tags to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the tags are disassociated from the parameter", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected remove tags to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected remove tags to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -3363,16 +3750,14 @@ Given("the secret does not already exist", function (this: LwsWorld) {
 
 Given("the secret already exists", async function (this: LwsWorld) {
   const client = this.secretsManagerClient();
-  await client.send(
-    new CreateSecretCommand({ Name: TEST_SM_SECRET, SecretString: TEST_SM_VALUE })
-  );
+  await client.send(new CreateSecretCommand({ Name: TEST_SM_SECRET, SecretString: TEST_SM_VALUE }));
 });
 
 Given("the secret exists", async function (this: LwsWorld) {
   const client = this.secretsManagerClient();
   try {
     await client.send(
-      new CreateSecretCommand({ Name: TEST_SM_SECRET, SecretString: TEST_SM_VALUE })
+      new CreateSecretCommand({ Name: TEST_SM_SECRET, SecretString: TEST_SM_VALUE }),
     );
   } catch {
     // ignore
@@ -3385,7 +3770,11 @@ Given("the secret does not exist", function (this: LwsWorld) {
 
 Given("the secret is {string}", function (this: LwsWorld, state: string) {
   if (this.lastResult.output !== null) {
-    assert.strictEqual(this.lastResult.success, true, `Expected secret to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`);
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected secret to be ${state} but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
     return;
   }
   // no-op: secret is ACTIVE by default when it exists
@@ -3398,8 +3787,12 @@ Given("the secret is not {string}", async function (this: LwsWorld, state: strin
   if (state === "CREATING" || state === "DELETING") {
     const client = this.secretsManagerClient();
     try {
-      await client.send(new CreateSecretCommand({ Name: TEST_SM_SECRET, SecretString: TEST_SM_VALUE }));
-    } catch { /* ignore if already exists */ }
+      await client.send(
+        new CreateSecretCommand({ Name: TEST_SM_SECRET, SecretString: TEST_SM_VALUE }),
+      );
+    } catch {
+      /* ignore if already exists */
+    }
     return;
   }
   if (state === "DELETED") {
@@ -3424,7 +3817,7 @@ When("a secret is created", async function (this: LwsWorld) {
   const client = this.secretsManagerClient();
   try {
     const result = await client.send(
-      new CreateSecretCommand({ Name: TEST_SM_SECRET, SecretString: TEST_SM_VALUE })
+      new CreateSecretCommand({ Name: TEST_SM_SECRET, SecretString: TEST_SM_VALUE }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3476,7 +3869,7 @@ When("a new value is stored for an active secret", async function (this: LwsWorl
   const client = this.secretsManagerClient();
   try {
     const result = await client.send(
-      new PutSecretValueCommand({ SecretId: TEST_SM_SECRET, SecretString: TEST_SM_VALUE2 })
+      new PutSecretValueCommand({ SecretId: TEST_SM_SECRET, SecretString: TEST_SM_VALUE2 }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3501,7 +3894,7 @@ When("tags are added to an active secret", async function (this: LwsWorld) {
       new SmTagResourceCommand({
         SecretId: TEST_SM_SECRET,
         Tags: [{ Key: TEST_SM_TAG_KEY, Value: TEST_SM_TAG_VAL }],
-      })
+      }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3513,7 +3906,7 @@ When("tags are removed from an active secret", async function (this: LwsWorld) {
   const client = this.secretsManagerClient();
   try {
     const result = await client.send(
-      new SmUntagResourceCommand({ SecretId: TEST_SM_SECRET, TagKeys: [TEST_SM_TAG_KEY] })
+      new SmUntagResourceCommand({ SecretId: TEST_SM_SECRET, TagKeys: [TEST_SM_TAG_KEY] }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3525,7 +3918,7 @@ When("metadata or description for an active secret is updated", async function (
   const client = this.secretsManagerClient();
   try {
     const result = await client.send(
-      new UpdateSecretCommand({ SecretId: TEST_SM_SECRET, Description: "updated description" })
+      new UpdateSecretCommand({ SecretId: TEST_SM_SECRET, Description: "updated description" }),
     );
     this.lastResult = { success: true, output: result };
   } catch (err) {
@@ -3545,49 +3938,95 @@ When("the recovery window for a deleted secret expires", function (this: LwsWorl
 // SecretsManager — Then
 // ---------------------------------------------------------------------------
 
-Then("the secret is \"ACTIVE\" with an initial version", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected create secret to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the secret is "ACTIVE" with an initial version', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected create secret to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the secret is \"DELETED\" and the recovery window is open", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected delete secret to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the secret is "DELETED" and the recovery window is open', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected delete secret to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the secret metadata is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected describe secret to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected describe secret to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the current secret value is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected get secret value to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected get secret value to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the list of secrets is returned", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected list secrets to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected list secrets to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("a new secret version is created and the previous version is retained", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected put secret value to succeed: ${JSON.stringify(this.lastResult.output)}`);
-});
+Then(
+  "a new secret version is created and the previous version is retained",
+  function (this: LwsWorld) {
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected put secret value to succeed: ${JSON.stringify(this.lastResult.output)}`,
+    );
+  },
+);
 
-Then("the secret is \"ACTIVE\" again and the recovery window is closed", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected restore secret to succeed: ${JSON.stringify(this.lastResult.output)}`);
+Then('the secret is "ACTIVE" again and the recovery window is closed', function (this: LwsWorld) {
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected restore secret to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the specified tags are associated with the secret", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected tag secret to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected tag secret to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the specified tags are no longer associated with the secret", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected untag secret to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected untag secret to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
 Then("the secret metadata is updated", function (this: LwsWorld) {
-  assert.strictEqual(this.lastResult.success, true, `Expected update secret to succeed: ${JSON.stringify(this.lastResult.output)}`);
+  assert.strictEqual(
+    this.lastResult.success,
+    true,
+    `Expected update secret to succeed: ${JSON.stringify(this.lastResult.output)}`,
+  );
 });
 
-Then("the secret has a new current version and the previous version is retained", function (this: LwsWorld) {
-  return "pending";
-});
+Then(
+  "the secret has a new current version and the previous version is retained",
+  function (this: LwsWorld) {
+    return "pending";
+  },
+);
 
 Then("the secret can no longer be restored", function (this: LwsWorld) {
   return "pending";
