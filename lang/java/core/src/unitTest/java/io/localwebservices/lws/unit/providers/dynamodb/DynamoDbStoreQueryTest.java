@@ -408,4 +408,122 @@ public class DynamoDbStoreQueryTest {
     // Assert
     assertEquals(expectedCount, actualItems.size());
   }
+
+  @Test
+  public void scan_withEmptyFilterExpr_returnsAllItems() {
+    // Arrange — exercises L238 false branch: filterExpr != null but isEmpty()
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "empty-filter-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> itemA = new LinkedHashMap<>(Map.of("pk", strAttr("a")));
+    Map<String, Object> itemB = new LinkedHashMap<>(Map.of("pk", strAttr("b")));
+    store.putItem(tableName, itemA);
+    store.putItem(tableName, itemB);
+    int expectedCount = 2;
+
+    // Act — empty string filterExpr should skip filtering
+    List<Map<String, Object>> actualItems = store.scan(tableName, "", null, null, null, null);
+
+    // Assert
+    assertEquals(expectedCount, actualItems.size());
+  }
+
+  @Test
+  public void query_withEmptyFilterExpr_returnsAllMatchingKeyItems() {
+    // Arrange — exercises L280 false branch: filterExpr != null but isEmpty()
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "empty-query-filter-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> item = new LinkedHashMap<>(Map.of("pk", strAttr("user-1")));
+    store.putItem(tableName, item);
+    int expectedCount = 1;
+
+    // Act — empty filterExpr on query
+    List<Map<String, Object>> actualItems =
+        store.query(tableName, "pk = :pk", null,
+            Map.of(":pk", strAttr("user-1")),
+            null, "", true, null, null);
+
+    // Assert
+    assertEquals(expectedCount, actualItems.size());
+  }
+
+  @Test
+  public void query_withEmptyKeyCondition_returnsAllItems() {
+    // Arrange — exercises L271 false branch: keyConditionExpr != null but isEmpty()
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "empty-keycond-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> itemA = new LinkedHashMap<>(Map.of("pk", strAttr("a")));
+    Map<String, Object> itemB = new LinkedHashMap<>(Map.of("pk", strAttr("b")));
+    store.putItem(tableName, itemA);
+    store.putItem(tableName, itemB);
+    int expectedCount = 2;
+
+    // Act — empty keyConditionExpr skips key filtering
+    List<Map<String, Object>> actualItems =
+        store.query(tableName, "", null, null, null, null, true, null, null);
+
+    // Assert
+    assertEquals(expectedCount, actualItems.size());
+  }
+
+  @Test
+  public void scan_limitNotExceeded_returnsAllItems() {
+    // Arrange — exercises L247 false branch: limit != null but items.size() <= limit
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "under-limit-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> itemA = new LinkedHashMap<>(Map.of("pk", strAttr("a")));
+    store.putItem(tableName, itemA);
+    int expectedCount = 1;
+
+    // Act — limit is larger than item count
+    List<Map<String, Object>> actualItems = store.scan(tableName, null, null, null, 100, null);
+
+    // Assert
+    assertEquals(expectedCount, actualItems.size());
+  }
+
+  @Test
+  public void query_withEmptyExclusiveStartKey_returnsAllItems() {
+    // Arrange — exercises L294 false branch: exclusiveStartKey != null but isEmpty()
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "empty-esk-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> itemA = new LinkedHashMap<>(Map.of("pk", strAttr("a")));
+    Map<String, Object> itemB = new LinkedHashMap<>(Map.of("pk", strAttr("b")));
+    store.putItem(tableName, itemA);
+    store.putItem(tableName, itemB);
+    int expectedCount = 2;
+
+    // Act — empty exclusiveStartKey should not paginate
+    List<Map<String, Object>> actualItems =
+        store.query(tableName, null, null, null, null, null, true, null, Map.of());
+
+    // Assert
+    assertEquals(expectedCount, actualItems.size());
+  }
+
+  @Test
+  public void query_exclusiveStartKeyNotFoundInResults_returnsAll() {
+    // Arrange — exercises L297/L303: for loop runs but key not found, idx stays -1
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "esk-miss-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> itemA = new LinkedHashMap<>(Map.of("pk", strAttr("a")));
+    Map<String, Object> itemB = new LinkedHashMap<>(Map.of("pk", strAttr("b")));
+    store.putItem(tableName, itemA);
+    store.putItem(tableName, itemB);
+    int expectedCount = 2;
+
+    // Act — exclusiveStartKey references an item not in results → idx=-1 → no subList
+    List<Map<String, Object>> actualItems =
+        store.query(tableName, null, null, null, null, null, true, null,
+            Map.of("pk", strAttr("nonexistent")));
+
+    // Assert — all items returned (idx stays -1)
+    assertEquals(expectedCount, actualItems.size());
+  }
+
 }

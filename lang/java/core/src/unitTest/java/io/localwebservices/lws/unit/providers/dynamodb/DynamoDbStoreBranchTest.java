@@ -255,4 +255,119 @@ public class DynamoDbStoreBranchTest {
     // Assert
     assertEquals(expectedCount, actualItems.size());
   }
+
+  @Test
+  public void query_withExclusiveStartKeyAndLimit_paginatesCorrectly() {
+    // Arrange
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "query-page-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    store.putItem(tableName, new LinkedHashMap<>(Map.of("pk", strAttr("user-a"))));
+    store.putItem(tableName, new LinkedHashMap<>(Map.of("pk", strAttr("user-b"))));
+    store.putItem(tableName, new LinkedHashMap<>(Map.of("pk", strAttr("user-c"))));
+
+    // Act — first page of 2 using query with limit
+    List<Map<String, Object>> firstPage =
+        store.query(tableName, null, null, null, null, null, true, 2, null);
+    Map<String, Object> lastKey = firstPage.get(firstPage.size() - 1);
+    // Second page with exclusiveStartKey and limit
+    List<Map<String, Object>> actualSecondPage =
+        store.query(tableName, null, null, null, null, null, true, 1, lastKey);
+
+    // Assert
+    assertEquals(1, actualSecondPage.size());
+  }
+
+
+  @Test
+  public void scan_withExprNameLiteralNotStartingWithHash_resolvesCorrectly() {
+    // Arrange — exercises L426 false branch: exprNames != null but expr doesn't start with #
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "no-hash-expr-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> item = new LinkedHashMap<>();
+    item.put("pk", strAttr("a"));
+    item.put("status", strAttr("active"));
+    store.putItem(tableName, item);
+    int expectedCount = 1;
+
+    // Act — exprNames is non-null but attr doesn't start with #
+    List<Map<String, Object>> actualItems =
+        store.scan(tableName, "status = :v",
+            Map.of("#notused", "other"),
+            Map.of(":v", strAttr("active")),
+            null, null);
+
+    // Assert
+    assertEquals(expectedCount, actualItems.size());
+  }
+
+  @Test
+  public void scan_withExprValueLiteralNotStartingWithColon_resolvesCorrectly() {
+    // Arrange — exercises L434 false branch: exprValues != null but expr doesn't start with :
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "no-colon-expr-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> item = new LinkedHashMap<>();
+    item.put("pk", strAttr("a"));
+    item.put("status", strAttr("active"));
+    store.putItem(tableName, item);
+    int expectedCount = 1;
+
+    // Act — exprValues is non-null but valExpr is a literal (no colon prefix)
+    List<Map<String, Object>> actualItems =
+        store.scan(tableName, "status = active",
+            null,
+            Map.of(":notused", strAttr("other")),
+            null, null);
+
+    // Assert
+    assertEquals(expectedCount, actualItems.size());
+  }
+
+  @Test
+  public void scan_withMapTypedAttrMissingNOrBool_resolvedAsMap() {
+    // Arrange — exercises L92 false branch: attr is a Map but no N key
+    // and L440/L454 false branches: Map without BOOL
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "map-attr-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    Map<String, Object> item = new LinkedHashMap<>();
+    item.put("pk", strAttr("a"));
+    // M-typed nested map — not S, N, B, or BOOL
+    Map<String, Object> nestedMap = new LinkedHashMap<>();
+    nestedMap.put("M", Map.of("key", "val"));
+    item.put("data", nestedMap);
+    store.putItem(tableName, item);
+    int expectedCount = 1;
+
+    // Act — scan returns the item; extractScalar hits the M type fallthrough
+    List<Map<String, Object>> actualItems = store.scan(tableName, null, null, null, null, null);
+
+    // Assert
+    assertEquals(expectedCount, actualItems.size());
+  }
+
+  @Test
+  public void scan_exclusiveStartKeyFound_correctlySublistsRemaining() {
+    // Arrange — exercises L230 (loop runs) and L236 (idx >= 0) true branch in SCAN
+    DynamoDbStore store = new DynamoDbStore();
+    String tableName = "scan-esk-found-table";
+    store.createTable(tableName, "pk", "S", null, null, List.of());
+    store.putItem(tableName, new LinkedHashMap<>(Map.of("pk", strAttr("a"))));
+    store.putItem(tableName, new LinkedHashMap<>(Map.of("pk", strAttr("b"))));
+    store.putItem(tableName, new LinkedHashMap<>(Map.of("pk", strAttr("c"))));
+
+    // Act — first page, then use the last item as exclusiveStartKey in SCAN
+    List<Map<String, Object>> firstPage = store.scan(tableName, null, null, null, 2, null);
+    Map<String, Object> lastKey = firstPage.get(firstPage.size() - 1);
+
+    // Call scan (not query) with exclusiveStartKey
+    List<Map<String, Object>> actualSecondPage =
+        store.scan(tableName, null, null, null, null, lastKey);
+
+    // Assert — should get the remaining item(s)
+    assertTrue(actualSecondPage.size() >= 1);
+  }
+
 }

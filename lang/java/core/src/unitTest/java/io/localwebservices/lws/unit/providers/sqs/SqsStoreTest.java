@@ -350,4 +350,69 @@ public class SqsStoreTest {
     // Assert
     assertEquals(expectedCount, actualCount);
   }
+
+  @Test
+  public void createQueue_withFifoQueueAttribute_setsFifoTrue() {
+    // Arrange
+    SqsStore store = new SqsStore(4566);
+
+    // Act — FifoQueue attribute set to "true" (not by name ending in .fifo)
+    LocalQueue actualQueue = store.createQueue("my-queue", Map.of("FifoQueue", "true"));
+
+    // Assert
+    assertTrue(actualQueue.isFifo);
+  }
+
+  @Test
+  public void listQueues_withEmptyPrefix_returnsAll() {
+    // Arrange
+    SqsStore store = new SqsStore(4566);
+    store.createQueue("queue-a", Map.of());
+    store.createQueue("queue-b", Map.of());
+    int expectedCount = 2;
+
+    // Act — empty string prefix should return all queues
+    List<SqsStore.LocalQueue> actualQueues = store.listQueues("");
+
+    // Assert
+    assertEquals(expectedCount, actualQueues.size());
+  }
+
+  @Test
+  public void deleteQueue_nonExistentQueue_doesNotThrow() {
+    // Arrange
+    SqsStore store = new SqsStore(4566);
+
+    // Act — deleteQueue on non-existent should be no-op (queue == null branch)
+    store.deleteQueue("ghost-queue");
+
+    // Assert
+    assertEquals(0, store.listQueues(null).size());
+  }
+
+  @Test
+  public void setQueueTags_nonExistentQueue_doesNotThrow() {
+    // Arrange
+    SqsStore store = new SqsStore(4566);
+
+    // Act — queue == null branch in setQueueTags
+    store.setQueueTags("nonexistent", Map.of("key", "value"));
+
+    // Assert — no exception, store unchanged
+    assertEquals(0, store.listQueues(null).size());
+  }
+
+  @Test
+  public void removeQueueTags_queueWithNoExistingTags_doesNotThrow() {
+    // Arrange
+    SqsStore store = new SqsStore(4566);
+    store.createQueue("no-tags-queue", Map.of());
+
+    // Act — existing == null branch in removeQueueTags
+    store.removeQueueTags("no-tags-queue", List.of("env"));
+
+    // Assert
+    assertTrue(store.getQueueTags("no-tags-queue").isEmpty());
+  }
+
 }

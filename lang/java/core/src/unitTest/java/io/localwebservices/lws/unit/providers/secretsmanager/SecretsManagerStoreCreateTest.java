@@ -145,4 +145,36 @@ public class SecretsManagerStoreCreateTest {
     assertFalse(store.secretExists(secretName));
     assertNull(store.findSecret(secretName));
   }
+
+  @Test
+  public void secretExists_softDeletedSecret_returnsFalse() {
+    // Arrange
+    SecretsManagerStore store = new SecretsManagerStore();
+    String secretName = "deleted-secret";
+    store.createSecret(secretName, "value", null, null);
+    store.deleteSecret(secretName, false);
+
+    // Act
+    boolean actualResult = store.secretExists(secretName);
+
+    // Assert
+    assertFalse(actualResult);
+  }
+
+  @Test
+  public void createSecret_withNonNullTags_storesTags() {
+    // Arrange
+    SecretsManagerStore store = new SecretsManagerStore();
+    String secretName = "tagged-create-secret";
+    java.util.List<java.util.Map<String, String>> expectedTags =
+        java.util.List.of(java.util.Map.of("Key", "env", "Value", "prod"));
+
+    // Act
+    java.util.Map<String, Object> actualSecret =
+        store.createSecret(secretName, "value", null, expectedTags);
+
+    // Assert
+    assertEquals(expectedTags, actualSecret.get("Tags"));
+  }
+
 }
