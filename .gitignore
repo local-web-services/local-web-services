@@ -1,4 +1,7 @@
+ignored/
 .DS_Store
+lang/typescript/**/dist/
+lang/typescript/**/node_modules/
 .venv
 __pycache__
 *.pyc

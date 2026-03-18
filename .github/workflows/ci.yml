@@ -346,6 +346,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Install and build core
+        working-directory: lang/typescript/core
+        run: npm ci && npm run build
       - name: Install
         working-directory: lang/typescript/sdk
         run: npm ci
@@ -365,6 +368,9 @@ jobs:
       - name: Install core
         working-directory: lang/typescript/core
         run: npm ci
+      - name: Build core
+        working-directory: lang/typescript/core
+        run: npm run build
       - name: Install sdk
         working-directory: lang/typescript/sdk
         run: npm ci
@@ -384,6 +390,9 @@ jobs:
       - name: Install core
         working-directory: lang/typescript/core
         run: npm ci
+      - name: Build core
+        working-directory: lang/typescript/core
+        run: npm run build
       - name: Install sdk
         working-directory: lang/typescript/sdk
         run: npm ci
@@ -403,6 +412,9 @@ jobs:
       - name: Install core
         working-directory: lang/typescript/core
         run: npm ci
+      - name: Build core
+        working-directory: lang/typescript/core
+        run: npm run build
       - name: Install sdk
         working-directory: lang/typescript/sdk
         run: npm ci
@@ -420,6 +432,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Install and build core
+        working-directory: lang/typescript/core
+        run: npm ci && npm run build
+      - name: Install and build sdk
+        working-directory: lang/typescript/sdk
+        run: npm ci && npm run build
       - name: Install
         working-directory: lang/typescript/example
         run: npm ci
@@ -436,6 +454,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Install and build core
+        working-directory: lang/typescript/core
+        run: npm ci && npm run build
       - name: Build SDK
         working-directory: lang/typescript/sdk
         run: npm ci && npm run build
@@ -455,6 +476,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Install and build core
+        working-directory: lang/typescript/core
+        run: npm ci && npm run build
       - name: Build SDK
         working-directory: lang/typescript/sdk
         run: npm ci && npm run build
@@ -474,6 +498,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Install and build core
+        working-directory: lang/typescript/core
+        run: npm ci && npm run build
       - name: Build SDK
         working-directory: lang/typescript/sdk
         run: npm ci && npm run build

@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "dev": "ts-node src/index.ts",
     "prepublishOnly": "npm run build",
     "test:integration": "cucumber-js",

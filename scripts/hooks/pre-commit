@@ -88,6 +88,7 @@ fi
 # ── TypeScript core + SDK + example ──────────────────────────────────────────
 if $TYPESCRIPT; then
   run "typescript-core test"        make -C "$REPO_ROOT/lang/typescript/core" test
+  run_in "typescript-core build"    "lang/typescript/core" npm run build
   run_in "typescript-sdk build"     "lang/typescript/sdk" npm ci
   run_in "typescript-sdk build tsc" "lang/typescript/sdk" npm run build
   run_in "typescript-example test"  "lang/typescript/example" npm ci
