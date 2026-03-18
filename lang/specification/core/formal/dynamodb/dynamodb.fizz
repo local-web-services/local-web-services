@@ -59,7 +59,7 @@ atomic action ActivateTable:
                 table_status[name] = "ACTIVE"
 
 # step: a table is deleted
-# result: the table is marked as DELETED and all its items are removed
+# result: the table enters DELETING state and all its items are removed
 # guard: the table exists
 # guard_violation: the table does not exist
 # guard: the table is ACTIVE
@@ -68,12 +68,28 @@ atomic action DeleteTable:
     oneof name in TABLE_NAMES:
         if name in table_status:
             if table_status[name] == "ACTIVE":
-                table_status[name] = "DELETED"
+                table_status[name] = "DELETING"
                 for pk in PK_VALUES:
                     for sk in SK_VALUES:
                         item_key = name + "#" + pk + "#" + sk
                         if item_key in items:
                             items[item_key] = False
+                if transaction_table == name:
+                    transaction_status = ""
+                    transaction_table = ""
+
+# fake_skip: internal
+# step: a table deletion completes
+# result: the table is DELETED
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is DELETING
+# guard_violation: the table is not DELETING
+atomic action FinishDeleteTable:
+    oneof name in TABLE_NAMES:
+        if name in table_status:
+            if table_status[name] == "DELETING":
+                table_status[name] = "DELETED"
 
 # step: a table is described
 # result: the table metadata is returned
@@ -314,7 +330,7 @@ atomic action SetThrottleWrites:
 # check: every table has a valid status (CREATING, ACTIVE, or DELETED)
 always assertion TableStatusValid:
     for name in table_status:
-        if table_status[name] not in ["CREATING", "ACTIVE", "DELETED"]:
+        if table_status[name] not in ["CREATING", "ACTIVE", "DELETING", "DELETED"]:
             return False
     return True
 

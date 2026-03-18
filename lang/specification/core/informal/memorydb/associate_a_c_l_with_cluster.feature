@@ -27,7 +27,7 @@ Feature: Memorydb - An Acl Is Associated With A Cluster
     When an "ACL" is associated with a cluster
     Then the operation is rejected
 
-  @standard @negative @associate_a_c_l_with_cluster @lifecycle @internal
+  @standard @negative @associate_a_c_l_with_cluster @lifecycle
   Scenario: an "ACL" is associated with a cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
@@ -42,7 +42,7 @@ Feature: Memorydb - An Acl Is Associated With A Cluster
     When an "ACL" is associated with a cluster
     Then the operation is rejected
 
-  @standard @negative @associate_a_c_l_with_cluster @lifecycle @internal
+  @standard @negative @associate_a_c_l_with_cluster @lifecycle
   Scenario: an "ACL" is associated with a cluster fails when the "ACL" is not "ACTIVE"
     Given the cluster exists
     And the cluster is "AVAILABLE"

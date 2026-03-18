@@ -7,7 +7,7 @@ Feature: Dynamodb - Read Throttling Is Toggled On Or Off
   Background:
     Given the system is initialized
 
-  @minimal @happy @set_throttle_reads @internal
+  @minimal @happy @set_throttle_reads
   Scenario: read throttling is toggled on or off
     When read throttling is toggled on or off
     Then reads are throttled or unthrottled

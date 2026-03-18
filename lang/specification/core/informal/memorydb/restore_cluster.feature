@@ -13,7 +13,7 @@ Feature: Memorydb - A Cluster Is Restored From A Snapshot
     And the snapshot is "AVAILABLE"
     And the target cluster slot is available
     When a cluster is restored from a snapshot
-    Then the restored cluster is in "CREATING" state
+    Then the restored cluster is in "RESTORING" state
     And every active cluster has write durability enabled
     And every snapshotting cluster has a corresponding in-progress snapshot
     And no "ACL" in "DELETING" state is currently associated with a cluster
@@ -26,7 +26,7 @@ Feature: Memorydb - A Cluster Is Restored From A Snapshot
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_cluster @lifecycle @internal
+  @standard @negative @restore_cluster @lifecycle
   Scenario: a cluster is restored from a snapshot fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

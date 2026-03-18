@@ -125,6 +125,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -273,6 +282,15 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance finishes creating
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -431,6 +449,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -579,6 +606,15 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance modification completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -737,6 +773,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -885,6 +930,15 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance reboot completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -1043,6 +1097,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -1191,6 +1254,15 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -1349,6 +1421,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -1497,6 +1578,15 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -1655,6 +1745,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -1803,6 +1902,15 @@ Feature: Rds - Action Sequences
     Given sid in snapshot_status
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -1961,6 +2069,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -2114,6 +2231,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -2144,6 +2270,168 @@ Feature: Rds - Action Sequences
   Scenario: a database instance is restored from a snapshot then a tag is applied to a database instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -2271,6 +2559,15 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -2429,6 +2726,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -2577,6 +2883,15 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -2735,6 +3050,15 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -2877,6 +3201,16 @@ Feature: Rds - Action Sequences
     When a database instance is created
     When a database instance finishes creating
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -3042,6 +3376,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a database instance configuration is modified then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -3197,6 +3541,16 @@ Feature: Rds - Action Sequences
     When a database instance is created
     When a database instance modification completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -3362,6 +3716,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a database instance is rebooted then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -3517,6 +3881,16 @@ Feature: Rds - Action Sequences
     When a database instance is created
     When a database instance reboot completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -3682,6 +4056,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a database instance is deleted without a final snapshot then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -3837,6 +4221,16 @@ Feature: Rds - Action Sequences
     When a database instance is created
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -4002,6 +4396,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a database instance deletion completes then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -4157,6 +4561,16 @@ Feature: Rds - Action Sequences
     When a database instance is created
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -4322,6 +4736,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -4477,6 +4901,16 @@ Feature: Rds - Action Sequences
     When a database instance is created
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -4642,6 +5076,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -4802,6 +5246,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -4836,6 +5290,176 @@ Feature: Rds - Action Sequences
     Given iid not in instance_status
     When a database instance is created
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid not in instance_status
+    When a database instance is created
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -4967,6 +5591,16 @@ Feature: Rds - Action Sequences
     When a database instance is created
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -5132,6 +5766,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -5287,6 +5931,16 @@ Feature: Rds - Action Sequences
     When a database instance is created
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is created then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -5452,6 +6106,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is created then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid not in instance_status
+    When a database instance is created
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is created then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid not in instance_status
     When a database instance is created
@@ -5597,6 +6261,16 @@ Feature: Rds - Action Sequences
     When a database instance finishes creating
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -5762,6 +6436,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database instance configuration is modified then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -5917,6 +6601,16 @@ Feature: Rds - Action Sequences
     When a database instance finishes creating
     When a database instance modification completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -6082,6 +6776,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database instance is rebooted then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -6237,6 +6941,16 @@ Feature: Rds - Action Sequences
     When a database instance finishes creating
     When a database instance reboot completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -6402,6 +7116,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database instance is deleted without a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -6557,6 +7281,16 @@ Feature: Rds - Action Sequences
     When a database instance finishes creating
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -6722,6 +7456,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database instance deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -6877,6 +7621,16 @@ Feature: Rds - Action Sequences
     When a database instance finishes creating
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -7042,6 +7796,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -7197,6 +7961,16 @@ Feature: Rds - Action Sequences
     When a database instance finishes creating
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -7362,6 +8136,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -7522,6 +8306,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -7556,6 +8350,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance finishes creating
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -7687,6 +8651,16 @@ Feature: Rds - Action Sequences
     When a database instance finishes creating
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -7852,6 +8826,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -8007,6 +8991,16 @@ Feature: Rds - Action Sequences
     When a database instance finishes creating
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -8172,6 +9166,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance finishes creating
@@ -8317,6 +9321,16 @@ Feature: Rds - Action Sequences
     When a database instance configuration is modified
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -8482,6 +9496,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -8637,6 +9661,16 @@ Feature: Rds - Action Sequences
     When a database instance configuration is modified
     When a database instance modification completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -8802,6 +9836,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database instance is rebooted then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -8957,6 +10001,16 @@ Feature: Rds - Action Sequences
     When a database instance configuration is modified
     When a database instance reboot completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -9122,6 +10176,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database instance is deleted without a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -9277,6 +10341,16 @@ Feature: Rds - Action Sequences
     When a database instance configuration is modified
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -9442,6 +10516,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database instance deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -9597,6 +10681,16 @@ Feature: Rds - Action Sequences
     When a database instance configuration is modified
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -9762,6 +10856,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -9917,6 +11021,16 @@ Feature: Rds - Action Sequences
     When a database instance configuration is modified
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -10082,6 +11196,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -10242,6 +11366,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -10276,6 +11410,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -10407,6 +11711,16 @@ Feature: Rds - Action Sequences
     When a database instance configuration is modified
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -10572,6 +11886,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -10727,6 +12051,16 @@ Feature: Rds - Action Sequences
     When a database instance configuration is modified
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -10892,6 +12226,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance configuration is modified
@@ -11037,6 +12381,16 @@ Feature: Rds - Action Sequences
     When a database instance modification completes
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -11202,6 +12556,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -11357,6 +12721,16 @@ Feature: Rds - Action Sequences
     When a database instance modification completes
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -11522,6 +12896,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database instance is rebooted then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -11677,6 +13061,16 @@ Feature: Rds - Action Sequences
     When a database instance modification completes
     When a database instance reboot completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -11842,6 +13236,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database instance is deleted without a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -11997,6 +13401,16 @@ Feature: Rds - Action Sequences
     When a database instance modification completes
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -12162,6 +13576,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database instance deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -12317,6 +13741,16 @@ Feature: Rds - Action Sequences
     When a database instance modification completes
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -12482,6 +13916,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -12637,6 +14081,16 @@ Feature: Rds - Action Sequences
     When a database instance modification completes
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -12802,6 +14256,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -12962,6 +14426,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -12996,6 +14470,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance modification completes
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -13127,6 +14771,16 @@ Feature: Rds - Action Sequences
     When a database instance modification completes
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -13292,6 +14946,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -13447,6 +15111,16 @@ Feature: Rds - Action Sequences
     When a database instance modification completes
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -13612,6 +15286,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance modification completes
@@ -13757,6 +15441,16 @@ Feature: Rds - Action Sequences
     When a database instance is rebooted
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -13922,6 +15616,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -14077,6 +15781,16 @@ Feature: Rds - Action Sequences
     When a database instance is rebooted
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -14242,6 +15956,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -14397,6 +16121,16 @@ Feature: Rds - Action Sequences
     When a database instance is rebooted
     When a database instance reboot completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -14562,6 +16296,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a database instance is deleted without a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -14717,6 +16461,16 @@ Feature: Rds - Action Sequences
     When a database instance is rebooted
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -14882,6 +16636,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a database instance deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -15037,6 +16801,16 @@ Feature: Rds - Action Sequences
     When a database instance is rebooted
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -15202,6 +16976,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -15357,6 +17141,16 @@ Feature: Rds - Action Sequences
     When a database instance is rebooted
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -15522,6 +17316,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -15682,6 +17486,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -15716,6 +17530,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -15847,6 +17831,16 @@ Feature: Rds - Action Sequences
     When a database instance is rebooted
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -16012,6 +18006,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -16167,6 +18171,16 @@ Feature: Rds - Action Sequences
     When a database instance is rebooted
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is rebooted then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -16332,6 +18346,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is rebooted then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is rebooted
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is rebooted then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is rebooted
@@ -16477,6 +18501,16 @@ Feature: Rds - Action Sequences
     When a database instance reboot completes
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -16642,6 +18676,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -16797,6 +18841,16 @@ Feature: Rds - Action Sequences
     When a database instance reboot completes
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -16962,6 +19016,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -17117,6 +19181,16 @@ Feature: Rds - Action Sequences
     When a database instance reboot completes
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -17282,6 +19356,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a database instance is deleted without a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -17437,6 +19521,16 @@ Feature: Rds - Action Sequences
     When a database instance reboot completes
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -17602,6 +19696,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a database instance deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -17757,6 +19861,16 @@ Feature: Rds - Action Sequences
     When a database instance reboot completes
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -17922,6 +20036,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -18077,6 +20201,16 @@ Feature: Rds - Action Sequences
     When a database instance reboot completes
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -18242,6 +20376,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -18402,6 +20546,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -18436,6 +20590,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance reboot completes
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -18567,6 +20891,16 @@ Feature: Rds - Action Sequences
     When a database instance reboot completes
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -18732,6 +21066,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -18887,6 +21231,16 @@ Feature: Rds - Action Sequences
     When a database instance reboot completes
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance reboot completes then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -19052,6 +21406,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance reboot completes then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance reboot completes
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance reboot completes then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance reboot completes
@@ -19197,6 +21561,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted without a final snapshot
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -19362,6 +21736,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -19517,6 +21901,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted without a final snapshot
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -19682,6 +22076,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -19837,6 +22241,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted without a final snapshot
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -20002,6 +22416,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a database instance reboot completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -20157,6 +22581,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted without a final snapshot
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -20322,6 +22756,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a database instance deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -20477,6 +22921,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted without a final snapshot
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -20642,6 +23096,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -20797,6 +23261,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted without a final snapshot
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -20962,6 +23436,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -21122,6 +23606,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -21156,6 +23650,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -21287,6 +23951,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted without a final snapshot
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -21452,6 +24126,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -21607,6 +24291,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted without a final snapshot
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -21772,6 +24466,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted without a final snapshot then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted without a final snapshot
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted without a final snapshot then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted without a final snapshot
@@ -21917,6 +24621,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted with a final snapshot
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -22082,6 +24796,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -22237,6 +24961,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted with a final snapshot
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -22402,6 +25136,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -22557,6 +25301,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted with a final snapshot
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -22722,6 +25476,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a database instance reboot completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -22877,6 +25641,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted with a final snapshot
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -23042,6 +25816,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a database instance deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -23197,6 +25981,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted with a final snapshot
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -23362,6 +26156,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -23517,6 +26321,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted with a final snapshot
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -23682,6 +26496,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -23842,6 +26666,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -23876,6 +26710,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -24007,6 +27011,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted with a final snapshot
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -24172,6 +27186,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -24327,6 +27351,16 @@ Feature: Rds - Action Sequences
     When a database instance is deleted with a final snapshot
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -24492,6 +27526,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted with a final snapshot then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted with a final snapshot
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted with a final snapshot then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance is deleted with a final snapshot
@@ -24637,6 +27681,16 @@ Feature: Rds - Action Sequences
     When a database instance deletion completes
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -24802,6 +27856,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -24957,6 +28021,16 @@ Feature: Rds - Action Sequences
     When a database instance deletion completes
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -25122,6 +28196,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -25277,6 +28361,16 @@ Feature: Rds - Action Sequences
     When a database instance deletion completes
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -25442,6 +28536,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database instance reboot completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -25597,6 +28701,16 @@ Feature: Rds - Action Sequences
     When a database instance deletion completes
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -25762,6 +28876,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -25917,6 +29041,16 @@ Feature: Rds - Action Sequences
     When a database instance deletion completes
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -26082,6 +29216,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -26237,6 +29381,16 @@ Feature: Rds - Action Sequences
     When a database instance deletion completes
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -26402,6 +29556,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -26562,6 +29726,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -26596,6 +29770,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -26727,6 +30071,16 @@ Feature: Rds - Action Sequences
     When a database instance deletion completes
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -26892,6 +30246,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -27047,6 +30411,16 @@ Feature: Rds - Action Sequences
     When a database instance deletion completes
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -27212,6 +30586,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database instance deletion completes
@@ -27357,6 +30741,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is created from an instance
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -27522,6 +30916,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -27677,6 +31081,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is created from an instance
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -27842,6 +31256,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -27997,6 +31421,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is created from an instance
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -28162,6 +31596,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a database instance reboot completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -28317,6 +31761,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is created from an instance
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -28482,6 +31936,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -28637,6 +32101,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is created from an instance
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -28802,6 +32276,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a database snapshot finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -28957,6 +32441,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is created from an instance
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -29122,6 +32616,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a database snapshot deletion completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -29282,6 +32786,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -29316,6 +32830,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a database snapshot is created from an instance
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -29447,6 +33131,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is created from an instance
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -29612,6 +33306,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -29767,6 +33471,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is created from an instance
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -29932,6 +33646,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is created from an instance then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a database snapshot is created from an instance
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is created from an instance then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a database snapshot is created from an instance
@@ -30077,6 +33801,16 @@ Feature: Rds - Action Sequences
     When a database snapshot finishes creating
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance is created then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -30242,6 +33976,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance finishes creating then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a database instance finishes creating then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -30397,6 +34141,16 @@ Feature: Rds - Action Sequences
     When a database snapshot finishes creating
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -30562,6 +34316,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance modification completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a database instance modification completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -30717,6 +34481,16 @@ Feature: Rds - Action Sequences
     When a database snapshot finishes creating
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance is rebooted then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -30882,6 +34656,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance reboot completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a database instance reboot completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -31037,6 +34821,16 @@ Feature: Rds - Action Sequences
     When a database snapshot finishes creating
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -31202,6 +34996,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -31357,6 +35161,16 @@ Feature: Rds - Action Sequences
     When a database snapshot finishes creating
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance deletion completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -31522,6 +35336,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a database snapshot is created from an instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -31677,6 +35501,16 @@ Feature: Rds - Action Sequences
     When a database snapshot finishes creating
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -31842,6 +35676,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a database snapshot deletion completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -32002,6 +35846,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -32036,6 +35890,176 @@ Feature: Rds - Action Sequences
     Given sid in snapshot_status
     When a database snapshot finishes creating
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance is created
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance finishes creating
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance modification completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance is rebooted
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance reboot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance deletion completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -32167,6 +36191,16 @@ Feature: Rds - Action Sequences
     When a database snapshot finishes creating
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -32332,6 +36366,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -32487,6 +36531,16 @@ Feature: Rds - Action Sequences
     When a database snapshot finishes creating
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -32652,6 +36706,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot finishes creating then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot finishes creating
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot finishes creating then a tag is applied to a database instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot finishes creating
@@ -32797,6 +36861,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is deleted
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance is created then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -32962,6 +37036,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance finishes creating then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a database instance finishes creating then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -33117,6 +37201,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is deleted
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -33282,6 +37376,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance modification completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a database instance modification completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -33437,6 +37541,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is deleted
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance is rebooted then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -33602,6 +37716,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance reboot completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a database instance reboot completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -33757,6 +37881,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is deleted
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -33922,6 +38056,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -34077,6 +38221,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is deleted
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance deletion completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -34242,6 +38396,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a database snapshot is created from an instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -34397,6 +38561,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is deleted
     When a database snapshot finishes creating
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -34562,6 +38736,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a database snapshot deletion completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -34722,6 +38906,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -34756,6 +38950,176 @@ Feature: Rds - Action Sequences
     Given sid in snapshot_status
     When a database snapshot is deleted
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance is created
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance finishes creating
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance modification completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance is rebooted
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance reboot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance deletion completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -34887,6 +39251,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is deleted
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -35052,6 +39426,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -35207,6 +39591,16 @@ Feature: Rds - Action Sequences
     When a database snapshot is deleted
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot is deleted then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -35372,6 +39766,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot is deleted then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot is deleted
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot is deleted then a tag is applied to a database instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot is deleted
@@ -35517,6 +39921,16 @@ Feature: Rds - Action Sequences
     When a database snapshot deletion completes
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance is created then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -35682,6 +40096,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance finishes creating then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a database instance finishes creating then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -35837,6 +40261,16 @@ Feature: Rds - Action Sequences
     When a database snapshot deletion completes
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -36002,6 +40436,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance modification completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a database instance modification completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -36157,6 +40601,16 @@ Feature: Rds - Action Sequences
     When a database snapshot deletion completes
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance is rebooted then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -36322,6 +40776,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance reboot completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a database instance reboot completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -36477,6 +40941,16 @@ Feature: Rds - Action Sequences
     When a database snapshot deletion completes
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -36642,6 +41116,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -36797,6 +41281,16 @@ Feature: Rds - Action Sequences
     When a database snapshot deletion completes
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance deletion completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -36962,6 +41456,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a database snapshot is created from an instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -37117,6 +41621,16 @@ Feature: Rds - Action Sequences
     When a database snapshot deletion completes
     When a database snapshot finishes creating
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -37282,6 +41796,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a database snapshot is deleted then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -37442,6 +41966,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -37476,6 +42010,176 @@ Feature: Rds - Action Sequences
     Given sid in snapshot_status
     When a database snapshot deletion completes
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance is created
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance finishes creating
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance modification completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance is rebooted
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance reboot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance deletion completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -37607,6 +42311,16 @@ Feature: Rds - Action Sequences
     When a database snapshot deletion completes
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -37772,6 +42486,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -37927,6 +42651,16 @@ Feature: Rds - Action Sequences
     When a database snapshot deletion completes
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -38092,6 +42826,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database snapshot deletion completes then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database snapshot deletion completes
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database snapshot deletion completes then a tag is applied to a database instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database snapshot deletion completes
@@ -38237,6 +42981,16 @@ Feature: Rds - Action Sequences
     When a database instance is restored from a snapshot
     When a database instance is created
     When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance is created then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -38402,6 +43156,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance finishes creating then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a database instance finishes creating then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -38557,6 +43321,16 @@ Feature: Rds - Action Sequences
     When a database instance is restored from a snapshot
     When a database instance configuration is modified
     When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -38722,6 +43496,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance modification completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a database instance modification completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -38877,6 +43661,16 @@ Feature: Rds - Action Sequences
     When a database instance is restored from a snapshot
     When a database instance is rebooted
     When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance is rebooted then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -39042,6 +43836,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance reboot completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a database instance reboot completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -39197,6 +44001,16 @@ Feature: Rds - Action Sequences
     When a database instance is restored from a snapshot
     When a database instance is deleted without a final snapshot
     When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -39362,6 +44176,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -39517,6 +44341,16 @@ Feature: Rds - Action Sequences
     When a database instance is restored from a snapshot
     When a database instance deletion completes
     When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance deletion completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -39682,6 +44516,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a database snapshot is created from an instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -39837,6 +44681,16 @@ Feature: Rds - Action Sequences
     When a database instance is restored from a snapshot
     When a database snapshot finishes creating
     When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -40002,6 +44856,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a database snapshot is deleted then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -40162,6 +45026,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a database snapshot deletion completes then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -40196,6 +45070,176 @@ Feature: Rds - Action Sequences
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
     When a database snapshot deletion completes
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance is created
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance finishes creating
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance modification completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance is rebooted
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance reboot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database instance deletion completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -40327,6 +45371,16 @@ Feature: Rds - Action Sequences
     When a database instance is restored from a snapshot
     When an automated backup runs on an available instance
     When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -40492,6 +45546,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -40647,6 +45711,16 @@ Feature: Rds - Action Sequences
     When a database instance is restored from a snapshot
     When multi-"AZ" is enabled on a database instance
     When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -40812,6 +45886,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a database instance is restored from a snapshot then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given sid in snapshot_status
+    When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a database instance is restored from a snapshot then a tag is applied to a database instance then an automated backup runs on an available instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
@@ -40835,6 +45919,3066 @@ Feature: Rds - Action Sequences
   Scenario: a database instance is restored from a snapshot then a tag is applied to a database instance then multi-"AZ" is enabled on a database instance
     Given sid in snapshot_status
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is created then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance finishes creating then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance configuration is modified then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance modification completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is rebooted then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance reboot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted without a final snapshot then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is deleted with a final snapshot then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance deletion completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is created from an instance then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot finishes creating then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot is deleted then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database snapshot deletion completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a database instance is restored from a snapshot then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then an automated backup runs on an available instance then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance then a tag is applied to a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance is created
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance modification completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance is rebooted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance reboot completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database snapshot finishes creating
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database snapshot is deleted
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database snapshot deletion completes
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
+    When a tag is applied to a database instance
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a database instance restore from snapshot completes then a tag is applied to a database instance then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     When multi-"AZ" is enabled on a database instance
     And every database instance has a valid status
@@ -40967,6 +49111,16 @@ Feature: Rds - Action Sequences
     When an automated backup runs on an available instance
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -41132,6 +49286,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then a database instance finishes creating then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -41287,6 +49451,16 @@ Feature: Rds - Action Sequences
     When an automated backup runs on an available instance
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -41452,6 +49626,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then a database instance modification completes then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -41607,6 +49791,16 @@ Feature: Rds - Action Sequences
     When an automated backup runs on an available instance
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -41772,6 +49966,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then a database instance reboot completes then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -41927,6 +50131,16 @@ Feature: Rds - Action Sequences
     When an automated backup runs on an available instance
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -42092,6 +50306,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then a database instance is deleted with a final snapshot then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -42247,6 +50471,16 @@ Feature: Rds - Action Sequences
     When an automated backup runs on an available instance
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -42412,6 +50646,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then a database snapshot is created from an instance then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -42567,6 +50811,16 @@ Feature: Rds - Action Sequences
     When an automated backup runs on an available instance
     When a database snapshot finishes creating
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -42732,6 +50986,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then a database snapshot is deleted then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -42887,6 +51151,16 @@ Feature: Rds - Action Sequences
     When an automated backup runs on an available instance
     When a database snapshot deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -43052,6 +51326,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then a database instance is restored from a snapshot then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -43076,6 +51360,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -43217,6 +51671,16 @@ Feature: Rds - Action Sequences
     When an automated backup runs on an available instance
     When a multi-"AZ" failover is triggered on an instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -43382,6 +51846,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then multi-"AZ" is enabled on a database instance then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -43542,6 +52016,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: an automated backup runs on an available instance then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When an automated backup runs on an available instance
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: an automated backup runs on an available instance then a tag is applied to a database instance then a multi-"AZ" failover is triggered on an instance
     Given iid in instance_status
     When an automated backup runs on an available instance
@@ -43687,6 +52171,16 @@ Feature: Rds - Action Sequences
     When a multi-"AZ" failover is triggered on an instance
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -43852,6 +52346,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -44007,6 +52511,16 @@ Feature: Rds - Action Sequences
     When a multi-"AZ" failover is triggered on an instance
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -44172,6 +52686,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -44327,6 +52851,16 @@ Feature: Rds - Action Sequences
     When a multi-"AZ" failover is triggered on an instance
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -44492,6 +53026,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then a database instance reboot completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -44647,6 +53191,16 @@ Feature: Rds - Action Sequences
     When a multi-"AZ" failover is triggered on an instance
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -44812,6 +53366,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -44967,6 +53531,16 @@ Feature: Rds - Action Sequences
     When a multi-"AZ" failover is triggered on an instance
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -45132,6 +53706,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then a database snapshot is created from an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -45287,6 +53871,16 @@ Feature: Rds - Action Sequences
     When a multi-"AZ" failover is triggered on an instance
     When a database snapshot finishes creating
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -45452,6 +54046,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then a database snapshot is deleted then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -45607,6 +54211,16 @@ Feature: Rds - Action Sequences
     When a multi-"AZ" failover is triggered on an instance
     When a database snapshot deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -45772,6 +54386,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -45796,6 +54420,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -45937,6 +54731,16 @@ Feature: Rds - Action Sequences
     When a multi-"AZ" failover is triggered on an instance
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -46102,6 +54906,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then multi-"AZ" is enabled on a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -46262,6 +55076,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a multi-"AZ" failover is triggered on an instance then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a multi-"AZ" failover is triggered on an instance
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a multi-"AZ" failover is triggered on an instance then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a multi-"AZ" failover is triggered on an instance
@@ -46407,6 +55231,16 @@ Feature: Rds - Action Sequences
     When multi-"AZ" is enabled on a database instance
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -46572,6 +55406,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -46727,6 +55571,16 @@ Feature: Rds - Action Sequences
     When multi-"AZ" is enabled on a database instance
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -46892,6 +55746,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -47047,6 +55911,16 @@ Feature: Rds - Action Sequences
     When multi-"AZ" is enabled on a database instance
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -47212,6 +56086,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a database instance reboot completes then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -47367,6 +56251,16 @@ Feature: Rds - Action Sequences
     When multi-"AZ" is enabled on a database instance
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -47532,6 +56426,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -47687,6 +56591,16 @@ Feature: Rds - Action Sequences
     When multi-"AZ" is enabled on a database instance
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -47852,6 +56766,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a database snapshot is created from an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -48007,6 +56931,16 @@ Feature: Rds - Action Sequences
     When multi-"AZ" is enabled on a database instance
     When a database snapshot finishes creating
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -48172,6 +57106,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a database snapshot is deleted then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -48327,6 +57271,16 @@ Feature: Rds - Action Sequences
     When multi-"AZ" is enabled on a database instance
     When a database snapshot deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -48492,6 +57446,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -48516,6 +57480,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    When a tag is applied to a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes then a tag is applied to a database instance
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     When a tag is applied to a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -48657,6 +57791,16 @@ Feature: Rds - Action Sequences
     When multi-"AZ" is enabled on a database instance
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -48822,6 +57966,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -48982,6 +58136,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: multi-"AZ" is enabled on a database instance then a tag is applied to a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When multi-"AZ" is enabled on a database instance
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: multi-"AZ" is enabled on a database instance then a tag is applied to a database instance then an automated backup runs on an available instance
     Given iid in instance_status
     When multi-"AZ" is enabled on a database instance
@@ -49127,6 +58291,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When a database instance is created
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance is created then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance is created
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -49292,6 +58466,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance finishes creating
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then a database instance finishes creating then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -49447,6 +58631,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When a database instance configuration is modified
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance configuration is modified then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance configuration is modified
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -49612,6 +58806,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance modification completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance modification completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then a database instance modification completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -49767,6 +58971,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When a database instance is rebooted
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance is rebooted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance is rebooted
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -49932,6 +59146,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance reboot completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance reboot completes
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then a database instance reboot completes then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -50087,6 +59311,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When a database instance is deleted without a final snapshot
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance is deleted without a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance is deleted without a final snapshot
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -50252,6 +59486,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance is deleted with a final snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance is deleted with a final snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then a database instance is deleted with a final snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -50407,6 +59651,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When a database instance deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -50572,6 +59826,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database snapshot is created from an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database snapshot is created from an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then a database snapshot is created from an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -50727,6 +59991,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When a database snapshot finishes creating
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database snapshot finishes creating then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database snapshot finishes creating
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -50892,6 +60166,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database snapshot is deleted then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database snapshot is deleted
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then a database snapshot is deleted then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -51047,6 +60331,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When a database snapshot deletion completes
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database snapshot deletion completes then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database snapshot deletion completes
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -51212,6 +60506,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance is restored from a snapshot then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance is restored from a snapshot
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then a database instance is restored from a snapshot then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -51236,6 +60540,176 @@ Feature: Rds - Action Sequences
     Given iid in instance_status
     When a tag is applied to a database instance
     When a database instance is restored from a snapshot
+    When multi-"AZ" is enabled on a database instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance is created
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is created
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance configuration is modified
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance modification completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance is rebooted
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is rebooted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance reboot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance reboot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance is deleted without a final snapshot
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted without a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance is deleted with a final snapshot
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is deleted with a final snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database snapshot is created from an instance
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is created from an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database snapshot finishes creating
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database snapshot finishes creating
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database snapshot is deleted
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database snapshot is deleted
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database snapshot deletion completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database snapshot deletion completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a database instance is restored from a snapshot
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then an automated backup runs on an available instance
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When an automated backup runs on an available instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then a multi-"AZ" failover is triggered on an instance
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
+    When a multi-"AZ" failover is triggered on an instance
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a database instance restore from snapshot completes then multi-"AZ" is enabled on a database instance
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a database instance restore from snapshot completes
     When multi-"AZ" is enabled on a database instance
     And every database instance has a valid status
     And every database snapshot has a valid status
@@ -51377,6 +60851,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When an automated backup runs on an available instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then an automated backup runs on an available instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When an automated backup runs on an available instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -51542,6 +61026,16 @@ Feature: Rds - Action Sequences
     And every backing-up instance has a corresponding in-progress snapshot
 
   @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then a multi-"AZ" failover is triggered on an instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When a multi-"AZ" failover is triggered on an instance
+    When a database instance restore from snapshot completes
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
   Scenario: a tag is applied to a database instance then a multi-"AZ" failover is triggered on an instance then an automated backup runs on an available instance
     Given iid in instance_status
     When a tag is applied to a database instance
@@ -51697,6 +61191,16 @@ Feature: Rds - Action Sequences
     When a tag is applied to a database instance
     When multi-"AZ" is enabled on a database instance
     When a database instance is restored from a snapshot
+    And every database instance has a valid status
+    And every database snapshot has a valid status
+    And every backing-up instance has a corresponding in-progress snapshot
+
+  @exhaustive @sequence
+  Scenario: a tag is applied to a database instance then multi-"AZ" is enabled on a database instance then a database instance restore from snapshot completes
+    Given iid in instance_status
+    When a tag is applied to a database instance
+    When multi-"AZ" is enabled on a database instance
+    When a database instance restore from snapshot completes
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot

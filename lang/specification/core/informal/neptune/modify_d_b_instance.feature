@@ -2,7 +2,7 @@
 Feature: Neptune - A Database Instance Configuration Is Modified
 
   # Generated from FizzBee spec: neptune.fizz
-  # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster
+  # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
 
   Background:
     Given the system is initialized
@@ -21,6 +21,7 @@ Feature: Neptune - A Database Instance Configuration Is Modified
     And a stopped cluster has no available instances
     And instances on a stopped or stopping cluster are not in "MODIFYING" state
     And a deleted cluster has no available instances
+    And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
   @standard @negative @modify_d_b_instance
@@ -29,7 +30,7 @@ Feature: Neptune - A Database Instance Configuration Is Modified
     When a database instance configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance @lifecycle @internal
+  @standard @negative @modify_d_b_instance @lifecycle
   Scenario: a database instance configuration is modified fails when the instance is not "AVAILABLE"
     Given the instance exists
     And the instance is not "AVAILABLE"
@@ -44,7 +45,7 @@ Feature: Neptune - A Database Instance Configuration Is Modified
     When a database instance configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance @lifecycle @internal
+  @standard @negative @modify_d_b_instance @lifecycle
   Scenario: a database instance configuration is modified fails when the cluster is not "AVAILABLE"
     Given the instance exists
     And the instance is "AVAILABLE"

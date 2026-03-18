@@ -29,14 +29,14 @@ Feature: Dynamodb - An Existing Item Is Updated In The Table
     When an existing item is updated in the table
     Then the operation is rejected
 
-  @standard @negative @update_item @lifecycle @internal
+  @standard @negative @update_item @lifecycle
   Scenario: an existing item is updated in the table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When an existing item is updated in the table
     Then the operation is rejected
 
-  @standard @negative @update_item @capacity @internal
+  @standard @negative @update_item @capacity
   Scenario: an existing item is updated in the table fails when writes are throttled
     Given the table exists
     And the table is "ACTIVE"
@@ -53,7 +53,7 @@ Feature: Dynamodb - An Existing Item Is Updated In The Table
     When an existing item is updated in the table
     Then the operation is rejected
 
-  @standard @negative @update_item @internal
+  @standard @negative @update_item
   Scenario: an existing item is updated in the table fails when the item is not present
     Given the table exists
     And the table is "ACTIVE"

@@ -1,5 +1,5 @@
 @dynamodb @generated
-Feature: Dynamodb - A Table Is Deleted
+Feature: Dynamodb - A Table Deletion Completes
 
   # Generated from FizzBee spec: dynamodb.fizz
   # Safety invariants: TableStatusValid, GsiPendingNonNegative, TransactionStatusValid, TransactionTableExists, ItemsOnlyInActiveTables, DeletedTableNotWritable
@@ -7,12 +7,12 @@ Feature: Dynamodb - A Table Is Deleted
   Background:
     Given the system is initialized
 
-  @minimal @happy @delete_table
-  Scenario: a table is deleted
+  @minimal @happy @finish_delete_table @internal
+  Scenario: a table deletion completes
     Given the table exists
-    And the table is "ACTIVE"
-    When a table is deleted
-    Then the table enters "DELETING" state and all its items are removed
+    And the table is "DELETING"
+    When a table deletion completes
+    Then the table is "DELETED"
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -20,15 +20,15 @@ Feature: Dynamodb - A Table Is Deleted
     And items only exist in non-deleted tables
     And deleted tables are never the target of a pending transaction
 
-  @standard @negative @delete_table
-  Scenario: a table is deleted fails when the table does not exist
+  @standard @negative @finish_delete_table @internal
+  Scenario: a table deletion completes fails when the table does not exist
     Given the table does not exist
-    When a table is deleted
+    When a table deletion completes
     Then the operation is rejected
 
-  @standard @negative @delete_table @lifecycle
-  Scenario: a table is deleted fails when the table is not "ACTIVE"
+  @standard @negative @finish_delete_table @internal
+  Scenario: a table deletion completes fails when the table is not "DELETING"
     Given the table exists
-    And the table is not "ACTIVE"
-    When a table is deleted
+    And the table is not "DELETING"
+    When a table deletion completes
     Then the operation is rejected

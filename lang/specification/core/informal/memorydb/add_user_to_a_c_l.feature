@@ -28,7 +28,7 @@ Feature: Memorydb - A User Is Added To An Acl
     When a user is added to an "ACL"
     Then the operation is rejected
 
-  @standard @negative @add_user_to_a_c_l @lifecycle @internal
+  @standard @negative @add_user_to_a_c_l @lifecycle
   Scenario: a user is added to an "ACL" fails when the "ACL" is not "ACTIVE"
     Given the "ACL" exists
     And the "ACL" is not "ACTIVE"
@@ -43,7 +43,7 @@ Feature: Memorydb - A User Is Added To An Acl
     When a user is added to an "ACL"
     Then the operation is rejected
 
-  @standard @negative @add_user_to_a_c_l @lifecycle @internal
+  @standard @negative @add_user_to_a_c_l @lifecycle
   Scenario: a user is added to an "ACL" fails when the user is not "ACTIVE"
     Given the "ACL" exists
     And the "ACL" is "ACTIVE"

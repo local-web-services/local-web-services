@@ -28,7 +28,7 @@ Feature: Docdb - A Database Instance Is Created In An Available Cluster
     When a database instance is created in an available cluster
     Then the operation is rejected
 
-  @standard @negative @create_d_b_instance @lifecycle @internal
+  @standard @negative @create_d_b_instance @lifecycle
   Scenario: a database instance is created in an available cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

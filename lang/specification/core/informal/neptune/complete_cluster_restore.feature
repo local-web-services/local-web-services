@@ -1,5 +1,5 @@
 @neptune @generated
-Feature: Neptune - A Database Cluster Creation Fails
+Feature: Neptune - A Database Cluster Restore From Snapshot Completes
 
   # Generated from FizzBee spec: neptune.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
@@ -7,12 +7,12 @@ Feature: Neptune - A Database Cluster Creation Fails
   Background:
     Given the system is initialized
 
-  @minimal @happy @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails
+  @minimal @happy @complete_cluster_restore @internal
+  Scenario: a database cluster restore from snapshot completes
     Given the cluster exists
-    And the cluster is "CREATING"
-    When a database cluster creation fails
-    Then the cluster is in "FAILED" state
+    And the cluster is "RESTORING"
+    When a database cluster restore from snapshot completes
+    Then the cluster is "AVAILABLE"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22,15 +22,15 @@ Feature: Neptune - A Database Cluster Creation Fails
     And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
-  @standard @negative @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails fails when the cluster does not exist
+  @standard @negative @complete_cluster_restore @internal
+  Scenario: a database cluster restore from snapshot completes fails when the cluster does not exist
     Given the cluster does not exist
-    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     Then the operation is rejected
 
-  @standard @negative @fail_cluster_creation @internal
-  Scenario: a database cluster creation fails fails when the cluster is not "CREATING"
+  @standard @negative @complete_cluster_restore @internal
+  Scenario: a database cluster restore from snapshot completes fails when the cluster is not "RESTORING"
     Given the cluster exists
-    And the cluster is not "CREATING"
-    When a database cluster creation fails
+    And the cluster is not "RESTORING"
+    When a database cluster restore from snapshot completes
     Then the operation is rejected
