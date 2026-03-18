@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+    xmlns="https://github.com/spotbugs/filter/3.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0
+        https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+
+    <!-- Exclude test source directories from SpotBugs analysis -->
+    <Match>
+        <Source name="~.*src/test/.*"/>
+    </Match>
+
+    <!-- Exclude generated code patterns -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- ServerState uses public primitive fields intentionally: they are read and written
+         by multiple handler/middleware classes in the same package and across packages. -->
+    <Match>
+        <Class name="io.localwebservices.lws.ServerState"/>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+    </Match>
+
+    <!-- LogCapture background methods intentionally swallow exceptions to avoid
+         crashing test threads when the log endpoint is unavailable or returns
+         unexpected data. The REC_CATCH_EXCEPTION is a companion false positive. -->
+    <Match>
+        <Class name="io.localwebservices.lws.LogCapture"/>
+        <Bug pattern="DE_MIGHT_IGNORE,REC_CATCH_EXCEPTION"/>
+    </Match>
+
+</FindBugsFilter>

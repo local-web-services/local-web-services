@@ -1,8 +1,8 @@
 package io.localwebservices.lws;
 
-import org.junit.platform.suite.api.*;
-
 import static io.cucumber.junit.platform.engine.Constants.*;
+
+import org.junit.platform.suite.api.*;
 
 @Suite
 @IncludeEngines("cucumber")
@@ -33,6 +33,7 @@ import static io.cucumber.junit.platform.engine.Constants.*;
 @SelectClasspathResource("informal/stepfunctions_ssm")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "io.localwebservices.lws.steps")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "progress")
-@ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value = "(@minimal or @standard) and not @internal")
-public class CucumberRunnerTest {
-}
+@ConfigurationParameter(
+    key = FILTER_TAGS_PROPERTY_NAME,
+    value = "(@minimal or @standard) and not @internal")
+public class CucumberRunnerTest {}

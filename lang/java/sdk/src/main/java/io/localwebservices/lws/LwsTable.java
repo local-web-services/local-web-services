@@ -1,7 +1,6 @@
 package io.localwebservices.lws;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -18,12 +17,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LwsTable {
 
-    /** Table name. */
-    String name();
+  /** Table name. */
+  String name();
 
-    /** Partition (hash) key attribute name. */
-    String hashKey();
+  /** Partition (hash) key attribute name. */
+  String hashKey();
 
-    /** Sort (range) key attribute name, or empty string for a simple key (default). */
-    String sortKey() default "";
+  /** Sort (range) key attribute name, or empty string for a simple key (default). */
+  String sortKey() default "";
 }

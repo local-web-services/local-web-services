@@ -1,6 +1,10 @@
 plugins {
     id 'java'
     id 'application'
+    id 'checkstyle'
+    id 'pmd'
+    id 'com.github.spotbugs' version '6.1.7'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 group = 'io.localwebservices'
@@ -23,6 +27,24 @@ def awsSdkVersion = '2.26.0'
 def cucumberVersion = '7.15.0'
 def jacksonVersion = '2.17.0'
 
+sourceSets {
+    test {
+        resources {
+            srcDir '../../specification/core'
+        }
+    }
+    architectureTest {
+        java { srcDir 'src/architectureTest/java' }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    architectureTestImplementation.extendsFrom testImplementation
+    architectureTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
 dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
@@ -43,13 +65,34 @@ dependencies {
     testImplementation 'org.junit.platform:junit-platform-suite:1.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
+
+    architectureTestImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    architectureTestImplementation 'org.junit.platform:junit-platform-launcher:1.10.2'
+    architectureTestImplementation files('../arch_tests/build/libs/arch_tests.jar')
 }
 
-sourceSets {
-    test {
-        resources {
-            srcDir '../../specification/core'
-        }
+checkstyle {
+    toolVersion = '10.17.0'
+    configFile = file('../config/checkstyle/checkstyle.xml')
+}
+
+pmd {
+    toolVersion = '7.13.0'
+    consoleOutput = true
+    ruleSets = []
+    ruleSetConfig = resources.text.fromFile('../config/pmd/pmd-ruleset.xml')
+}
+
+spotbugs {
+    toolVersion = '4.9.3'
+    ignoreFailures = false
+    excludeFilter = file('../config/spotbugs/exclude.xml')
+}
+
+spotless {
+    java {
+        googleJavaFormat('1.22.0')
+        target 'src/**/*.java'
     }
 }
 
@@ -60,4 +103,12 @@ test {
         events 'passed', 'skipped', 'failed'
         showStandardStreams = false
     }
+}
+
+task architectureTest(type: Test) {
+    testClassesDirs = sourceSets.architectureTest.output.classesDirs
+    classpath = sourceSets.architectureTest.runtimeClasspath
+    useJUnitPlatform()
+    systemProperty 'arch.src.root', "${projectDir}/src/main/java"
+    systemProperty 'arch.tests.root', "${projectDir}/src/test/java"
 }

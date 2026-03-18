@@ -8,9 +8,9 @@ import java.lang.annotation.Target;
 /**
  * Marks a field or parameter in a JUnit 5 test class for {@link LwsSession} injection.
  *
- * <p>When used on a field, {@link LwsExtension} sets the field to the shared session
- * before each test method runs. When used on a test method parameter, JUnit 5's
- * parameter resolution injects the session automatically.
+ * <p>When used on a field, {@link LwsExtension} sets the field to the shared session before each
+ * test method runs. When used on a test method parameter, JUnit 5's parameter resolution injects
+ * the session automatically.
  *
  * <pre>{@code
  * @LwsTest(tables = { @LwsTable(name = "Orders", hashKey = "id") })
@@ -23,5 +23,4 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LwsInject {
-}
+public @interface LwsInject {}

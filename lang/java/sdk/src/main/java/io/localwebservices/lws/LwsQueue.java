@@ -17,6 +17,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LwsQueue {
 
-    /** Queue name. */
-    String name();
+  /** Queue name. */
+  String name();
 }

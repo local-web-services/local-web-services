@@ -10,9 +10,18 @@ before writing or modifying anything under `lang/java/`.
 
 ```
 lang/java/
+├── arch_tests/      Shared architecture constraint tests (JAR consumed by all three projects)
+│   ├── build.gradle
+│   ├── settings.gradle
+│   └── src/main/java/io/localwebservices/lws/archtests/
+├── config/          Shared quality tool config (referenced by all three build.gradle files)
+│   ├── checkstyle/checkstyle.xml
+│   ├── pmd/pmd-ruleset.xml
+│   └── spotbugs/exclude.xml
 ├── core/            AWS emulator server — com.sun.net.httpserver handlers
 │   ├── src/main/java/io/localwebservices/lws/
 │   ├── src/test/java/io/localwebservices/lws/
+│   ├── src/architectureTest/java/io/localwebservices/lws/
 │   ├── src/test/resources/         Feature files + Cucumber config
 │   ├── build.gradle
 │   ├── gradlew
@@ -20,10 +29,12 @@ lang/java/
 ├── sdk/             Testing SDK for user projects
 │   ├── src/main/java/io/localwebservices/lws/
 │   ├── src/test/java/io/localwebservices/lws/
+│   ├── src/architectureTest/java/io/localwebservices/lws/
 │   ├── src/test/resources/
 │   ├── build.gradle
 │   └── Makefile
 ├── example/         Reference project demonstrating SDK usage
+│   ├── src/architectureTest/java/com/example/orders/
 │   ├── build.gradle
 │   └── Makefile
 └── Makefile         Root cascading Makefile
@@ -55,9 +66,12 @@ to avoid build directory conflicts between projects running in the same workspac
 | Test type | Core | SDK | Example |
 |---|---|---|---|
 | `unit / bdd` | `src/test/java/` (JUnit 5 + Cucumber) | `src/test/java/` (JUnit 5 + Cucumber) | `src/test/java/` (JUnit 5 + Cucumber) |
+| `architecture` | `src/architectureTest/java/` | `src/architectureTest/java/` | `src/architectureTest/java/` |
 
 All test types are run together via `./gradlew test`. There is no separate
 unit vs BDD split — JUnit 5 runs Cucumber via the Cucumber JUnit Platform Engine.
+
+Architecture tests run separately via `./gradlew architectureTest`.
 
 Feature files (`.feature`) live in `src/test/resources/` within each project,
 referencing the canonical specs from `lang/specification/core/informal/<service>/`.
@@ -72,12 +86,19 @@ referencing the canonical specs from `lang/specification/core/informal/<service>
 |---|---|
 | `test` | `./gradlew test` |
 | `test-e2e` | Same as `test` |
-| `check` | `test` |
+| `lint` | `./gradlew checkstyleMain checkstyleTest` |
+| `format` | `./gradlew spotlessApply` |
+| `format-check` | `./gradlew spotlessCheck` |
+| `cpd` | `./gradlew pmdMain pmdTest` |
+| `spotbugs` | `./gradlew spotbugsMain` |
+| `architecture-test` | `./gradlew architectureTest` |
+| `check` | `lint format-check cpd spotbugs architecture-test test` |
 
-The example target sets `GRADLE_OPTS` to redirect the build directory:
+The example Makefile exports `GRADLE_OPTS` to redirect the build directory for all targets:
 
-```sh
-GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example" ./gradlew test
+```makefile
+GRADLE_OPTS := -Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example
+export GRADLE_OPTS
 ```
 
 ### Root `lang/java/Makefile` cascading behaviour
@@ -86,6 +107,11 @@ GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example" .
 |---|---|
 | `check` | core, sdk, example |
 | `test-e2e` | core, sdk, example |
+| `lint` | core, sdk, example |
+| `format-check` | core, sdk, example |
+| `cpd` | core, sdk, example |
+| `spotbugs` | core, sdk, example |
+| `architecture-test` | core, sdk, example |
 
 Example:
 
@@ -93,6 +119,11 @@ Example:
 # From repo root
 make -C lang/java check              # runs check in core, sdk, example
 make -C lang/java/core test          # runs ./gradlew test in core only
+make -C lang/java/core lint          # Checkstyle — zero violations
+make -C lang/java/core format-check  # Spotless — no changes needed
+make -C lang/java/core cpd           # PMD CPD — zero duplicates
+make -C lang/java/core spotbugs      # SpotBugs — zero bugs
+make -C lang/java/core architecture-test  # Arch tests — all pass
 ```
 
 ---
@@ -107,6 +138,69 @@ make -C lang/java/core test          # runs ./gradlew test in core only
 | Cucumber JUnit Platform Engine | Cucumber → JUnit 5 bridge | `cucumber-junit-platform-engine` |
 | Jackson | JSON serialisation | `jackson-databind 2.17.0` |
 | AWS SDK v2 | Client library in tests | BOM `2.26.0` |
+| Checkstyle 10.17.0 | Style, imports, complexity (≤10) | `lang/java/config/checkstyle/checkstyle.xml` |
+| Spotless + Google Java Format 1.22.0 | Code formatting | Configured in `build.gradle` |
+| PMD 7.4.0 | Static analysis + CPD copy-paste detection | `lang/java/config/pmd/pmd-ruleset.xml` |
+| SpotBugs 4.8.6 | Bytecode static analysis | `lang/java/config/spotbugs/exclude.xml` |
+
+---
+
+## Shared Config Directory
+
+`lang/java/config/` contains quality tool configuration shared by all three projects.
+Each `build.gradle` references config files via relative path `../config/`:
+
+```groovy
+checkstyle { configFile = file('../config/checkstyle/checkstyle.xml') }
+pmd { ruleSetConfig = resources.text.fromFile('../config/pmd/pmd-ruleset.xml') }
+spotbugs { excludeFilter = file('../config/spotbugs/exclude.xml') }
+```
+
+Do not duplicate these files inside individual project directories.
+
+---
+
+## Architecture Tests Package
+
+`lang/java/arch_tests/` is a shared Gradle library that produces `arch_tests.jar`.
+It is consumed by core, sdk, and example as a `architectureTestImplementation` dependency.
+
+### Shared test classes
+
+| Class | What it enforces |
+|---|---|
+| `AaaCommentsTest` | `@Test` methods must contain `// Arrange`, `// Act`, `// Assert` |
+| `NoMagicStringsTest` | Assertion calls must not use inline string literals |
+| `NoSkippedTestsTest` | No `@Disabled` annotations in test sources |
+| `FileNamingTest` | Test files must end in `Test.java`, `Steps.java`, etc. |
+| `FileLengthTest` | `src/main/` files must be ≤500 lines |
+| `NoBareExceptionsTest` | No empty catch blocks in `src/main/` |
+
+### System properties
+
+Each project's `architectureTest` Gradle task passes two system properties:
+
+| Property | Value |
+|---|---|
+| `arch.src.root` | `${projectDir}/src/main/java` |
+| `arch.tests.root` | `${projectDir}/src/test/java` |
+
+### Delegation classes
+
+Each project's `src/architectureTest/java/` contains one thin subclass per shared test,
+which inherits all assertions from the base class in `arch_tests`. No test logic lives there.
+
+### Building arch_tests before architecture-test
+
+Architecture tests require `arch_tests.jar` to be built first:
+
+```sh
+cd lang/java/arch_tests && ./gradlew jar
+# then run architecture tests in any project
+make -C lang/java/core architecture-test
+```
+
+CI builds `arch_tests.jar` as a step before running architecture tests in each project.
 
 ---
 
@@ -138,25 +232,41 @@ When running locally, build JARs in order before running tests in downstream pro
 
 ## CI Job Naming and Structure
 
-Job name format: `java-{project}-test`
+Job name format: `java-{project}-{type}`
 
 ### Jobs
 
-| Job | Command | Needs Docker | Depends on |
-|---|---|---|---|
-| `java-core-test` | `GRADLE_OPTS=... ./gradlew test` in `lang/java/core` | No | — |
-| `java-sdk-test` | Build core JAR, then `./gradlew test` in `lang/java/sdk` | No | `java-core-test` |
-| `java-example-test` | Build core + sdk JARs, then `./gradlew test` in `lang/java/example` | No | `java-sdk-test` |
+| Job | Command | Depends on |
+|---|---|---|
+| `java-core-test` | `./gradlew test` in `lang/java/core` | — |
+| `java-sdk-test` | Build core JAR, then `./gradlew test` in `lang/java/sdk` | `java-core-test` |
+| `java-example-test` | Build core + sdk JARs, then `./gradlew test` in `lang/java/example` | `java-sdk-test` |
+| `java-core-lint` | `make lint format-check cpd spotbugs` in `lang/java/core` | — |
+| `java-core-architecture-test` | Build arch_tests JAR, then `./gradlew architectureTest` | `java-core-test` |
+| `java-sdk-lint` | Build core JAR, then `make lint format-check cpd spotbugs` in `lang/java/sdk` | — |
+| `java-sdk-architecture-test` | Build arch_tests + core JARs, then `./gradlew architectureTest` | `java-sdk-test` |
+| `java-example-lint` | `make lint format-check cpd spotbugs` in `lang/java/example` | — |
+| `java-example-architecture-test` | Build arch_tests + core + sdk JARs, then `./gradlew architectureTest` | `java-example-test` |
 
 ### Change detection gating
 
-All three jobs are gated on the `java` filter:
+All jobs are gated on the `java` filter:
 
 ```
 lang/java/**
 ```
 
-A change to any file under `lang/java/` triggers all three jobs.
+A change to any file under `lang/java/` triggers all jobs.
+
+---
+
+## Feature Files Are Read-Only
+
+Feature files in `lang/specification/` are the **canonical source of truth**
+for behaviour across all language implementations. **Never edit them to work
+around a limitation in a specific language's fake** — fix the fake instead.
+The only permitted reason to modify a feature file is a deliberate change to
+the shared specification itself.
 
 ---
 
