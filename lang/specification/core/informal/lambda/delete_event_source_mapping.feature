@@ -27,7 +27,7 @@ Feature: Lambda - An Enabled Event Source Mapping Is Deleted
     When an enabled event source mapping is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_source_mapping @lifecycle @internal
+  @standard @negative @delete_event_source_mapping @lifecycle
   Scenario: an enabled event source mapping is deleted fails when the mapping is not "ENABLED"
     Given the event source mapping exists
     And the mapping is not "ENABLED"

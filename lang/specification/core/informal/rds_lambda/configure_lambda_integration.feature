@@ -17,7 +17,7 @@ Feature: RdsLambda - The Db Instance Is Configured With An Iam Role To Invoke Th
     And every successful invocation references a "DB" instance that exists
     And every successful invocation recorded which function it invoked
 
-  @standard @negative @configure_lambda_integration @lifecycle @internal
+  @standard @negative @configure_lambda_integration @lifecycle
   Scenario: the "DB" instance is configured with an "IAM" role to invoke the Lambda function fails when the "DB" instance does not exist or is not "AVAILABLE"
     Given the "DB" instance does not exist or is not "AVAILABLE"
     When the "DB" instance is configured with an "IAM" role to invoke the Lambda function

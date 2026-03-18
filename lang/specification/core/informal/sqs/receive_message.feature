@@ -25,14 +25,14 @@ Feature: Sqs - A Message Is Received From The Queue
     When a message is received from the queue
     Then the operation is rejected
 
-  @standard @negative @receive_message @internal
+  @standard @negative @receive_message
   Scenario: a message is received from the queue fails when the message is not "AVAILABLE"
     Given the message exists
     And the message is not "AVAILABLE"
     When a message is received from the queue
     Then the operation is rejected
 
-  @standard @negative @receive_message @internal
+  @standard @negative @receive_message
   Scenario: a message is received from the queue fails when the message's queue does not exist
     Given the message exists
     And the message is "AVAILABLE"
@@ -40,7 +40,7 @@ Feature: Sqs - A Message Is Received From The Queue
     When a message is received from the queue
     Then the operation is rejected
 
-  @standard @negative @receive_message @lifecycle @internal
+  @standard @negative @receive_message @lifecycle
   Scenario: a message is received from the queue fails when the message's queue is not "ACTIVE"
     Given the message exists
     And the message is "AVAILABLE"

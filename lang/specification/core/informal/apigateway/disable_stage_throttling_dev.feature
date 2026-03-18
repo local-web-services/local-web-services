@@ -27,7 +27,7 @@ Feature: Apigateway - Throttling Is Disabled For The Dev Stage
     When throttling is disabled for the dev stage
     Then the operation is rejected
 
-  @standard @negative @disable_stage_throttling_dev @lifecycle @internal
+  @standard @negative @disable_stage_throttling_dev @lifecycle
   Scenario: throttling is disabled for the dev stage fails when the dev stage is not active
     Given the dev stage exists
     And the dev stage is not active

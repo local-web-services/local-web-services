@@ -23,7 +23,7 @@ Feature: Sqs - Queue Attributes Are Retrieved
     When queue attributes are retrieved
     Then the operation is rejected
 
-  @standard @negative @get_queue_attributes @lifecycle @internal
+  @standard @negative @get_queue_attributes @lifecycle
   Scenario: queue attributes are retrieved fails when the queue is not "ACTIVE"
     Given the queue exists
     And the queue is not "ACTIVE"

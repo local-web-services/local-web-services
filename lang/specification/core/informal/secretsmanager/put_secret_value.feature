@@ -28,7 +28,7 @@ Feature: Secretsmanager - A New Value Is Stored For An Active Secret
     When a new value is stored for an active secret
     Then the operation is rejected
 
-  @standard @negative @put_secret_value @lifecycle @internal
+  @standard @negative @put_secret_value @lifecycle
   Scenario: a new value is stored for an active secret fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

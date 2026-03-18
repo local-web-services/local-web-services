@@ -28,7 +28,7 @@ Feature: Secretsmanager - Tags Are Removed From An Active Secret
     When tags are removed from an active secret
     Then the operation is rejected
 
-  @standard @negative @untag_resource @lifecycle @internal
+  @standard @negative @untag_resource @lifecycle
   Scenario: tags are removed from an active secret fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

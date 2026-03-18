@@ -18,20 +18,20 @@ Feature: EventsDynamodb - An Event Matches An Enabled Rule And Eventbridge Write
     And every existing item references a table that exists
     And every matched event references a rule that exists
 
-  @standard @negative @event_targets_dynamo_d_b @lifecycle @internal
+  @standard @negative @event_targets_dynamo_d_b @lifecycle
   Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target fails when no rule is "ENABLED"
     Given no rule is "ENABLED"
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Then the operation is rejected
 
-  @standard @negative @event_targets_dynamo_d_b @lifecycle @internal
+  @standard @negative @event_targets_dynamo_d_b @lifecycle
   Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target fails when the target table is not "ACTIVE"
     Given a rule is "ENABLED"
     And the target table is not "ACTIVE"
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Then the operation is rejected
 
-  @standard @negative @event_targets_dynamo_d_b @capacity @internal
+  @standard @negative @event_targets_dynamo_d_b @capacity
   Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target fails when no event slot is available
     Given a rule is "ENABLED"
     And the target table is "ACTIVE"
@@ -39,7 +39,7 @@ Feature: EventsDynamodb - An Event Matches An Enabled Rule And Eventbridge Write
     When an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target
     Then the operation is rejected
 
-  @standard @negative @event_targets_dynamo_d_b @capacity @internal
+  @standard @negative @event_targets_dynamo_d_b @capacity
   Scenario: an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target fails when no item slot is available
     Given a rule is "ENABLED"
     And the target table is "ACTIVE"

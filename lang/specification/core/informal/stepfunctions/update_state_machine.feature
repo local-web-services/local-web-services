@@ -25,7 +25,7 @@ Feature: Stepfunctions - A State Machine Definition Is Updated
     When a state machine definition is updated
     Then the operation is rejected
 
-  @standard @negative @update_state_machine @lifecycle @internal
+  @standard @negative @update_state_machine @lifecycle
   Scenario: a state machine definition is updated fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

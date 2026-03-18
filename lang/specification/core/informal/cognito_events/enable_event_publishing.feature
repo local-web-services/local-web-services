@@ -17,7 +17,7 @@ Feature: CognitoEvents - Eventbridge Publishing Is Enabled On The User Pool
     And every "DELIVERED" event references a pool that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @enable_event_publishing @lifecycle @internal
+  @standard @negative @enable_event_publishing @lifecycle
   Scenario: EventBridge publishing is enabled on the user pool fails when the pool does not exist or is not "ACTIVE"
     Given the pool does not exist or is not "ACTIVE"
     When EventBridge publishing is enabled on the user pool

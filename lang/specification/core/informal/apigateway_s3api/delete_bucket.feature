@@ -22,7 +22,7 @@ Feature: ApigatewayS3api - The S3 Bucket Is Deleted
     When the S3 bucket is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_bucket @lifecycle @internal
+  @standard @negative @delete_bucket @lifecycle
   Scenario: the S3 bucket is deleted fails when the bucket is already "DELETED"
     Given the bucket exists
     And the bucket is already "DELETED"

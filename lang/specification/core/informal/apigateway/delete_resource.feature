@@ -29,7 +29,7 @@ Feature: Apigateway - A Non-Root Resource Is Deleted Along With Its Methods And 
     When a non-root resource is deleted along with its methods and integrations
     Then the operation is rejected
 
-  @standard @negative @delete_resource @lifecycle @internal
+  @standard @negative @delete_resource @lifecycle
   Scenario: a non-root resource is deleted along with its methods and integrations fails when the resource is not "ACTIVE"
     Given the resource exists
     And the resource is not "ACTIVE"

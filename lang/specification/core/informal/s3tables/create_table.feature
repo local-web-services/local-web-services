@@ -27,7 +27,7 @@ Feature: S3tables - A Table Is Created In A Namespace
     When a table is created in a namespace
     Then the operation is rejected
 
-  @standard @negative @create_table @lifecycle @internal
+  @standard @negative @create_table @lifecycle
   Scenario: a table is created in a namespace fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
@@ -42,7 +42,7 @@ Feature: S3tables - A Table Is Created In A Namespace
     When a table is created in a namespace
     Then the operation is rejected
 
-  @standard @negative @create_table @lifecycle @internal
+  @standard @negative @create_table @lifecycle
   Scenario: a table is created in a namespace fails when the namespace is not "ACTIVE"
     Given the bucket exists
     And the bucket is "ACTIVE"

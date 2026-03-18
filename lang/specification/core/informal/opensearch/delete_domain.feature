@@ -24,7 +24,7 @@ Feature: Opensearch - A Search Domain Is Deleted
     When a search domain is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_domain @lifecycle @internal
+  @standard @negative @delete_domain @lifecycle
   Scenario: a search domain is deleted fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

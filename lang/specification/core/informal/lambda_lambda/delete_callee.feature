@@ -22,7 +22,7 @@ Feature: LambdaLambda - The Callee Lambda Function Is Deleted
     When the callee Lambda function is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_callee @lifecycle @internal
+  @standard @negative @delete_callee @lifecycle
   Scenario: the callee Lambda function is deleted fails when the callee is already "DELETED"
     Given the callee exists
     And the callee is already "DELETED"

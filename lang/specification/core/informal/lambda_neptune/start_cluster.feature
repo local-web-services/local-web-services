@@ -15,7 +15,7 @@ Feature: LambdaNeptune - The Neptune Cluster Is Started
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every successful invocation recorded which cluster it queried
 
-  @standard @negative @start_cluster @lifecycle @internal
+  @standard @negative @start_cluster @lifecycle
   Scenario: the Neptune cluster is started fails when the cluster is not "STOPPED"
     Given the cluster is not "STOPPED"
     When the Neptune cluster is started

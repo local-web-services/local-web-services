@@ -28,7 +28,7 @@ Feature: Lambda - An Active Function Is Deleted
     When an active function is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_function @lifecycle @internal
+  @standard @negative @delete_function @lifecycle
   Scenario: an active function is deleted fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"

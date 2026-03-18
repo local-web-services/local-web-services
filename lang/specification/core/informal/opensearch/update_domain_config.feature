@@ -24,7 +24,7 @@ Feature: Opensearch - A Domain Configuration Update Is Requested
     When a domain configuration update is requested
     Then the operation is rejected
 
-  @standard @negative @update_domain_config @lifecycle @internal
+  @standard @negative @update_domain_config @lifecycle
   Scenario: a domain configuration update is requested fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

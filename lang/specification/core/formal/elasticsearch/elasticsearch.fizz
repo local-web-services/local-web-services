@@ -72,6 +72,8 @@ atomic action FinishDeletingDomain:
                     idx_key = domain + "#" + iname
                     if idx_key in index_status:
                         index_status[idx_key] = "DELETED"
+                for tkey in TAG_KEYS:
+                    domain_tag[domain + "#" + tkey] = False
 
 # step: a domain configuration update is requested
 # result: the domain is in PROCESSING state with a pending config change

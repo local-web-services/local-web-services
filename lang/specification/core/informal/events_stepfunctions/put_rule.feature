@@ -26,7 +26,7 @@ Feature: EventsStepfunctions - An Eventbridge Rule Is Created To Start A Step Fu
     When an EventBridge rule is created to start a Step Functions execution on matching events
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle @internal
+  @standard @negative @put_rule @lifecycle
   Scenario: an EventBridge rule is created to start a Step Functions execution on matching events fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
@@ -41,7 +41,7 @@ Feature: EventsStepfunctions - An Eventbridge Rule Is Created To Start A Step Fu
     When an EventBridge rule is created to start a Step Functions execution on matching events
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle @internal
+  @standard @negative @put_rule @lifecycle
   Scenario: an EventBridge rule is created to start a Step Functions execution on matching events fails when the state machine is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"

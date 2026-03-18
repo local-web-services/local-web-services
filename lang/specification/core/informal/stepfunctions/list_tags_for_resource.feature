@@ -25,7 +25,7 @@ Feature: Stepfunctions - Tags For A State Machine Are Listed
     When tags for a state machine are listed
     Then the operation is rejected
 
-  @standard @negative @list_tags_for_resource @lifecycle @internal
+  @standard @negative @list_tags_for_resource @lifecycle
   Scenario: tags for a state machine are listed fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

@@ -19,7 +19,7 @@ Feature: S3apiEvents - An Object Is Uploaded And S3 Delivers An Event To The Eve
     And every "DELIVERED" event references an object that exists
     And every "DELIVERED" event references a bus that exists
 
-  @standard @negative @put_object_with_event @lifecycle @internal
+  @standard @negative @put_object_with_event @lifecycle
   Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when the bucket is not "ACTIVE"
     Given the bucket is not "ACTIVE"
     When an object is uploaded and S3 delivers an event to the EventBridge bus
@@ -32,7 +32,7 @@ Feature: S3apiEvents - An Object Is Uploaded And S3 Delivers An Event To The Eve
     When an object is uploaded and S3 delivers an event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @put_object_with_event @lifecycle @internal
+  @standard @negative @put_object_with_event @lifecycle
   Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when the target bus is "DELETED"
     Given the bucket is "ACTIVE"
     And the bucket has an EventBridge notification configured
@@ -40,7 +40,7 @@ Feature: S3apiEvents - An Object Is Uploaded And S3 Delivers An Event To The Eve
     When an object is uploaded and S3 delivers an event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @put_object_with_event @capacity @internal
+  @standard @negative @put_object_with_event @capacity
   Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when no object slot is available
     Given the bucket is "ACTIVE"
     And the bucket has an EventBridge notification configured
@@ -49,7 +49,7 @@ Feature: S3apiEvents - An Object Is Uploaded And S3 Delivers An Event To The Eve
     When an object is uploaded and S3 delivers an event to the EventBridge bus
     Then the operation is rejected
 
-  @standard @negative @put_object_with_event @capacity @internal
+  @standard @negative @put_object_with_event @capacity
   Scenario: an object is uploaded and S3 delivers an event to the EventBridge bus fails when no event slot is available
     Given the bucket is "ACTIVE"
     And the bucket has an EventBridge notification configured

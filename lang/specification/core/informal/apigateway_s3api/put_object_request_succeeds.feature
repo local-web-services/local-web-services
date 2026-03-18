@@ -19,7 +19,7 @@ Feature: ApigatewayS3api - A Put Request Is Received And The Api Writes An Objec
     And every existing object references a bucket that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @put_object_request_succeeds @lifecycle @internal
+  @standard @negative @put_object_request_succeeds @lifecycle
   Scenario: a "PUT" request is received and the "API" writes an object to the S3 bucket fails when the "API" is not "ACTIVE"
     Given the "API" is not "ACTIVE"
     When a "PUT" request is received and the "API" writes an object to the S3 bucket
@@ -32,7 +32,7 @@ Feature: ApigatewayS3api - A Put Request Is Received And The Api Writes An Objec
     When a "PUT" request is received and the "API" writes an object to the S3 bucket
     Then the operation is rejected
 
-  @standard @negative @put_object_request_succeeds @lifecycle @internal
+  @standard @negative @put_object_request_succeeds @lifecycle
   Scenario: a "PUT" request is received and the "API" writes an object to the S3 bucket fails when the bucket is not "ACTIVE"
     Given the "API" is "ACTIVE"
     And the "API" has an S3 integration configured
@@ -40,7 +40,7 @@ Feature: ApigatewayS3api - A Put Request Is Received And The Api Writes An Objec
     When a "PUT" request is received and the "API" writes an object to the S3 bucket
     Then the operation is rejected
 
-  @standard @negative @put_object_request_succeeds @capacity @internal
+  @standard @negative @put_object_request_succeeds @capacity
   Scenario: a "PUT" request is received and the "API" writes an object to the S3 bucket fails when no request slot is available
     Given the "API" is "ACTIVE"
     And the "API" has an S3 integration configured
@@ -49,7 +49,7 @@ Feature: ApigatewayS3api - A Put Request Is Received And The Api Writes An Objec
     When a "PUT" request is received and the "API" writes an object to the S3 bucket
     Then the operation is rejected
 
-  @standard @negative @put_object_request_succeeds @capacity @internal
+  @standard @negative @put_object_request_succeeds @capacity
   Scenario: a "PUT" request is received and the "API" writes an object to the S3 bucket fails when no object slot is available
     Given the "API" is "ACTIVE"
     And the "API" has an S3 integration configured

@@ -22,7 +22,7 @@ Feature: LambdaGlacier - A Glacier Vault Is Deleted
     When a Glacier vault is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_vault @lifecycle @internal
+  @standard @negative @delete_vault @lifecycle
   Scenario: a Glacier vault is deleted fails when the vault is already "DELETED"
     Given the vault exists
     And the vault is already "DELETED"

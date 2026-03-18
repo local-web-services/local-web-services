@@ -27,7 +27,7 @@ Feature: Glacier - An Empty Vault Is Deleted
     When an empty vault is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_vault @lifecycle @internal
+  @standard @negative @delete_vault @lifecycle
   Scenario: an empty vault is deleted fails when the vault is not "ACTIVE"
     Given the vault exists
     And the vault is not "ACTIVE"

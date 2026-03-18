@@ -24,7 +24,7 @@ Feature: Sns - A Subscription Is Removed
     When a subscription is removed
     Then the operation is rejected
 
-  @standard @negative @unsubscribe @lifecycle @internal
+  @standard @negative @unsubscribe @lifecycle
   Scenario: a subscription is removed fails when the subscription is not "CONFIRMED"
     Given the subscription exists
     And the subscription is not "CONFIRMED"
