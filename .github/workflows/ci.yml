@@ -20,7 +20,9 @@ jobs:
       python-sdk: ${{ steps.filter.outputs.python-sdk }}
       python-example: ${{ steps.filter.outputs.python-example }}
       core: ${{ steps.filter.outputs.core }}
-      typescript: ${{ steps.filter.outputs.typescript }}
+      typescript-core: ${{ steps.filter.outputs.typescript-core }}
+      typescript-sdk: ${{ steps.filter.outputs.typescript-sdk }}
+      typescript-example: ${{ steps.filter.outputs.typescript-example }}
       java: ${{ steps.filter.outputs.java }}
       go: ${{ steps.filter.outputs.go }}
       sample-cdk: ${{ steps.filter.outputs.sample-cdk }}
@@ -49,11 +51,18 @@ jobs:
               - 'lang/python/arch_tests/**'
             core:
               - 'lang/python/core/**'
-            typescript:
+            typescript-core:
               - 'lang/typescript/core/**'
+              - 'lang/typescript/arch_tests/**'
+            typescript-sdk:
               - 'lang/typescript/sdk/**'
+              - 'lang/typescript/core/**'
+              - 'lang/typescript/arch_tests/**'
+            typescript-example:
               - 'lang/typescript/example/**'
-              - 'lang/specification/**'
+              - 'lang/typescript/sdk/**'
+              - 'lang/typescript/core/**'
+              - 'lang/typescript/arch_tests/**'
             java:
               - 'lang/java/**'
               - 'lang/specification/**'
@@ -251,18 +260,207 @@ jobs:
         working-directory: lang/python/sdk
 
   # ── TypeScript Core ─────────────────────────────────────────────────────────
-  typescript-core-test:
+  typescript-core-lint:
     needs: [changes]
-    if: needs.changes.outputs.typescript == 'true'
+    if: needs.changes.outputs.typescript-core == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Test
+      - name: Install
         working-directory: lang/typescript/core
-        run: npm ci && npm test
+        run: npm ci
+      - name: Lint / format / complexity / cpd / type-check
+        working-directory: lang/typescript/core
+        run: make lint format-check complexity cpd type-check
+
+  typescript-core-integration-test:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        working-directory: lang/typescript/core
+        run: npm ci
+      - name: Integration test
+        working-directory: lang/typescript/core
+        run: make integration-test
+
+  typescript-core-architecture-test:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-core == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        working-directory: lang/typescript/core
+        run: npm ci
+      - name: Architecture test
+        working-directory: lang/typescript/core
+        run: make architecture-test
+
+  # ── TypeScript SDK ─────────────────────────────────────────────────────────
+  typescript-sdk-lint:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-sdk == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        working-directory: lang/typescript/sdk
+        run: npm ci
+      - name: Lint / format / complexity / cpd / type-check
+        working-directory: lang/typescript/sdk
+        run: make lint format-check complexity cpd type-check
+
+  typescript-sdk-unit-test:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-sdk == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install core
+        working-directory: lang/typescript/core
+        run: npm ci
+      - name: Install sdk
+        working-directory: lang/typescript/sdk
+        run: npm ci
+      - name: Unit test
+        working-directory: lang/typescript/sdk
+        run: make unit-test
+
+  typescript-sdk-architecture-test:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-sdk == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install core
+        working-directory: lang/typescript/core
+        run: npm ci
+      - name: Install sdk
+        working-directory: lang/typescript/sdk
+        run: npm ci
+      - name: Architecture test
+        working-directory: lang/typescript/sdk
+        run: make architecture-test
+
+  typescript-sdk-e2e-test:
+    needs: [changes, typescript-core-integration-test]
+    if: |
+      always() &&
+      needs.changes.outputs.typescript-sdk == 'true' &&
+      (needs.typescript-core-integration-test.result == 'success' || needs.typescript-core-integration-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install core
+        working-directory: lang/typescript/core
+        run: npm ci
+      - name: Install sdk
+        working-directory: lang/typescript/sdk
+        run: npm ci
+      - name: E2E test
+        working-directory: lang/typescript/sdk
+        run: make e2e-test
+
+  # ── TypeScript Example ──────────────────────────────────────────────────────
+  typescript-example-lint:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-example == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        working-directory: lang/typescript/example
+        run: npm ci
+      - name: Lint / format / complexity / cpd / type-check
+        working-directory: lang/typescript/example
+        run: make lint format-check complexity cpd type-check
+
+  typescript-example-unit-test:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-example == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build SDK
+        working-directory: lang/typescript/sdk
+        run: npm ci && npm run build
+      - name: Install
+        working-directory: lang/typescript/example
+        run: npm ci
+      - name: Unit test
+        working-directory: lang/typescript/example
+        run: make unit-test
+
+  typescript-example-architecture-test:
+    needs: [changes]
+    if: needs.changes.outputs.typescript-example == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build SDK
+        working-directory: lang/typescript/sdk
+        run: npm ci && npm run build
+      - name: Install
+        working-directory: lang/typescript/example
+        run: npm ci
+      - name: Architecture test
+        working-directory: lang/typescript/example
+        run: make architecture-test
+
+  typescript-example-e2e-test:
+    needs: [changes, typescript-sdk-e2e-test]
+    if: |
+      always() &&
+      needs.changes.outputs.typescript-example == 'true' &&
+      (needs.typescript-sdk-e2e-test.result == 'success' || needs.typescript-sdk-e2e-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build SDK
+        working-directory: lang/typescript/sdk
+        run: npm ci && npm run build
+      - name: Install
+        working-directory: lang/typescript/example
+        run: npm ci
+      - name: E2E test
+        working-directory: lang/typescript/example
+        run: make e2e-test
 
   # ── Go Core ─────────────────────────────────────────────────────────────────
   go-core-test:
@@ -292,23 +490,6 @@ jobs:
       - name: Test
         working-directory: lang/java/core
         run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew test
-
-  # ── TypeScript SDK ─────────────────────────────────────────────────────────
-  typescript-sdk-test:
-    needs: [changes, typescript-core-test]
-    if: |
-      always() &&
-      needs.changes.outputs.typescript == 'true' &&
-      (needs.typescript-core-test.result == 'success' || needs.typescript-core-test.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Test
-        working-directory: lang/typescript/sdk
-        run: npm ci && npm test
 
   # ── Java SDK ───────────────────────────────────────────────────────────────
   java-sdk-test:
@@ -424,29 +605,6 @@ jobs:
         working-directory: lang/python/example
       - run: make e2e-test
         working-directory: lang/python/example
-
-  # ── TypeScript Example ──────────────────────────────────────────────────────
-  typescript-example-test:
-    needs: [changes, typescript-sdk-test]
-    if: |
-      always() &&
-      needs.changes.outputs.typescript == 'true' &&
-      needs.typescript-sdk-test.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Build TypeScript SDK
-        working-directory: lang/typescript/sdk
-        run: npm ci && npm run build
-      - name: Test (Jest)
-        working-directory: lang/typescript/example
-        run: npm ci && npm test
-      - name: Test (BDD)
-        working-directory: lang/typescript/example
-        run: npm run test:bdd
 
   # ── Java Example ────────────────────────────────────────────────────────────
   java-example-test:
@@ -594,11 +752,14 @@ jobs:
 
   # ── Sample Project CDK ──────────────────────────────────────────────────────
   sample-project-cdk-build:
-    needs: [changes, python-core-unit-test]
+    needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
     if: |
       always() &&
       needs.changes.outputs.sample-cdk == 'true' &&
-      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped')
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-unit-test.result == 'success' || needs.python-sdk-unit-test.result == 'skipped') &&
+      (needs.python-sdk-architecture-test.result == 'success' || needs.python-sdk-architecture-test.result == 'skipped') &&
+      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -639,11 +800,14 @@ jobs:
 
   # ── Sample Project HCL ──────────────────────────────────────────────────────
   sample-project-hcl-build:
-    needs: [changes, python-core-unit-test]
+    needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
     if: |
       always() &&
       needs.changes.outputs.sample-hcl == 'true' &&
-      (needs.python-core-unit-test.result == 'success' || needs.python-core-unit-test.result == 'skipped')
+      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
+      (needs.python-sdk-unit-test.result == 'success' || needs.python-sdk-unit-test.result == 'skipped') &&
+      (needs.python-sdk-architecture-test.result == 'success' || needs.python-sdk-architecture-test.result == 'skipped') &&
+      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
