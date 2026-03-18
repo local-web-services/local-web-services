@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.localwebservices.lws.providers.dynamodb.DynamoDbStore;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 public class DynamoDbStoreFilterTest {
@@ -61,10 +61,12 @@ public class DynamoDbStoreFilterTest {
     item.put("month", strAttr("2024-06"));
 
     // Act — "between" in a single expression (no AND to confuse the splitter)
-    boolean actualResult = store.evaluateFilter(item,
-        "month BETWEEN :lo :hi",
-        null,
-        Map.of(":lo", strAttr("2024-01"), ":hi", strAttr("2024-12")));
+    boolean actualResult =
+        store.evaluateFilter(
+            item,
+            "month BETWEEN :lo :hi",
+            null,
+            Map.of(":lo", strAttr("2024-01"), ":hi", strAttr("2024-12")));
 
     // Note: this exercises the between parsing path; actual result depends on parse
     // The key thing is the branch is exercised
@@ -80,10 +82,12 @@ public class DynamoDbStoreFilterTest {
     item.put("pk", strAttr("x")); // no "month" attribute
 
     // Act — between check on null attribute value
-    boolean actualResult = store.evaluateFilter(item,
-        "month BETWEEN :lo :hi",
-        null,
-        Map.of(":lo", strAttr("2024-01"), ":hi", strAttr("2024-12")));
+    boolean actualResult =
+        store.evaluateFilter(
+            item,
+            "month BETWEEN :lo :hi",
+            null,
+            Map.of(":lo", strAttr("2024-01"), ":hi", strAttr("2024-12")));
 
     // Assert
     assertFalse(actualResult);
@@ -111,10 +115,9 @@ public class DynamoDbStoreFilterTest {
     item.put("status", strAttr("active"));
 
     // Act — uses exprNames and exprValues resolution
-    boolean actualResult = store.evaluateFilter(item,
-        "#s = :v",
-        Map.of("#s", "status"),
-        Map.of(":v", strAttr("active")));
+    boolean actualResult =
+        store.evaluateFilter(
+            item, "#s = :v", Map.of("#s", "status"), Map.of(":v", strAttr("active")));
 
     // Assert
     assertTrue(actualResult);
@@ -128,10 +131,8 @@ public class DynamoDbStoreFilterTest {
     item.put("status", strAttr("active"));
 
     // Act — :v not in exprValues map → resolveScalarValue returns null
-    boolean actualResult = store.evaluateFilter(item,
-        "status = :missing",
-        null,
-        Map.of(":v", strAttr("active")));
+    boolean actualResult =
+        store.evaluateFilter(item, "status = :missing", null, Map.of(":v", strAttr("active")));
 
     // Assert — expected is null so returns false
     assertFalse(actualResult);
@@ -169,8 +170,7 @@ public class DynamoDbStoreFilterTest {
 
     // Act — resolveScalarValue for N type + resolveScalarFromItem for N type
     List<Map<String, Object>> actualItems =
-        store.scan(tableName, "count = :val", null,
-            Map.of(":val", numAttr("10")), null, null);
+        store.scan(tableName, "count = :val", null, Map.of(":val", numAttr("10")), null, null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -184,10 +184,7 @@ public class DynamoDbStoreFilterTest {
     item.put("tag", "hot");
 
     // Act — :v resolves to plain string "hot"
-    boolean actualResult = store.evaluateFilter(item,
-        "tag = :v",
-        null,
-        Map.of(":v", "hot"));
+    boolean actualResult = store.evaluateFilter(item, "tag = :v", null, Map.of(":v", "hot"));
 
     // Assert
     assertTrue(actualResult);
@@ -201,10 +198,8 @@ public class DynamoDbStoreFilterTest {
     item.put("pk", strAttr("a")); // no "missing" attr
 
     // Act
-    boolean actualResult = store.evaluateFilter(item,
-        "missing = :v",
-        null,
-        Map.of(":v", strAttr("x")));
+    boolean actualResult =
+        store.evaluateFilter(item, "missing = :v", null, Map.of(":v", strAttr("x")));
 
     // Assert — resolveScalarFromItem returns null → String.valueOf(null)="null", not equal to "x"
     assertFalse(actualResult);
@@ -228,8 +223,7 @@ public class DynamoDbStoreFilterTest {
     Map<String, Object> boolVal = new LinkedHashMap<>();
     boolVal.put("BOOL", true);
     List<Map<String, Object>> actualItems =
-        store.scan(tableName, "active = :val", null,
-            Map.of(":val", boolVal), null, null);
+        store.scan(tableName, "active = :val", null, Map.of(":val", boolVal), null, null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -246,10 +240,12 @@ public class DynamoDbStoreFilterTest {
     // Note: evaluateFilter splits on AND first, so we need a different structure.
     // Use evaluateFilter with explicit between clause without AND confusion:
     // The between clause with plain value references
-    boolean actualResult = store.evaluateFilter(item,
-        "score BETWEEN :lo :hi",
-        null,
-        Map.of(":lo", strAttr("10"), ":hi", strAttr("90")));
+    boolean actualResult =
+        store.evaluateFilter(
+            item,
+            "score BETWEEN :lo :hi",
+            null,
+            Map.of(":lo", strAttr("10"), ":hi", strAttr("90")));
 
     // Assert — exercises the between code path
     assertTrue(actualResult || !actualResult);
@@ -266,7 +262,8 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act
-    store.updateItem(tableName,
+    store.updateItem(
+        tableName,
         Map.of("pk", strAttr("k1")),
         "SET #attr = :val",
         Map.of("#attr", "myField"),
@@ -288,7 +285,8 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act — exprValues is null, so literal value is used
-    store.updateItem(tableName,
+    store.updateItem(
+        tableName,
         Map.of("pk", strAttr("k2")),
         "SET #attr = directValue",
         Map.of("#attr", "myField"),
@@ -311,11 +309,8 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k3")),
-        "REMOVE #e",
-        Map.of("#e", "extra"),
-        null);
+    store.updateItem(
+        tableName, Map.of("pk", strAttr("k3")), "REMOVE #e", Map.of("#e", "extra"), null);
 
     // Assert — already covered by DynamoDbStoreQueryTest but exercises exprNames path
     assertNull(store.getItem(tableName, Map.of("pk", strAttr("k3"))).get("extra"));
@@ -332,11 +327,7 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act — SET with no '=' separator
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k4")),
-        "SET noEqualsHere",
-        null,
-        null);
+    store.updateItem(tableName, Map.of("pk", strAttr("k4")), "SET noEqualsHere", null, null);
 
     // Assert — no exception; item unchanged
     assertFalse(store.getItem(tableName, Map.of("pk", strAttr("k4"))).containsKey("noEqualsHere"));
@@ -353,11 +344,7 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act — ADD with single token (no space after attr name)
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k5")),
-        "ADD singletoken",
-        null,
-        null);
+    store.updateItem(tableName, Map.of("pk", strAttr("k5")), "ADD singletoken", null, null);
 
     // Assert — no exception
     assertTrue(store.getItem(tableName, Map.of("pk", strAttr("k5"))).containsKey("pk"));
@@ -371,10 +358,12 @@ public class DynamoDbStoreFilterTest {
     item.put("status", strAttr("active"));
 
     // Act — :missing is not in exprValues → resolveScalarValue returns null
-    boolean actualResult = store.evaluateFilter(item,
-        "status = :missing",
-        null,
-        new java.util.HashMap<>()); // non-null but empty map → get returns null
+    boolean actualResult =
+        store.evaluateFilter(
+            item,
+            "status = :missing",
+            null,
+            new java.util.HashMap<>()); // non-null but empty map → get returns null
 
     // Assert
     assertFalse(actualResult);
@@ -393,10 +382,7 @@ public class DynamoDbStoreFilterTest {
     // and the map attr resolveScalarFromItem → fallthrough
 
     // Act — comparing m-typed attr against a literal value
-    boolean actualResult = store.evaluateFilter(item,
-        "data = anyLiteral",
-        null,
-        null);
+    boolean actualResult = store.evaluateFilter(item, "data = anyLiteral", null, null);
 
     // Assert — doesn't throw; BOOL false branch exercised in resolveScalarValue
     assertTrue(actualResult || !actualResult);
@@ -415,11 +401,13 @@ public class DynamoDbStoreFilterTest {
     int expectedCount = 1;
 
     // Act — SET with literal attr name (no #) and exprNames mapping to something else
-    Map<String, Object> updatedItem = store.updateItem(tableName,
-        Map.of("pk", strAttr("a")),
-        "SET color = :val",
-        Map.of("#other", "other"),  // non-null exprNames, but attrExpr doesn't start with #
-        Map.of(":val", strAttr("red")));
+    Map<String, Object> updatedItem =
+        store.updateItem(
+            tableName,
+            Map.of("pk", strAttr("a")),
+            "SET color = :val",
+            Map.of("#other", "other"), // non-null exprNames, but attrExpr doesn't start with #
+            Map.of(":val", strAttr("red")));
 
     // Assert
     assertEquals(strAttr("red"), updatedItem.get("color"));
@@ -436,11 +424,13 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act — SET with literal value (no :) and non-null exprValues with other entries
-    Map<String, Object> updatedItem = store.updateItem(tableName,
-        Map.of("pk", strAttr("a")),
-        "SET size = large",
-        null,
-        Map.of(":other", strAttr("unused")));  // exprValues non-null, valExpr has no :
+    Map<String, Object> updatedItem =
+        store.updateItem(
+            tableName,
+            Map.of("pk", strAttr("a")),
+            "SET size = large",
+            null,
+            Map.of(":other", strAttr("unused"))); // exprValues non-null, valExpr has no :
 
     // Assert
     assertEquals("large", updatedItem.get("size"));
@@ -457,11 +447,12 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act — ADD with #attr (exprNames resolves it) but literal value (no :)
-    store.updateItem(tableName,
+    store.updateItem(
+        tableName,
         Map.of("pk", strAttr("k")),
         "ADD #myAttr literalValue",
         Map.of("#myAttr", "realAttr"),
-        null);  // exprValues null → literal value used
+        null); // exprValues null → literal value used
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k")));
@@ -479,10 +470,11 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act — ADD with # attr but null exprNames, with : value and exprValues
-    store.updateItem(tableName,
+    store.updateItem(
+        tableName,
         Map.of("pk", strAttr("k")),
         "ADD #attr :val",
-        null,  // exprNames null → #attr used literally
+        null, // exprNames null → #attr used literally
         Map.of(":val", strAttr("resolved")));
 
     // Assert
@@ -502,7 +494,8 @@ public class DynamoDbStoreFilterTest {
     store.putItem(tableName, item);
 
     // Act — ADD on non-existent (null) attr with a Map delta
-    store.updateItem(tableName,
+    store.updateItem(
+        tableName,
         Map.of("pk", strAttr("k")),
         "ADD counter :delta",
         null,
@@ -512,5 +505,4 @@ public class DynamoDbStoreFilterTest {
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k")));
     assertEquals(numAttr("1"), actualItem.get("counter"));
   }
-
 }

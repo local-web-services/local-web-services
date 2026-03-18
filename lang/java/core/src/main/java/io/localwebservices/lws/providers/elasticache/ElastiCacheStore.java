@@ -84,9 +84,7 @@ public class ElastiCacheStore {
     String name = params.get("CacheSubnetGroupName");
     Map<String, Object> sg = new LinkedHashMap<>();
     sg.put("CacheSubnetGroupName", name);
-    sg.put(
-        "CacheSubnetGroupDescription",
-        params.getOrDefault("CacheSubnetGroupDescription", ""));
+    sg.put("CacheSubnetGroupDescription", params.getOrDefault("CacheSubnetGroupDescription", ""));
     sg.put("VpcId", "vpc-00000000");
     sg.put("Subnets", List.of());
     subnetGroups.put(name, sg);

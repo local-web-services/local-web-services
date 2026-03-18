@@ -15,13 +15,13 @@ public class S3StoreTest {
     S3Store store = new S3Store();
     String expectedBucket = "my-bucket";
     store.buckets.put(expectedBucket, Map.of("Name", expectedBucket));
-    store.objects.put(expectedBucket, Map.of("key.txt", new byte[]{1}));
+    store.objects.put(expectedBucket, Map.of("key.txt", new byte[] {1}));
     store.objectMetadata.put(expectedBucket, Map.of("key.txt", "text/plain"));
     store.bucketTags.put(expectedBucket, Map.of("env", "test"));
     store.bucketPolicies.put(expectedBucket, "{}");
     store.bucketWebsites.put(expectedBucket, Map.of("IndexDocument", "index.html"));
     store.multipartUploads.put("upload-1", Map.of("UploadId", "upload-1"));
-    store.multipartParts.put("upload-1", Map.of(1, new byte[]{2}));
+    store.multipartParts.put("upload-1", Map.of(1, new byte[] {2}));
 
     // Act
     store.reset();

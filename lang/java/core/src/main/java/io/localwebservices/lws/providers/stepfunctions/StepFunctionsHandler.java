@@ -223,9 +223,7 @@ public class StepFunctionsHandler implements HttpHandler {
               body.containsKey("name") ? (String) body.get("name") : UUID.randomUUID().toString();
           String execArn =
               "arn:aws:states:us-east-1:000000000000:express:"
-                  + (smArn.contains(":")
-                      ? smArn.substring(smArn.lastIndexOf(':') + 1)
-                      : smArn)
+                  + (smArn.contains(":") ? smArn.substring(smArn.lastIndexOf(':') + 1) : smArn)
                   + ":"
                   + execName;
           double now = Instant.now().getEpochSecond() * 1.0;

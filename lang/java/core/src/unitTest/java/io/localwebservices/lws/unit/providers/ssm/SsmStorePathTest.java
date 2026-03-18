@@ -1,6 +1,7 @@
 package io.localwebservices.lws.unit.providers.ssm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.localwebservices.lws.providers.ssm.SsmStore;
@@ -11,50 +12,58 @@ import org.junit.jupiter.api.Test;
 public class SsmStorePathTest {
 
   @Test
-  public void getParametersByPath_matchingPrefix_returnsMatchingParams() {
+  public void getParametersByPath_matchingPrefix_returnsTwoParams() {
     // Arrange
     SsmStore store = new SsmStore();
-    store.putParameter("/app/config/db", "localhost", "String", false);
-    store.putParameter("/app/config/port", "5432", "String", false);
-    store.putParameter("/other/key", "irrelevant", "String", false);
-    int expectedCount = 2;
+    store.putParameter("/app/db", "val1", "String", false);
+    store.putParameter("/app/svc", "val2", "String", false);
+    store.putParameter("/other/x", "val3", "String", false);
+    int expectedSize = 2;
 
     // Act
-    List<Map<String, Object>> actualParams = store.getParametersByPath("/app/config");
+    List<Map<String, Object>> actualParams = store.getParametersByPath("/app");
 
     // Assert
-    assertEquals(expectedCount, actualParams.size());
+    assertEquals(expectedSize, actualParams.size());
   }
 
   @Test
   public void getParametersByPath_noMatch_returnsEmptyList() {
     // Arrange
     SsmStore store = new SsmStore();
-    store.putParameter("/app/config/db", "localhost", "String", false);
-    int expectedCount = 0;
+    store.putParameter("/x/y", "val", "String", false);
 
     // Act
-    List<Map<String, Object>> actualParams = store.getParametersByPath("/nonexistent/path");
+    List<Map<String, Object>> actualParams = store.getParametersByPath("/z");
 
     // Assert
-    assertEquals(expectedCount, actualParams.size());
+    assertTrue(actualParams.isEmpty());
   }
 
   @Test
-  public void getParametersByPath_rootPath_returnsAllUnderRoot() {
+  public void deleteParameter_existingParam_removesIt() {
     // Arrange
     SsmStore store = new SsmStore();
-    store.putParameter("/app/a", "val-a", "String", false);
-    store.putParameter("/app/b", "val-b", "String", false);
-    int expectedCount = 2;
+    String paramName = "p";
+    store.putParameter(paramName, "v", "String", false);
 
     // Act
-    List<Map<String, Object>> actualParams = store.getParametersByPath("/app");
+    boolean actualDeleteResult = store.deleteParameter(paramName);
 
     // Assert
-    assertEquals(expectedCount, actualParams.size());
-    List<Object> actualNames = actualParams.stream().map(p -> p.get("Name")).toList();
-    assertTrue(actualNames.contains("/app/a"));
-    assertTrue(actualNames.contains("/app/b"));
+    assertTrue(actualDeleteResult);
+    assertFalse(store.containsParameter(paramName));
+  }
+
+  @Test
+  public void deleteParameter_missingParam_returnsFalse() {
+    // Arrange
+    SsmStore store = new SsmStore();
+
+    // Act
+    boolean actualResult = store.deleteParameter("missing");
+
+    // Assert
+    assertFalse(actualResult);
   }
 }

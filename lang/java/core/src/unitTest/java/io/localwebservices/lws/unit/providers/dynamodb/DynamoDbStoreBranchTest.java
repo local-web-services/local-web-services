@@ -1,9 +1,7 @@
 package io.localwebservices.lws.unit.providers.dynamodb;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.localwebservices.lws.providers.dynamodb.DynamoDbStore;
@@ -69,9 +67,16 @@ public class DynamoDbStoreBranchTest {
 
     // Act
     List<Map<String, Object>> actualItems =
-        store.query(tableName, "pk = :pk AND score = :score", null,
+        store.query(
+            tableName,
+            "pk = :pk AND score = :score",
+            null,
             Map.of(":pk", strAttr("user"), ":score", numAttr("100")),
-            null, null, true, null, null);
+            null,
+            null,
+            true,
+            null,
+            null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -95,8 +100,7 @@ public class DynamoDbStoreBranchTest {
 
     // Act
     List<Map<String, Object>> actualItems =
-        store.scan(tableName, "score = :val", null,
-            Map.of(":val", numAttr("100")), null, null);
+        store.scan(tableName, "score = :val", null, Map.of(":val", numAttr("100")), null, null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -120,8 +124,7 @@ public class DynamoDbStoreBranchTest {
 
     // Act
     List<Map<String, Object>> actualItems =
-        store.scan(tableName, "active = :val", null,
-            Map.of(":val", boolAttr(true)), null, null);
+        store.scan(tableName, "active = :val", null, Map.of(":val", boolAttr(true)), null, null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -138,7 +141,8 @@ public class DynamoDbStoreBranchTest {
     store.putItem(tableName, item);
 
     // Act — ADD with a string value (not a N-typed map) falls to the generic put
-    store.updateItem(tableName,
+    store.updateItem(
+        tableName,
         Map.of("pk", strAttr("r1")),
         "ADD label :lbl",
         null,
@@ -163,7 +167,8 @@ public class DynamoDbStoreBranchTest {
     // Act — first page, then second page with limit
     List<Map<String, Object>> firstPage = store.scan(tableName, null, null, null, 2, null);
     Map<String, Object> lastOfFirst = firstPage.get(firstPage.size() - 1);
-    List<Map<String, Object>> actualSecondPage = store.scan(tableName, null, null, null, 1, lastOfFirst);
+    List<Map<String, Object>> actualSecondPage =
+        store.scan(tableName, null, null, null, 1, lastOfFirst);
 
     // Assert
     assertEquals(1, actualSecondPage.size());
@@ -183,11 +188,16 @@ public class DynamoDbStoreBranchTest {
 
     // Act
     List<Map<String, Object>> actualItems =
-        store.query(tableName,
+        store.query(
+            tableName,
             "pk = :pk AND begins_with(sk, :prefix)",
             null,
             Map.of(":pk", strAttr("user"), ":prefix", strAttr("order")),
-            null, null, true, null, null);
+            null,
+            null,
+            true,
+            null,
+            null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -207,11 +217,16 @@ public class DynamoDbStoreBranchTest {
 
     // Act
     List<Map<String, Object>> actualItems =
-        store.query(tableName,
+        store.query(
+            tableName,
             "pk = :pk AND sk BETWEEN :lo AND :hi",
             null,
             Map.of(":pk", strAttr("user"), ":lo", strAttr("a"), ":hi", strAttr("z")),
-            null, null, true, null, null);
+            null,
+            null,
+            true,
+            null,
+            null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -278,7 +293,6 @@ public class DynamoDbStoreBranchTest {
     assertEquals(1, actualSecondPage.size());
   }
 
-
   @Test
   public void scan_withExprNameLiteralNotStartingWithHash_resolvesCorrectly() {
     // Arrange — exercises L426 false branch: exprNames != null but expr doesn't start with #
@@ -293,10 +307,13 @@ public class DynamoDbStoreBranchTest {
 
     // Act — exprNames is non-null but attr doesn't start with #
     List<Map<String, Object>> actualItems =
-        store.scan(tableName, "status = :v",
+        store.scan(
+            tableName,
+            "status = :v",
             Map.of("#notused", "other"),
             Map.of(":v", strAttr("active")),
-            null, null);
+            null,
+            null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -316,10 +333,8 @@ public class DynamoDbStoreBranchTest {
 
     // Act — exprValues is non-null but valExpr is a literal (no colon prefix)
     List<Map<String, Object>> actualItems =
-        store.scan(tableName, "status = active",
-            null,
-            Map.of(":notused", strAttr("other")),
-            null, null);
+        store.scan(
+            tableName, "status = active", null, Map.of(":notused", strAttr("other")), null, null);
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -369,5 +384,4 @@ public class DynamoDbStoreBranchTest {
     // Assert — should get the remaining item(s)
     assertTrue(actualSecondPage.size() >= 1);
   }
-
 }

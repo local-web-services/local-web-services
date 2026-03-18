@@ -13,7 +13,7 @@ test-e2e: test ## Run e2e tests
 integration-test: test ## Run integration tests
 
 lint: ## Check style, imports, and complexity (Checkstyle)
-	GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew checkstyleMain checkstyleTest
+	GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew checkstyleMain checkstyleTest checkstyleUnitTest
 
 format: ## Auto-format code (Google Java Format via Spotless)
 	GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew spotlessApply

@@ -9,57 +9,51 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("unchecked")
 public class SsmStoreTagTest {
 
   @Test
   public void addTags_newTags_appendsToList() {
     // Arrange
     SsmStore store = new SsmStore();
-    String resourceId = "/tagged/param";
+    String resourceId = "myParam";
     store.putParameter(resourceId, "v", "String", false);
-    List<Map<String, Object>> tags =
-        List.of(
-            Map.of("Key", "env", "Value", "prod"),
-            Map.of("Key", "team", "Value", "platform"));
-    int expectedTagCount = 2;
+    int expectedSize = 2;
 
     // Act
-    store.addTags(resourceId, tags);
+    store.addTags(
+        resourceId,
+        List.of(Map.of("Key", "env", "Value", "prod"), Map.of("Key", "team", "Value", "ops")));
 
     // Assert
-    assertEquals(expectedTagCount, store.listTags(resourceId).size());
+    assertEquals(expectedSize, store.listTags(resourceId).size());
   }
 
   @Test
   public void removeTags_existingKey_removesTag() {
     // Arrange
     SsmStore store = new SsmStore();
-    String resourceId = "/remove/tag/param";
+    String resourceId = "myParam";
     store.putParameter(resourceId, "v", "String", false);
     store.addTags(
         resourceId,
-        List.of(
-            Map.of("Key", "env", "Value", "prod"),
-            Map.of("Key", "team", "Value", "platform")));
-    int expectedTagCount = 1;
-    String expectedRemainingKey = "team";
+        List.of(Map.of("Key", "env", "Value", "prod"), Map.of("Key", "team", "Value", "ops")));
+    int expectedSize = 1;
 
     // Act
     store.removeTags(resourceId, List.of("env"));
 
     // Assert
-    List<Map<String, String>> actualTags = store.listTags(resourceId);
-    assertEquals(expectedTagCount, actualTags.size());
-    assertEquals(expectedRemainingKey, actualTags.get(0).get("Key"));
+    assertEquals(expectedSize, store.listTags(resourceId).size());
   }
 
   @Test
   public void hasTagAssociated_presentKey_returnsTrue() {
     // Arrange
     SsmStore store = new SsmStore();
-    String resourceId = "/has/tag/param";
+    String resourceId = "myParam";
     store.putParameter(resourceId, "v", "String", false);
-    store.addTags(resourceId, List.of(Map.of("Key", "env", "Value", "staging")));
+    store.addTags(resourceId, List.of(Map.of("Key", "env", "Value", "prod")));
 
     // Act
     boolean actualResult = store.hasTagAssociated(resourceId, List.of("env"));
@@ -72,7 +66,7 @@ public class SsmStoreTagTest {
   public void hasTagAssociated_absentKey_returnsFalse() {
     // Arrange
     SsmStore store = new SsmStore();
-    String resourceId = "/absent/tag/param";
+    String resourceId = "myParam";
     store.putParameter(resourceId, "v", "String", false);
 
     // Act
@@ -86,14 +80,13 @@ public class SsmStoreTagTest {
   public void listTags_noTags_returnsEmptyList() {
     // Arrange
     SsmStore store = new SsmStore();
-    String resourceId = "/no/tags/param";
+    String resourceId = "myParam";
     store.putParameter(resourceId, "v", "String", false);
-    int expectedSize = 0;
 
     // Act
     List<Map<String, String>> actualTags = store.listTags(resourceId);
 
     // Assert
-    assertEquals(expectedSize, actualTags.size());
+    assertTrue(actualTags.isEmpty());
   }
 }

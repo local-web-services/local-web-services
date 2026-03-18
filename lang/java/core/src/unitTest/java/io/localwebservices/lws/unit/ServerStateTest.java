@@ -52,7 +52,10 @@ public class ServerStateTest {
   public void reset_swallowsCallbackExceptions() {
     // Arrange
     ServerState state = new ServerState();
-    state.resetCallbacks.add(() -> { throw new RuntimeException("callback failure"); });
+    state.resetCallbacks.add(
+        () -> {
+          throw new RuntimeException("callback failure");
+        });
     state.chaosRules.put("sqs", Map.of());
 
     // Act — must not throw

@@ -99,8 +99,7 @@ public class SecretsManagerStore {
   }
 
   public void untagResource(String secretId, List<String> tagKeys) {
-    List<Map<String, String>> existing =
-        resourceTags.getOrDefault(secretId, new ArrayList<>());
+    List<Map<String, String>> existing = resourceTags.getOrDefault(secretId, new ArrayList<>());
     existing.removeIf(t -> tagKeys.contains(t.get("Key")));
   }
 

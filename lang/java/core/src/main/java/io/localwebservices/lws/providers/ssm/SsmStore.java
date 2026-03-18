@@ -112,14 +112,12 @@ public class SsmStore {
   }
 
   public void removeTags(String resourceId, List<String> tagKeys) {
-    List<Map<String, String>> existing =
-        resourceTags.getOrDefault(resourceId, new ArrayList<>());
+    List<Map<String, String>> existing = resourceTags.getOrDefault(resourceId, new ArrayList<>());
     existing.removeIf(t -> tagKeys.contains(t.get("Key")));
   }
 
   public boolean hasTagAssociated(String resourceId, List<String> tagKeys) {
-    List<Map<String, String>> existing =
-        resourceTags.getOrDefault(resourceId, new ArrayList<>());
+    List<Map<String, String>> existing = resourceTags.getOrDefault(resourceId, new ArrayList<>());
     return existing.stream().anyMatch(t -> tagKeys.contains(t.get("Key")));
   }
 

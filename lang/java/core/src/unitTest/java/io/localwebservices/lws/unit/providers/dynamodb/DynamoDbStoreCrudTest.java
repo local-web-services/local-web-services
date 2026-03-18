@@ -107,7 +107,8 @@ public class DynamoDbStoreCrudTest {
     DynamoDbStore store = new DynamoDbStore();
     String tableName = "items-table";
     store.createTable(tableName, "pk", "S", null, null, List.of());
-    Map<String, Object> expectedItem = Map.of("pk", Map.of("S", "key-1"), "value", Map.of("S", "hello"));
+    Map<String, Object> expectedItem =
+        Map.of("pk", Map.of("S", "key-1"), "value", Map.of("S", "hello"));
 
     // Act
     store.putItem(tableName, expectedItem);
@@ -181,13 +182,23 @@ public class DynamoDbStoreCrudTest {
     store.createTable(tableName, "pk", "S", "sk", "S", List.of());
 
     // Act
-    store.putItem(tableName, Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s1"), "data", Map.of("S", "v1")));
-    store.putItem(tableName, Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s2"), "data", Map.of("S", "v2")));
+    store.putItem(
+        tableName,
+        Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s1"), "data", Map.of("S", "v1")));
+    store.putItem(
+        tableName,
+        Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s2"), "data", Map.of("S", "v2")));
 
     // Assert
-    assertEquals(2, store.listTables().size() > 0 ? store.scan(tableName, null, null, null, null, null).size() : 0);
-    Map<String, Object> actualItem1 = store.getItem(tableName, Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s1")));
-    Map<String, Object> actualItem2 = store.getItem(tableName, Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s2")));
+    assertEquals(
+        2,
+        store.listTables().size() > 0
+            ? store.scan(tableName, null, null, null, null, null).size()
+            : 0);
+    Map<String, Object> actualItem1 =
+        store.getItem(tableName, Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s1")));
+    Map<String, Object> actualItem2 =
+        store.getItem(tableName, Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s2")));
     assertNotNull(actualItem1);
     assertNotNull(actualItem2);
   }

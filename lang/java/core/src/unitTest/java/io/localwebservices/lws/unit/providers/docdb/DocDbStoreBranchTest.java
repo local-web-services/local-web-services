@@ -27,10 +27,11 @@ public class DocDbStoreBranchTest {
   public void describeInstances_byIdNotFound_returnsEmptyList() {
     // Arrange
     DocDbStore store = new DocDbStore();
-    store.createInstance(Map.of(
-        "DBInstanceIdentifier", "existing-instance",
-        "DBClusterIdentifier", "cluster-1",
-        "DBInstanceClass", "db.r5.large"));
+    store.createInstance(
+        Map.of(
+            "DBInstanceIdentifier", "existing-instance",
+            "DBClusterIdentifier", "cluster-1",
+            "DBInstanceClass", "db.r5.large"));
     int expectedCount = 0;
 
     // Act
@@ -44,9 +45,10 @@ public class DocDbStoreBranchTest {
   public void describeSnapshots_byIdNotFound_returnsEmptyList() {
     // Arrange
     DocDbStore store = new DocDbStore();
-    store.createSnapshot(Map.of(
-        "DBClusterSnapshotIdentifier", "existing-snap",
-        "DBClusterIdentifier", "cluster-1"));
+    store.createSnapshot(
+        Map.of(
+            "DBClusterSnapshotIdentifier", "existing-snap",
+            "DBClusterIdentifier", "cluster-1"));
     int expectedCount = 0;
 
     // Act

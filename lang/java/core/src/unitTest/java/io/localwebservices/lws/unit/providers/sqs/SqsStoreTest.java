@@ -330,7 +330,8 @@ public class SqsStoreTest {
 
     // Act
     LocalQueue actualQueue =
-        store.createQueue("timeout-queue", Map.of("VisibilityTimeout", String.valueOf(expectedTimeout)));
+        store.createQueue(
+            "timeout-queue", Map.of("VisibilityTimeout", String.valueOf(expectedTimeout)));
 
     // Assert
     assertEquals(expectedTimeout, actualQueue.visibilityTimeout);
@@ -414,5 +415,4 @@ public class SqsStoreTest {
     // Assert
     assertTrue(store.getQueueTags("no-tags-queue").isEmpty());
   }
-
 }

@@ -3,7 +3,6 @@ package io.localwebservices.lws.unit.providers.elasticache;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.localwebservices.lws.providers.elasticache.ElastiCacheStore;
 import java.util.LinkedHashMap;

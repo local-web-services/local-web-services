@@ -35,9 +35,7 @@ public class StepFunctionsStoreHistoryTest {
     String smArn = store.stateMachineArn(machineName);
     store.createStateMachine(machineName, Map.of("name", machineName));
     List<Map<String, Object>> newTags =
-        List.of(
-            Map.of("key", "env", "value", "prod"),
-            Map.of("key", "team", "value", "platform"));
+        List.of(Map.of("key", "env", "value", "prod"), Map.of("key", "team", "value", "platform"));
     int expectedSize = 2;
 
     // Act
@@ -57,9 +55,7 @@ public class StepFunctionsStoreHistoryTest {
     store.createStateMachine(machineName, Map.of("name", machineName));
     store.tagResource(
         smArn,
-        List.of(
-            Map.of("key", "env", "value", "prod"),
-            Map.of("key", "team", "value", "platform")));
+        List.of(Map.of("key", "env", "value", "prod"), Map.of("key", "team", "value", "platform")));
     int expectedSize = 1;
     String expectedRemainingKey = "team";
 
@@ -81,9 +77,7 @@ public class StepFunctionsStoreHistoryTest {
     store.createStateMachine(machineName, Map.of("name", machineName));
     store.tagResource(
         smArn,
-        List.of(
-            Map.of("key", "env", "value", "prod"),
-            Map.of("key", "team", "value", "platform")));
+        List.of(Map.of("key", "env", "value", "prod"), Map.of("key", "team", "value", "platform")));
 
     // Act
     boolean actualResult = store.allTagsFound(smArn, List.of("env", "team"));

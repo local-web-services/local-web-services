@@ -79,10 +79,7 @@ public class SecretsManagerHandler implements HttpHandler {
           }
           Map<String, Object> secret =
               store.createSecret(
-                  name,
-                  body.get("SecretString"),
-                  body.get("SecretBinary"),
-                  body.get("Tags"));
+                  name, body.get("SecretString"), body.get("SecretBinary"), body.get("Tags"));
           sendJson(
               exchange,
               200,
@@ -135,7 +132,12 @@ public class SecretsManagerHandler implements HttpHandler {
           sendJson(
               exchange,
               200,
-              Map.of("Name", secret.get("Name"), "ARN", secret.get("ARN"), "VersionId",
+              Map.of(
+                  "Name",
+                  secret.get("Name"),
+                  "ARN",
+                  secret.get("ARN"),
+                  "VersionId",
                   secret.get("VersionId")));
           break;
         }
@@ -183,8 +185,14 @@ public class SecretsManagerHandler implements HttpHandler {
             return;
           }
           String versionId = UUID.randomUUID().toString();
-          Object secretString = body.containsKey("SecretString") ? body.get("SecretString") : secret.get("SecretString");
-          Object secretBinary = body.containsKey("SecretBinary") ? body.get("SecretBinary") : secret.get("SecretBinary");
+          Object secretString =
+              body.containsKey("SecretString")
+                  ? body.get("SecretString")
+                  : secret.get("SecretString");
+          Object secretBinary =
+              body.containsKey("SecretBinary")
+                  ? body.get("SecretBinary")
+                  : secret.get("SecretBinary");
           store.updateSecret(secret, secretString, secretBinary, versionId);
           sendJson(
               exchange,

@@ -1,7 +1,6 @@
 package io.localwebservices.lws.unit.providers.dynamodb;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.localwebservices.lws.providers.dynamodb.DynamoDbStore;
@@ -74,11 +73,8 @@ public class DynamoDbStoreExtraTest {
     String expectedValue = "direct-value";
 
     // Act
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k3")),
-        "SET status = " + expectedValue,
-        null,
-        null);
+    store.updateItem(
+        tableName, Map.of("pk", strAttr("k3")), "SET status = " + expectedValue, null, null);
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k3")));
@@ -113,8 +109,7 @@ public class DynamoDbStoreExtraTest {
     int expectedCount = 2;
 
     // Act — empty map as exclusiveStartKey — should behave as no start key
-    List<Map<String, Object>> actualItems =
-        store.scan(tableName, null, null, null, null, Map.of());
+    List<Map<String, Object>> actualItems = store.scan(tableName, null, null, null, null, Map.of());
 
     // Assert
     assertEquals(expectedCount, actualItems.size());
@@ -149,11 +144,7 @@ public class DynamoDbStoreExtraTest {
     store.putItem(tableName, item);
 
     // Act
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k4")),
-        "ADD count 5",
-        null,
-        null);
+    store.updateItem(tableName, Map.of("pk", strAttr("k4")), "ADD count 5", null, null);
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k4")));
@@ -172,11 +163,7 @@ public class DynamoDbStoreExtraTest {
     store.putItem(tableName, item);
 
     // Act
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k5")),
-        "REMOVE temp",
-        null,
-        null);
+    store.updateItem(tableName, Map.of("pk", strAttr("k5")), "REMOVE temp", null, null);
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k5")));
@@ -195,11 +182,7 @@ public class DynamoDbStoreExtraTest {
     store.putItem(tableName, item);
 
     // Act — expression starting with DELETE (not supported) takes no action
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k6")),
-        "DELETE unknown_attr",
-        null,
-        null);
+    store.updateItem(tableName, Map.of("pk", strAttr("k6")), "DELETE unknown_attr", null, null);
 
     // Assert — val is unchanged
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k6")));
@@ -217,7 +200,8 @@ public class DynamoDbStoreExtraTest {
     store.putItem(tableName, item);
 
     // Act — exprNames is null, so #attr is used as literal attribute name
-    store.updateItem(tableName,
+    store.updateItem(
+        tableName,
         Map.of("pk", strAttr("k7")),
         "SET #attr = :val",
         null,
@@ -239,11 +223,7 @@ public class DynamoDbStoreExtraTest {
     store.putItem(tableName, item);
 
     // Act — exprValues is null, so :val is used as literal value string
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k8")),
-        "SET myAttr = :val",
-        null,
-        null);
+    store.updateItem(tableName, Map.of("pk", strAttr("k8")), "SET myAttr = :val", null, null);
 
     // Assert — :val literally becomes the value
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k8")));
@@ -261,11 +241,7 @@ public class DynamoDbStoreExtraTest {
     store.putItem(tableName, item);
 
     // Act — both exprNames and exprValues are null with # and : prefixes
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k9")),
-        "ADD #myAttr :delta",
-        null,
-        null);
+    store.updateItem(tableName, Map.of("pk", strAttr("k9")), "ADD #myAttr :delta", null, null);
 
     // Assert — #myAttr is used literally, :delta is the value
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k9")));
@@ -284,7 +260,8 @@ public class DynamoDbStoreExtraTest {
     store.putItem(tableName, item);
 
     // Act — ADD where both existing and delta are maps but neither has "N" → generic put
-    store.updateItem(tableName,
+    store.updateItem(
+        tableName,
         Map.of("pk", strAttr("k10")),
         "ADD category :delta",
         null,
@@ -307,15 +284,10 @@ public class DynamoDbStoreExtraTest {
     store.putItem(tableName, item);
 
     // Act — exprNames is null, so #extra is used as literal key
-    store.updateItem(tableName,
-        Map.of("pk", strAttr("k11")),
-        "REMOVE #extra",
-        null,
-        null);
+    store.updateItem(tableName, Map.of("pk", strAttr("k11")), "REMOVE #extra", null, null);
 
     // Assert — #extra literally removed
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k11")));
     assertNull(actualItem.get("#extra"));
   }
-
 }

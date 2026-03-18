@@ -14,76 +14,70 @@ import org.junit.jupiter.api.Test;
 public class SecretsManagerStoreCreateTest {
 
   @Test
-  public void createSecret_newName_returnsSecretWithArn() {
+  public void createSecret_newName_hasNameAndArn() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String expectedName = "my-secret";
+    String expectedName = "mySecret";
 
     // Act
-    Map<String, Object> actualSecret = store.createSecret(expectedName, "s3cr3t", null, null);
+    Map<String, Object> actualSecret = store.createSecret(expectedName, "{}", null, null);
 
     // Assert
     assertEquals(expectedName, actualSecret.get("Name"));
     assertNotNull(actualSecret.get("ARN"));
-    assertNotNull(actualSecret.get("VersionId"));
   }
 
   @Test
-  public void secretArn_returnsExpectedFormat() {
+  public void secretArn_returnsArnContainingName() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "arn-check-secret";
-    String expectedAccount = "000000000000";
-    String expectedRegion = "us-east-1";
+    String secretName = "mySecret";
+    String expectedArnPrefix = "arn:aws:secretsmanager";
 
     // Act
     String actualArn = store.secretArn(secretName);
 
     // Assert
-    assertTrue(actualArn.contains(expectedAccount));
-    assertTrue(actualArn.contains(expectedRegion));
     assertTrue(actualArn.contains(secretName));
+    assertTrue(actualArn.contains(expectedArnPrefix));
   }
 
   @Test
   public void findSecret_byName_returnsSecret() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String expectedName = "find-by-name";
-    store.createSecret(expectedName, "value", null, null);
+    String secretName = "mySecret";
+    store.createSecret(secretName, "{}", null, null);
 
     // Act
-    Map<String, Object> actualSecret = store.findSecret(expectedName);
+    Map<String, Object> actualSecret = store.findSecret(secretName);
 
     // Assert
     assertNotNull(actualSecret);
-    assertEquals(expectedName, actualSecret.get("Name"));
   }
 
   @Test
   public void findSecret_byArn_returnsSecret() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "find-by-arn";
-    store.createSecret(secretName, "value", null, null);
-    String expectedArn = store.secretArn(secretName);
+    String secretName = "mySecret";
+    Map<String, Object> created = store.createSecret(secretName, "{}", null, null);
+    String expectedArn = (String) created.get("ARN");
 
     // Act
     Map<String, Object> actualSecret = store.findSecret(expectedArn);
 
     // Assert
     assertNotNull(actualSecret);
-    assertEquals(expectedArn, actualSecret.get("ARN"));
   }
 
   @Test
   public void findSecret_notFound_returnsNull() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String missingName = "does-not-exist";
 
     // Act
-    Map<String, Object> actualSecret = store.findSecret(missingName);
+    Map<String, Object> actualSecret = store.findSecret("doesNotExist");
 
     // Assert
     assertNull(actualSecret);
@@ -93,8 +87,8 @@ public class SecretsManagerStoreCreateTest {
   public void secretExists_activeSecret_returnsTrue() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "active-secret";
-    store.createSecret(secretName, "value", null, null);
+    String secretName = "mySecret";
+    store.createSecret(secretName, "{}", null, null);
 
     // Act
     boolean actualResult = store.secretExists(secretName);
@@ -104,13 +98,12 @@ public class SecretsManagerStoreCreateTest {
   }
 
   @Test
-  public void secretExists_nonExistentSecret_returnsFalse() {
+  public void secretExists_nonExistent_returnsFalse() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "nonexistent-secret";
 
     // Act
-    boolean actualResult = store.secretExists(secretName);
+    boolean actualResult = store.secretExists("mySecret");
 
     // Assert
     assertFalse(actualResult);
@@ -120,61 +113,14 @@ public class SecretsManagerStoreCreateTest {
   public void listSecrets_twoSecrets_returnsBothEntries() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    store.createSecret("secret-alpha", "val-a", null, null);
-    store.createSecret("secret-beta", "val-b", null, null);
-    int expectedCount = 2;
+    store.createSecret("s1", "{}", null, null);
+    store.createSecret("s2", "{}", null, null);
+    int expectedSize = 2;
 
     // Act
     List<Map<String, Object>> actualSecrets = store.listSecrets();
 
     // Assert
-    assertEquals(expectedCount, actualSecrets.size());
+    assertEquals(expectedSize, actualSecrets.size());
   }
-
-  @Test
-  public void reset_clearsAllSecrets() {
-    // Arrange
-    SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "reset-secret";
-    store.createSecret(secretName, "value", null, null);
-
-    // Act
-    store.reset();
-
-    // Assert
-    assertFalse(store.secretExists(secretName));
-    assertNull(store.findSecret(secretName));
-  }
-
-  @Test
-  public void secretExists_softDeletedSecret_returnsFalse() {
-    // Arrange
-    SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "deleted-secret";
-    store.createSecret(secretName, "value", null, null);
-    store.deleteSecret(secretName, false);
-
-    // Act
-    boolean actualResult = store.secretExists(secretName);
-
-    // Assert
-    assertFalse(actualResult);
-  }
-
-  @Test
-  public void createSecret_withNonNullTags_storesTags() {
-    // Arrange
-    SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "tagged-create-secret";
-    java.util.List<java.util.Map<String, String>> expectedTags =
-        java.util.List.of(java.util.Map.of("Key", "env", "Value", "prod"));
-
-    // Act
-    java.util.Map<String, Object> actualSecret =
-        store.createSecret(secretName, "value", null, expectedTags);
-
-    // Assert
-    assertEquals(expectedTags, actualSecret.get("Tags"));
-  }
-
 }

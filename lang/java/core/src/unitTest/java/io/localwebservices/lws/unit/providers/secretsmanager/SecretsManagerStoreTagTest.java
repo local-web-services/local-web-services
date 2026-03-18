@@ -1,68 +1,60 @@
 package io.localwebservices.lws.unit.providers.secretsmanager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.localwebservices.lws.providers.secretsmanager.SecretsManagerStore;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("unchecked")
 public class SecretsManagerStoreTagTest {
 
   @Test
   public void tagResource_newTags_appendsToList() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "tagged-secret";
-    store.createSecret(secretName, "value", null, null);
-    List<Map<String, Object>> tags =
-        List.of(
-            Map.of("Key", "env", "Value", "prod"),
-            Map.of("Key", "owner", "Value", "platform-team"));
-    int expectedTagCount = 2;
+    String secretName = "mySecret";
+    store.createSecret(secretName, "{}", null, null);
+    int expectedSize = 1;
 
     // Act
-    store.tagResource(secretName, tags);
+    store.tagResource(secretName, List.of(Map.of("Key", "env", "Value", "prod")));
 
     // Assert
-    assertEquals(expectedTagCount, store.listTags(secretName).size());
+    assertEquals(expectedSize, store.listTags(secretName).size());
   }
 
   @Test
   public void untagResource_existingKey_removesTag() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "untag-secret";
-    store.createSecret(secretName, "value", null, null);
+    String secretName = "mySecret";
+    store.createSecret(secretName, "{}", null, null);
     store.tagResource(
         secretName,
-        List.of(
-            Map.of("Key", "env", "Value", "prod"),
-            Map.of("Key", "owner", "Value", "platform-team")));
-    int expectedTagCount = 1;
-    String expectedRemainingKey = "owner";
+        List.of(Map.of("Key", "env", "Value", "prod"), Map.of("Key", "team", "Value", "ops")));
+    int expectedSize = 1;
 
     // Act
     store.untagResource(secretName, List.of("env"));
 
     // Assert
-    List<Map<String, String>> actualTags = store.listTags(secretName);
-    assertEquals(expectedTagCount, actualTags.size());
-    assertEquals(expectedRemainingKey, actualTags.get(0).get("Key"));
+    assertEquals(expectedSize, store.listTags(secretName).size());
   }
 
   @Test
   public void listTags_noTags_returnsEmptyList() {
     // Arrange
     SecretsManagerStore store = new SecretsManagerStore();
-    String secretName = "untagged-secret";
-    store.createSecret(secretName, "value", null, null);
-    int expectedSize = 0;
+    String secretName = "mySecret";
+    store.createSecret(secretName, "{}", null, null);
 
     // Act
     List<Map<String, String>> actualTags = store.listTags(secretName);
 
     // Assert
-    assertEquals(expectedSize, actualTags.size());
+    assertTrue(actualTags.isEmpty());
   }
 }

@@ -27,9 +27,10 @@ public class ElastiCacheStoreBranchTest {
   public void describeReplicationGroups_byIdNotFound_returnsEmptyList() {
     // Arrange
     ElastiCacheStore store = new ElastiCacheStore();
-    store.createReplicationGroup(Map.of(
-        "ReplicationGroupId", "existing-rg",
-        "ReplicationGroupDescription", "test"));
+    store.createReplicationGroup(
+        Map.of(
+            "ReplicationGroupId", "existing-rg",
+            "ReplicationGroupDescription", "test"));
     int expectedCount = 0;
 
     // Act
@@ -43,10 +44,11 @@ public class ElastiCacheStoreBranchTest {
   public void describeCacheSubnetGroups_byIdNotFound_returnsEmptyList() {
     // Arrange
     ElastiCacheStore store = new ElastiCacheStore();
-    store.createCacheSubnetGroup(Map.of(
-        "CacheSubnetGroupName", "existing-sg",
-        "SubnetIds.SubnetId.1", "subnet-111",
-        "VpcId", "vpc-123"));
+    store.createCacheSubnetGroup(
+        Map.of(
+            "CacheSubnetGroupName", "existing-sg",
+            "SubnetIds.SubnetId.1", "subnet-111",
+            "VpcId", "vpc-123"));
     int expectedCount = 0;
 
     // Act

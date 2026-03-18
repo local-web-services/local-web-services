@@ -70,17 +70,9 @@ public class StepFunctionsStore {
   }
 
   public Map<String, Object> startExecution(String smArn, String execName, String input) {
-    String machineName =
-        smArn.contains(":") ? smArn.substring(smArn.lastIndexOf(':') + 1) : smArn;
+    String machineName = smArn.contains(":") ? smArn.substring(smArn.lastIndexOf(':') + 1) : smArn;
     String execArn =
-        "arn:aws:states:"
-            + REGION
-            + ":"
-            + ACCOUNT
-            + ":execution:"
-            + machineName
-            + ":"
-            + execName;
+        "arn:aws:states:" + REGION + ":" + ACCOUNT + ":execution:" + machineName + ":" + execName;
     double startDate = Instant.now().getEpochSecond() * 1.0;
     Map<String, Object> exec = new LinkedHashMap<>();
     exec.put("executionArn", execArn);
@@ -143,15 +135,12 @@ public class StepFunctionsStore {
   }
 
   public boolean allTagsFound(String resourceArn, List<String> tagKeys) {
-    List<Map<String, String>> existing =
-        resourceTags.getOrDefault(resourceArn, new ArrayList<>());
-    return tagKeys.stream()
-        .allMatch(k -> existing.stream().anyMatch(t -> k.equals(t.get("key"))));
+    List<Map<String, String>> existing = resourceTags.getOrDefault(resourceArn, new ArrayList<>());
+    return tagKeys.stream().allMatch(k -> existing.stream().anyMatch(t -> k.equals(t.get("key"))));
   }
 
   public void untagResource(String resourceArn, List<String> tagKeys) {
-    List<Map<String, String>> existing =
-        resourceTags.getOrDefault(resourceArn, new ArrayList<>());
+    List<Map<String, String>> existing = resourceTags.getOrDefault(resourceArn, new ArrayList<>());
     existing.removeIf(t -> tagKeys.contains(t.get("key")));
   }
 }
