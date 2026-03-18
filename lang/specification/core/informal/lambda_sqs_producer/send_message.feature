@@ -18,7 +18,7 @@ Feature: LambdaSqsProducer - The Lambda Function Sends A Message To The Sqs Queu
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
 
-  @standard @negative @send_message @lifecycle
+  @standard @negative @send_message @lifecycle @internal
   Scenario: the Lambda function sends a message to the "SQS" queue during invocation fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function sends a message to the "SQS" queue during invocation
@@ -31,7 +31,7 @@ Feature: LambdaSqsProducer - The Lambda Function Sends A Message To The Sqs Queu
     When the Lambda function sends a message to the "SQS" queue during invocation
     Then the operation is rejected
 
-  @standard @negative @send_message @lifecycle
+  @standard @negative @send_message @lifecycle @internal
   Scenario: the Lambda function sends a message to the "SQS" queue during invocation fails when the queue is not "ACTIVE"
     Given an invocation is "IN_PROGRESS"
     And the queue exists
@@ -39,7 +39,7 @@ Feature: LambdaSqsProducer - The Lambda Function Sends A Message To The Sqs Queu
     When the Lambda function sends a message to the "SQS" queue during invocation
     Then the operation is rejected
 
-  @standard @negative @send_message @capacity
+  @standard @negative @send_message @capacity @internal
   Scenario: the Lambda function sends a message to the "SQS" queue during invocation fails when no message slot is available
     Given an invocation is "IN_PROGRESS"
     And the queue exists

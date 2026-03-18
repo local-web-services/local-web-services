@@ -28,7 +28,7 @@ Feature: Neptune - An Automated Backup Window Runs On An Available Cluster
     When an automated backup window runs on an available cluster
     Then the operation is rejected
 
-  @standard @negative @automated_backup_window @lifecycle
+  @standard @negative @automated_backup_window @lifecycle @internal
   Scenario: an automated backup window runs on an available cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

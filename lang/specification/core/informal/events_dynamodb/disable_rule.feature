@@ -22,7 +22,7 @@ Feature: EventsDynamodb - An Eventbridge Rule Is Disabled
     When an EventBridge rule is disabled
     Then the operation is rejected
 
-  @standard @negative @disable_rule @lifecycle
+  @standard @negative @disable_rule @lifecycle @internal
   Scenario: an EventBridge rule is disabled fails when the rule is already "DISABLED"
     Given the rule exists
     And the rule is already "DISABLED"

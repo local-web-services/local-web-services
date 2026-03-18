@@ -27,7 +27,7 @@ Feature: Memorydb - A User Is Removed From An Acl
     When a user is removed from an "ACL"
     Then the operation is rejected
 
-  @standard @negative @remove_user_from_a_c_l @lifecycle
+  @standard @negative @remove_user_from_a_c_l @lifecycle @internal
   Scenario: a user is removed from an "ACL" fails when the "ACL" is not "ACTIVE"
     Given the "ACL" exists
     And the "ACL" is not "ACTIVE"

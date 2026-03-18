@@ -25,7 +25,7 @@ Feature: S3api - A Bucket Is Deleted
     When a bucket is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_bucket @lifecycle
+  @standard @negative @delete_bucket @lifecycle @internal
   Scenario: a bucket is deleted fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

@@ -27,7 +27,7 @@ Feature: Docdb - A Database Cluster Configuration Is Modified
     When a database cluster configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_cluster @lifecycle
+  @standard @negative @modify_d_b_cluster @lifecycle @internal
   Scenario: a database cluster configuration is modified fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

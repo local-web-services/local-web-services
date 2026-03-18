@@ -26,14 +26,14 @@ Feature: Glacier - A Vault Inventory Retrieval Job Is Initiated
     When a vault inventory retrieval job is initiated
     Then the operation is rejected
 
-  @standard @negative @initiate_inventory_retrieval_job @lifecycle
+  @standard @negative @initiate_inventory_retrieval_job @lifecycle @internal
   Scenario: a vault inventory retrieval job is initiated fails when the vault is not "ACTIVE"
     Given the vault exists
     And the vault is not "ACTIVE"
     When a vault inventory retrieval job is initiated
     Then the operation is rejected
 
-  @standard @negative @initiate_inventory_retrieval_job @capacity
+  @standard @negative @initiate_inventory_retrieval_job @capacity @internal
   Scenario: a vault inventory retrieval job is initiated fails when the job slot is not available
     Given the vault exists
     And the vault is "ACTIVE"

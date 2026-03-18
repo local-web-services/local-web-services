@@ -22,7 +22,7 @@ Feature: StepfunctionsRds - A Multi-Az Failover Begins On The Db Instance
     When a Multi-"AZ" failover begins on the "DB" instance
     Then the operation is rejected
 
-  @standard @negative @d_b_failover_begins @lifecycle
+  @standard @negative @d_b_failover_begins @lifecycle @internal
   Scenario: a Multi-"AZ" failover begins on the "DB" instance fails when the "DB" instance is not "AVAILABLE"
     Given the "DB" instance exists
     And the "DB" instance is not "AVAILABLE"

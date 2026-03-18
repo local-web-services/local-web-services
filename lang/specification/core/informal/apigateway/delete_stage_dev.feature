@@ -27,7 +27,7 @@ Feature: Apigateway - The Dev Stage Is Deleted
     When the dev stage is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_stage_dev @lifecycle
+  @standard @negative @delete_stage_dev @lifecycle @internal
   Scenario: the dev stage is deleted fails when the dev stage is not active
     Given the dev stage exists
     And the dev stage is not active

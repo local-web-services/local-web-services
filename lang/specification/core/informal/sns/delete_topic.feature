@@ -24,7 +24,7 @@ Feature: Sns - An Sns Topic Is Deleted
     When an "SNS" topic is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_topic @lifecycle
+  @standard @negative @delete_topic @lifecycle @internal
   Scenario: an "SNS" topic is deleted fails when the topic is not "ACTIVE"
     Given the topic exists
     And the topic is not "ACTIVE"

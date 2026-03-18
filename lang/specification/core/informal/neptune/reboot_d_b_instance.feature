@@ -29,7 +29,7 @@ Feature: Neptune - A Database Instance Is Rebooted
     When a database instance is rebooted
     Then the operation is rejected
 
-  @standard @negative @reboot_d_b_instance @lifecycle
+  @standard @negative @reboot_d_b_instance @lifecycle @internal
   Scenario: a database instance is rebooted fails when the instance is not "AVAILABLE"
     Given the instance exists
     And the instance is not "AVAILABLE"
@@ -44,7 +44,7 @@ Feature: Neptune - A Database Instance Is Rebooted
     When a database instance is rebooted
     Then the operation is rejected
 
-  @standard @negative @reboot_d_b_instance @lifecycle
+  @standard @negative @reboot_d_b_instance @lifecycle @internal
   Scenario: a database instance is rebooted fails when the cluster is not "AVAILABLE"
     Given the instance exists
     And the instance is "AVAILABLE"

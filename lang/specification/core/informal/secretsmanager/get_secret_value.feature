@@ -28,7 +28,7 @@ Feature: Secretsmanager - The Current Value Of An Active Secret Is Retrieved
     When the current value of an active secret is retrieved
     Then the operation is rejected
 
-  @standard @negative @get_secret_value @lifecycle
+  @standard @negative @get_secret_value @lifecycle @internal
   Scenario: the current value of an active secret is retrieved fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

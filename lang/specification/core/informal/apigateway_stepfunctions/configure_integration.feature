@@ -26,7 +26,7 @@ Feature: ApigatewayStepfunctions - A Step Functions Direct Integration Is Config
     When a Step Functions direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @standard @negative @configure_integration @lifecycle @internal
   Scenario: a Step Functions direct integration is configured on the "REST" "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
@@ -50,7 +50,7 @@ Feature: ApigatewayStepfunctions - A Step Functions Direct Integration Is Config
     When a Step Functions direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @standard @negative @configure_integration @lifecycle @internal
   Scenario: a Step Functions direct integration is configured on the "REST" "API" fails when the state machine is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"

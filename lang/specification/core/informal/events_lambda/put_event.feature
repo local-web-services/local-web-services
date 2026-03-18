@@ -26,14 +26,14 @@ Feature: EventsLambda - An Event Is Published To The Bus And Triggers An Asynchr
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @standard @negative @put_event @lifecycle @internal
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @standard @negative @put_event @lifecycle @internal
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when no "ENABLED" rule exists on the bus targeting a function
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: EventsLambda - An Event Is Published To The Bus And Triggers An Asynchr
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @lifecycle
+  @standard @negative @put_event @lifecycle @internal
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when the target function is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: EventsLambda - An Event Is Published To The Bus And Triggers An Asynchr
     When an event is published to the bus and triggers an asynchronous Lambda invocation
     Then the operation is rejected
 
-  @standard @negative @put_event @capacity
+  @standard @negative @put_event @capacity @internal
   Scenario: an event is published to the bus and triggers an asynchronous Lambda invocation fails when no invocation slot is available
     Given the event bus exists
     And the event bus is "ACTIVE"

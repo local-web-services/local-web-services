@@ -28,14 +28,14 @@ Feature: Docdb - A Database Cluster Is Deleted
     When a database cluster is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_cluster @lifecycle
+  @standard @negative @delete_d_b_cluster @lifecycle @internal
   Scenario: a database cluster is deleted fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"
     When a database cluster is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_cluster @lifecycle
+  @standard @negative @delete_d_b_cluster @lifecycle @internal
   Scenario: a database cluster is deleted fails when the cluster has non-deleted instances
     Given the cluster exists
     And the cluster is "AVAILABLE"

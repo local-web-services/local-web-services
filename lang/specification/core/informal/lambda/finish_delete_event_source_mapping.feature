@@ -27,7 +27,7 @@ Feature: Lambda - An Event Source Mapping Finishes Being Deleted
     When an event source mapping finishes being deleted
     Then the operation is rejected
 
-  @standard @negative @finish_delete_event_source_mapping @lifecycle
+  @standard @negative @finish_delete_event_source_mapping @lifecycle @internal
   Scenario: an event source mapping finishes being deleted fails when the mapping is not "DELETING"
     Given the event source mapping exists
     And the mapping is not "DELETING"

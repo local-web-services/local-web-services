@@ -22,7 +22,7 @@ Feature: GlacierSns - A Glacier Archive Retrieval Job Is Initiated On The Vault
     When a Glacier archive retrieval job is initiated on the vault
     Then the operation is rejected
 
-  @standard @negative @initiate_job @capacity
+  @standard @negative @initiate_job @capacity @internal
   Scenario: a Glacier archive retrieval job is initiated on the vault fails when no job slot is available
     Given the vault exists
     And no job slot is available

@@ -25,7 +25,7 @@ Feature: StepfunctionsDynamodb - A Dynamodb Putitem Task Is Configured On The St
     When a DynamoDB PutItem task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_dynamo_d_b_task @lifecycle
+  @standard @negative @configure_dynamo_d_b_task @lifecycle @internal
   Scenario: a DynamoDB PutItem task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
@@ -49,7 +49,7 @@ Feature: StepfunctionsDynamodb - A Dynamodb Putitem Task Is Configured On The St
     When a DynamoDB PutItem task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_dynamo_d_b_task @lifecycle
+  @standard @negative @configure_dynamo_d_b_task @lifecycle @internal
   Scenario: a DynamoDB PutItem task is configured on the state machine fails when the table is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

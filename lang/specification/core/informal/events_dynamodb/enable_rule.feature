@@ -22,7 +22,7 @@ Feature: EventsDynamodb - An Eventbridge Rule Is Enabled
     When an EventBridge rule is enabled
     Then the operation is rejected
 
-  @standard @negative @enable_rule @lifecycle
+  @standard @negative @enable_rule @lifecycle @internal
   Scenario: an EventBridge rule is enabled fails when the rule is already "ENABLED"
     Given the rule exists
     And the rule is already "ENABLED"

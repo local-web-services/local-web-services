@@ -25,7 +25,7 @@ Feature: StepfunctionsSns - An Sns Publish Task Is Configured On The State Machi
     When an "SNS" publish task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s_n_s_task @lifecycle
+  @standard @negative @configure_s_n_s_task @lifecycle @internal
   Scenario: an "SNS" publish task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
@@ -49,7 +49,7 @@ Feature: StepfunctionsSns - An Sns Publish Task Is Configured On The State Machi
     When an "SNS" publish task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s_n_s_task @lifecycle
+  @standard @negative @configure_s_n_s_task @lifecycle @internal
   Scenario: an "SNS" publish task is configured on the state machine fails when the topic is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

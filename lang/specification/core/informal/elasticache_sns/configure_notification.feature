@@ -17,7 +17,7 @@ Feature: ElasticacheSns - An Sns Notification Is Configured On The Elasticache C
     And every "PUBLISHED" notification references a cluster that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @configure_notification @lifecycle
+  @standard @negative @configure_notification @lifecycle @internal
   Scenario: an "SNS" notification is configured on the ElastiCache cluster fails when the cluster does not exist or is not "AVAILABLE"
     Given the cluster does not exist or is not "AVAILABLE"
     When an "SNS" notification is configured on the ElastiCache cluster

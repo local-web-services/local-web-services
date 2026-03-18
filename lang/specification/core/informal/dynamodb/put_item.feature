@@ -27,14 +27,14 @@ Feature: Dynamodb - An Item Is Written To The Table
     When an item is written to the table
     Then the operation is rejected
 
-  @standard @negative @put_item @lifecycle
+  @standard @negative @put_item @lifecycle @internal
   Scenario: an item is written to the table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When an item is written to the table
     Then the operation is rejected
 
-  @standard @negative @put_item @capacity
+  @standard @negative @put_item @capacity @internal
   Scenario: an item is written to the table fails when writes are throttled
     Given the table exists
     And the table is "ACTIVE"

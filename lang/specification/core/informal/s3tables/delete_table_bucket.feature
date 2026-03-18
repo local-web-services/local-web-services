@@ -25,7 +25,7 @@ Feature: S3tables - A Table Bucket Is Deleted
     When a table bucket is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table_bucket @lifecycle
+  @standard @negative @delete_table_bucket @lifecycle @internal
   Scenario: a table bucket is deleted fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

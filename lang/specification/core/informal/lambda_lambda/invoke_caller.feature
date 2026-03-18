@@ -23,14 +23,14 @@ Feature: LambdaLambda - The Caller Lambda Function Is Invoked
     When the caller Lambda function is invoked
     Then the operation is rejected
 
-  @standard @negative @invoke_caller @lifecycle
+  @standard @negative @invoke_caller @lifecycle @internal
   Scenario: the caller Lambda function is invoked fails when the caller is not "ACTIVE"
     Given the caller exists
     And the caller is not "ACTIVE"
     When the caller Lambda function is invoked
     Then the operation is rejected
 
-  @standard @negative @invoke_caller @capacity
+  @standard @negative @invoke_caller @capacity @internal
   Scenario: the caller Lambda function is invoked fails when no invocation slot is available
     Given the caller exists
     And the caller is "ACTIVE"

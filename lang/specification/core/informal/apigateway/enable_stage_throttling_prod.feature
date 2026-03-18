@@ -27,7 +27,7 @@ Feature: Apigateway - Throttling Is Enabled For The Prod Stage
     When throttling is enabled for the prod stage
     Then the operation is rejected
 
-  @standard @negative @enable_stage_throttling_prod @lifecycle
+  @standard @negative @enable_stage_throttling_prod @lifecycle @internal
   Scenario: throttling is enabled for the prod stage fails when the prod stage is not active
     Given the prod stage exists
     And the prod stage is not active

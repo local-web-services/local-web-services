@@ -27,7 +27,7 @@ Feature: Neptune - A Database Instance Is Deleted
     When a database instance is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_instance @lifecycle
+  @standard @negative @delete_d_b_instance @lifecycle @internal
   Scenario: a database instance is deleted fails when the instance is not "AVAILABLE"
     Given the instance exists
     And the instance is not "AVAILABLE"

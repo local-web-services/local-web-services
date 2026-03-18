@@ -18,7 +18,7 @@ Feature: RdsLambda - An Rds Stored Procedure Fails To Invoke Lambda Because The 
     And every successful invocation references a "DB" instance that exists
     And every successful invocation recorded which function it invoked
 
-  @standard @negative @invocation_fails_function_deleted @lifecycle
+  @standard @negative @invocation_fails_function_deleted @lifecycle @internal
   Scenario: an "RDS" stored procedure fails to invoke Lambda because the function has been deleted fails when the "DB" instance is not "AVAILABLE"
     Given the "DB" instance is not "AVAILABLE"
     When an "RDS" stored procedure fails to invoke Lambda because the function has been deleted
@@ -31,7 +31,7 @@ Feature: RdsLambda - An Rds Stored Procedure Fails To Invoke Lambda Because The 
     When an "RDS" stored procedure fails to invoke Lambda because the function has been deleted
     Then the operation is rejected
 
-  @standard @negative @invocation_fails_function_deleted @lifecycle
+  @standard @negative @invocation_fails_function_deleted @lifecycle @internal
   Scenario: an "RDS" stored procedure fails to invoke Lambda because the function has been deleted fails when the Lambda function is not "DELETED"
     Given the "DB" instance is "AVAILABLE"
     And the "DB" instance has a Lambda integration configured
@@ -39,7 +39,7 @@ Feature: RdsLambda - An Rds Stored Procedure Fails To Invoke Lambda Because The 
     When an "RDS" stored procedure fails to invoke Lambda because the function has been deleted
     Then the operation is rejected
 
-  @standard @negative @invocation_fails_function_deleted @capacity
+  @standard @negative @invocation_fails_function_deleted @capacity @internal
   Scenario: an "RDS" stored procedure fails to invoke Lambda because the function has been deleted fails when no invocation slot is available
     Given the "DB" instance is "AVAILABLE"
     And the "DB" instance has a Lambda integration configured

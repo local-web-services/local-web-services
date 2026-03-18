@@ -28,7 +28,7 @@ Feature: Apigateway - A Root Resource Is Initialized For An Api
     When a root resource is initialized for an "API"
     Then the operation is rejected
 
-  @standard @negative @init_root_resource @lifecycle
+  @standard @negative @init_root_resource @lifecycle @internal
   Scenario: a root resource is initialized for an "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"

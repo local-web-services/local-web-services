@@ -27,7 +27,7 @@ Feature: Lambda - A Function'S Code Is Updated
     When a function's code is updated
     Then the operation is rejected
 
-  @standard @negative @update_function_code @lifecycle
+  @standard @negative @update_function_code @lifecycle @internal
   Scenario: a function's code is updated fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"

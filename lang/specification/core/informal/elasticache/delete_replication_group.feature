@@ -25,7 +25,7 @@ Feature: Elasticache - A Replication Group Is Deleted
     When a replication group is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_replication_group @lifecycle
+  @standard @negative @delete_replication_group @lifecycle @internal
   Scenario: a replication group is deleted fails when the replication group is not "AVAILABLE"
     Given the replication group exists
     And the replication group is not "AVAILABLE"

@@ -27,7 +27,7 @@ Feature: Neptune - A Stopped Database Cluster Is Started
     When a stopped database cluster is started
     Then the operation is rejected
 
-  @standard @negative @start_d_b_cluster @lifecycle
+  @standard @negative @start_d_b_cluster @lifecycle @internal
   Scenario: a stopped database cluster is started fails when the cluster is not "STOPPED"
     Given the cluster exists
     And the cluster is not "STOPPED"

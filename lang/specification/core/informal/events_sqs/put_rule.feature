@@ -25,7 +25,7 @@ Feature: EventsSqs - An Eventbridge Rule Is Created To Route Matching Events To 
     When an EventBridge rule is created to route matching events to the "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle
+  @standard @negative @put_rule @lifecycle @internal
   Scenario: an EventBridge rule is created to route matching events to the "SQS" queue fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
@@ -40,7 +40,7 @@ Feature: EventsSqs - An Eventbridge Rule Is Created To Route Matching Events To 
     When an EventBridge rule is created to route matching events to the "SQS" queue
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle
+  @standard @negative @put_rule @lifecycle @internal
   Scenario: an EventBridge rule is created to route matching events to the "SQS" queue fails when the queue is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"

@@ -27,7 +27,7 @@ Feature: Neptune - A Database Cluster Is Stopped
     When a database cluster is stopped
     Then the operation is rejected
 
-  @standard @negative @stop_d_b_cluster @lifecycle
+  @standard @negative @stop_d_b_cluster @lifecycle @internal
   Scenario: a database cluster is stopped fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

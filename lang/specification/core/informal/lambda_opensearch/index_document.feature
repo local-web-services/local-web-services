@@ -19,20 +19,20 @@ Feature: LambdaOpensearch - The Lambda Function Indexes A Document Into The Open
     And every indexed document belongs to an existing index
     And every existing index belongs to an "ACTIVE" domain
 
-  @standard @negative @index_document @lifecycle
+  @standard @negative @index_document @lifecycle @internal
   Scenario: the Lambda function indexes a document into the OpenSearch index during invocation fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function indexes a document into the OpenSearch index during invocation
     Then the operation is rejected
 
-  @standard @negative @index_document @lifecycle
+  @standard @negative @index_document @lifecycle @internal
   Scenario: the Lambda function indexes a document into the OpenSearch index during invocation fails when the index does not exist
     Given an invocation is "IN_PROGRESS"
     And the index does not exist
     When the Lambda function indexes a document into the OpenSearch index during invocation
     Then the operation is rejected
 
-  @standard @negative @index_document @lifecycle
+  @standard @negative @index_document @lifecycle @internal
   Scenario: the Lambda function indexes a document into the OpenSearch index during invocation fails when the index's domain is not "ACTIVE"
     Given an invocation is "IN_PROGRESS"
     And the index exists
@@ -40,7 +40,7 @@ Feature: LambdaOpensearch - The Lambda Function Indexes A Document Into The Open
     When the Lambda function indexes a document into the OpenSearch index during invocation
     Then the operation is rejected
 
-  @standard @negative @index_document @capacity
+  @standard @negative @index_document @capacity @internal
   Scenario: the Lambda function indexes a document into the OpenSearch index during invocation fails when no document slot is available
     Given an invocation is "IN_PROGRESS"
     And the index exists

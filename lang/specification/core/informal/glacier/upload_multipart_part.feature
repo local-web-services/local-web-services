@@ -26,7 +26,7 @@ Feature: Glacier - A Part Is Uploaded For A Multipart Upload
     When a part is uploaded for a multipart upload
     Then the operation is rejected
 
-  @standard @negative @upload_multipart_part @lifecycle
+  @standard @negative @upload_multipart_part @lifecycle @internal
   Scenario: a part is uploaded for a multipart upload fails when the upload is not InProgress
     Given the upload exists
     And the upload is not InProgress

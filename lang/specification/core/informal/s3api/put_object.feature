@@ -24,7 +24,7 @@ Feature: S3api - An Object Is Uploaded To A Bucket
     When an object is uploaded to a bucket
     Then the operation is rejected
 
-  @standard @negative @put_object @lifecycle
+  @standard @negative @put_object @lifecycle @internal
   Scenario: an object is uploaded to a bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

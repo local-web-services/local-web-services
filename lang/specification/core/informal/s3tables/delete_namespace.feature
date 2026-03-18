@@ -27,7 +27,7 @@ Feature: S3tables - A Namespace Is Deleted From A Table Bucket
     When a namespace is deleted from a table bucket
     Then the operation is rejected
 
-  @standard @negative @delete_namespace @lifecycle
+  @standard @negative @delete_namespace @lifecycle @internal
   Scenario: a namespace is deleted from a table bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
@@ -42,7 +42,7 @@ Feature: S3tables - A Namespace Is Deleted From A Table Bucket
     When a namespace is deleted from a table bucket
     Then the operation is rejected
 
-  @standard @negative @delete_namespace @lifecycle
+  @standard @negative @delete_namespace @lifecycle @internal
   Scenario: a namespace is deleted from a table bucket fails when the namespace is not "ACTIVE"
     Given the bucket exists
     And the bucket is "ACTIVE"

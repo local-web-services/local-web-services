@@ -24,7 +24,7 @@ Feature: StepfunctionsSns - An Execution Of The State Machine Is Started
     When an execution of the state machine is started
     Then the operation is rejected
 
-  @standard @negative @start_execution @lifecycle
+  @standard @negative @start_execution @lifecycle @internal
   Scenario: an execution of the state machine is started fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
@@ -39,7 +39,7 @@ Feature: StepfunctionsSns - An Execution Of The State Machine Is Started
     When an execution of the state machine is started
     Then the operation is rejected
 
-  @standard @negative @start_execution @capacity
+  @standard @negative @start_execution @capacity @internal
   Scenario: an execution of the state machine is started fails when no execution slot is available
     Given the state machine exists
     And the state machine is "ACTIVE"

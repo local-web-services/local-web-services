@@ -15,7 +15,7 @@ Feature: StepfunctionsNeptune - The Neptune Cluster Is Started
     And every "RUNNING" execution references an "ACTIVE" state machine
     And every succeeded execution recorded which cluster it queried
 
-  @standard @negative @start_cluster @lifecycle
+  @standard @negative @start_cluster @lifecycle @internal
   Scenario: the Neptune cluster is started fails when the cluster is not "STOPPED"
     Given the cluster is not "STOPPED"
     When the Neptune cluster is started

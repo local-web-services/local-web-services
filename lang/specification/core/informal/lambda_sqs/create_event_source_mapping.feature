@@ -27,7 +27,7 @@ Feature: LambdaSqs - A Lambda Event Source Mapping Is Created Linking A Queue To
     When a Lambda event source mapping is created linking a queue to a function
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping @lifecycle
+  @standard @negative @create_event_source_mapping @lifecycle @internal
   Scenario: a Lambda event source mapping is created linking a queue to a function fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
@@ -42,7 +42,7 @@ Feature: LambdaSqs - A Lambda Event Source Mapping Is Created Linking A Queue To
     When a Lambda event source mapping is created linking a queue to a function
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping @lifecycle
+  @standard @negative @create_event_source_mapping @lifecycle @internal
   Scenario: a Lambda event source mapping is created linking a queue to a function fails when the queue is not "ACTIVE"
     Given the function exists
     And the function is "ACTIVE"

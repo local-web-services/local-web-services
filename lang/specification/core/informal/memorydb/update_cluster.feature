@@ -25,7 +25,7 @@ Feature: Memorydb - A Memorydb Cluster Configuration Is Updated
     When a MemoryDB cluster configuration is updated
     Then the operation is rejected
 
-  @standard @negative @update_cluster @lifecycle
+  @standard @negative @update_cluster @lifecycle @internal
   Scenario: a MemoryDB cluster configuration is updated fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

@@ -16,13 +16,13 @@ Feature: LambdaGlacier - The Lambda Function Fails To Upload Because The Vault H
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing archive references a vault that exists
 
-  @standard @negative @invocation_fails_vault_deleted @lifecycle
+  @standard @negative @invocation_fails_vault_deleted @lifecycle @internal
   Scenario: the Lambda function fails to upload because the vault has been deleted fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function fails to upload because the vault has been deleted
     Then the operation is rejected
 
-  @standard @negative @invocation_fails_vault_deleted @lifecycle
+  @standard @negative @invocation_fails_vault_deleted @lifecycle @internal
   Scenario: the Lambda function fails to upload because the vault has been deleted fails when the vault is not "DELETED"
     Given an invocation is "IN_PROGRESS"
     And the vault is not "DELETED"

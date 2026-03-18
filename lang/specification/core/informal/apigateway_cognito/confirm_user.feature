@@ -25,7 +25,7 @@ Feature: ApigatewayCognito - A User Is Confirmed In A Cognito User Pool
     When a user is confirmed in a Cognito User Pool
     Then the operation is rejected
 
-  @standard @negative @confirm_user @lifecycle
+  @standard @negative @confirm_user @lifecycle @internal
   Scenario: a user is confirmed in a Cognito User Pool fails when the pool is not "ACTIVE"
     Given the pool exists
     And the pool is not "ACTIVE"

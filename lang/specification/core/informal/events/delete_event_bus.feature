@@ -37,7 +37,7 @@ Feature: Events - An Event Bus Is Deleted
     When an event bus is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus @lifecycle
+  @standard @negative @delete_event_bus @lifecycle @internal
   Scenario: an event bus is deleted fails when the event bus is not "ACTIVE"
     Given the event bus is not the default bus
     And the event bus exists

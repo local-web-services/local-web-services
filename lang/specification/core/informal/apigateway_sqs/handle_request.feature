@@ -26,7 +26,7 @@ Feature: ApigatewaySqs - The Api Receives A Request And Enqueues It As An Sqs Me
     When the "API" receives a request and enqueues it as an "SQS" message
     Then the operation is rejected
 
-  @standard @negative @handle_request @lifecycle
+  @standard @negative @handle_request @lifecycle @internal
   Scenario: the "API" receives a request and enqueues it as an "SQS" message fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
@@ -41,7 +41,7 @@ Feature: ApigatewaySqs - The Api Receives A Request And Enqueues It As An Sqs Me
     When the "API" receives a request and enqueues it as an "SQS" message
     Then the operation is rejected
 
-  @standard @negative @handle_request @lifecycle
+  @standard @negative @handle_request @lifecycle @internal
   Scenario: the "API" receives a request and enqueues it as an "SQS" message fails when the target queue is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: ApigatewaySqs - The Api Receives A Request And Enqueues It As An Sqs Me
     When the "API" receives a request and enqueues it as an "SQS" message
     Then the operation is rejected
 
-  @standard @negative @handle_request @capacity
+  @standard @negative @handle_request @capacity @internal
   Scenario: the "API" receives a request and enqueues it as an "SQS" message fails when no request slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -60,7 +60,7 @@ Feature: ApigatewaySqs - The Api Receives A Request And Enqueues It As An Sqs Me
     When the "API" receives a request and enqueues it as an "SQS" message
     Then the operation is rejected
 
-  @standard @negative @handle_request @capacity
+  @standard @negative @handle_request @capacity @internal
   Scenario: the "API" receives a request and enqueues it as an "SQS" message fails when no message slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"

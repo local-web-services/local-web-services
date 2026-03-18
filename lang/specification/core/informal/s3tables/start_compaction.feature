@@ -25,7 +25,7 @@ Feature: S3tables - Compaction Is Started On A Table
     When compaction is started on a table
     Then the operation is rejected
 
-  @standard @negative @start_compaction @lifecycle
+  @standard @negative @start_compaction @lifecycle @internal
   Scenario: compaction is started on a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

@@ -28,7 +28,7 @@ Feature: Docdb - A Cluster Is Restored From A Snapshot
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_d_b_cluster_from_snapshot @lifecycle
+  @standard @negative @restore_d_b_cluster_from_snapshot @lifecycle @internal
   Scenario: a cluster is restored from a snapshot fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

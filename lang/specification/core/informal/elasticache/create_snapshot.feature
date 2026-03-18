@@ -27,7 +27,7 @@ Feature: Elasticache - A Snapshot Is Created From An Available Redis Cache Clust
     When a snapshot is created from an available redis cache cluster
     Then the operation is rejected
 
-  @standard @negative @create_snapshot @lifecycle
+  @standard @negative @create_snapshot @lifecycle @internal
   Scenario: a snapshot is created from an available redis cache cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

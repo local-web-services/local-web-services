@@ -22,7 +22,7 @@ Feature: StepfunctionsSns - A Running Execution Publishes A Message To The Sns T
     When a running execution publishes a message to the "SNS" topic and succeeds
     Then the operation is rejected
 
-  @standard @negative @publish_task @lifecycle
+  @standard @negative @publish_task @lifecycle @internal
   Scenario: a running execution publishes a message to the "SNS" topic and succeeds fails when the target topic is not "ACTIVE"
     Given an execution is "RUNNING"
     And the target topic is not "ACTIVE"

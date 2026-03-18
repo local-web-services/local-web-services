@@ -41,7 +41,7 @@ Feature: Ssm - Tags Are Removed From A Parameter
     When tags are removed from a parameter
     Then the operation is rejected
 
-  @standard @negative @remove_tags_from_resource
+  @standard @negative @remove_tags_from_resource @internal
   Scenario: tags are removed from a parameter fails when the tag association is not active
     Given the parameter exists
     And the parameter is active

@@ -23,7 +23,7 @@ Feature: Elasticsearch - A Domain Configuration Update Is Requested
     When a domain configuration update is requested
     Then the operation is rejected
 
-  @standard @negative @update_elasticsearch_domain_config @lifecycle
+  @standard @negative @update_elasticsearch_domain_config @lifecycle @internal
   Scenario: a domain configuration update is requested fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

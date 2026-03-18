@@ -26,7 +26,7 @@ Feature: S3api - An Object Is Retrieved From A Bucket
     When an object is retrieved from a bucket
     Then the operation is rejected
 
-  @standard @negative @get_object @lifecycle
+  @standard @negative @get_object @lifecycle @internal
   Scenario: an object is retrieved from a bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

@@ -48,7 +48,7 @@ Feature: Events - Events Are Published To An Event Bus
     When events are published to an event bus
     Then the operation is rejected
 
-  @standard @negative @put_events
+  @standard @negative @put_events @internal
   Scenario: events are published to an event bus fails when the rule's event bus does not match
     Given the event bus exists
     And the event bus is "ACTIVE"
@@ -78,7 +78,7 @@ Feature: Events - Events Are Published To An Event Bus
     When events are published to an event bus
     Then the operation is rejected
 
-  @standard @negative @put_events
+  @standard @negative @put_events @internal
   Scenario: events are published to an event bus fails when the target association is not active
     Given the event bus exists
     And the event bus is "ACTIVE"

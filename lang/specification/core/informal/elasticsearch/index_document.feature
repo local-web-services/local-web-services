@@ -25,7 +25,7 @@ Feature: Elasticsearch - A Document Is Indexed In An Active Index
     When a document is indexed in an active index
     Then the operation is rejected
 
-  @standard @negative @index_document @lifecycle
+  @standard @negative @index_document @lifecycle @internal
   Scenario: a document is indexed in an active index fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

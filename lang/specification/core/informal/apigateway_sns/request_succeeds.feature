@@ -19,7 +19,7 @@ Feature: ApigatewaySns - A Request Is Received, The Api Publishes To The Sns Top
     And every "PUBLISHED" message references a topic that exists
     And every successful request references an "API" that exists
 
-  @standard @negative @request_succeeds @lifecycle
+  @standard @negative @request_succeeds @lifecycle @internal
   Scenario: a request is received, the "API" publishes to the "SNS" topic, and returns 200 fails when the "API" is not "ACTIVE"
     Given the "API" is not "ACTIVE"
     When a request is received, the "API" publishes to the "SNS" topic, and returns 200
@@ -32,7 +32,7 @@ Feature: ApigatewaySns - A Request Is Received, The Api Publishes To The Sns Top
     When a request is received, the "API" publishes to the "SNS" topic, and returns 200
     Then the operation is rejected
 
-  @standard @negative @request_succeeds @lifecycle
+  @standard @negative @request_succeeds @lifecycle @internal
   Scenario: a request is received, the "API" publishes to the "SNS" topic, and returns 200 fails when the target topic is not "ACTIVE"
     Given the "API" is "ACTIVE"
     And the "API" has an "SNS" integration configured
@@ -40,7 +40,7 @@ Feature: ApigatewaySns - A Request Is Received, The Api Publishes To The Sns Top
     When a request is received, the "API" publishes to the "SNS" topic, and returns 200
     Then the operation is rejected
 
-  @standard @negative @request_succeeds @capacity
+  @standard @negative @request_succeeds @capacity @internal
   Scenario: a request is received, the "API" publishes to the "SNS" topic, and returns 200 fails when no request slot is available
     Given the "API" is "ACTIVE"
     And the "API" has an "SNS" integration configured
@@ -49,7 +49,7 @@ Feature: ApigatewaySns - A Request Is Received, The Api Publishes To The Sns Top
     When a request is received, the "API" publishes to the "SNS" topic, and returns 200
     Then the operation is rejected
 
-  @standard @negative @request_succeeds @capacity
+  @standard @negative @request_succeeds @capacity @internal
   Scenario: a request is received, the "API" publishes to the "SNS" topic, and returns 200 fails when no message slot is available
     Given the "API" is "ACTIVE"
     And the "API" has an "SNS" integration configured

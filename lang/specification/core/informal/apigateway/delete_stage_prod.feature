@@ -27,7 +27,7 @@ Feature: Apigateway - The Prod Stage Is Deleted
     When the prod stage is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_stage_prod @lifecycle
+  @standard @negative @delete_stage_prod @lifecycle @internal
   Scenario: the prod stage is deleted fails when the prod stage is not active
     Given the prod stage exists
     And the prod stage is not active

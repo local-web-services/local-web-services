@@ -22,7 +22,7 @@ Feature: ElasticacheSns - The Sns Topic Is Deleted
     When the "SNS" topic is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_topic @lifecycle
+  @standard @negative @delete_topic @lifecycle @internal
   Scenario: the "SNS" topic is deleted fails when the topic is already "DELETED"
     Given the topic exists
     And the topic is already "DELETED"

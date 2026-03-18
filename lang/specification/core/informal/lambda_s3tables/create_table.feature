@@ -22,7 +22,7 @@ Feature: LambdaS3tables - A Table Is Created In The Table Bucket
     When a table is created in the table bucket
     Then the operation is rejected
 
-  @standard @negative @create_table @lifecycle
+  @standard @negative @create_table @lifecycle @internal
   Scenario: a table is created in the table bucket fails when the table bucket is not "ACTIVE"
     Given the table does not already exist
     And the table bucket is not "ACTIVE"

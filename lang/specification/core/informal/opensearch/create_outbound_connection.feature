@@ -35,7 +35,7 @@ Feature: Opensearch - An Outbound Cross-Cluster Connection Is Created Between Tw
     When an outbound cross-cluster connection is created between two domains
     Then the operation is rejected
 
-  @standard @negative @create_outbound_connection @lifecycle
+  @standard @negative @create_outbound_connection @lifecycle @internal
   Scenario: an outbound cross-cluster connection is created between two domains fails when the local domain is not "ACTIVE"
     Given the connection slot is available
     And the local domain exists
@@ -52,7 +52,7 @@ Feature: Opensearch - An Outbound Cross-Cluster Connection Is Created Between Tw
     When an outbound cross-cluster connection is created between two domains
     Then the operation is rejected
 
-  @standard @negative @create_outbound_connection @lifecycle
+  @standard @negative @create_outbound_connection @lifecycle @internal
   Scenario: an outbound cross-cluster connection is created between two domains fails when the remote domain is not "ACTIVE"
     Given the connection slot is available
     And the local domain exists

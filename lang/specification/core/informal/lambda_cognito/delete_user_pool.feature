@@ -22,7 +22,7 @@ Feature: LambdaCognito - A Cognito User Pool Is Deleted
     When a Cognito user pool is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_user_pool @lifecycle
+  @standard @negative @delete_user_pool @lifecycle @internal
   Scenario: a Cognito user pool is deleted fails when the pool is already "DELETED"
     Given the pool exists
     And the pool is already "DELETED"

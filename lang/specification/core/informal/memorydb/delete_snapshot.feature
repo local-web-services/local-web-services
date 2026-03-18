@@ -25,7 +25,7 @@ Feature: Memorydb - A Snapshot Is Deleted
     When a snapshot is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_snapshot @lifecycle
+  @standard @negative @delete_snapshot @lifecycle @internal
   Scenario: a snapshot is deleted fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

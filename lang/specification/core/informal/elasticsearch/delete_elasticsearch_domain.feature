@@ -23,7 +23,7 @@ Feature: Elasticsearch - A Search Domain Is Deleted
     When a search domain is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_elasticsearch_domain @lifecycle
+  @standard @negative @delete_elasticsearch_domain @lifecycle @internal
   Scenario: a search domain is deleted fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

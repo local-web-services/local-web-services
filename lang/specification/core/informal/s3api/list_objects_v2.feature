@@ -24,7 +24,7 @@ Feature: S3api - Objects In A Bucket Are Listed
     When objects in a bucket are listed
     Then the operation is rejected
 
-  @standard @negative @list_objects_v2 @lifecycle
+  @standard @negative @list_objects_v2 @lifecycle @internal
   Scenario: objects in a bucket are listed fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

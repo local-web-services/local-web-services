@@ -23,14 +23,14 @@ Feature: LambdaRds - The Lambda Function Is Invoked
     When the Lambda function is invoked
     Then the operation is rejected
 
-  @standard @negative @invoke_function @lifecycle
+  @standard @negative @invoke_function @lifecycle @internal
   Scenario: the Lambda function is invoked fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
     When the Lambda function is invoked
     Then the operation is rejected
 
-  @standard @negative @invoke_function @capacity
+  @standard @negative @invoke_function @capacity @internal
   Scenario: the Lambda function is invoked fails when no invocation slot is available
     Given the function exists
     And the function is "ACTIVE"

@@ -65,7 +65,7 @@ Feature: Apigateway - An Api Deployment Is Created
     When an "API" deployment is created
     Then the operation is rejected
 
-  @standard @negative @create_deployment @lifecycle
+  @standard @negative @create_deployment @lifecycle @internal
   Scenario: an "API" deployment is created fails when the "API" is not "ACTIVE"
     Given the deployment slot is available
     And the method has an integration

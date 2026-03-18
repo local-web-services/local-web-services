@@ -26,7 +26,7 @@ Feature: Memorydb - A Cluster Is Restored From A Snapshot
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_cluster @lifecycle
+  @standard @negative @restore_cluster @lifecycle @internal
   Scenario: a cluster is restored from a snapshot fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

@@ -24,7 +24,7 @@ Feature: LambdaOpensearch - An Index Is Created In The Opensearch Domain
     When an index is created in the OpenSearch domain
     Then the operation is rejected
 
-  @standard @negative @create_index @lifecycle
+  @standard @negative @create_index @lifecycle @internal
   Scenario: an index is created in the OpenSearch domain fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

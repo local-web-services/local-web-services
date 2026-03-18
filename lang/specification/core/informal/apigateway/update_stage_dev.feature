@@ -29,7 +29,7 @@ Feature: Apigateway - The Dev Stage Is Redeployed To A New Deployment
     When the dev stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_dev @lifecycle
+  @standard @negative @update_stage_dev @lifecycle @internal
   Scenario: the dev stage is redeployed to a new deployment fails when the deployment is not "ACTIVE"
     Given the deployment exists
     And the deployment is not "ACTIVE"
@@ -44,7 +44,7 @@ Feature: Apigateway - The Dev Stage Is Redeployed To A New Deployment
     When the dev stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_dev @lifecycle
+  @standard @negative @update_stage_dev @lifecycle @internal
   Scenario: the dev stage is redeployed to a new deployment fails when the dev stage is not active
     Given the deployment exists
     And the deployment is "ACTIVE"

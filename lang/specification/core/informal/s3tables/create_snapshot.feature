@@ -25,7 +25,7 @@ Feature: S3tables - A Snapshot Is Created For A Table
     When a snapshot is created for a table
     Then the operation is rejected
 
-  @standard @negative @create_snapshot @lifecycle
+  @standard @negative @create_snapshot @lifecycle @internal
   Scenario: a snapshot is created for a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

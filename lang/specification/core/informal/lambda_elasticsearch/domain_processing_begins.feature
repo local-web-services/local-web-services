@@ -22,7 +22,7 @@ Feature: LambdaElasticsearch - A Domain Configuration Update Begins
     When a domain configuration update begins
     Then the operation is rejected
 
-  @standard @negative @domain_processing_begins @lifecycle
+  @standard @negative @domain_processing_begins @lifecycle @internal
   Scenario: a domain configuration update begins fails when the domain is not "AVAILABLE"
     Given the domain exists
     And the domain is not "AVAILABLE"

@@ -28,7 +28,7 @@ Feature: Neptune - A Multi-Az Failover Is Triggered On A Cluster
     When a multi-"AZ" failover is triggered on a cluster
     Then the operation is rejected
 
-  @standard @negative @multi_a_z_failover @lifecycle
+  @standard @negative @multi_a_z_failover @lifecycle @internal
   Scenario: a multi-"AZ" failover is triggered on a cluster fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

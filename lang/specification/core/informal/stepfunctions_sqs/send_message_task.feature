@@ -31,7 +31,7 @@ Feature: StepfunctionsSqs - A Running Execution Reaches The Sqs Task State And S
     When a running execution reaches the "SQS" task state and sends a message to the queue
     Then the operation is rejected
 
-  @standard @negative @send_message_task @lifecycle
+  @standard @negative @send_message_task @lifecycle @internal
   Scenario: a running execution reaches the "SQS" task state and sends a message to the queue fails when the target queue is not "ACTIVE"
     Given an execution is "RUNNING"
     And the execution's state machine has a configured "SQS" task
@@ -39,7 +39,7 @@ Feature: StepfunctionsSqs - A Running Execution Reaches The Sqs Task State And S
     When a running execution reaches the "SQS" task state and sends a message to the queue
     Then the operation is rejected
 
-  @standard @negative @send_message_task @capacity
+  @standard @negative @send_message_task @capacity @internal
   Scenario: a running execution reaches the "SQS" task state and sends a message to the queue fails when no message slot is available
     Given an execution is "RUNNING"
     And the execution's state machine has a configured "SQS" task

@@ -27,7 +27,7 @@ Feature: ApigatewayLambda - The Api Receives An Http Request And Synchronously I
     When the "API" receives an "HTTP" request and synchronously invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @handle_request @lifecycle
+  @standard @negative @handle_request @lifecycle @internal
   Scenario: the "API" receives an "HTTP" request and synchronously invokes the Lambda function fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
@@ -42,7 +42,7 @@ Feature: ApigatewayLambda - The Api Receives An Http Request And Synchronously I
     When the "API" receives an "HTTP" request and synchronously invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @handle_request @lifecycle
+  @standard @negative @handle_request @lifecycle @internal
   Scenario: the "API" receives an "HTTP" request and synchronously invokes the Lambda function fails when the integrated function is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: ApigatewayLambda - The Api Receives An Http Request And Synchronously I
     When the "API" receives an "HTTP" request and synchronously invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @handle_request @capacity
+  @standard @negative @handle_request @capacity @internal
   Scenario: the "API" receives an "HTTP" request and synchronously invokes the Lambda function fails when no request slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"
@@ -61,7 +61,7 @@ Feature: ApigatewayLambda - The Api Receives An Http Request And Synchronously I
     When the "API" receives an "HTTP" request and synchronously invokes the Lambda function
     Then the operation is rejected
 
-  @standard @negative @handle_request @capacity
+  @standard @negative @handle_request @capacity @internal
   Scenario: the "API" receives an "HTTP" request and synchronously invokes the Lambda function fails when no invocation slot is available
     Given the "API" exists
     And the "API" is "ACTIVE"

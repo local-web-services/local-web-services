@@ -25,7 +25,7 @@ Feature: StepfunctionsSqs - An Sqs Send-Message Task Is Configured On The State 
     When an "SQS" send-message task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s_q_s_task @lifecycle
+  @standard @negative @configure_s_q_s_task @lifecycle @internal
   Scenario: an "SQS" send-message task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
@@ -49,7 +49,7 @@ Feature: StepfunctionsSqs - An Sqs Send-Message Task Is Configured On The State 
     When an "SQS" send-message task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s_q_s_task @lifecycle
+  @standard @negative @configure_s_q_s_task @lifecycle @internal
   Scenario: an "SQS" send-message task is configured on the state machine fails when the queue is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

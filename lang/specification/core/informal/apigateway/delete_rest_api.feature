@@ -27,7 +27,7 @@ Feature: Apigateway - A Rest Api Is Deleted
     When a "REST" "API" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_rest_api @lifecycle
+  @standard @negative @delete_rest_api @lifecycle @internal
   Scenario: a "REST" "API" is deleted fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"

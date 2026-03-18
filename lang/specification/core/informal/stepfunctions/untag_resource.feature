@@ -27,7 +27,7 @@ Feature: Stepfunctions - Tags Are Removed From A State Machine
     When tags are removed from a state machine
     Then the operation is rejected
 
-  @standard @negative @untag_resource @lifecycle
+  @standard @negative @untag_resource @lifecycle @internal
   Scenario: tags are removed from a state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
@@ -42,7 +42,7 @@ Feature: Stepfunctions - Tags Are Removed From A State Machine
     When tags are removed from a state machine
     Then the operation is rejected
 
-  @standard @negative @untag_resource
+  @standard @negative @untag_resource @internal
   Scenario: tags are removed from a state machine fails when the tag association is not active
     Given the state machine exists
     And the state machine is "ACTIVE"

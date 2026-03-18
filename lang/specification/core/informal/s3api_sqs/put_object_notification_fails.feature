@@ -18,7 +18,7 @@ Feature: S3apiSqs - An Object Is Uploaded But Notification Delivery Fails Becaus
     And every "QUEUED" message references an object that exists
     And every "QUEUED" message references a queue that exists
 
-  @standard @negative @put_object_notification_fails @lifecycle
+  @standard @negative @put_object_notification_fails @lifecycle @internal
   Scenario: an object is uploaded but notification delivery fails because the queue has been deleted fails when the bucket is not "ACTIVE"
     Given the bucket is not "ACTIVE"
     When an object is uploaded but notification delivery fails because the queue has been deleted
@@ -31,7 +31,7 @@ Feature: S3apiSqs - An Object Is Uploaded But Notification Delivery Fails Becaus
     When an object is uploaded but notification delivery fails because the queue has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails @lifecycle
+  @standard @negative @put_object_notification_fails @lifecycle @internal
   Scenario: an object is uploaded but notification delivery fails because the queue has been deleted fails when the target queue is not "DELETED"
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration
@@ -39,7 +39,7 @@ Feature: S3apiSqs - An Object Is Uploaded But Notification Delivery Fails Becaus
     When an object is uploaded but notification delivery fails because the queue has been deleted
     Then the operation is rejected
 
-  @standard @negative @put_object_notification_fails @capacity
+  @standard @negative @put_object_notification_fails @capacity @internal
   Scenario: an object is uploaded but notification delivery fails because the queue has been deleted fails when no object slot is available
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration

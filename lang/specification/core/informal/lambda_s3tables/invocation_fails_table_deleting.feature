@@ -16,13 +16,13 @@ Feature: LambdaS3tables - The Lambda Function Fails To Write Because The Table I
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing record references a table that exists
 
-  @standard @negative @invocation_fails_table_deleting @lifecycle
+  @standard @negative @invocation_fails_table_deleting @lifecycle @internal
   Scenario: the Lambda function fails to write because the table is being deleted fails when no invocation is "IN_PROGRESS"
     Given no invocation is "IN_PROGRESS"
     When the Lambda function fails to write because the table is being deleted
     Then the operation is rejected
 
-  @standard @negative @invocation_fails_table_deleting @lifecycle
+  @standard @negative @invocation_fails_table_deleting @lifecycle @internal
   Scenario: the Lambda function fails to write because the table is being deleted fails when the table is not "DELETING"
     Given an invocation is "IN_PROGRESS"
     And the table is not "DELETING"

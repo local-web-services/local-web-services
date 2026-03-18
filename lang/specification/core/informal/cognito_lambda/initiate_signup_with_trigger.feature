@@ -27,7 +27,7 @@ Feature: CognitoLambda - A User Initiates Signup To A Pool That Has A Pre-Signup
     When a user initiates signup to a pool that has a pre-signup trigger configured
     Then the operation is rejected
 
-  @standard @negative @initiate_signup_with_trigger @lifecycle
+  @standard @negative @initiate_signup_with_trigger @lifecycle @internal
   Scenario: a user initiates signup to a pool that has a pre-signup trigger configured fails when the pool is not "ACTIVE"
     Given the pool exists
     And the pool is not "ACTIVE"
@@ -42,7 +42,7 @@ Feature: CognitoLambda - A User Initiates Signup To A Pool That Has A Pre-Signup
     When a user initiates signup to a pool that has a pre-signup trigger configured
     Then the operation is rejected
 
-  @standard @negative @initiate_signup_with_trigger @lifecycle
+  @standard @negative @initiate_signup_with_trigger @lifecycle @internal
   Scenario: a user initiates signup to a pool that has a pre-signup trigger configured fails when the trigger function is not "ACTIVE"
     Given the pool exists
     And the pool is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: CognitoLambda - A User Initiates Signup To A Pool That Has A Pre-Signup
     When a user initiates signup to a pool that has a pre-signup trigger configured
     Then the operation is rejected
 
-  @standard @negative @initiate_signup_with_trigger @capacity
+  @standard @negative @initiate_signup_with_trigger @capacity @internal
   Scenario: a user initiates signup to a pool that has a pre-signup trigger configured fails when no user slot is available
     Given the pool exists
     And the pool is "ACTIVE"
@@ -61,7 +61,7 @@ Feature: CognitoLambda - A User Initiates Signup To A Pool That Has A Pre-Signup
     When a user initiates signup to a pool that has a pre-signup trigger configured
     Then the operation is rejected
 
-  @standard @negative @initiate_signup_with_trigger @capacity
+  @standard @negative @initiate_signup_with_trigger @capacity @internal
   Scenario: a user initiates signup to a pool that has a pre-signup trigger configured fails when no invocation slot is available
     Given the pool exists
     And the pool is "ACTIVE"

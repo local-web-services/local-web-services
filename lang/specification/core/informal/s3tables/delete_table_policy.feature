@@ -25,7 +25,7 @@ Feature: S3tables - A Table'S Policy Is Deleted
     When a table's policy is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table_policy @lifecycle
+  @standard @negative @delete_table_policy @lifecycle @internal
   Scenario: a table's policy is deleted fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

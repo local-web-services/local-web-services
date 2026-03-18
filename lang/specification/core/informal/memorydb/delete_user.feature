@@ -25,7 +25,7 @@ Feature: Memorydb - A User Is Deleted
     When a user is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_user @lifecycle
+  @standard @negative @delete_user @lifecycle @internal
   Scenario: a user is deleted fails when the user is not "ACTIVE"
     Given the user exists
     And the user is not "ACTIVE"

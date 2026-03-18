@@ -23,14 +23,14 @@ Feature: StepfunctionsEvents - A Running Execution Succeeds And Step Functions D
     When a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus
     Then the operation is rejected
 
-  @standard @negative @execution_succeeds_event_delivered @lifecycle
+  @standard @negative @execution_succeeds_event_delivered @lifecycle @internal
   Scenario: a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when the bus is "DELETED"
     Given an execution is "RUNNING"
     And the bus is "DELETED"
     When a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus
     Then the operation is rejected
 
-  @standard @negative @execution_succeeds_event_delivered @capacity
+  @standard @negative @execution_succeeds_event_delivered @capacity @internal
   Scenario: a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus fails when no event slot is available
     Given an execution is "RUNNING"
     And the bus is "ACTIVE"

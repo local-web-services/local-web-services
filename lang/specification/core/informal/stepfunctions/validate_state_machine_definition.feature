@@ -25,7 +25,7 @@ Feature: Stepfunctions - A State Machine Definition Is Validated
     When a state machine definition is validated
     Then the operation is rejected
 
-  @standard @negative @validate_state_machine_definition @lifecycle
+  @standard @negative @validate_state_machine_definition @lifecycle @internal
   Scenario: a state machine definition is validated fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

@@ -25,7 +25,7 @@ Feature: ApigatewaySqs - An Sqs Direct Integration Is Configured On The Rest Api
     When an "SQS" direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @standard @negative @configure_integration @lifecycle @internal
   Scenario: an "SQS" direct integration is configured on the "REST" "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
@@ -49,7 +49,7 @@ Feature: ApigatewaySqs - An Sqs Direct Integration Is Configured On The Rest Api
     When an "SQS" direct integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle
+  @standard @negative @configure_integration @lifecycle @internal
   Scenario: an "SQS" direct integration is configured on the "REST" "API" fails when the queue is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"

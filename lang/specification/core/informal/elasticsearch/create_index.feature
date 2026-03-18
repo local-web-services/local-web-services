@@ -24,7 +24,7 @@ Feature: Elasticsearch - An Index Is Created In An Active Domain
     When an index is created in an active domain
     Then the operation is rejected
 
-  @standard @negative @create_index @lifecycle
+  @standard @negative @create_index @lifecycle @internal
   Scenario: an index is created in an active domain fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

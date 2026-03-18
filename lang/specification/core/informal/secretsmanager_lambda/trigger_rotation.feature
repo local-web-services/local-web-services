@@ -17,7 +17,7 @@ Feature: SecretsmanagerLambda - A Rotation Is Triggered For The Secret
     And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
     And every successful rotation invocation recorded which secret it rotated
 
-  @standard @negative @trigger_rotation @lifecycle
+  @standard @negative @trigger_rotation @lifecycle @internal
   Scenario: a rotation is triggered for the secret fails when the secret does not exist or is not "ACTIVE"
     Given the secret does not exist or is not "ACTIVE"
     When a rotation is triggered for the secret
@@ -30,7 +30,7 @@ Feature: SecretsmanagerLambda - A Rotation Is Triggered For The Secret
     When a rotation is triggered for the secret
     Then the operation is rejected
 
-  @standard @negative @trigger_rotation @capacity
+  @standard @negative @trigger_rotation @capacity @internal
   Scenario: a rotation is triggered for the secret fails when no invocation slot is available
     Given the secret exists and is "ACTIVE"
     And the secret has a rotation function configured

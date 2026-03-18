@@ -22,7 +22,7 @@ Feature: S3apiSqs - The Sqs Queue Is Deleted
     When the "SQS" queue is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_queue @lifecycle
+  @standard @negative @delete_queue @lifecycle @internal
   Scenario: the "SQS" queue is deleted fails when the queue is already "DELETED"
     Given the queue exists
     And the queue is already "DELETED"

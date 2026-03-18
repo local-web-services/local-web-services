@@ -26,7 +26,7 @@ Feature: EventsLambda - An Eventbridge Rule Is Created To Asynchronously Invoke 
     When an EventBridge rule is created to asynchronously invoke a Lambda function on matching events
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle
+  @standard @negative @put_rule @lifecycle @internal
   Scenario: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
@@ -41,7 +41,7 @@ Feature: EventsLambda - An Eventbridge Rule Is Created To Asynchronously Invoke 
     When an EventBridge rule is created to asynchronously invoke a Lambda function on matching events
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle
+  @standard @negative @put_rule @lifecycle @internal
   Scenario: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events fails when the function is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"

@@ -23,7 +23,7 @@ Feature: Sqs - All Messages In A Queue Are Purged
     When all messages in a queue are purged
     Then the operation is rejected
 
-  @standard @negative @purge_queue @lifecycle
+  @standard @negative @purge_queue @lifecycle @internal
   Scenario: all messages in a queue are purged fails when the queue is not "ACTIVE"
     Given the queue exists
     And the queue is not "ACTIVE"

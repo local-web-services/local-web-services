@@ -25,7 +25,7 @@ Feature: Stepfunctions - Executions For A State Machine Are Listed
     When executions for a state machine are listed
     Then the operation is rejected
 
-  @standard @negative @list_executions @lifecycle
+  @standard @negative @list_executions @lifecycle @internal
   Scenario: executions for a state machine are listed fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

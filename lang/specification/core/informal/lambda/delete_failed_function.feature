@@ -27,7 +27,7 @@ Feature: Lambda - A Failed Function Is Deleted
     When a failed function is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_failed_function @lifecycle
+  @standard @negative @delete_failed_function @lifecycle @internal
   Scenario: a failed function is deleted fails when the function is not "FAILED"
     Given the function exists
     And the function is not "FAILED"

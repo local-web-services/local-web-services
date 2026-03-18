@@ -25,7 +25,7 @@ Feature: Elasticsearch - An Index Is Deleted From An Active Domain
     When an index is deleted from an active domain
     Then the operation is rejected
 
-  @standard @negative @delete_index @lifecycle
+  @standard @negative @delete_index @lifecycle @internal
   Scenario: an index is deleted from an active domain fails when the domain is not "ACTIVE"
     Given the domain exists
     And the domain is not "ACTIVE"

@@ -28,7 +28,7 @@ Feature: Glacier - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload @lifecycle
+  @standard @negative @complete_multipart_upload @lifecycle @internal
   Scenario: a multipart upload is completed fails when the upload is not InProgress
     Given the upload exists
     And the upload is not InProgress
@@ -43,7 +43,7 @@ Feature: Glacier - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload @lifecycle
+  @standard @negative @complete_multipart_upload @lifecycle @internal
   Scenario: a multipart upload is completed fails when the vault is not "ACTIVE"
     Given the upload exists
     And the upload is InProgress
@@ -52,7 +52,7 @@ Feature: Glacier - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload @capacity
+  @standard @negative @complete_multipart_upload @capacity @internal
   Scenario: a multipart upload is completed fails when the archive slot is not available
     Given the upload exists
     And the upload is InProgress

@@ -25,7 +25,7 @@ Feature: Glacier - A Multipart Upload Is Aborted
     When a multipart upload is aborted
     Then the operation is rejected
 
-  @standard @negative @abort_multipart_upload @lifecycle
+  @standard @negative @abort_multipart_upload @lifecycle @internal
   Scenario: a multipart upload is aborted fails when the upload is not InProgress
     Given the upload exists
     And the upload is not InProgress

@@ -25,7 +25,7 @@ Feature: StepfunctionsS3api - An S3 Task Is Configured On The State Machine
     When an S3 task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s3_task @lifecycle
+  @standard @negative @configure_s3_task @lifecycle @internal
   Scenario: an S3 task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
@@ -49,7 +49,7 @@ Feature: StepfunctionsS3api - An S3 Task Is Configured On The State Machine
     When an S3 task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_s3_task @lifecycle
+  @standard @negative @configure_s3_task @lifecycle @internal
   Scenario: an S3 task is configured on the state machine fails when the bucket is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

@@ -29,7 +29,7 @@ Feature: Docdb - A Database Instance Configuration Is Modified
     When a database instance configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance @lifecycle
+  @standard @negative @modify_d_b_instance @lifecycle @internal
   Scenario: a database instance configuration is modified fails when the instance is not "AVAILABLE"
     Given the instance exists
     And the instance is not "AVAILABLE"
@@ -44,7 +44,7 @@ Feature: Docdb - A Database Instance Configuration Is Modified
     When a database instance configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_instance @lifecycle
+  @standard @negative @modify_d_b_instance @lifecycle @internal
   Scenario: a database instance configuration is modified fails when the cluster is not "AVAILABLE"
     Given the instance exists
     And the instance is "AVAILABLE"

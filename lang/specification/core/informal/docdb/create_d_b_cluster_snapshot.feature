@@ -28,7 +28,7 @@ Feature: Docdb - A Database Cluster Snapshot Is Created
     When a database cluster snapshot is created
     Then the operation is rejected
 
-  @standard @negative @create_d_b_cluster_snapshot @lifecycle
+  @standard @negative @create_d_b_cluster_snapshot @lifecycle @internal
   Scenario: a database cluster snapshot is created fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

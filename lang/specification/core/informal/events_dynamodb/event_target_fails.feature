@@ -7,7 +7,7 @@ Feature: EventsDynamodb - An Event Matches An Enabled Rule But The Dynamodb Writ
   Background:
     Given the system is initialized
 
-  @minimal @happy @event_target_fails
+  @minimal @happy @event_target_fails @internal
   Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
     Given a rule is "ENABLED"
     And the target table is "DELETING"
@@ -17,20 +17,20 @@ Feature: EventsDynamodb - An Event Matches An Enabled Rule But The Dynamodb Writ
     And every existing item references a table that exists
     And every matched event references a rule that exists
 
-  @standard @negative @event_target_fails @lifecycle
+  @standard @negative @event_target_fails @lifecycle @internal
   Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted fails when no rule is "ENABLED"
     Given no rule is "ENABLED"
     When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
     Then the operation is rejected
 
-  @standard @negative @event_target_fails @lifecycle
+  @standard @negative @event_target_fails @lifecycle @internal
   Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted fails when the target table is not "DELETING"
     Given a rule is "ENABLED"
     And the target table is not "DELETING"
     When an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted
     Then the operation is rejected
 
-  @standard @negative @event_target_fails @capacity
+  @standard @negative @event_target_fails @capacity @internal
   Scenario: an event matches an "ENABLED" rule but the DynamoDB write fails because the table is being deleted fails when no event slot is available
     Given a rule is "ENABLED"
     And the target table is "DELETING"

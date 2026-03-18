@@ -35,7 +35,7 @@ Feature: Apigateway - A Child Resource Is Created Under An Existing Resource
     When a child resource is created under an existing resource
     Then the operation is rejected
 
-  @standard @negative @create_resource @lifecycle
+  @standard @negative @create_resource @lifecycle @internal
   Scenario: a child resource is created under an existing resource fails when the parent resource is not "ACTIVE"
     Given the resource slot is unallocated
     And the parent resource exists

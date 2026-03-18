@@ -23,7 +23,7 @@ Feature: Rds - Multi-Az Is Enabled On A Database Instance
     When multi-"AZ" is enabled on a database instance
     Then the operation is rejected
 
-  @standard @negative @enable_multi_a_z @lifecycle
+  @standard @negative @enable_multi_a_z @lifecycle @internal
   Scenario: multi-"AZ" is enabled on a database instance fails when the instance is not "AVAILABLE"
     Given the database instance exists
     And the instance is not "AVAILABLE"

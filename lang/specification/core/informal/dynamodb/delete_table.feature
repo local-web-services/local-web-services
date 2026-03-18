@@ -26,7 +26,7 @@ Feature: Dynamodb - A Table Is Deleted
     When a table is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table @lifecycle
+  @standard @negative @delete_table @lifecycle @internal
   Scenario: a table is deleted fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

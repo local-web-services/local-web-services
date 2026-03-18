@@ -27,7 +27,7 @@ Feature: Sns - A Message Is Published To A Topic
     When a message is published to a topic
     Then the operation is rejected
 
-  @standard @negative @publish @lifecycle
+  @standard @negative @publish @lifecycle @internal
   Scenario: a message is published to a topic fails when the topic is not "ACTIVE"
     Given the topic exists
     And the topic is not "ACTIVE"
@@ -42,7 +42,7 @@ Feature: Sns - A Message Is Published To A Topic
     When a message is published to a topic
     Then the operation is rejected
 
-  @standard @negative @publish
+  @standard @negative @publish @internal
   Scenario: a message is published to a topic fails when the subscription does not belong to this topic
     Given the topic exists
     And the topic is "ACTIVE"
@@ -51,7 +51,7 @@ Feature: Sns - A Message Is Published To A Topic
     When a message is published to a topic
     Then the operation is rejected
 
-  @standard @negative @publish @capacity
+  @standard @negative @publish @capacity @internal
   Scenario: a message is published to a topic fails when no delivery slot is available
     Given the topic exists
     And the topic is "ACTIVE"

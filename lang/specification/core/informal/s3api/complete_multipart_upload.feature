@@ -27,7 +27,7 @@ Feature: S3api - A Multipart Upload Is Completed
     When a multipart upload is completed
     Then the operation is rejected
 
-  @standard @negative @complete_multipart_upload @lifecycle
+  @standard @negative @complete_multipart_upload @lifecycle @internal
   Scenario: a multipart upload is completed fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

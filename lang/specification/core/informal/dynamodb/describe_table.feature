@@ -26,7 +26,7 @@ Feature: Dynamodb - A Table Is Described
     When a table is described
     Then the operation is rejected
 
-  @standard @negative @describe_table
+  @standard @negative @describe_table @lifecycle @internal
   Scenario: a table is described fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

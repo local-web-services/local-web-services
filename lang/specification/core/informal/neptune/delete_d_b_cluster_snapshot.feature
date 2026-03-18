@@ -27,7 +27,7 @@ Feature: Neptune - A Database Cluster Snapshot Is Deleted
     When a database cluster snapshot is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_cluster_snapshot @lifecycle
+  @standard @negative @delete_d_b_cluster_snapshot @lifecycle @internal
   Scenario: a database cluster snapshot is deleted fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

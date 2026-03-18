@@ -25,7 +25,7 @@ Feature: Stepfunctions - A State Machine Is Described
     When a state machine is described
     Then the operation is rejected
 
-  @standard @negative @describe_state_machine @lifecycle
+  @standard @negative @describe_state_machine @lifecycle @internal
   Scenario: a state machine is described fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
