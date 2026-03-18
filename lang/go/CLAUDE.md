@@ -99,6 +99,52 @@ Tests follow standard Go conventions:
 
 ---
 
+## BDD Tag Conventions
+
+The BDD runner in `core/tests/bdd_test.go` applies the tag filter:
+
+```
+(@minimal or @standard) and not @internal
+```
+
+### `@internal` — permanently excluded scenarios
+
+Tag a scenario `@internal` in the feature file when it requires an **internal
+or private API** to force the system into a state that the public AWS API
+cannot create. Examples:
+
+- A resource is in `DELETING` state (AWS transitions this internally; there is
+  no public API call that puts a resource into `DELETING` and leaves it there)
+- A capacity slot is exhausted (`no item slot is available`, `no execution slot
+  is available`) — the fake has no public API to drain capacity
+- A resource is `PENDING_DELETION` with a recovery window still open
+
+These scenarios are excluded from the standard run **permanently by design**.
+They are not "not yet implemented" — they are fundamentally untestable via
+public APIs in a local fake.
+
+### `godog.ErrSkip` — do not use
+
+`godog.ErrSkip` returned from a step definition silently skips the scenario at
+runtime after it has already matched the tag filter. This is equivalent to
+`pytest.mark.skip` and is **not permitted**.
+
+- If a scenario is untestable via public APIs → tag it `@internal` in the
+  feature file instead
+- If a scenario's behaviour is not yet implemented in the Go fake → implement
+  it; do not skip it
+
+### Unimplemented cross-service behaviour
+
+Scenarios that test cross-service behaviour (e.g. S3→SNS notifications,
+SNS→SQS fanout, StepFunctions task execution) use only public APIs and reach
+reachable states. They are not `@internal`. If the Go fake has not implemented
+the behaviour yet, the step definition must be written and the implementation
+must be added. Using `godog.ErrSkip` as a placeholder for unimplemented work
+is not acceptable.
+
+---
+
 ## CI Job Naming and Structure
 
 Job name format: `go-{project}-test`
