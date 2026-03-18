@@ -2,31 +2,19 @@
 
 from __future__ import annotations
 
-import json
 import uuid
 
 from fastapi import Request, Response
 
 from lws.logging.logger import get_logger
 from lws.providers._shared.request_helpers import parse_json_body
-from lws.providers.apigateway._apigateway_state import _ApiGatewayV2State
+from lws.providers.apigateway._apigateway_state import (
+    _ApiGatewayV2State,
+    _json_response,
+    _not_found,
+)
 
 _logger = get_logger("ldk.apigateway-mgmt")
-
-
-def _json_response(data: dict, status_code: int = 200) -> Response:
-    return Response(
-        content=json.dumps(data, default=str),
-        status_code=status_code,
-        media_type="application/json",
-    )
-
-
-def _not_found(resource_type: str, resource_id: str) -> Response:
-    return _json_response(
-        {"message": f"{resource_type} not found: {resource_id}"},
-        status_code=404,
-    )
 
 
 class ApiGatewayV2SubRouter:
@@ -46,9 +34,7 @@ class ApiGatewayV2SubRouter:
         # Stages
         r.add_api_route("/v2/apis/{api_id}/stages", self._create_stage, methods=["POST"])
         r.add_api_route("/v2/apis/{api_id}/stages", self._list_stages, methods=["GET"])
-        r.add_api_route(
-            "/v2/apis/{api_id}/stages/{stage_name}", self._get_stage, methods=["GET"]
-        )
+        r.add_api_route("/v2/apis/{api_id}/stages/{stage_name}", self._get_stage, methods=["GET"])
         r.add_api_route(
             "/v2/apis/{api_id}/stages/{stage_name}", self._update_stage, methods=["PATCH"]
         )
@@ -60,9 +46,7 @@ class ApiGatewayV2SubRouter:
         r.add_api_route(
             "/v2/apis/{api_id}/integrations", self._create_integration, methods=["POST"]
         )
-        r.add_api_route(
-            "/v2/apis/{api_id}/integrations", self._list_integrations, methods=["GET"]
-        )
+        r.add_api_route("/v2/apis/{api_id}/integrations", self._list_integrations, methods=["GET"])
         r.add_api_route(
             "/v2/apis/{api_id}/integrations/{integration_id}",
             self._get_integration,
@@ -77,20 +61,14 @@ class ApiGatewayV2SubRouter:
         # Routes
         r.add_api_route("/v2/apis/{api_id}/routes", self._create_route, methods=["POST"])
         r.add_api_route("/v2/apis/{api_id}/routes", self._list_routes, methods=["GET"])
-        r.add_api_route(
-            "/v2/apis/{api_id}/routes/{route_id}", self._get_route, methods=["GET"]
-        )
+        r.add_api_route("/v2/apis/{api_id}/routes/{route_id}", self._get_route, methods=["GET"])
         r.add_api_route(
             "/v2/apis/{api_id}/routes/{route_id}", self._delete_route, methods=["DELETE"]
         )
 
         # Authorizers
-        r.add_api_route(
-            "/v2/apis/{api_id}/authorizers", self._create_authorizer, methods=["POST"]
-        )
-        r.add_api_route(
-            "/v2/apis/{api_id}/authorizers", self._list_authorizers, methods=["GET"]
-        )
+        r.add_api_route("/v2/apis/{api_id}/authorizers", self._create_authorizer, methods=["POST"])
+        r.add_api_route("/v2/apis/{api_id}/authorizers", self._list_authorizers, methods=["GET"])
         r.add_api_route(
             "/v2/apis/{api_id}/authorizers/{authorizer_id}",
             self._get_authorizer,

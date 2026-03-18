@@ -443,9 +443,7 @@ def _create_function_url_providers(
         providers[f"__function_url_{furl.function_name}__"] = furl_provider
         url_config = {
             "FunctionName": furl.function_name,
-            "FunctionArn": (
-                f"arn:aws:lambda:us-east-1:000000000000:function:{furl.function_name}"
-            ),
+            "FunctionArn": (f"arn:aws:lambda:us-east-1:000000000000:function:{furl.function_name}"),
             "AuthType": furl.auth_type,
             "Cors": furl.cors,
             "InvokeMode": furl.invoke_mode,

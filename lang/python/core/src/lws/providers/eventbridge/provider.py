@@ -458,5 +458,3 @@ class EventBridgeProvider(IEventBus):
                 bus_name="default",
                 bus_arn="arn:aws:events:us-east-1:000000000000:event-bus/default",
             )
-
-

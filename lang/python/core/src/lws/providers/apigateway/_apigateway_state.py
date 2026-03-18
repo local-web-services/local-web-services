@@ -2,10 +2,30 @@
 
 from __future__ import annotations
 
+import json
 import time
 import uuid
 from dataclasses import dataclass, field
 from typing import Any
+
+from fastapi import Response
+
+
+def _json_response(data: dict, status_code: int = 200) -> Response:
+    """Return a JSON FastAPI Response."""
+    return Response(
+        content=json.dumps(data, default=str),
+        status_code=status_code,
+        media_type="application/json",
+    )
+
+
+def _not_found(resource_type: str, resource_id: str) -> Response:
+    """Return a 404 JSON response for a missing resource."""
+    return _json_response(
+        {"message": f"{resource_type} not found: {resource_id}"},
+        status_code=404,
+    )
 
 # ---------------------------------------------------------------------------
 # V1 (REST API) state

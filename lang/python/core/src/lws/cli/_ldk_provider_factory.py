@@ -165,7 +165,6 @@ def _create_providers(
     """
     from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
         _HttpServiceProvider,
-        _register_http_providers,
     )
     from lws.runtime.sdk_env import build_sdk_env  # pylint: disable=import-outside-toplevel
 
@@ -271,24 +270,26 @@ def _create_providers(
     if iam_auth_bundle is None:
         iam_auth_bundle = _create_iam_auth_bundle(config, data_dir.parent)
 
-    _register_http_providers(
-        providers,
-        dynamo_provider=dynamo_provider,
-        sqs_provider=sqs_provider,
-        s3_provider=s3_provider,
-        sns_provider=sns_provider,
-        eb_provider=eb_provider,
-        sf_provider=sf_provider,
-        cognito_provider=cognito_provider,
-        ports={
-            "dynamodb": dynamo_port,
-            "sqs": sqs_port,
-            "s3": s3_port,
-            "sns": sns_port,
-            "events": eb_port,
-            "stepfunctions": sf_port,
-            "cognito-idp": cognito_port,
-        },
+    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
+        _CoreProviderSet,
+        _register_http_providers_from_set,
+    )
+
+    _core_set = _CoreProviderSet(
+        dynamo_provider, sqs_provider, s3_provider, sns_provider,
+        eb_provider, sf_provider, cognito_provider,
+    )
+    _core_ports = {
+        "dynamodb": dynamo_port,
+        "sqs": sqs_port,
+        "s3": s3_port,
+        "sns": sns_port,
+        "events": eb_port,
+        "stepfunctions": sf_port,
+        "cognito-idp": cognito_port,
+    }
+    _register_http_providers_from_set(
+        providers, _core_set, _core_ports,
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
         iam_auth=iam_auth_bundle,

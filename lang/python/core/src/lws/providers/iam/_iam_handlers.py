@@ -196,9 +196,7 @@ async def _handle_list_role_policies(state: _IamState, params: dict[str, str]) -
     return _xml_response(xml)
 
 
-async def _handle_list_attached_role_policies(
-    state: _IamState, params: dict[str, str]
-) -> Response:
+async def _handle_list_attached_role_policies(state: _IamState, params: dict[str, str]) -> Response:
     """Handle ListAttachedRolePolicies."""
     role_name = params.get("RoleName", "")
     attached = state.attached_policies.get(role_name, [])

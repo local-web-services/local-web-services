@@ -219,9 +219,7 @@ def _build_execution_history_events(
                 "previousEventId": event_id - 1,
                 "stateEnteredEventDetails": {
                     "name": transition.state_name,
-                    "input": (
-                        json.dumps(transition.input_data) if transition.input_data else "{}"
-                    ),
+                    "input": (json.dumps(transition.input_data) if transition.input_data else "{}"),
                 },
             }
         )

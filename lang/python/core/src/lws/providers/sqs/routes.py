@@ -83,7 +83,7 @@ class SqsRouter(_SqsXmlHandlersMixin, _SqsJsonHandlersMixin):
         # Detect AWS JSON 1.0 protocol via X-Amz-Target header
         amz_target = request.headers.get("x-amz-target", "")
         if amz_target.startswith("AmazonSQS."):
-            action = amz_target[len("AmazonSQS."):]
+            action = amz_target[len("AmazonSQS.") :]
             body = await request.json()
             handler = self._json_handlers().get(action)
             if handler is None:

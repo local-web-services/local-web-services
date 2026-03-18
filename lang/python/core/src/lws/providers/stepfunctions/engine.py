@@ -416,5 +416,3 @@ class ExecutionEngine:
             async with semaphore:
                 return await self._run_branch(state.iterator, item_input)
         return await self._run_branch(state.iterator, item_input)
-
-

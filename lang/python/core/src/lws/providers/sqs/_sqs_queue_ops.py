@@ -9,10 +9,13 @@ from fastapi import Response
 from lws.providers.sqs._sqs_helpers import (
     _apply_queue_attrs,
     _build_queue_attrs,
+    _do_delete_queue,
     _error_xml,
     _extract_queue_attributes,
     _extract_queue_name,
     _extract_queue_tags,
+    _get_queue_or_error_xml,
+    _nonexistent_queue_error_xml,
     _queue_url,
     _xml_response,
 )
@@ -64,18 +67,9 @@ class _SqsQueueOpsMixin:
                 status_code=400,
             )
         try:
-            await self.provider.delete_queue(queue_name)  # type: ignore[attr-defined]
-            if self._lifecycle.enabled and self._lifecycle.delete_dwell_ms > 0:  # type: ignore[attr-defined]
-                self._tracker.set_state(queue_name, "DELETING")  # type: ignore[attr-defined]
-                self._tracker.schedule_transition(queue_name, None, self._lifecycle.delete_dwell_ms)  # type: ignore[attr-defined]
-            else:
-                self._tracker.remove(queue_name)  # type: ignore[attr-defined]
+            await _do_delete_queue(self.provider, self._tracker, self._lifecycle, queue_name)  # type: ignore[attr-defined]
         except KeyError:
-            return _error_xml(
-                "AWS.SimpleQueueService.NonExistentQueue",
-                f"The specified queue does not exist: {queue_name}",
-                status_code=400,
-            )
+            return _nonexistent_queue_error_xml(queue_name)
         xml = (
             "<DeleteQueueResponse>"
             f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
@@ -88,13 +82,9 @@ class _SqsQueueOpsMixin:
         err = self._get_lifecycle_error_xml(queue_name)  # type: ignore[attr-defined]
         if err is not None:
             return err
-        queue = self.provider.get_queue(queue_name)  # type: ignore[attr-defined]
-        if queue is None:
-            return _error_xml(
-                "AWS.SimpleQueueService.NonExistentQueue",
-                f"The specified queue does not exist: {queue_name}",
-                status_code=400,
-            )
+        _queue, err = _get_queue_or_error_xml(self.provider, queue_name)  # type: ignore[attr-defined]
+        if err is not None:
+            return err
 
         queue_url = _queue_url(queue_name)
         xml = (
@@ -112,13 +102,9 @@ class _SqsQueueOpsMixin:
         err = self._get_lifecycle_error_xml(queue_name)  # type: ignore[attr-defined]
         if err is not None:
             return err
-        queue = self.provider.get_queue(queue_name)  # type: ignore[attr-defined]
-        if queue is None:
-            return _error_xml(
-                "AWS.SimpleQueueService.NonExistentQueue",
-                f"The specified queue does not exist: {queue_name}",
-                status_code=400,
-            )
+        queue, err = _get_queue_or_error_xml(self.provider, queue_name)  # type: ignore[attr-defined]
+        if err is not None:
+            return err
 
         config = self.provider.configs.get(queue_name)  # type: ignore[attr-defined]
         attrs = _build_queue_attrs(queue_name, queue, config)
@@ -140,13 +126,9 @@ class _SqsQueueOpsMixin:
         err = self._get_lifecycle_error_xml(queue_name)  # type: ignore[attr-defined]
         if err is not None:
             return err
-        queue = self.provider.get_queue(queue_name)  # type: ignore[attr-defined]
-        if queue is None:
-            return _error_xml(
-                "AWS.SimpleQueueService.NonExistentQueue",
-                f"The specified queue does not exist: {queue_name}",
-                status_code=400,
-            )
+        queue, err = _get_queue_or_error_xml(self.provider, queue_name)  # type: ignore[attr-defined]
+        if err is not None:
+            return err
         attrs = _extract_queue_attributes(params)
         config = self.provider.configs.get(queue_name)  # type: ignore[attr-defined]
         _apply_queue_attrs(queue, attrs, config)

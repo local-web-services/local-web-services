@@ -2,30 +2,19 @@
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
 from fastapi import APIRouter, Request, Response
 
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.request_helpers import parse_json_body
-from lws.providers.apigateway._apigateway_state import _ApiGatewayState, _RestApi
+from lws.providers.apigateway._apigateway_state import (
+    _ApiGatewayState,
+    _RestApi,
+    _json_response,
+    _not_found,
+)
 from lws.providers.apigateway._apigateway_v1_resources import ApiGatewayResourceRouter
-
-
-def _json_response(data: dict, status_code: int = 200) -> Response:
-    return Response(
-        content=json.dumps(data, default=str),
-        status_code=status_code,
-        media_type="application/json",
-    )
-
-
-def _not_found(resource_type: str, resource_id: str) -> Response:
-    return _json_response(
-        {"message": f"{resource_type} not found: {resource_id}"},
-        status_code=404,
-    )
 
 
 def _format_rest_api(api: _RestApi) -> dict[str, Any]:

@@ -61,15 +61,7 @@ async def _handle_create_secret(state: _SecretsState, body: dict) -> Response:
 
     version_id: str | None = None
     if secret_string is not None or secret_binary is not None:
-        version_id = str(uuid.uuid4())
-        version = _SecretVersion(
-            version_id=version_id,
-            secret_string=secret_string,
-            secret_binary=secret_binary,
-            stages=["AWSCURRENT"],
-        )
-        secret.versions[version_id] = version
-        secret.current_version_id = version_id
+        version_id = _rotate_secret_version(secret, secret_string, secret_binary)
 
     result: dict[str, Any] = {"ARN": secret.arn, "Name": name}
     if version_id:
@@ -122,23 +114,7 @@ async def _handle_put_secret_value(state: _SecretsState, body: dict) -> Response
             f"Secret {secret_id} not found.",
         )
 
-    # Move AWSCURRENT from old version
-    if secret.current_version_id and secret.current_version_id in secret.versions:
-        old = secret.versions[secret.current_version_id]
-        if "AWSCURRENT" in old.stages:
-            old.stages.remove("AWSCURRENT")
-        if "AWSPREVIOUS" not in old.stages:
-            old.stages.append("AWSPREVIOUS")
-
-    version_id = str(uuid.uuid4())
-    version = _SecretVersion(
-        version_id=version_id,
-        secret_string=secret_string,
-        secret_binary=secret_binary,
-        stages=["AWSCURRENT"],
-    )
-    secret.versions[version_id] = version
-    secret.current_version_id = version_id
+    version_id = _rotate_secret_version(secret, secret_string, secret_binary)
     secret.last_changed_date = time.time()
 
     return _json_response({"ARN": secret.arn, "Name": secret.name, "VersionId": version_id})

@@ -9,12 +9,17 @@ import uuid
 from fastapi import Response
 
 from lws.providers.sqs._sqs_helpers import (
+    _apply_visibility_timeout_to_messages,
     _build_attributes_xml,
     _build_message_attributes_xml,
     _error_xml,
     _extract_message_attributes,
     _extract_queue_name,
+    _find_and_update_visibility,
+    _get_queue_or_error_xml,
+    _nonexistent_queue_error_xml,
     _queue_url,
+    _send_message_and_get_md5,
     _xml_response,
 )
 from lws.providers.sqs._sqs_queue_ops import _SqsQueueOpsMixin
@@ -79,12 +84,7 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
         if visibility_timeout is not None:
             queue = self.provider.get_queue(queue_name)  # type: ignore[attr-defined]
             if queue is not None:
-                vt = int(visibility_timeout)
-                now = time.monotonic()
-                for msg_dict in messages:
-                    for m in queue.messages:
-                        if m.message_id == msg_dict["MessageId"]:
-                            m.visibility_timeout_until = now + vt
+                _apply_visibility_timeout_to_messages(queue, messages, visibility_timeout)
 
         msg_xml_parts: list[str] = []
         for msg in messages:
@@ -132,19 +132,11 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
         receipt_handle = params.get("ReceiptHandle", "")
         visibility_timeout = int(params.get("VisibilityTimeout", "0"))
 
-        queue = self.provider.get_queue(queue_name)  # type: ignore[attr-defined]
-        if queue is None:
-            return _error_xml(
-                "AWS.SimpleQueueService.NonExistentQueue",
-                f"The specified queue does not exist: {queue_name}",
-                status_code=400,
-            )
+        queue, err = _get_queue_or_error_xml(self.provider, queue_name)  # type: ignore[attr-defined]
+        if err is not None:
+            return err
 
-        now = time.monotonic()
-        for msg in queue.messages:
-            if msg.receipt_handle == receipt_handle:
-                msg.visibility_timeout_until = now + visibility_timeout
-                break
+        _find_and_update_visibility(queue, receipt_handle, visibility_timeout, time.monotonic())
 
         xml = (
             "<ChangeMessageVisibilityResponse>"
@@ -158,13 +150,9 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
         successful: list[str] = []
         failed: list[str] = []
 
-        queue = self.provider.get_queue(queue_name)  # type: ignore[attr-defined]
-        if queue is None:
-            return _error_xml(
-                "AWS.SimpleQueueService.NonExistentQueue",
-                f"The specified queue does not exist: {queue_name}",
-                status_code=400,
-            )
+        queue, err = _get_queue_or_error_xml(self.provider, queue_name)  # type: ignore[attr-defined]
+        if err is not None:
+            return err
 
         now = time.monotonic()
         n = 1
@@ -174,17 +162,10 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
                 f"ChangeMessageVisibilityBatchRequestEntry.{n}.ReceiptHandle", ""
             )
             vt = int(
-                params.get(
-                    f"ChangeMessageVisibilityBatchRequestEntry.{n}.VisibilityTimeout", "0"
-                )
+                params.get(f"ChangeMessageVisibilityBatchRequestEntry.{n}.VisibilityTimeout", "0")
             )
 
-            found = False
-            for msg in queue.messages:
-                if msg.receipt_handle == receipt_handle:
-                    msg.visibility_timeout_until = now + vt
-                    found = True
-                    break
+            found = _find_and_update_visibility(queue, receipt_handle, vt, now)
 
             if found:
                 successful.append(
@@ -222,11 +203,7 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
         try:
             await self.provider.purge_queue(queue_name)  # type: ignore[attr-defined]
         except KeyError:
-            return _error_xml(
-                "AWS.SimpleQueueService.NonExistentQueue",
-                f"The specified queue does not exist: {queue_name}",
-                status_code=400,
-            )
+            return _nonexistent_queue_error_xml(queue_name)
         xml = (
             "<PurgeQueueResponse>"
             f"<ResponseMetadata><RequestId>{uuid.uuid4()}</RequestId></ResponseMetadata>"
@@ -246,12 +223,9 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
             delay = int(params.get(f"SendMessageBatchRequestEntry.{n}.DelaySeconds", "0"))
 
             try:
-                message_id = await self.provider.send_message(  # type: ignore[attr-defined]
-                    queue_name=queue_name,
-                    message_body=msg_body,
-                    delay_seconds=delay,
+                message_id, md5_body = await _send_message_and_get_md5(
+                    self.provider, queue_name, msg_body, delay  # type: ignore[attr-defined]
                 )
-                md5_body = hashlib.md5(msg_body.encode()).hexdigest()
                 successful.append(
                     f"<SendMessageBatchResultEntry>"
                     f"<Id>{entry_id}</Id>"
@@ -322,13 +296,9 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
 
     async def _list_dead_letter_source_queues(self, params: dict) -> Response:
         queue_name = _extract_queue_name(params)
-        queue = self.provider.get_queue(queue_name)  # type: ignore[attr-defined]
-        if queue is None:
-            return _error_xml(
-                "AWS.SimpleQueueService.NonExistentQueue",
-                f"The specified queue does not exist: {queue_name}",
-                status_code=400,
-            )
+        queue, err = _get_queue_or_error_xml(self.provider, queue_name)  # type: ignore[attr-defined]
+        if err is not None:
+            return err
 
         source_queues: list[str] = []
         for name, q in self.provider.queues.items():  # type: ignore[attr-defined]

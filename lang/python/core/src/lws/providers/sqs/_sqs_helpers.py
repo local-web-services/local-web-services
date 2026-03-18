@@ -236,3 +236,70 @@ def _extract_queue_name_from_url(queue_url: str) -> str:
     if queue_url:
         return queue_url.rstrip("/").split("/")[-1]
     return ""
+
+
+async def _send_message_and_get_md5(
+    provider: object, queue_name: str, msg_body: str, delay: int
+) -> tuple[str, str]:
+    """Send *msg_body* to *queue_name* and return ``(message_id, md5_body)``."""
+    import hashlib  # pylint: disable=import-outside-toplevel
+
+    message_id = await provider.send_message(  # type: ignore[attr-defined]
+        queue_name=queue_name,
+        message_body=msg_body,
+        delay_seconds=delay,
+    )
+    md5_body = hashlib.md5(msg_body.encode()).hexdigest()
+    return message_id, md5_body
+
+
+async def _do_delete_queue(provider: object, tracker: object, lifecycle: object, queue_name: str) -> None:
+    """Delete *queue_name* via *provider* and update *tracker* according to *lifecycle*."""
+    await provider.delete_queue(queue_name)  # type: ignore[attr-defined]
+    if lifecycle.enabled and lifecycle.delete_dwell_ms > 0:  # type: ignore[attr-defined]
+        tracker.set_state(queue_name, "DELETING")  # type: ignore[attr-defined]
+        tracker.schedule_transition(queue_name, None, lifecycle.delete_dwell_ms)  # type: ignore[attr-defined]
+    else:
+        tracker.remove(queue_name)  # type: ignore[attr-defined]
+
+
+def _nonexistent_queue_error_xml(queue_name: str) -> "Response":
+    """Return a standard NonExistentQueue error XML response."""
+    return _error_xml(
+        "AWS.SimpleQueueService.NonExistentQueue",
+        f"The specified queue does not exist: {queue_name}",
+        status_code=400,
+    )
+
+
+def _get_queue_or_error_xml(provider: object, queue_name: str) -> tuple:
+    """Return ``(queue, None)`` if queue exists, or ``(None, error_response)`` otherwise."""
+    queue = provider.get_queue(queue_name)  # type: ignore[attr-defined]
+    if queue is None:
+        return None, _nonexistent_queue_error_xml(queue_name)
+    return queue, None
+
+
+def _apply_visibility_timeout_to_messages(
+    queue: object, messages: list, visibility_timeout: str
+) -> None:
+    """Update visibility timeouts for *messages* to *visibility_timeout* seconds."""
+    vt = int(visibility_timeout)
+    now = time.monotonic()
+    for msg_dict in messages:
+        for m in queue.messages:  # type: ignore[attr-defined]
+            if m.message_id == msg_dict["MessageId"]:
+                m.visibility_timeout_until = now + vt
+
+
+def _find_and_update_visibility(
+    queue: object, receipt_handle: str, vt: int, now: float
+) -> bool:
+    """Set *vt* on the message with *receipt_handle*. Returns True if found."""
+    found = False
+    for msg in queue.messages:  # type: ignore[attr-defined]
+        if msg.receipt_handle == receipt_handle:
+            msg.visibility_timeout_until = now + vt
+            found = True
+            break
+    return found

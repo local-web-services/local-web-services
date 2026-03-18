@@ -31,6 +31,28 @@ from lws.providers.stepfunctions.provider import StepFunctionsProvider
 from lws.runtime.orchestrator import Orchestrator
 
 
+class _CoreProviderSet:
+    """Groups the seven core service providers used by ``_register_http_providers``."""
+
+    def __init__(
+        self,
+        dynamo_provider: SqliteDynamoProvider,
+        sqs_provider: SqsProvider,
+        s3_provider: S3Provider,
+        sns_provider: SnsProvider,
+        eb_provider: EventBridgeProvider,
+        sf_provider: StepFunctionsProvider,
+        cognito_provider: CognitoProvider,
+    ) -> None:
+        self.dynamo_provider = dynamo_provider
+        self.sqs_provider = sqs_provider
+        self.s3_provider = s3_provider
+        self.sns_provider = sns_provider
+        self.eb_provider = eb_provider
+        self.sf_provider = sf_provider
+        self.cognito_provider = cognito_provider
+
+
 class _ContainerCleanupProvider(Provider):
     """Provider that stops all per-resource containers on shutdown."""
 
@@ -190,6 +212,34 @@ def _register_http_providers(
 
     for svc_name, port, factory in http_services:
         providers[f"__{svc_name}_http__"] = _HttpServiceProvider(f"{svc_name}-http", factory, port)
+
+
+def _register_http_providers_from_set(
+    providers: dict[str, Provider],
+    provider_set: _CoreProviderSet,
+    ports: dict[str, int],
+    *,
+    chaos_configs: dict[str, Any] | None = None,
+    aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
+    iam_auth: IamAuthBundle | None = None,
+    lifecycle_configs: dict[str, Any] | None = None,
+) -> None:
+    """Register HTTP service providers from a ``_CoreProviderSet``."""
+    _register_http_providers(
+        providers,
+        dynamo_provider=provider_set.dynamo_provider,
+        sqs_provider=provider_set.sqs_provider,
+        s3_provider=provider_set.s3_provider,
+        sns_provider=provider_set.sns_provider,
+        eb_provider=provider_set.eb_provider,
+        sf_provider=provider_set.sf_provider,
+        cognito_provider=provider_set.cognito_provider,
+        ports=ports,
+        chaos_configs=chaos_configs,
+        aws_fake_configs=aws_fake_configs,
+        iam_auth=iam_auth,
+        lifecycle_configs=lifecycle_configs,
+    )
 
 
 def _build_resource_metadata(app_model: AppModel, port: int) -> dict[str, Any]:

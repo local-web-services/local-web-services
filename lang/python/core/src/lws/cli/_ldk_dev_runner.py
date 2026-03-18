@@ -135,9 +135,7 @@ def _add_resource_details(details: dict[str, str], app_model: AppModel) -> None:
     for b in app_model.event_buses:
         details[f"Event Bus:{b.name}"] = f"lws events list-rules --event-bus-name {b.name}"
     for sm in app_model.state_machines:
-        details[f"State Machine:{sm.name}"] = (
-            f"lws stepfunctions start-execution --name {sm.name}"
-        )
+        details[f"State Machine:{sm.name}"] = f"lws stepfunctions start-execution --name {sm.name}"
     for p in app_model.user_pools:
         details[f"User Pool:{p.user_pool_name}"] = (
             f"lws cognito-idp sign-up --user-pool-name {p.user_pool_name}"

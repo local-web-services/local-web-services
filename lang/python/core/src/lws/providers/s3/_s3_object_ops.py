@@ -283,5 +283,3 @@ async def _delete_objects(bucket: str, request: Request, provider: S3Provider) -
         "</DeleteResult>"
     )
     return _xml_response(result_body)
-
-

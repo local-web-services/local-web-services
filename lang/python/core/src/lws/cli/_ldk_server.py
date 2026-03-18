@@ -16,9 +16,11 @@ from typing import Any
 import typer
 
 from lws.cli._ldk_http_registry import (
+    _CoreProviderSet,
     _build_resource_metadata,
     _mount_management_api,
     _register_http_providers,
+    _register_http_providers_from_set,
     _service_ports,
 )
 from lws.cli._ldk_provider_factory import (
@@ -77,30 +79,10 @@ def _create_terraform_providers(
     providers: dict[str, Provider] = {}
 
     port = config.port
-    ports = {
-        "dynamodb": port + 1,
-        "sqs": port + 2,
-        "s3": port + 3,
-        "sns": port + 4,
-        "events": port + 5,
-        "stepfunctions": port + 6,
-        "cognito-idp": port + 7,
-        "apigateway": port + 8,
-        "lambda": port + 9,
-        "iam": port + 10,
-        "sts": port + 11,
-        "ssm": port + 12,
-        "secretsmanager": port + 13,
-        "elasticache": port + 14,
-        "memorydb": port + 15,
-        "docdb": port + 16,
-        "neptune": port + 17,
-        "es": port + 18,
-        "opensearch": port + 19,
-        "rds": port + 20,
-        "glacier": port + 21,
-        "s3tables": port + 22,
-    }
+    ports = _service_ports(port)
+    ports["apigateway"] = port + 8
+    ports["iam"] = port + 10
+    ports["sts"] = port + 11
 
     dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
     sqs_provider = SqsProvider()
@@ -122,16 +104,12 @@ def _create_terraform_providers(
     if iam_auth_bundle is None:
         iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
 
-    _register_http_providers(
-        providers,
-        dynamo_provider=dynamo_provider,
-        sqs_provider=sqs_provider,
-        s3_provider=s3_provider,
-        sns_provider=sns_provider,
-        eb_provider=eb_provider,
-        sf_provider=sf_provider,
-        cognito_provider=cognito_provider,
-        ports=ports,
+    _core_set = _CoreProviderSet(
+        dynamo_provider, sqs_provider, s3_provider, sns_provider,
+        eb_provider, sf_provider, cognito_provider,
+    )
+    _register_http_providers_from_set(
+        providers, _core_set, ports,
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
         iam_auth=iam_auth_bundle,

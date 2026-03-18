@@ -9,11 +9,15 @@ from fastapi import Response
 
 from lws.providers.sqs._sqs_helpers import (
     _apply_queue_attrs,
+    _apply_visibility_timeout_to_messages,
     _build_queue_attrs,
+    _do_delete_queue,
     _extract_queue_name_from_url,
+    _find_and_update_visibility,
     _json_error,
     _json_response,
     _queue_url,
+    _send_message_and_get_md5,
 )
 from lws.providers.sqs.provider import build_queue_config
 
@@ -63,12 +67,7 @@ class _SqsJsonHandlersMixin:
         queue = self.provider.get_queue(queue_name)  # type: ignore[attr-defined]
         if queue is None:
             return
-        vt = int(visibility_timeout)
-        now = time.monotonic()
-        for msg_dict in messages:
-            for m in queue.messages:
-                if m.message_id == msg_dict["MessageId"]:
-                    m.visibility_timeout_until = now + vt
+        _apply_visibility_timeout_to_messages(queue, messages, visibility_timeout)
 
     async def _json_receive_message(self, body: dict) -> Response:
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
@@ -139,12 +138,7 @@ class _SqsJsonHandlersMixin:
                 f"Queue {queue_name} is still being created",
             )
         try:
-            await self.provider.delete_queue(queue_name)  # type: ignore[attr-defined]
-            if self._lifecycle.enabled and self._lifecycle.delete_dwell_ms > 0:  # type: ignore[attr-defined]
-                self._tracker.set_state(queue_name, "DELETING")  # type: ignore[attr-defined]
-                self._tracker.schedule_transition(queue_name, None, self._lifecycle.delete_dwell_ms)  # type: ignore[attr-defined]
-            else:
-                self._tracker.remove(queue_name)  # type: ignore[attr-defined]
+            await _do_delete_queue(self.provider, self._tracker, self._lifecycle, queue_name)  # type: ignore[attr-defined]
         except KeyError:
             return _json_error(
                 "AWS.SimpleQueueService.NonExistentQueue",
@@ -250,12 +244,9 @@ class _SqsJsonHandlersMixin:
             delay = int(entry.get("DelaySeconds", 0))
 
             try:
-                message_id = await self.provider.send_message(  # type: ignore[attr-defined]
-                    queue_name=queue_name,
-                    message_body=msg_body,
-                    delay_seconds=delay,
+                message_id, md5_body = await _send_message_and_get_md5(
+                    self.provider, queue_name, msg_body, delay  # type: ignore[attr-defined]
                 )
-                md5_body = hashlib.md5(msg_body.encode()).hexdigest()
                 successful.append(
                     {
                         "Id": entry_id,
@@ -343,12 +334,7 @@ class _SqsJsonHandlersMixin:
             receipt_handle = entry.get("ReceiptHandle", "")
             vt = int(entry.get("VisibilityTimeout", 0))
 
-            found = False
-            for msg in queue.messages:
-                if msg.receipt_handle == receipt_handle:
-                    msg.visibility_timeout_until = now + vt
-                    found = True
-                    break
+            found = _find_and_update_visibility(queue, receipt_handle, vt, now)
 
             if found:
                 successful.append({"Id": entry_id})

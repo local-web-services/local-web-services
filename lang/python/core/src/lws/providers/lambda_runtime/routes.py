@@ -192,24 +192,12 @@ class LambdaManagementRouter:
             self._delete_function_url_config,
             methods=["DELETE"],
         )
-        r.add_api_route(
-            "/2017-03-31/tags/{arn:path}", self._tag_resource, methods=["POST"]
-        )
-        r.add_api_route(
-            "/2017-03-31/tags/{arn:path}", self._untag_resource, methods=["DELETE"]
-        )
-        r.add_api_route(
-            "/2017-03-31/tags/{arn:path}", self._list_tags, methods=["GET"]
-        )
-        r.add_api_route(
-            "/2015-03-31/tags/{arn:path}", self._tag_resource, methods=["POST"]
-        )
-        r.add_api_route(
-            "/2015-03-31/tags/{arn:path}", self._untag_resource, methods=["DELETE"]
-        )
-        r.add_api_route(
-            "/2015-03-31/tags/{arn:path}", self._list_tags, methods=["GET"]
-        )
+        r.add_api_route("/2017-03-31/tags/{arn:path}", self._tag_resource, methods=["POST"])
+        r.add_api_route("/2017-03-31/tags/{arn:path}", self._untag_resource, methods=["DELETE"])
+        r.add_api_route("/2017-03-31/tags/{arn:path}", self._list_tags, methods=["GET"])
+        r.add_api_route("/2015-03-31/tags/{arn:path}", self._tag_resource, methods=["POST"])
+        r.add_api_route("/2015-03-31/tags/{arn:path}", self._untag_resource, methods=["DELETE"])
+        r.add_api_route("/2015-03-31/tags/{arn:path}", self._list_tags, methods=["GET"])
         r.add_api_route(
             "/{path:path}",
             self._stub_handler,
@@ -220,8 +208,11 @@ class LambdaManagementRouter:
 
     async def _create_function(self, request: Request) -> Response:
         return await handle_create_function(
-            request, self._registry, self._create_compute,
-            self._lifecycle, self._tracker,
+            request,
+            self._registry,
+            self._create_compute,
+            self._lifecycle,
+            self._tracker,
         )
 
     async def _list_functions(self, _request: Request) -> Response:
@@ -255,16 +246,20 @@ class LambdaManagementRouter:
         compute = self._registry.get_compute(function_name)
         if compute is None:
             return _json_response(
-                {"Message": f"Function not found: {function_name}",
-                 "Type": "ResourceNotFoundException"},
+                {
+                    "Message": f"Function not found: {function_name}",
+                    "Type": "ResourceNotFoundException",
+                },
                 404,
             )
         if self._lifecycle.enabled:
             state = self._tracker.get_state(function_name)
             if state in ("CREATING", "DELETING"):
                 return _json_response(
-                    {"Message": f"Function {function_name} is in state {state}",
-                     "Type": "ResourceConflictException"},
+                    {
+                        "Message": f"Function {function_name} is in state {state}",
+                        "Type": "ResourceConflictException",
+                    },
                     409,
                 )
 
@@ -292,19 +287,13 @@ class LambdaManagementRouter:
     # -- Event source mappings -----------------------------------------------
 
     async def _create_event_source_mapping(self, request: Request) -> Response:
-        return await handle_create_event_source_mapping(
-            request, self._state.event_source_mappings
-        )
+        return await handle_create_event_source_mapping(request, self._state.event_source_mappings)
 
     async def _get_event_source_mapping(self, esm_uuid: str) -> Response:
-        return await handle_get_event_source_mapping(
-            esm_uuid, self._state.event_source_mappings
-        )
+        return await handle_get_event_source_mapping(esm_uuid, self._state.event_source_mappings)
 
     async def _delete_event_source_mapping(self, esm_uuid: str) -> Response:
-        return await handle_delete_event_source_mapping(
-            esm_uuid, self._state.event_source_mappings
-        )
+        return await handle_delete_event_source_mapping(esm_uuid, self._state.event_source_mappings)
 
     async def _list_event_source_mappings(self, _request: Request) -> Response:
         return await handle_list_event_source_mappings(self._state.event_source_mappings)
@@ -332,8 +321,10 @@ class LambdaManagementRouter:
         body = await parse_json_body(request)
         if self._registry.get_function_url(function_name) is not None:
             return _json_response(
-                {"Message": f"Function URL already exists for: {function_name}",
-                 "Type": "ResourceConflictException"},
+                {
+                    "Message": f"Function URL already exists for: {function_name}",
+                    "Type": "ResourceConflictException",
+                },
                 409,
             )
         auth_type = body.get("AuthType", "NONE")
@@ -382,8 +373,10 @@ class LambdaManagementRouter:
         url_config = self._registry.get_function_url(function_name)
         if url_config is None:
             return _json_response(
-                {"Message": f"Function URL config not found for: {function_name}",
-                 "Type": "ResourceNotFoundException"},
+                {
+                    "Message": f"Function URL config not found for: {function_name}",
+                    "Type": "ResourceNotFoundException",
+                },
                 404,
             )
         return _json_response(url_config)
@@ -393,8 +386,10 @@ class LambdaManagementRouter:
         url_config = self._registry.get_function_url(function_name)
         if url_config is None:
             return _json_response(
-                {"Message": f"Function URL config not found for: {function_name}",
-                 "Type": "ResourceNotFoundException"},
+                {
+                    "Message": f"Function URL config not found for: {function_name}",
+                    "Type": "ResourceNotFoundException",
+                },
                 404,
             )
         if "AuthType" in body:

@@ -318,9 +318,7 @@ async def update_gsi_entry(
     gsi_pk = _extract_key_value(item, gsi.key_schema.partition_key)
     if not gsi_pk:
         return  # Item doesn't project into this GSI
-    gsi_sk = (
-        _extract_key_value(item, gsi.key_schema.sort_key) if gsi.key_schema.sort_key else ""
-    )
+    gsi_sk = _extract_key_value(item, gsi.key_schema.sort_key) if gsi.key_schema.sort_key else ""
     projected_json = _project_item_for_gsi(item, gsi, table_config)
     await conn.execute(
         f"INSERT OR REPLACE INTO gsi_{gsi.index_name} (pk, sk, item_json) VALUES (?, ?, ?)",
@@ -335,18 +333,14 @@ async def delete_gsi_entry(
 ) -> None:
     """Delete an item from a GSI table."""
     gsi_pk = _extract_key_value(item, gsi.key_schema.partition_key)
-    gsi_sk = (
-        _extract_key_value(item, gsi.key_schema.sort_key) if gsi.key_schema.sort_key else ""
-    )
+    gsi_sk = _extract_key_value(item, gsi.key_schema.sort_key) if gsi.key_schema.sort_key else ""
     await conn.execute(
         f"DELETE FROM gsi_{gsi.index_name} WHERE pk = ? AND sk = ?",
         (gsi_pk, gsi_sk),
     )
 
 
-def apply_gsi_projection(
-    config: TableConfig, index_name: str, items: list[dict]
-) -> list[dict]:
+def apply_gsi_projection(config: TableConfig, index_name: str, items: list[dict]) -> list[dict]:
     """Apply GSI projection filtering to query results."""
     gsi = _find_gsi(config, index_name)
     if gsi is None or gsi.projection_type.upper() == "ALL":
