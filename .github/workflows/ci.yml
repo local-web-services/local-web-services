@@ -671,6 +671,12 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
+      - name: Build Java core JAR
+        working-directory: lang/java/core
+        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
+      - name: Build Java SDK JAR
+        working-directory: lang/java/sdk
+        run: GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew jar
       - name: Lint
         working-directory: lang/java/example
         run: make lint format-check cpd spotbugs
