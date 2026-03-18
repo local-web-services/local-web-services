@@ -257,7 +257,7 @@ class DockerCompute(ICompute):
         # via ``_ensure_container()``.
         self._destroy_container()
 
-        invocation_result = self._parse_result(result, duration_ms, context.aws_request_id)
+        invocation_result = parse_invocation_output(result, duration_ms, context.aws_request_id)
         _logger.log_lambda_invocation(
             function_name=func_name,
             request_id=context.aws_request_id,
@@ -495,8 +495,3 @@ class DockerCompute(ICompute):
             )
 
         return output.decode(errors="replace"), timed_out
-
-    @staticmethod
-    def _parse_result(raw: str, duration_ms: float, request_id: str) -> InvocationResult:
-        """Parse the JSON emitted by the bootstrap script into an InvocationResult."""
-        return parse_invocation_output(raw, duration_ms, request_id)

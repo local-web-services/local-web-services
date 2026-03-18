@@ -29,7 +29,7 @@ from lws.providers.stepfunctions._engine_helpers import (
     _resolve_map_items,
     _resolve_wait_seconds,
 )
-from lws.providers.stepfunctions._engine_state import (
+from lws.providers.stepfunctions._engine_state import (  # pylint: disable=unused-import
     ExecutionHistory,
     ExecutionStatus,
     StatesError,

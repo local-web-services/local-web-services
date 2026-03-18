@@ -38,7 +38,9 @@ def _next_or_none(next_state: str | None, end: bool) -> str | None:
 
 def _prepare_task_input(state: TaskState, input_data: Any) -> Any:
     """Prepare the effective input for a task invocation."""
-    from lws.providers.stepfunctions.path_utils import apply_input_path
+    from lws.providers.stepfunctions.path_utils import (  # pylint: disable=import-outside-toplevel
+        apply_input_path,
+    )
 
     effective_input = apply_input_path(input_data, state.input_path)
     if state.parameters:

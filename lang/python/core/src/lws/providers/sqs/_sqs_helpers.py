@@ -253,7 +253,9 @@ async def _send_message_and_get_md5(
     return message_id, md5_body
 
 
-async def _do_delete_queue(provider: object, tracker: object, lifecycle: object, queue_name: str) -> None:
+async def _do_delete_queue(
+    provider: object, tracker: object, lifecycle: object, queue_name: str
+) -> None:
     """Delete *queue_name* via *provider* and update *tracker* according to *lifecycle*."""
     await provider.delete_queue(queue_name)  # type: ignore[attr-defined]
     if lifecycle.enabled and lifecycle.delete_dwell_ms > 0:  # type: ignore[attr-defined]
@@ -263,7 +265,7 @@ async def _do_delete_queue(provider: object, tracker: object, lifecycle: object,
         tracker.remove(queue_name)  # type: ignore[attr-defined]
 
 
-def _nonexistent_queue_error_xml(queue_name: str) -> "Response":
+def _nonexistent_queue_error_xml(queue_name: str) -> Response:
     """Return a standard NonExistentQueue error XML response."""
     return _error_xml(
         "AWS.SimpleQueueService.NonExistentQueue",
@@ -292,9 +294,7 @@ def _apply_visibility_timeout_to_messages(
                 m.visibility_timeout_until = now + vt
 
 
-def _find_and_update_visibility(
-    queue: object, receipt_handle: str, vt: int, now: float
-) -> bool:
+def _find_and_update_visibility(queue: object, receipt_handle: str, vt: int, now: float) -> bool:
     """Set *vt* on the message with *receipt_handle*. Returns True if found."""
     found = False
     for msg in queue.messages:  # type: ignore[attr-defined]

@@ -10,9 +10,9 @@ from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, Resourc
 from lws.providers._shared.request_helpers import parse_json_body
 from lws.providers.apigateway._apigateway_state import (
     _ApiGatewayState,
-    _RestApi,
     _json_response,
     _not_found,
+    _RestApi,
 )
 from lws.providers.apigateway._apigateway_v1_resources import ApiGatewayResourceRouter
 

@@ -19,7 +19,7 @@ from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middl
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
-from lws.providers.secretsmanager._secretsmanager_handlers import (
+from lws.providers.secretsmanager._secretsmanager_handlers import (  # pylint: disable=unused-import
     _ACTION_HANDLERS,
     _error_response,
     _json_response,  # noqa: F401

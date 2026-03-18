@@ -16,7 +16,7 @@ from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
-from lws.providers.iam._iam_handlers import (
+from lws.providers.iam._iam_handlers import (  # pylint: disable=unused-import
     _ACTION_HANDLERS,
     _request_id,
     _xml_response,  # noqa: F401

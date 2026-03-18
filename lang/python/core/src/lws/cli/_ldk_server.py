@@ -16,10 +16,9 @@ from typing import Any
 import typer
 
 from lws.cli._ldk_http_registry import (
-    _CoreProviderSet,
     _build_resource_metadata,
+    _CoreProviderSet,
     _mount_management_api,
-    _register_http_providers,
     _register_http_providers_from_set,
     _service_ports,
 )
@@ -38,14 +37,6 @@ from lws.config.loader import LdkConfig
 from lws.interfaces import Provider
 from lws.providers._shared.aws_iam_auth import IamAuthBundle
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
-from lws.providers.cognito.provider import CognitoProvider
-from lws.providers.cognito.user_store import UserPoolConfig
-from lws.providers.dynamodb.provider import SqliteDynamoProvider
-from lws.providers.eventbridge.provider import EventBridgeProvider
-from lws.providers.s3.provider import S3Provider
-from lws.providers.sns.provider import SnsProvider
-from lws.providers.sqs.provider import SqsProvider
-from lws.providers.stepfunctions.provider import StepFunctionsProvider
 from lws.runtime.orchestrator import Orchestrator
 from lws.runtime.sdk_env import build_sdk_env
 from lws.runtime.synth import SynthError, ensure_synth
@@ -72,8 +63,8 @@ def _create_terraform_providers(
     dict[str, Any],
 ]:
     """Create all service providers for Terraform mode (no app model)."""
-    from lws.cli._ldk_http_registry import (
-        _HttpServiceProvider,  # pylint: disable=import-outside-toplevel
+    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
+        _HttpServiceProvider,
     )
 
     providers: dict[str, Provider] = {}
@@ -84,32 +75,18 @@ def _create_terraform_providers(
     ports["iam"] = port + 10
     ports["sts"] = port + 11
 
-    dynamo_provider = SqliteDynamoProvider(data_dir=data_dir, tables=[])
-    sqs_provider = SqsProvider()
-    s3_provider = S3Provider(data_dir=data_dir)
-    sns_provider = SnsProvider()
-    eb_provider = EventBridgeProvider()
-    sf_provider = StepFunctionsProvider()
-
-    pool_config = UserPoolConfig(
-        user_pool_id="us-east-1_default",
-        user_pool_name="default",
-    )
-    cognito_provider = CognitoProvider(data_dir=data_dir, config=pool_config)
-    providers["__cognito_default__"] = cognito_provider
+    _core_set = _CoreProviderSet.from_data_dir(data_dir)
+    providers["__cognito_default__"] = _core_set.cognito_provider
 
     chaos_configs = _create_chaos_configs()
     aws_fake_configs = _load_aws_fake_configs(project_dir)
     lifecycle_configs = _create_lifecycle_configs()
     if iam_auth_bundle is None:
         iam_auth_bundle = _create_iam_auth_bundle(config, project_dir)
-
-    _core_set = _CoreProviderSet(
-        dynamo_provider, sqs_provider, s3_provider, sns_provider,
-        eb_provider, sf_provider, cognito_provider,
-    )
     _register_http_providers_from_set(
-        providers, _core_set, ports,
+        providers,
+        _core_set,
+        ports,
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
         iam_auth=iam_auth_bundle,
@@ -126,7 +103,7 @@ def _create_terraform_providers(
 
     # Wire Lambda registry compute providers into Step Functions so SFN can
     # invoke Lambda functions that Terraform creates dynamically.
-    sf_provider.set_compute_providers(lambda_registry.compute)
+    _core_set.sf_provider.set_compute_providers(lambda_registry.compute)
 
     # Build SDK env so Lambda functions can reach local services
     local_endpoints: dict[str, str] = {
@@ -327,6 +304,27 @@ def _print_experimental_banner(ports: dict[str, int]) -> None:
     _console.print()
 
 
+def _start_watcher(project_dir: Path, config: Any) -> Any:
+    """Create, configure, and start a FileWatcher for the project."""
+    watcher = FileWatcher(
+        watch_dir=project_dir,
+        include_patterns=config.watch_include,
+        exclude_patterns=config.watch_exclude,
+    )
+    watcher.on_change(lambda path: logging.getLogger("ldk.watcher").info("Changed: %s", path))
+    watcher.start()
+    return watcher
+
+
+def _build_furl_ports(app_model: Any, base_port: int) -> dict[str, int]:
+    """Build function URL → port mapping for display."""
+    furl_ports: dict[str, int] = {}
+    for furl in app_model.function_urls:
+        idx = list(f.function_name for f in app_model.function_urls).index(furl.function_name)
+        furl_ports[furl.function_name] = base_port + 23 + idx
+    return furl_ports
+
+
 async def _run_dev(
     project_dir: Path,
     port_override: int | None,
@@ -415,26 +413,13 @@ async def _run_dev(
         raise typer.Exit(1)
 
     # Build function URL port mapping for display
-    furl_ports: dict[str, int] = {}
-    for furl in app_model.function_urls:
-        furl_port = (
-            config.port
-            + 23
-            + list(f.function_name for f in app_model.function_urls).index(furl.function_name)
-        )
-        furl_ports[furl.function_name] = furl_port
+    furl_ports = _build_furl_ports(app_model, config.port)
     _display_summary(app_model, config.port, furl_ports if furl_ports else None)
     typer.echo(f"  Dashboard: http://localhost:{config.port}/_ldk/gui")
 
     _print_experimental_banner(_service_ports(config.port))
 
-    watcher = FileWatcher(
-        watch_dir=project_dir,
-        include_patterns=config.watch_include,
-        exclude_patterns=config.watch_exclude,
-    )
-    watcher.on_change(lambda path: logging.getLogger("ldk.watcher").info("Changed: %s", path))
-    watcher.start()
+    watcher = _start_watcher(project_dir, config)
 
     try:
         await orchestrator.wait_for_shutdown()

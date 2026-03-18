@@ -17,7 +17,7 @@ from rich.console import Console
 
 # Re-export server-layer symbols so callers importing from this module
 # continue to work without changes.
-from lws.cli._ldk_server import (  # noqa: F401
+from lws.cli._ldk_server import (  # noqa: F401  # pylint: disable=unused-import,cyclic-import
     __version__,
     _create_terraform_providers,
     _run_dev,

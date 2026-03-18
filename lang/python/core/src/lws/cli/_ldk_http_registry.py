@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from lws.interfaces import Provider
@@ -18,6 +19,7 @@ from lws.providers._shared.aws_iam_auth import IamAuthBundle
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 from lws.providers.apigateway.provider import ApiGatewayProvider
 from lws.providers.cognito.provider import CognitoProvider
+from lws.providers.cognito.user_store import UserPoolConfig
 from lws.providers.dynamodb.provider import SqliteDynamoProvider
 from lws.providers.dynamodb.routes import create_dynamodb_app
 from lws.providers.eventbridge.provider import EventBridgeProvider
@@ -51,6 +53,23 @@ class _CoreProviderSet:
         self.eb_provider = eb_provider
         self.sf_provider = sf_provider
         self.cognito_provider = cognito_provider
+
+    @classmethod
+    def from_data_dir(cls, data_dir: Path) -> _CoreProviderSet:
+        """Create the default core provider set for Terraform mode."""
+        pool_config = UserPoolConfig(
+            user_pool_id="us-east-1_default",
+            user_pool_name="default",
+        )
+        return cls(
+            dynamo_provider=SqliteDynamoProvider(data_dir=data_dir, tables=[]),
+            sqs_provider=SqsProvider(),
+            s3_provider=S3Provider(data_dir=data_dir),
+            sns_provider=SnsProvider(),
+            eb_provider=EventBridgeProvider(),
+            sf_provider=StepFunctionsProvider(),
+            cognito_provider=CognitoProvider(data_dir=data_dir, config=pool_config),
+        )
 
 
 class _ContainerCleanupProvider(Provider):

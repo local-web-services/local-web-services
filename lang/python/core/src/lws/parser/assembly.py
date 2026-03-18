@@ -17,7 +17,7 @@ from lws.parser._assembly_collectors import (
     collect_state_machines,
     collect_user_pools,
 )
-from lws.parser._assembly_helpers import (
+from lws.parser._assembly_helpers import (  # pylint: disable=unused-import
     build_resource_map,
     extract_website_configuration,
     find_handler_for_integration,

@@ -248,9 +248,6 @@ def _build_state_machine_description(
     workflow_type_standard: object,
 ) -> dict:
     """Build an AWS-compatible describe_state_machine response dict."""
-    import json  # pylint: disable=import-outside-toplevel
-    import time  # pylint: disable=import-outside-toplevel
-
     config = configs.get(name)
     wf_type = workflow_types.get(name, workflow_type_standard)
     definition = ""

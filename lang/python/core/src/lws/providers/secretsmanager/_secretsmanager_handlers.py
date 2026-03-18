@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import time
-import uuid
 from typing import Any
 
 from fastapi import Response
@@ -16,7 +15,6 @@ from lws.providers.secretsmanager._secretsmanager_state import (
     _rotate_secret_version,
     _Secret,
     _SecretsState,
-    _SecretVersion,
 )
 
 

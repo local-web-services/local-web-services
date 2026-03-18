@@ -18,7 +18,7 @@ from typing import Any
 
 # Re-export per-service helpers so existing callers importing from this
 # module continue to work without changes.
-from lws.cli._ldk_providers_core import (  # noqa: F401
+from lws.cli._ldk_providers_core import (  # noqa: F401  # pylint: disable=unused-import
     _create_api_providers,
     _create_cognito_providers,
     _create_compute_providers,
@@ -32,7 +32,7 @@ from lws.cli._ldk_providers_core import (  # noqa: F401
     _create_stepfunctions_providers,
     _wire_remaining_providers,
 )
-from lws.cli._ldk_providers_extended import (  # noqa: F401
+from lws.cli._ldk_providers_extended import (  # noqa: F401  # pylint: disable=unused-import
     _register_experimental_providers,
     _register_ssm_secretsmanager_providers,
 )
@@ -149,7 +149,7 @@ def _register_fake_provider(
     providers["__fake_server__"] = fake_provider
 
 
-def _create_providers(
+def _create_providers(  # pylint: disable=too-many-statements
     app_model: AppModel,
     graph: AppGraph,
     config: LdkConfig,
@@ -164,23 +164,15 @@ def _create_providers(
     and a chaos config map for runtime updates.
     """
     from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
+        _CoreProviderSet,
         _HttpServiceProvider,
+        _register_http_providers_from_set,
+        _service_ports,
     )
     from lws.runtime.sdk_env import build_sdk_env  # pylint: disable=import-outside-toplevel
 
     providers: dict[str, Provider] = {}
-
-    # Port allocation: base+1 DynamoDB, +2 SQS, +3 S3, +4 SNS, +5 EventBridge,
-    # +6 Step Functions, +7 Cognito, +12 SSM, +13 Secrets Manager
-    dynamo_port = config.port + 1
-    sqs_port = config.port + 2
-    s3_port = config.port + 3
-    sns_port = config.port + 4
-    eb_port = config.port + 5
-    sf_port = config.port + 6
-    cognito_port = config.port + 7
-    ssm_port = config.port + 12
-    secretsmanager_port = config.port + 13
+    ports = _service_ports(config.port)
 
     # 1. Storage providers (no deps)
     dynamo_provider, dynamo_providers = _create_dynamo_providers(app_model, graph, data_dir)
@@ -193,10 +185,11 @@ def _create_providers(
     providers.update(s3_providers)
 
     # 2. Build local_endpoints for SDK env redirection
-    local_endpoints: dict[str, str] = {}
-    local_endpoints["dynamodb"] = f"http://127.0.0.1:{dynamo_port}"
-    local_endpoints["sqs"] = f"http://127.0.0.1:{sqs_port}"
-    local_endpoints["s3"] = f"http://127.0.0.1:{s3_port}"
+    local_endpoints: dict[str, str] = {
+        "dynamodb": f"http://127.0.0.1:{ports['dynamodb']}",
+        "sqs": f"http://127.0.0.1:{ports['sqs']}",
+        "s3": f"http://127.0.0.1:{ports['s3']}",
+    }
 
     # 3. Compute (Lambda — Node.js + Python)
     sdk_env = build_sdk_env(local_endpoints)
@@ -215,10 +208,10 @@ def _create_providers(
         local_endpoints,
         data_dir,
         config.port,
-        sns_port=sns_port,
-        eb_port=eb_port,
-        sf_port=sf_port,
-        cognito_port=cognito_port,
+        sns_port=ports["sns"],
+        eb_port=ports["events"],
+        sf_port=ports["stepfunctions"],
+        cognito_port=ports["cognito-idp"],
     )
     _ecs_provider, ecs_providers = _create_ecs_providers(app_model, graph)
     providers.update(ecs_providers)
@@ -229,7 +222,6 @@ def _create_providers(
         create_lambda_management_app,
     )
 
-    lambda_port = config.port + 9
     lambda_registry = LambdaRegistry()
 
     for func in app_model.functions:
@@ -244,8 +236,8 @@ def _create_providers(
         lambda_registry.register(func.name, func_config, compute_providers[func.name])
 
     # 8. Add SSM and Secrets Manager endpoints, rebuild SDK env, update compute
-    local_endpoints["ssm"] = f"http://127.0.0.1:{ssm_port}"
-    local_endpoints["secretsmanager"] = f"http://127.0.0.1:{secretsmanager_port}"
+    local_endpoints["ssm"] = f"http://127.0.0.1:{ports['ssm']}"
+    local_endpoints["secretsmanager"] = f"http://127.0.0.1:{ports['secretsmanager']}"
     sdk_env = build_sdk_env(local_endpoints)
     for compute in lambda_registry.compute.values():
         if hasattr(compute, "sdk_env"):
@@ -255,7 +247,7 @@ def _create_providers(
     providers["__lambda_http__"] = _HttpServiceProvider(
         "lambda-http",
         lambda: create_lambda_management_app(lambda_registry, None, sdk_env),
-        lambda_port,
+        ports["lambda"],
     )
 
     # 9b. Function URL providers
@@ -270,26 +262,28 @@ def _create_providers(
     if iam_auth_bundle is None:
         iam_auth_bundle = _create_iam_auth_bundle(config, data_dir.parent)
 
-    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
-        _CoreProviderSet,
-        _register_http_providers_from_set,
-    )
-
     _core_set = _CoreProviderSet(
-        dynamo_provider, sqs_provider, s3_provider, sns_provider,
-        eb_provider, sf_provider, cognito_provider,
+        cognito_provider=cognito_provider,
+        dynamo_provider=dynamo_provider,
+        eb_provider=eb_provider,
+        s3_provider=s3_provider,
+        sf_provider=sf_provider,
+        sns_provider=sns_provider,
+        sqs_provider=sqs_provider,
     )
     _core_ports = {
-        "dynamodb": dynamo_port,
-        "sqs": sqs_port,
-        "s3": s3_port,
-        "sns": sns_port,
-        "events": eb_port,
-        "stepfunctions": sf_port,
-        "cognito-idp": cognito_port,
+        "dynamodb": ports["dynamodb"],
+        "sqs": ports["sqs"],
+        "s3": ports["s3"],
+        "sns": ports["sns"],
+        "events": ports["events"],
+        "stepfunctions": ports["stepfunctions"],
+        "cognito-idp": ports["cognito-idp"],
     }
     _register_http_providers_from_set(
-        providers, _core_set, _core_ports,
+        providers,
+        _core_set,
+        _core_ports,
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
         iam_auth=iam_auth_bundle,
@@ -303,8 +297,8 @@ def _create_providers(
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
         iam_auth_bundle=iam_auth_bundle,
-        ssm_port=ssm_port,
-        secretsmanager_port=secretsmanager_port,
+        ssm_port=ports["ssm"],
+        secretsmanager_port=ports["secretsmanager"],
     )
 
     # Fake server provider

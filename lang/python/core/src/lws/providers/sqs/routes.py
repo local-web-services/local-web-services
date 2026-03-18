@@ -195,9 +195,9 @@ def create_sqs_app(
     lifecycle: ResourceLifecycleConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the SQS wire protocol."""
-    import lws.providers.sqs._sqs_helpers as _helpers  # noqa: PLC0415
+    import lws.providers.sqs._sqs_helpers as _helpers  # noqa: PLC0415  # pylint: disable=import-outside-toplevel
 
-    _helpers._sqs_port = port  # noqa: SLF001
+    _helpers._sqs_port = port  # noqa: SLF001  # pylint: disable=protected-access
     app = FastAPI()
     if aws_fake is not None:
         app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="sqs")

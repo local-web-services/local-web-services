@@ -12,7 +12,6 @@ from lws.providers.sqs._sqs_helpers import (
     _apply_visibility_timeout_to_messages,
     _build_attributes_xml,
     _build_message_attributes_xml,
-    _error_xml,
     _extract_message_attributes,
     _extract_queue_name,
     _find_and_update_visibility,
