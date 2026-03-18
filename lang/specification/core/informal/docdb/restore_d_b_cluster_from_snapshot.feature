@@ -13,7 +13,7 @@ Feature: Docdb - A Cluster Is Restored From A Snapshot
     And the snapshot is "AVAILABLE"
     And the target cluster slot is available
     When a cluster is restored from a snapshot
-    Then the restored cluster is in "CREATING" state
+    Then the restored cluster is in "RESTORING" state
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -28,7 +28,7 @@ Feature: Docdb - A Cluster Is Restored From A Snapshot
     When a cluster is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_d_b_cluster_from_snapshot @lifecycle @internal
+  @standard @negative @restore_d_b_cluster_from_snapshot @lifecycle
   Scenario: a cluster is restored from a snapshot fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

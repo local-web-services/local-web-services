@@ -24,7 +24,7 @@ Feature: Rds - A Database Instance Is Deleted With A Final Snapshot
     When a database instance is deleted with a final snapshot
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_instance_with_snapshot @lifecycle @internal
+  @standard @negative @delete_d_b_instance_with_snapshot @lifecycle
   Scenario: a database instance is deleted with a final snapshot fails when the instance is not "AVAILABLE"
     Given the database instance exists
     And the instance is not "AVAILABLE"

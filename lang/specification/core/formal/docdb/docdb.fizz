@@ -111,6 +111,11 @@ atomic action CompleteClusterDeletion:
         if cid in cluster_status:
             if cluster_status[cid] == "DELETING":
                 cluster_status[cid] = "DELETED"
+                for sid in SNAPSHOT_IDS:
+                    if sid in snapshot_status:
+                        if snapshot_status[sid] == "CREATING":
+                            if snapshot_cluster[sid] == cid:
+                                snapshot_status[sid] = "DELETED"
 
 # step: a database instance is created in an available cluster
 # result: the instance is in CREATING state and associated with the cluster
@@ -275,7 +280,7 @@ atomic action CompleteSnapshotDeletion:
                 snapshot_status[sid] = "DELETED"
 
 # step: a cluster is restored from a snapshot
-# result: the restored cluster is in CREATING state
+# result: the restored cluster is in RESTORING state
 # guard: the snapshot exists
 # guard_violation: the snapshot does not exist
 # guard: the snapshot is AVAILABLE
@@ -288,8 +293,21 @@ atomic action RestoreDBClusterFromSnapshot:
             if snapshot_status[sid] == "AVAILABLE":
                 oneof cid in CLUSTER_IDS:
                     if cid not in cluster_status:
-                        cluster_status[cid] = "CREATING"
+                        cluster_status[cid] = "RESTORING"
                         cluster_primary_instance[cid] = ""
+
+# fake_skip: internal
+# step: a database cluster restore from snapshot completes
+# result: the cluster is AVAILABLE
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is RESTORING
+# guard_violation: the cluster is not RESTORING
+atomic action CompleteClusterRestore:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "RESTORING":
+                cluster_status[cid] = "AVAILABLE"
 
 # fake_skip: internal
 # Failover: pick a replica instance to become the new primary
@@ -327,7 +345,7 @@ atomic action Failover:
 always assertion ValidClusterStatus:
     for cid in cluster_status:
         s = cluster_status[cid]
-        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "FAILED" and s != "DELETED":
+        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "FAILED" and s != "RESTORING" and s != "DELETED":
             return False
     return True
 

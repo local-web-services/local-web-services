@@ -23,7 +23,7 @@ Feature: Rds - A Database Snapshot Is Deleted
     When a database snapshot is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_d_b_snapshot @lifecycle @internal
+  @standard @negative @delete_d_b_snapshot @lifecycle
   Scenario: a database snapshot is deleted fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

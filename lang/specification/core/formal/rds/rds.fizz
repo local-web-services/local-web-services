@@ -208,9 +208,9 @@ atomic action FinishDeleteDBSnapshot:
             if snapshot_status[sid] == "DELETING":
                 snapshot_status[sid] = "DELETED"
 
-# RestoreDBInstanceFromDBSnapshot: creates a new instance in CREATING state from an AVAILABLE snapshot
+# RestoreDBInstanceFromDBSnapshot: creates a new instance in RESTORING state from an AVAILABLE snapshot
 # step: a database instance is restored from a snapshot
-# result: the restored instance is in CREATING state
+# result: the restored instance is in RESTORING state
 # guard: the snapshot exists
 # guard_violation: the snapshot does not exist
 # guard: the snapshot is AVAILABLE
@@ -223,8 +223,21 @@ atomic action RestoreDBInstanceFromDBSnapshot:
             if snapshot_status[sid] == "AVAILABLE":
                 oneof iid in INSTANCE_IDS:
                     if iid not in instance_status:
-                        instance_status[iid] = "CREATING"
+                        instance_status[iid] = "RESTORING"
                         instance_multi_az[iid] = False
+
+# fake_skip: internal
+# step: a database instance restore from snapshot completes
+# result: the instance is AVAILABLE
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is RESTORING
+# guard_violation_lifecycle: the instance is not RESTORING
+atomic action FinishRestoreDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "RESTORING":
+                instance_status[iid] = "AVAILABLE"
 
 # Non-deterministic automated backup window
 # fake_skip: internal
@@ -294,7 +307,7 @@ atomic action TagDBInstance:
 always assertion ValidDBInstanceStatus:
     for iid in instance_status:
         s = instance_status[iid]
-        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "FAILED" and s != "BACKING_UP" and s != "REBOOTING" and s != "DELETED":
+        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "FAILED" and s != "BACKING_UP" and s != "REBOOTING" and s != "RESTORING" and s != "DELETED":
             return False
     return True
 

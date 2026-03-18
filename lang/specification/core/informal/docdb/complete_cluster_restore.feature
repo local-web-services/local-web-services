@@ -1,5 +1,5 @@
 @docdb @generated
-Feature: Docdb - A Database Cluster Configuration Is Modified
+Feature: Docdb - A Database Cluster Restore From Snapshot Completes
 
   # Generated from FizzBee spec: docdb.fizz
   # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, NoNonDeletedInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster, DeletingClusterGetsNoNewInstances, SnapshotHasValidClusterReference
@@ -7,12 +7,12 @@ Feature: Docdb - A Database Cluster Configuration Is Modified
   Background:
     Given the system is initialized
 
-  @minimal @happy @modify_d_b_cluster
-  Scenario: a database cluster configuration is modified
+  @minimal @happy @complete_cluster_restore @internal
+  Scenario: a database cluster restore from snapshot completes
     Given the cluster exists
-    And the cluster is "AVAILABLE"
-    When a database cluster configuration is modified
-    Then the cluster is in "MODIFYING" state
+    And the cluster is "RESTORING"
+    When a database cluster restore from snapshot completes
+    Then the cluster is "AVAILABLE"
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21,15 +21,15 @@ Feature: Docdb - A Database Cluster Configuration Is Modified
     And a deleting cluster receives no new instances
     And every creating snapshot references a cluster that has not been deleted
 
-  @standard @negative @modify_d_b_cluster
-  Scenario: a database cluster configuration is modified fails when the cluster does not exist
+  @standard @negative @complete_cluster_restore @internal
+  Scenario: a database cluster restore from snapshot completes fails when the cluster does not exist
     Given the cluster does not exist
-    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
     Then the operation is rejected
 
-  @standard @negative @modify_d_b_cluster @lifecycle
-  Scenario: a database cluster configuration is modified fails when the cluster is not "AVAILABLE"
+  @standard @negative @complete_cluster_restore @internal
+  Scenario: a database cluster restore from snapshot completes fails when the cluster is not "RESTORING"
     Given the cluster exists
-    And the cluster is not "AVAILABLE"
-    When a database cluster configuration is modified
+    And the cluster is not "RESTORING"
+    When a database cluster restore from snapshot completes
     Then the operation is rejected

@@ -229,6 +229,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -454,6 +467,19 @@ Feature: Docdb - Action Sequences
     Given cid in cluster_status
     When a database cluster finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -697,6 +723,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -922,6 +961,19 @@ Feature: Docdb - Action Sequences
     Given cid in cluster_status
     When a database cluster configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -1165,6 +1217,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -1390,6 +1455,19 @@ Feature: Docdb - Action Sequences
     Given cid in cluster_status
     When a database cluster is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -1633,6 +1711,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -1858,6 +1949,19 @@ Feature: Docdb - Action Sequences
     Given cid in cluster_status
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -2101,6 +2205,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -2326,6 +2443,19 @@ Feature: Docdb - Action Sequences
     Given iid in instance_status
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -2569,6 +2699,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -2794,6 +2937,19 @@ Feature: Docdb - Action Sequences
     Given iid in instance_status
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -3037,6 +3193,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -3262,6 +3431,19 @@ Feature: Docdb - Action Sequences
     Given cid in cluster_status
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -3505,6 +3687,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -3730,6 +3925,19 @@ Feature: Docdb - Action Sequences
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -3973,6 +4181,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -4207,9 +4428,269 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -4454,6 +4935,19 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database cluster finishes creating then a database cluster creation fails
     Given cid not in cluster_status
     When a database cluster is created
@@ -4669,6 +5163,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is created
     When a database cluster finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -4916,6 +5424,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database cluster creation fails then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -5145,6 +5667,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is created
     When a database cluster configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -5392,6 +5928,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database cluster modification completes then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -5621,6 +6171,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is created
     When a database cluster is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -5868,6 +6432,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database cluster deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -6097,6 +6675,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is created
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -6344,6 +6936,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -6573,6 +7179,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is created
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -6820,6 +7440,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -7049,6 +7683,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is created
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -7296,6 +7944,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -7525,6 +8187,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is created
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -7772,6 +8448,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -8001,6 +8691,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is created
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -8248,6 +8952,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
@@ -8486,10 +9204,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is created then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid not in cluster_status
     When a database cluster is created
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is created then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -8738,6 +9722,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is created then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid not in cluster_status
+    When a database cluster is created
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database cluster is created then a database cluster creation fails
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -8953,6 +9951,20 @@ Feature: Docdb - Action Sequences
     When a database cluster finishes creating
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -9200,6 +10212,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database cluster creation fails then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -9429,6 +10455,20 @@ Feature: Docdb - Action Sequences
     When a database cluster finishes creating
     When a database cluster configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -9676,6 +10716,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database cluster modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -9905,6 +10959,20 @@ Feature: Docdb - Action Sequences
     When a database cluster finishes creating
     When a database cluster is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -10152,6 +11220,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database cluster deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -10381,6 +11463,20 @@ Feature: Docdb - Action Sequences
     When a database cluster finishes creating
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -10628,6 +11724,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -10857,6 +11967,20 @@ Feature: Docdb - Action Sequences
     When a database cluster finishes creating
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -11104,6 +12228,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -11333,6 +12471,20 @@ Feature: Docdb - Action Sequences
     When a database cluster finishes creating
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -11580,6 +12732,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -11809,6 +12975,20 @@ Feature: Docdb - Action Sequences
     When a database cluster finishes creating
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -12056,6 +13236,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -12285,6 +13479,20 @@ Feature: Docdb - Action Sequences
     When a database cluster finishes creating
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -12532,6 +13740,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
@@ -12770,10 +13992,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster finishes creating then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster finishes creating
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -13022,6 +14510,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster finishes creating then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster finishes creating
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database cluster is created then a database cluster finishes creating
     Given cid in cluster_status
     When a database cluster creation fails
@@ -13237,6 +14739,20 @@ Feature: Docdb - Action Sequences
     When a database cluster creation fails
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -13484,6 +15000,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -13713,6 +15243,20 @@ Feature: Docdb - Action Sequences
     When a database cluster creation fails
     When a database cluster configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -13960,6 +15504,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database cluster modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -14189,6 +15747,20 @@ Feature: Docdb - Action Sequences
     When a database cluster creation fails
     When a database cluster is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -14436,6 +16008,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database cluster deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -14665,6 +16251,20 @@ Feature: Docdb - Action Sequences
     When a database cluster creation fails
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -14912,6 +16512,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -15141,6 +16755,20 @@ Feature: Docdb - Action Sequences
     When a database cluster creation fails
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -15388,6 +17016,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -15617,6 +17259,20 @@ Feature: Docdb - Action Sequences
     When a database cluster creation fails
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -15864,6 +17520,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -16093,6 +17763,20 @@ Feature: Docdb - Action Sequences
     When a database cluster creation fails
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -16340,6 +18024,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -16569,6 +18267,20 @@ Feature: Docdb - Action Sequences
     When a database cluster creation fails
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -16816,6 +18528,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
@@ -17054,10 +18780,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster creation fails then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster creation fails then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -17306,6 +19298,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster creation fails then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster creation fails
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database cluster is created then a database cluster finishes creating
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -17521,6 +19527,20 @@ Feature: Docdb - Action Sequences
     When a database cluster configuration is modified
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -17768,6 +19788,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -17997,6 +20031,20 @@ Feature: Docdb - Action Sequences
     When a database cluster configuration is modified
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -18244,6 +20292,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database cluster modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -18473,6 +20535,20 @@ Feature: Docdb - Action Sequences
     When a database cluster configuration is modified
     When a database cluster is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -18720,6 +20796,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database cluster deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -18949,6 +21039,20 @@ Feature: Docdb - Action Sequences
     When a database cluster configuration is modified
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -19196,6 +21300,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -19425,6 +21543,20 @@ Feature: Docdb - Action Sequences
     When a database cluster configuration is modified
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -19672,6 +21804,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -19901,6 +22047,20 @@ Feature: Docdb - Action Sequences
     When a database cluster configuration is modified
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -20148,6 +22308,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -20377,6 +22551,20 @@ Feature: Docdb - Action Sequences
     When a database cluster configuration is modified
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -20624,6 +22812,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -20853,6 +23055,20 @@ Feature: Docdb - Action Sequences
     When a database cluster configuration is modified
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -21100,6 +23316,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
@@ -21338,10 +23568,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster configuration is modified then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster configuration is modified
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -21590,6 +24086,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster configuration is modified
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database cluster is created then a database cluster finishes creating
     Given cid in cluster_status
     When a database cluster modification completes
@@ -21805,6 +24315,20 @@ Feature: Docdb - Action Sequences
     When a database cluster modification completes
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22052,6 +24576,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -22281,6 +24819,20 @@ Feature: Docdb - Action Sequences
     When a database cluster modification completes
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -22528,6 +25080,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -22757,6 +25323,20 @@ Feature: Docdb - Action Sequences
     When a database cluster modification completes
     When a database cluster is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23004,6 +25584,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database cluster deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -23233,6 +25827,20 @@ Feature: Docdb - Action Sequences
     When a database cluster modification completes
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23480,6 +26088,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -23709,6 +26331,20 @@ Feature: Docdb - Action Sequences
     When a database cluster modification completes
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -23956,6 +26592,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -24185,6 +26835,20 @@ Feature: Docdb - Action Sequences
     When a database cluster modification completes
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -24432,6 +27096,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -24661,6 +27339,20 @@ Feature: Docdb - Action Sequences
     When a database cluster modification completes
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -24908,6 +27600,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -25137,6 +27843,20 @@ Feature: Docdb - Action Sequences
     When a database cluster modification completes
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -25384,6 +28104,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
@@ -25622,10 +28356,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster modification completes then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster modification completes then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -25874,6 +28874,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster modification completes then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster modification completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database cluster is created then a database cluster finishes creating
     Given cid in cluster_status
     When a database cluster is deleted
@@ -26089,6 +29103,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is deleted
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -26336,6 +29364,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
@@ -26565,6 +29607,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is deleted
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -26812,6 +29868,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
@@ -27041,6 +30111,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is deleted
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -27288,6 +30372,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database cluster deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
@@ -27517,6 +30615,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is deleted
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -27764,6 +30876,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
@@ -27993,6 +31119,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is deleted
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -28240,6 +31380,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
@@ -28469,6 +31623,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is deleted
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -28716,6 +31884,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
@@ -28945,6 +32127,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is deleted
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -29192,6 +32388,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
@@ -29421,6 +32631,20 @@ Feature: Docdb - Action Sequences
     When a database cluster is deleted
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -29668,6 +32892,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
@@ -29906,10 +33144,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster is deleted then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster is deleted
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster is deleted then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -30158,6 +33662,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster is deleted then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster is deleted
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database cluster is created then a database cluster finishes creating
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -30373,6 +33891,20 @@ Feature: Docdb - Action Sequences
     When a database cluster deletion completes
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -30620,6 +34152,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -30849,6 +34395,20 @@ Feature: Docdb - Action Sequences
     When a database cluster deletion completes
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -31096,6 +34656,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -31325,6 +34899,20 @@ Feature: Docdb - Action Sequences
     When a database cluster deletion completes
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -31572,6 +35160,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -31801,6 +35403,20 @@ Feature: Docdb - Action Sequences
     When a database cluster deletion completes
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -32048,6 +35664,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -32277,6 +35907,20 @@ Feature: Docdb - Action Sequences
     When a database cluster deletion completes
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -32524,6 +36168,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -32753,6 +36411,20 @@ Feature: Docdb - Action Sequences
     When a database cluster deletion completes
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -33000,6 +36672,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -33229,6 +36915,20 @@ Feature: Docdb - Action Sequences
     When a database cluster deletion completes
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -33476,6 +37176,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -33705,6 +37419,20 @@ Feature: Docdb - Action Sequences
     When a database cluster deletion completes
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -33952,6 +37680,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
@@ -34190,10 +37932,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster deletion completes then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -34442,6 +38450,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster deletion completes then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster deletion completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database cluster is created then a database cluster finishes creating
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -34657,6 +38679,20 @@ Feature: Docdb - Action Sequences
     When a database instance is created in an available cluster
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -34904,6 +38940,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -35133,6 +39183,20 @@ Feature: Docdb - Action Sequences
     When a database instance is created in an available cluster
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -35380,6 +39444,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -35609,6 +39687,20 @@ Feature: Docdb - Action Sequences
     When a database instance is created in an available cluster
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -35856,6 +39948,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -36085,6 +40191,20 @@ Feature: Docdb - Action Sequences
     When a database instance is created in an available cluster
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -36332,6 +40452,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -36561,6 +40695,20 @@ Feature: Docdb - Action Sequences
     When a database instance is created in an available cluster
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -36808,6 +40956,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -37037,6 +41199,20 @@ Feature: Docdb - Action Sequences
     When a database instance is created in an available cluster
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -37284,6 +41460,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -37513,6 +41703,20 @@ Feature: Docdb - Action Sequences
     When a database instance is created in an available cluster
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -37760,6 +41964,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -37989,6 +42207,20 @@ Feature: Docdb - Action Sequences
     When a database instance is created in an available cluster
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -38236,6 +42468,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
@@ -38474,10 +42720,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is created in an available cluster then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database instance is created in an available cluster
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -38726,6 +43238,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database instance is created in an available cluster
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database cluster is created then a database cluster finishes creating
     Given iid in instance_status
     When a database instance finishes creating
@@ -38941,6 +43467,20 @@ Feature: Docdb - Action Sequences
     When a database instance finishes creating
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -39188,6 +43728,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -39417,6 +43971,20 @@ Feature: Docdb - Action Sequences
     When a database instance finishes creating
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -39664,6 +44232,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -39893,6 +44475,20 @@ Feature: Docdb - Action Sequences
     When a database instance finishes creating
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -40140,6 +44736,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -40369,6 +44979,20 @@ Feature: Docdb - Action Sequences
     When a database instance finishes creating
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -40616,6 +45240,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -40845,6 +45483,20 @@ Feature: Docdb - Action Sequences
     When a database instance finishes creating
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -41092,6 +45744,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -41321,6 +45987,20 @@ Feature: Docdb - Action Sequences
     When a database instance finishes creating
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -41568,6 +46248,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -41797,6 +46491,20 @@ Feature: Docdb - Action Sequences
     When a database instance finishes creating
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -42044,6 +46752,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -42273,6 +46995,20 @@ Feature: Docdb - Action Sequences
     When a database instance finishes creating
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -42520,6 +47256,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
@@ -42758,10 +47508,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance finishes creating then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster is created
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database instance is deleted
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance finishes creating then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -43010,6 +48026,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance finishes creating then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance finishes creating
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database cluster is created then a database cluster finishes creating
     Given iid in instance_status
     When a database instance configuration is modified
@@ -43225,6 +48255,20 @@ Feature: Docdb - Action Sequences
     When a database instance configuration is modified
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -43472,6 +48516,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
@@ -43701,6 +48759,20 @@ Feature: Docdb - Action Sequences
     When a database instance configuration is modified
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -43948,6 +49020,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
@@ -44177,6 +49263,20 @@ Feature: Docdb - Action Sequences
     When a database instance configuration is modified
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -44424,6 +49524,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
@@ -44653,6 +49767,20 @@ Feature: Docdb - Action Sequences
     When a database instance configuration is modified
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -44900,6 +50028,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
@@ -45129,6 +50271,20 @@ Feature: Docdb - Action Sequences
     When a database instance configuration is modified
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -45376,6 +50532,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database instance modification completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
@@ -45605,6 +50775,20 @@ Feature: Docdb - Action Sequences
     When a database instance configuration is modified
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -45852,6 +51036,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
@@ -46081,6 +51279,20 @@ Feature: Docdb - Action Sequences
     When a database instance configuration is modified
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -46328,6 +51540,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
@@ -46557,6 +51783,20 @@ Feature: Docdb - Action Sequences
     When a database instance configuration is modified
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -46804,6 +52044,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
@@ -47042,10 +52296,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance configuration is modified then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance configuration is modified
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster is created
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database instance is deleted
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -47294,6 +52814,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance configuration is modified then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance configuration is modified
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database cluster is created then a database cluster finishes creating
     Given iid in instance_status
     When a database instance modification completes
@@ -47509,6 +53043,20 @@ Feature: Docdb - Action Sequences
     When a database instance modification completes
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -47756,6 +53304,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -47985,6 +53547,20 @@ Feature: Docdb - Action Sequences
     When a database instance modification completes
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -48232,6 +53808,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -48461,6 +54051,20 @@ Feature: Docdb - Action Sequences
     When a database instance modification completes
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -48708,6 +54312,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -48937,6 +54555,20 @@ Feature: Docdb - Action Sequences
     When a database instance modification completes
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -49184,6 +54816,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -49413,6 +55059,20 @@ Feature: Docdb - Action Sequences
     When a database instance modification completes
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -49660,6 +55320,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -49889,6 +55563,20 @@ Feature: Docdb - Action Sequences
     When a database instance modification completes
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -50136,6 +55824,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -50365,6 +56067,20 @@ Feature: Docdb - Action Sequences
     When a database instance modification completes
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -50612,6 +56328,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -50841,6 +56571,20 @@ Feature: Docdb - Action Sequences
     When a database instance modification completes
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -51088,6 +56832,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
@@ -51326,10 +57084,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance modification completes then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance modification completes
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster is created
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database instance is deleted
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance modification completes then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given iid in instance_status
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -51578,6 +57602,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance modification completes then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance modification completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database cluster is created then a database cluster finishes creating
     Given iid in instance_status
     When a database instance is deleted
@@ -51793,6 +57831,20 @@ Feature: Docdb - Action Sequences
     When a database instance is deleted
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -52040,6 +58092,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
@@ -52269,6 +58335,20 @@ Feature: Docdb - Action Sequences
     When a database instance is deleted
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -52516,6 +58596,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
@@ -52745,6 +58839,20 @@ Feature: Docdb - Action Sequences
     When a database instance is deleted
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -52992,6 +59100,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
@@ -53221,6 +59343,20 @@ Feature: Docdb - Action Sequences
     When a database instance is deleted
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -53468,6 +59604,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
@@ -53697,6 +59847,20 @@ Feature: Docdb - Action Sequences
     When a database instance is deleted
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -53944,6 +60108,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
@@ -54173,6 +60351,20 @@ Feature: Docdb - Action Sequences
     When a database instance is deleted
     When a database instance modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database instance modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -54420,6 +60612,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
@@ -54649,6 +60855,20 @@ Feature: Docdb - Action Sequences
     When a database instance is deleted
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -54896,6 +61116,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
@@ -55125,6 +61359,20 @@ Feature: Docdb - Action Sequences
     When a database instance is deleted
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -55372,6 +61620,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
@@ -55610,10 +61872,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance is deleted then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance is deleted
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster is created
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance is deleted then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given iid in instance_status
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -55862,6 +62390,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance is deleted then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance is deleted
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database cluster is created then a database cluster finishes creating
     Given iid in instance_status
     When a database instance deletion completes
@@ -56077,6 +62619,20 @@ Feature: Docdb - Action Sequences
     When a database instance deletion completes
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -56324,6 +62880,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -56553,6 +63123,20 @@ Feature: Docdb - Action Sequences
     When a database instance deletion completes
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -56800,6 +63384,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -57029,6 +63627,20 @@ Feature: Docdb - Action Sequences
     When a database instance deletion completes
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -57276,6 +63888,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -57505,6 +64131,20 @@ Feature: Docdb - Action Sequences
     When a database instance deletion completes
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -57752,6 +64392,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -57981,6 +64635,20 @@ Feature: Docdb - Action Sequences
     When a database instance deletion completes
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -58228,6 +64896,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -58457,6 +65139,20 @@ Feature: Docdb - Action Sequences
     When a database instance deletion completes
     When a database instance modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance modification completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -58704,6 +65400,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database instance is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database instance is deleted then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -58933,6 +65643,20 @@ Feature: Docdb - Action Sequences
     When a database instance deletion completes
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -59180,6 +65904,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -59409,6 +66147,20 @@ Feature: Docdb - Action Sequences
     When a database instance deletion completes
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -59656,6 +66408,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
@@ -59894,10 +66660,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database instance deletion completes then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given iid in instance_status
     When a database instance deletion completes
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster is created
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database instance modification completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database instance is deleted
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database instance deletion completes then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -60146,6 +67178,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database instance deletion completes then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given iid in instance_status
+    When a database instance deletion completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database cluster is created then a database cluster finishes creating
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -60361,6 +67407,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is created
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -60608,6 +67668,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -60837,6 +67911,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is created
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -61084,6 +68172,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -61313,6 +68415,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is created
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -61560,6 +68676,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -61789,6 +68919,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is created
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -62036,6 +69180,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -62265,6 +69423,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is created
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -62512,6 +69684,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -62741,6 +69927,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is created
     When a database instance modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -62988,6 +70188,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database instance is deleted then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -63217,6 +70431,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is created
     When a database instance deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -63464,6 +70692,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -63693,6 +70935,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is created
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -63940,6 +71196,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
@@ -64178,10 +71448,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is created then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given cid in cluster_status
     When a database cluster snapshot is created
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -64430,6 +71966,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is created then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a database cluster snapshot is created
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database cluster is created then a database cluster finishes creating
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -64645,6 +72195,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot finishes creating
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster is created then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -64892,6 +72456,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -65121,6 +72699,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot finishes creating
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -65368,6 +72960,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -65597,6 +73203,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot finishes creating
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -65844,6 +73464,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -66073,6 +73707,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot finishes creating
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -66320,6 +73968,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -66549,6 +74211,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot finishes creating
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -66796,6 +74472,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -67025,6 +74715,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot finishes creating
     When a database instance modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database instance modification completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -67272,6 +74976,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database instance is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database instance is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -67501,6 +75219,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot finishes creating
     When a database instance deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -67748,6 +75480,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database cluster snapshot is created then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -67977,6 +75723,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot finishes creating
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -68224,6 +75984,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
@@ -68462,10 +76236,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot finishes creating then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot finishes creating
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster is created
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database instance modification completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database instance is deleted
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -68714,6 +76754,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot finishes creating
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database cluster is created then a database cluster finishes creating
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -68929,6 +76983,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is deleted
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster is created then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -69176,6 +77244,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -69405,6 +77487,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is deleted
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -69652,6 +77748,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -69881,6 +77991,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is deleted
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -70128,6 +78252,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -70357,6 +78495,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is deleted
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -70604,6 +78756,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -70833,6 +78999,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is deleted
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -71080,6 +79260,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -71309,6 +79503,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is deleted
     When a database instance modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database instance modification completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -71556,6 +79764,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database instance is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database instance is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -71785,6 +80007,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is deleted
     When a database instance deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -72032,6 +80268,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database cluster snapshot is created then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -72261,6 +80511,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot is deleted
     When a database cluster snapshot finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -72508,6 +80772,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
@@ -72746,10 +81024,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot is deleted then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot is deleted
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster is created
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database instance modification completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database instance is deleted
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -72998,6 +81542,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot is deleted then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot is deleted
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database cluster is created then a database cluster finishes creating
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -73213,6 +81771,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot deletion completes
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster is created then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -73460,6 +82032,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -73689,6 +82275,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot deletion completes
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -73936,6 +82536,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -74165,6 +82779,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot deletion completes
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -74412,6 +83040,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -74641,6 +83283,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot deletion completes
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -74888,6 +83544,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -75117,6 +83787,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot deletion completes
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -75364,6 +84048,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -75593,6 +84291,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot deletion completes
     When a database instance modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database instance modification completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -75840,6 +84552,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database instance is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database instance is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -76069,6 +84795,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot deletion completes
     When a database instance deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -76316,6 +85056,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database cluster snapshot is created then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -76545,6 +85299,20 @@ Feature: Docdb - Action Sequences
     When a database cluster snapshot deletion completes
     When a database cluster snapshot finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -76792,6 +85560,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a database cluster snapshot is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
@@ -77030,10 +85812,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a database cluster snapshot deletion completes then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a database cluster snapshot deletion completes
     When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster is created
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database instance modification completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database instance is deleted
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -77282,6 +86330,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a database cluster snapshot deletion completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database cluster is created then a database cluster finishes creating
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -77497,6 +86559,20 @@ Feature: Docdb - Action Sequences
     When a cluster is restored from a snapshot
     When a database cluster is created
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster is created then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -77744,6 +86820,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -77973,6 +87063,20 @@ Feature: Docdb - Action Sequences
     When a cluster is restored from a snapshot
     When a database cluster creation fails
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -78220,6 +87324,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -78449,6 +87567,20 @@ Feature: Docdb - Action Sequences
     When a cluster is restored from a snapshot
     When a database cluster modification completes
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -78696,6 +87828,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -78925,6 +88071,20 @@ Feature: Docdb - Action Sequences
     When a cluster is restored from a snapshot
     When a database cluster deletion completes
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -79172,6 +88332,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -79401,6 +88575,20 @@ Feature: Docdb - Action Sequences
     When a cluster is restored from a snapshot
     When a database instance finishes creating
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -79648,6 +88836,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -79877,6 +89079,20 @@ Feature: Docdb - Action Sequences
     When a cluster is restored from a snapshot
     When a database instance modification completes
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database instance modification completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -80124,6 +89340,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database instance is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database instance is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -80353,6 +89583,20 @@ Feature: Docdb - Action Sequences
     When a cluster is restored from a snapshot
     When a database instance deletion completes
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -80600,6 +89844,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database cluster snapshot is created then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -80829,6 +90087,20 @@ Feature: Docdb - Action Sequences
     When a cluster is restored from a snapshot
     When a database cluster snapshot finishes creating
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -81076,6 +90348,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database cluster snapshot is deleted then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
@@ -81314,10 +90600,276 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a cluster is restored from a snapshot then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
     Given sid in snapshot_status
     When a cluster is restored from a snapshot
     When a database cluster snapshot deletion completes
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster is created
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database instance modification completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database instance is deleted
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
     When a failover is triggered and a replica is promoted to primary
     And every cluster has a valid status
     And every instance has a valid status
@@ -81566,6 +91118,4808 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes
+    Given sid in snapshot_status
+    When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is created then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster finishes creating then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster creation fails then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster configuration is modified then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster modification completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster is deleted then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster deletion completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is created in an available cluster then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance finishes creating then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance configuration is modified then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance modification completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance is deleted then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database instance deletion completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is created then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot finishes creating then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot is deleted then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a database cluster snapshot deletion completes then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a cluster is restored from a snapshot then a failover is triggered and a replica is promoted to primary
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
+    When a failover is triggered and a replica is promoted to primary
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster creation fails
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database instance finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database instance configuration is modified
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database instance modification completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database instance is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database instance deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a database cluster restore from snapshot completes then a failover is triggered and a replica is promoted to primary then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a database cluster restore from snapshot completes
+    When a failover is triggered and a replica is promoted to primary
+    When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database cluster is created then a database cluster finishes creating
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -81795,6 +96149,20 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a database cluster is created
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster is created
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -82042,6 +96410,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster finishes creating
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database cluster creation fails then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -82271,6 +96653,20 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a database cluster creation fails
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster creation fails then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster creation fails
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -82518,6 +96914,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database cluster modification completes then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -82747,6 +97157,20 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a database cluster modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -82994,6 +97418,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database cluster deletion completes then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -83223,6 +97661,20 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a database cluster deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -83470,6 +97922,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database instance is created in an available cluster then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance is created in an available cluster
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database instance finishes creating then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -83699,6 +98165,20 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a database instance finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database instance finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -83946,6 +98426,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database instance configuration is modified then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance configuration is modified
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database instance modification completes then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -84175,6 +98669,20 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a database instance modification completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database instance modification completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance modification completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -84422,6 +98930,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database instance is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database instance deletion completes then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -84651,6 +99173,20 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a database instance deletion completes
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database instance deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database instance deletion completes
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -84898,6 +99434,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster snapshot is created then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster snapshot is created
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database cluster snapshot finishes creating then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -85127,6 +99677,20 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a database cluster snapshot finishes creating
     When a cluster is restored from a snapshot
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster snapshot finishes creating then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster snapshot finishes creating
+    When a database cluster restore from snapshot completes
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status
@@ -85374,6 +99938,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster snapshot is deleted then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster snapshot is deleted
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a database cluster snapshot deletion completes then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -85612,6 +100190,20 @@ Feature: Docdb - Action Sequences
     And every creating snapshot references a cluster that has not been deleted
 
   @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster snapshot deletion completes then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster snapshot deletion completes
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
   Scenario: a failover is triggered and a replica is promoted to primary then a cluster is restored from a snapshot then a database cluster is created
     Given cid in cluster_status
     When a failover is triggered and a replica is promoted to primary
@@ -85841,6 +100433,272 @@ Feature: Docdb - Action Sequences
     When a failover is triggered and a replica is promoted to primary
     When a cluster is restored from a snapshot
     When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a cluster is restored from a snapshot then a database cluster restore from snapshot completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a cluster is restored from a snapshot
+    When a database cluster restore from snapshot completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster is created
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster finishes creating
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster creation fails
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster creation fails
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster configuration is modified
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster modification completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster is deleted
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster deletion completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database instance is created in an available cluster
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database instance is created in an available cluster
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database instance finishes creating
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database instance finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database instance configuration is modified
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database instance configuration is modified
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database instance modification completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database instance modification completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database instance is deleted
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database instance is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database instance deletion completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database instance deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster snapshot is created
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is created
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster snapshot finishes creating
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot finishes creating
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster snapshot is deleted
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot is deleted
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a database cluster snapshot deletion completes
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a database cluster snapshot deletion completes
+    And every cluster has a valid status
+    And every instance has a valid status
+    And every snapshot has a valid status
+    And a deleted cluster has no non-deleted instances
+    And a failed cluster has no available instances
+    And a deleting cluster receives no new instances
+    And every creating snapshot references a cluster that has not been deleted
+
+  @exhaustive @sequence
+  Scenario: a failover is triggered and a replica is promoted to primary then a database cluster restore from snapshot completes then a cluster is restored from a snapshot
+    Given cid in cluster_status
+    When a failover is triggered and a replica is promoted to primary
+    When a database cluster restore from snapshot completes
+    When a cluster is restored from a snapshot
     And every cluster has a valid status
     And every instance has a valid status
     And every snapshot has a valid status

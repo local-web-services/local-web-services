@@ -392,7 +392,7 @@ atomic action CreateDBClusterSnapshot:
 
 # fake_skip: internal
 # step: a database cluster snapshot finishes creating
-# result: the snapshot is AVAILABLE
+# result: the snapshot is AVAILABLE and the cluster returns to AVAILABLE if it was backing up
 # guard: the snapshot exists
 # guard_violation: the snapshot does not exist
 # guard: the snapshot is CREATING
@@ -402,6 +402,10 @@ atomic action CompleteSnapshotCreation:
         if sid in snapshot_status:
             if snapshot_status[sid] == "CREATING":
                 snapshot_status[sid] = "AVAILABLE"
+                cid = snapshot_cluster[sid]
+                if cid in cluster_status:
+                    if cluster_status[cid] == "BACKING_UP":
+                        cluster_status[cid] = "AVAILABLE"
 
 # step: a database cluster snapshot is deleted
 # result: the snapshot is in DELETING state
@@ -429,7 +433,7 @@ atomic action CompleteSnapshotDeletion:
                 snapshot_status[sid] = "DELETED"
 
 # step: a cluster is restored from a snapshot
-# result: the restored cluster is in CREATING state
+# result: the restored cluster is in RESTORING state
 # guard: the snapshot exists
 # guard_violation: the snapshot does not exist
 # guard: the snapshot is AVAILABLE
@@ -442,12 +446,26 @@ atomic action RestoreDBClusterFromSnapshot:
             if snapshot_status[sid] == "AVAILABLE":
                 oneof cid in CLUSTER_IDS:
                     if cid not in cluster_status:
-                        cluster_status[cid] = "CREATING"
+                        cluster_status[cid] = "RESTORING"
                         cluster_multi_az[cid] = True
                         cluster_primary_instance[cid] = ""
 
+# fake_skip: internal
+# step: a database cluster restore from snapshot completes
+# result: the cluster is AVAILABLE
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is RESTORING
+# guard_violation: the cluster is not RESTORING
+atomic action CompleteClusterRestore:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "RESTORING":
+                cluster_status[cid] = "AVAILABLE"
+
+# fake_skip: internal
 # step: an automated backup window runs on an available cluster
-# result: a snapshot is CREATING and linked to the cluster
+# result: a snapshot is CREATING and the cluster is in BACKING_UP state
 # guard: the cluster exists
 # guard_violation: the cluster does not exist
 # guard: the cluster is AVAILABLE
@@ -462,13 +480,14 @@ atomic action AutomatedBackupWindow:
                     if sid not in snapshot_status:
                         snapshot_status[sid] = "CREATING"
                         snapshot_cluster[sid] = cid
+                        cluster_status[cid] = "BACKING_UP"
 
 # Safety: cluster statuses are valid
 # check: every cluster has a valid status
 always assertion ValidClusterStatus:
     for cid in cluster_status:
         s = cluster_status[cid]
-        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "FAILED" and s != "STOPPED" and s != "STARTING" and s != "STOPPING" and s != "DELETED":
+        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "FAILED" and s != "STOPPED" and s != "STARTING" and s != "STOPPING" and s != "RESTORING" and s != "BACKING_UP" and s != "DELETED":
             return False
     return True
 
@@ -525,6 +544,22 @@ always assertion NoAvailableInstancesOnDeletedCluster:
                         if instance_cluster[iid] == cid:
                             if instance_status[iid] != "DELETED":
                                 return False
+    return True
+
+# Safety: a BACKING_UP cluster must have a corresponding in-progress snapshot
+# check: every backing-up cluster has a corresponding in-progress snapshot
+always assertion BackingUpClusterHasSnapshot:
+    for cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "BACKING_UP":
+                found = False
+                for sid in SNAPSHOT_IDS:
+                    if sid in snapshot_status:
+                        if snapshot_status[sid] == "CREATING":
+                            if snapshot_cluster[sid] == cid:
+                                found = True
+                if not found:
+                    return False
     return True
 
 # Safety: FAILED clusters should not have AVAILABLE instances

@@ -25,7 +25,7 @@ Feature: Memorydb - A Memorydb Cluster Is Deleted
     When a MemoryDB cluster is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_cluster @lifecycle @internal
+  @standard @negative @delete_cluster @lifecycle
   Scenario: a MemoryDB cluster is deleted fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

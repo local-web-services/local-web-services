@@ -23,7 +23,7 @@ Feature: Rds - A Tag Is Applied To A Database Instance
     When a tag is applied to a database instance
     Then the operation is rejected
 
-  @standard @negative @tag_d_b_instance @lifecycle @internal
+  @standard @negative @tag_d_b_instance @lifecycle
   Scenario: a tag is applied to a database instance fails when the instance is not "AVAILABLE"
     Given the database instance exists
     And the instance is not "AVAILABLE"

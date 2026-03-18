@@ -27,14 +27,14 @@ Feature: Dynamodb - Items Are Queried From The Table By Key
     When items are queried from the table by key
     Then the operation is rejected
 
-  @standard @negative @query @lifecycle @internal
+  @standard @negative @query @lifecycle
   Scenario: items are queried from the table by key fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When items are queried from the table by key
     Then the operation is rejected
 
-  @standard @negative @query @capacity @internal
+  @standard @negative @query @capacity
   Scenario: items are queried from the table by key fails when reads are throttled
     Given the table exists
     And the table is "ACTIVE"
