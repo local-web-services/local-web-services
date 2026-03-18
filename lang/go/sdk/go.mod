@@ -1,6 +1,6 @@
 module github.com/local-web-services/local-web-services-go-sdk
 
-go 1.21
+go 1.23
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.3
@@ -13,8 +13,12 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sns v1.31.0
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.34.0
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.52.0
+	github.com/cucumber/godog v0.15.0
 	github.com/gorilla/websocket v1.5.3
+	github.com/local-web-services/local-web-services-go-core v0.0.0
 )
+
+replace github.com/local-web-services/local-web-services-go-core => ../core
 
 require (
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 // indirect
@@ -32,5 +36,12 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.22.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.27.0 // indirect
 	github.com/aws/smithy-go v1.20.3 // indirect
+	github.com/cucumber/gherkin/go/v26 v26.2.0 // indirect
+	github.com/cucumber/messages/go/v21 v21.0.1 // indirect
+	github.com/gofrs/uuid v4.3.1+incompatible // indirect
+	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-memdb v1.3.4 // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 )

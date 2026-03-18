@@ -1,0 +1,155 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# S3 -> SNS Integration Formal Specification
+# Models S3 bucket event notifications delivered to an SNS topic.
+# When an object is uploaded to a bucket with a notification configuration,
+# S3 publishes a notification to the target SNS topic.
+# If the topic has been deleted, notification delivery fails silently.
+
+BUCKET_IDS = ["bucket-1"]
+TOPIC_IDS = ["topic-1"]
+OBJ_IDS = ["obj-1"]
+MSG_IDS = ["msg-1"]
+
+
+action Init:
+    bucket_status = {}          # bucket_status[bid] = "ACTIVE"
+    bucket_topic = {}           # bucket_topic[bid] = topic_id or "" (notification config)
+    topic_status = {}           # topic_status[tid] = "ACTIVE" | "DELETED"
+    obj_status = {}             # obj_status[oid] = "EXISTS"
+    obj_bucket = {}             # obj_bucket[oid] = bucket_id
+    msg_status = {}             # msg_status[mid] = "PUBLISHED" | "DELETED"
+    msg_topic = {}              # msg_topic[mid] = topic_id
+    msg_obj = {}                # msg_obj[mid] = obj_id
+
+
+# step: an S3 bucket is created
+# result: the bucket is ACTIVE with no notification configuration
+# guard: the bucket does not already exist
+# guard_violation: the bucket already exists
+atomic action CreateBucket:
+    oneof bid in BUCKET_IDS:
+        if bid not in bucket_status:
+            bucket_status[bid] = "ACTIVE"
+            bucket_topic[bid] = ""
+
+
+# step: an SNS topic is created
+# result: the topic is ACTIVE
+# guard: the topic does not already exist
+# guard_violation: the topic already exists
+atomic action CreateTopic:
+    oneof tid in TOPIC_IDS:
+        if tid not in topic_status:
+            topic_status[tid] = "ACTIVE"
+
+
+# step: the SNS topic is deleted
+# result: the topic is DELETED and notification delivery to it will fail
+# guard: the topic exists
+# guard_violation: the topic does not exist
+# guard: the topic is ACTIVE
+# guard_violation_lifecycle: the topic is already DELETED
+atomic action DeleteTopic:
+    oneof tid in TOPIC_IDS:
+        if tid in topic_status:
+            if topic_status[tid] == "ACTIVE":
+                topic_status[tid] = "DELETED"
+
+
+# step: an SNS notification configuration is added to the bucket
+# result: the bucket will publish notifications to the topic when objects are uploaded
+# guard: the bucket exists and is ACTIVE
+# guard_violation: the bucket does not exist or is not ACTIVE
+# guard: the bucket has no notification configuration
+# guard_violation: the bucket already has a notification configuration
+# guard: the topic exists and is ACTIVE
+# guard_violation: the topic does not exist or is not ACTIVE
+atomic action ConfigureNotification:
+    oneof bid in BUCKET_IDS:
+        if bid in bucket_status:
+            if bucket_status[bid] == "ACTIVE":
+                if bucket_topic[bid] == "":
+                    oneof tid in TOPIC_IDS:
+                        if tid in topic_status:
+                            if topic_status[tid] == "ACTIVE":
+                                bucket_topic[bid] = tid
+
+
+# step: an object is uploaded and S3 publishes a notification to the SNS topic
+# result: the object EXISTS and a notification is PUBLISHED to the topic
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the bucket has a notification configuration
+# guard_violation: the bucket has no notification configuration
+# guard: the target topic is ACTIVE
+# guard_violation_lifecycle: the target topic is DELETED
+# guard: an object slot is available
+# guard_violation_capacity: no object slot is available
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action PutObjectWithNotification:
+    oneof bid in BUCKET_IDS:
+        if bid in bucket_status:
+            if bucket_status[bid] == "ACTIVE":
+                if bucket_topic[bid] != "":
+                    tid = bucket_topic[bid]
+                    if tid in topic_status:
+                        if topic_status[tid] == "ACTIVE":
+                            oneof oid in OBJ_IDS:
+                                if oid not in obj_status:
+                                    oneof mid in MSG_IDS:
+                                        if mid not in msg_status:
+                                            obj_status[oid] = "EXISTS"
+                                            obj_bucket[oid] = bid
+                                            msg_status[mid] = "PUBLISHED"
+                                            msg_topic[mid] = tid
+                                            msg_obj[mid] = oid
+
+
+# step: an object is uploaded but notification delivery fails because the topic has been deleted
+# result: the object EXISTS but no notification is published
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the bucket has a notification configuration
+# guard_violation: the bucket has no notification configuration
+# guard: the target topic is DELETED
+# guard_violation_lifecycle: the target topic is not DELETED
+# guard: an object slot is available
+# guard_violation_capacity: no object slot is available
+atomic action PutObjectNotificationFails:
+    oneof bid in BUCKET_IDS:
+        if bid in bucket_status:
+            if bucket_status[bid] == "ACTIVE":
+                if bucket_topic[bid] != "":
+                    tid = bucket_topic[bid]
+                    if tid in topic_status:
+                        if topic_status[tid] == "DELETED":
+                            oneof oid in OBJ_IDS:
+                                if oid not in obj_status:
+                                    obj_status[oid] = "EXISTS"
+                                    obj_bucket[oid] = bid
+
+
+# check: every PUBLISHED notification references an object that exists
+always assertion PublishedNotificationReferencesExistingObject:
+    for mid in msg_status:
+        if msg_status[mid] == "PUBLISHED":
+            oid = msg_obj[mid]
+            if oid not in obj_status:
+                return False
+    return True
+
+
+# check: every PUBLISHED notification references a topic that exists
+always assertion PublishedNotificationReferencesExistingTopic:
+    for mid in msg_status:
+        if msg_status[mid] == "PUBLISHED":
+            tid = msg_topic[mid]
+            if tid not in topic_status:
+                return False
+    return True

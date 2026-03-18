@@ -1,0 +1,428 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 20
+---
+# Formal specification for AWS S3 Tables (s3tables)
+# Models table bucket lifecycle, namespace lifecycle, table lifecycle,
+# Apache Iceberg table format (snapshots, schema evolution),
+# maintenance configuration, table policies, and background compaction
+
+BUCKET_NAMES = ["bucket-a", "bucket-b"]
+NS_NAMES = ["ns-1", "ns-2"]
+TABLE_NAMES = ["table-1", "table-2", "table-3"]
+SNAPSHOT_IDS = ["snap-1", "snap-2", "snap-3", "snap-4"]
+
+action Init:
+    bucket_status = {}
+
+    ns_status = {}
+
+    table_status = {}
+    table_schema_version = {}
+    table_snapshot_count = {}
+
+    snapshot_status = {}
+
+    maintenance_compaction = {}
+
+    table_policy_exists = {}
+
+# step: a table bucket is created
+# result: the bucket is in CREATING state
+# guard: the bucket does not already exist
+# guard_violation: the bucket already exists
+atomic action CreateTableBucket:
+    oneof bname in BUCKET_NAMES:
+        if bname not in bucket_status:
+            bucket_status[bname] = "CREATING"
+
+# fake_skip: internal
+# step: a table bucket finishes creating
+# result: the bucket is ACTIVE
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is CREATING
+# guard_violation: the bucket is not CREATING
+atomic action FinishCreatingTableBucket:
+    oneof bname in BUCKET_NAMES:
+        if bname in bucket_status:
+            if bucket_status[bname] == "CREATING":
+                bucket_status[bname] = "ACTIVE"
+
+# step: a table bucket is deleted
+# result: the bucket enters DELETING state
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the bucket has no active namespaces
+# guard_violation: the bucket has active namespaces
+atomic action DeleteTableBucket:
+    oneof bname in BUCKET_NAMES:
+        if bname in bucket_status:
+            if bucket_status[bname] == "ACTIVE":
+                if all([bname + "#" + ns not in ns_status or ns_status[bname + "#" + ns] != "ACTIVE" for ns in NS_NAMES]):
+                    bucket_status[bname] = "DELETING"
+
+# fake_skip: internal
+# step: a table bucket finishes being deleted
+# result: the bucket is DELETED and all its namespaces and tables are DELETED
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is DELETING
+# guard_violation: the bucket is not DELETING
+# guard: the namespace exists
+# guard_violation: the namespace does not exist
+# guard: the table exists
+# guard_violation: the table does not exist
+atomic action FinishDeletingTableBucket:
+    oneof bname in BUCKET_NAMES:
+        if bname in bucket_status:
+            if bucket_status[bname] == "DELETING":
+                bucket_status[bname] = "DELETED"
+                for ns in NS_NAMES:
+                    ns_key = bname + "#" + ns
+                    if ns_key in ns_status:
+                        ns_status[ns_key] = "DELETED"
+                        for tname in TABLE_NAMES:
+                            tkey = bname + "#" + ns + "#" + tname
+                            if tkey in table_status:
+                                table_status[tkey] = "DELETED"
+
+# step: a namespace is created in a table bucket
+# result: the namespace is ACTIVE
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the namespace does not already exist
+# guard_violation: the namespace already exists
+atomic action CreateNamespace:
+    oneof bname in BUCKET_NAMES:
+        if bname in bucket_status:
+            if bucket_status[bname] == "ACTIVE":
+                oneof ns in NS_NAMES:
+                    ns_key = bname + "#" + ns
+                    if ns_key not in ns_status:
+                        ns_status[ns_key] = "ACTIVE"
+
+# step: a namespace is deleted from a table bucket
+# result: the namespace enters DELETING state
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the namespace exists
+# guard_violation: the namespace does not exist
+# guard: the namespace is ACTIVE
+# guard_violation_lifecycle: the namespace is not ACTIVE
+# guard: the namespace has no active tables
+# guard_violation: the namespace has active tables
+atomic action DeleteNamespace:
+    oneof bname in BUCKET_NAMES:
+        if bname in bucket_status:
+            if bucket_status[bname] == "ACTIVE":
+                oneof ns in NS_NAMES:
+                    ns_key = bname + "#" + ns
+                    if ns_key in ns_status:
+                        if ns_status[ns_key] == "ACTIVE":
+                            if all([bname + "#" + ns + "#" + tname not in table_status or table_status[bname + "#" + ns + "#" + tname] != "ACTIVE" for tname in TABLE_NAMES]):
+                                ns_status[ns_key] = "DELETING"
+
+# fake_skip: internal
+# step: a namespace finishes being deleted
+# result: the namespace is DELETED and all its tables are DELETED
+# guard: the namespace exists
+# guard_violation: the namespace does not exist
+# guard: the namespace is DELETING
+# guard_violation: the namespace is not DELETING
+# guard: the table exists
+# guard_violation: the table does not exist
+atomic action FinishDeletingNamespace:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            ns_key = bname + "#" + ns
+            if ns_key in ns_status:
+                if ns_status[ns_key] == "DELETING":
+                    ns_status[ns_key] = "DELETED"
+                    for tname in TABLE_NAMES:
+                        tkey = bname + "#" + ns + "#" + tname
+                        if tkey in table_status:
+                            table_status[tkey] = "DELETED"
+
+# step: a table is created in a namespace
+# result: the table is in CREATING state
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+# guard: the namespace exists
+# guard_violation: the namespace does not exist
+# guard: the namespace is ACTIVE
+# guard_violation_lifecycle: the namespace is not ACTIVE
+# guard: the table does not already exist
+# guard_violation: the table already exists
+atomic action CreateTable:
+    oneof bname in BUCKET_NAMES:
+        if bname in bucket_status:
+            if bucket_status[bname] == "ACTIVE":
+                oneof ns in NS_NAMES:
+                    ns_key = bname + "#" + ns
+                    if ns_key in ns_status:
+                        if ns_status[ns_key] == "ACTIVE":
+                            oneof tname in TABLE_NAMES:
+                                tkey = bname + "#" + ns + "#" + tname
+                                if tkey not in table_status:
+                                    table_status[tkey] = "CREATING"
+                                    table_schema_version[tkey] = 1
+                                    table_snapshot_count[tkey] = 0
+                                    maintenance_compaction[tkey] = True
+                                    table_policy_exists[tkey] = False
+
+# fake_skip: internal
+# step: a table finishes creating
+# result: the table is ACTIVE
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is CREATING
+# guard_violation: the table is not CREATING
+atomic action FinishCreatingTable:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "CREATING":
+                        table_status[tkey] = "ACTIVE"
+
+# step: a table is deleted
+# result: the table enters DELETING state
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+atomic action DeleteTable:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "ACTIVE":
+                        table_status[tkey] = "DELETING"
+
+# fake_skip: internal
+# step: a table finishes being deleted
+# result: the table is DELETED and all its snapshots are DELETED
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is DELETING
+# guard_violation: the table is not DELETING
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+atomic action FinishDeletingTable:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "DELETING":
+                        table_status[tkey] = "DELETED"
+                        for snap in SNAPSHOT_IDS:
+                            snap_key = tkey + "#" + snap
+                            if snap_key in snapshot_status:
+                                snapshot_status[snap_key] = "DELETED"
+
+# step: a snapshot is created for a table
+# result: the snapshot is ACTIVE and the table snapshot count increases
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: the snapshot does not already exist
+# guard_violation: the snapshot already exists
+atomic action CreateSnapshot:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "ACTIVE":
+                        oneof snap in SNAPSHOT_IDS:
+                            snap_key = tkey + "#" + snap
+                            if snap_key not in snapshot_status:
+                                snapshot_status[snap_key] = "ACTIVE"
+                                table_snapshot_count[tkey] = table_snapshot_count[tkey] + 1
+
+# step: a table's schema is evolved
+# result: the schema version is incremented
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+atomic action EvolveSchema:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "ACTIVE":
+                        table_schema_version[tkey] = table_schema_version[tkey] + 1
+
+# step: maintenance configuration is applied to a table
+# result: compaction is enabled for the table
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+atomic action PutTableMaintenanceConfiguration:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "ACTIVE":
+                        maintenance_compaction[tkey] = True
+
+# step: a policy is attached to a table
+# result: the table has a policy
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+atomic action PutTablePolicy:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "ACTIVE":
+                        table_policy_exists[tkey] = True
+
+# step: a table's policy is deleted
+# result: the table has no policy
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: the table has a policy
+# guard_violation: the table does not have a policy
+atomic action DeleteTablePolicy:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "ACTIVE":
+                        if table_policy_exists[tkey] == True:
+                            table_policy_exists[tkey] = False
+
+# step: compaction is started on a table
+# result: the table enters MAINTENANCE state
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: compaction is enabled for the table
+# guard_violation: compaction is not enabled for the table
+atomic action StartCompaction:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "ACTIVE":
+                        if maintenance_compaction[tkey] == True:
+                            table_status[tkey] = "MAINTENANCE"
+
+# fake_skip: internal
+# step: compaction finishes on a table
+# result: the table returns to ACTIVE state
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is in MAINTENANCE state
+# guard_violation_lifecycle: the table is not in MAINTENANCE state
+atomic action FinishCompaction:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "MAINTENANCE":
+                        table_status[tkey] = "ACTIVE"
+
+# step: an expired snapshot is removed from a table
+# result: the snapshot is DELETED and the table snapshot count decreases
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: the table has more than one snapshot
+# guard_violation: the table has one or fewer snapshots
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is ACTIVE
+# guard_violation: the snapshot is not ACTIVE
+atomic action ExpireSnapshot:
+    oneof bname in BUCKET_NAMES:
+        oneof ns in NS_NAMES:
+            oneof tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_status:
+                    if table_status[tkey] == "ACTIVE":
+                        if table_snapshot_count[tkey] > 1:
+                            oneof snap in SNAPSHOT_IDS:
+                                snap_key = tkey + "#" + snap
+                                if snap_key in snapshot_status:
+                                    if snapshot_status[snap_key] == "ACTIVE":
+                                        snapshot_status[snap_key] = "DELETED"
+                                        table_snapshot_count[tkey] = table_snapshot_count[tkey] - 1
+
+# check: a bucket in DELETING state has no ACTIVE namespaces
+always assertion BucketDeletionRequiresNoNamespaces:
+    for bname in BUCKET_NAMES:
+        if bname in bucket_status:
+            if bucket_status[bname] == "DELETING":
+                for ns in NS_NAMES:
+                    ns_key = bname + "#" + ns
+                    if ns_key in ns_status:
+                        if ns_status[ns_key] == "ACTIVE":
+                            return False
+    return True
+
+# check: a namespace in DELETING state has no ACTIVE tables
+always assertion NamespaceDeletionRequiresNoTables:
+    for bname in BUCKET_NAMES:
+        for ns in NS_NAMES:
+            ns_key = bname + "#" + ns
+            if ns_key in ns_status:
+                if ns_status[ns_key] == "DELETING":
+                    for tname in TABLE_NAMES:
+                        tkey = bname + "#" + ns + "#" + tname
+                        if tkey in table_status:
+                            if table_status[tkey] == "ACTIVE":
+                                return False
+    return True
+
+# check: snapshot count is never negative
+always assertion SnapshotCountNonNegative:
+    for bname in BUCKET_NAMES:
+        for ns in NS_NAMES:
+            for tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_snapshot_count:
+                    if table_snapshot_count[tkey] < 0:
+                        return False
+    return True
+
+# check: schema version is always at least one
+always assertion SchemaVersionAtLeastOne:
+    for bname in BUCKET_NAMES:
+        for ns in NS_NAMES:
+            for tname in TABLE_NAMES:
+                tkey = bname + "#" + ns + "#" + tname
+                if tkey in table_schema_version:
+                    if table_schema_version[tkey] < 1:
+                        return False
+    return True

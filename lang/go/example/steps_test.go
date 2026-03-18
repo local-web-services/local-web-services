@@ -5,8 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/service/sfn"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	dyntypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/aws/aws-sdk-go-v2/service/sfn"
+	sfntypes "github.com/aws/aws-sdk-go-v2/service/sfn/types"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/cucumber/godog"
 	"github.com/local-web-services/local-web-services-go-sdk/lws"
 )
@@ -39,22 +43,22 @@ type testContext struct {
 	sqsHelper *lws.SQSHelper
 }
 
-func InitializeScenario(sc *godog.ScenarioContext) {
-	ctx := &testContext{}
+func (c *testContext) reset() {
+	c.session = nil
+	c.sfnClient = nil
+	c.stateMachineArn = ""
+	c.lastOutput = nil
+	c.lastErr = nil
+	c.logCapture = nil
+	c.sfnFakeBuilder = nil
+	c.fakeExecutionArn = ""
+	c.processedOutputs = nil
+	c.processedIDs = nil
+	c.ddbHelper = nil
+	c.sqsHelper = nil
+}
 
-	sc.After(func(goCtx context.Context, sc *godog.Scenario, err error) (context.Context, error) {
-		if ctx.logCapture != nil {
-			ctx.logCapture.Stop()
-			ctx.logCapture = nil
-		}
-		if ctx.session != nil {
-			_ = ctx.session.Fake("stepfunctions").Clear()
-			ctx.session.Close()
-			ctx.session = nil
-		}
-		return goCtx, nil
-	})
-
+func InitializeSteps(sc *godog.ScenarioContext, ctx *testContext) {
 	// Session setup steps
 	sc.Step(`an OrderProcessor state machine is running`, ctx.anOrderProcessorStateMachineIsRunning)
 	sc.Step(`no state machines are configured`, ctx.noStateMachinesConfigured)
@@ -103,16 +107,17 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 // --- Session setup ---
 
 func (c *testContext) anOrderProcessorStateMachineIsRunning() error {
-	session, err := lws.New(lws.SessionSpec{
-		StateMachines: []lws.StateMachineSpec{
-			{Name: "OrderProcessor", Definition: stateMachineDefinition},
-		},
+	c.session = sharedSession
+	c.sfnClient = c.session.SFNClient()
+	_, err := c.sfnClient.CreateStateMachine(context.Background(), &sfn.CreateStateMachineInput{
+		Name:       aws.String("OrderProcessor"),
+		Definition: aws.String(stateMachineDefinition),
+		RoleArn:    aws.String("arn:aws:iam::000000000000:role/StepFunctionsRole"),
+		Type:       sfntypes.StateMachineTypeStandard,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to start lws session: %w", err)
+		return fmt.Errorf("failed to create OrderProcessor state machine: %w", err)
 	}
-	c.session = session
-	c.sfnClient = session.SFNClient()
 	arn, err := resolveStateMachineArn(c.sfnClient)
 	if err != nil {
 		return err
@@ -122,53 +127,69 @@ func (c *testContext) anOrderProcessorStateMachineIsRunning() error {
 }
 
 func (c *testContext) noStateMachinesConfigured() error {
-	session, err := lws.New(lws.SessionSpec{})
-	if err != nil {
-		return fmt.Errorf("failed to start lws session: %w", err)
-	}
-	c.session = session
-	c.sfnClient = session.SFNClient()
+	c.session = sharedSession
+	c.sfnClient = c.session.SFNClient()
 	return nil
 }
 
 func (c *testContext) aSessionStartedFromHCLDirectory(dir string) error {
-	session, err := lws.FromHcl(dir)
+	spec, err := lws.DiscoverHcl(dir)
 	if err != nil {
-		return fmt.Errorf("failed to start lws session from HCL: %w", err)
+		return fmt.Errorf("HCL discovery failed: %w", err)
 	}
-	c.session = session
-	c.sfnClient = session.SFNClient()
-	arn, err := resolveStateMachineArn(c.sfnClient)
-	if err != nil {
-		return err
+	c.session = sharedSession
+	c.sfnClient = c.session.SFNClient()
+	for _, sm := range spec.StateMachines {
+		_, err := c.sfnClient.CreateStateMachine(context.Background(), &sfn.CreateStateMachineInput{
+			Name:       aws.String(sm.Name),
+			Definition: aws.String(sm.Definition),
+			RoleArn:    aws.String("arn:aws:iam::000000000000:role/StepFunctionsRole"),
+			Type:       sfntypes.StateMachineTypeStandard,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create state machine %q: %w", sm.Name, err)
+		}
 	}
-	c.stateMachineArn = arn
+	if len(spec.StateMachines) > 0 {
+		arn, err := resolveStateMachineArn(c.sfnClient)
+		if err != nil {
+			return err
+		}
+		c.stateMachineArn = arn
+	}
 	return nil
 }
 
 func (c *testContext) aDynamoDBTableWithPartitionKey(tableName, partitionKey string) error {
-	session, err := lws.New(lws.SessionSpec{
-		Tables: []lws.TableSpec{
-			{Name: tableName, PartitionKey: partitionKey},
+	c.session = sharedSession
+	ddbClient := c.session.DynamoDBClient()
+	_, err := ddbClient.CreateTable(context.Background(), &dynamodb.CreateTableInput{
+		TableName: aws.String(tableName),
+		KeySchema: []dyntypes.KeySchemaElement{
+			{AttributeName: aws.String(partitionKey), KeyType: dyntypes.KeyTypeHash},
 		},
+		AttributeDefinitions: []dyntypes.AttributeDefinition{
+			{AttributeName: aws.String(partitionKey), AttributeType: dyntypes.ScalarAttributeTypeS},
+		},
+		BillingMode: dyntypes.BillingModePayPerRequest,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to start lws session: %w", err)
+		return fmt.Errorf("failed to create DynamoDB table %q: %w", tableName, err)
 	}
-	c.session = session
-	c.ddbHelper = session.DynamoDB(tableName)
+	c.ddbHelper = c.session.DynamoDB(tableName)
 	return nil
 }
 
 func (c *testContext) anSQSQueueNamed(queueName string) error {
-	session, err := lws.New(lws.SessionSpec{
-		Queues: []string{queueName},
+	c.session = sharedSession
+	sqsClient := c.session.SQSClient()
+	_, err := sqsClient.CreateQueue(context.Background(), &sqs.CreateQueueInput{
+		QueueName: aws.String(queueName),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to start lws session: %w", err)
+		return fmt.Errorf("failed to create SQS queue %q: %w", queueName, err)
 	}
-	c.session = session
-	c.sqsHelper = session.SQS(queueName)
+	c.sqsHelper = c.session.SQS(queueName)
 	return nil
 }
 
@@ -398,11 +419,15 @@ func (c *testContext) noErrorsWillAppearInLogCapture() error {
 }
 
 func (c *testContext) recentLogsWillBeNonEmpty() error {
-	logs := c.session.RecentLogs()
-	if len(logs) == 0 {
-		return fmt.Errorf("expected non-empty recent logs after activity")
+	deadline := time.Now().Add(5 * time.Second)
+	for time.Now().Before(deadline) {
+		logs := c.session.RecentLogs()
+		if len(logs) > 0 {
+			return nil
+		}
+		time.Sleep(50 * time.Millisecond)
 	}
-	return nil
+	return fmt.Errorf("expected non-empty recent logs after activity")
 }
 
 func (c *testContext) filteringLogsByServiceWillReturnEntries(service string) error {

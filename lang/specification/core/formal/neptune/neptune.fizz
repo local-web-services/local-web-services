@@ -1,0 +1,540 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 20
+---
+# Amazon Neptune formal specification
+# Models DB clusters, instances, and snapshots with lifecycle transitions
+# Uses flat dicts and fixed resource pools (no nested subscript, no del, no state: block)
+
+CLUSTER_IDS = ["neptune-c1", "neptune-c2", "neptune-c3"]
+INSTANCE_IDS = ["neptune-i1", "neptune-i2", "neptune-i3", "neptune-i4"]
+SNAPSHOT_IDS = ["neptune-s1", "neptune-s2", "neptune-s3"]
+
+action Init:
+    cluster_status = {}
+    cluster_multi_az = {}
+    cluster_primary_instance = {}
+
+    instance_status = {}
+    instance_cluster = {}
+    instance_is_primary = {}
+
+    snapshot_status = {}
+    snapshot_cluster = {}
+
+# step: a database cluster is created
+# result: the cluster is in CREATING state
+# guard: the cluster does not already exist
+# guard_violation: the cluster already exists
+atomic action CreateDBCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid not in cluster_status:
+            cluster_status[cid] = "CREATING"
+            cluster_multi_az[cid] = True
+            cluster_primary_instance[cid] = ""
+
+# fake_skip: internal
+# step: a database cluster finishes creating
+# result: the cluster is AVAILABLE
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is CREATING
+# guard_violation: the cluster is not CREATING
+atomic action CompleteClusterCreation:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "CREATING":
+                cluster_status[cid] = "AVAILABLE"
+
+# fake_skip: internal
+# step: a database cluster creation fails
+# result: the cluster is in FAILED state
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is CREATING
+# guard_violation: the cluster is not CREATING
+atomic action FailClusterCreation:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "CREATING":
+                cluster_status[cid] = "FAILED"
+
+# step: a database cluster configuration is modified
+# result: the cluster is in MODIFYING state
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+atomic action ModifyDBCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                cluster_status[cid] = "MODIFYING"
+
+# fake_skip: internal
+# step: a database cluster modification completes
+# result: the cluster returns to AVAILABLE state
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is MODIFYING
+# guard_violation: the cluster is not MODIFYING
+atomic action CompleteClusterModification:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "MODIFYING":
+                cluster_status[cid] = "AVAILABLE"
+
+# step: a database cluster is stopped
+# result: the cluster is in STOPPING state
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+atomic action StopDBCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                cluster_status[cid] = "STOPPING"
+
+# fake_skip: internal
+# step: a database cluster stop completes
+# result: the cluster and its instances are STOPPED
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is STOPPING
+# guard_violation: the cluster is not STOPPING
+# guard: the instance is associated with a cluster
+# guard_violation: the instance is not associated with a cluster
+# guard: the instance belongs to this cluster
+# guard_violation: the instance belongs to a different cluster
+# guard: the instance is AVAILABLE
+# guard_violation: the instance is not AVAILABLE
+atomic action CompleteClusterStop:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "STOPPING":
+                cluster_status[cid] = "STOPPED"
+                for iid in INSTANCE_IDS:
+                    if iid in instance_cluster:
+                        if instance_cluster[iid] == cid:
+                            if instance_status[iid] == "AVAILABLE":
+                                instance_status[iid] = "STOPPED"
+
+# step: a stopped database cluster is started
+# result: the cluster is in STARTING state
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is STOPPED
+# guard_violation_lifecycle: the cluster is not STOPPED
+atomic action StartDBCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "STOPPED":
+                cluster_status[cid] = "STARTING"
+
+# fake_skip: internal
+# step: a database cluster start completes
+# result: the cluster and its instances are AVAILABLE
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is STARTING
+# guard_violation: the cluster is not STARTING
+# guard: the instance is associated with a cluster
+# guard_violation: the instance is not associated with a cluster
+# guard: the instance belongs to this cluster
+# guard_violation: the instance belongs to a different cluster
+# guard: the instance is STOPPED
+# guard_violation: the instance is not STOPPED
+atomic action CompleteClusterStart:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "STARTING":
+                cluster_status[cid] = "AVAILABLE"
+                for iid in INSTANCE_IDS:
+                    if iid in instance_cluster:
+                        if instance_cluster[iid] == cid:
+                            if instance_status[iid] == "STOPPED":
+                                instance_status[iid] = "AVAILABLE"
+
+# step: a database cluster is deleted
+# result: the cluster is in DELETING state
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+# guard: the cluster has no non-deleted instances
+# guard_violation_lifecycle: the cluster has non-deleted instances
+atomic action DeleteDBCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                if all([iid not in instance_status or instance_cluster[iid] != cid or instance_status[iid] == "DELETED" for iid in INSTANCE_IDS]):
+                    cluster_status[cid] = "DELETING"
+
+# fake_skip: internal
+# step: a database cluster deletion completes
+# result: the cluster is DELETED
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is DELETING
+# guard_violation: the cluster is not DELETING
+atomic action CompleteClusterDeletion:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "DELETING":
+                cluster_status[cid] = "DELETED"
+
+# step: a database instance is created in an available cluster
+# result: the instance is in CREATING state and associated with the cluster
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+# guard: the instance slot is available
+# guard_violation: the instance slot is not available
+atomic action CreateDBInstance:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                oneof iid in INSTANCE_IDS:
+                    if iid not in instance_status:
+                        instance_status[iid] = "CREATING"
+                        instance_cluster[iid] = cid
+                        if cluster_primary_instance[cid] == "":
+                            instance_is_primary[iid] = True
+                        else:
+                            instance_is_primary[iid] = False
+
+# fake_skip: internal
+# step: a database instance finishes creating
+# result: the instance is AVAILABLE and the cluster primary is updated if applicable
+# guard: the instance exists
+# guard_violation: the instance does not exist
+# guard: the instance is CREATING
+# guard_violation: the instance is not CREATING
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the instance is the primary
+# guard_violation: the instance is not the primary
+atomic action CompleteInstanceCreation:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "CREATING":
+                instance_status[iid] = "AVAILABLE"
+                cid = instance_cluster[iid]
+                if cid in cluster_status:
+                    if instance_is_primary[iid]:
+                        cluster_primary_instance[cid] = iid
+
+# step: a database instance configuration is modified
+# result: the instance is in MODIFYING state
+# guard: the instance exists
+# guard_violation: the instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+atomic action ModifyDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                cid = instance_cluster[iid]
+                if cid in cluster_status:
+                    if cluster_status[cid] == "AVAILABLE":
+                        instance_status[iid] = "MODIFYING"
+
+# fake_skip: internal
+# step: a database instance modification completes
+# result: the instance returns to AVAILABLE state
+# guard: the instance exists
+# guard_violation: the instance does not exist
+# guard: the instance is MODIFYING
+# guard_violation: the instance is not MODIFYING
+atomic action CompleteInstanceModification:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "MODIFYING":
+                instance_status[iid] = "AVAILABLE"
+
+# step: a database instance is rebooted
+# result: the instance is in REBOOTING state
+# guard: the instance exists
+# guard_violation: the instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+atomic action RebootDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                cid = instance_cluster[iid]
+                if cid in cluster_status:
+                    if cluster_status[cid] == "AVAILABLE":
+                        instance_status[iid] = "REBOOTING"
+
+# fake_skip: internal
+# step: a database instance reboot completes
+# result: the instance returns to AVAILABLE state
+# guard: the instance exists
+# guard_violation: the instance does not exist
+# guard: the instance is REBOOTING
+# guard_violation: the instance is not REBOOTING
+atomic action CompleteInstanceReboot:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "REBOOTING":
+                instance_status[iid] = "AVAILABLE"
+
+# step: a database instance is deleted
+# result: the instance is in DELETING state
+# guard: the instance exists
+# guard_violation: the instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+atomic action DeleteDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                instance_status[iid] = "DELETING"
+
+# fake_skip: internal
+# step: a database instance deletion completes
+# result: the instance is DELETED and the cluster primary is cleared if applicable
+# guard: the instance exists
+# guard_violation: the instance does not exist
+# guard: the instance is DELETING
+# guard_violation: the instance is not DELETING
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the instance is the primary of the cluster
+# guard_violation: the instance is not the primary of the cluster
+atomic action CompleteInstanceDeletion:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "DELETING":
+                instance_status[iid] = "DELETED"
+                cid = instance_cluster[iid]
+                if cid in cluster_status:
+                    if cluster_primary_instance[cid] == iid:
+                        cluster_primary_instance[cid] = ""
+
+# MultiAZFailover: model as cluster going through MODIFYING (promotes a new primary)
+# step: a multi-AZ failover is triggered on a cluster
+# result: the cluster enters MODIFYING state for primary promotion
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+# guard: multi-AZ is enabled for the cluster
+# guard_violation: multi-AZ is not enabled for the cluster
+atomic action MultiAZFailover:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                if cluster_multi_az[cid]:
+                    cluster_status[cid] = "MODIFYING"
+
+# fake_skip: internal
+# Promote a replica instance to primary while cluster is MODIFYING
+# step: a replica instance is promoted to primary during failover
+# result: the cluster returns to AVAILABLE with a new primary instance
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is MODIFYING
+# guard_violation: the cluster is not MODIFYING
+# guard: the new primary instance exists
+# guard_violation: the new primary instance does not exist
+# guard: the instance belongs to this cluster
+# guard_violation: the instance does not belong to this cluster
+# guard: the instance is not already the primary
+# guard_violation: the instance is already the primary
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+atomic action PromoteReplicaToPrimary:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "MODIFYING":
+                oneof new_primary in INSTANCE_IDS:
+                    if new_primary in instance_status:
+                        if instance_cluster[new_primary] == cid:
+                            if not instance_is_primary[new_primary]:
+                                if instance_status[new_primary] == "AVAILABLE":
+                                    old_primary = cluster_primary_instance[cid]
+                                    cluster_primary_instance[cid] = new_primary
+                                    instance_is_primary[new_primary] = True
+                                    if old_primary != "":
+                                        instance_is_primary[old_primary] = False
+                                    cluster_status[cid] = "AVAILABLE"
+
+# step: a database cluster snapshot is created
+# result: the snapshot is in CREATING state and linked to the cluster
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+# guard: the snapshot slot is available
+# guard_violation: the snapshot slot is not available
+atomic action CreateDBClusterSnapshot:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                oneof sid in SNAPSHOT_IDS:
+                    if sid not in snapshot_status:
+                        snapshot_status[sid] = "CREATING"
+                        snapshot_cluster[sid] = cid
+
+# fake_skip: internal
+# step: a database cluster snapshot finishes creating
+# result: the snapshot is AVAILABLE
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is CREATING
+# guard_violation: the snapshot is not CREATING
+atomic action CompleteSnapshotCreation:
+    oneof sid in SNAPSHOT_IDS:
+        if sid in snapshot_status:
+            if snapshot_status[sid] == "CREATING":
+                snapshot_status[sid] = "AVAILABLE"
+
+# step: a database cluster snapshot is deleted
+# result: the snapshot is in DELETING state
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is AVAILABLE
+# guard_violation_lifecycle: the snapshot is not AVAILABLE
+atomic action DeleteDBClusterSnapshot:
+    oneof sid in SNAPSHOT_IDS:
+        if sid in snapshot_status:
+            if snapshot_status[sid] == "AVAILABLE":
+                snapshot_status[sid] = "DELETING"
+
+# fake_skip: internal
+# step: a database cluster snapshot deletion completes
+# result: the snapshot is DELETED
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is DELETING
+# guard_violation: the snapshot is not DELETING
+atomic action CompleteSnapshotDeletion:
+    oneof sid in SNAPSHOT_IDS:
+        if sid in snapshot_status:
+            if snapshot_status[sid] == "DELETING":
+                snapshot_status[sid] = "DELETED"
+
+# step: a cluster is restored from a snapshot
+# result: the restored cluster is in CREATING state
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is AVAILABLE
+# guard_violation_lifecycle: the snapshot is not AVAILABLE
+# guard: the target cluster slot is available
+# guard_violation: the target cluster slot is not available
+atomic action RestoreDBClusterFromSnapshot:
+    oneof sid in SNAPSHOT_IDS:
+        if sid in snapshot_status:
+            if snapshot_status[sid] == "AVAILABLE":
+                oneof cid in CLUSTER_IDS:
+                    if cid not in cluster_status:
+                        cluster_status[cid] = "CREATING"
+                        cluster_multi_az[cid] = True
+                        cluster_primary_instance[cid] = ""
+
+# step: an automated backup window runs on an available cluster
+# result: a snapshot is CREATING and linked to the cluster
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+# guard: a snapshot slot is available
+# guard_violation: no snapshot slot is available
+atomic action AutomatedBackupWindow:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                oneof sid in SNAPSHOT_IDS:
+                    if sid not in snapshot_status:
+                        snapshot_status[sid] = "CREATING"
+                        snapshot_cluster[sid] = cid
+
+# Safety: cluster statuses are valid
+# check: every cluster has a valid status
+always assertion ValidClusterStatus:
+    for cid in cluster_status:
+        s = cluster_status[cid]
+        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "FAILED" and s != "STOPPED" and s != "STARTING" and s != "STOPPING" and s != "DELETED":
+            return False
+    return True
+
+# Safety: instance statuses are valid
+# check: every instance has a valid status
+always assertion ValidInstanceStatus:
+    for iid in instance_status:
+        s = instance_status[iid]
+        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "REBOOTING" and s != "STOPPED" and s != "DELETED":
+            return False
+    return True
+
+# Safety: snapshot statuses are valid
+# check: every snapshot has a valid status
+always assertion ValidSnapshotStatus:
+    for sid in snapshot_status:
+        s = snapshot_status[sid]
+        if s != "CREATING" and s != "AVAILABLE" and s != "DELETING" and s != "DELETED":
+            return False
+    return True
+
+# Safety: stopped clusters must not have AVAILABLE instances
+# check: a stopped cluster has no available instances
+always assertion StoppedClusterHasNoAvailableInstances:
+    for cid in cluster_status:
+        if cluster_status[cid] == "STOPPED":
+            for iid in instance_status:
+                if iid in instance_cluster:
+                    if instance_cluster[iid] == cid:
+                        if instance_status[iid] == "AVAILABLE":
+                            return False
+    return True
+
+# Safety: instances on a stopped/stopping cluster cannot be modifying
+# check: instances on a stopped or stopping cluster are not in MODIFYING state
+always assertion StoppedClusterInstancesNotModifiable:
+    for iid in instance_status:
+        if instance_status[iid] == "MODIFYING":
+            if iid in instance_cluster:
+                cid = instance_cluster[iid]
+                if cid in cluster_status:
+                    if cluster_status[cid] == "STOPPED" or cluster_status[cid] == "STOPPING":
+                        return False
+    return True
+
+# Safety: DELETED clusters should not have non-deleted instances
+# check: a deleted cluster has no available instances
+always assertion NoAvailableInstancesOnDeletedCluster:
+    for cid in cluster_status:
+        if cluster_status[cid] == "DELETED":
+            for iid in INSTANCE_IDS:
+                if iid in instance_status:
+                    if iid in instance_cluster:
+                        if instance_cluster[iid] == cid:
+                            if instance_status[iid] != "DELETED":
+                                return False
+    return True
+
+# Safety: FAILED clusters should not have AVAILABLE instances
+# check: a failed cluster has no available instances
+always assertion NoAvailableInstancesOnFailedCluster:
+    for cid in cluster_status:
+        if cluster_status[cid] == "FAILED":
+            for iid in instance_status:
+                if iid in instance_cluster:
+                    if instance_cluster[iid] == cid:
+                        if instance_status[iid] == "AVAILABLE":
+                            return False
+    return True

@@ -1,0 +1,184 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Step Functions -> S3 Integration Formal Specification
+# Models a Step Functions state machine reading and writing objects to S3 as task steps.
+# A PutObject task always succeeds; a GetObject task fails if the object does not exist.
+
+SM_IDS = ["sm-1"]
+BUCKET_IDS = ["bucket-1"]
+EXEC_IDS = ["exec-1"]
+OBJ_IDS = ["obj-1"]
+
+
+action Init:
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    sm_bucket = {}              # sm_bucket[smid] = bucket_id or "" (S3 task target)
+    bucket_status = {}          # bucket_status[bid] = "ACTIVE"
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    obj_status = {}             # obj_status[oid] = "EXISTS" | "DELETED"
+    obj_bucket = {}             # obj_bucket[oid] = bucket_id
+    obj_exec = {}               # obj_exec[oid] = exec_id
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE with no S3 task configured
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+            sm_bucket[smid] = ""
+
+
+# step: an S3 bucket is created
+# result: the bucket is ACTIVE
+# guard: the bucket does not already exist
+# guard_violation: the bucket already exists
+atomic action CreateBucket:
+    oneof bid in BUCKET_IDS:
+        if bid not in bucket_status:
+            bucket_status[bid] = "ACTIVE"
+
+
+# step: an S3 task is configured on the state machine
+# result: the state machine will read or write objects to the bucket when it reaches the task state
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine has no S3 task configured
+# guard_violation: the state machine already has an S3 task configured
+# guard: the bucket exists
+# guard_violation: the bucket does not exist
+# guard: the bucket is ACTIVE
+# guard_violation_lifecycle: the bucket is not ACTIVE
+atomic action ConfigureS3Task:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_bucket[smid] == "":
+                    oneof bid in BUCKET_IDS:
+                        if bid in bucket_status:
+                            if bucket_status[bid] == "ACTIVE":
+                                sm_bucket[smid] = bid
+
+
+# step: an execution of the state machine is started
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine has an S3 task configured
+# guard_violation: the state machine has no S3 task configured
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecution:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_bucket[smid] != "":
+                    oneof eid in EXEC_IDS:
+                        if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                            exec_status[eid] = "RUNNING"
+                            exec_sm[eid] = smid
+
+
+# step: a running execution writes an object to the S3 bucket and succeeds
+# result: the object EXISTS in the bucket and the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the target bucket is ACTIVE
+# guard_violation_lifecycle: the target bucket is not ACTIVE
+# guard: an object slot is available
+# guard_violation_capacity: no object slot is available
+atomic action PutObjectTask:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_bucket:
+                    bid = sm_bucket[smid]
+                    if bid != "":
+                        if bid in bucket_status:
+                            if bucket_status[bid] == "ACTIVE":
+                                oneof oid in OBJ_IDS:
+                                    if oid not in obj_status or obj_status[oid] == "DELETED":
+                                        obj_status[oid] = "EXISTS"
+                                        obj_bucket[oid] = bid
+                                        obj_exec[oid] = eid
+                                        exec_status[eid] = "SUCCEEDED"
+
+
+# step: a running execution reads an existing object from the S3 bucket and succeeds
+# result: the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: an object EXISTS in the target bucket
+# guard_violation: no object EXISTS in the target bucket
+atomic action GetObjectTask:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_bucket:
+                    bid = sm_bucket[smid]
+                    if bid != "":
+                        found = False
+                        for oid in obj_status:
+                            if obj_status[oid] == "EXISTS":
+                                if obj_bucket[oid] == bid:
+                                    found = True
+                        if found == True:
+                            exec_status[eid] = "SUCCEEDED"
+
+
+# step: a running execution fails to read because no object exists in the bucket
+# result: the execution is FAILED with a NoSuchKey error
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: no object EXISTS in the target bucket
+# guard_violation: an object EXISTS in the target bucket
+atomic action GetObjectNotFoundTask:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_bucket:
+                    bid = sm_bucket[smid]
+                    if bid != "":
+                        found = False
+                        for oid in obj_status:
+                            if obj_status[oid] == "EXISTS":
+                                if obj_bucket[oid] == bid:
+                                    found = True
+                        if found == False:
+                            exec_status[eid] = "FAILED"
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every existing object belongs to an ACTIVE bucket
+always assertion ObjectRequiresActiveBucket:
+    for oid in obj_status:
+        if obj_status[oid] == "EXISTS":
+            bid = obj_bucket[oid]
+            if bid in bucket_status:
+                if bucket_status[bid] != "ACTIVE":
+                    return False
+    return True

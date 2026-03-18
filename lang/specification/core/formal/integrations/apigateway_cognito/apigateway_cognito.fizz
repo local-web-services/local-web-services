@@ -1,0 +1,233 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 50
+---
+# API Gateway -> Cognito Integration Formal Specification
+# Models a REST API with a Cognito User Pool authorizer that validates JWT tokens before routing.
+# Requests with a valid token from a user in the configured pool are AUTHORIZED.
+# Requests with a valid token from a user in a different pool are REJECTED (pool mismatch).
+
+API_IDS = ["api-1"]
+POOL_IDS = ["pool-1", "pool-2"]
+USER_IDS = ["user-1"]
+TOKEN_IDS = ["token-1"]
+REQ_IDS = ["req-1"]
+
+
+action Init:
+    # API Gateway
+    api_status = {}             # api_status[aid] = "ACTIVE"
+    api_pool = {}               # api_pool[aid] = pool_id or "" (configured Cognito authorizer)
+
+    # Cognito User Pools
+    pool_status = {}            # pool_status[pid] = "ACTIVE"
+
+    # Users within a pool
+    user_status = {}            # user_status[uid] = "CONFIRMED"
+    user_pool = {}              # user_pool[uid] = pool_id
+
+    # JWT tokens issued by Cognito
+    token_status = {}           # token_status[tkid] = "VALID"
+    token_user = {}             # token_user[tkid] = user_id
+    token_pool = {}             # token_pool[tkid] = pool_id
+
+    # Incoming HTTP requests
+    req_status = {}             # req_status[rid] = "AUTHORIZED" | "REJECTED"
+    req_api = {}                # req_api[rid] = api_id
+    req_token = {}              # req_token[rid] = token_id
+
+
+# step: a REST API is created
+# result: the API is ACTIVE with no Cognito authorizer configured
+# guard: the API does not already exist
+# guard_violation: the API already exists
+atomic action CreateRestApi:
+    oneof aid in API_IDS:
+        if aid not in api_status:
+            api_status[aid] = "ACTIVE"
+            api_pool[aid] = ""
+
+
+# step: a Cognito User Pool is created
+# result: the pool is ACTIVE
+# guard: the pool does not already exist
+# guard_violation: the pool already exists
+atomic action CreateUserPool:
+    oneof pid in POOL_IDS:
+        if pid not in pool_status:
+            pool_status[pid] = "ACTIVE"
+
+
+# step: a Cognito User Pool authorizer is configured on the REST API
+# result: the API will validate JWT tokens against the configured pool before routing requests
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has no authorizer configured
+# guard_violation: the API already has an authorizer configured
+# guard: the pool exists
+# guard_violation: the pool does not exist
+# guard: the pool is ACTIVE
+# guard_violation_lifecycle: the pool is not ACTIVE
+atomic action ConfigureAuthorizer:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_pool[aid] == "":
+                    oneof pid in POOL_IDS:
+                        if pid in pool_status:
+                            if pool_status[pid] == "ACTIVE":
+                                api_pool[aid] = pid
+
+
+# step: a user is confirmed in a Cognito User Pool
+# result: the user is CONFIRMED and can authenticate
+# guard: the pool exists
+# guard_violation: the pool does not exist
+# guard: the pool is ACTIVE
+# guard_violation_lifecycle: the pool is not ACTIVE
+# guard: the user does not already exist
+# guard_violation: the user already exists
+atomic action ConfirmUser:
+    oneof pid in POOL_IDS:
+        if pid in pool_status:
+            if pool_status[pid] == "ACTIVE":
+                oneof uid in USER_IDS:
+                    if uid not in user_status:
+                        user_status[uid] = "CONFIRMED"
+                        user_pool[uid] = pid
+
+
+# step: Cognito issues a JWT token for a confirmed user
+# result: a VALID token is issued that can be presented to API Gateway for authorization
+# guard: the user exists
+# guard_violation: the user does not exist
+# guard: the user is CONFIRMED
+# guard_violation_lifecycle: the user is not CONFIRMED
+# guard: a token slot is available
+# guard_violation_capacity: no token slot is available
+atomic action IssueToken:
+    oneof uid in USER_IDS:
+        if uid in user_status:
+            if user_status[uid] == "CONFIRMED":
+                oneof tkid in TOKEN_IDS:
+                    if tkid not in token_status:
+                        token_status[tkid] = "VALID"
+                        token_user[tkid] = uid
+                        token_pool[tkid] = user_pool[uid]
+
+
+# step: a request with a valid token from a user in the API's configured pool is authorized
+# result: the request is AUTHORIZED and routed to the backend
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has a Cognito authorizer configured
+# guard_violation: the API has no Cognito authorizer configured
+# guard: a VALID token exists
+# guard_violation_lifecycle: no VALID token exists
+# guard: the token belongs to a CONFIRMED user in the API's configured pool
+# guard_violation_lifecycle: the token does not belong to a CONFIRMED user in the configured pool
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+atomic action AuthorizeRequest:
+    oneof rid in REQ_IDS:
+        if rid not in req_status:
+            oneof aid in API_IDS:
+                if aid in api_status:
+                    if api_status[aid] == "ACTIVE":
+                        if api_pool[aid] != "":
+                            pid = api_pool[aid]
+                            oneof tkid in TOKEN_IDS:
+                                if tkid in token_status:
+                                    if token_status[tkid] == "VALID":
+                                        uid = token_user[tkid]
+                                        if uid in user_status:
+                                            if user_status[uid] == "CONFIRMED":
+                                                if user_pool[uid] == pid:
+                                                    req_status[rid] = "AUTHORIZED"
+                                                    req_api[rid] = aid
+                                                    req_token[rid] = tkid
+
+
+# step: a request with a valid token from a user in a different pool is rejected
+# result: the request is REJECTED because the token's issuing pool does not match the configured authorizer
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has a Cognito authorizer configured
+# guard_violation: the API has no Cognito authorizer configured
+# guard: a VALID token exists from a user in a different pool than the configured authorizer
+# guard_violation_lifecycle: no such mismatched token exists
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+atomic action RejectRequest:
+    oneof rid in REQ_IDS:
+        if rid not in req_status:
+            oneof aid in API_IDS:
+                if aid in api_status:
+                    if api_status[aid] == "ACTIVE":
+                        if api_pool[aid] != "":
+                            pid = api_pool[aid]
+                            oneof tkid in TOKEN_IDS:
+                                if tkid in token_status:
+                                    if token_status[tkid] == "VALID":
+                                        if token_pool[tkid] != pid:
+                                            req_status[rid] = "REJECTED"
+                                            req_api[rid] = aid
+                                            req_token[rid] = tkid
+
+
+# check: every API with a configured authorizer references an ACTIVE pool
+always assertion AuthorizerRequiresActivePool:
+    for aid in api_pool:
+        if api_pool[aid] != "":
+            pid = api_pool[aid]
+            if pid in pool_status:
+                if pool_status[pid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every AUTHORIZED request was validated against a VALID token
+always assertion AuthorizedRequestRequiresValidToken:
+    for rid in req_status:
+        if req_status[rid] == "AUTHORIZED":
+            tkid = req_token[rid]
+            if tkid in token_status:
+                if token_status[tkid] != "VALID":
+                    return False
+    return True
+
+
+# check: every AUTHORIZED request's token belongs to a user in the API's configured pool
+always assertion AuthorizedRequestRequiresPoolMembership:
+    for rid in req_status:
+        if req_status[rid] == "AUTHORIZED":
+            aid = req_api[rid]
+            tkid = req_token[rid]
+            if aid in api_pool:
+                pid = api_pool[aid]
+                if tkid in token_pool:
+                    if token_pool[tkid] != pid:
+                        return False
+    return True
+
+
+# check: every REJECTED request's token belongs to a user in a different pool than the configured authorizer
+always assertion RejectedRequestHasMismatchedPool:
+    for rid in req_status:
+        if req_status[rid] == "REJECTED":
+            aid = req_api[rid]
+            tkid = req_token[rid]
+            if aid in api_pool:
+                pid = api_pool[aid]
+                if tkid in token_pool:
+                    if token_pool[tkid] == pid:
+                        return False
+    return True

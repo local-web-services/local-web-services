@@ -182,3 +182,46 @@ All E2E tests must run in every environment — local development and CI. **Test
 When adding a new dependency:
 1. Add the required setup step to `.github/workflows/ci.yml` in the `test-e2e` job
 2. Document the local requirement in this file
+
+## `@internal` — Scenarios Requiring Internal API Control
+
+Some scenarios describe system states that the public AWS API cannot create.
+These are permanently excluded from the standard test run using the `@internal`
+tag.
+
+**Use `@internal` when and only when** the scenario requires an internal or
+private API to force the system into a state that no sequence of public API
+calls can produce. Examples:
+
+- A resource is in `DELETING` state (AWS transitions this internally; there is
+  no public API call that puts a resource into `DELETING` and leaves it there)
+- A capacity limit is reached (`no item slot is available`, `no execution slot
+  is available`) — the fake has no public API to exhaust capacity
+- A resource is `PENDING_DELETION` with a recovery window still open
+
+```gherkin
+@dynamodb @delete_table @controlplane
+Feature: DynamoDB DeleteTable
+
+  @happy
+  Scenario: Delete an existing table
+    ...
+
+  @error @internal
+  Scenario: Reject deletion when table is already DELETING
+    Given the table is already "DELETING"
+    When I delete table "e2e-delete-table"
+    Then the command will fail with "ResourceInUseException"
+```
+
+The BDD runner in each language filters `not @internal` so these scenarios
+are excluded before they reach the step runner. They are not "not yet
+implemented" — they describe behaviour that is genuinely untestable without
+internal control of the fake.
+
+**Do not use `@internal` for:**
+
+- Scenarios whose behaviour is not yet implemented in a particular language's
+  fake. Those must be implemented — not tagged or skipped.
+- Scenarios that require Docker or other external dependencies. Configure CI
+  to provide those dependencies instead.

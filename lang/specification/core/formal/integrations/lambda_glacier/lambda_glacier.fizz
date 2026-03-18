@@ -1,0 +1,137 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Lambda -> Glacier Integration Formal Specification
+# Models a Lambda function uploading archives to and retrieving archives from Glacier vaults.
+# If the target vault has been deleted, archive upload fails with a ResourceNotFoundException.
+
+FUNC_IDS = ["func-1"]
+VAULT_IDS = ["vault-1"]
+INV_IDS = ["inv-1"]
+ARCHIVE_IDS = ["archive-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    vault_status = {}           # vault_status[vid] = "EXISTS" | "DELETED"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    archive_status = {}         # archive_status[aid] = "EXISTS" | "DELETED"
+    archive_vault = {}          # archive_vault[aid] = vault_id
+    archive_inv = {}            # archive_inv[aid] = inv_id
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a Glacier vault is created
+# result: the vault EXISTS
+# guard: the vault does not already exist
+# guard_violation: the vault already exists
+atomic action CreateVault:
+    oneof vid in VAULT_IDS:
+        if vid not in vault_status:
+            vault_status[vid] = "EXISTS"
+
+
+# step: a Glacier vault is deleted
+# result: the vault is DELETED and archive uploads will fail
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault EXISTS (not already DELETED)
+# guard_violation_lifecycle: the vault is already DELETED
+atomic action DeleteVault:
+    oneof vid in VAULT_IDS:
+        if vid in vault_status:
+            if vault_status[vid] == "EXISTS":
+                vault_status[vid] = "DELETED"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# fake_skip: internal
+# step: the Lambda function uploads an archive to an existing vault and succeeds
+# result: the archive EXISTS in the vault and the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the vault EXISTS
+# guard_violation_lifecycle: the vault does not exist or is DELETED
+# guard: an archive slot is available
+# guard_violation_capacity: no archive slot is available
+atomic action UploadArchiveTask:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof vid in VAULT_IDS:
+                    if vid in vault_status:
+                        if vault_status[vid] == "EXISTS":
+                            oneof aid in ARCHIVE_IDS:
+                                if aid not in archive_status or archive_status[aid] == "DELETED":
+                                    archive_status[aid] = "EXISTS"
+                                    archive_vault[aid] = vid
+                                    archive_inv[aid] = iid
+                                    inv_status[iid] = "SUCCESS"
+
+
+# step: the Lambda function fails to upload because the vault has been deleted
+# result: the invocation is FAILED with a ResourceNotFoundException
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the vault is DELETED
+# guard_violation_lifecycle: the vault is not DELETED
+atomic action InvocationFailsVaultDeleted:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof vid in VAULT_IDS:
+                    if vid in vault_status:
+                        if vault_status[vid] == "DELETED":
+                            inv_status[iid] = "FAILED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every existing archive references a vault that exists
+# (archives persist in the vault's storage and are not deleted when vault transitions)
+always assertion ArchiveReferencesExistingVault:
+    for aid in archive_status:
+        if archive_status[aid] == "EXISTS":
+            vid = archive_vault[aid]
+            if vid not in vault_status:
+                return False
+    return True

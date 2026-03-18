@@ -87,7 +87,7 @@ describe("ChaosBuilder", () => {
         expect.objectContaining({
           method: "POST",
           headers: { "Content-Type": "application/json" },
-        })
+        }),
       );
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.enabled).toBe(true);
@@ -120,7 +120,7 @@ describe("ChaosBuilder", () => {
       // Assert
       expect(fakeFetch).toHaveBeenCalledWith(
         EXPECTED_CHAOS_URL,
-        expect.objectContaining({ method: "POST" })
+        expect.objectContaining({ method: "POST" }),
       );
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       expect(actualBody.dynamodb.enabled).toBe(false);

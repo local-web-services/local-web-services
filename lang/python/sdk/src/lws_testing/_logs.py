@@ -34,6 +34,7 @@ class LogCapture:
         # log entries within the capture window land on our handler.
         try:
             from lws.logging.logger import set_ws_handler  # noqa: PLC0415
+
             set_ws_handler(self._handler)
         except Exception:  # noqa: BLE001
             pass
@@ -49,49 +50,57 @@ class LogCapture:
         raw = full_backlog[self._snapshot_len :]
         # Normalize: HTTP request logs emit 'handler' for the operation name;
         # copy it to 'operation' so assert_called() works for all log types.
-        self._entries = [
-            {**e, "operation": e.get("operation") or e.get("handler")}
-            for e in raw
-        ]
+        self._entries = [{**e, "operation": e.get("operation") or e.get("handler")} for e in raw]
+
+    def _current_entries(self) -> list[dict[str, Any]]:
+        """Return the current captured entries, flushing from the backlog first.
+
+        Safe to call before :meth:`stop` — used by assertion helpers so they
+        work both inside a ``with`` block and in BDD-style manual start/stop.
+        """
+        self.stop()
+        return self._entries
 
     # ── Access ────────────────────────────────────────────────────────────────
 
     @property
     def entries(self) -> list[dict[str, Any]]:
         """All log entries captured in this window."""
-        return list(self._entries)
+        return list(self._current_entries())
 
     def for_service(self, service: str) -> list[dict[str, Any]]:
         """Return entries for a specific AWS service (e.g. ``"dynamodb"``)."""
         service_lower = service.lower()
-        return [e for e in self._entries if e.get("service", "").lower() == service_lower]
+        return [e for e in self._current_entries() if e.get("service", "").lower() == service_lower]
 
     def for_operation(self, operation: str) -> list[dict[str, Any]]:
         """Return entries for a specific operation (e.g. ``"PutItem"``)."""
-        return [e for e in self._entries if e.get("operation") == operation]
+        return [e for e in self._current_entries() if e.get("operation") == operation]
 
     # ── Assertions ────────────────────────────────────────────────────────────
 
     def assert_called(self, service: str, operation: str) -> None:
         """Assert that *service*.*operation* was called at least once."""
         expected_service = service.lower()
+        current = self._current_entries()
         matching = [
             e
-            for e in self._entries
+            for e in current
             if e.get("service", "").lower() == expected_service and e.get("operation") == operation
         ]
         assert matching, (
             f"Expected {service}.{operation} to have been called, "
             f"but no matching log entry was found. "
-            f"Captured entries: {self._entries}"
+            f"Captured entries: {current}"
         )
 
     def assert_not_called(self, service: str, operation: str) -> None:
         """Assert that *service*.*operation* was NOT called."""
         expected_service = service.lower()
+        current = self._current_entries()
         matching = [
             e
-            for e in self._entries
+            for e in current
             if e.get("service", "").lower() == expected_service and e.get("operation") == operation
         ]
         assert not matching, (
@@ -101,15 +110,17 @@ class LogCapture:
 
     def assert_no_errors(self) -> None:
         """Assert that no ERROR-level log entries were captured."""
-        errors = [e for e in self._entries if e.get("level") == "ERROR"]
+        current = self._current_entries()
+        errors = [e for e in current if e.get("level") == "ERROR"]
         assert not errors, f"Expected no ERROR log entries, but found {len(errors)}: {errors}"
 
     def assert_call_count(self, service: str, operation: str, expected_count: int) -> None:
         """Assert that *service*.*operation* was called exactly *expected_count* times."""
         expected_service = service.lower()
+        current = self._current_entries()
         actual_entries = [
             e
-            for e in self._entries
+            for e in current
             if e.get("service", "").lower() == expected_service and e.get("operation") == operation
         ]
         actual_count = len(actual_entries)

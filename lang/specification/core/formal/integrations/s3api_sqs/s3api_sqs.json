@@ -1,0 +1,3388 @@
+{
+  "sourceInfo": {
+    "fileName": "s3api_sqs.fizz",
+    "start": {
+      "line": 13,
+      "column": 1
+    },
+    "end": {
+      "line": 156
+    }
+  },
+  "invariants": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 139,
+          "column": 1
+        },
+        "end": {
+          "line": 149
+        }
+      },
+      "name": "QueuedMessageReferencesExistingObject",
+      "temporalOperators": [
+        "always"
+      ],
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 140,
+            "column": 5
+          },
+          "end": {
+            "line": 149
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 140,
+                "column": 5
+              },
+              "end": {
+                "line": 145,
+                "column": 4
+              }
+            },
+            "forStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 140,
+                  "column": 5
+                },
+                "end": {
+                  "line": 145,
+                  "column": 4
+                }
+              },
+              "loopVars": [
+                "mid"
+              ],
+              "pyExpr": "msg_status",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 141,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 145,
+                    "column": 4
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 141,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 145,
+                        "column": 4
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 141,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 145,
+                          "column": 4
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 141,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 145,
+                              "column": 4
+                            }
+                          },
+                          "condition": "msg_status[mid] == \"QUEUED\"",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 142,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 145,
+                                "column": 4
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 142,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 143,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 142,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 142,
+                                      "column": 30
+                                    }
+                                  },
+                                  "code": "oid = msg_obj[mid]"
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 143,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 145,
+                                    "column": 4
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 143,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 145,
+                                      "column": 4
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 143,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 145,
+                                          "column": 4
+                                        }
+                                      },
+                                      "condition": "oid not in obj_status",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 144,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 145,
+                                            "column": 4
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 144,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 145,
+                                                "column": 4
+                                              }
+                                            },
+                                            "returnStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 144,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 144,
+                                                  "column": 28
+                                                }
+                                              },
+                                              "pyExpr": "False",
+                                              "expr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 144,
+                                                    "column": 24
+                                                  },
+                                                  "end": {
+                                                    "line": 144,
+                                                    "column": 28
+                                                  }
+                                                },
+                                                "pyExpr": "False"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 143,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 143,
+                                            "column": 36
+                                          }
+                                        },
+                                        "pyExpr": "oid not in obj_status"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 141,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 141,
+                                "column": 38
+                              }
+                            },
+                            "pyExpr": "msg_status[mid] == \"QUEUED\""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 140,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 140,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "msg_status"
+              }
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 145,
+                "column": 5
+              },
+              "end": {
+                "line": 149
+              }
+            },
+            "returnStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 145,
+                  "column": 5
+                },
+                "end": {
+                  "line": 145,
+                  "column": 15
+                }
+              },
+              "pyExpr": "True",
+              "expr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 145,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 145,
+                    "column": 15
+                  }
+                },
+                "pyExpr": "True"
+              }
+            }
+          }
+        ]
+      },
+      "pyCode": "def QueuedMessageReferencesExistingObject():\n    for mid in msg_status:\n        if msg_status[mid] == \"QUEUED\":\n            oid = msg_obj[mid]\n            if oid not in obj_status:\n                return False\n    return True\n\n\n# check: every QUEUED message references a queue that exists\n"
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 149,
+          "column": 1
+        },
+        "end": {
+          "line": 156
+        }
+      },
+      "name": "QueuedMessageReferencesExistingQueue",
+      "temporalOperators": [
+        "always"
+      ],
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 150,
+            "column": 5
+          },
+          "end": {
+            "line": 156
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 150,
+                "column": 5
+              },
+              "end": {
+                "line": 155,
+                "column": 4
+              }
+            },
+            "forStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 150,
+                  "column": 5
+                },
+                "end": {
+                  "line": 155,
+                  "column": 4
+                }
+              },
+              "loopVars": [
+                "mid"
+              ],
+              "pyExpr": "msg_status",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 151,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 155,
+                    "column": 4
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 151,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 155,
+                        "column": 4
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 151,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 155,
+                          "column": 4
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 151,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 155,
+                              "column": 4
+                            }
+                          },
+                          "condition": "msg_status[mid] == \"QUEUED\"",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 152,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 155,
+                                "column": 4
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 152,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 153,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 152,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 152,
+                                      "column": 32
+                                    }
+                                  },
+                                  "code": "qid = msg_queue[mid]"
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 153,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 155,
+                                    "column": 4
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 153,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 155,
+                                      "column": 4
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 153,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 155,
+                                          "column": 4
+                                        }
+                                      },
+                                      "condition": "qid not in queue_status",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 154,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 155,
+                                            "column": 4
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 154,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 155,
+                                                "column": 4
+                                              }
+                                            },
+                                            "returnStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 154,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 154,
+                                                  "column": 28
+                                                }
+                                              },
+                                              "pyExpr": "False",
+                                              "expr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 154,
+                                                    "column": 24
+                                                  },
+                                                  "end": {
+                                                    "line": 154,
+                                                    "column": 28
+                                                  }
+                                                },
+                                                "pyExpr": "False"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 153,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 153,
+                                            "column": 38
+                                          }
+                                        },
+                                        "pyExpr": "qid not in queue_status"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 151,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 151,
+                                "column": 38
+                              }
+                            },
+                            "pyExpr": "msg_status[mid] == \"QUEUED\""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 150,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 150,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "msg_status"
+              }
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 155,
+                "column": 5
+              },
+              "end": {
+                "line": 156
+              }
+            },
+            "returnStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 155,
+                  "column": 5
+                },
+                "end": {
+                  "line": 155,
+                  "column": 15
+                }
+              },
+              "pyExpr": "True",
+              "expr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 155,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 155,
+                    "column": 15
+                  }
+                },
+                "pyExpr": "True"
+              }
+            }
+          }
+        ]
+      },
+      "pyCode": "def QueuedMessageReferencesExistingQueue():\n    for mid in msg_status:\n        if msg_status[mid] == \"QUEUED\":\n            qid = msg_queue[mid]\n            if qid not in queue_status:\n                return False\n    return True\n"
+    }
+  ],
+  "actions": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 19,
+          "column": 1
+        },
+        "end": {
+          "line": 34
+        }
+      },
+      "name": "Init",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_STRONG"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 20,
+            "column": 5
+          },
+          "end": {
+            "line": 34
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 20,
+                "column": 5
+              },
+              "end": {
+                "line": 21,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 20,
+                  "column": 5
+                },
+                "end": {
+                  "line": 20,
+                  "column": 22
+                }
+              },
+              "code": "bucket_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 21,
+                "column": 5
+              },
+              "end": {
+                "line": 22,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 21,
+                  "column": 5
+                },
+                "end": {
+                  "line": 21,
+                  "column": 21
+                }
+              },
+              "code": "bucket_queue = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 22,
+                "column": 5
+              },
+              "end": {
+                "line": 23,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 22,
+                  "column": 5
+                },
+                "end": {
+                  "line": 22,
+                  "column": 21
+                }
+              },
+              "code": "queue_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 23,
+                "column": 5
+              },
+              "end": {
+                "line": 24,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 23,
+                  "column": 5
+                },
+                "end": {
+                  "line": 23,
+                  "column": 19
+                }
+              },
+              "code": "obj_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 24,
+                "column": 5
+              },
+              "end": {
+                "line": 25,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 24,
+                  "column": 5
+                },
+                "end": {
+                  "line": 24,
+                  "column": 19
+                }
+              },
+              "code": "obj_bucket = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 25,
+                "column": 5
+              },
+              "end": {
+                "line": 26,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 25,
+                  "column": 5
+                },
+                "end": {
+                  "line": 25,
+                  "column": 19
+                }
+              },
+              "code": "msg_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 26,
+                "column": 5
+              },
+              "end": {
+                "line": 27,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 26,
+                  "column": 5
+                },
+                "end": {
+                  "line": 26,
+                  "column": 18
+                }
+              },
+              "code": "msg_queue = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 27,
+                "column": 5
+              },
+              "end": {
+                "line": 34
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 27,
+                  "column": 5
+                },
+                "end": {
+                  "line": 27,
+                  "column": 16
+                }
+              },
+              "code": "msg_obj = {}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 34,
+          "column": 1
+        },
+        "end": {
+          "line": 45
+        }
+      },
+      "name": "CreateBucket",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 35,
+            "column": 5
+          },
+          "end": {
+            "line": 45
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 35,
+                "column": 5
+              },
+              "end": {
+                "line": 45
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 35,
+                  "column": 5
+                },
+                "end": {
+                  "line": 45
+                }
+              },
+              "loopVars": [
+                "bid"
+              ],
+              "pyExpr": "BUCKET_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 36,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 45
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 36,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 45
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 36,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 45
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 36,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 45
+                            }
+                          },
+                          "condition": "bid not in bucket_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 37,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 45
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 37,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 38,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 37,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 37,
+                                      "column": 41
+                                    }
+                                  },
+                                  "code": "bucket_status[bid] = \"ACTIVE\""
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 38,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 45
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 38,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 38,
+                                      "column": 34
+                                    }
+                                  },
+                                  "code": "bucket_queue[bid] = \"\""
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 36,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 36,
+                                "column": 35
+                              }
+                            },
+                            "pyExpr": "bid not in bucket_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 35,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 35,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "BUCKET_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 45,
+          "column": 1
+        },
+        "end": {
+          "line": 57
+        }
+      },
+      "name": "CreateQueue",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 46,
+            "column": 5
+          },
+          "end": {
+            "line": 57
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 46,
+                "column": 5
+              },
+              "end": {
+                "line": 57
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 46,
+                  "column": 5
+                },
+                "end": {
+                  "line": 57
+                }
+              },
+              "loopVars": [
+                "qid"
+              ],
+              "pyExpr": "QUEUE_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 47,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 57
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 47,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 57
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 47,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 57
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 47,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 57
+                            }
+                          },
+                          "condition": "qid not in queue_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 48,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 57
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 48,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 57
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 48,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 48,
+                                      "column": 40
+                                    }
+                                  },
+                                  "code": "queue_status[qid] = \"ACTIVE\""
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 47,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 47,
+                                "column": 34
+                              }
+                            },
+                            "pyExpr": "qid not in queue_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 46,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 46,
+                    "column": 24
+                  }
+                },
+                "pyExpr": "QUEUE_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 57,
+          "column": 1
+        },
+        "end": {
+          "line": 72
+        }
+      },
+      "name": "DeleteQueue",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 58,
+            "column": 5
+          },
+          "end": {
+            "line": 72
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 58,
+                "column": 5
+              },
+              "end": {
+                "line": 72
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 58,
+                  "column": 5
+                },
+                "end": {
+                  "line": 72
+                }
+              },
+              "loopVars": [
+                "qid"
+              ],
+              "pyExpr": "QUEUE_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 59,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 72
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 59,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 72
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 59,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 72
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 59,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 72
+                            }
+                          },
+                          "condition": "qid in queue_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 60,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 72
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 60,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 72
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 60,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 72
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 60,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 72
+                                        }
+                                      },
+                                      "condition": "queue_status[qid] == \"ACTIVE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 61,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 72
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 61,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 72
+                                              }
+                                            },
+                                            "pyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 61,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 61,
+                                                  "column": 45
+                                                }
+                                              },
+                                              "code": "queue_status[qid] = \"DELETED\""
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 60,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 60,
+                                            "column": 44
+                                          }
+                                        },
+                                        "pyExpr": "queue_status[qid] == \"ACTIVE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 59,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 59,
+                                "column": 30
+                              }
+                            },
+                            "pyExpr": "qid in queue_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 58,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 58,
+                    "column": 24
+                  }
+                },
+                "pyExpr": "QUEUE_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 72,
+          "column": 1
+        },
+        "end": {
+          "line": 95
+        }
+      },
+      "name": "ConfigureNotification",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 73,
+            "column": 5
+          },
+          "end": {
+            "line": 95
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 73,
+                "column": 5
+              },
+              "end": {
+                "line": 95
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 73,
+                  "column": 5
+                },
+                "end": {
+                  "line": 95
+                }
+              },
+              "loopVars": [
+                "bid"
+              ],
+              "pyExpr": "BUCKET_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 74,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 95
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 74,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 95
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 74,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 95
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 74,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 95
+                            }
+                          },
+                          "condition": "bid in bucket_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 75,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 95
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 75,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 95
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 75,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 95
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 75,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 95
+                                        }
+                                      },
+                                      "condition": "bucket_status[bid] == \"ACTIVE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 76,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 95
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 76,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 95
+                                              }
+                                            },
+                                            "ifStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 76,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 95
+                                                }
+                                              },
+                                              "branches": [
+                                                {
+                                                  "sourceInfo": {
+                                                    "start": {
+                                                      "line": 76,
+                                                      "column": 20
+                                                    },
+                                                    "end": {
+                                                      "line": 95
+                                                    }
+                                                  },
+                                                  "condition": "bucket_queue[bid] == \"\"",
+                                                  "block": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 77,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 95
+                                                      }
+                                                    },
+                                                    "stmts": [
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 77,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 95
+                                                          }
+                                                        },
+                                                        "anyStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 77,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 95
+                                                            }
+                                                          },
+                                                          "loopVars": [
+                                                            "qid"
+                                                          ],
+                                                          "pyExpr": "QUEUE_IDS",
+                                                          "block": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 78,
+                                                                "column": 25
+                                                              },
+                                                              "end": {
+                                                                "line": 95
+                                                              }
+                                                            },
+                                                            "stmts": [
+                                                              {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 78,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 95
+                                                                  }
+                                                                },
+                                                                "ifStmt": {
+                                                                  "sourceInfo": {
+                                                                    "start": {
+                                                                      "line": 78,
+                                                                      "column": 25
+                                                                    },
+                                                                    "end": {
+                                                                      "line": 95
+                                                                    }
+                                                                  },
+                                                                  "branches": [
+                                                                    {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 78,
+                                                                          "column": 28
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 95
+                                                                        }
+                                                                      },
+                                                                      "condition": "qid in queue_status",
+                                                                      "block": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 79,
+                                                                            "column": 29
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 95
+                                                                          }
+                                                                        },
+                                                                        "stmts": [
+                                                                          {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 79,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 95
+                                                                              }
+                                                                            },
+                                                                            "ifStmt": {
+                                                                              "sourceInfo": {
+                                                                                "start": {
+                                                                                  "line": 79,
+                                                                                  "column": 29
+                                                                                },
+                                                                                "end": {
+                                                                                  "line": 95
+                                                                                }
+                                                                              },
+                                                                              "branches": [
+                                                                                {
+                                                                                  "sourceInfo": {
+                                                                                    "start": {
+                                                                                      "line": 79,
+                                                                                      "column": 32
+                                                                                    },
+                                                                                    "end": {
+                                                                                      "line": 95
+                                                                                    }
+                                                                                  },
+                                                                                  "condition": "queue_status[qid] == \"ACTIVE\"",
+                                                                                  "block": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 80,
+                                                                                        "column": 33
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 95
+                                                                                      }
+                                                                                    },
+                                                                                    "stmts": [
+                                                                                      {
+                                                                                        "sourceInfo": {
+                                                                                          "start": {
+                                                                                            "line": 80,
+                                                                                            "column": 33
+                                                                                          },
+                                                                                          "end": {
+                                                                                            "line": 95
+                                                                                          }
+                                                                                        },
+                                                                                        "pyStmt": {
+                                                                                          "sourceInfo": {
+                                                                                            "start": {
+                                                                                              "line": 80,
+                                                                                              "column": 33
+                                                                                            },
+                                                                                            "end": {
+                                                                                              "line": 80,
+                                                                                              "column": 55
+                                                                                            }
+                                                                                          },
+                                                                                          "code": "bucket_queue[bid] = qid"
+                                                                                        }
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  "conditionExpr": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 79,
+                                                                                        "column": 32
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 79,
+                                                                                        "column": 60
+                                                                                      }
+                                                                                    },
+                                                                                    "pyExpr": "queue_status[qid] == \"ACTIVE\""
+                                                                                  }
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      "conditionExpr": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 78,
+                                                                            "column": 28
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 78,
+                                                                            "column": 46
+                                                                          }
+                                                                        },
+                                                                        "pyExpr": "qid in queue_status"
+                                                                      }
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              }
+                                                            ]
+                                                          },
+                                                          "iterExpr": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 77,
+                                                                "column": 32
+                                                              },
+                                                              "end": {
+                                                                "line": 77,
+                                                                "column": 40
+                                                              }
+                                                            },
+                                                            "pyExpr": "QUEUE_IDS"
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  },
+                                                  "conditionExpr": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 76,
+                                                        "column": 20
+                                                      },
+                                                      "end": {
+                                                        "line": 76,
+                                                        "column": 42
+                                                      }
+                                                    },
+                                                    "pyExpr": "bucket_queue[bid] == \"\""
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 75,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 75,
+                                            "column": 45
+                                          }
+                                        },
+                                        "pyExpr": "bucket_status[bid] == \"ACTIVE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 74,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 74,
+                                "column": 31
+                              }
+                            },
+                            "pyExpr": "bid in bucket_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 73,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 73,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "BUCKET_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 95,
+          "column": 1
+        },
+        "end": {
+          "line": 124
+        }
+      },
+      "name": "PutObjectWithNotification",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 96,
+            "column": 5
+          },
+          "end": {
+            "line": 124
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 96,
+                "column": 5
+              },
+              "end": {
+                "line": 124
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 96,
+                  "column": 5
+                },
+                "end": {
+                  "line": 124
+                }
+              },
+              "loopVars": [
+                "bid"
+              ],
+              "pyExpr": "BUCKET_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 97,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 124
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 97,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 124
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 97,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 124
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 97,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 124
+                            }
+                          },
+                          "condition": "bid in bucket_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 98,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 124
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 98,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 124
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 98,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 124
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 98,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 124
+                                        }
+                                      },
+                                      "condition": "bucket_status[bid] == \"ACTIVE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 99,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 124
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 99,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 124
+                                              }
+                                            },
+                                            "ifStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 99,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 124
+                                                }
+                                              },
+                                              "branches": [
+                                                {
+                                                  "sourceInfo": {
+                                                    "start": {
+                                                      "line": 99,
+                                                      "column": 20
+                                                    },
+                                                    "end": {
+                                                      "line": 124
+                                                    }
+                                                  },
+                                                  "condition": "bucket_queue[bid] != \"\"",
+                                                  "block": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 100,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 124
+                                                      }
+                                                    },
+                                                    "stmts": [
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 100,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 101,
+                                                            "column": 20
+                                                          }
+                                                        },
+                                                        "pyStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 100,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 100,
+                                                              "column": 43
+                                                            }
+                                                          },
+                                                          "code": "qid = bucket_queue[bid]"
+                                                        }
+                                                      },
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 101,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 124
+                                                          }
+                                                        },
+                                                        "ifStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 101,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 124
+                                                            }
+                                                          },
+                                                          "branches": [
+                                                            {
+                                                              "sourceInfo": {
+                                                                "start": {
+                                                                  "line": 101,
+                                                                  "column": 24
+                                                                },
+                                                                "end": {
+                                                                  "line": 124
+                                                                }
+                                                              },
+                                                              "condition": "qid in queue_status",
+                                                              "block": {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 102,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 124
+                                                                  }
+                                                                },
+                                                                "stmts": [
+                                                                  {
+                                                                    "sourceInfo": {
+                                                                      "start": {
+                                                                        "line": 102,
+                                                                        "column": 25
+                                                                      },
+                                                                      "end": {
+                                                                        "line": 124
+                                                                      }
+                                                                    },
+                                                                    "ifStmt": {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 102,
+                                                                          "column": 25
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 124
+                                                                        }
+                                                                      },
+                                                                      "branches": [
+                                                                        {
+                                                                          "sourceInfo": {
+                                                                            "start": {
+                                                                              "line": 102,
+                                                                              "column": 28
+                                                                            },
+                                                                            "end": {
+                                                                              "line": 124
+                                                                            }
+                                                                          },
+                                                                          "condition": "queue_status[qid] == \"ACTIVE\"",
+                                                                          "block": {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 103,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 124
+                                                                              }
+                                                                            },
+                                                                            "stmts": [
+                                                                              {
+                                                                                "sourceInfo": {
+                                                                                  "start": {
+                                                                                    "line": 103,
+                                                                                    "column": 29
+                                                                                  },
+                                                                                  "end": {
+                                                                                    "line": 124
+                                                                                  }
+                                                                                },
+                                                                                "anyStmt": {
+                                                                                  "sourceInfo": {
+                                                                                    "start": {
+                                                                                      "line": 103,
+                                                                                      "column": 29
+                                                                                    },
+                                                                                    "end": {
+                                                                                      "line": 124
+                                                                                    }
+                                                                                  },
+                                                                                  "loopVars": [
+                                                                                    "oid"
+                                                                                  ],
+                                                                                  "pyExpr": "OBJ_IDS",
+                                                                                  "block": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 104,
+                                                                                        "column": 33
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 124
+                                                                                      }
+                                                                                    },
+                                                                                    "stmts": [
+                                                                                      {
+                                                                                        "sourceInfo": {
+                                                                                          "start": {
+                                                                                            "line": 104,
+                                                                                            "column": 33
+                                                                                          },
+                                                                                          "end": {
+                                                                                            "line": 124
+                                                                                          }
+                                                                                        },
+                                                                                        "ifStmt": {
+                                                                                          "sourceInfo": {
+                                                                                            "start": {
+                                                                                              "line": 104,
+                                                                                              "column": 33
+                                                                                            },
+                                                                                            "end": {
+                                                                                              "line": 124
+                                                                                            }
+                                                                                          },
+                                                                                          "branches": [
+                                                                                            {
+                                                                                              "sourceInfo": {
+                                                                                                "start": {
+                                                                                                  "line": 104,
+                                                                                                  "column": 36
+                                                                                                },
+                                                                                                "end": {
+                                                                                                  "line": 124
+                                                                                                }
+                                                                                              },
+                                                                                              "condition": "oid not in obj_status",
+                                                                                              "block": {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 105,
+                                                                                                    "column": 37
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 124
+                                                                                                  }
+                                                                                                },
+                                                                                                "stmts": [
+                                                                                                  {
+                                                                                                    "sourceInfo": {
+                                                                                                      "start": {
+                                                                                                        "line": 105,
+                                                                                                        "column": 37
+                                                                                                      },
+                                                                                                      "end": {
+                                                                                                        "line": 124
+                                                                                                      }
+                                                                                                    },
+                                                                                                    "anyStmt": {
+                                                                                                      "sourceInfo": {
+                                                                                                        "start": {
+                                                                                                          "line": 105,
+                                                                                                          "column": 37
+                                                                                                        },
+                                                                                                        "end": {
+                                                                                                          "line": 124
+                                                                                                        }
+                                                                                                      },
+                                                                                                      "loopVars": [
+                                                                                                        "mid"
+                                                                                                      ],
+                                                                                                      "pyExpr": "MSG_IDS",
+                                                                                                      "block": {
+                                                                                                        "sourceInfo": {
+                                                                                                          "start": {
+                                                                                                            "line": 106,
+                                                                                                            "column": 41
+                                                                                                          },
+                                                                                                          "end": {
+                                                                                                            "line": 124
+                                                                                                          }
+                                                                                                        },
+                                                                                                        "stmts": [
+                                                                                                          {
+                                                                                                            "sourceInfo": {
+                                                                                                              "start": {
+                                                                                                                "line": 106,
+                                                                                                                "column": 41
+                                                                                                              },
+                                                                                                              "end": {
+                                                                                                                "line": 124
+                                                                                                              }
+                                                                                                            },
+                                                                                                            "ifStmt": {
+                                                                                                              "sourceInfo": {
+                                                                                                                "start": {
+                                                                                                                  "line": 106,
+                                                                                                                  "column": 41
+                                                                                                                },
+                                                                                                                "end": {
+                                                                                                                  "line": 124
+                                                                                                                }
+                                                                                                              },
+                                                                                                              "branches": [
+                                                                                                                {
+                                                                                                                  "sourceInfo": {
+                                                                                                                    "start": {
+                                                                                                                      "line": 106,
+                                                                                                                      "column": 44
+                                                                                                                    },
+                                                                                                                    "end": {
+                                                                                                                      "line": 124
+                                                                                                                    }
+                                                                                                                  },
+                                                                                                                  "condition": "mid not in msg_status",
+                                                                                                                  "block": {
+                                                                                                                    "sourceInfo": {
+                                                                                                                      "start": {
+                                                                                                                        "line": 107,
+                                                                                                                        "column": 45
+                                                                                                                      },
+                                                                                                                      "end": {
+                                                                                                                        "line": 124
+                                                                                                                      }
+                                                                                                                    },
+                                                                                                                    "stmts": [
+                                                                                                                      {
+                                                                                                                        "sourceInfo": {
+                                                                                                                          "start": {
+                                                                                                                            "line": 107,
+                                                                                                                            "column": 45
+                                                                                                                          },
+                                                                                                                          "end": {
+                                                                                                                            "line": 108,
+                                                                                                                            "column": 44
+                                                                                                                          }
+                                                                                                                        },
+                                                                                                                        "pyStmt": {
+                                                                                                                          "sourceInfo": {
+                                                                                                                            "start": {
+                                                                                                                              "line": 107,
+                                                                                                                              "column": 45
+                                                                                                                            },
+                                                                                                                            "end": {
+                                                                                                                              "line": 107,
+                                                                                                                              "column": 70
+                                                                                                                            }
+                                                                                                                          },
+                                                                                                                          "code": "obj_status[oid] = \"EXISTS\""
+                                                                                                                        }
+                                                                                                                      },
+                                                                                                                      {
+                                                                                                                        "sourceInfo": {
+                                                                                                                          "start": {
+                                                                                                                            "line": 108,
+                                                                                                                            "column": 45
+                                                                                                                          },
+                                                                                                                          "end": {
+                                                                                                                            "line": 109,
+                                                                                                                            "column": 44
+                                                                                                                          }
+                                                                                                                        },
+                                                                                                                        "pyStmt": {
+                                                                                                                          "sourceInfo": {
+                                                                                                                            "start": {
+                                                                                                                              "line": 108,
+                                                                                                                              "column": 45
+                                                                                                                            },
+                                                                                                                            "end": {
+                                                                                                                              "line": 108,
+                                                                                                                              "column": 65
+                                                                                                                            }
+                                                                                                                          },
+                                                                                                                          "code": "obj_bucket[oid] = bid"
+                                                                                                                        }
+                                                                                                                      },
+                                                                                                                      {
+                                                                                                                        "sourceInfo": {
+                                                                                                                          "start": {
+                                                                                                                            "line": 109,
+                                                                                                                            "column": 45
+                                                                                                                          },
+                                                                                                                          "end": {
+                                                                                                                            "line": 110,
+                                                                                                                            "column": 44
+                                                                                                                          }
+                                                                                                                        },
+                                                                                                                        "pyStmt": {
+                                                                                                                          "sourceInfo": {
+                                                                                                                            "start": {
+                                                                                                                              "line": 109,
+                                                                                                                              "column": 45
+                                                                                                                            },
+                                                                                                                            "end": {
+                                                                                                                              "line": 109,
+                                                                                                                              "column": 70
+                                                                                                                            }
+                                                                                                                          },
+                                                                                                                          "code": "msg_status[mid] = \"QUEUED\""
+                                                                                                                        }
+                                                                                                                      },
+                                                                                                                      {
+                                                                                                                        "sourceInfo": {
+                                                                                                                          "start": {
+                                                                                                                            "line": 110,
+                                                                                                                            "column": 45
+                                                                                                                          },
+                                                                                                                          "end": {
+                                                                                                                            "line": 111,
+                                                                                                                            "column": 44
+                                                                                                                          }
+                                                                                                                        },
+                                                                                                                        "pyStmt": {
+                                                                                                                          "sourceInfo": {
+                                                                                                                            "start": {
+                                                                                                                              "line": 110,
+                                                                                                                              "column": 45
+                                                                                                                            },
+                                                                                                                            "end": {
+                                                                                                                              "line": 110,
+                                                                                                                              "column": 64
+                                                                                                                            }
+                                                                                                                          },
+                                                                                                                          "code": "msg_queue[mid] = qid"
+                                                                                                                        }
+                                                                                                                      },
+                                                                                                                      {
+                                                                                                                        "sourceInfo": {
+                                                                                                                          "start": {
+                                                                                                                            "line": 111,
+                                                                                                                            "column": 45
+                                                                                                                          },
+                                                                                                                          "end": {
+                                                                                                                            "line": 124
+                                                                                                                          }
+                                                                                                                        },
+                                                                                                                        "pyStmt": {
+                                                                                                                          "sourceInfo": {
+                                                                                                                            "start": {
+                                                                                                                              "line": 111,
+                                                                                                                              "column": 45
+                                                                                                                            },
+                                                                                                                            "end": {
+                                                                                                                              "line": 111,
+                                                                                                                              "column": 62
+                                                                                                                            }
+                                                                                                                          },
+                                                                                                                          "code": "msg_obj[mid] = oid"
+                                                                                                                        }
+                                                                                                                      }
+                                                                                                                    ]
+                                                                                                                  },
+                                                                                                                  "conditionExpr": {
+                                                                                                                    "sourceInfo": {
+                                                                                                                      "start": {
+                                                                                                                        "line": 106,
+                                                                                                                        "column": 44
+                                                                                                                      },
+                                                                                                                      "end": {
+                                                                                                                        "line": 106,
+                                                                                                                        "column": 64
+                                                                                                                      }
+                                                                                                                    },
+                                                                                                                    "pyExpr": "mid not in msg_status"
+                                                                                                                  }
+                                                                                                                }
+                                                                                                              ]
+                                                                                                            }
+                                                                                                          }
+                                                                                                        ]
+                                                                                                      },
+                                                                                                      "iterExpr": {
+                                                                                                        "sourceInfo": {
+                                                                                                          "start": {
+                                                                                                            "line": 105,
+                                                                                                            "column": 48
+                                                                                                          },
+                                                                                                          "end": {
+                                                                                                            "line": 105,
+                                                                                                            "column": 54
+                                                                                                          }
+                                                                                                        },
+                                                                                                        "pyExpr": "MSG_IDS"
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              "conditionExpr": {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 104,
+                                                                                                    "column": 36
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 104,
+                                                                                                    "column": 56
+                                                                                                  }
+                                                                                                },
+                                                                                                "pyExpr": "oid not in obj_status"
+                                                                                              }
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  "iterExpr": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 103,
+                                                                                        "column": 40
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 103,
+                                                                                        "column": 46
+                                                                                      }
+                                                                                    },
+                                                                                    "pyExpr": "OBJ_IDS"
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          "conditionExpr": {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 102,
+                                                                                "column": 28
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 102,
+                                                                                "column": 56
+                                                                              }
+                                                                            },
+                                                                            "pyExpr": "queue_status[qid] == \"ACTIVE\""
+                                                                          }
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  }
+                                                                ]
+                                                              },
+                                                              "conditionExpr": {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 101,
+                                                                    "column": 24
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 101,
+                                                                    "column": 42
+                                                                  }
+                                                                },
+                                                                "pyExpr": "qid in queue_status"
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  },
+                                                  "conditionExpr": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 99,
+                                                        "column": 20
+                                                      },
+                                                      "end": {
+                                                        "line": 99,
+                                                        "column": 42
+                                                      }
+                                                    },
+                                                    "pyExpr": "bucket_queue[bid] != \"\""
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 98,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 98,
+                                            "column": 45
+                                          }
+                                        },
+                                        "pyExpr": "bucket_status[bid] == \"ACTIVE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 97,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 97,
+                                "column": 31
+                              }
+                            },
+                            "pyExpr": "bid in bucket_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 96,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 96,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "BUCKET_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 124,
+          "column": 1
+        },
+        "end": {
+          "line": 139
+        }
+      },
+      "name": "PutObjectNotificationFails",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 125,
+            "column": 5
+          },
+          "end": {
+            "line": 139
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 125,
+                "column": 5
+              },
+              "end": {
+                "line": 139
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 125,
+                  "column": 5
+                },
+                "end": {
+                  "line": 139
+                }
+              },
+              "loopVars": [
+                "bid"
+              ],
+              "pyExpr": "BUCKET_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 126,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 139
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 126,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 139
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 126,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 139
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 126,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 139
+                            }
+                          },
+                          "condition": "bid in bucket_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 127,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 139
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 127,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 139
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 127,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 139
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 127,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 139
+                                        }
+                                      },
+                                      "condition": "bucket_status[bid] == \"ACTIVE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 128,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 139
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 128,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 139
+                                              }
+                                            },
+                                            "ifStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 128,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 139
+                                                }
+                                              },
+                                              "branches": [
+                                                {
+                                                  "sourceInfo": {
+                                                    "start": {
+                                                      "line": 128,
+                                                      "column": 20
+                                                    },
+                                                    "end": {
+                                                      "line": 139
+                                                    }
+                                                  },
+                                                  "condition": "bucket_queue[bid] != \"\"",
+                                                  "block": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 129,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 139
+                                                      }
+                                                    },
+                                                    "stmts": [
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 129,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 130,
+                                                            "column": 20
+                                                          }
+                                                        },
+                                                        "pyStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 129,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 129,
+                                                              "column": 43
+                                                            }
+                                                          },
+                                                          "code": "qid = bucket_queue[bid]"
+                                                        }
+                                                      },
+                                                      {
+                                                        "sourceInfo": {
+                                                          "start": {
+                                                            "line": 130,
+                                                            "column": 21
+                                                          },
+                                                          "end": {
+                                                            "line": 139
+                                                          }
+                                                        },
+                                                        "ifStmt": {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 130,
+                                                              "column": 21
+                                                            },
+                                                            "end": {
+                                                              "line": 139
+                                                            }
+                                                          },
+                                                          "branches": [
+                                                            {
+                                                              "sourceInfo": {
+                                                                "start": {
+                                                                  "line": 130,
+                                                                  "column": 24
+                                                                },
+                                                                "end": {
+                                                                  "line": 139
+                                                                }
+                                                              },
+                                                              "condition": "qid in queue_status",
+                                                              "block": {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 131,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 139
+                                                                  }
+                                                                },
+                                                                "stmts": [
+                                                                  {
+                                                                    "sourceInfo": {
+                                                                      "start": {
+                                                                        "line": 131,
+                                                                        "column": 25
+                                                                      },
+                                                                      "end": {
+                                                                        "line": 139
+                                                                      }
+                                                                    },
+                                                                    "ifStmt": {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 131,
+                                                                          "column": 25
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 139
+                                                                        }
+                                                                      },
+                                                                      "branches": [
+                                                                        {
+                                                                          "sourceInfo": {
+                                                                            "start": {
+                                                                              "line": 131,
+                                                                              "column": 28
+                                                                            },
+                                                                            "end": {
+                                                                              "line": 139
+                                                                            }
+                                                                          },
+                                                                          "condition": "queue_status[qid] == \"DELETED\"",
+                                                                          "block": {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 132,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 139
+                                                                              }
+                                                                            },
+                                                                            "stmts": [
+                                                                              {
+                                                                                "sourceInfo": {
+                                                                                  "start": {
+                                                                                    "line": 132,
+                                                                                    "column": 29
+                                                                                  },
+                                                                                  "end": {
+                                                                                    "line": 139
+                                                                                  }
+                                                                                },
+                                                                                "anyStmt": {
+                                                                                  "sourceInfo": {
+                                                                                    "start": {
+                                                                                      "line": 132,
+                                                                                      "column": 29
+                                                                                    },
+                                                                                    "end": {
+                                                                                      "line": 139
+                                                                                    }
+                                                                                  },
+                                                                                  "loopVars": [
+                                                                                    "oid"
+                                                                                  ],
+                                                                                  "pyExpr": "OBJ_IDS",
+                                                                                  "block": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 133,
+                                                                                        "column": 33
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 139
+                                                                                      }
+                                                                                    },
+                                                                                    "stmts": [
+                                                                                      {
+                                                                                        "sourceInfo": {
+                                                                                          "start": {
+                                                                                            "line": 133,
+                                                                                            "column": 33
+                                                                                          },
+                                                                                          "end": {
+                                                                                            "line": 139
+                                                                                          }
+                                                                                        },
+                                                                                        "ifStmt": {
+                                                                                          "sourceInfo": {
+                                                                                            "start": {
+                                                                                              "line": 133,
+                                                                                              "column": 33
+                                                                                            },
+                                                                                            "end": {
+                                                                                              "line": 139
+                                                                                            }
+                                                                                          },
+                                                                                          "branches": [
+                                                                                            {
+                                                                                              "sourceInfo": {
+                                                                                                "start": {
+                                                                                                  "line": 133,
+                                                                                                  "column": 36
+                                                                                                },
+                                                                                                "end": {
+                                                                                                  "line": 139
+                                                                                                }
+                                                                                              },
+                                                                                              "condition": "oid not in obj_status",
+                                                                                              "block": {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 134,
+                                                                                                    "column": 37
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 139
+                                                                                                  }
+                                                                                                },
+                                                                                                "stmts": [
+                                                                                                  {
+                                                                                                    "sourceInfo": {
+                                                                                                      "start": {
+                                                                                                        "line": 134,
+                                                                                                        "column": 37
+                                                                                                      },
+                                                                                                      "end": {
+                                                                                                        "line": 135,
+                                                                                                        "column": 36
+                                                                                                      }
+                                                                                                    },
+                                                                                                    "pyStmt": {
+                                                                                                      "sourceInfo": {
+                                                                                                        "start": {
+                                                                                                          "line": 134,
+                                                                                                          "column": 37
+                                                                                                        },
+                                                                                                        "end": {
+                                                                                                          "line": 134,
+                                                                                                          "column": 62
+                                                                                                        }
+                                                                                                      },
+                                                                                                      "code": "obj_status[oid] = \"EXISTS\""
+                                                                                                    }
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "sourceInfo": {
+                                                                                                      "start": {
+                                                                                                        "line": 135,
+                                                                                                        "column": 37
+                                                                                                      },
+                                                                                                      "end": {
+                                                                                                        "line": 139
+                                                                                                      }
+                                                                                                    },
+                                                                                                    "pyStmt": {
+                                                                                                      "sourceInfo": {
+                                                                                                        "start": {
+                                                                                                          "line": 135,
+                                                                                                          "column": 37
+                                                                                                        },
+                                                                                                        "end": {
+                                                                                                          "line": 135,
+                                                                                                          "column": 57
+                                                                                                        }
+                                                                                                      },
+                                                                                                      "code": "obj_bucket[oid] = bid"
+                                                                                                    }
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              "conditionExpr": {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 133,
+                                                                                                    "column": 36
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 133,
+                                                                                                    "column": 56
+                                                                                                  }
+                                                                                                },
+                                                                                                "pyExpr": "oid not in obj_status"
+                                                                                              }
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  "iterExpr": {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 132,
+                                                                                        "column": 40
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 132,
+                                                                                        "column": 46
+                                                                                      }
+                                                                                    },
+                                                                                    "pyExpr": "OBJ_IDS"
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          "conditionExpr": {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 131,
+                                                                                "column": 28
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 131,
+                                                                                "column": 57
+                                                                              }
+                                                                            },
+                                                                            "pyExpr": "queue_status[qid] == \"DELETED\""
+                                                                          }
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  }
+                                                                ]
+                                                              },
+                                                              "conditionExpr": {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 130,
+                                                                    "column": 24
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 130,
+                                                                    "column": 42
+                                                                  }
+                                                                },
+                                                                "pyExpr": "qid in queue_status"
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  },
+                                                  "conditionExpr": {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 128,
+                                                        "column": 20
+                                                      },
+                                                      "end": {
+                                                        "line": 128,
+                                                        "column": 42
+                                                      }
+                                                    },
+                                                    "pyExpr": "bucket_queue[bid] != \"\""
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 127,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 127,
+                                            "column": 45
+                                          }
+                                        },
+                                        "pyExpr": "bucket_status[bid] == \"ACTIVE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 126,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 126,
+                                "column": 31
+                              }
+                            },
+                            "pyExpr": "bid in bucket_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 125,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 125,
+                    "column": 25
+                  }
+                },
+                "pyExpr": "BUCKET_IDS"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "stmts": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 13,
+          "column": 1
+        },
+        "end": {
+          "line": 14
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 13,
+            "column": 1
+          },
+          "end": {
+            "line": 13,
+            "column": 25
+          }
+        },
+        "code": "BUCKET_IDS = [\"bucket-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 14,
+          "column": 1
+        },
+        "end": {
+          "line": 15
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 14,
+            "column": 1
+          },
+          "end": {
+            "line": 14,
+            "column": 23
+          }
+        },
+        "code": "QUEUE_IDS = [\"queue-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 15,
+          "column": 1
+        },
+        "end": {
+          "line": 16
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 15,
+            "column": 1
+          },
+          "end": {
+            "line": 15,
+            "column": 19
+          }
+        },
+        "code": "OBJ_IDS = [\"obj-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 16,
+          "column": 1
+        },
+        "end": {
+          "line": 19
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 16,
+            "column": 1
+          },
+          "end": {
+            "line": 16,
+            "column": 19
+          }
+        },
+        "code": "MSG_IDS = [\"msg-1\"]"
+      }
+    }
+  ],
+  "frontMatter": {
+    "yaml": "deadlock_detection: false\noptions:\n  max_concurrent_actions: 1\n  max_actions: 40\n"
+  }
+}

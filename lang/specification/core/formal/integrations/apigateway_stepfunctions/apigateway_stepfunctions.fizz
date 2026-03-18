@@ -1,0 +1,165 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# API Gateway -> Step Functions Integration Formal Specification
+# Models a REST API that synchronously starts a Step Functions Express Workflow execution.
+# The API waits for the execution to complete and returns the result to the caller.
+
+API_IDS = ["api-1"]
+SM_IDS = ["sm-1"]
+REQ_IDS = ["req-1"]
+EXEC_IDS = ["exec-1"]
+
+
+action Init:
+    api_status = {}             # api_status[aid] = "ACTIVE"
+    api_sm = {}                 # api_sm[aid] = sm_id or "" (integrated state machine)
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    req_status = {}             # req_status[rid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    req_api = {}                # req_api[rid] = api_id
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_req = {}               # exec_req[eid] = request_id
+
+
+# step: a REST API is created
+# result: the API is ACTIVE with no Step Functions integration configured
+# guard: the API does not already exist
+# guard_violation: the API already exists
+atomic action CreateRestApi:
+    oneof aid in API_IDS:
+        if aid not in api_status:
+            api_status[aid] = "ACTIVE"
+            api_sm[aid] = ""
+
+
+# step: a Step Functions Express Workflow state machine is created
+# result: the state machine is ACTIVE
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+
+
+# step: a Step Functions direct integration is configured on the REST API
+# result: the API will synchronously start and await an Express Workflow execution per request
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has no integration configured
+# guard_violation: the API already has an integration configured
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+atomic action ConfigureIntegration:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_sm[aid] == "":
+                    oneof smid in SM_IDS:
+                        if smid in sm_status:
+                            if sm_status[smid] == "ACTIVE":
+                                api_sm[aid] = smid
+
+
+# step: the API receives an HTTP request and synchronously starts a Step Functions execution
+# result: the request and execution are both IN_PROGRESS and RUNNING respectively
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has a Step Functions integration configured
+# guard_violation: the API has no Step Functions integration configured
+# guard: the integrated state machine is ACTIVE
+# guard_violation_lifecycle: the integrated state machine is not ACTIVE
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action HandleRequest:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_sm[aid] != "":
+                    smid = api_sm[aid]
+                    if smid in sm_status:
+                        if sm_status[smid] == "ACTIVE":
+                            oneof rid in REQ_IDS:
+                                if rid not in req_status or req_status[rid] == "SUCCESS" or req_status[rid] == "FAILED":
+                                    oneof eid in EXEC_IDS:
+                                        if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                                            req_status[rid] = "IN_PROGRESS"
+                                            req_api[rid] = aid
+                                            exec_status[eid] = "RUNNING"
+                                            exec_req[eid] = rid
+
+
+# fake_skip: internal
+# step: the Step Functions execution completes successfully and the API returns a successful response
+# result: the execution is SUCCEEDED and the request is SUCCESS
+# guard: an execution is RUNNING
+# guard_violation_lifecycle: no execution is RUNNING
+atomic action ExecutionSucceeds:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                rid = exec_req[eid]
+                exec_status[eid] = "SUCCEEDED"
+                req_status[rid] = "SUCCESS"
+
+
+# fake_skip: internal
+# step: the Step Functions execution fails and the API returns an error response
+# result: the execution is FAILED and the request is FAILED
+# guard: an execution is RUNNING
+# guard_violation_lifecycle: no execution is RUNNING
+atomic action ExecutionFails:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                rid = exec_req[eid]
+                exec_status[eid] = "FAILED"
+                req_status[rid] = "FAILED"
+
+
+# check: every IN_PROGRESS request references an ACTIVE API
+always assertion RequestRequiresActiveApi:
+    for rid in req_status:
+        if req_status[rid] == "IN_PROGRESS":
+            aid = req_api[rid]
+            if aid in api_status:
+                if api_status[aid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            rid = exec_req[eid]
+            if rid in req_api:
+                aid = req_api[rid]
+                if aid in api_sm:
+                    smid = api_sm[aid]
+                    if smid in sm_status:
+                        if sm_status[smid] != "ACTIVE":
+                            return False
+    return True
+
+
+# check: every RUNNING execution has a corresponding IN_PROGRESS request
+always assertion ExecutionLinkedToRequest:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            rid = exec_req[eid]
+            if rid in req_status:
+                if req_status[rid] != "IN_PROGRESS":
+                    return False
+    return True

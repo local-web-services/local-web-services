@@ -1,0 +1,207 @@
+#!/usr/bin/env bash
+# Pre-commit hook: mirrors all CI checks, scoped to staged paths.
+# Install via: make install-hooks
+# Bypass via:  git commit --no-verify
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+STAGED=$(git diff --cached --name-only)
+
+if [ -z "$STAGED" ]; then
+  exit 0
+fi
+
+# ── Path detection (mirrors CI dorny/paths-filter) ────────────────────────────
+
+PYTHON_CORE=false   # lang/python/core/**
+PYTHON=false        # lang/python/**  (sdk + example)
+TYPESCRIPT=false    # lang/typescript/**
+JAVA=false          # lang/java/**
+GO=false            # lang/go/**
+SPECIFICATION=false # lang/specification/core/formal/**
+SAMPLE_CDK=false    # sample-project/cdk/** or lang/python/core/**
+SAMPLE_HCL=false    # sample-project/hcl/** or lang/python/core/**
+
+echo "$STAGED" | grep -q "^lang/python/core/"               && PYTHON_CORE=true
+echo "$STAGED" | grep -q "^lang/python/"                    && PYTHON=true
+echo "$STAGED" | grep -q "^lang/typescript/"                && TYPESCRIPT=true
+echo "$STAGED" | grep -q "^lang/java/"                      && JAVA=true
+echo "$STAGED" | grep -q "^lang/go/"                        && GO=true
+echo "$STAGED" | grep -q "^lang/specification/core/formal/" && SPECIFICATION=true
+{ echo "$STAGED" | grep -q "^lang/python/core/" || echo "$STAGED" | grep -q "^sample-project/cdk/"; } && SAMPLE_CDK=true
+{ echo "$STAGED" | grep -q "^lang/python/core/" || echo "$STAGED" | grep -q "^sample-project/hcl/"; } && SAMPLE_HCL=true
+
+FAILED=0
+
+run() {
+  local label="$1"; shift
+  echo ""
+  echo "── $label ──────────────────────────────────────────"
+  if "$@"; then
+    echo "✓ $label passed"
+  else
+    echo "✗ $label FAILED"
+    FAILED=1
+  fi
+}
+
+run_in() {
+  local label="$1"; local dir="$2"; shift 2
+  echo ""
+  echo "── $label ──────────────────────────────────────────"
+  if (cd "$REPO_ROOT/$dir" && "$@"); then
+    echo "✓ $label passed"
+  else
+    echo "✗ $label FAILED"
+    FAILED=1
+  fi
+}
+
+wait_for_ldk() {
+  local port="${1:-3000}"
+  for i in $(seq 1 60); do
+    if curl -sf "http://localhost:$port/_ldk/status" \
+        | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+      echo "ldk is ready"
+      return 0
+    fi
+    sleep 1
+  done
+  echo "ldk failed to start within 60s"
+  return 1
+}
+
+# ── Python core ───────────────────────────────────────────────────────────────
+if $PYTHON_CORE; then
+  run "python-core lint"         make -C "$REPO_ROOT/lang/python/core" lint
+  run "python-core format-check" make -C "$REPO_ROOT/lang/python/core" format-check
+  run "python-core test"         make -C "$REPO_ROOT/lang/python/core" test
+  run "python-core test-e2e"     make -C "$REPO_ROOT/lang/python/core" test-e2e
+fi
+
+# ── Python SDK + example ──────────────────────────────────────────────────────
+if $PYTHON; then
+  run "python-sdk test"     make -C "$REPO_ROOT/lang/python/sdk" test
+  run_in "python-example test" "lang/python/example" uv run --extra test pytest
+fi
+
+# ── TypeScript core + SDK + example ──────────────────────────────────────────
+if $TYPESCRIPT; then
+  run "typescript-core test"        make -C "$REPO_ROOT/lang/typescript/core" test
+  run_in "typescript-core build"    "lang/typescript/core" npm run build
+  run_in "typescript-sdk build"     "lang/typescript/sdk" npm ci
+  run_in "typescript-sdk build tsc" "lang/typescript/sdk" npm run build
+  run_in "typescript-example test"  "lang/typescript/example" npm ci
+  run_in "typescript-example jest"  "lang/typescript/example" npm test
+  run_in "typescript-example bdd"   "lang/typescript/example" npm run test:e2e
+fi
+
+# ── Go core + SDK + example ───────────────────────────────────────────────────
+if $GO; then
+  run "go-core test"    make -C "$REPO_ROOT/lang/go/core" test
+  run "go-sdk test"     make -C "$REPO_ROOT/lang/go/sdk" test
+  run_in "go-example test" "lang/go/example" go test ./...
+fi
+
+# ── Java core + SDK + example ─────────────────────────────────────────────────
+if $JAVA; then
+  run "java-core test" make -C "$REPO_ROOT/lang/java/core" test
+  run_in "java-core jar"    "lang/java/core" \
+      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-core" ./gradlew jar
+  run_in "java-sdk test"    "lang/java/sdk" \
+      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew test
+  run_in "java-sdk jar"     "lang/java/sdk" \
+      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-sdk" ./gradlew jar
+  run_in "java-example test" "lang/java/example" \
+      env GRADLE_OPTS="-Dorg.gradle.project.buildDir=/tmp/gradle-build-lws-java-example" ./gradlew test
+fi
+
+# ── FizzBee formal specs ──────────────────────────────────────────────────────
+if $SPECIFICATION; then
+  if ! command -v fizz &>/dev/null; then
+    echo ""
+    echo "── fizzbee-check (SKIPPED — fizz not in PATH) ───────────────────────"
+  else
+    SPEC_FAILED=0
+    echo ""
+    echo "── fizzbee-check ─────────────────────────────────────────────────────"
+    while IFS= read -r spec; do
+      echo "  Checking: $spec"
+      if ! timeout 120 fizz "$REPO_ROOT/$spec"; then
+        echo "  FAILED: $spec"
+        SPEC_FAILED=1
+      fi
+    done < <(echo "$STAGED" | grep '\.fizz$')
+    if [ $SPEC_FAILED -eq 0 ]; then
+      echo "✓ fizzbee-check passed"
+    else
+      echo "✗ fizzbee-check FAILED"
+      FAILED=1
+    fi
+  fi
+fi
+
+# ── Sample project CDK ────────────────────────────────────────────────────────
+if $SAMPLE_CDK; then
+  echo ""
+  echo "── sample-project-cdk ────────────────────────────────────────────────"
+  LDK_PID=""
+  _cleanup_cdk() { [ -n "$LDK_PID" ] && kill "$LDK_PID" 2>/dev/null || true; }
+  trap _cleanup_cdk EXIT
+  (cd "$REPO_ROOT/sample-project/cdk" && ldk dev) &
+  LDK_PID=$!
+  if wait_for_ldk 3000; then
+    if (cd "$REPO_ROOT/sample-project/cdk" && npx cdk synth) && \
+       (cd "$REPO_ROOT/sample-project/cdk" && ./test-orders.sh); then
+      echo "✓ sample-project-cdk passed"
+    else
+      echo "✗ sample-project-cdk FAILED"
+      FAILED=1
+    fi
+  else
+    echo "✗ sample-project-cdk FAILED (ldk did not start)"
+    FAILED=1
+  fi
+  kill "$LDK_PID" 2>/dev/null || true
+  LDK_PID=""
+  trap - EXIT
+fi
+
+# ── Sample project HCL ────────────────────────────────────────────────────────
+if $SAMPLE_HCL; then
+  echo ""
+  echo "── sample-project-hcl ────────────────────────────────────────────────"
+  if ! command -v tofu &>/dev/null; then
+    echo "── sample-project-hcl (SKIPPED — tofu not in PATH) ─────────────────"
+  else
+    LDK_PID=""
+    _cleanup_hcl() { [ -n "$LDK_PID" ] && kill "$LDK_PID" 2>/dev/null || true; }
+    trap _cleanup_hcl EXIT
+    (cd "$REPO_ROOT/sample-project/hcl" && ldk dev) &
+    LDK_PID=$!
+    if wait_for_ldk 3000; then
+      if (cd "$REPO_ROOT/sample-project/hcl" && tofu init) && \
+         (cd "$REPO_ROOT/sample-project/hcl" && tofu apply -auto-approve) && \
+         (cd "$REPO_ROOT/sample-project/hcl" && ./test-orders.sh); then
+        echo "✓ sample-project-hcl passed"
+      else
+        echo "✗ sample-project-hcl FAILED"
+        FAILED=1
+      fi
+    else
+      echo "✗ sample-project-hcl FAILED (ldk did not start)"
+      FAILED=1
+    fi
+    kill "$LDK_PID" 2>/dev/null || true
+    LDK_PID=""
+    trap - EXIT
+  fi
+fi
+
+# ── Result ────────────────────────────────────────────────────────────────────
+echo ""
+if [ $FAILED -ne 0 ]; then
+  echo "Pre-commit checks FAILED. Fix the issues above or use git commit --no-verify to skip."
+  exit 1
+fi
+echo "All pre-commit checks passed."

@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'io.localwebservices'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+}
+
+jar {
+    archiveFileName = 'arch_tests.jar'
+}

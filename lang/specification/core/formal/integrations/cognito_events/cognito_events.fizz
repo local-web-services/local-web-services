@@ -1,0 +1,149 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Cognito IdP -> EventBridge Integration Formal Specification
+# Models Cognito user pool events (sign-in, sign-up, etc.) being published
+# to an EventBridge event bus. When a user action occurs in an ACTIVE pool,
+# Cognito sends an event to the configured event bus.
+# If the bus has been deleted, event delivery fails silently.
+
+POOL_IDS = ["pool-1"]
+BUS_IDS = ["bus-1"]
+EVENT_IDS = ["event-1"]
+
+
+action Init:
+    pool_status = {}            # pool_status[pid] = "ACTIVE" | "DELETED"
+    pool_bus = {}               # pool_bus[pid] = bus_id or "" (EventBridge config)
+    bus_status = {}             # bus_status[busid] = "ACTIVE" | "DELETED"
+    event_status = {}           # event_status[eid] = "DELIVERED" | "FAILED"
+    event_pool = {}             # event_pool[eid] = pool_id
+    event_bus = {}              # event_bus[eid] = bus_id
+
+
+# step: a Cognito user pool is created
+# result: the pool is ACTIVE with no EventBridge configuration
+# guard: the pool does not already exist
+# guard_violation: the pool already exists
+atomic action CreateUserPool:
+    oneof pid in POOL_IDS:
+        if pid not in pool_status:
+            pool_status[pid] = "ACTIVE"
+            pool_bus[pid] = ""
+
+
+# step: an EventBridge event bus is created
+# result: the bus is ACTIVE
+# guard: the bus does not already exist
+# guard_violation: the bus already exists
+atomic action CreateEventBus:
+    oneof busid in BUS_IDS:
+        if busid not in bus_status:
+            bus_status[busid] = "ACTIVE"
+
+
+# step: the EventBridge event bus is deleted
+# result: the bus is DELETED and Cognito event delivery will fail
+# guard: the bus exists
+# guard_violation: the bus does not exist
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is already DELETED
+atomic action DeleteEventBus:
+    oneof busid in BUS_IDS:
+        if busid in bus_status:
+            if bus_status[busid] == "ACTIVE":
+                bus_status[busid] = "DELETED"
+
+
+# step: EventBridge publishing is enabled on the user pool
+# result: the pool will send user events to the bus
+# guard: the pool exists and is ACTIVE
+# guard_violation_lifecycle: the pool does not exist or is not ACTIVE
+# guard: the pool has no EventBridge configuration
+# guard_violation: the pool already has an EventBridge configuration
+# guard: the bus exists and is ACTIVE
+# guard_violation: the bus does not exist or is not ACTIVE
+atomic action EnableEventPublishing:
+    oneof pid in POOL_IDS:
+        if pid in pool_status:
+            if pool_status[pid] == "ACTIVE":
+                if pool_bus[pid] == "":
+                    oneof busid in BUS_IDS:
+                        if busid in bus_status:
+                            if bus_status[busid] == "ACTIVE":
+                                pool_bus[pid] = busid
+
+
+# fake_skip: internal
+# step: a user action occurs in the pool and Cognito delivers the event to the EventBridge bus
+# result: the event is DELIVERED to the bus
+# guard: the pool exists and is ACTIVE
+# guard_violation_lifecycle: the pool does not exist or is not ACTIVE
+# guard: the pool has an EventBridge configuration
+# guard_violation: the pool has no EventBridge configuration
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is DELETED
+# guard: an event slot is available
+# guard_violation_capacity: no event slot is available
+atomic action UserActionDelivered:
+    oneof pid in POOL_IDS:
+        if pid in pool_status:
+            if pool_status[pid] == "ACTIVE":
+                if pool_bus[pid] != "":
+                    busid = pool_bus[pid]
+                    if busid in bus_status:
+                        if bus_status[busid] == "ACTIVE":
+                            oneof eid in EVENT_IDS:
+                                if eid not in event_status:
+                                    event_status[eid] = "DELIVERED"
+                                    event_pool[eid] = pid
+                                    event_bus[eid] = busid
+
+
+# fake_skip: internal
+# step: a user action occurs but event delivery fails because the bus has been deleted
+# result: the event delivery FAILED
+# guard: the pool exists and is ACTIVE
+# guard_violation_lifecycle: the pool does not exist or is not ACTIVE
+# guard: the pool has an EventBridge configuration
+# guard_violation: the pool has no EventBridge configuration
+# guard: the bus is DELETED
+# guard_violation_lifecycle: the bus is not DELETED
+# guard: an event slot is available
+# guard_violation_capacity: no event slot is available
+atomic action UserActionDeliveryFails:
+    oneof pid in POOL_IDS:
+        if pid in pool_status:
+            if pool_status[pid] == "ACTIVE":
+                if pool_bus[pid] != "":
+                    busid = pool_bus[pid]
+                    if busid in bus_status:
+                        if bus_status[busid] == "DELETED":
+                            oneof eid in EVENT_IDS:
+                                if eid not in event_status:
+                                    event_status[eid] = "FAILED"
+                                    event_pool[eid] = pid
+                                    event_bus[eid] = busid
+
+
+# check: every DELIVERED event references a pool that exists
+always assertion DeliveredEventReferencesExistingPool:
+    for eid in event_status:
+        if event_status[eid] == "DELIVERED":
+            pid = event_pool[eid]
+            if pid not in pool_status:
+                return False
+    return True
+
+
+# check: every DELIVERED event references a bus that exists
+always assertion DeliveredEventReferencesExistingBus:
+    for eid in event_status:
+        if event_status[eid] == "DELIVERED":
+            busid = event_bus[eid]
+            if busid not in bus_status:
+                return False
+    return True

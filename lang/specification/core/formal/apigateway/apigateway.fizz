@@ -1,0 +1,640 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 30
+---
+# AWS API Gateway REST Formal Specification
+# Models REST APIs, resources, methods, integrations, deployments, and stages
+#
+# FizzBee grammar rules:
+#   - Iterate over fixed lists, NOT over mutable dicts
+#   - Only single-level subscript assignments: dict[key] = x is OK
+#   - del dict[key] is NOT supported: use sentinel values instead
+#   - No comments inside oneof: blocks
+
+API_IDS = ["api-1", "api-2"]
+RESOURCE_IDS = ["res-root-1", "res-1", "res-2", "res-root-2", "res-3"]
+METHOD_KEYS = ["res-1:GET", "res-1:POST", "res-2:GET", "res-root-1:GET"]
+DEPLOYMENT_IDS = ["dep-1", "dep-2", "dep-3"]
+STAGE_NAMES = ["prod", "dev"]
+
+action Init:
+    # api_status[aid] = "ACTIVE"|"DELETED"
+    api_status = {}
+
+    # resource_api[rid] = api_id (which API owns this resource)
+    resource_api = {}
+
+    # resource_path[rid] = "/"|"segment" (root vs child)
+    resource_path = {}
+
+    # resource_status[rid] = "ACTIVE"|"DELETED"
+    resource_status = {}
+
+    # method_status[mk] = "EXISTS"|"DELETED"
+    method_status = {}
+
+    # method_api[mk] = api_id
+    method_api = {}
+
+    # method_resource[mk] = resource_id
+    method_resource = {}
+
+    # integration_status[mk] = "EXISTS"|"DELETED"
+    integration_status = {}
+
+    # integration_api[mk] = api_id (which API this integration belongs to)
+    integration_api = {}
+
+    # method_response_exists[mk+":200"] = True|False
+    method_response_exists = {}
+
+    # ir_exists[mk+":200"] = True|False
+    ir_exists = {}
+
+    # deployment_status[did] = "ACTIVE"|"DELETED"
+    deployment_status = {}
+
+    # deployment_api[did] = api_id
+    deployment_api = {}
+
+    # stage_exists["aid:sname"] = True|False
+    stage_exists = {}
+
+    # stage_deployment["aid:sname"] = dep_id
+    stage_deployment = {}
+
+    # stage_throttling["aid:sname"] = True|False
+    stage_throttling = {}
+
+# step: a REST API is created
+# result: the API is ACTIVE
+# guard: the API does not already exist
+# guard_violation: the API already exists
+# CreateRestApi: create the API entry
+atomic action CreateRestApi:
+    oneof aid in API_IDS:
+        if aid not in api_status:
+            api_status[aid] = "ACTIVE"
+
+# step: a root resource is initialized for an API
+# result: the root resource is ACTIVE
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the resource slot is unallocated
+# guard_violation: the resource slot is already allocated
+# InitRootResource: allocate a root resource for an active API that has none yet
+atomic action InitRootResource:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                oneof rid in RESOURCE_IDS:
+                    if rid not in resource_api:
+                        resource_api[rid] = aid
+                        resource_path[rid] = "/"
+                        resource_status[rid] = "ACTIVE"
+
+# step: a REST API is deleted
+# result: the API is DELETED along with all its resources, methods, integrations, deployments, and stages
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+atomic action DeleteRestApi:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                api_status[aid] = "DELETED"
+                for rid in RESOURCE_IDS:
+                    if rid in resource_api:
+                        if resource_api[rid] == aid:
+                            resource_status[rid] = "DELETED"
+                for mk in METHOD_KEYS:
+                    if mk in method_api:
+                        if method_api[mk] == aid:
+                            if method_status[mk] == "EXISTS":
+                                method_status[mk] = "DELETED"
+                for mk in METHOD_KEYS:
+                    if mk in integration_api:
+                        if integration_api[mk] == aid:
+                            if integration_status[mk] == "EXISTS":
+                                integration_status[mk] = "DELETED"
+                for did in DEPLOYMENT_IDS:
+                    if did in deployment_api:
+                        if deployment_api[did] == aid:
+                            if deployment_status[did] == "ACTIVE":
+                                deployment_status[did] = "DELETED"
+                for sname in STAGE_NAMES:
+                    sk = aid + ":" + sname
+                    if sk in stage_exists:
+                        stage_exists[sk] = False
+
+# step: a child resource is created under an existing resource
+# result: the new resource is ACTIVE
+# guard: the resource slot is unallocated
+# guard_violation: the resource slot is already allocated
+# guard: the parent resource exists
+# guard_violation: the parent resource does not exist
+# guard: the parent resource is ACTIVE
+# guard_violation_lifecycle: the parent resource is not ACTIVE
+# CreateResource: add a non-root resource under an existing ACTIVE resource
+atomic action CreateResource:
+    oneof rid in RESOURCE_IDS:
+        if rid not in resource_api:
+            oneof parent_rid in RESOURCE_IDS:
+                if parent_rid in resource_status:
+                    if resource_status[parent_rid] == "ACTIVE":
+                        resource_api[rid] = resource_api[parent_rid]
+                        resource_path[rid] = "segment"
+                        resource_status[rid] = "ACTIVE"
+
+# step: a non-root resource is deleted along with its methods and integrations
+# result: the resource is DELETED along with all its methods and integrations
+# guard: the resource exists
+# guard_violation: the resource does not exist
+# guard: the resource is ACTIVE
+# guard_violation_lifecycle: the resource is not ACTIVE
+# guard: the resource has a path
+# guard_violation: the resource does not have a path
+# guard: the resource is not the root resource
+# guard_violation: the resource is the root resource
+atomic action DeleteResource:
+    oneof rid in RESOURCE_IDS:
+        if rid in resource_status:
+            if resource_status[rid] == "ACTIVE":
+                if rid in resource_path:
+                    if resource_path[rid] != "/":
+                        resource_status[rid] = "DELETED"
+                        for mk in METHOD_KEYS:
+                            if mk in method_resource:
+                                if method_resource[mk] == rid:
+                                    if method_status[mk] == "EXISTS":
+                                        method_status[mk] = "DELETED"
+                                    if mk in integration_status:
+                                        if integration_status[mk] == "EXISTS":
+                                            integration_status[mk] = "DELETED"
+
+# step: a GET method is created on a resource
+# result: the method EXISTS on the resource
+# guard: the method does not already exist
+# guard_violation: the method already exists
+# guard: the resource exists
+# guard_violation: the resource does not exist
+# guard: the resource is ACTIVE
+# guard_violation_lifecycle: the resource is not ACTIVE
+# PutMethod: create a GET method for a resource
+atomic action PutMethodGet:
+    oneof mk in METHOD_KEYS:
+        if mk not in method_status:
+            rid = mk[:mk.index(":")]
+            if rid in resource_status:
+                if resource_status[rid] == "ACTIVE":
+                    method_status[mk] = "EXISTS"
+                    method_api[mk] = resource_api[rid]
+                    method_resource[mk] = rid
+
+# step: an existing method is updated
+# result: the method remains unchanged
+# guard: the method exists
+# guard_violation: the method does not exist
+# guard: the method EXISTS
+# guard_violation: the method does not exist
+# PutMethod (re-put on existing active method has no semantic change)
+atomic action PutMethodUpdate:
+    oneof mk in METHOD_KEYS:
+        if mk in method_status:
+            if method_status[mk] == "EXISTS":
+                pass
+
+# step: a method is deleted along with its integration
+# result: the method is DELETED and its integration is DELETED if it exists
+# guard: the method exists
+# guard_violation: the method does not exist
+# guard: the method EXISTS
+# guard_violation: the method does not exist
+atomic action DeleteMethod:
+    oneof mk in METHOD_KEYS:
+        if mk in method_status:
+            if method_status[mk] == "EXISTS":
+                method_status[mk] = "DELETED"
+                if mk in integration_status:
+                    if integration_status[mk] == "EXISTS":
+                        integration_status[mk] = "DELETED"
+
+# step: a 200 method response is configured
+# result: the method response exists
+# guard: the method exists
+# guard_violation: the method does not exist
+# guard: the method EXISTS
+# guard_violation: the method does not exist
+# PutMethodResponse: record 200 response for an existing method
+atomic action PutMethodResponse:
+    oneof mk in METHOD_KEYS:
+        if mk in method_status:
+            if method_status[mk] == "EXISTS":
+                mr_key = mk + ":200"
+                method_response_exists[mr_key] = True
+
+# step: a backend integration is attached to a method
+# result: the integration EXISTS
+# guard: the method exists
+# guard_violation: the method does not exist
+# guard: the method EXISTS
+# guard_violation: the method does not exist
+# PutIntegration: attach backend integration to a method
+atomic action PutIntegration:
+    oneof mk in METHOD_KEYS:
+        if mk in method_status:
+            if method_status[mk] == "EXISTS":
+                integration_status[mk] = "EXISTS"
+                integration_api[mk] = method_api[mk]
+
+# step: an integration is deleted
+# result: the integration is DELETED
+# guard: the integration exists
+# guard_violation: the integration does not exist
+# guard: the integration EXISTS
+# guard_violation: the integration does not exist
+# DeleteIntegration
+atomic action DeleteIntegration:
+    oneof mk in METHOD_KEYS:
+        if mk in integration_status:
+            if integration_status[mk] == "EXISTS":
+                integration_status[mk] = "DELETED"
+
+# step: a 200 integration response is configured
+# result: the integration response exists
+# guard: the integration exists
+# guard_violation: the integration does not exist
+# guard: the integration EXISTS
+# guard_violation: the integration does not exist
+# PutIntegrationResponse: record 200 integration response
+atomic action PutIntegrationResponse:
+    oneof mk in METHOD_KEYS:
+        if mk in integration_status:
+            if integration_status[mk] == "EXISTS":
+                ir_key = mk + ":200"
+                ir_exists[ir_key] = True
+
+# step: an API deployment is created
+# result: the deployment is ACTIVE
+# guard: the deployment slot is available
+# guard_violation: the deployment slot is already in use
+# guard: the method has an integration
+# guard_violation: the method does not have an integration
+# guard: the integration EXISTS
+# guard_violation: the integration does not exist
+# guard: the method has an API association
+# guard_violation: the method does not have an API association
+# guard: the API exists
+# guard_violation: the API does not exist
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# CreateDeployment: create a deployment for an API that has at least one integration
+atomic action CreateDeployment:
+    oneof did in DEPLOYMENT_IDS:
+        if did not in deployment_status:
+            oneof mk in METHOD_KEYS:
+                if mk in integration_status:
+                    if integration_status[mk] == "EXISTS":
+                        if mk in method_api:
+                            aid = method_api[mk]
+                            if aid in api_status:
+                                if api_status[aid] == "ACTIVE":
+                                    deployment_status[did] = "ACTIVE"
+                                    deployment_api[did] = aid
+
+# step: a deployment is deleted when no stage references it
+# result: the deployment is DELETED
+# guard: the deployment exists
+# guard_violation: the deployment does not exist
+# guard: the deployment is ACTIVE
+# guard_violation_lifecycle: the deployment is not ACTIVE
+# guard: the stage key exists
+# guard_violation: the stage key does not exist
+# guard: the stage is active
+# guard_violation: the stage is not active
+# guard: the stage has a deployment reference
+# guard_violation: the stage does not have a deployment reference
+# guard: the stage references this deployment
+# guard_violation: the stage does not reference this deployment
+# guard: no stage references this deployment
+# guard_violation: a stage references this deployment
+# DeleteDeployment: only if no stage references it
+atomic action DeleteDeployment:
+    oneof did in DEPLOYMENT_IDS:
+        if did in deployment_status:
+            if deployment_status[did] == "ACTIVE":
+                can_delete = True
+                for sname in STAGE_NAMES:
+                    for aid in API_IDS:
+                        sk = aid + ":" + sname
+                        if sk in stage_exists:
+                            if stage_exists[sk] == True:
+                                if sk in stage_deployment:
+                                    if stage_deployment[sk] == did:
+                                        can_delete = False
+                if can_delete:
+                    deployment_status[did] = "DELETED"
+
+# step: a prod stage is created for an API
+# result: the prod stage exists pointing to the deployment
+# guard: the deployment exists
+# guard_violation: the deployment does not exist
+# guard: the deployment is ACTIVE
+# guard_violation_lifecycle: the deployment is not ACTIVE
+# guard: the prod stage does not already exist for this API
+# guard_violation: the prod stage already exists for this API
+# CreateStage: associate a stage name with an existing deployment
+atomic action CreateStageProd:
+    oneof did in DEPLOYMENT_IDS:
+        if did in deployment_status:
+            if deployment_status[did] == "ACTIVE":
+                aid = deployment_api[did]
+                sk = aid + ":prod"
+                if sk not in stage_exists:
+                    stage_exists[sk] = True
+                    stage_deployment[sk] = did
+                    stage_throttling[sk] = False
+
+# step: a dev stage is created for an API
+# result: the dev stage exists pointing to the deployment
+# guard: the deployment exists
+# guard_violation: the deployment does not exist
+# guard: the deployment is ACTIVE
+# guard_violation_lifecycle: the deployment is not ACTIVE
+# guard: the dev stage does not already exist for this API
+# guard_violation: the dev stage already exists for this API
+atomic action CreateStageDev:
+    oneof did in DEPLOYMENT_IDS:
+        if did in deployment_status:
+            if deployment_status[did] == "ACTIVE":
+                aid = deployment_api[did]
+                sk = aid + ":dev"
+                if sk not in stage_exists:
+                    stage_exists[sk] = True
+                    stage_deployment[sk] = did
+                    stage_throttling[sk] = False
+
+# step: the prod stage is deleted
+# result: the prod stage no longer exists
+# guard: the prod stage exists
+# guard_violation: the prod stage does not exist
+# guard: the prod stage is active
+# guard_violation_lifecycle: the prod stage is not active
+# DeleteStage
+atomic action DeleteStageProd:
+    oneof aid in API_IDS:
+        sk = aid + ":prod"
+        if sk in stage_exists:
+            if stage_exists[sk] == True:
+                stage_exists[sk] = False
+
+# step: the dev stage is deleted
+# result: the dev stage no longer exists
+# guard: the dev stage exists
+# guard_violation: the dev stage does not exist
+# guard: the dev stage is active
+# guard_violation_lifecycle: the dev stage is not active
+atomic action DeleteStageDev:
+    oneof aid in API_IDS:
+        sk = aid + ":dev"
+        if sk in stage_exists:
+            if stage_exists[sk] == True:
+                stage_exists[sk] = False
+
+# step: the prod stage is redeployed to a new deployment
+# result: the prod stage points to the new deployment
+# guard: the deployment exists
+# guard_violation: the deployment does not exist
+# guard: the deployment is ACTIVE
+# guard_violation_lifecycle: the deployment is not ACTIVE
+# guard: the prod stage exists
+# guard_violation: the prod stage does not exist
+# guard: the prod stage is active
+# guard_violation_lifecycle: the prod stage is not active
+# UpdateStage: point stage at a different deployment (redeploy)
+atomic action UpdateStageProd:
+    oneof did in DEPLOYMENT_IDS:
+        if did in deployment_status:
+            if deployment_status[did] == "ACTIVE":
+                aid = deployment_api[did]
+                sk = aid + ":prod"
+                if sk in stage_exists:
+                    if stage_exists[sk] == True:
+                        stage_deployment[sk] = did
+
+# step: the dev stage is redeployed to a new deployment
+# result: the dev stage points to the new deployment
+# guard: the deployment exists
+# guard_violation: the deployment does not exist
+# guard: the deployment is ACTIVE
+# guard_violation_lifecycle: the deployment is not ACTIVE
+# guard: the dev stage exists
+# guard_violation: the dev stage does not exist
+# guard: the dev stage is active
+# guard_violation_lifecycle: the dev stage is not active
+atomic action UpdateStageDev:
+    oneof did in DEPLOYMENT_IDS:
+        if did in deployment_status:
+            if deployment_status[did] == "ACTIVE":
+                aid = deployment_api[did]
+                sk = aid + ":dev"
+                if sk in stage_exists:
+                    if stage_exists[sk] == True:
+                        stage_deployment[sk] = did
+
+# step: throttling is enabled for the prod stage
+# result: prod stage requests are throttled
+# guard: the prod stage exists
+# guard_violation: the prod stage does not exist
+# guard: the prod stage is active
+# guard_violation_lifecycle: the prod stage is not active
+# EnableStageThrottling / DisableStageThrottling
+atomic action EnableStageThrottlingProd:
+    oneof aid in API_IDS:
+        sk = aid + ":prod"
+        if sk in stage_exists:
+            if stage_exists[sk] == True:
+                stage_throttling[sk] = True
+
+# step: throttling is disabled for the prod stage
+# result: prod stage requests are not throttled
+# guard: the prod stage exists
+# guard_violation: the prod stage does not exist
+# guard: the prod stage is active
+# guard_violation_lifecycle: the prod stage is not active
+atomic action DisableStageThrottlingProd:
+    oneof aid in API_IDS:
+        sk = aid + ":prod"
+        if sk in stage_exists:
+            if stage_exists[sk] == True:
+                stage_throttling[sk] = False
+
+# step: throttling is enabled for the dev stage
+# result: dev stage requests are throttled
+# guard: the dev stage exists
+# guard_violation: the dev stage does not exist
+# guard: the dev stage is active
+# guard_violation_lifecycle: the dev stage is not active
+atomic action EnableStageThrottlingDev:
+    oneof aid in API_IDS:
+        sk = aid + ":dev"
+        if sk in stage_exists:
+            if stage_exists[sk] == True:
+                stage_throttling[sk] = True
+
+# step: throttling is disabled for the dev stage
+# result: dev stage requests are not throttled
+# guard: the dev stage exists
+# guard_violation: the dev stage does not exist
+# guard: the dev stage is active
+# guard_violation_lifecycle: the dev stage is not active
+atomic action DisableStageThrottlingDev:
+    oneof aid in API_IDS:
+        sk = aid + ":dev"
+        if sk in stage_exists:
+            if stage_exists[sk] == True:
+                stage_throttling[sk] = False
+
+# fake_skip: internal
+# step: a request is made to the throttled prod stage
+# result: the request is throttled or passes non-deterministically
+# guard: the prod stage has throttling configured
+# guard_violation: the prod stage does not have throttling configured
+# guard: throttling is enabled for the prod stage
+# guard_violation: throttling is not enabled for the prod stage
+# RequestThrottled: non-deterministic outcome when throttling is enabled
+atomic action RequestThrottledProd:
+    oneof aid in API_IDS:
+        sk = aid + ":prod"
+        if sk in stage_throttling:
+            if stage_throttling[sk] == True:
+                oneof:
+                    pass
+                    pass
+
+# fake_skip: internal
+# step: a request is made to the throttled dev stage
+# result: the request is throttled or passes non-deterministically
+# guard: the dev stage has throttling configured
+# guard_violation: the dev stage does not have throttling configured
+# guard: throttling is enabled for the dev stage
+# guard_violation: throttling is not enabled for the dev stage
+atomic action RequestThrottledDev:
+    oneof aid in API_IDS:
+        sk = aid + ":dev"
+        if sk in stage_throttling:
+            if stage_throttling[sk] == True:
+                oneof:
+                    pass
+                    pass
+
+# fake_skip: internal
+# step: a backend integration is called
+# result: the integration times out or responds non-deterministically
+# guard: the integration exists
+# guard_violation: the integration does not exist
+# guard: the integration EXISTS
+# guard_violation: the integration does not exist
+# IntegrationTimeout: non-deterministic backend latency
+atomic action IntegrationTimeout:
+    oneof mk in METHOD_KEYS:
+        if mk in integration_status:
+            if integration_status[mk] == "EXISTS":
+                oneof:
+                    pass
+                    pass
+
+# check: all ACTIVE resources belong to ACTIVE APIs
+# Safety: all ACTIVE resources belong to ACTIVE APIs
+always assertion ResourcesBelongToExistingApis:
+    for rid in resource_api:
+        if rid in resource_status:
+            if resource_status[rid] == "ACTIVE":
+                aid = resource_api[rid]
+                if aid in api_status:
+                    if api_status[aid] == "DELETED":
+                        return False
+    return True
+
+# check: all EXISTING methods belong to ACTIVE resources
+# Safety: all EXISTING methods belong to ACTIVE resources
+always assertion MethodsBelongToExistingResources:
+    for mk in method_resource:
+        if mk in method_status:
+            if method_status[mk] == "EXISTS":
+                rid = method_resource[mk]
+                if rid in resource_status:
+                    if resource_status[rid] == "DELETED":
+                        return False
+    return True
+
+# check: all EXISTING integrations correspond to EXISTING methods
+# Safety: all EXISTING integrations correspond to EXISTING methods
+always assertion IntegrationsBelongToExistingMethods:
+    for mk in integration_status:
+        if integration_status[mk] == "EXISTS":
+            if mk in method_status:
+                if method_status[mk] == "DELETED":
+                    return False
+    return True
+
+# check: all ACTIVE deployments belong to ACTIVE APIs
+# Safety: all ACTIVE deployments belong to ACTIVE APIs
+always assertion DeploymentsBelongToExistingApis:
+    for did in deployment_api:
+        if did in deployment_status:
+            if deployment_status[did] == "ACTIVE":
+                aid = deployment_api[did]
+                if aid in api_status:
+                    if api_status[aid] == "DELETED":
+                        return False
+    return True
+
+# check: all active stages reference ACTIVE deployments
+# Safety: all active stages reference ACTIVE deployments
+always assertion StagesReferenceExistingDeployments:
+    for sk in stage_deployment:
+        if sk in stage_exists:
+            if stage_exists[sk] == True:
+                did = stage_deployment[sk]
+                if did in deployment_status:
+                    if deployment_status[did] == "DELETED":
+                        return False
+    return True
+
+# check: all active stages belong to ACTIVE APIs
+# Safety: all active stages belong to ACTIVE APIs
+always assertion StagesBelongToExistingApis:
+    for aid in API_IDS:
+        for sname in STAGE_NAMES:
+            sk = aid + ":" + sname
+            if sk in stage_exists:
+                if stage_exists[sk] == True:
+                    if aid in api_status:
+                        if api_status[aid] == "DELETED":
+                            return False
+    return True
+
+# check: each ACTIVE API has at least one ACTIVE root resource
+# Safety: each ACTIVE API has at least one root resource (path "/")
+always assertion RootResourcePreserved:
+    for aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                has_root = False
+                for rid in RESOURCE_IDS:
+                    if rid in resource_api:
+                        if resource_api[rid] == aid:
+                            if rid in resource_status:
+                                if resource_status[rid] == "ACTIVE":
+                                    if rid in resource_path:
+                                        if resource_path[rid] == "/":
+                                            has_root = True
+                if not has_root:
+                    return False
+    return True

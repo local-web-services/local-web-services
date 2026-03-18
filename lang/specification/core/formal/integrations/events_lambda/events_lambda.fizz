@@ -1,0 +1,168 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# EventBridge -> Lambda Integration Formal Specification
+# Models an EventBridge rule routing events from a bus to a Lambda function (async invocation).
+
+BUS_IDS = ["bus-1"]
+RULE_IDS = ["rule-1"]
+FUNC_IDS = ["func-1"]
+INV_IDS = ["inv-1"]
+
+
+action Init:
+    # EventBridge
+    bus_status = {}             # bus_status[bid] = "ACTIVE"
+    rule_status = {}            # rule_status[rid] = "ENABLED" | "DISABLED"
+    rule_bus = {}               # rule_bus[rid] = bus_id
+    rule_func = {}              # rule_func[rid] = func_id
+
+    # Lambda function
+    func_status = {}            # func_status[fid] = "ACTIVE"
+
+    # Lambda invocations triggered asynchronously by EventBridge
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    inv_rule = {}               # inv_rule[iid] = rule_id
+
+
+# step: an EventBridge event bus is created
+# result: the event bus is ACTIVE
+# guard: the event bus does not already exist
+# guard_violation: the event bus already exists
+atomic action CreateEventBus:
+    oneof bid in BUS_IDS:
+        if bid not in bus_status:
+            bus_status[bid] = "ACTIVE"
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: an EventBridge rule is created to asynchronously invoke a Lambda function on matching events
+# result: the rule is ENABLED and will trigger the function when matching events are published
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation_lifecycle: the event bus is not ACTIVE
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: the rule does not already exist
+# guard_violation: the rule already exists
+atomic action PutRule:
+    oneof rid in RULE_IDS:
+        if rid not in rule_status:
+            oneof bid in BUS_IDS:
+                if bid in bus_status:
+                    if bus_status[bid] == "ACTIVE":
+                        oneof fid in FUNC_IDS:
+                            if fid in func_status:
+                                if func_status[fid] == "ACTIVE":
+                                    rule_status[rid] = "ENABLED"
+                                    rule_bus[rid] = bid
+                                    rule_func[rid] = fid
+
+
+# step: an event is published to the bus and triggers an asynchronous Lambda invocation
+# result: the invocation is IN_PROGRESS
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation_lifecycle: the event bus is not ACTIVE
+# guard: an ENABLED rule exists on the bus targeting a function
+# guard_violation_lifecycle: no ENABLED rule exists on the bus targeting a function
+# guard: the target function is ACTIVE
+# guard_violation_lifecycle: the target function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action PutEvent:
+    oneof bid in BUS_IDS:
+        if bid in bus_status:
+            if bus_status[bid] == "ACTIVE":
+                oneof rid in RULE_IDS:
+                    if rid in rule_status:
+                        if rule_status[rid] == "ENABLED":
+                            if rule_bus[rid] == bid:
+                                fid = rule_func[rid]
+                                if fid in func_status:
+                                    if func_status[fid] == "ACTIVE":
+                                        oneof iid in INV_IDS:
+                                            if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                                                inv_status[iid] = "IN_PROGRESS"
+                                                inv_func[iid] = fid
+                                                inv_rule[iid] = rid
+
+
+# fake_skip: internal
+# step: the Lambda invocation completes successfully
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "SUCCESS"
+
+
+# fake_skip: internal
+# step: the Lambda invocation fails
+# result: the invocation is FAILED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationFails:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "FAILED"
+
+
+# check: every IN_PROGRESS invocation was triggered by an ENABLED rule
+always assertion InvocationRequiresEnabledRule:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            rid = inv_rule[iid]
+            if rid in rule_status:
+                if rule_status[rid] != "ENABLED":
+                    return False
+    return True
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every ENABLED rule references an ACTIVE event bus
+always assertion RuleReferencesActiveBus:
+    for rid in rule_status:
+        if rule_status[rid] == "ENABLED":
+            bid = rule_bus[rid]
+            if bid in bus_status:
+                if bus_status[bid] != "ACTIVE":
+                    return False
+    return True
+
+
+# Note: invocation liveness (eventually SUCCESS or FAILED) is not modeled here because
+# InvocationSucceeds and InvocationFails are external triggers (async Lambda runtime events)
+# and FizzBee liveness requires fairness assumptions that are not supported.
+# In practice, Lambda retries async invocations up to two additional times before discarding.

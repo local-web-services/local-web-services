@@ -1,0 +1,107 @@
+package io.localwebservices.lws.unit.providers.docdb;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import io.localwebservices.lws.providers.docdb.DocDbStore;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+public class DocDbStoreSnapshotTest {
+
+  @Test
+  public void createSnapshot_withParams_storesSnapshot() {
+    // Arrange
+    DocDbStore store = new DocDbStore();
+    Map<String, String> params = new LinkedHashMap<>();
+    params.put("DBClusterIdentifier", "my-cluster");
+    params.put("DBClusterSnapshotIdentifier", "my-snap");
+    String expectedSnapshotId = "my-snap";
+
+    // Act
+    Map<String, Object> actualSnapshot = store.createSnapshot(params);
+
+    // Assert
+    assertNotNull(actualSnapshot);
+    assertEquals(expectedSnapshotId, actualSnapshot.get("DBClusterSnapshotIdentifier"));
+  }
+
+  @Test
+  public void describeSnapshots_withId_returnsSingleSnapshot() {
+    // Arrange
+    DocDbStore store = new DocDbStore();
+    Map<String, String> paramsA = new LinkedHashMap<>();
+    paramsA.put("DBClusterIdentifier", "my-cluster");
+    paramsA.put("DBClusterSnapshotIdentifier", "snap-a");
+    Map<String, String> paramsB = new LinkedHashMap<>();
+    paramsB.put("DBClusterIdentifier", "my-cluster");
+    paramsB.put("DBClusterSnapshotIdentifier", "snap-b");
+    store.createSnapshot(paramsA);
+    store.createSnapshot(paramsB);
+    int expectedSize = 1;
+    String expectedId = "snap-a";
+
+    // Act
+    List<Map<String, Object>> actualSnapshots = store.describeSnapshots("snap-a");
+
+    // Assert
+    assertEquals(expectedSize, actualSnapshots.size());
+    assertEquals(expectedId, actualSnapshots.get(0).get("DBClusterSnapshotIdentifier"));
+  }
+
+  @Test
+  public void describeSnapshots_withNullId_returnsAll() {
+    // Arrange
+    DocDbStore store = new DocDbStore();
+    Map<String, String> paramsA = new LinkedHashMap<>();
+    paramsA.put("DBClusterIdentifier", "my-cluster");
+    paramsA.put("DBClusterSnapshotIdentifier", "snap-a");
+    Map<String, String> paramsB = new LinkedHashMap<>();
+    paramsB.put("DBClusterIdentifier", "my-cluster");
+    paramsB.put("DBClusterSnapshotIdentifier", "snap-b");
+    store.createSnapshot(paramsA);
+    store.createSnapshot(paramsB);
+    int expectedSize = 2;
+
+    // Act
+    List<Map<String, Object>> actualSnapshots = store.describeSnapshots(null);
+
+    // Assert
+    assertEquals(expectedSize, actualSnapshots.size());
+  }
+
+  @Test
+  public void deleteSnapshot_existingId_returnsAndRemoves() {
+    // Arrange
+    DocDbStore store = new DocDbStore();
+    Map<String, String> params = new LinkedHashMap<>();
+    params.put("DBClusterIdentifier", "my-cluster");
+    params.put("DBClusterSnapshotIdentifier", "my-snap");
+    store.createSnapshot(params);
+    String expectedId = "my-snap";
+    int expectedRemainingSize = 0;
+
+    // Act
+    Map<String, Object> actualDeleted = store.deleteSnapshot("my-snap");
+
+    // Assert
+    assertNotNull(actualDeleted);
+    assertEquals(expectedId, actualDeleted.get("DBClusterSnapshotIdentifier"));
+    assertEquals(expectedRemainingSize, store.describeSnapshots(null).size());
+  }
+
+  @Test
+  public void deleteSnapshot_unknownId_returnsNull() {
+    // Arrange
+    DocDbStore store = new DocDbStore();
+
+    // Act
+    Map<String, Object> actualDeleted = store.deleteSnapshot("does-not-exist");
+
+    // Assert
+    assertNull(actualDeleted);
+  }
+}

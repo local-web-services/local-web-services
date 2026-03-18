@@ -1,0 +1,149 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Lambda -> Step Functions Integration Formal Specification
+# Models a Lambda function starting a Step Functions state machine execution.
+# If the state machine has been deleted, StartExecution fails with a StateMachineDoesNotExist error.
+
+FUNC_IDS = ["func-1"]
+SM_IDS = ["sm-1"]
+INV_IDS = ["inv-1"]
+EXEC_IDS = ["exec-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    sm_status = {}              # sm_status[smid] = "ACTIVE" | "DELETED"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    exec_inv = {}               # exec_inv[eid] = inv_id (invocation that started this execution)
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+
+
+# step: a Step Functions state machine is deleted
+# result: the state machine is DELETED and Lambda StartExecution calls will fail
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is already DELETED
+atomic action DeleteStateMachine:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                sm_status[smid] = "DELETED"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# fake_skip: internal
+# step: the Lambda function starts an execution of an ACTIVE state machine and succeeds
+# result: the execution is RUNNING and the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine does not exist or is DELETED
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecutionTask:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof smid in SM_IDS:
+                    if smid in sm_status:
+                        if sm_status[smid] == "ACTIVE":
+                            oneof eid in EXEC_IDS:
+                                if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                                    exec_status[eid] = "RUNNING"
+                                    exec_sm[eid] = smid
+                                    exec_inv[eid] = iid
+                                    inv_status[iid] = "SUCCESS"
+
+
+# step: the Lambda function fails to start an execution because the state machine has been deleted
+# result: the invocation is FAILED with a StateMachineDoesNotExist error
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the state machine is DELETED
+# guard_violation_lifecycle: the state machine is not DELETED
+atomic action InvocationFailsStateMachineDeleted:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof smid in SM_IDS:
+                    if smid in sm_status:
+                        if sm_status[smid] == "DELETED":
+                            inv_status[iid] = "FAILED"
+
+
+# fake_skip: internal
+# step: a running execution completes successfully
+# result: the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation_lifecycle: no execution is RUNNING
+atomic action ExecutionCompletes:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                exec_status[eid] = "SUCCEEDED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every RUNNING execution references a state machine that exists
+# (state machine may be deleted after execution starts; execution continues until terminal state)
+always assertion RunningExecutionReferencesExistingStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid not in sm_status:
+                return False
+    return True

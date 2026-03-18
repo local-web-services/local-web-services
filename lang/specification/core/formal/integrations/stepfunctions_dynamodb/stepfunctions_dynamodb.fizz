@@ -1,0 +1,162 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Step Functions -> DynamoDB Integration Formal Specification
+# Models a Step Functions state machine that writes an item to DynamoDB as a task step.
+# The task succeeds when the item is written; the execution then completes.
+# An execution that attempts a GetItem on a non-existent item fails.
+
+SM_IDS = ["sm-1"]
+TABLE_IDS = ["table-1"]
+EXEC_IDS = ["exec-1"]
+ITEM_IDS = ["item-1"]
+
+
+action Init:
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    sm_table = {}               # sm_table[smid] = table_id or "" (DynamoDB task target)
+    table_status = {}           # table_status[tid] = "ACTIVE"
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    item_status = {}            # item_status[iid] = "EXISTS" | "DELETED"
+    item_table = {}             # item_table[iid] = table_id
+    item_exec = {}              # item_exec[iid] = exec_id
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE with no DynamoDB task configured
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+            sm_table[smid] = ""
+
+
+# step: a DynamoDB table is created
+# result: the table is ACTIVE
+# guard: the table does not already exist
+# guard_violation: the table already exists
+atomic action CreateTable:
+    oneof tid in TABLE_IDS:
+        if tid not in table_status:
+            table_status[tid] = "ACTIVE"
+
+
+# step: a DynamoDB PutItem task is configured on the state machine
+# result: the state machine will write an item to the table when it reaches the task state
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine has no DynamoDB task configured
+# guard_violation: the state machine already has a DynamoDB task configured
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+atomic action ConfigureDynamoDBTask:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_table[smid] == "":
+                    oneof tid in TABLE_IDS:
+                        if tid in table_status:
+                            if table_status[tid] == "ACTIVE":
+                                sm_table[smid] = tid
+
+
+# step: an execution of the state machine is started
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine has a DynamoDB task configured
+# guard_violation: the state machine has no DynamoDB task configured
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecution:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_table[smid] != "":
+                    oneof eid in EXEC_IDS:
+                        if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                            exec_status[eid] = "RUNNING"
+                            exec_sm[eid] = smid
+
+
+# step: a running execution writes an item to the DynamoDB table and succeeds
+# result: the item EXISTS in the table and the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the target table is ACTIVE
+# guard_violation_lifecycle: the target table is not ACTIVE
+# guard: an item slot is available
+# guard_violation_capacity: no item slot is available
+atomic action PutItemTask:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_table:
+                    tid = sm_table[smid]
+                    if tid != "":
+                        if tid in table_status:
+                            if table_status[tid] == "ACTIVE":
+                                oneof iid in ITEM_IDS:
+                                    if iid not in item_status or item_status[iid] == "DELETED":
+                                        item_status[iid] = "EXISTS"
+                                        item_table[iid] = tid
+                                        item_exec[iid] = eid
+                                        exec_status[eid] = "SUCCEEDED"
+
+
+# step: a running execution attempts to get an item that does not exist and the execution fails
+# result: the execution is FAILED because the item was not found
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: no item EXISTS in the target table
+# guard_violation: an item EXISTS in the target table
+atomic action GetItemNotFoundTask:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_table:
+                    tid = sm_table[smid]
+                    if tid != "":
+                        found = False
+                        for iid in item_status:
+                            if item_status[iid] == "EXISTS":
+                                if item_table[iid] == tid:
+                                    found = True
+                        if found == False:
+                            exec_status[eid] = "FAILED"
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every existing item belongs to an ACTIVE table
+always assertion ItemRequiresActiveTable:
+    for iid in item_status:
+        if item_status[iid] == "EXISTS":
+            tid = item_table[iid]
+            if tid in table_status:
+                if table_status[tid] != "ACTIVE":
+                    return False
+    return True

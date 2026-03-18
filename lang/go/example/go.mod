@@ -1,18 +1,22 @@
 module github.com/local-web-services/local-web-services-sdk-go-example-project
 
-go 1.21
+go 1.23
 
 require (
+	github.com/aws/aws-sdk-go-v2 v1.30.3
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.34.0
 	github.com/aws/aws-sdk-go-v2/service/sfn v1.30.0
+	github.com/aws/aws-sdk-go-v2/service/sqs v1.34.0
 	github.com/cucumber/godog v0.15.0
+	github.com/local-web-services/local-web-services-go-core v0.0.0
 	github.com/local-web-services/local-web-services-go-sdk v0.2.2
 )
 
 replace github.com/local-web-services/local-web-services-go-sdk => ../sdk
 
+replace github.com/local-web-services/local-web-services-go-core => ../core
+
 require (
-	github.com/aws/aws-sdk-go-v2 v1.30.3 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.27.0 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.0 // indirect
@@ -29,7 +33,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.58.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.32.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sns v1.31.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sqs v1.34.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.52.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.19.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.22.0 // indirect

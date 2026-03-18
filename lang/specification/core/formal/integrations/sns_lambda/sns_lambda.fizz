@@ -1,0 +1,170 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# SNS -> Lambda Integration Formal Specification
+# Models an SNS topic asynchronously invoking a subscribed Lambda function when a message is published.
+
+TOPIC_IDS = ["topic-1"]
+FUNC_IDS = ["func-1"]
+SUB_IDS = ["sub-1"]
+INV_IDS = ["inv-1"]
+
+
+action Init:
+    # SNS
+    topic_status = {}           # topic_status[tid] = "ACTIVE"
+
+    # SNS -> Lambda subscription
+    sub_status = {}             # sub_status[sid] = "CONFIRMED" | "DELETED"
+    sub_topic = {}              # sub_topic[sid] = topic_id
+    sub_func = {}               # sub_func[sid] = func_id
+
+    # Lambda function
+    func_status = {}            # func_status[fid] = "ACTIVE"
+
+    # Lambda invocations triggered asynchronously by SNS
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    inv_sub = {}                # inv_sub[iid] = sub_id
+
+
+# step: an SNS topic is created
+# result: the topic is ACTIVE
+# guard: the topic does not already exist
+# guard_violation: the topic already exists
+atomic action CreateTopic:
+    oneof tid in TOPIC_IDS:
+        if tid not in topic_status:
+            topic_status[tid] = "ACTIVE"
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a Lambda function subscribes to an SNS topic
+# result: the subscription is CONFIRMED and the function will be invoked on published messages
+# guard: the topic exists
+# guard_violation: the topic does not exist
+# guard: the topic is ACTIVE
+# guard_violation_lifecycle: the topic is not ACTIVE
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: the subscription slot is available
+# guard_violation_capacity: the subscription slot is not available
+atomic action SubscribeFunctionToTopic:
+    oneof tid in TOPIC_IDS:
+        if tid in topic_status:
+            if topic_status[tid] == "ACTIVE":
+                oneof fid in FUNC_IDS:
+                    if fid in func_status:
+                        if func_status[fid] == "ACTIVE":
+                            oneof sid in SUB_IDS:
+                                if sid not in sub_status:
+                                    sub_status[sid] = "CONFIRMED"
+                                    sub_topic[sid] = tid
+                                    sub_func[sid] = fid
+
+
+# step: a message is published to an SNS topic and asynchronously invokes the subscribed Lambda function
+# result: the invocation is IN_PROGRESS
+# guard: the topic exists
+# guard_violation: the topic does not exist
+# guard: the topic is ACTIVE
+# guard_violation_lifecycle: the topic is not ACTIVE
+# guard: a confirmed subscription exists for the topic
+# guard_violation_lifecycle: no confirmed subscription exists for the topic
+# guard: the subscribed function is ACTIVE
+# guard_violation_lifecycle: the subscribed function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action PublishAndInvoke:
+    oneof tid in TOPIC_IDS:
+        if tid in topic_status:
+            if topic_status[tid] == "ACTIVE":
+                oneof sid in SUB_IDS:
+                    if sid in sub_status:
+                        if sub_status[sid] == "CONFIRMED":
+                            if sub_topic[sid] == tid:
+                                fid = sub_func[sid]
+                                if fid in func_status:
+                                    if func_status[fid] == "ACTIVE":
+                                        oneof iid in INV_IDS:
+                                            if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                                                inv_status[iid] = "IN_PROGRESS"
+                                                inv_func[iid] = fid
+                                                inv_sub[iid] = sid
+
+
+# fake_skip: internal
+# step: the Lambda invocation completes successfully
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "SUCCESS"
+
+
+# fake_skip: internal
+# step: the Lambda invocation fails
+# result: the invocation is FAILED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationFails:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "FAILED"
+
+
+# check: every CONFIRMED subscription references an ACTIVE SNS topic
+always assertion SubscriptionReferencesActiveTopic:
+    for sid in sub_status:
+        if sub_status[sid] == "CONFIRMED":
+            tid = sub_topic[sid]
+            if tid in topic_status:
+                if topic_status[tid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every IN_PROGRESS invocation was triggered by a CONFIRMED subscription
+always assertion InvocationRequiresConfirmedSubscription:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            sid = inv_sub[iid]
+            if sid in sub_status:
+                if sub_status[sid] != "CONFIRMED":
+                    return False
+    return True
+
+
+# Note: invocation liveness (eventually SUCCESS or FAILED) is not modeled here because
+# InvocationSucceeds and InvocationFails are external triggers (async Lambda runtime events)
+# and FizzBee liveness requires fairness assumptions that are not supported.
+# SNS retries async Lambda invocations up to two additional times before discarding.

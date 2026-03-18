@@ -1,6 +1,7 @@
-import boto3
 import json
 import time
+
+import boto3
 
 
 def process_order(order_id: str, state_machine_arn: str, sfn_client=None) -> dict:

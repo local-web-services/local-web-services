@@ -1,0 +1,131 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Neptune -> EventBridge Integration Formal Specification
+# Models Neptune cluster and instance events being published to an EventBridge event bus.
+# When a Neptune cluster changes state (e.g., starts, stops, fails over),
+# Neptune automatically sends an event to EventBridge.
+# If the bus has been deleted, event delivery fails silently.
+
+CLUSTER_IDS = ["cluster-1"]
+BUS_IDS = ["bus-1"]
+EVENT_IDS = ["event-1", "event-2"]
+
+
+action Init:
+    cluster_status = {}         # cluster_status[cid] = "AVAILABLE" | "STOPPING" | "STOPPED" | "STARTING"
+    bus_status = {}             # bus_status[busid] = "ACTIVE" | "DELETED"
+    event_status = {}           # event_status[eid] = "DELIVERED"
+    event_cluster = {}          # event_cluster[eid] = cluster_id
+    event_type = {}             # event_type[eid] = "STOPPED" | "STARTED" | "FAILOVER"
+    event_bus = {}              # event_bus[eid] = bus_id
+
+
+# step: a Neptune cluster is created and becomes AVAILABLE
+# result: the cluster is AVAILABLE
+# guard: the cluster does not already exist
+# guard_violation: the cluster already exists
+atomic action CreateCluster:
+    oneof cid in CLUSTER_IDS:
+        if cid not in cluster_status:
+            cluster_status[cid] = "AVAILABLE"
+
+
+# step: an EventBridge event bus is created
+# result: the bus is ACTIVE
+# guard: the bus does not already exist
+# guard_violation: the bus already exists
+atomic action CreateEventBus:
+    oneof busid in BUS_IDS:
+        if busid not in bus_status:
+            bus_status[busid] = "ACTIVE"
+
+
+# step: the EventBridge event bus is deleted
+# result: the bus is DELETED and Neptune event delivery will fail
+# guard: the bus exists
+# guard_violation: the bus does not exist
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is already DELETED
+atomic action DeleteEventBus:
+    oneof busid in BUS_IDS:
+        if busid in bus_status:
+            if bus_status[busid] == "ACTIVE":
+                bus_status[busid] = "DELETED"
+
+
+# fake_skip: internal
+# step: the Neptune cluster stops and delivers the state change event to the EventBridge bus
+# result: the cluster is STOPPING and the STOPPED event is DELIVERED
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+# guard: the bus is ACTIVE
+# guard_violation_lifecycle: the bus is DELETED
+# guard: an event slot is available
+# guard_violation_capacity: no event slot is available
+atomic action ClusterStopEventDelivered:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                oneof busid in BUS_IDS:
+                    if busid in bus_status:
+                        if bus_status[busid] == "ACTIVE":
+                            oneof eid in EVENT_IDS:
+                                if eid not in event_status:
+                                    cluster_status[cid] = "STOPPING"
+                                    event_status[eid] = "DELIVERED"
+                                    event_cluster[eid] = cid
+                                    event_type[eid] = "STOPPED"
+                                    event_bus[eid] = busid
+
+
+# fake_skip: internal
+# step: the Neptune cluster stops but event delivery fails because the bus is deleted
+# result: the cluster is STOPPING but no event is delivered
+# guard: the cluster is AVAILABLE
+# guard_violation_lifecycle: the cluster is not AVAILABLE
+# guard: the bus is DELETED
+# guard_violation_lifecycle: the bus is not DELETED
+atomic action ClusterStopEventFails:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "AVAILABLE":
+                oneof busid in BUS_IDS:
+                    if busid in bus_status:
+                        if bus_status[busid] == "DELETED":
+                            cluster_status[cid] = "STOPPING"
+
+
+# fake_skip: internal
+# step: the Neptune cluster finishes stopping
+# result: the cluster is STOPPED
+# guard: the cluster is STOPPING
+# guard_violation_lifecycle: the cluster is not STOPPING
+atomic action ClusterStopComplete:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "STOPPING":
+                cluster_status[cid] = "STOPPED"
+
+
+# check: every DELIVERED event references a cluster that exists
+always assertion DeliveredEventReferencesExistingCluster:
+    for eid in event_status:
+        if event_status[eid] == "DELIVERED":
+            cid = event_cluster[eid]
+            if cid not in cluster_status:
+                return False
+    return True
+
+
+# check: every DELIVERED event references a bus that exists
+always assertion DeliveredEventReferencesExistingBus:
+    for eid in event_status:
+        if event_status[eid] == "DELIVERED":
+            busid = event_bus[eid]
+            if busid not in bus_status:
+                return False
+    return True

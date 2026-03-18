@@ -1,104 +1,75 @@
-import { spawn } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { LwsSession } from "../../src/session";
 
-jest.mock("child_process", () => ({
-  spawn: jest.fn(),
+// Mock the in-process server so _start() never spawns a real HTTP server.
+const mockServerClose = jest.fn().mockResolvedValue(undefined);
+const mockServer = { close: mockServerClose };
+const mockStartServer = jest.fn().mockResolvedValue(mockServer);
+
+jest.mock("local-web-services-typescript-core", () => ({
+  startServer: (...args: unknown[]) => mockStartServer(...args),
 }));
 
-const fakeSpawn = spawn as jest.Mock;
-
-function makeFakeProcess() {
-  return {
-    on: jest.fn(),
-    kill: jest.fn(),
-    once: jest.fn((_event: string, cb: () => void) => cb()),
-    stdout: null,
-    stderr: null,
-  };
-}
-
 describe("LwsSession", () => {
-  let fakeProcess: ReturnType<typeof makeFakeProcess>;
-
   beforeEach(() => {
-    jest.useFakeTimers();
-    fakeProcess = makeFakeProcess();
-    fakeSpawn.mockReturnValue(fakeProcess);
+    jest.clearAllMocks();
+    mockStartServer.mockResolvedValue(mockServer);
     global.fetch = jest.fn().mockResolvedValue({ ok: true });
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
-    jest.clearAllMocks();
-  });
-
   describe("create", () => {
-    it("spawns ldk dev with the project directory and base port arguments", async () => {
+    it("starts the in-process server with a base port", async () => {
       // Arrange / Act
       const session = await LwsSession.create({});
 
       // Assert
-      expect(fakeSpawn).toHaveBeenCalledWith(
-        "ldk",
-        expect.arrayContaining([
-          "dev",
-          "--project-dir",
-          expect.any(String),
-          "--port",
-          expect.any(String),
-        ]),
-        expect.any(Object)
+      expect(mockStartServer).toHaveBeenCalledWith(
+        expect.objectContaining({ basePort: expect.any(Number) }),
       );
 
       await session.close();
     });
 
-    it("spawns without a --mode flag when using explicit spec", async () => {
+    it("starts the server once per session", async () => {
       // Arrange / Act
       const session = await LwsSession.create({});
 
       // Assert
-      const actualArgs: string[] = fakeSpawn.mock.calls[0][1];
-      expect(actualArgs).not.toContain("--mode");
+      expect(mockStartServer).toHaveBeenCalledTimes(1);
 
       await session.close();
     });
   });
 
   describe("fromCdk", () => {
-    it("spawns ldk dev with --mode cdk", async () => {
+    it("starts the in-process server", async () => {
       // Arrange / Act
       const session = await LwsSession.fromCdk("/some/project");
 
       // Assert
-      const actualArgs: string[] = fakeSpawn.mock.calls[0][1];
-      expect(actualArgs).toContain("--mode");
-      expect(actualArgs).toContain("cdk");
+      expect(mockStartServer).toHaveBeenCalledTimes(1);
 
       await session.close();
     });
   });
 
   describe("fromHcl", () => {
-    it("parses HCL files and spawns ldk dev without --mode flag", async () => {
+    it("starts the in-process server without error", async () => {
       // Arrange — create a temporary directory with a minimal .tf file (no resources)
       const expectedTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "lws-test-hcl-"));
       fs.writeFileSync(
         path.join(expectedTmpDir, "main.tf"),
-        'provider "aws" { region = "us-east-1" }\n'
+        'provider "aws" { region = "us-east-1" }\n',
       );
 
       try {
         // Act
         const session = await LwsSession.fromHcl(expectedTmpDir);
 
-        // Assert — ldk is spawned without --mode terraform (mode is auto-detected)
-        const actualArgs: string[] = fakeSpawn.mock.calls[0][1];
-        expect(actualArgs).toContain("dev");
-        expect(actualArgs).not.toContain("terraform");
+        // Assert
+        expect(mockStartServer).toHaveBeenCalledTimes(1);
 
         await session.close();
       } finally {
@@ -122,7 +93,7 @@ describe("LwsSession", () => {
           expectedDefinition,
           "EOF",
           "}",
-        ].join("\n")
+        ].join("\n"),
       );
 
       try {
@@ -136,8 +107,8 @@ describe("LwsSession", () => {
             typeof call[1] === "object" &&
             (call[1] as Record<string, unknown>).headers !== undefined &&
             JSON.stringify((call[1] as Record<string, unknown>).headers).includes(
-              "CreateStateMachine"
-            )
+              "CreateStateMachine",
+            ),
         );
         expect(sfnCall).toBeDefined();
         const actualBody = JSON.parse((sfnCall![1] as Record<string, string>).body);
@@ -155,7 +126,13 @@ describe("LwsSession", () => {
       // Arrange
       const session = await LwsSession.create({});
       const expectedServices = [
-        "dynamodb", "sqs", "s3", "sns", "stepfunctions", "ssm", "secretsmanager",
+        "dynamodb",
+        "sqs",
+        "s3",
+        "sns",
+        "stepfunctions",
+        "ssm",
+        "secretsmanager",
       ];
 
       // Act & Assert
@@ -198,7 +175,7 @@ describe("LwsSession", () => {
 
       // Act & Assert
       expect(() => session.client("unsupported-service")).toThrow(
-        '"unsupported-service" is not supported'
+        '"unsupported-service" is not supported',
       );
 
       await session.close();
@@ -206,7 +183,7 @@ describe("LwsSession", () => {
   });
 
   describe("close", () => {
-    it("sends SIGTERM to the ldk process", async () => {
+    it("stops the in-process server", async () => {
       // Arrange
       const session = await LwsSession.create({});
 
@@ -214,7 +191,7 @@ describe("LwsSession", () => {
       await session.close();
 
       // Assert
-      expect(fakeProcess.kill).toHaveBeenCalledWith("SIGTERM");
+      expect(mockServerClose).toHaveBeenCalledTimes(1);
     });
 
     it("is idempotent — a second close does not throw", async () => {

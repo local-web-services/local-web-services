@@ -239,4 +239,3 @@ func (h *S3Helper) AssertObjectCount(t testing.TB, expected int, prefix string) 
 		t.Errorf("S3Helper.AssertObjectCount: got %d objects, want %d", len(keys), expected)
 	}
 }
-

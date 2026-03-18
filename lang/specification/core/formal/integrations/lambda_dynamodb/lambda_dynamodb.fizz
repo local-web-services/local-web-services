@@ -1,0 +1,132 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# Lambda -> DynamoDB Integration Formal Specification
+# Models a Lambda function writing an item to a DynamoDB table during invocation.
+# The item persists in the table after the invocation completes.
+
+FUNC_IDS = ["func-1"]
+TABLE_IDS = ["table-1"]
+INV_IDS = ["inv-1"]
+ITEM_IDS = ["item-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    table_status = {}           # table_status[tid] = "ACTIVE"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    item_status = {}            # item_status[oid] = "EXISTS" | "DELETED"
+    item_table = {}             # item_table[oid] = table_id
+    item_inv = {}               # item_inv[oid] = inv_id
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a DynamoDB table is created
+# result: the table is ACTIVE
+# guard: the table does not already exist
+# guard_violation: the table already exists
+atomic action CreateTable:
+    oneof tid in TABLE_IDS:
+        if tid not in table_status:
+            table_status[tid] = "ACTIVE"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# step: the Lambda function writes an item to the DynamoDB table during invocation
+# result: the item EXISTS in the table
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is not ACTIVE
+# guard: an item slot is available
+# guard_violation_capacity: no item slot is available
+atomic action PutItem:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof tid in TABLE_IDS:
+                    if tid in table_status:
+                        if table_status[tid] == "ACTIVE":
+                            oneof oid in ITEM_IDS:
+                                if oid not in item_status or item_status[oid] == "DELETED":
+                                    item_status[oid] = "EXISTS"
+                                    item_table[oid] = tid
+                                    item_inv[oid] = iid
+
+
+# fake_skip: internal
+# step: the Lambda invocation completes successfully
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "SUCCESS"
+
+
+# fake_skip: internal
+# step: the Lambda invocation fails
+# result: the invocation is FAILED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationFails:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                inv_status[iid] = "FAILED"
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every existing item belongs to an ACTIVE table
+always assertion ItemRequiresActiveTable:
+    for oid in item_status:
+        if item_status[oid] == "EXISTS":
+            tid = item_table[oid]
+            if tid in table_status:
+                if table_status[tid] != "ACTIVE":
+                    return False
+    return True

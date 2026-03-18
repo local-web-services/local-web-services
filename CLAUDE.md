@@ -27,6 +27,7 @@ Before writing or modifying code, read the relevant contributing guides:
 - `contributing/testing/INTEGRATION.md` — integration test standards, wire protocols, HTTP patterns
 - `contributing/testing/END_TO_END.md` — E2E test standards: Gherkin / pytest-bdd, step definitions, resource naming
 - `contributing/LINTING.md` — linting, formatting, complexity checks, `make check` details
+- `lang/python/CLAUDE.md` — Python implementation: testing strategy, Makefile targets, CI structure
 
 When adding a new feature:
 - Every new `lws` CLI command requires a Gherkin feature file + wiring file in `tests/e2e/<service>/`

@@ -1,0 +1,325 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 15
+---
+# Formal specification for AWS S3 Glacier
+# Models vault lifecycle, archive management, multipart uploads,
+# job processing (retrieval and inventory), and vault inventory consistency
+
+VAULT_NAMES = ["vault-a", "vault-b", "vault-c"]
+ARCHIVE_IDS = ["archive-1", "archive-2", "archive-3", "archive-4"]
+UPLOAD_IDS = ["upload-1", "upload-2"]
+JOB_IDS = ["job-1", "job-2", "job-3", "inv-job-1", "inv-job-2"]
+PART_NUMBERS = [1, 2, 3, 4]
+
+action Init:
+    vault_status = {}
+    vault_archive_count = {}
+    vault_inventory_fresh = {}
+    archive_status = {}
+    upload_status = {}
+    upload_vault = {}
+    upload_part = {}
+    job_status = {}
+    job_vault = {}
+    job_type = {}
+    job_archive = {}
+    job_output_available = {}
+    job_output_retrieved = {}
+
+# step: a vault is created
+# result: the vault is ACTIVE with zero archives
+# guard: the vault does not already exist
+# guard_violation: the vault already exists
+atomic action CreateVault:
+    oneof vault in VAULT_NAMES:
+        if vault not in vault_status:
+            vault_status[vault] = "ACTIVE"
+            vault_archive_count[vault] = 0
+            vault_inventory_fresh[vault] = False
+
+# step: an empty vault is deleted
+# result: the vault is DELETED
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault is ACTIVE
+# guard_violation_lifecycle: the vault is not ACTIVE
+# guard: the vault has no archives
+# guard_violation: the vault has archives
+# guard: the vault has no in-progress jobs
+# guard_violation: the vault has in-progress jobs
+atomic action DeleteVault:
+    oneof vault in VAULT_NAMES:
+        if vault in vault_status:
+            if vault_status[vault] == "ACTIVE":
+                if vault_archive_count[vault] == 0:
+                    if all([jid not in job_vault or job_vault[jid] != vault or job_status[jid] != "InProgress" for jid in JOB_IDS]):
+                        vault_status[vault] = "DELETED"
+
+# step: an archive is uploaded to a vault
+# result: the archive is STORED and the vault archive count increases
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault is ACTIVE
+# guard_violation_lifecycle: the vault is not ACTIVE
+# guard: the archive does not already exist
+# guard_violation: the archive already exists
+atomic action UploadArchive:
+    oneof vault in VAULT_NAMES:
+        if vault in vault_status:
+            if vault_status[vault] == "ACTIVE":
+                oneof archive in ARCHIVE_IDS:
+                    arch_key = vault + "#" + archive
+                    if arch_key not in archive_status:
+                        archive_status[arch_key] = "STORED"
+                        vault_archive_count[vault] = vault_archive_count[vault] + 1
+
+# step: an archive is deleted from a vault
+# result: the archive is DELETED and the vault archive count decreases
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault is ACTIVE
+# guard_violation_lifecycle: the vault is not ACTIVE
+# guard: the archive exists
+# guard_violation: the archive does not exist
+# guard: the archive is STORED
+# guard_violation_lifecycle: the archive is not STORED
+atomic action DeleteArchive:
+    oneof vault in VAULT_NAMES:
+        if vault in vault_status:
+            if vault_status[vault] == "ACTIVE":
+                oneof archive in ARCHIVE_IDS:
+                    arch_key = vault + "#" + archive
+                    if arch_key in archive_status:
+                        if archive_status[arch_key] == "STORED":
+                            archive_status[arch_key] = "DELETED"
+                            vault_archive_count[vault] = vault_archive_count[vault] - 1
+
+# step: a multipart upload is initiated for a vault
+# result: the upload is InProgress
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault is ACTIVE
+# guard_violation_lifecycle: the vault is not ACTIVE
+# guard: the upload does not already exist
+# guard_violation: the upload already exists
+atomic action InitiateMultipartUpload:
+    oneof vault in VAULT_NAMES:
+        if vault in vault_status:
+            if vault_status[vault] == "ACTIVE":
+                oneof upload in UPLOAD_IDS:
+                    if upload not in upload_status:
+                        upload_status[upload] = "InProgress"
+                        upload_vault[upload] = vault
+
+# step: a part is uploaded for a multipart upload
+# result: the part is recorded for the upload
+# guard: the upload exists
+# guard_violation: the upload does not exist
+# guard: the upload is InProgress
+# guard_violation_lifecycle: the upload is not InProgress
+# guard: the part has not already been uploaded
+# guard_violation: the part has already been uploaded
+atomic action UploadMultipartPart:
+    oneof upload in UPLOAD_IDS:
+        if upload in upload_status:
+            if upload_status[upload] == "InProgress":
+                oneof pnum in PART_NUMBERS:
+                    pkey = upload + "#" + str(pnum)
+                    if pkey not in upload_part:
+                        upload_part[pkey] = True
+
+# step: a multipart upload is completed
+# result: the upload is Completed and the assembled archive is STORED in the vault
+# guard: the upload exists
+# guard_violation: the upload does not exist
+# guard: the upload is InProgress
+# guard_violation_lifecycle: the upload is not InProgress
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault is ACTIVE
+# guard_violation_lifecycle: the vault is not ACTIVE
+# guard: the archive slot is available
+# guard_violation_capacity: the archive slot is not available
+atomic action CompleteMultipartUpload:
+    oneof upload_id in UPLOAD_IDS:
+        if upload_id in upload_status:
+            if upload_status[upload_id] == "InProgress":
+                vault_name = upload_vault[upload_id]
+                if vault_name in vault_status:
+                    if vault_status[vault_name] == "ACTIVE":
+                        oneof archive_id in ARCHIVE_IDS:
+                            arch_key = vault_name + "#" + archive_id
+                            if arch_key not in archive_status:
+                                archive_status[arch_key] = "STORED"
+                                vault_archive_count[vault_name] = vault_archive_count[vault_name] + 1
+                                upload_status[upload_id] = "Completed"
+
+# step: a multipart upload is aborted
+# result: the upload is Aborted
+# guard: the upload exists
+# guard_violation: the upload does not exist
+# guard: the upload is InProgress
+# guard_violation_lifecycle: the upload is not InProgress
+atomic action AbortMultipartUpload:
+    oneof upload_id in UPLOAD_IDS:
+        if upload_id in upload_status:
+            if upload_status[upload_id] == "InProgress":
+                upload_status[upload_id] = "Aborted"
+
+# step: an archive retrieval job is initiated
+# result: the job is InProgress for the given archive
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault is ACTIVE
+# guard_violation_lifecycle: the vault is not ACTIVE
+# guard: the archive exists
+# guard_violation: the archive does not exist
+# guard: the archive is STORED
+# guard_violation_lifecycle: the archive is not STORED
+# guard: the job slot is available
+# guard_violation_capacity: the job slot is not available
+atomic action InitiateArchiveRetrievalJob:
+    oneof vault in VAULT_NAMES:
+        if vault in vault_status:
+            if vault_status[vault] == "ACTIVE":
+                oneof archive in ARCHIVE_IDS:
+                    arch_key = vault + "#" + archive
+                    if arch_key in archive_status:
+                        if archive_status[arch_key] == "STORED":
+                            oneof jid in JOB_IDS:
+                                if jid not in job_status:
+                                    job_status[jid] = "InProgress"
+                                    job_vault[jid] = vault
+                                    job_type[jid] = "ArchiveRetrieval"
+                                    job_archive[jid] = archive
+                                    job_output_available[jid] = False
+                                    job_output_retrieved[jid] = False
+
+# step: a vault inventory retrieval job is initiated
+# result: the job is InProgress for the given vault
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault is ACTIVE
+# guard_violation_lifecycle: the vault is not ACTIVE
+# guard: the job slot is available
+# guard_violation_capacity: the job slot is not available
+atomic action InitiateInventoryRetrievalJob:
+    oneof vault in VAULT_NAMES:
+        if vault in vault_status:
+            if vault_status[vault] == "ACTIVE":
+                oneof jid in JOB_IDS:
+                    if jid not in job_status:
+                        job_status[jid] = "InProgress"
+                        job_vault[jid] = vault
+                        job_type[jid] = "InventoryRetrieval"
+                        job_archive[jid] = ""
+                        job_output_available[jid] = False
+                        job_output_retrieved[jid] = False
+
+# fake_skip: internal
+# step: a job completes successfully
+# result: the job is Succeeded and its output is available
+# guard: the job exists
+# guard_violation: the job does not exist
+# guard: the job is InProgress
+# guard_violation: the job is not InProgress
+atomic action JobSucceeds:
+    oneof jid in JOB_IDS:
+        if jid in job_status:
+            if job_status[jid] == "InProgress":
+                job_status[jid] = "Succeeded"
+                job_output_available[jid] = True
+
+# fake_skip: internal
+# step: a job fails
+# result: the job is Failed
+# guard: the job exists
+# guard_violation: the job does not exist
+# guard: the job is InProgress
+# guard_violation: the job is not InProgress
+atomic action JobFails:
+    oneof jid in JOB_IDS:
+        if jid in job_status:
+            if job_status[jid] == "InProgress":
+                job_status[jid] = "Failed"
+
+# step: the output of a succeeded job is retrieved
+# result: the job output is marked as retrieved
+# guard: the job exists
+# guard_violation: the job does not exist
+# guard: the job is Succeeded
+# guard_violation_lifecycle: the job is not Succeeded
+# guard: the job output is available
+# guard_violation: the job output is not available
+atomic action GetJobOutput:
+    oneof jid in JOB_IDS:
+        if jid in job_status:
+            if job_status[jid] == "Succeeded":
+                if job_output_available[jid] == True:
+                    job_output_retrieved[jid] = True
+
+# fake_skip: internal
+# step: a vault inventory is refreshed
+# result: the vault inventory is marked as fresh
+# guard: the vault exists
+# guard_violation: the vault does not exist
+# guard: the vault is ACTIVE
+# guard_violation_lifecycle: the vault is not ACTIVE
+atomic action VaultInventoryRefresh:
+    oneof vault in VAULT_NAMES:
+        if vault in vault_status:
+            if vault_status[vault] == "ACTIVE":
+                vault_inventory_fresh[vault] = True
+
+# check: every in-progress job references an active vault
+always assertion InProgressJobReferencesActiveVault:
+    for jid in JOB_IDS:
+        if jid in job_status:
+            if job_status[jid] == "InProgress":
+                if jid in job_vault:
+                    vault = job_vault[jid]
+                    if vault in vault_status:
+                        if vault_status[vault] == "DELETED":
+                            return False
+    return True
+
+# check: vault archive count is never negative
+always assertion VaultArchiveCountNonNegative:
+    for vault in VAULT_NAMES:
+        if vault in vault_archive_count:
+            if vault_archive_count[vault] < 0:
+                return False
+    return True
+
+# check: all stored archives belong to an ACTIVE vault
+always assertion ArchivesHaveActiveParentVault:
+    for arch_key in archive_status:
+        if archive_status[arch_key] == "STORED":
+            parts = arch_key.split("#")
+            vault = parts[0]
+            if vault not in vault_status:
+                return False
+            if vault_status[vault] == "DELETED":
+                return False
+    return True
+
+# check: job output is only available for succeeded jobs
+always assertion JobOutputOnlyOnSuccess:
+    for jid in JOB_IDS:
+        if jid in job_output_available:
+            if job_output_available[jid] == True:
+                if job_status[jid] != "Succeeded":
+                    return False
+    return True
+
+# check: every archive retrieval job references a non-empty archive ID
+always assertion ArchiveRetrievalJobHasArchive:
+    for jid in JOB_IDS:
+        if jid in job_type:
+            if job_type[jid] == "ArchiveRetrieval":
+                if job_archive[jid] == "":
+                    return False
+    return True

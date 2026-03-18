@@ -1,0 +1,154 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 40
+---
+# API Gateway -> DynamoDB Integration Formal Specification
+# Models an API Gateway REST API with a direct DynamoDB integration (no Lambda proxy).
+# The API is configured with a VTL mapping template that writes to a DynamoDB table.
+# If the table is being deleted, the request fails with a service error.
+
+API_IDS = ["api-1"]
+TABLE_IDS = ["table-1"]
+REQ_IDS = ["req-1"]
+ITEM_IDS = ["item-1"]
+
+
+action Init:
+    api_status = {}             # api_status[aid] = "ACTIVE"
+    api_table = {}              # api_table[aid] = table_id or "" (DynamoDB integration target)
+    table_status = {}           # table_status[tid] = "ACTIVE" | "DELETING"
+    req_status = {}             # req_status[rid] = "SUCCESS" | "FAILED"
+    req_api = {}                # req_api[rid] = api_id
+    item_status = {}            # item_status[iid] = "EXISTS"
+    item_table = {}             # item_table[iid] = table_id
+    item_req = {}               # item_req[iid] = req_id
+
+
+# step: an API Gateway REST API is created
+# result: the API is ACTIVE with no DynamoDB integration configured
+# guard: the API does not already exist
+# guard_violation: the API already exists
+atomic action CreateRestAPI:
+    oneof aid in API_IDS:
+        if aid not in api_status:
+            api_status[aid] = "ACTIVE"
+            api_table[aid] = ""
+
+
+# step: a DynamoDB table is created
+# result: the table is ACTIVE
+# guard: the table does not already exist
+# guard_violation: the table already exists
+atomic action CreateTable:
+    oneof tid in TABLE_IDS:
+        if tid not in table_status:
+            table_status[tid] = "ACTIVE"
+
+
+# step: a table deletion is initiated
+# result: the table is DELETING and API requests targeting it will fail
+# guard: the table exists
+# guard_violation: the table does not exist
+# guard: the table is ACTIVE
+# guard_violation_lifecycle: the table is already DELETING
+atomic action DeleteTable:
+    oneof tid in TABLE_IDS:
+        if tid in table_status:
+            if table_status[tid] == "ACTIVE":
+                table_status[tid] = "DELETING"
+
+
+# step: a direct DynamoDB integration is configured on the API
+# result: the API will write to the table when requests are received
+# guard: the API exists and is ACTIVE
+# guard_violation: the API does not exist or is not ACTIVE
+# guard: the API has no DynamoDB integration configured
+# guard_violation: the API already has a DynamoDB integration configured
+# guard: the table exists and is ACTIVE
+# guard_violation: the table does not exist or is not ACTIVE
+atomic action ConfigureDirectIntegration:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_table[aid] == "":
+                    oneof tid in TABLE_IDS:
+                        if tid in table_status:
+                            if table_status[tid] == "ACTIVE":
+                                api_table[aid] = tid
+
+
+# step: a request is received, the API writes to the DynamoDB table, and returns 200
+# result: the item EXISTS and the request is SUCCESS
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has a DynamoDB integration configured
+# guard_violation: the API has no DynamoDB integration configured
+# guard: the target table is ACTIVE
+# guard_violation_lifecycle: the target table is not ACTIVE
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+# guard: an item slot is available
+# guard_violation_capacity: no item slot is available
+atomic action RequestSucceeds:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_table[aid] != "":
+                    tid = api_table[aid]
+                    if tid in table_status:
+                        if table_status[tid] == "ACTIVE":
+                            oneof rid in REQ_IDS:
+                                if rid not in req_status:
+                                    oneof iid in ITEM_IDS:
+                                        if iid not in item_status:
+                                            req_status[rid] = "SUCCESS"
+                                            req_api[rid] = aid
+                                            item_status[iid] = "EXISTS"
+                                            item_table[iid] = tid
+                                            item_req[iid] = rid
+
+
+# step: a request is received but the DynamoDB write fails because the table is being deleted
+# result: the request is FAILED and no item is written
+# guard: the API is ACTIVE
+# guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has a DynamoDB integration configured
+# guard_violation: the API has no DynamoDB integration configured
+# guard: the target table is DELETING
+# guard_violation_lifecycle: the target table is not DELETING
+# guard: a request slot is available
+# guard_violation_capacity: no request slot is available
+atomic action RequestFails:
+    oneof aid in API_IDS:
+        if aid in api_status:
+            if api_status[aid] == "ACTIVE":
+                if api_table[aid] != "":
+                    tid = api_table[aid]
+                    if tid in table_status:
+                        if table_status[tid] == "DELETING":
+                            oneof rid in REQ_IDS:
+                                if rid not in req_status:
+                                    req_status[rid] = "FAILED"
+                                    req_api[rid] = aid
+
+
+# check: every existing item references a table that exists
+always assertion ItemReferencesExistingTable:
+    for iid in item_status:
+        if item_status[iid] == "EXISTS":
+            tid = item_table[iid]
+            if tid not in table_status:
+                return False
+    return True
+
+
+# check: every successful request references an API that exists
+always assertion SuccessfulRequestReferencesExistingAPI:
+    for rid in req_status:
+        if req_status[rid] == "SUCCESS":
+            aid = req_api[rid]
+            if aid not in api_status:
+                return False
+    return True

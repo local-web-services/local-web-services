@@ -1,0 +1,324 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 15
+---
+# AWS RDS Formal Specification
+# Models DB instance lifecycle, snapshots, automated backups, and Multi-AZ failover
+# Uses flat dicts and fixed resource pools (no nested subscript, no del, no state: block)
+
+INSTANCE_IDS = ["db-1", "db-2", "db-3", "db-4"]
+SNAPSHOT_IDS = ["snap-1", "snap-2", "snap-3", "snap-4", "snap-5", "snap-6"]
+
+action Init:
+    instance_status = {}
+    instance_multi_az = {}
+
+    snapshot_status = {}
+    snapshot_instance = {}
+
+# CreateDBInstance: instance starts in CREATING state
+# step: a database instance is created
+# result: the instance is in CREATING state
+# guard: the database instance does not already exist
+# guard_violation: the database instance already exists
+atomic action CreateDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid not in instance_status:
+            instance_status[iid] = "CREATING"
+            instance_multi_az[iid] = False
+
+# Non-deterministic: instance becomes AVAILABLE or FAILED after CREATING
+# fake_skip: internal
+# step: a database instance finishes creating
+# result: the instance is AVAILABLE or FAILED
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is CREATING
+# guard_violation_lifecycle: the instance is not CREATING
+atomic action ActivateDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "CREATING":
+                oneof:
+                    instance_status[iid] = "AVAILABLE"
+                    instance_status[iid] = "FAILED"
+
+# ModifyDBInstance: transitions AVAILABLE instance to MODIFYING
+# step: a database instance configuration is modified
+# result: the instance is in MODIFYING state
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+atomic action ModifyDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                instance_status[iid] = "MODIFYING"
+
+# fake_skip: internal
+# step: a database instance modification completes
+# result: the instance returns to AVAILABLE state
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is MODIFYING
+# guard_violation_lifecycle: the instance is not MODIFYING
+atomic action FinishModifyDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "MODIFYING":
+                instance_status[iid] = "AVAILABLE"
+
+# RebootDBInstance: only on AVAILABLE instances
+# step: a database instance is rebooted
+# result: the instance is in REBOOTING state
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+atomic action RebootDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                instance_status[iid] = "REBOOTING"
+
+# fake_skip: internal
+# step: a database instance reboot completes
+# result: the instance returns to AVAILABLE state
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is REBOOTING
+# guard_violation_lifecycle: the instance is not REBOOTING
+atomic action FinishRebootDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "REBOOTING":
+                instance_status[iid] = "AVAILABLE"
+
+# DeleteDBInstance: with SkipFinalSnapshot flag = True
+# step: a database instance is deleted without a final snapshot
+# result: the instance is in DELETING state
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE or FAILED
+# guard_violation_lifecycle: the instance is neither AVAILABLE nor FAILED
+atomic action DeleteDBInstanceSkipSnapshot:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE" or instance_status[iid] == "FAILED":
+                instance_status[iid] = "DELETING"
+
+# DeleteDBInstance: without SkipFinalSnapshot — links a final snapshot to the instance
+# step: a database instance is deleted with a final snapshot
+# result: the instance is in DELETING state and a snapshot is CREATING
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+# guard: a snapshot slot is available
+# guard_violation: no snapshot slot is available
+atomic action DeleteDBInstanceWithSnapshot:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                oneof sid in SNAPSHOT_IDS:
+                    if sid not in snapshot_status:
+                        snapshot_status[sid] = "CREATING"
+                        snapshot_instance[sid] = iid
+                        instance_status[iid] = "DELETING"
+
+# fake_skip: internal
+# step: a database instance deletion completes
+# result: the instance is DELETED
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is DELETING
+# guard_violation_lifecycle: the instance is not DELETING
+atomic action FinishDeleteDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "DELETING":
+                instance_status[iid] = "DELETED"
+
+# CreateDBSnapshot: only on AVAILABLE instances; instance moves to BACKING_UP
+# step: a database snapshot is created from an instance
+# result: the snapshot is CREATING and the instance is in BACKING_UP state
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+# guard: a snapshot slot is available
+# guard_violation: no snapshot slot is available
+atomic action CreateDBSnapshot:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                oneof sid in SNAPSHOT_IDS:
+                    if sid not in snapshot_status:
+                        snapshot_status[sid] = "CREATING"
+                        snapshot_instance[sid] = iid
+                        instance_status[iid] = "BACKING_UP"
+
+# fake_skip: internal
+# step: a database snapshot finishes creating
+# result: the snapshot is AVAILABLE and the instance returns to AVAILABLE state
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is CREATING
+# guard_violation_lifecycle: the snapshot is not CREATING
+# guard: the instance exists
+# guard_violation: the instance does not exist
+# guard: the instance is BACKING_UP
+# guard_violation_lifecycle: the instance is not BACKING_UP
+atomic action FinishCreateDBSnapshot:
+    oneof sid in SNAPSHOT_IDS:
+        if sid in snapshot_status:
+            if snapshot_status[sid] == "CREATING":
+                snapshot_status[sid] = "AVAILABLE"
+                iid = snapshot_instance[sid]
+                if iid in instance_status:
+                    if instance_status[iid] == "BACKING_UP":
+                        instance_status[iid] = "AVAILABLE"
+
+# DeleteDBSnapshot: only on AVAILABLE snapshots
+# step: a database snapshot is deleted
+# result: the snapshot is in DELETING state
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is AVAILABLE
+# guard_violation_lifecycle: the snapshot is not AVAILABLE
+atomic action DeleteDBSnapshot:
+    oneof sid in SNAPSHOT_IDS:
+        if sid in snapshot_status:
+            if snapshot_status[sid] == "AVAILABLE":
+                snapshot_status[sid] = "DELETING"
+
+# fake_skip: internal
+# step: a database snapshot deletion completes
+# result: the snapshot is DELETED
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is DELETING
+# guard_violation_lifecycle: the snapshot is not DELETING
+atomic action FinishDeleteDBSnapshot:
+    oneof sid in SNAPSHOT_IDS:
+        if sid in snapshot_status:
+            if snapshot_status[sid] == "DELETING":
+                snapshot_status[sid] = "DELETED"
+
+# RestoreDBInstanceFromDBSnapshot: creates a new instance in CREATING state from an AVAILABLE snapshot
+# step: a database instance is restored from a snapshot
+# result: the restored instance is in CREATING state
+# guard: the snapshot exists
+# guard_violation: the snapshot does not exist
+# guard: the snapshot is AVAILABLE
+# guard_violation_lifecycle: the snapshot is not AVAILABLE
+# guard: the target instance slot is available
+# guard_violation: the target instance slot is not available
+atomic action RestoreDBInstanceFromDBSnapshot:
+    oneof sid in SNAPSHOT_IDS:
+        if sid in snapshot_status:
+            if snapshot_status[sid] == "AVAILABLE":
+                oneof iid in INSTANCE_IDS:
+                    if iid not in instance_status:
+                        instance_status[iid] = "CREATING"
+                        instance_multi_az[iid] = False
+
+# Non-deterministic automated backup window
+# fake_skip: internal
+# step: an automated backup runs on an available instance
+# result: a snapshot is CREATING and the instance is in BACKING_UP state
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+# guard: a snapshot slot is available
+# guard_violation: no snapshot slot is available
+atomic action AutomatedBackup:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                oneof sid in SNAPSHOT_IDS:
+                    if sid not in snapshot_status:
+                        snapshot_status[sid] = "CREATING"
+                        snapshot_instance[sid] = iid
+                        instance_status[iid] = "BACKING_UP"
+
+# Non-deterministic Multi-AZ failover: AVAILABLE multi-az instance goes through MODIFYING
+# fake_skip: internal
+# step: a multi-AZ failover is triggered on an instance
+# result: the instance enters MODIFYING state during promotion
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+# guard: the instance has multi-AZ enabled
+# guard_violation: the instance does not have multi-AZ enabled
+atomic action MultiAZFailover:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                if instance_multi_az[iid]:
+                    instance_status[iid] = "MODIFYING"
+
+# EnableMultiAZ on an AVAILABLE instance
+# step: multi-AZ is enabled on a database instance
+# result: the instance is configured for multi-AZ deployment
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+atomic action EnableMultiAZ:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                instance_multi_az[iid] = True
+
+# Tag operation on AVAILABLE instances (simplified: set a tagged flag)
+# step: a tag is applied to a database instance
+# result: the instance tag state is unchanged (no-op model)
+# guard: the database instance exists
+# guard_violation: the database instance does not exist
+# guard: the instance is AVAILABLE
+# guard_violation_lifecycle: the instance is not AVAILABLE
+atomic action TagDBInstance:
+    oneof iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "AVAILABLE":
+                instance_multi_az[iid] = instance_multi_az[iid]
+
+# Safety: DB instance statuses are valid
+# check: every database instance has a valid status
+always assertion ValidDBInstanceStatus:
+    for iid in instance_status:
+        s = instance_status[iid]
+        if s != "CREATING" and s != "AVAILABLE" and s != "MODIFYING" and s != "DELETING" and s != "FAILED" and s != "BACKING_UP" and s != "REBOOTING" and s != "DELETED":
+            return False
+    return True
+
+# Safety: DB snapshot statuses are valid
+# check: every database snapshot has a valid status
+always assertion ValidDBSnapshotStatus:
+    for sid in snapshot_status:
+        s = snapshot_status[sid]
+        if s != "CREATING" and s != "AVAILABLE" and s != "DELETING" and s != "DELETED":
+            return False
+    return True
+
+# Safety: every BACKING_UP instance has a corresponding in-progress snapshot
+# check: every backing-up instance has a corresponding in-progress snapshot
+always assertion BackingUpInstanceHasSnapshot:
+    for iid in INSTANCE_IDS:
+        if iid in instance_status:
+            if instance_status[iid] == "BACKING_UP":
+                found = False
+                for sid in SNAPSHOT_IDS:
+                    if sid in snapshot_status:
+                        if snapshot_status[sid] == "CREATING":
+                            if snapshot_instance[sid] == iid:
+                                found = True
+                if not found:
+                    return False
+    return True

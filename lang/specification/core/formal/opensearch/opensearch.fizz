@@ -1,0 +1,396 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 20
+---
+DOMAIN_NAMES = ["os-domain-a", "os-domain-b", "os-domain-c"]
+CONNECTION_IDS = ["conn-1", "conn-2", "conn-3"]
+TAG_KEYS = ["env", "team", "cost-center", "project"]
+
+action Init:
+    domain_status = {}
+    domain_instance_type = {}
+    domain_instance_count = {}
+    domain_pending_config = {}
+    domain_bg_new_cluster = {}
+    domain_bg_traffic_swapped = {}
+    domain_tag = {}
+    outbound_status = {}
+    outbound_local = {}
+    outbound_remote = {}
+    inbound_status = {}
+
+# step: a search domain is created
+# result: the domain is in CREATING state
+# guard: the domain does not already exist
+# guard_violation: the domain already exists
+atomic action CreateDomain:
+    oneof domain in DOMAIN_NAMES:
+        if domain not in domain_status:
+            domain_status[domain] = "CREATING"
+            domain_instance_type[domain] = "r6g.large.search"
+            domain_instance_count[domain] = 1
+            domain_pending_config[domain] = False
+            domain_bg_new_cluster[domain] = False
+            domain_bg_traffic_swapped[domain] = False
+
+# fake_skip: internal
+# step: a search domain finishes creating
+# result: the domain is ACTIVE and ready for use
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is CREATING
+# guard_violation: the domain is not CREATING
+atomic action FinishCreatingDomain:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "CREATING":
+                domain_status[domain] = "ACTIVE"
+
+# step: a search domain is deleted
+# result: the domain is in DELETING state
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+atomic action DeleteDomain:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                domain_status[domain] = "DELETING"
+
+# fake_skip: internal
+# step: a search domain finishes deleting
+# result: the domain is DELETED and all associated connections are removed
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is DELETING
+# guard_violation: the domain is not DELETING
+# guard: an outbound connection has a local domain set
+# guard_violation: an outbound connection does not have a local domain set
+# guard: the outbound connection's local domain is this domain
+# guard_violation: the outbound connection's local domain is not this domain
+# guard: an outbound connection has a remote domain set
+# guard_violation: an outbound connection does not have a remote domain set
+# guard: the outbound connection's remote domain is this domain
+# guard_violation: the outbound connection's remote domain is not this domain
+# guard: an inbound connection exists
+# guard_violation: an inbound connection does not exist
+# guard: the inbound connection is not already DELETED
+# guard_violation: the inbound connection is already DELETED
+# guard: the associated outbound connection has a local domain
+# guard_violation: the associated outbound connection does not have a local domain
+# guard: the outbound connection's local domain matches this domain
+# guard_violation: the outbound connection's local domain does not match this domain
+# guard: the associated outbound connection has a remote domain
+# guard_violation: the associated outbound connection does not have a remote domain
+# guard: the outbound connection's remote domain matches this domain
+# guard_violation: the outbound connection's remote domain does not match this domain
+atomic action FinishDeletingDomain:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "DELETING":
+                domain_status[domain] = "DELETED"
+                for conn in CONNECTION_IDS:
+                    if conn in outbound_local:
+                        if outbound_local[conn] == domain:
+                            outbound_status[conn] = "DELETED"
+                    if conn in outbound_remote:
+                        if outbound_remote[conn] == domain:
+                            outbound_status[conn] = "DELETED"
+                    if conn in inbound_status:
+                        if inbound_status[conn] != "DELETED":
+                            if conn in outbound_local:
+                                if outbound_local[conn] == domain:
+                                    inbound_status[conn] = "DELETED"
+                            if conn in outbound_remote:
+                                if outbound_remote[conn] == domain:
+                                    inbound_status[conn] = "DELETED"
+
+# step: a domain configuration update is requested
+# result: the domain is in PROCESSING state and a blue-green deployment begins
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+atomic action UpdateDomainConfig:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                domain_status[domain] = "PROCESSING"
+                domain_pending_config[domain] = True
+                domain_bg_new_cluster[domain] = False
+                domain_bg_traffic_swapped[domain] = False
+
+# fake_skip: internal
+# step: the new cluster for a blue-green deployment becomes ready
+# result: the domain has a new cluster prepared but traffic is not yet swapped
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is PROCESSING
+# guard_violation: the domain is not PROCESSING
+# guard: the new cluster has not been prepared yet
+# guard_violation: the new cluster has already been prepared
+atomic action BlueGreenNewClusterReady:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "PROCESSING":
+                if domain_bg_new_cluster[domain] == False:
+                    domain_bg_new_cluster[domain] = True
+
+# fake_skip: internal
+# step: traffic is swapped to the new cluster during a blue-green deployment
+# result: the domain is now serving requests from the new cluster
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is PROCESSING
+# guard_violation: the domain is not PROCESSING
+# guard: the new cluster is ready
+# guard_violation: the new cluster is not ready
+# guard: traffic has not been swapped yet
+# guard_violation: traffic has already been swapped
+atomic action BlueGreenSwapTraffic:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "PROCESSING":
+                if domain_bg_new_cluster[domain] == True:
+                    if domain_bg_traffic_swapped[domain] == False:
+                        domain_bg_traffic_swapped[domain] = True
+
+# fake_skip: internal
+# step: a blue-green deployment completes
+# result: the domain is ACTIVE with the new configuration applied
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is PROCESSING
+# guard_violation: the domain is not PROCESSING
+# guard: traffic has been swapped to the new cluster
+# guard_violation: traffic has not been swapped to the new cluster
+atomic action BlueGreenComplete:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "PROCESSING":
+                if domain_bg_traffic_swapped[domain] == True:
+                    domain_instance_type[domain] = "r6g.xlarge.search"
+                    domain_instance_count[domain] = 2
+                    domain_pending_config[domain] = False
+                    domain_bg_new_cluster[domain] = False
+                    domain_bg_traffic_swapped[domain] = False
+                    domain_status[domain] = "ACTIVE"
+
+# fake_skip: internal
+# step: shards are rebalanced across nodes in an active domain
+# result: the instance count is updated without data loss
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is ACTIVE
+# guard_violation_lifecycle: the domain is not ACTIVE
+atomic action ShardRebalancing:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] == "ACTIVE":
+                domain_instance_count[domain] = domain_instance_count[domain]
+
+# step: an outbound cross-cluster connection is created between two domains
+# result: the connection is in PENDING_ACCEPTANCE state
+# guard: the connection slot is available
+# guard_violation: the connection slot is not available
+# guard: the local domain exists
+# guard_violation: the local domain does not exist
+# guard: the local domain is ACTIVE
+# guard_violation_lifecycle: the local domain is not ACTIVE
+# guard: the remote domain exists
+# guard_violation: the remote domain does not exist
+# guard: the remote domain is ACTIVE
+# guard_violation_lifecycle: the remote domain is not ACTIVE
+# guard: the local and remote domains are different
+# guard_violation: the local and remote domains are the same
+atomic action CreateOutboundConnection:
+    oneof conn in CONNECTION_IDS:
+        if conn not in outbound_status:
+            oneof local_domain in DOMAIN_NAMES:
+                if local_domain in domain_status:
+                    if domain_status[local_domain] == "ACTIVE":
+                        oneof remote_domain in DOMAIN_NAMES:
+                            if remote_domain in domain_status:
+                                if domain_status[remote_domain] == "ACTIVE":
+                                    if local_domain != remote_domain:
+                                        outbound_status[conn] = "PENDING_ACCEPTANCE"
+                                        outbound_local[conn] = local_domain
+                                        outbound_remote[conn] = remote_domain
+                                        inbound_status[conn] = "PENDING_ACCEPTANCE"
+
+# step: an inbound cross-cluster connection is accepted
+# result: both the inbound and outbound connection are ACTIVE
+# guard: the inbound connection exists
+# guard_violation: the inbound connection does not exist
+# guard: the inbound connection is PENDING_ACCEPTANCE
+# guard_violation: the inbound connection is not PENDING_ACCEPTANCE
+# guard: the outbound connection exists
+# guard_violation: the outbound connection does not exist
+atomic action AcceptInboundConnection:
+    oneof conn in CONNECTION_IDS:
+        if conn in inbound_status:
+            if inbound_status[conn] == "PENDING_ACCEPTANCE":
+                inbound_status[conn] = "ACTIVE"
+                if conn in outbound_status:
+                    outbound_status[conn] = "ACTIVE"
+
+# step: an inbound cross-cluster connection is rejected
+# result: both the inbound and outbound connection are REJECTED
+# guard: the inbound connection exists
+# guard_violation: the inbound connection does not exist
+# guard: the inbound connection is PENDING_ACCEPTANCE
+# guard_violation: the inbound connection is not PENDING_ACCEPTANCE
+# guard: the outbound connection exists
+# guard_violation: the outbound connection does not exist
+atomic action RejectInboundConnection:
+    oneof conn in CONNECTION_IDS:
+        if conn in inbound_status:
+            if inbound_status[conn] == "PENDING_ACCEPTANCE":
+                inbound_status[conn] = "REJECTED"
+                if conn in outbound_status:
+                    outbound_status[conn] = "REJECTED"
+
+# step: an outbound cross-cluster connection is deleted
+# result: the outbound connection is in DELETING state
+# guard: the outbound connection exists
+# guard_violation: the outbound connection does not exist
+# guard: the outbound connection is not already DELETING
+# guard_violation: the outbound connection is already DELETING
+# guard: the outbound connection is not already DELETED
+# guard_violation: the outbound connection is already DELETED
+atomic action DeleteOutboundConnection:
+    oneof conn in CONNECTION_IDS:
+        if conn in outbound_status:
+            if outbound_status[conn] != "DELETING":
+                if outbound_status[conn] != "DELETED":
+                    outbound_status[conn] = "DELETING"
+
+# fake_skip: internal
+# step: an outbound connection finishes deleting
+# result: the outbound and associated inbound connection are DELETED
+# guard: the outbound connection exists
+# guard_violation: the outbound connection does not exist
+# guard: the outbound connection is DELETING
+# guard_violation: the outbound connection is not DELETING
+# guard: the associated inbound connection exists
+# guard_violation: the associated inbound connection does not exist
+atomic action FinishDeletingOutboundConnection:
+    oneof conn in CONNECTION_IDS:
+        if conn in outbound_status:
+            if outbound_status[conn] == "DELETING":
+                outbound_status[conn] = "DELETED"
+                if conn in inbound_status:
+                    inbound_status[conn] = "DELETED"
+
+# step: an inbound cross-cluster connection is deleted
+# result: the inbound connection is in DELETING state
+# guard: the inbound connection exists
+# guard_violation: the inbound connection does not exist
+# guard: the inbound connection is not already DELETING
+# guard_violation: the inbound connection is already DELETING
+# guard: the inbound connection is not already DELETED
+# guard_violation: the inbound connection is already DELETED
+atomic action DeleteInboundConnection:
+    oneof conn in CONNECTION_IDS:
+        if conn in inbound_status:
+            if inbound_status[conn] != "DELETING":
+                if inbound_status[conn] != "DELETED":
+                    inbound_status[conn] = "DELETING"
+
+# fake_skip: internal
+# step: an inbound connection finishes deleting
+# result: the inbound connection is DELETED
+# guard: the inbound connection exists
+# guard_violation: the inbound connection does not exist
+# guard: the inbound connection is DELETING
+# guard_violation: the inbound connection is not DELETING
+atomic action FinishDeletingInboundConnection:
+    oneof conn in CONNECTION_IDS:
+        if conn in inbound_status:
+            if inbound_status[conn] == "DELETING":
+                inbound_status[conn] = "DELETED"
+
+# step: tags are added to a domain
+# result: the specified tags are associated with the domain
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is not being deleted
+# guard_violation_lifecycle: the domain is being deleted
+# guard: the domain is not deleted
+# guard_violation: the domain is deleted
+atomic action AddTags:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] != "DELETING":
+                if domain_status[domain] != "DELETED":
+                    oneof tkey in TAG_KEYS:
+                        domain_tag[domain + "#" + tkey] = True
+
+# step: tags are removed from a domain
+# result: the specified tags are no longer associated with the domain
+# guard: the domain exists
+# guard_violation: the domain does not exist
+# guard: the domain is not being deleted
+# guard_violation_lifecycle: the domain is being deleted
+# guard: the domain is not deleted
+# guard_violation: the domain is deleted
+# guard: the tag key exists
+# guard_violation: the tag key does not exist
+atomic action RemoveTags:
+    oneof domain in DOMAIN_NAMES:
+        if domain in domain_status:
+            if domain_status[domain] != "DELETING":
+                if domain_status[domain] != "DELETED":
+                    oneof tkey in TAG_KEYS:
+                        tk = domain + "#" + tkey
+                        if tk in domain_tag:
+                            domain_tag[tk] = False
+
+# check: no active connection references a deleted domain
+always assertion ActiveConnectionsReferenceActiveDomains:
+    for conn in CONNECTION_IDS:
+        if conn in outbound_status:
+            if outbound_status[conn] == "ACTIVE":
+                if conn in outbound_local:
+                    local = outbound_local[conn]
+                    if local in domain_status:
+                        if domain_status[local] == "DELETED":
+                            return False
+                if conn in outbound_remote:
+                    remote = outbound_remote[conn]
+                    if remote in domain_status:
+                        if domain_status[remote] == "DELETED":
+                            return False
+    return True
+
+# check: traffic can only be swapped after the new cluster is ready
+always assertion TrafficSwapRequiresNewCluster:
+    for domain in DOMAIN_NAMES:
+        if domain in domain_bg_traffic_swapped:
+            if domain_bg_traffic_swapped[domain] == True:
+                if domain_bg_new_cluster[domain] == False:
+                    return False
+    return True
+
+# check: an outbound connection that is ACTIVE cannot have a REJECTED inbound connection
+always assertion ConnectionStatusConsistency:
+    for conn in CONNECTION_IDS:
+        if conn in outbound_status:
+            if outbound_status[conn] == "ACTIVE":
+                if conn in inbound_status:
+                    if inbound_status[conn] == "REJECTED":
+                        return False
+    return True
+
+# check: a pending config change only exists on a domain that is PROCESSING
+always assertion PendingConfigOnlyOnProcessingDomain:
+    for domain in DOMAIN_NAMES:
+        if domain in domain_pending_config:
+            if domain_pending_config[domain] == True:
+                if domain in domain_status:
+                    if domain_status[domain] != "PROCESSING":
+                        return False
+    return True

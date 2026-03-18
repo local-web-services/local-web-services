@@ -1,0 +1,97 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 10
+---
+# Chaos Service Formal Specification
+# Models per-service chaos injection: enable/disable, error rate, and latency configuration.
+# Services are independent — configuring one never affects another.
+
+SERVICES = ["dynamodb", "sqs", "s3"]
+
+action Init:
+    chaos_enabled = {}
+    chaos_error_full = {}
+    chaos_has_latency = {}
+
+
+# step: chaos is enabled for a service
+# result: chaos is enabled for the service
+atomic action EnableChaos:
+    oneof svc in SERVICES:
+        chaos_enabled[svc] = True
+
+
+# step: chaos is disabled for a service
+# result: chaos is disabled for the service
+# guard: chaos is enabled for the service
+# guard_violation: chaos is not enabled for the service
+atomic action DisableChaos:
+    oneof svc in SERVICES:
+        if svc in chaos_enabled:
+            if chaos_enabled[svc] == True:
+                chaos_enabled[svc] = False
+
+
+# step: the chaos error rate is configured for a service
+# result: the error rate configuration is updated
+atomic action SetErrorRate:
+    oneof svc in SERVICES:
+        oneof:
+            chaos_error_full[svc] = True
+            chaos_error_full[svc] = False
+
+
+# step: the chaos latency is configured for a service
+# result: the latency configuration is updated
+atomic action SetLatency:
+    oneof svc in SERVICES:
+        oneof:
+            chaos_has_latency[svc] = True
+            chaos_has_latency[svc] = False
+
+
+# step: the chaos status for all services is retrieved
+# result: the chaos configuration for each service is returned
+atomic action GetChaosStatus:
+    pass
+
+
+# step: a service call is injected with a chaos error
+# result: the service call receives a chaos error response
+# guard: chaos is enabled for the service
+# guard_violation: chaos is not enabled for the service
+# guard: the error rate is set to full for the service
+# guard_violation: the error rate is not set to full for the service
+atomic action InjectError:
+    oneof svc in SERVICES:
+        if svc in chaos_enabled:
+            if chaos_enabled[svc] == True:
+                if svc in chaos_error_full:
+                    if chaos_error_full[svc] == True:
+                        pass
+
+
+# step: a service call is delayed by chaos latency injection
+# result: the service call takes at least the configured minimum latency
+# guard: chaos is enabled for the service
+# guard_violation: chaos is not enabled for the service
+# guard: latency is configured for the service
+# guard_violation: latency is not configured for the service
+atomic action InjectLatency:
+    oneof svc in SERVICES:
+        if svc in chaos_enabled:
+            if chaos_enabled[svc] == True:
+                if svc in chaos_has_latency:
+                    if chaos_has_latency[svc] == True:
+                        pass
+
+
+# check: every chaos-configured service is a known service
+always assertion ChaosConfigOnlyForKnownServices:
+    for svc in chaos_enabled:
+        if svc not in SERVICES:
+            return False
+    return True
+

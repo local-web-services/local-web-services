@@ -1,0 +1,2678 @@
+{
+  "sourceInfo": {
+    "fileName": "rds_events.fizz",
+    "start": {
+      "line": 13,
+      "column": 1
+    },
+    "end": {
+      "line": 127
+    }
+  },
+  "invariants": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 110,
+          "column": 1
+        },
+        "end": {
+          "line": 120
+        }
+      },
+      "name": "DeliveredEventReferencesExistingDB",
+      "temporalOperators": [
+        "always"
+      ],
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 111,
+            "column": 5
+          },
+          "end": {
+            "line": 120
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 111,
+                "column": 5
+              },
+              "end": {
+                "line": 116,
+                "column": 4
+              }
+            },
+            "forStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 111,
+                  "column": 5
+                },
+                "end": {
+                  "line": 116,
+                  "column": 4
+                }
+              },
+              "loopVars": [
+                "eid"
+              ],
+              "pyExpr": "event_status",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 112,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 116,
+                    "column": 4
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 112,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 116,
+                        "column": 4
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 112,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 116,
+                          "column": 4
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 112,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 116,
+                              "column": 4
+                            }
+                          },
+                          "condition": "event_status[eid] == \"DELIVERED\"",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 113,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 116,
+                                "column": 4
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 113,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 114,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 113,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 113,
+                                      "column": 32
+                                    }
+                                  },
+                                  "code": "dbid = event_db[eid]"
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 114,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 116,
+                                    "column": 4
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 114,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 116,
+                                      "column": 4
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 114,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 116,
+                                          "column": 4
+                                        }
+                                      },
+                                      "condition": "dbid not in db_status",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 115,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 116,
+                                            "column": 4
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 115,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 116,
+                                                "column": 4
+                                              }
+                                            },
+                                            "returnStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 115,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 115,
+                                                  "column": 28
+                                                }
+                                              },
+                                              "pyExpr": "False",
+                                              "expr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 115,
+                                                    "column": 24
+                                                  },
+                                                  "end": {
+                                                    "line": 115,
+                                                    "column": 28
+                                                  }
+                                                },
+                                                "pyExpr": "False"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 114,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 114,
+                                            "column": 36
+                                          }
+                                        },
+                                        "pyExpr": "dbid not in db_status"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 112,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 112,
+                                "column": 43
+                              }
+                            },
+                            "pyExpr": "event_status[eid] == \"DELIVERED\""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 111,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 111,
+                    "column": 27
+                  }
+                },
+                "pyExpr": "event_status"
+              }
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 116,
+                "column": 5
+              },
+              "end": {
+                "line": 120
+              }
+            },
+            "returnStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 116,
+                  "column": 5
+                },
+                "end": {
+                  "line": 116,
+                  "column": 15
+                }
+              },
+              "pyExpr": "True",
+              "expr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 116,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 116,
+                    "column": 15
+                  }
+                },
+                "pyExpr": "True"
+              }
+            }
+          }
+        ]
+      },
+      "pyCode": "def DeliveredEventReferencesExistingDB():\n    for eid in event_status:\n        if event_status[eid] == \"DELIVERED\":\n            dbid = event_db[eid]\n            if dbid not in db_status:\n                return False\n    return True\n\n\n# check: every DELIVERED event references a bus that exists\n"
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 120,
+          "column": 1
+        },
+        "end": {
+          "line": 127
+        }
+      },
+      "name": "DeliveredEventReferencesExistingBus",
+      "temporalOperators": [
+        "always"
+      ],
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 121,
+            "column": 5
+          },
+          "end": {
+            "line": 127
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 121,
+                "column": 5
+              },
+              "end": {
+                "line": 126,
+                "column": 4
+              }
+            },
+            "forStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 121,
+                  "column": 5
+                },
+                "end": {
+                  "line": 126,
+                  "column": 4
+                }
+              },
+              "loopVars": [
+                "eid"
+              ],
+              "pyExpr": "event_status",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 122,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 126,
+                    "column": 4
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 122,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 126,
+                        "column": 4
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 122,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 126,
+                          "column": 4
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 122,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 126,
+                              "column": 4
+                            }
+                          },
+                          "condition": "event_status[eid] == \"DELIVERED\"",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 123,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 126,
+                                "column": 4
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 123,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 124,
+                                    "column": 12
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 123,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 123,
+                                      "column": 34
+                                    }
+                                  },
+                                  "code": "busid = event_bus[eid]"
+                                }
+                              },
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 124,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 126,
+                                    "column": 4
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 124,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 126,
+                                      "column": 4
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 124,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 126,
+                                          "column": 4
+                                        }
+                                      },
+                                      "condition": "busid not in bus_status",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 125,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 126,
+                                            "column": 4
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 125,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 126,
+                                                "column": 4
+                                              }
+                                            },
+                                            "returnStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 125,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 125,
+                                                  "column": 28
+                                                }
+                                              },
+                                              "pyExpr": "False",
+                                              "expr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 125,
+                                                    "column": 24
+                                                  },
+                                                  "end": {
+                                                    "line": 125,
+                                                    "column": 28
+                                                  }
+                                                },
+                                                "pyExpr": "False"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 124,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 124,
+                                            "column": 38
+                                          }
+                                        },
+                                        "pyExpr": "busid not in bus_status"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 122,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 122,
+                                "column": 43
+                              }
+                            },
+                            "pyExpr": "event_status[eid] == \"DELIVERED\""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 121,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 121,
+                    "column": 27
+                  }
+                },
+                "pyExpr": "event_status"
+              }
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 126,
+                "column": 5
+              },
+              "end": {
+                "line": 127
+              }
+            },
+            "returnStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 126,
+                  "column": 5
+                },
+                "end": {
+                  "line": 126,
+                  "column": 15
+                }
+              },
+              "pyExpr": "True",
+              "expr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 126,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 126,
+                    "column": 15
+                  }
+                },
+                "pyExpr": "True"
+              }
+            }
+          }
+        ]
+      },
+      "pyCode": "def DeliveredEventReferencesExistingBus():\n    for eid in event_status:\n        if event_status[eid] == \"DELIVERED\":\n            busid = event_bus[eid]\n            if busid not in bus_status:\n                return False\n    return True\n"
+    }
+  ],
+  "actions": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 18,
+          "column": 1
+        },
+        "end": {
+          "line": 30
+        }
+      },
+      "name": "Init",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_STRONG"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 19,
+            "column": 5
+          },
+          "end": {
+            "line": 30
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 19,
+                "column": 5
+              },
+              "end": {
+                "line": 20,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 19,
+                  "column": 5
+                },
+                "end": {
+                  "line": 19,
+                  "column": 18
+                }
+              },
+              "code": "db_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 20,
+                "column": 5
+              },
+              "end": {
+                "line": 21,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 20,
+                  "column": 5
+                },
+                "end": {
+                  "line": 20,
+                  "column": 19
+                }
+              },
+              "code": "bus_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 21,
+                "column": 5
+              },
+              "end": {
+                "line": 22,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 21,
+                  "column": 5
+                },
+                "end": {
+                  "line": 21,
+                  "column": 21
+                }
+              },
+              "code": "event_status = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 22,
+                "column": 5
+              },
+              "end": {
+                "line": 23,
+                "column": 4
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 22,
+                  "column": 5
+                },
+                "end": {
+                  "line": 22,
+                  "column": 17
+                }
+              },
+              "code": "event_db = {}"
+            }
+          },
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 23,
+                "column": 5
+              },
+              "end": {
+                "line": 30
+              }
+            },
+            "pyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 23,
+                  "column": 5
+                },
+                "end": {
+                  "line": 23,
+                  "column": 18
+                }
+              },
+              "code": "event_bus = {}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 30,
+          "column": 1
+        },
+        "end": {
+          "line": 40
+        }
+      },
+      "name": "CreateDBInstance",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 31,
+            "column": 5
+          },
+          "end": {
+            "line": 40
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 31,
+                "column": 5
+              },
+              "end": {
+                "line": 40
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 31,
+                  "column": 5
+                },
+                "end": {
+                  "line": 40
+                }
+              },
+              "loopVars": [
+                "dbid"
+              ],
+              "pyExpr": "DB_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 32,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 40
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 32,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 40
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 32,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 40
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 32,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 40
+                            }
+                          },
+                          "condition": "dbid not in db_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 33,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 40
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 33,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 40
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 33,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 33,
+                                      "column": 41
+                                    }
+                                  },
+                                  "code": "db_status[dbid] = \"AVAILABLE\""
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 32,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 32,
+                                "column": 32
+                              }
+                            },
+                            "pyExpr": "dbid not in db_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 31,
+                    "column": 17
+                  },
+                  "end": {
+                    "line": 31,
+                    "column": 22
+                  }
+                },
+                "pyExpr": "DB_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 40,
+          "column": 1
+        },
+        "end": {
+          "line": 52
+        }
+      },
+      "name": "CreateEventBus",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 41,
+            "column": 5
+          },
+          "end": {
+            "line": 52
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 41,
+                "column": 5
+              },
+              "end": {
+                "line": 52
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 41,
+                  "column": 5
+                },
+                "end": {
+                  "line": 52
+                }
+              },
+              "loopVars": [
+                "busid"
+              ],
+              "pyExpr": "BUS_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 42,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 52
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 42,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 52
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 42,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 52
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 42,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 52
+                            }
+                          },
+                          "condition": "busid not in bus_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 43,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 52
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 43,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 52
+                                  }
+                                },
+                                "pyStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 43,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 43,
+                                      "column": 40
+                                    }
+                                  },
+                                  "code": "bus_status[busid] = \"ACTIVE\""
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 42,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 42,
+                                "column": 34
+                              }
+                            },
+                            "pyExpr": "busid not in bus_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 41,
+                    "column": 18
+                  },
+                  "end": {
+                    "line": 41,
+                    "column": 24
+                  }
+                },
+                "pyExpr": "BUS_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 52,
+          "column": 1
+        },
+        "end": {
+          "line": 67
+        }
+      },
+      "name": "DeleteEventBus",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 53,
+            "column": 5
+          },
+          "end": {
+            "line": 67
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 53,
+                "column": 5
+              },
+              "end": {
+                "line": 67
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 53,
+                  "column": 5
+                },
+                "end": {
+                  "line": 67
+                }
+              },
+              "loopVars": [
+                "busid"
+              ],
+              "pyExpr": "BUS_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 54,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 67
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 54,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 67
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 54,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 67
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 54,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 67
+                            }
+                          },
+                          "condition": "busid in bus_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 55,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 67
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 55,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 67
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 55,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 67
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 55,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 67
+                                        }
+                                      },
+                                      "condition": "bus_status[busid] == \"ACTIVE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 56,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 67
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 56,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 67
+                                              }
+                                            },
+                                            "pyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 56,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 56,
+                                                  "column": 45
+                                                }
+                                              },
+                                              "code": "bus_status[busid] = \"DELETED\""
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 55,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 55,
+                                            "column": 44
+                                          }
+                                        },
+                                        "pyExpr": "bus_status[busid] == \"ACTIVE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 54,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 54,
+                                "column": 30
+                              }
+                            },
+                            "pyExpr": "busid in bus_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 53,
+                    "column": 18
+                  },
+                  "end": {
+                    "line": 53,
+                    "column": 24
+                  }
+                },
+                "pyExpr": "BUS_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 67,
+          "column": 1
+        },
+        "end": {
+          "line": 88
+        }
+      },
+      "name": "DBStopEventDelivered",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 68,
+            "column": 5
+          },
+          "end": {
+            "line": 88
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 68,
+                "column": 5
+              },
+              "end": {
+                "line": 88
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 68,
+                  "column": 5
+                },
+                "end": {
+                  "line": 88
+                }
+              },
+              "loopVars": [
+                "dbid"
+              ],
+              "pyExpr": "DB_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 69,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 88
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 69,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 88
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 69,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 88
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 69,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 88
+                            }
+                          },
+                          "condition": "dbid in db_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 70,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 88
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 70,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 88
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 70,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 88
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 70,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 88
+                                        }
+                                      },
+                                      "condition": "db_status[dbid] == \"AVAILABLE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 71,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 88
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 71,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 88
+                                              }
+                                            },
+                                            "anyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 71,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 88
+                                                }
+                                              },
+                                              "loopVars": [
+                                                "busid"
+                                              ],
+                                              "pyExpr": "BUS_IDS",
+                                              "block": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 72,
+                                                    "column": 21
+                                                  },
+                                                  "end": {
+                                                    "line": 88
+                                                  }
+                                                },
+                                                "stmts": [
+                                                  {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 72,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 88
+                                                      }
+                                                    },
+                                                    "ifStmt": {
+                                                      "sourceInfo": {
+                                                        "start": {
+                                                          "line": 72,
+                                                          "column": 21
+                                                        },
+                                                        "end": {
+                                                          "line": 88
+                                                        }
+                                                      },
+                                                      "branches": [
+                                                        {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 72,
+                                                              "column": 24
+                                                            },
+                                                            "end": {
+                                                              "line": 88
+                                                            }
+                                                          },
+                                                          "condition": "busid in bus_status",
+                                                          "block": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 73,
+                                                                "column": 25
+                                                              },
+                                                              "end": {
+                                                                "line": 88
+                                                              }
+                                                            },
+                                                            "stmts": [
+                                                              {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 73,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 88
+                                                                  }
+                                                                },
+                                                                "ifStmt": {
+                                                                  "sourceInfo": {
+                                                                    "start": {
+                                                                      "line": 73,
+                                                                      "column": 25
+                                                                    },
+                                                                    "end": {
+                                                                      "line": 88
+                                                                    }
+                                                                  },
+                                                                  "branches": [
+                                                                    {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 73,
+                                                                          "column": 28
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 88
+                                                                        }
+                                                                      },
+                                                                      "condition": "bus_status[busid] == \"ACTIVE\"",
+                                                                      "block": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 74,
+                                                                            "column": 29
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 88
+                                                                          }
+                                                                        },
+                                                                        "stmts": [
+                                                                          {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 74,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 88
+                                                                              }
+                                                                            },
+                                                                            "anyStmt": {
+                                                                              "sourceInfo": {
+                                                                                "start": {
+                                                                                  "line": 74,
+                                                                                  "column": 29
+                                                                                },
+                                                                                "end": {
+                                                                                  "line": 88
+                                                                                }
+                                                                              },
+                                                                              "loopVars": [
+                                                                                "eid"
+                                                                              ],
+                                                                              "pyExpr": "EVENT_IDS",
+                                                                              "block": {
+                                                                                "sourceInfo": {
+                                                                                  "start": {
+                                                                                    "line": 75,
+                                                                                    "column": 33
+                                                                                  },
+                                                                                  "end": {
+                                                                                    "line": 88
+                                                                                  }
+                                                                                },
+                                                                                "stmts": [
+                                                                                  {
+                                                                                    "sourceInfo": {
+                                                                                      "start": {
+                                                                                        "line": 75,
+                                                                                        "column": 33
+                                                                                      },
+                                                                                      "end": {
+                                                                                        "line": 88
+                                                                                      }
+                                                                                    },
+                                                                                    "ifStmt": {
+                                                                                      "sourceInfo": {
+                                                                                        "start": {
+                                                                                          "line": 75,
+                                                                                          "column": 33
+                                                                                        },
+                                                                                        "end": {
+                                                                                          "line": 88
+                                                                                        }
+                                                                                      },
+                                                                                      "branches": [
+                                                                                        {
+                                                                                          "sourceInfo": {
+                                                                                            "start": {
+                                                                                              "line": 75,
+                                                                                              "column": 36
+                                                                                            },
+                                                                                            "end": {
+                                                                                              "line": 88
+                                                                                            }
+                                                                                          },
+                                                                                          "condition": "eid not in event_status",
+                                                                                          "block": {
+                                                                                            "sourceInfo": {
+                                                                                              "start": {
+                                                                                                "line": 76,
+                                                                                                "column": 37
+                                                                                              },
+                                                                                              "end": {
+                                                                                                "line": 88
+                                                                                              }
+                                                                                            },
+                                                                                            "stmts": [
+                                                                                              {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 76,
+                                                                                                    "column": 37
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 77,
+                                                                                                    "column": 36
+                                                                                                  }
+                                                                                                },
+                                                                                                "pyStmt": {
+                                                                                                  "sourceInfo": {
+                                                                                                    "start": {
+                                                                                                      "line": 76,
+                                                                                                      "column": 37
+                                                                                                    },
+                                                                                                    "end": {
+                                                                                                      "line": 76,
+                                                                                                      "column": 64
+                                                                                                    }
+                                                                                                  },
+                                                                                                  "code": "db_status[dbid] = \"STOPPING\""
+                                                                                                }
+                                                                                              },
+                                                                                              {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 77,
+                                                                                                    "column": 37
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 78,
+                                                                                                    "column": 36
+                                                                                                  }
+                                                                                                },
+                                                                                                "pyStmt": {
+                                                                                                  "sourceInfo": {
+                                                                                                    "start": {
+                                                                                                      "line": 77,
+                                                                                                      "column": 37
+                                                                                                    },
+                                                                                                    "end": {
+                                                                                                      "line": 77,
+                                                                                                      "column": 67
+                                                                                                    }
+                                                                                                  },
+                                                                                                  "code": "event_status[eid] = \"DELIVERED\""
+                                                                                                }
+                                                                                              },
+                                                                                              {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 78,
+                                                                                                    "column": 37
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 79,
+                                                                                                    "column": 36
+                                                                                                  }
+                                                                                                },
+                                                                                                "pyStmt": {
+                                                                                                  "sourceInfo": {
+                                                                                                    "start": {
+                                                                                                      "line": 78,
+                                                                                                      "column": 37
+                                                                                                    },
+                                                                                                    "end": {
+                                                                                                      "line": 78,
+                                                                                                      "column": 56
+                                                                                                    }
+                                                                                                  },
+                                                                                                  "code": "event_db[eid] = dbid"
+                                                                                                }
+                                                                                              },
+                                                                                              {
+                                                                                                "sourceInfo": {
+                                                                                                  "start": {
+                                                                                                    "line": 79,
+                                                                                                    "column": 37
+                                                                                                  },
+                                                                                                  "end": {
+                                                                                                    "line": 88
+                                                                                                  }
+                                                                                                },
+                                                                                                "pyStmt": {
+                                                                                                  "sourceInfo": {
+                                                                                                    "start": {
+                                                                                                      "line": 79,
+                                                                                                      "column": 37
+                                                                                                    },
+                                                                                                    "end": {
+                                                                                                      "line": 79,
+                                                                                                      "column": 58
+                                                                                                    }
+                                                                                                  },
+                                                                                                  "code": "event_bus[eid] = busid"
+                                                                                                }
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          "conditionExpr": {
+                                                                                            "sourceInfo": {
+                                                                                              "start": {
+                                                                                                "line": 75,
+                                                                                                "column": 36
+                                                                                              },
+                                                                                              "end": {
+                                                                                                "line": 75,
+                                                                                                "column": 58
+                                                                                              }
+                                                                                            },
+                                                                                            "pyExpr": "eid not in event_status"
+                                                                                          }
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              "iterExpr": {
+                                                                                "sourceInfo": {
+                                                                                  "start": {
+                                                                                    "line": 74,
+                                                                                    "column": 40
+                                                                                  },
+                                                                                  "end": {
+                                                                                    "line": 74,
+                                                                                    "column": 48
+                                                                                  }
+                                                                                },
+                                                                                "pyExpr": "EVENT_IDS"
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      "conditionExpr": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 73,
+                                                                            "column": 28
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 73,
+                                                                            "column": 56
+                                                                          }
+                                                                        },
+                                                                        "pyExpr": "bus_status[busid] == \"ACTIVE\""
+                                                                      }
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              }
+                                                            ]
+                                                          },
+                                                          "conditionExpr": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 72,
+                                                                "column": 24
+                                                              },
+                                                              "end": {
+                                                                "line": 72,
+                                                                "column": 42
+                                                              }
+                                                            },
+                                                            "pyExpr": "busid in bus_status"
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "iterExpr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 71,
+                                                    "column": 30
+                                                  },
+                                                  "end": {
+                                                    "line": 71,
+                                                    "column": 36
+                                                  }
+                                                },
+                                                "pyExpr": "BUS_IDS"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 70,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 70,
+                                            "column": 45
+                                          }
+                                        },
+                                        "pyExpr": "db_status[dbid] == \"AVAILABLE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 69,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 69,
+                                "column": 28
+                              }
+                            },
+                            "pyExpr": "dbid in db_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 68,
+                    "column": 17
+                  },
+                  "end": {
+                    "line": 68,
+                    "column": 22
+                  }
+                },
+                "pyExpr": "DB_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 88,
+          "column": 1
+        },
+        "end": {
+          "line": 102
+        }
+      },
+      "name": "DBStopEventFails",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 89,
+            "column": 5
+          },
+          "end": {
+            "line": 102
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 89,
+                "column": 5
+              },
+              "end": {
+                "line": 102
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 89,
+                  "column": 5
+                },
+                "end": {
+                  "line": 102
+                }
+              },
+              "loopVars": [
+                "dbid"
+              ],
+              "pyExpr": "DB_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 90,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 102
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 90,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 102
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 90,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 102
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 90,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 102
+                            }
+                          },
+                          "condition": "dbid in db_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 91,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 102
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 91,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 102
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 91,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 102
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 91,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 102
+                                        }
+                                      },
+                                      "condition": "db_status[dbid] == \"AVAILABLE\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 92,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 102
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 92,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 102
+                                              }
+                                            },
+                                            "anyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 92,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 102
+                                                }
+                                              },
+                                              "loopVars": [
+                                                "busid"
+                                              ],
+                                              "pyExpr": "BUS_IDS",
+                                              "block": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 93,
+                                                    "column": 21
+                                                  },
+                                                  "end": {
+                                                    "line": 102
+                                                  }
+                                                },
+                                                "stmts": [
+                                                  {
+                                                    "sourceInfo": {
+                                                      "start": {
+                                                        "line": 93,
+                                                        "column": 21
+                                                      },
+                                                      "end": {
+                                                        "line": 102
+                                                      }
+                                                    },
+                                                    "ifStmt": {
+                                                      "sourceInfo": {
+                                                        "start": {
+                                                          "line": 93,
+                                                          "column": 21
+                                                        },
+                                                        "end": {
+                                                          "line": 102
+                                                        }
+                                                      },
+                                                      "branches": [
+                                                        {
+                                                          "sourceInfo": {
+                                                            "start": {
+                                                              "line": 93,
+                                                              "column": 24
+                                                            },
+                                                            "end": {
+                                                              "line": 102
+                                                            }
+                                                          },
+                                                          "condition": "busid in bus_status",
+                                                          "block": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 94,
+                                                                "column": 25
+                                                              },
+                                                              "end": {
+                                                                "line": 102
+                                                              }
+                                                            },
+                                                            "stmts": [
+                                                              {
+                                                                "sourceInfo": {
+                                                                  "start": {
+                                                                    "line": 94,
+                                                                    "column": 25
+                                                                  },
+                                                                  "end": {
+                                                                    "line": 102
+                                                                  }
+                                                                },
+                                                                "ifStmt": {
+                                                                  "sourceInfo": {
+                                                                    "start": {
+                                                                      "line": 94,
+                                                                      "column": 25
+                                                                    },
+                                                                    "end": {
+                                                                      "line": 102
+                                                                    }
+                                                                  },
+                                                                  "branches": [
+                                                                    {
+                                                                      "sourceInfo": {
+                                                                        "start": {
+                                                                          "line": 94,
+                                                                          "column": 28
+                                                                        },
+                                                                        "end": {
+                                                                          "line": 102
+                                                                        }
+                                                                      },
+                                                                      "condition": "bus_status[busid] == \"DELETED\"",
+                                                                      "block": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 95,
+                                                                            "column": 29
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 102
+                                                                          }
+                                                                        },
+                                                                        "stmts": [
+                                                                          {
+                                                                            "sourceInfo": {
+                                                                              "start": {
+                                                                                "line": 95,
+                                                                                "column": 29
+                                                                              },
+                                                                              "end": {
+                                                                                "line": 102
+                                                                              }
+                                                                            },
+                                                                            "pyStmt": {
+                                                                              "sourceInfo": {
+                                                                                "start": {
+                                                                                  "line": 95,
+                                                                                  "column": 29
+                                                                                },
+                                                                                "end": {
+                                                                                  "line": 95,
+                                                                                  "column": 56
+                                                                                }
+                                                                              },
+                                                                              "code": "db_status[dbid] = \"STOPPING\""
+                                                                            }
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      "conditionExpr": {
+                                                                        "sourceInfo": {
+                                                                          "start": {
+                                                                            "line": 94,
+                                                                            "column": 28
+                                                                          },
+                                                                          "end": {
+                                                                            "line": 94,
+                                                                            "column": 57
+                                                                          }
+                                                                        },
+                                                                        "pyExpr": "bus_status[busid] == \"DELETED\""
+                                                                      }
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              }
+                                                            ]
+                                                          },
+                                                          "conditionExpr": {
+                                                            "sourceInfo": {
+                                                              "start": {
+                                                                "line": 93,
+                                                                "column": 24
+                                                              },
+                                                              "end": {
+                                                                "line": 93,
+                                                                "column": 42
+                                                              }
+                                                            },
+                                                            "pyExpr": "busid in bus_status"
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "iterExpr": {
+                                                "sourceInfo": {
+                                                  "start": {
+                                                    "line": 92,
+                                                    "column": 30
+                                                  },
+                                                  "end": {
+                                                    "line": 92,
+                                                    "column": 36
+                                                  }
+                                                },
+                                                "pyExpr": "BUS_IDS"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 91,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 91,
+                                            "column": 45
+                                          }
+                                        },
+                                        "pyExpr": "db_status[dbid] == \"AVAILABLE\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 90,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 90,
+                                "column": 28
+                              }
+                            },
+                            "pyExpr": "dbid in db_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 89,
+                    "column": 17
+                  },
+                  "end": {
+                    "line": 89,
+                    "column": 22
+                  }
+                },
+                "pyExpr": "DB_IDS"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 102,
+          "column": 1
+        },
+        "end": {
+          "line": 110
+        }
+      },
+      "name": "DBStopComplete",
+      "flow": "FLOW_ATOMIC",
+      "fairness": {
+        "level": "FAIRNESS_LEVEL_UNFAIR"
+      },
+      "block": {
+        "sourceInfo": {
+          "start": {
+            "line": 103,
+            "column": 5
+          },
+          "end": {
+            "line": 110
+          }
+        },
+        "flow": "FLOW_ATOMIC",
+        "stmts": [
+          {
+            "sourceInfo": {
+              "start": {
+                "line": 103,
+                "column": 5
+              },
+              "end": {
+                "line": 110
+              }
+            },
+            "anyStmt": {
+              "sourceInfo": {
+                "start": {
+                  "line": 103,
+                  "column": 5
+                },
+                "end": {
+                  "line": 110
+                }
+              },
+              "loopVars": [
+                "dbid"
+              ],
+              "pyExpr": "DB_IDS",
+              "block": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 104,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 110
+                  }
+                },
+                "stmts": [
+                  {
+                    "sourceInfo": {
+                      "start": {
+                        "line": 104,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 110
+                      }
+                    },
+                    "ifStmt": {
+                      "sourceInfo": {
+                        "start": {
+                          "line": 104,
+                          "column": 9
+                        },
+                        "end": {
+                          "line": 110
+                        }
+                      },
+                      "branches": [
+                        {
+                          "sourceInfo": {
+                            "start": {
+                              "line": 104,
+                              "column": 12
+                            },
+                            "end": {
+                              "line": 110
+                            }
+                          },
+                          "condition": "dbid in db_status",
+                          "block": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 105,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 110
+                              }
+                            },
+                            "stmts": [
+                              {
+                                "sourceInfo": {
+                                  "start": {
+                                    "line": 105,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 110
+                                  }
+                                },
+                                "ifStmt": {
+                                  "sourceInfo": {
+                                    "start": {
+                                      "line": 105,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 110
+                                    }
+                                  },
+                                  "branches": [
+                                    {
+                                      "sourceInfo": {
+                                        "start": {
+                                          "line": 105,
+                                          "column": 16
+                                        },
+                                        "end": {
+                                          "line": 110
+                                        }
+                                      },
+                                      "condition": "db_status[dbid] == \"STOPPING\"",
+                                      "block": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 106,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 110
+                                          }
+                                        },
+                                        "stmts": [
+                                          {
+                                            "sourceInfo": {
+                                              "start": {
+                                                "line": 106,
+                                                "column": 17
+                                              },
+                                              "end": {
+                                                "line": 110
+                                              }
+                                            },
+                                            "pyStmt": {
+                                              "sourceInfo": {
+                                                "start": {
+                                                  "line": 106,
+                                                  "column": 17
+                                                },
+                                                "end": {
+                                                  "line": 106,
+                                                  "column": 43
+                                                }
+                                              },
+                                              "code": "db_status[dbid] = \"STOPPED\""
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "conditionExpr": {
+                                        "sourceInfo": {
+                                          "start": {
+                                            "line": 105,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 105,
+                                            "column": 44
+                                          }
+                                        },
+                                        "pyExpr": "db_status[dbid] == \"STOPPING\""
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "conditionExpr": {
+                            "sourceInfo": {
+                              "start": {
+                                "line": 104,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 104,
+                                "column": 28
+                              }
+                            },
+                            "pyExpr": "dbid in db_status"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "iterExpr": {
+                "sourceInfo": {
+                  "start": {
+                    "line": 103,
+                    "column": 17
+                  },
+                  "end": {
+                    "line": 103,
+                    "column": 22
+                  }
+                },
+                "pyExpr": "DB_IDS"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "stmts": [
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 13,
+          "column": 1
+        },
+        "end": {
+          "line": 14
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 13,
+            "column": 1
+          },
+          "end": {
+            "line": 13,
+            "column": 17
+          }
+        },
+        "code": "DB_IDS = [\"db-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 14,
+          "column": 1
+        },
+        "end": {
+          "line": 15
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 14,
+            "column": 1
+          },
+          "end": {
+            "line": 14,
+            "column": 19
+          }
+        },
+        "code": "BUS_IDS = [\"bus-1\"]"
+      }
+    },
+    {
+      "sourceInfo": {
+        "start": {
+          "line": 15,
+          "column": 1
+        },
+        "end": {
+          "line": 18
+        }
+      },
+      "pyStmt": {
+        "sourceInfo": {
+          "start": {
+            "line": 15,
+            "column": 1
+          },
+          "end": {
+            "line": 15,
+            "column": 23
+          }
+        },
+        "code": "EVENT_IDS = [\"event-1\"]"
+      }
+    }
+  ],
+  "frontMatter": {
+    "yaml": "deadlock_detection: false\noptions:\n  max_concurrent_actions: 1\n  max_actions: 35\n"
+  }
+}

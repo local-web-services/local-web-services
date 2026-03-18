@@ -36,13 +36,13 @@ def discover(project_dir: Path) -> dict[str, Any]:
     secrets = _extract_secrets(model.secrets)
 
     return {
-        "tables": tables,
-        "queues": queues,
         "buckets": buckets,
-        "topics": topics,
-        "state_machines": state_machines,
         "parameters": parameters,
+        "queues": queues,
         "secrets": secrets,
+        "state_machines": state_machines,
+        "tables": tables,
+        "topics": topics,
     }
 
 

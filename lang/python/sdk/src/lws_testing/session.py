@@ -13,6 +13,19 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+from lws_testing._spec import (
+    DynamoTable,
+    S3Bucket,
+    Secret,
+    SnsTopic,
+    SqsQueue,
+    SsmParameter,
+    StateMachine,
+)
+
+# Union type for all typed resource specs accepted by LwsSession.
+ResourceSpec = DynamoTable | SqsQueue | S3Bucket | SnsTopic | SsmParameter | Secret | StateMachine
+
 # Maps boto3 service name → AWS SDK endpoint URL env var.
 # Setting these redirects *any* boto3 client created in the process to the
 # local LWS service — no production-code changes required.
@@ -24,6 +37,8 @@ _SERVICE_ENV_VARS: dict[str, str] = {
     "stepfunctions": "AWS_ENDPOINT_URL_STEPFUNCTIONS",
     "ssm": "AWS_ENDPOINT_URL_SSM",
     "secretsmanager": "AWS_ENDPOINT_URL_SECRETSMANAGER",
+    "events": "AWS_ENDPOINT_URL_EVENTS",
+    "apigateway": "AWS_ENDPOINT_URL_API_GATEWAY",
 }
 
 # Credential / region overrides so boto3 never tries to contact IAM or STS.
@@ -32,6 +47,50 @@ _TEST_CREDENTIALS: dict[str, str] = {
     "AWS_SECRET_ACCESS_KEY": "test",
     "AWS_DEFAULT_REGION": "us-east-1",
 }
+
+
+def _parse_typed_resources(resources: tuple) -> dict[str, list]:
+    """Convert typed resource objects into keyed lists for LwsSession._spec."""
+    tables: list[dict[str, Any]] = []
+    queues: list[str] = []
+    buckets: list[str] = []
+    topics: list[str] = []
+    state_machines: list[dict[str, Any]] = []
+    secrets: list[str] = []
+    parameters: list[str] = []
+    for resource in resources:
+        if isinstance(resource, DynamoTable):
+            entry: dict[str, Any] = {"name": resource.name, "partition_key": resource.hash_key}
+            if resource.sort_key is not None:
+                entry["sort_key"] = resource.sort_key
+            tables.append(entry)
+        elif isinstance(resource, SqsQueue):
+            queues.append(resource.name)
+        elif isinstance(resource, S3Bucket):
+            buckets.append(resource.name)
+        elif isinstance(resource, SnsTopic):
+            topics.append(resource.name)
+        elif isinstance(resource, StateMachine):
+            state_machines.append(
+                {
+                    "name": resource.name,
+                    "definition": resource.definition,
+                    "role_arn": resource.role_arn,
+                }
+            )
+        elif isinstance(resource, Secret):
+            secrets.append(resource.name)
+        elif isinstance(resource, SsmParameter):
+            parameters.append(resource.name)
+    return {
+        "tables": tables,
+        "queues": queues,
+        "buckets": buckets,
+        "topics": topics,
+        "state_machines": state_machines,
+        "secrets": secrets,
+        "parameters": parameters,
+    }
 
 
 def _free_port() -> int:
@@ -54,19 +113,26 @@ class LwsSession:
             dynamo = session.client("dynamodb")
             dynamo.put_item(TableName="Orders", Item={...})
 
-    Or construct directly with explicit resources::
+    Or construct with typed resource specs::
+
+        with LwsSession(
+            DynamoTable("Orders", hash_key="id"),
+            SqsQueue("OrderQueue"),
+        ) as session:
+            ...
+
+    Or with the legacy dict-based API (still supported)::
 
         with LwsSession(
             tables=[{"name": "Orders", "partition_key": "id"}],
             queues=["OrderQueue"],
-            buckets=["ReceiptsBucket"],
         ) as session:
             ...
     """
 
     def __init__(
         self,
-        *,
+        *resources: ResourceSpec,
         tables: list[dict[str, Any]] | None = None,
         queues: list[str] | None = None,
         buckets: list[str] | None = None,
@@ -75,14 +141,15 @@ class LwsSession:
         secrets: list[str] | None = None,
         parameters: list[str] | None = None,
     ) -> None:
+        typed = _parse_typed_resources(resources)
         self._spec: dict[str, Any] = {
-            "tables": tables or [],
-            "queues": queues or [],
-            "buckets": buckets or [],
-            "topics": topics or [],
-            "state_machines": state_machines or [],
-            "secrets": secrets or [],
-            "parameters": parameters or [],
+            "tables": (tables or []) + typed["tables"],
+            "queues": (queues or []) + typed["queues"],
+            "buckets": (buckets or []) + typed["buckets"],
+            "topics": (topics or []) + typed["topics"],
+            "state_machines": (state_machines or []) + typed["state_machines"],
+            "secrets": (secrets or []) + typed["secrets"],
+            "parameters": (parameters or []) + typed["parameters"],
         }
         self._ports: dict[str, int] = {}
         self._mgmt_port: int = 0
@@ -222,11 +289,12 @@ class LwsSession:
 
     # ── boto3 client factory ──────────────────────────────────────────────────
 
-    def client(self, service: str) -> Any:
+    def client(self, service: str, config: Any = None) -> Any:
         """Return a pre-configured boto3 client pointing at the local service.
 
         Args:
             service: AWS service name (e.g. ``"dynamodb"``, ``"sqs"``, ``"s3"``).
+            config: Optional botocore Config object to pass through to boto3.client.
         """
         import boto3  # pylint: disable=import-outside-toplevel
 
@@ -242,75 +310,16 @@ class LwsSession:
             region_name="us-east-1",
             aws_access_key_id="test",
             aws_secret_access_key="test",
+            config=config,
         )
 
     # ── State management ──────────────────────────────────────────────────────
 
     def reset(self) -> None:
         """Clear all service state. Call between tests to ensure isolation."""
-        self._reset_dynamodb()
-        self._reset_sqs()
-        self._reset_s3()
+        import httpx  # pylint: disable=import-outside-toplevel
 
-    def _reset_dynamodb(self) -> None:
-        """Delete all items from every DynamoDB table in the spec."""
-        if "dynamodb" not in self._ports:
-            return
-        client = self.client("dynamodb")
-        for table_spec in self._spec.get("tables", []):
-            table_name = table_spec["name"]
-            key_names = [table_spec["partition_key"]]
-            if "sort_key" in table_spec:
-                key_names.append(table_spec["sort_key"])
-            self._truncate_table(client, table_name, key_names)
-
-    def _truncate_table(self, client: Any, table_name: str, key_names: list[str]) -> None:
-        """Scan and batch-delete all items from a DynamoDB table."""
-        projection = ", ".join(f"#k{i}" for i in range(len(key_names)))
-        names = {f"#k{i}": name for i, name in enumerate(key_names)}
-        last_key = None
-        while True:
-            kwargs: dict[str, Any] = {
-                "TableName": table_name,
-                "ProjectionExpression": projection,
-                "ExpressionAttributeNames": names,
-            }
-            if last_key:
-                kwargs["ExclusiveStartKey"] = last_key
-            response = client.scan(**kwargs)
-            items = response.get("Items", [])
-            for item in items:
-                key = {k: item[k] for k in key_names}
-                client.delete_item(TableName=table_name, Key=key)
-            last_key = response.get("LastEvaluatedKey")
-            if not last_key:
-                break
-
-    def _reset_sqs(self) -> None:
-        """Purge all SQS queues in the spec."""
-        if "sqs" not in self._ports:
-            return
-        client = self.client("sqs")
-        port = self._ports["sqs"]
-        for queue_spec in self._spec.get("queues", []):
-            queue_name = queue_spec if isinstance(queue_spec, str) else queue_spec["name"]
-            queue_url = f"http://127.0.0.1:{port}/000000000000/{queue_name}"
-            try:
-                client.purge_queue(QueueUrl=queue_url)
-            except Exception:  # pylint: disable=broad-except
-                pass
-
-    def _reset_s3(self) -> None:
-        """Delete all objects from every S3 bucket in the spec."""
-        if "s3" not in self._ports:
-            return
-        client = self.client("s3")
-        for bucket_spec in self._spec.get("buckets", []):
-            bucket_name = bucket_spec if isinstance(bucket_spec, str) else bucket_spec["name"]
-            paginator = client.get_paginator("list_objects_v2")
-            for page in paginator.paginate(Bucket=bucket_name):
-                for obj in page.get("Contents", []):
-                    client.delete_object(Bucket=bucket_name, Key=obj["Key"])
+        httpx.post(f"http://127.0.0.1:{self._mgmt_port}/_ldk/reset")
 
     # ── Resource helpers ──────────────────────────────────────────────────────
 
@@ -354,6 +363,12 @@ class LwsSession:
         from lws_testing._builders.chaos import ChaosBuilder
 
         return ChaosBuilder(service, self._mgmt_port)
+
+    def lifecycle(self, service: str) -> Any:
+        """Return a fluent lifecycle builder for the given service."""
+        from lws_testing._builders.lifecycle import LifecycleBuilder
+
+        return LifecycleBuilder(service, self._mgmt_port)
 
     @property
     def iam(self) -> Any:

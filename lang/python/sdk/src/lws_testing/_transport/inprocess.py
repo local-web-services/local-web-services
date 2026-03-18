@@ -105,12 +105,47 @@ class _StubOrchestrator:
         self._running = False
 
 
+class _SsmStateProvider:
+    """Thin wrapper that exposes _SsmState as a resettable provider."""
+
+    def __init__(self, state: Any) -> None:
+        self._state = state
+
+    @property
+    def name(self) -> str:
+        return "ssm"
+
+    async def reset(self) -> None:
+        self._state.reset()
+
+    async def health_check(self) -> bool:
+        return True
+
+
+class _SecretsManagerStateProvider:
+    """Thin wrapper that exposes _SecretsState as a resettable provider."""
+
+    def __init__(self, state: Any) -> None:
+        self._state = state
+
+    @property
+    def name(self) -> str:
+        return "secretsmanager"
+
+    async def reset(self) -> None:
+        self._state.reset()
+
+    async def health_check(self) -> bool:
+        return True
+
+
 def _create_management_app(
     providers: dict[str, Any],
     chaos_configs: dict[str, Any],
     fake_configs: dict[str, Any],
+    lifecycle_configs: dict[str, Any],
 ) -> Any:
-    """Build a FastAPI management app with reset, fake, and chaos endpoints."""
+    """Build a FastAPI management app with reset, fake, chaos, and lifecycle endpoints."""
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     from lws.api.management import _handle_reset, create_management_router
@@ -123,6 +158,7 @@ def _create_management_app(
         providers=providers,
         chaos_configs=chaos_configs,
         aws_fake_configs=fake_configs,
+        lifecycle_configs=lifecycle_configs,
     )
     app.include_router(router)
 
@@ -159,6 +195,7 @@ def _convert_spec(spec: dict[str, Any]) -> dict[str, list[Any]]:
 def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, Any]:
     """Instantiate all service providers."""
     from lws.providers.dynamodb.provider import SqliteDynamoProvider
+    from lws.providers.eventbridge.provider import EventBridgeProvider
     from lws.providers.s3.provider import S3Provider
     from lws.providers.sns.provider import SnsProvider
     from lws.providers.sqs.provider import SqsProvider
@@ -175,6 +212,7 @@ def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, An
         "s3": S3Provider(data_dir=s3_data, buckets=cfg["buckets"]),
         "sns": SnsProvider(topics=cfg["topics"]),
         "stepfunctions": StepFunctionsProvider(state_machines=cfg["state_machines"]),
+        "events": EventBridgeProvider(),
     }
 
 
@@ -183,10 +221,18 @@ def _build_service_apps(
     ports: dict[str, int],
     chaos_configs: dict[str, Any],
     fake_configs: dict[str, Any],
+    lifecycle_configs: dict[str, Any],
     cfg: dict[str, list[Any]],
-) -> list[tuple[str, Any]]:
-    """Build FastAPI apps for all services; return as (service_name, app) pairs."""
+) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
+    """Build FastAPI apps for all services.
+
+    Returns a tuple of:
+    - list of (service_name, app) pairs for server startup
+    - dict of extra providers (ssm, secretsmanager state wrappers) for reset support
+    """
+    from lws.providers.apigateway.routes import create_apigateway_management_app
     from lws.providers.dynamodb.routes import create_dynamodb_app
+    from lws.providers.eventbridge.routes import create_eventbridge_app
     from lws.providers.s3.routes import create_s3_app
     from lws.providers.secretsmanager.routes import create_secretsmanager_app
     from lws.providers.sns.routes import create_sns_app
@@ -194,13 +240,27 @@ def _build_service_apps(
     from lws.providers.ssm.routes import create_ssm_app
     from lws.providers.stepfunctions.routes import create_stepfunctions_app
 
-    return [
+    ssm_app, ssm_state = create_ssm_app(
+        initial_parameters=cfg["parameters"] or None,
+        chaos=chaos_configs["ssm"],
+        aws_fake=fake_configs["ssm"],
+        lifecycle=lifecycle_configs["ssm"],
+    )
+    secretsmanager_app, secretsmanager_state = create_secretsmanager_app(
+        initial_secrets=cfg["secrets"] or None,
+        chaos=chaos_configs["secretsmanager"],
+        aws_fake=fake_configs["secretsmanager"],
+        lifecycle=lifecycle_configs["secretsmanager"],
+    )
+
+    service_apps = [
         (
             "dynamodb",
             create_dynamodb_app(
                 providers["dynamodb"],
                 chaos=chaos_configs["dynamodb"],
                 aws_fake=fake_configs["dynamodb"],
+                lifecycle=lifecycle_configs["dynamodb"],
             ),
         ),
         (
@@ -210,6 +270,7 @@ def _build_service_apps(
                 port=ports["sqs"],
                 chaos=chaos_configs["sqs"],
                 aws_fake=fake_configs["sqs"],
+                lifecycle=lifecycle_configs["sqs"],
             ),
         ),
         (
@@ -218,6 +279,7 @@ def _build_service_apps(
                 providers["s3"],
                 chaos=chaos_configs["s3"],
                 aws_fake=fake_configs["s3"],
+                lifecycle=lifecycle_configs["s3"],
             ),
         ),
         (
@@ -226,6 +288,7 @@ def _build_service_apps(
                 providers["sns"],
                 chaos=chaos_configs["sns"],
                 aws_fake=fake_configs["sns"],
+                lifecycle=lifecycle_configs["sns"],
             ),
         ),
         (
@@ -234,25 +297,36 @@ def _build_service_apps(
                 providers["stepfunctions"],
                 chaos=chaos_configs["stepfunctions"],
                 aws_fake=fake_configs["stepfunctions"],
+                lifecycle=lifecycle_configs["stepfunctions"],
+                tracker_ref=(_sf_tracker_ref := []),
+            ),
+        ),
+        ("ssm", ssm_app),
+        ("secretsmanager", secretsmanager_app),
+        (
+            "events",
+            create_eventbridge_app(
+                providers["events"],
+                chaos=chaos_configs["events"],
+                aws_fake=fake_configs["events"],
+                lifecycle=lifecycle_configs["events"],
+                sf_tracker=_sf_tracker_ref[0] if _sf_tracker_ref else None,
             ),
         ),
         (
-            "ssm",
-            create_ssm_app(
-                initial_parameters=cfg["parameters"] or None,
-                chaos=chaos_configs["ssm"],
-                aws_fake=fake_configs["ssm"],
-            ),
-        ),
-        (
-            "secretsmanager",
-            create_secretsmanager_app(
-                initial_secrets=cfg["secrets"] or None,
-                chaos=chaos_configs["secretsmanager"],
-                aws_fake=fake_configs["secretsmanager"],
+            "apigateway",
+            create_apigateway_management_app(
+                lifecycle=lifecycle_configs["apigateway"],
             ),
         ),
     ]
+
+    extra_providers = {
+        "ssm": _SsmStateProvider(ssm_state),
+        "secretsmanager": _SecretsManagerStateProvider(secretsmanager_state),
+    }
+
+    return service_apps, extra_providers
 
 
 async def _start_providers(providers: dict[str, Any]) -> None:
@@ -287,6 +361,8 @@ _SERVICE_NAMES = [
     "stepfunctions",
     "ssm",
     "secretsmanager",
+    "events",
+    "apigateway",
 ]
 
 
@@ -302,6 +378,7 @@ async def start_services(
         passed directly to :func:`stop_services`.
     """
     from lws.providers._shared.aws_chaos import AwsChaosConfig
+    from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
     from lws.providers._shared.aws_operation_fake import AwsFakeConfig
 
     log_handler = _setup_logging()
@@ -310,12 +387,17 @@ async def start_services(
 
     chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}
     fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
+    lifecycle_configs: dict[str, Any] = {s: ResourceLifecycleConfig() for s in _SERVICE_NAMES}
     ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
     mgmt_port = _free_port()
 
-    service_apps = _build_service_apps(providers, ports, chaos_configs, fake_configs, cfg)
+    service_apps, extra_providers = _build_service_apps(
+        providers, ports, chaos_configs, fake_configs, lifecycle_configs, cfg
+    )
+    # Merge ssm/secretsmanager state wrappers so the management reset endpoint can reach them
+    all_providers = {**providers, **extra_providers}
     await _start_providers(providers)
-    mgmt_app = _create_management_app(providers, chaos_configs, fake_configs)
+    mgmt_app = _create_management_app(all_providers, chaos_configs, fake_configs, lifecycle_configs)
     servers = await _start_all_servers(service_apps, ports, mgmt_app, mgmt_port)
 
     return log_handler, ports, mgmt_port, servers

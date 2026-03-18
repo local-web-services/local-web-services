@@ -98,7 +98,7 @@ describe("LogCapture", () => {
 
       // Act & Assert
       expect(() => capture.assertCalled("dynamodb", "PutItem")).toThrow(
-        "Expected dynamodb.PutItem to have been called"
+        "Expected dynamodb.PutItem to have been called",
       );
     });
 
@@ -107,7 +107,7 @@ describe("LogCapture", () => {
 
       // Act & Assert
       expect(() => capture.assertCalled("dynamodb", "PutItem")).toThrow(
-        "Expected dynamodb.PutItem to have been called"
+        "Expected dynamodb.PutItem to have been called",
       );
     });
   });
@@ -118,9 +118,7 @@ describe("LogCapture", () => {
       injectEntries([{ service: "s3", operation: "GetObject" }]);
 
       // Act & Assert
-      expect(() =>
-        capture.assertNotCalled("dynamodb", "PutItem")
-      ).not.toThrow();
+      expect(() => capture.assertNotCalled("dynamodb", "PutItem")).not.toThrow();
     });
 
     it("throws when a matching entry is found", () => {
@@ -129,7 +127,7 @@ describe("LogCapture", () => {
 
       // Act & Assert
       expect(() => capture.assertNotCalled("dynamodb", "PutItem")).toThrow(
-        "Expected dynamodb.PutItem NOT to have been called"
+        "Expected dynamodb.PutItem NOT to have been called",
       );
     });
   });
@@ -137,9 +135,7 @@ describe("LogCapture", () => {
   describe("assertNoErrors", () => {
     it("does not throw when there are no ERROR-level entries", () => {
       // Arrange
-      injectEntries([
-        { service: "dynamodb", operation: "PutItem", level: "INFO" },
-      ]);
+      injectEntries([{ service: "dynamodb", operation: "PutItem", level: "INFO" }]);
 
       // Act & Assert
       expect(() => capture.assertNoErrors()).not.toThrow();
@@ -153,9 +149,7 @@ describe("LogCapture", () => {
       ]);
 
       // Act & Assert
-      expect(() => capture.assertNoErrors()).toThrow(
-        "Expected no ERROR log entries, but found 1"
-      );
+      expect(() => capture.assertNoErrors()).toThrow("Expected no ERROR log entries, but found 1");
     });
 
     it("does not throw when the entries list is empty", () => {

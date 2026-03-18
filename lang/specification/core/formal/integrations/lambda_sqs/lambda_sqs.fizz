@@ -1,0 +1,258 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Lambda -> SQS Integration Formal Specification
+# Models a Lambda event source mapping (ESM) polling an SQS queue and invoking a function.
+# Includes DLQ redrive after repeated invocation failures.
+
+QUEUE_IDS = ["queue-1", "dlq-1"]
+MAIN_QUEUE_IDS = ["queue-1"]
+FUNC_IDS = ["func-1"]
+ESM_IDS = ["esm-1"]
+MSG_IDS = ["msg-1"]
+INV_IDS = ["inv-1"]
+
+action Init:
+    # SQS queues (includes main queue and dead-letter queue)
+    queue_status = {}           # queue_status[qid] = "ACTIVE" | "DELETED"
+    queue_dlq = {}              # queue_dlq[qid] = "" (none) or dlq queue_id
+
+    # SQS messages
+    msg_status = {}             # msg_status[mid] = "AVAILABLE" | "IN_FLIGHT" | "DELETED"
+    msg_queue = {}              # msg_queue[mid] = queue_id
+    msg_receive_count = {}      # msg_receive_count[mid] = int
+    msg_in_dlq = {}             # msg_in_dlq[mid] = True if message has been redriven to DLQ
+
+    # Lambda function
+    func_status = {}            # func_status[fid] = "ACTIVE"
+
+    # Lambda event source mapping
+    esm_status = {}             # esm_status[eid] = "ENABLED" | "DISABLED"
+    esm_func = {}               # esm_func[eid] = func_id
+    esm_queue = {}              # esm_queue[eid] = queue_id
+
+    # Lambda invocations triggered by ESM
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_msg = {}                # inv_msg[iid] = msg_id
+    inv_esm = {}                # inv_esm[iid] = esm_id
+
+
+# step: an SQS queue is created
+# result: the queue is ACTIVE with no dead-letter queue configured
+# guard: the queue does not already exist
+# guard_violation: the queue already exists
+atomic action CreateQueue:
+    oneof qid in QUEUE_IDS:
+        if qid not in queue_status:
+            queue_status[qid] = "ACTIVE"
+            queue_dlq[qid] = ""
+
+
+# step: the SQS queue is configured with a dead-letter queue
+# result: failed messages will be redriven to the dead-letter queue after two receives
+# guard: the source queue exists
+# guard_violation: the source queue does not exist
+# guard: the source queue is ACTIVE
+# guard_violation_lifecycle: the source queue is not ACTIVE
+# guard: the dead-letter queue exists
+# guard_violation: the dead-letter queue does not exist
+# guard: the dead-letter queue is ACTIVE
+# guard_violation_lifecycle: the dead-letter queue is not ACTIVE
+# guard: the source queue has no dead-letter queue configured
+# guard_violation: the source queue already has a dead-letter queue configured
+atomic action ConfigureRedrive:
+    oneof qid in MAIN_QUEUE_IDS:
+        if qid in queue_status:
+            if queue_status[qid] == "ACTIVE":
+                if queue_dlq[qid] == "":
+                    oneof did in QUEUE_IDS:
+                        if did != qid:
+                            if did in queue_status:
+                                if queue_status[did] == "ACTIVE":
+                                    queue_dlq[qid] = did
+
+
+# fake_skip: internal
+# step: a message arrives in the SQS queue
+# result: the message is AVAILABLE for processing
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action MessageArrives:
+    oneof qid in MAIN_QUEUE_IDS:
+        if qid in queue_status:
+            if queue_status[qid] == "ACTIVE":
+                oneof mid in MSG_IDS:
+                    if mid not in msg_status or msg_status[mid] == "DELETED":
+                        msg_status[mid] = "AVAILABLE"
+                        msg_queue[mid] = qid
+                        msg_receive_count[mid] = 0
+                        msg_in_dlq[mid] = False
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a Lambda event source mapping is created linking a queue to a function
+# result: the event source mapping is ENABLED and will poll the queue for messages
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+# guard: the event source mapping does not already exist
+# guard_violation: the event source mapping already exists
+atomic action CreateEventSourceMapping:
+    oneof eid in ESM_IDS:
+        if eid not in esm_status:
+            oneof fid in FUNC_IDS:
+                if fid in func_status:
+                    if func_status[fid] == "ACTIVE":
+                        oneof qid in MAIN_QUEUE_IDS:
+                            if qid in queue_status:
+                                if queue_status[qid] == "ACTIVE":
+                                    esm_status[eid] = "ENABLED"
+                                    esm_func[eid] = fid
+                                    esm_queue[eid] = qid
+
+
+# fake_skip: internal
+# step: the event source mapping polls the queue and invokes the Lambda function
+# result: the message is IN_FLIGHT and a Lambda invocation is IN_PROGRESS
+# guard: the event source mapping exists
+# guard_violation: the event source mapping does not exist
+# guard: the event source mapping is ENABLED
+# guard_violation_lifecycle: the event source mapping is not ENABLED
+# guard: the mapped function is ACTIVE
+# guard_violation_lifecycle: the mapped function is not ACTIVE
+# guard: an AVAILABLE message exists in the mapped queue
+# guard_violation: no AVAILABLE message exists in the mapped queue
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action ESMPollAndInvoke:
+    oneof eid in ESM_IDS:
+        if eid in esm_status:
+            if esm_status[eid] == "ENABLED":
+                fid = esm_func[eid]
+                if fid in func_status:
+                    if func_status[fid] == "ACTIVE":
+                        qid = esm_queue[eid]
+                        oneof mid in MSG_IDS:
+                            if mid in msg_status:
+                                if msg_status[mid] == "AVAILABLE":
+                                    if msg_queue[mid] == qid:
+                                        oneof iid in INV_IDS:
+                                            if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                                                inv_status[iid] = "IN_PROGRESS"
+                                                inv_msg[iid] = mid
+                                                inv_esm[iid] = eid
+                                                msg_status[mid] = "IN_FLIGHT"
+                                                msg_receive_count[mid] = msg_receive_count[mid] + 1
+
+
+# fake_skip: internal
+# step: the Lambda invocation completes successfully
+# result: the invocation is SUCCESS and the SQS message is DELETED
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                mid = inv_msg[iid]
+                inv_status[iid] = "SUCCESS"
+                msg_status[mid] = "DELETED"
+
+
+# fake_skip: internal
+# step: the Lambda invocation fails
+# result: if the receive count is below the threshold the message is AVAILABLE for reprocessing, otherwise it is redriven to the dead-letter queue
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+atomic action InvocationFails:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                mid = inv_msg[iid]
+                qid = msg_queue[mid]
+                inv_status[iid] = "FAILED"
+                redriven = False
+                if qid in queue_dlq:
+                    if queue_dlq[qid] != "":
+                        if msg_receive_count[mid] >= 2:
+                            dlq_id = queue_dlq[qid]
+                            msg_queue[mid] = dlq_id
+                            msg_in_dlq[mid] = True
+                            msg_status[mid] = "DELETED"
+                            msg_receive_count[mid] = 0
+                            redriven = True
+                if redriven == False:
+                    msg_status[mid] = "AVAILABLE"
+
+
+# check: every in-progress invocation was initiated by an ENABLED event source mapping
+always assertion InvocationRequiresEnabledESM:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            eid = inv_esm[iid]
+            if eid in esm_status:
+                if esm_status[eid] != "ENABLED":
+                    return False
+    return True
+
+
+# check: every in-progress invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            eid = inv_esm[iid]
+            if eid in esm_func:
+                fid = esm_func[eid]
+                if fid in func_status:
+                    if func_status[fid] != "ACTIVE":
+                        return False
+    return True
+
+
+# check: every AVAILABLE or IN_FLIGHT message belongs to an ACTIVE queue
+always assertion MessagesReferenceActiveQueues:
+    for mid in msg_status:
+        if msg_status[mid] != "DELETED":
+            qid = msg_queue[mid]
+            if qid in queue_status:
+                if queue_status[qid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every ENABLED event source mapping references an ACTIVE queue
+always assertion ESMReferencesActiveQueue:
+    for eid in esm_status:
+        if esm_status[eid] == "ENABLED":
+            qid = esm_queue[eid]
+            if qid in queue_status:
+                if queue_status[qid] != "ACTIVE":
+                    return False
+    return True
+
+
+# Note: invocation liveness (eventually SUCCESS or FAILED) is not modeled here because
+# InvocationSucceeds and InvocationFails are external triggers (async Lambda runtime events)
+# and FizzBee liveness requires fairness assumptions that are not supported.
+# In practice, Lambda enforces a maximum execution timeout of 15 minutes.

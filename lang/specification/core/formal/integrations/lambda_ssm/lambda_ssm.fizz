@@ -1,0 +1,130 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Lambda -> SSM Parameter Store Integration Formal Specification
+# Models a Lambda function reading a parameter from SSM Parameter Store during invocation.
+# If the parameter has been deleted, the read fails and the invocation fails
+# with a ParameterNotFound error.
+
+FUNC_IDS = ["func-1"]
+PARAM_IDS = ["param-1"]
+INV_IDS = ["inv-1"]
+
+
+action Init:
+    func_status = {}            # func_status[fid] = "ACTIVE"
+    param_status = {}           # param_status[pid] = "EXISTS" | "DELETED"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_func = {}               # inv_func[iid] = func_id
+    inv_param = {}              # inv_param[iid] = param_id (parameter read during invocation)
+
+
+# step: a Lambda function is deployed
+# result: the function is ACTIVE
+# guard: the function does not already exist
+# guard_violation: the function already exists
+atomic action DeployFunction:
+    oneof fid in FUNC_IDS:
+        if fid not in func_status:
+            func_status[fid] = "ACTIVE"
+
+
+# step: a parameter is created in SSM Parameter Store
+# result: the parameter EXISTS and can be read by Lambda
+# guard: the parameter does not already exist
+# guard_violation: the parameter already exists
+atomic action CreateParameter:
+    oneof pid in PARAM_IDS:
+        if pid not in param_status:
+            param_status[pid] = "EXISTS"
+
+
+# step: a parameter is deleted from SSM Parameter Store
+# result: the parameter is DELETED and will cause a ParameterNotFound error when read
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter EXISTS
+# guard_violation_lifecycle: the parameter is already DELETED
+atomic action DeleteParameter:
+    oneof pid in PARAM_IDS:
+        if pid in param_status:
+            if param_status[pid] == "EXISTS":
+                param_status[pid] = "DELETED"
+
+
+# step: the Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the function exists
+# guard_violation: the function does not exist
+# guard: the function is ACTIVE
+# guard_violation_lifecycle: the function is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeFunction:
+    oneof fid in FUNC_IDS:
+        if fid in func_status:
+            if func_status[fid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_func[iid] = fid
+
+
+# fake_skip: internal
+# step: the Lambda function reads an existing parameter and completes successfully
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the parameter EXISTS
+# guard_violation_lifecycle: the parameter does not exist or is DELETED
+atomic action InvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof pid in PARAM_IDS:
+                    if pid in param_status:
+                        if param_status[pid] == "EXISTS":
+                            inv_status[iid] = "SUCCESS"
+                            inv_param[iid] = pid
+
+
+# fake_skip: internal
+# step: the Lambda function fails because the parameter has been deleted
+# result: the invocation is FAILED with a ParameterNotFound error
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the parameter is DELETED
+# guard_violation_lifecycle: the parameter is not DELETED
+atomic action InvocationFailsParameterNotFound:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof pid in PARAM_IDS:
+                    if pid in param_status:
+                        if param_status[pid] == "DELETED":
+                            inv_status[iid] = "FAILED"
+                            inv_param[iid] = pid
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE Lambda function
+always assertion InvocationRequiresActiveFunction:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_func[iid]
+            if fid in func_status:
+                if func_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every successful invocation recorded which parameter it read
+# (verifies Lambda cannot succeed without reading a parameter; parameter may be deleted afterwards)
+always assertion SuccessfulInvocationReadAParameter:
+    for iid in inv_status:
+        if inv_status[iid] == "SUCCESS":
+            if iid not in inv_param:
+                return False
+    return True

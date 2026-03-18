@@ -8,12 +8,12 @@ import (
 )
 
 type chaosPayload struct {
-	Enabled            bool    `json:"enabled"`
-	ErrorRate          float64 `json:"error_rate,omitempty"`
-	LatencyMinMs       int     `json:"latency_min_ms,omitempty"`
-	LatencyMaxMs       int     `json:"latency_max_ms,omitempty"`
+	Enabled             bool    `json:"enabled"`
+	ErrorRate           float64 `json:"error_rate,omitempty"`
+	LatencyMinMs        int     `json:"latency_min_ms,omitempty"`
+	LatencyMaxMs        int     `json:"latency_max_ms,omitempty"`
 	ConnectionResetRate float64 `json:"connection_reset_rate,omitempty"`
-	TimeoutRate        float64 `json:"timeout_rate,omitempty"`
+	TimeoutRate         float64 `json:"timeout_rate,omitempty"`
 }
 
 // ChaosBuilder configures chaos engineering settings for a single service.

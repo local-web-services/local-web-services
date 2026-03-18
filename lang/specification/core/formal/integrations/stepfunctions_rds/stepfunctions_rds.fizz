@@ -1,0 +1,142 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Step Functions -> RDS Integration Formal Specification
+# Models a Step Functions state machine executing queries against an RDS instance
+# using the RDS Data API as a task step.
+# If the DB instance is failing over, the task fails with a connection error.
+
+SM_IDS = ["sm-1"]
+DB_IDS = ["db-1"]
+EXEC_IDS = ["exec-1"]
+
+
+action Init:
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    db_status = {}              # db_status[dbid] = "AVAILABLE" | "FAILING_OVER"
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    exec_db = {}                # exec_db[eid] = db_id (DB queried by this execution)
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+
+
+# step: an RDS DB instance is created
+# result: the DB instance is AVAILABLE
+# guard: the DB instance does not already exist
+# guard_violation: the DB instance already exists
+atomic action CreateDBInstance:
+    oneof dbid in DB_IDS:
+        if dbid not in db_status:
+            db_status[dbid] = "AVAILABLE"
+
+
+# step: a Multi-AZ failover begins on the DB instance
+# result: the DB instance is FAILING_OVER and queries will be rejected
+# guard: the DB instance exists
+# guard_violation: the DB instance does not exist
+# guard: the DB instance is AVAILABLE
+# guard_violation_lifecycle: the DB instance is not AVAILABLE
+atomic action DBFailoverBegins:
+    oneof dbid in DB_IDS:
+        if dbid in db_status:
+            if db_status[dbid] == "AVAILABLE":
+                db_status[dbid] = "FAILING_OVER"
+
+
+# fake_skip: internal
+# step: the DB instance failover completes
+# result: the DB instance is AVAILABLE again
+# guard: the DB instance is FAILING_OVER
+# guard_violation_lifecycle: the DB instance is not FAILING_OVER
+atomic action DBFailoverComplete:
+    oneof dbid in DB_IDS:
+        if dbid in db_status:
+            if db_status[dbid] == "FAILING_OVER":
+                db_status[dbid] = "AVAILABLE"
+
+
+# step: an execution of the state machine is started
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecution:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                oneof eid in EXEC_IDS:
+                    if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                        exec_status[eid] = "RUNNING"
+                        exec_sm[eid] = smid
+
+
+# fake_skip: internal
+# step: a running execution queries the AVAILABLE DB instance and the task succeeds
+# result: the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the DB instance is AVAILABLE
+# guard_violation_lifecycle: the DB instance is not AVAILABLE
+atomic action QueryDBTaskSucceeds:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof dbid in DB_IDS:
+                    if dbid in db_status:
+                        if db_status[dbid] == "AVAILABLE":
+                            exec_status[eid] = "SUCCEEDED"
+                            exec_db[eid] = dbid
+
+
+# fake_skip: internal
+# step: a running execution fails to query the DB because it is failing over
+# result: the execution is FAILED with a connection error
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the DB instance is FAILING_OVER
+# guard_violation_lifecycle: the DB instance is not FAILING_OVER
+atomic action QueryDBTaskFails:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                oneof dbid in DB_IDS:
+                    if dbid in db_status:
+                        if db_status[dbid] == "FAILING_OVER":
+                            exec_status[eid] = "FAILED"
+                            exec_db[eid] = dbid
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every succeeded execution recorded which DB instance it queried
+# (verifies an execution cannot succeed without querying a DB; DB may fail over afterwards)
+always assertion SuccessfulExecutionQueriedADB:
+    for eid in exec_status:
+        if exec_status[eid] == "SUCCEEDED":
+            if eid not in exec_db:
+                return False
+    return True

@@ -5,7 +5,7 @@ export class ChaosBuilder {
 
   constructor(
     private readonly service: string,
-    private readonly mgmtPort: number
+    private readonly mgmtPort: number,
   ) {}
 
   errorRate(rate: number): ChaosBuilder {

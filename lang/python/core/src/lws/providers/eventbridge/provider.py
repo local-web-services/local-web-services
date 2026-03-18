@@ -1,0 +1,460 @@
+"""EventBridge provider for local development.
+
+Implements the ``IEventBus`` interface and ``Provider`` lifecycle.
+Manages event buses, rules, pattern-based routing, and scheduled rules.
+Lambda targets are invoked via registered compute providers.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import uuid
+
+from lws.interfaces.compute import ICompute, LambdaContext
+from lws.interfaces.event_bus import IEventBus
+from lws.interfaces.provider import ProviderStatus
+from lws.providers.eventbridge._eventbridge_state import (
+    EventBusConfig,
+    RuleConfig,
+    RuleTarget,
+    _build_event_envelope,
+    _build_scheduled_event,
+    _extract_function_name,
+)
+from lws.providers.eventbridge.pattern_matcher import match_event
+from lws.providers.eventbridge.scheduler import ScheduledRule, ScheduleRunner
+
+logger = logging.getLogger(__name__)
+
+
+class EventBridgeProvider(IEventBus):
+    """In-memory EventBridge provider that manages event buses and rules.
+
+    Parameters
+    ----------
+    buses:
+        List of event bus configurations to create at startup.
+    rules:
+        List of rule configurations to register at startup.
+    """
+
+    def __init__(
+        self,
+        buses: list[EventBusConfig] | None = None,
+        rules: list[RuleConfig] | None = None,
+    ) -> None:
+        self._bus_configs = buses or []
+        self._rule_configs = rules or []
+        self._buses: dict[str, EventBusConfig] = {}
+        self._rules: dict[str, RuleConfig] = {}
+        self._tags: dict[str, dict[str, str]] = {}
+        self._status = ProviderStatus.STOPPED
+        self._compute_providers: dict[str, ICompute] = {}
+        self._lock = asyncio.Lock()
+        self._scheduler = ScheduleRunner()
+
+    # -- Provider lifecycle ---------------------------------------------------
+
+    @property
+    def name(self) -> str:
+        return "eventbridge"
+
+    async def start(self) -> None:
+        """Create event buses and rules, then start scheduled rules."""
+        async with self._lock:
+            self._ensure_default_bus()
+            for bus_config in self._bus_configs:
+                self._buses[bus_config.bus_name] = bus_config
+            for rule_config in self._rule_configs:
+                self._rules[rule_config.rule_name] = rule_config
+            self._status = ProviderStatus.RUNNING
+
+        scheduled = self._build_scheduled_rules()
+        if scheduled:
+            await self._scheduler.start(scheduled)
+
+    async def stop(self) -> None:
+        """Stop all scheduled tasks and clear state."""
+        await self._scheduler.stop()
+        async with self._lock:
+            self._buses.clear()
+            self._rules.clear()
+            self._tags.clear()
+            self._status = ProviderStatus.STOPPED
+
+    async def reset(self) -> None:
+        """Reset all dynamic state while keeping the provider running.
+
+        Clears all custom event buses, rules, and tags.  The default bus and
+        any buses/rules provided at startup are restored.
+        """
+        await self._scheduler.stop()
+        async with self._lock:
+            self._buses.clear()
+            self._rules.clear()
+            self._tags.clear()
+            self._ensure_default_bus()
+            for bus_config in self._bus_configs:
+                self._buses[bus_config.bus_name] = bus_config
+            for rule_config in self._rule_configs:
+                self._rules[rule_config.rule_name] = rule_config
+
+        scheduled = self._build_scheduled_rules()
+        if scheduled:
+            await self._scheduler.start(scheduled)
+
+    async def health_check(self) -> bool:
+        return self._status is ProviderStatus.RUNNING
+
+    # -- Cross-provider wiring ------------------------------------------------
+
+    def set_compute_providers(self, providers: dict[str, ICompute]) -> None:
+        """Register compute providers for Lambda target dispatch."""
+        self._compute_providers = providers
+
+    # -- IEventBus interface --------------------------------------------------
+
+    async def put_events(self, entries: list[dict]) -> list[dict]:
+        """Publish one or more events to the event bus.
+
+        Each entry should contain: Source, DetailType, Detail, and
+        optionally EventBusName.  Returns a list of result entries.
+        """
+        results: list[dict] = []
+        for entry in entries:
+            event_id = str(uuid.uuid4())
+            event = _build_event_envelope(entry, event_id)
+            bus_name = entry.get("EventBusName", "default")
+            matched = await self._route_event(event, bus_name)
+            results.append({"EventId": event_id, "ErrorCode": None, "ErrorMessage": None})
+            logger.debug(
+                "Event %s routed to %d rule(s) on bus '%s'",
+                event_id,
+                matched,
+                bus_name,
+            )
+        return results
+
+    # -- Public API -----------------------------------------------------------
+
+    async def put_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+        event_pattern: dict | None = None,
+        schedule_expression: str | None = None,
+        targets: list[RuleTarget] | None = None,
+    ) -> str:
+        """Create or update a rule. Returns the rule ARN.
+
+        Raises KeyError if the event bus does not exist.
+        Raises ValueError if the event bus is not ACTIVE or the rule already exists.
+        """
+        async with self._lock:
+            if event_bus_name not in self._buses:
+                raise KeyError(f"Event bus not found: {event_bus_name}")
+            if rule_name in self._rules:
+                raise ValueError(f"Rule already exists: {rule_name}")
+            rule = RuleConfig(
+                rule_name=rule_name,
+                event_bus_name=event_bus_name,
+                event_pattern=event_pattern,
+                schedule_expression=schedule_expression,
+                targets=targets or [],
+            )
+            self._rules[rule_name] = rule
+        arn = f"arn:aws:events:us-east-1:000000000000:rule/{rule_name}"
+        return arn
+
+    async def put_targets(self, rule_name: str, targets: list[RuleTarget]) -> None:
+        """Add targets to an existing rule."""
+        async with self._lock:
+            rule = self._rules.get(rule_name)
+            if rule is None:
+                raise KeyError(f"Rule not found: {rule_name}")
+            rule.targets.extend(targets)
+
+    def list_rules(self, event_bus_name: str = "default") -> list[RuleConfig]:
+        """Return all rules for a given event bus.
+
+        Raises KeyError if the event bus does not exist.
+        """
+        if event_bus_name not in self._buses:
+            raise KeyError(f"Event bus not found: {event_bus_name}")
+        return [r for r in self._rules.values() if r.event_bus_name == event_bus_name]
+
+    def list_buses(self) -> list[EventBusConfig]:
+        """Return all event buses."""
+        return list(self._buses.values())
+
+    async def create_event_bus(self, bus_name: str) -> str:
+        """Create an event bus. Returns the bus ARN.
+
+        Raises ValueError if the bus already exists.
+        """
+        arn = f"arn:aws:events:us-east-1:000000000000:event-bus/{bus_name}"
+        async with self._lock:
+            if bus_name in self._buses:
+                raise ValueError(f"Event bus already exists: {bus_name}")
+            self._buses[bus_name] = EventBusConfig(bus_name=bus_name, bus_arn=arn)
+        return arn
+
+    async def delete_event_bus(self, bus_name: str) -> None:
+        """Delete an event bus. Raises KeyError if not found.
+
+        Raises ValueError if the bus is the default bus or has associated rules.
+        """
+        if bus_name == "default":
+            raise ValueError("Cannot delete the default event bus")
+        async with self._lock:
+            if bus_name not in self._buses:
+                raise KeyError(f"Event bus not found: {bus_name}")
+            rules_on_bus = [r for r in self._rules.values() if r.event_bus_name == bus_name]
+            if rules_on_bus:
+                raise ValueError(f"Cannot delete event bus '{bus_name}': it has associated rules")
+            del self._buses[bus_name]
+
+    def describe_event_bus(self, bus_name: str) -> dict:
+        """Describe an event bus. Raises KeyError if not found."""
+        bus = self._buses.get(bus_name)
+        if bus is None:
+            raise KeyError(f"Event bus not found: {bus_name}")
+        return {
+            "Name": bus.bus_name,
+            "Arn": bus.bus_arn,
+            "State": "ACTIVE",
+        }
+
+    async def delete_rule(self, rule_name: str) -> None:
+        """Delete a rule. Raises KeyError if not found.
+
+        Raises ValueError if the rule has active targets.
+        """
+        async with self._lock:
+            if rule_name not in self._rules:
+                raise KeyError(f"Rule not found: {rule_name}")
+            rule = self._rules[rule_name]
+            if rule.targets:
+                raise ValueError(f"Cannot delete rule '{rule_name}': it has active targets")
+            del self._rules[rule_name]
+
+    def describe_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+    ) -> dict:
+        """Describe a rule. Raises KeyError if not found."""
+        rule = self._rules.get(rule_name)
+        if rule is None or rule.event_bus_name != event_bus_name:
+            raise KeyError(f"Rule not found: {rule_name}")
+        result: dict = {
+            "Name": rule.rule_name,
+            "Arn": f"arn:aws:events:us-east-1:000000000000:rule/{rule.rule_name}",
+            "EventBusName": rule.event_bus_name,
+            "State": "ENABLED" if rule.enabled else "DISABLED",
+        }
+        if rule.event_pattern:
+            result["EventPattern"] = json.dumps(rule.event_pattern)
+        if rule.schedule_expression:
+            result["ScheduleExpression"] = rule.schedule_expression
+        return result
+
+    def list_targets_by_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+    ) -> list[dict]:
+        """Return the targets for a rule. Raises KeyError if not found."""
+        rule = self._rules.get(rule_name)
+        if rule is None or rule.event_bus_name != event_bus_name:
+            raise KeyError(f"Rule not found: {rule_name}")
+        targets = []
+        for t in rule.targets:
+            entry: dict = {"Id": t.target_id, "Arn": t.arn}
+            if t.input_path:
+                entry["InputPath"] = t.input_path
+            if t.input_template:
+                entry["InputTransformer"] = {"InputTemplate": t.input_template}
+            targets.append(entry)
+        return targets
+
+    async def remove_targets(
+        self,
+        rule_name: str,
+        ids: list[str],
+        event_bus_name: str = "default",
+    ) -> list[dict]:
+        """Remove targets from a rule by ID. Returns list of failed entries.
+
+        Raises KeyError if the rule is not found.
+        Raises ValueError if any of the specified target IDs are not found on the rule.
+        """
+        async with self._lock:
+            rule = self._rules.get(rule_name)
+            if rule is None or rule.event_bus_name != event_bus_name:
+                raise KeyError(f"Rule not found: {rule_name}")
+            existing_ids = {t.target_id for t in rule.targets}
+            ids_set = set(ids)
+            missing = ids_set - existing_ids
+            if missing:
+                raise ValueError(f"Target(s) not found on rule '{rule_name}': {missing}")
+            rule.targets = [t for t in rule.targets if t.target_id not in ids_set]
+        return []
+
+    async def enable_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+    ) -> None:
+        """Enable a rule. Raises KeyError if not found.
+
+        Raises ValueError if the rule is not DISABLED.
+        """
+        async with self._lock:
+            rule = self._rules.get(rule_name)
+            if rule is None or rule.event_bus_name != event_bus_name:
+                raise KeyError(f"Rule not found: {rule_name}")
+            if rule.enabled:
+                raise ValueError(f"Rule '{rule_name}' is already ENABLED")
+            rule.enabled = True
+
+    async def disable_rule(
+        self,
+        rule_name: str,
+        event_bus_name: str = "default",
+    ) -> None:
+        """Disable a rule. Raises KeyError if not found.
+
+        Raises ValueError if the rule is not ENABLED.
+        """
+        async with self._lock:
+            rule = self._rules.get(rule_name)
+            if rule is None or rule.event_bus_name != event_bus_name:
+                raise KeyError(f"Rule not found: {rule_name}")
+            if not rule.enabled:
+                raise ValueError(f"Rule '{rule_name}' is already DISABLED")
+            rule.enabled = False
+
+    def tag_resource(self, resource_arn: str, tags: list[dict]) -> None:
+        """Add or overwrite tags on a resource ARN."""
+        if resource_arn not in self._tags:
+            self._tags[resource_arn] = {}
+        for tag in tags:
+            key = tag.get("Key", "")
+            value = tag.get("Value", "")
+            self._tags[resource_arn][key] = value
+
+    def untag_resource(self, resource_arn: str, tag_keys: list[str]) -> None:
+        """Remove tags from a resource ARN by key."""
+        if resource_arn in self._tags:
+            for key in tag_keys:
+                self._tags[resource_arn].pop(key, None)
+
+    def list_tags_for_resource(self, resource_arn: str) -> list[dict]:
+        """Return the tags for a resource ARN."""
+        tag_map = self._tags.get(resource_arn, {})
+        return [{"Key": k, "Value": v} for k, v in tag_map.items()]
+
+    # -- Internal event publishing for cross-service routing ------------------
+
+    async def publish_internal(
+        self,
+        source: str,
+        detail_type: str,
+        detail: dict,
+        event_bus_name: str = "default",
+    ) -> str:
+        """Publish an event from another provider (e.g. aws.s3, aws.dynamodb).
+
+        Returns the event ID.
+        """
+        entry = {
+            "Source": source,
+            "DetailType": detail_type,
+            "Detail": json.dumps(detail),
+            "EventBusName": event_bus_name,
+        }
+        results = await self.put_events([entry])
+        return results[0]["EventId"]
+
+    # -- Routing --------------------------------------------------------------
+
+    async def _route_event(self, event: dict, bus_name: str) -> int:
+        """Route an event to all matching rules on the given bus.
+
+        Returns the number of rules that matched.
+        """
+        matched = 0
+        rules = self.list_rules(bus_name)
+        for rule in rules:
+            if not rule.enabled or not rule.event_pattern:
+                continue
+            if match_event(rule.event_pattern, event):
+                matched += 1
+                for target in rule.targets:
+                    asyncio.create_task(self._dispatch_target(target, event))
+        return matched
+
+    async def _dispatch_target(self, target: RuleTarget, event: dict) -> None:
+        """Dispatch an event to a single rule target."""
+        try:
+            function_name = _extract_function_name(target.arn)
+            compute = self._compute_providers.get(function_name)
+            if compute is None:
+                logger.error(
+                    "No compute provider for target: %s",
+                    target.arn,
+                )
+                return
+            context = LambdaContext(
+                function_name=function_name,
+                memory_limit_in_mb=128,
+                timeout_seconds=30,
+                aws_request_id=str(uuid.uuid4()),
+                invoked_function_arn=target.arn,
+            )
+            await compute.invoke(event, context)
+        except Exception:
+            logger.exception(
+                "Failed to dispatch event to target %s",
+                target.arn,
+            )
+
+    # -- Scheduling -----------------------------------------------------------
+
+    def _build_scheduled_rules(self) -> list[ScheduledRule]:
+        """Build ScheduledRule objects for all rules with schedule expressions."""
+        scheduled: list[ScheduledRule] = []
+        for rule in self._rules.values():
+            if not rule.schedule_expression or not rule.enabled:
+                continue
+            scheduled.append(
+                ScheduledRule(
+                    rule_name=rule.rule_name,
+                    schedule_expression=rule.schedule_expression,
+                    callback=self._make_schedule_callback(rule),
+                )
+            )
+        return scheduled
+
+    def _make_schedule_callback(self, rule: RuleConfig):  # noqa: ANN202
+        """Create a callback coroutine for a scheduled rule."""
+
+        async def _callback() -> None:
+            event = _build_scheduled_event(rule)
+            for target in rule.targets:
+                await self._dispatch_target(target, event)
+
+        return _callback
+
+    # -- Helpers --------------------------------------------------------------
+
+    def _ensure_default_bus(self) -> None:
+        """Ensure a default event bus exists."""
+        if "default" not in self._buses:
+            self._buses["default"] = EventBusConfig(
+                bus_name="default",
+                bus_arn="arn:aws:events:us-east-1:000000000000:event-bus/default",
+            )

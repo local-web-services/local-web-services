@@ -166,7 +166,7 @@ describe("S3Helper", () => {
 
       // Act & Assert
       await expect(helper.assertObjectExists("missing.txt")).rejects.toThrow(
-        'Expected object "missing.txt" to exist in bucket'
+        'Expected object "missing.txt" to exist in bucket',
       );
     });
   });
@@ -197,9 +197,7 @@ describe("S3Helper", () => {
       const expectedCount = 3;
 
       // Act & Assert
-      await expect(helper.assertObjectCount(expectedCount)).rejects.toThrow(
-        "Expected 3 object(s)"
-      );
+      await expect(helper.assertObjectCount(expectedCount)).rejects.toThrow("Expected 3 object(s)");
     });
   });
 });

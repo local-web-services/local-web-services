@@ -1,16 +1,12 @@
 package lws
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
-	"net"
 	"net/http"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -25,6 +21,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	ssmtypes "github.com/aws/aws-sdk-go-v2/service/ssm/types"
+
+	core "github.com/local-web-services/local-web-services-go-core/lws"
 )
 
 // serviceOffsets maps service names to their port offset from the base port.
@@ -34,38 +32,191 @@ var serviceOffsets = map[string]int{
 	"s3":             3,
 	"sns":            4,
 	"stepfunctions":  6,
+	"cognitoidp":     7,
+	"lambda":         8,
+	"apigateway":     9,
+	"rds":            10,
+	"docdb":          11,
 	"ssm":            12,
 	"secretsmanager": 13,
+	"elasticache":    14,
+	"neptune":        15,
+	"memorydb":       16,
+	"glacier":        17,
+	"elasticsearch":  18,
+	"opensearch":     19,
+	"s3tables":       20,
 }
 
-// Session is a local AWS session that wraps an ldk dev subprocess.
-// Call Close or defer session.Close() to stop the process after the test.
+// serviceEnvVars maps service names to AWS SDK endpoint URL environment variables.
+// Setting these redirects any SDK client created in the process to the local LWS
+// service — no production-code changes required (drop-in mode).
+var serviceEnvVars = map[string]string{
+	"dynamodb":       "AWS_ENDPOINT_URL_DYNAMODB",
+	"sqs":            "AWS_ENDPOINT_URL_SQS",
+	"s3":             "AWS_ENDPOINT_URL_S3",
+	"sns":            "AWS_ENDPOINT_URL_SNS",
+	"stepfunctions":  "AWS_ENDPOINT_URL_STEPFUNCTIONS",
+	"cognitoidp":     "AWS_ENDPOINT_URL_COGNITO_IDP",
+	"lambda":         "AWS_ENDPOINT_URL_LAMBDA",
+	"apigateway":     "AWS_ENDPOINT_URL_API_GATEWAY",
+	"rds":            "AWS_ENDPOINT_URL_RDS",
+	"docdb":          "AWS_ENDPOINT_URL_RDS",
+	"ssm":            "AWS_ENDPOINT_URL_SSM",
+	"secretsmanager": "AWS_ENDPOINT_URL_SECRETSMANAGER",
+	"elasticache":    "AWS_ENDPOINT_URL_ELASTICACHE",
+	"neptune":        "AWS_ENDPOINT_URL_NEPTUNE",
+	"memorydb":       "AWS_ENDPOINT_URL_MEMORY_DB",
+	"glacier":        "AWS_ENDPOINT_URL_GLACIER",
+	"elasticsearch":  "AWS_ENDPOINT_URL_ELASTICSEARCH",
+	"opensearch":     "AWS_ENDPOINT_URL_OPENSEARCH",
+	"s3tables":       "AWS_ENDPOINT_URL_S3_TABLES",
+}
+
+// Session is a local AWS session backed by an in-process LWS server.
+// Call Close or defer session.Close() after the test to stop the server.
 type Session struct {
 	basePort int
-	cmd      *exec.Cmd
+	srv      *core.Server // nil when created via NewInProcessSession
 	awsCfg   aws.Config
 	bgLogs   *LogCapture
+	savedEnv map[string]string
 }
 
-// New creates a session with explicitly declared resources.
-// It creates a temporary directory with a minimal Terraform stub so ldk
-// can start without requiring a real project directory.
-func New(spec SessionSpec) (*Session, error) {
-	tmpDir, err := os.MkdirTemp("", "lws-testing-")
+// ── Functional options ────────────────────────────────────────────────────────
+
+// Option configures the resources pre-created in a Session.
+type Option func(*SessionSpec)
+
+// DynamoTable adds a DynamoDB table with the given name and hash key to the session.
+func DynamoTable(name, hashKey string) Option {
+	return func(s *SessionSpec) {
+		s.Tables = append(s.Tables, TableSpec{Name: name, PartitionKey: hashKey})
+	}
+}
+
+// SQSQueue adds an SQS queue to the session.
+func SQSQueue(name string) Option {
+	return func(s *SessionSpec) {
+		s.Queues = append(s.Queues, name)
+	}
+}
+
+// S3Bucket adds an S3 bucket to the session.
+func S3Bucket(name string) Option {
+	return func(s *SessionSpec) {
+		s.Buckets = append(s.Buckets, name)
+	}
+}
+
+// SNSTopic adds an SNS topic to the session.
+func SNSTopic(name string) Option {
+	return func(s *SessionSpec) {
+		s.Topics = append(s.Topics, name)
+	}
+}
+
+// StepFunction adds a Step Functions state machine to the session.
+func StepFunction(name, definition string) Option {
+	return func(s *SessionSpec) {
+		s.StateMachines = append(s.StateMachines, StateMachineSpec{
+			Name:       name,
+			Definition: definition,
+		})
+	}
+}
+
+// SSMParameter adds an SSM Parameter Store parameter to the session.
+func SSMParameter(name string) Option {
+	return func(s *SessionSpec) {
+		s.Parameters = append(s.Parameters, name)
+	}
+}
+
+// SecretValue adds a Secrets Manager secret to the session.
+func SecretValue(name string) Option {
+	return func(s *SessionSpec) {
+		s.Secrets = append(s.Secrets, name)
+	}
+}
+
+func buildSpec(opts ...Option) SessionSpec {
+	var spec SessionSpec
+	for _, opt := range opts {
+		opt(&spec)
+	}
+	return spec
+}
+
+// ── Entry points ──────────────────────────────────────────────────────────────
+
+// Start creates an in-process session, pre-creates resources, and registers
+// t.Cleanup to reset and close. Each test calling Start gets its own isolated
+// server — no shared state between tests.
+func Start(t *testing.T, opts ...Option) *Session {
+	t.Helper()
+	spec := buildSpec(opts...)
+	s, err := New(spec)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temp dir: %w", err)
+		t.Fatalf("lws.Start: %v", err)
 	}
-	// ldk.yaml: empty services block
-	if err := os.WriteFile(filepath.Join(tmpDir, "ldk.yaml"), []byte("services:\n"), 0600); err != nil {
-		os.RemoveAll(tmpDir) //nolint:errcheck
-		return nil, fmt.Errorf("failed to write ldk.yaml: %w", err)
+	t.Cleanup(func() {
+		if err := s.Reset(); err != nil {
+			t.Logf("lws.Reset: %v", err)
+		}
+	})
+	t.Cleanup(s.Close)
+	return s
+}
+
+// NewShared creates an in-process session without binding to a *testing.T.
+// Use this in TestMain or BDD suites that start once and reset per scenario.
+func NewShared(opts ...Option) (*Session, error) {
+	return New(buildSpec(opts...))
+}
+
+// New creates an in-process session with explicitly declared resources.
+func New(spec SessionSpec) (*Session, error) {
+	basePort, err := core.FindFreePort()
+	if err != nil {
+		return nil, fmt.Errorf("failed to find free port: %w", err)
 	}
-	// ldk requires at least one .tf file to detect the project as Terraform mode
-	if err := os.WriteFile(filepath.Join(tmpDir, "main.tf"), []byte("# local-web-services testing session\n"), 0600); err != nil {
-		os.RemoveAll(tmpDir) //nolint:errcheck
-		return nil, fmt.Errorf("failed to write main.tf: %w", err)
+
+	srv, err := core.StartServer(basePort)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start server: %w", err)
 	}
-	return newSession(tmpDir, spec)
+
+	awsCfg, err := config.LoadDefaultConfig(context.Background(),
+		config.WithRegion("us-east-1"),
+		config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider("test", "test", ""),
+		),
+	)
+	if err != nil {
+		srv.Close()
+		return nil, fmt.Errorf("failed to load AWS config: %w", err)
+	}
+
+	session := &Session{
+		basePort: basePort,
+		srv:      srv,
+		awsCfg:   awsCfg,
+		savedEnv: make(map[string]string),
+	}
+
+	if err := session.preCreateResources(spec); err != nil {
+		srv.Close()
+		return nil, err
+	}
+
+	session.patchEnv()
+
+	if bgLogs, err := newLogCapture(session); err == nil {
+		session.bgLogs = bgLogs
+	}
+
+	return session, nil
 }
 
 // FromHcl creates a session by discovering resources from Terraform HCL files
@@ -78,51 +229,59 @@ func FromHcl(projectDir string) (*Session, error) {
 	return New(spec)
 }
 
-func newSession(projectDir string, spec SessionSpec) (*Session, error) {
-	basePort, err := findFreePort()
-	if err != nil {
-		return nil, fmt.Errorf("failed to find free port: %w", err)
-	}
-
-	cmd := exec.Command("ldk", "dev",
-		"--project-dir", projectDir,
-		"--port", fmt.Sprintf("%d", basePort),
-	)
-	cmd.Stdout = io.Discard
-	cmd.Stderr = io.Discard
-	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf("failed to start ldk: %w", err)
-	}
-
-	awsCfg, err := config.LoadDefaultConfig(context.Background(),
+// NewInProcessSession creates a Session that points at an already-running
+// in-process server at the given base port. No new server is started.
+//
+// Deprecated: use Start or NewShared instead, which start their own in-process
+// server and manage its lifecycle automatically.
+func NewInProcessSession(basePort int) *Session {
+	awsCfg, _ := config.LoadDefaultConfig(context.Background(),
 		config.WithRegion("us-east-1"),
 		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider("test", "test", ""),
 		),
 	)
-	if err != nil {
-		cmd.Process.Kill() //nolint:errcheck
-		return nil, fmt.Errorf("failed to load AWS config: %w", err)
+	s := &Session{basePort: basePort, awsCfg: awsCfg, savedEnv: make(map[string]string)}
+	if bgLogs, err := newLogCapture(s); err == nil {
+		s.bgLogs = bgLogs
 	}
-
-	session := &Session{basePort: basePort, cmd: cmd, awsCfg: awsCfg}
-
-	if err := session.awaitReady(); err != nil {
-		cmd.Process.Kill() //nolint:errcheck
-		return nil, err
-	}
-
-	if err := session.preCreateResources(spec); err != nil {
-		cmd.Process.Kill() //nolint:errcheck
-		return nil, err
-	}
-
-	if bgLogs, err := newLogCapture(session); err == nil {
-		session.bgLogs = bgLogs
-	}
-
-	return session, nil
+	return s
 }
+
+// ── Environment patching ──────────────────────────────────────────────────────
+
+// patchEnv sets AWS SDK endpoint env vars so any SDK client created in this
+// process automatically hits the local LWS service (drop-in mode).
+func (s *Session) patchEnv() {
+	for service, envVar := range serviceEnvVars {
+		port := s.basePort + serviceOffsets[service]
+		s.savedEnv[envVar] = os.Getenv(envVar)
+		os.Setenv(envVar, fmt.Sprintf("http://127.0.0.1:%d", port)) //nolint:errcheck
+	}
+	testCreds := map[string]string{
+		"AWS_ACCESS_KEY_ID":     "test",
+		"AWS_SECRET_ACCESS_KEY": "test",
+		"AWS_DEFAULT_REGION":    "us-east-1",
+	}
+	for k, v := range testCreds {
+		s.savedEnv[k] = os.Getenv(k)
+		os.Setenv(k, v) //nolint:errcheck
+	}
+}
+
+// restoreEnv undoes all env var changes made by patchEnv.
+func (s *Session) restoreEnv() {
+	for k, saved := range s.savedEnv {
+		if saved == "" {
+			os.Unsetenv(k) //nolint:errcheck
+		} else {
+			os.Setenv(k, saved) //nolint:errcheck
+		}
+	}
+	s.savedEnv = make(map[string]string)
+}
+
+// ── Port / URL helpers ────────────────────────────────────────────────────────
 
 // PortFor returns the port number for the named service.
 func (s *Session) PortFor(service string) (int, error) {
@@ -138,6 +297,8 @@ func (s *Session) QueueURL(queueName string) string {
 	port, _ := s.PortFor("sqs")
 	return fmt.Sprintf("http://127.0.0.1:%d/000000000000/%s", port, queueName)
 }
+
+// ── AWS client factory ────────────────────────────────────────────────────────
 
 // DynamoDBClient returns a pre-configured DynamoDB client.
 func (s *Session) DynamoDBClient() *dynamodb.Client {
@@ -196,6 +357,8 @@ func (s *Session) SecretsManagerClient() *secretsmanager.Client {
 	})
 }
 
+// ── Lifecycle ─────────────────────────────────────────────────────────────────
+
 // Reset resets all provider state via the management API.
 func (s *Session) Reset() error {
 	url := fmt.Sprintf("http://127.0.0.1:%d/_ldk/reset", s.basePort)
@@ -207,6 +370,21 @@ func (s *Session) Reset() error {
 	return nil
 }
 
+// Close stops the background log capture, restores env vars, and shuts down
+// the in-process server.
+func (s *Session) Close() {
+	if s.bgLogs != nil {
+		s.bgLogs.Stop()
+		s.bgLogs = nil
+	}
+	s.restoreEnv()
+	if s.srv != nil {
+		s.srv.Close()
+	}
+}
+
+// ── Builders ──────────────────────────────────────────────────────────────────
+
 // Chaos returns a ChaosBuilder for the given service (e.g. "stepfunctions").
 func (s *Session) Chaos(service string) *ChaosBuilder {
 	return &ChaosBuilder{session: s, service: service}
@@ -217,18 +395,6 @@ func (s *Session) StartLogCapture() (*LogCapture, error) {
 	return newLogCapture(s)
 }
 
-// Close stops the background log capture and the ldk dev process.
-func (s *Session) Close() {
-	if s.bgLogs != nil {
-		s.bgLogs.Stop()
-		s.bgLogs = nil
-	}
-	if s.cmd != nil && s.cmd.Process != nil {
-		s.cmd.Process.Kill() //nolint:errcheck
-		s.cmd.Wait()         //nolint:errcheck
-	}
-}
-
 // Iam returns an IamBuilder for configuring IAM authentication mode.
 func (s *Session) Iam() *IamBuilder {
 	return &IamBuilder{
@@ -237,6 +403,8 @@ func (s *Session) Iam() *IamBuilder {
 		identities: make(map[string]*IdentityBuilder),
 	}
 }
+
+// ── Resource helpers ──────────────────────────────────────────────────────────
 
 // DynamoDB returns a DynamoDBHelper bound to the given table name.
 func (s *Session) DynamoDB(tableName string) *DynamoDBHelper {
@@ -266,39 +434,7 @@ func (s *Session) RecentLogs() []LogEntry {
 	return s.bgLogs.Entries()
 }
 
-func (s *Session) awaitReady() error {
-	const maxRetries = 3
-	statusURL := fmt.Sprintf("http://127.0.0.1:%d/_ldk/status", s.basePort)
-	var lastErr error
-	for attempt := 0; attempt <= maxRetries; attempt++ {
-		deadline := time.Now().Add(30 * time.Second)
-		for time.Now().Before(deadline) {
-			if s.cmd.ProcessState != nil {
-				return fmt.Errorf("ldk dev process exited unexpectedly")
-			}
-			resp, err := http.Get(statusURL) //nolint:noctx
-			if err != nil {
-				lastErr = err
-			} else if resp.StatusCode < 400 {
-				body, readErr := io.ReadAll(resp.Body)
-				resp.Body.Close()
-				if readErr == nil && bytes.Contains(body, []byte(`"running":true`)) {
-					return nil
-				}
-				lastErr = fmt.Errorf("status endpoint returned HTTP %d", resp.StatusCode)
-			} else {
-				lastErr = fmt.Errorf("status endpoint returned HTTP %d", resp.StatusCode)
-				resp.Body.Close()
-			}
-			time.Sleep(500 * time.Millisecond)
-		}
-		if attempt < maxRetries {
-			fmt.Printf("[lws] ldk dev not ready after 30 s, retrying in 15 s... (%d/%d)\n", attempt+1, maxRetries)
-			time.Sleep(15 * time.Second)
-		}
-	}
-	return fmt.Errorf("ldk dev did not become ready after %d retries: %w", maxRetries, lastErr)
-}
+// ── Resource pre-creation ─────────────────────────────────────────────────────
 
 func (s *Session) preCreateResources(spec SessionSpec) error {
 	ctx := context.Background()
@@ -418,13 +554,4 @@ func (s *Session) preCreateResources(spec SessionSpec) error {
 	}
 
 	return nil
-}
-
-func findFreePort() (int, error) {
-	l, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		return 0, err
-	}
-	defer l.Close()
-	return l.Addr().(*net.TCPAddr).Port, nil
 }

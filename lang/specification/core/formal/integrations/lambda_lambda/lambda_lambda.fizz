@@ -1,0 +1,130 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Lambda -> Lambda Integration Formal Specification
+# Models a Lambda function (caller) invoking another Lambda function (callee)
+# synchronously or asynchronously as part of its execution.
+# If the callee function has been deleted, the invoke call fails with a ResourceNotFoundException.
+
+CALLER_IDS = ["caller-1"]
+CALLEE_IDS = ["callee-1"]
+INV_IDS = ["inv-1"]
+
+
+action Init:
+    caller_status = {}          # caller_status[fid] = "ACTIVE"
+    callee_status = {}          # callee_status[fid] = "ACTIVE" | "DELETED"
+    inv_status = {}             # inv_status[iid] = "IN_PROGRESS" | "SUCCESS" | "FAILED"
+    inv_caller = {}             # inv_caller[iid] = caller func_id
+    inv_callee = {}             # inv_callee[iid] = callee func_id (callee invoked)
+
+
+# step: a caller Lambda function is deployed
+# result: the caller function is ACTIVE
+# guard: the caller function does not already exist
+# guard_violation: the caller function already exists
+atomic action DeployCaller:
+    oneof fid in CALLER_IDS:
+        if fid not in caller_status:
+            caller_status[fid] = "ACTIVE"
+
+
+# step: a callee Lambda function is deployed
+# result: the callee function is ACTIVE
+# guard: the callee function does not already exist
+# guard_violation: the callee function already exists
+atomic action DeployCallee:
+    oneof fid in CALLEE_IDS:
+        if fid not in callee_status:
+            callee_status[fid] = "ACTIVE"
+
+
+# step: the callee Lambda function is deleted
+# result: the callee is DELETED and invocations targeting it will fail
+# guard: the callee exists
+# guard_violation: the callee does not exist
+# guard: the callee is ACTIVE
+# guard_violation_lifecycle: the callee is already DELETED
+atomic action DeleteCallee:
+    oneof fid in CALLEE_IDS:
+        if fid in callee_status:
+            if callee_status[fid] == "ACTIVE":
+                callee_status[fid] = "DELETED"
+
+
+# step: the caller Lambda function is invoked
+# result: the invocation is IN_PROGRESS
+# guard: the caller exists
+# guard_violation: the caller does not exist
+# guard: the caller is ACTIVE
+# guard_violation_lifecycle: the caller is not ACTIVE
+# guard: an invocation slot is available
+# guard_violation_capacity: no invocation slot is available
+atomic action InvokeCaller:
+    oneof cfid in CALLER_IDS:
+        if cfid in caller_status:
+            if caller_status[cfid] == "ACTIVE":
+                oneof iid in INV_IDS:
+                    if iid not in inv_status or inv_status[iid] == "SUCCESS" or inv_status[iid] == "FAILED":
+                        inv_status[iid] = "IN_PROGRESS"
+                        inv_caller[iid] = cfid
+
+
+# fake_skip: internal
+# step: the caller Lambda function invokes the ACTIVE callee and the call succeeds
+# result: the invocation is SUCCESS
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the callee is ACTIVE
+# guard_violation_lifecycle: the callee does not exist or is DELETED
+atomic action CalleeInvocationSucceeds:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof fid in CALLEE_IDS:
+                    if fid in callee_status:
+                        if callee_status[fid] == "ACTIVE":
+                            inv_status[iid] = "SUCCESS"
+                            inv_callee[iid] = fid
+
+
+# fake_skip: internal
+# step: the caller fails to invoke the callee because the callee has been deleted
+# result: the invocation is FAILED with a ResourceNotFoundException
+# guard: an invocation is IN_PROGRESS
+# guard_violation_lifecycle: no invocation is IN_PROGRESS
+# guard: the callee is DELETED
+# guard_violation_lifecycle: the callee is not DELETED
+atomic action CalleeInvocationFails:
+    oneof iid in INV_IDS:
+        if iid in inv_status:
+            if inv_status[iid] == "IN_PROGRESS":
+                oneof fid in CALLEE_IDS:
+                    if fid in callee_status:
+                        if callee_status[fid] == "DELETED":
+                            inv_status[iid] = "FAILED"
+                            inv_callee[iid] = fid
+
+
+# check: every IN_PROGRESS invocation references an ACTIVE caller function
+always assertion InvocationRequiresActiveCaller:
+    for iid in inv_status:
+        if inv_status[iid] == "IN_PROGRESS":
+            fid = inv_caller[iid]
+            if fid in caller_status:
+                if caller_status[fid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every successful invocation recorded which callee was invoked
+# (verifies a caller cannot succeed without invoking a callee; callee may be deleted afterwards)
+always assertion SuccessfulInvocationInvokedACallee:
+    for iid in inv_status:
+        if inv_status[iid] == "SUCCESS":
+            if iid not in inv_callee:
+                return False
+    return True

@@ -1,0 +1,140 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 35
+---
+# Step Functions -> SQS Integration Formal Specification
+# Models a Step Functions state machine that sends a message to SQS as a task step.
+# The task succeeds when the message is enqueued; the execution then completes.
+
+SM_IDS = ["sm-1"]
+QUEUE_IDS = ["queue-1"]
+EXEC_IDS = ["exec-1"]
+MSG_IDS = ["msg-1"]
+
+
+action Init:
+    sm_status = {}              # sm_status[smid] = "ACTIVE"
+    sm_queue = {}               # sm_queue[smid] = queue_id or "" (SQS task target)
+    queue_status = {}           # queue_status[qid] = "ACTIVE"
+    exec_status = {}            # exec_status[eid] = "RUNNING" | "SUCCEEDED" | "FAILED"
+    exec_sm = {}                # exec_sm[eid] = sm_id
+    msg_status = {}             # msg_status[mid] = "AVAILABLE" | "DELETED"
+    msg_queue = {}              # msg_queue[mid] = queue_id
+    msg_exec = {}               # msg_exec[mid] = exec_id
+
+
+# step: a Step Functions state machine is created
+# result: the state machine is ACTIVE with no SQS task configured
+# guard: the state machine does not already exist
+# guard_violation: the state machine already exists
+atomic action CreateStateMachine:
+    oneof smid in SM_IDS:
+        if smid not in sm_status:
+            sm_status[smid] = "ACTIVE"
+            sm_queue[smid] = ""
+
+
+# step: an SQS queue is created
+# result: the queue is ACTIVE
+# guard: the queue does not already exist
+# guard_violation: the queue already exists
+atomic action CreateQueue:
+    oneof qid in QUEUE_IDS:
+        if qid not in queue_status:
+            queue_status[qid] = "ACTIVE"
+
+
+# step: an SQS send-message task is configured on the state machine
+# result: the state machine will enqueue a message when it reaches the task state
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine has no SQS task configured
+# guard_violation: the state machine already has an SQS task configured
+# guard: the queue exists
+# guard_violation: the queue does not exist
+# guard: the queue is ACTIVE
+# guard_violation_lifecycle: the queue is not ACTIVE
+atomic action ConfigureSQSTask:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_queue[smid] == "":
+                    oneof qid in QUEUE_IDS:
+                        if qid in queue_status:
+                            if queue_status[qid] == "ACTIVE":
+                                sm_queue[smid] = qid
+
+
+# step: an execution of the state machine is started
+# result: the execution is RUNNING
+# guard: the state machine exists
+# guard_violation: the state machine does not exist
+# guard: the state machine is ACTIVE
+# guard_violation_lifecycle: the state machine is not ACTIVE
+# guard: the state machine has an SQS task configured
+# guard_violation: the state machine has no SQS task configured
+# guard: an execution slot is available
+# guard_violation_capacity: no execution slot is available
+atomic action StartExecution:
+    oneof smid in SM_IDS:
+        if smid in sm_status:
+            if sm_status[smid] == "ACTIVE":
+                if sm_queue[smid] != "":
+                    oneof eid in EXEC_IDS:
+                        if eid not in exec_status or exec_status[eid] == "SUCCEEDED" or exec_status[eid] == "FAILED":
+                            exec_status[eid] = "RUNNING"
+                            exec_sm[eid] = smid
+
+
+# step: a running execution reaches the SQS task state and sends a message to the queue
+# result: the message is AVAILABLE in the queue and the execution is SUCCEEDED
+# guard: an execution is RUNNING
+# guard_violation: no execution is RUNNING
+# guard: the execution's state machine has a configured SQS task
+# guard_violation: the execution's state machine has no SQS task configured
+# guard: the target queue is ACTIVE
+# guard_violation_lifecycle: the target queue is not ACTIVE
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action SendMessageTask:
+    oneof eid in EXEC_IDS:
+        if eid in exec_status:
+            if exec_status[eid] == "RUNNING":
+                smid = exec_sm[eid]
+                if smid in sm_queue:
+                    qid = sm_queue[smid]
+                    if qid != "":
+                        if qid in queue_status:
+                            if queue_status[qid] == "ACTIVE":
+                                oneof mid in MSG_IDS:
+                                    if mid not in msg_status or msg_status[mid] == "DELETED":
+                                        msg_status[mid] = "AVAILABLE"
+                                        msg_queue[mid] = qid
+                                        msg_exec[mid] = eid
+                                        exec_status[eid] = "SUCCEEDED"
+
+
+# check: every RUNNING execution references an ACTIVE state machine
+always assertion ExecutionRequiresActiveStateMachine:
+    for eid in exec_status:
+        if exec_status[eid] == "RUNNING":
+            smid = exec_sm[eid]
+            if smid in sm_status:
+                if sm_status[smid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every AVAILABLE message belongs to an ACTIVE queue
+always assertion MessageRequiresActiveQueue:
+    for mid in msg_status:
+        if msg_status[mid] == "AVAILABLE":
+            qid = msg_queue[mid]
+            if qid in queue_status:
+                if queue_status[qid] != "ACTIVE":
+                    return False
+    return True

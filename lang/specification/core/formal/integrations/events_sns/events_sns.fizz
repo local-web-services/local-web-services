@@ -1,0 +1,133 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 30
+---
+# EventBridge -> SNS Integration Formal Specification
+# Models an EventBridge rule routing events from a bus directly to an SNS topic.
+# Completes the EventBridge fan-out picture alongside events_sqs, events_lambda,
+# and events_stepfunctions.
+
+BUS_IDS = ["bus-1"]
+RULE_IDS = ["rule-1"]
+TOPIC_IDS = ["topic-1"]
+MSG_IDS = ["msg-1", "msg-2"]
+
+
+action Init:
+    bus_status = {}             # bus_status[bid] = "ACTIVE"
+    rule_status = {}            # rule_status[rid] = "ENABLED" | "DISABLED"
+    rule_bus = {}               # rule_bus[rid] = bus_id
+    rule_topic = {}             # rule_topic[rid] = topic_id
+    topic_status = {}           # topic_status[tid] = "ACTIVE"
+    msg_status = {}             # msg_status[mid] = "AVAILABLE" | "DELETED"
+    msg_topic = {}              # msg_topic[mid] = topic_id
+
+
+# step: an EventBridge event bus is created
+# result: the event bus is ACTIVE
+# guard: the event bus does not already exist
+# guard_violation: the event bus already exists
+atomic action CreateEventBus:
+    oneof bid in BUS_IDS:
+        if bid not in bus_status:
+            bus_status[bid] = "ACTIVE"
+
+
+# step: an SNS topic is created
+# result: the topic is ACTIVE
+# guard: the topic does not already exist
+# guard_violation: the topic already exists
+atomic action CreateTopic:
+    oneof tid in TOPIC_IDS:
+        if tid not in topic_status:
+            topic_status[tid] = "ACTIVE"
+
+
+# step: an EventBridge rule is created to route matching events to an SNS topic
+# result: the rule is ENABLED and will publish to the topic when matching events are received
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation_lifecycle: the event bus is not ACTIVE
+# guard: the topic exists
+# guard_violation: the topic does not exist
+# guard: the topic is ACTIVE
+# guard_violation_lifecycle: the topic is not ACTIVE
+# guard: the rule does not already exist
+# guard_violation: the rule already exists
+atomic action PutRule:
+    oneof rid in RULE_IDS:
+        if rid not in rule_status:
+            oneof bid in BUS_IDS:
+                if bid in bus_status:
+                    if bus_status[bid] == "ACTIVE":
+                        oneof tid in TOPIC_IDS:
+                            if tid in topic_status:
+                                if topic_status[tid] == "ACTIVE":
+                                    rule_status[rid] = "ENABLED"
+                                    rule_bus[rid] = bid
+                                    rule_topic[rid] = tid
+
+
+# step: an event is published to the bus and routed to the target SNS topic
+# result: the message is AVAILABLE on the topic
+# guard: the event bus exists
+# guard_violation: the event bus does not exist
+# guard: the event bus is ACTIVE
+# guard_violation_lifecycle: the event bus is not ACTIVE
+# guard: an ENABLED rule exists on the bus targeting a topic
+# guard_violation_lifecycle: no ENABLED rule exists on the bus targeting a topic
+# guard: the target topic is ACTIVE
+# guard_violation_lifecycle: the target topic is not ACTIVE
+# guard: a message slot is available
+# guard_violation_capacity: no message slot is available
+atomic action PutEvent:
+    oneof bid in BUS_IDS:
+        if bid in bus_status:
+            if bus_status[bid] == "ACTIVE":
+                oneof rid in RULE_IDS:
+                    if rid in rule_status:
+                        if rule_status[rid] == "ENABLED":
+                            if rule_bus[rid] == bid:
+                                tid = rule_topic[rid]
+                                if tid in topic_status:
+                                    if topic_status[tid] == "ACTIVE":
+                                        oneof mid in MSG_IDS:
+                                            if mid not in msg_status or msg_status[mid] == "DELETED":
+                                                msg_status[mid] = "AVAILABLE"
+                                                msg_topic[mid] = tid
+
+
+# step: a subscriber consumes a message from the SNS topic
+# result: the message is DELETED
+# guard: an AVAILABLE message exists on the topic
+# guard_violation_lifecycle: no AVAILABLE message exists on the topic
+atomic action ConsumeMessage:
+    oneof mid in MSG_IDS:
+        if mid in msg_status:
+            if msg_status[mid] == "AVAILABLE":
+                msg_status[mid] = "DELETED"
+
+
+# check: every ENABLED rule references an ACTIVE event bus
+always assertion RuleReferencesActiveBus:
+    for rid in rule_status:
+        if rule_status[rid] == "ENABLED":
+            bid = rule_bus[rid]
+            if bid in bus_status:
+                if bus_status[bid] != "ACTIVE":
+                    return False
+    return True
+
+
+# check: every AVAILABLE message belongs to an ACTIVE topic
+always assertion MessageRequiresActiveTopic:
+    for mid in msg_status:
+        if msg_status[mid] == "AVAILABLE":
+            tid = msg_topic[mid]
+            if tid in topic_status:
+                if topic_status[tid] != "ACTIVE":
+                    return False
+    return True

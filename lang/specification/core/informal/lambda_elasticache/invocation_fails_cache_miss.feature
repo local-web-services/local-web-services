@@ -1,0 +1,30 @@
+@lambdaelasticache @generated
+Feature: LambdaElasticache - The Lambda Invocation Fails Because All Cache Entries Have Been Evicted
+
+  # Generated from FizzBee spec: lambda_elasticache.fizz
+  # Safety invariants: InvocationRequiresActiveFunction, CachedEntryRequiresAvailableCluster
+
+  Background:
+    Given the system is initialized
+
+  @minimal @happy @invocation_fails_cache_miss @internal
+  Scenario: the Lambda invocation fails because all cache entries have been evicted
+    Given an invocation is "IN_PROGRESS"
+    And no "CACHED" entries exist in the cluster
+    When the Lambda invocation fails because all cache entries have been evicted
+    Then the invocation is "FAILED"
+    And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
+    And every "CACHED" entry belongs to an "AVAILABLE" cluster
+
+  @standard @negative @invocation_fails_cache_miss @internal
+  Scenario: the Lambda invocation fails because all cache entries have been evicted fails when no invocation is "IN_PROGRESS"
+    Given no invocation is "IN_PROGRESS"
+    When the Lambda invocation fails because all cache entries have been evicted
+    Then the operation is rejected
+
+  @standard @negative @invocation_fails_cache_miss @internal
+  Scenario: the Lambda invocation fails because all cache entries have been evicted fails when a "CACHED" entry exists in the cluster
+    Given an invocation is "IN_PROGRESS"
+    And a "CACHED" entry exists in the cluster
+    When the Lambda invocation fails because all cache entries have been evicted
+    Then the operation is rejected

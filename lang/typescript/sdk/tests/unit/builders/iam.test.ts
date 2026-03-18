@@ -55,7 +55,7 @@ describe("IamBuilder", () => {
         expect.objectContaining({
           method: "POST",
           headers: { "Content-Type": "application/json" },
-        })
+        }),
       );
     });
 
@@ -78,11 +78,7 @@ describe("IamBuilder", () => {
       const builder = new IamBuilder(EXPECTED_MGMT_PORT);
 
       // Act
-      await builder
-        .identity("read-only")
-        .allow(["dynamodb:GetItem"])
-        .apply()
-        .apply();
+      await builder.identity("read-only").allow(["dynamodb:GetItem"]).apply().apply();
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
@@ -121,11 +117,7 @@ describe("IdentityBuilder", () => {
       const expectedResource = "arn:aws:dynamodb:::table/Orders";
 
       // Act
-      await parent
-        .identity("dev-user")
-        .allow(expectedActions, expectedResource)
-        .apply()
-        .apply();
+      await parent.identity("dev-user").allow(expectedActions, expectedResource).apply().apply();
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
@@ -140,16 +132,11 @@ describe("IdentityBuilder", () => {
       const parent = new IamBuilder(EXPECTED_MGMT_PORT);
 
       // Act
-      await parent
-        .identity("dev-user")
-        .allow(["s3:GetObject"])
-        .apply()
-        .apply();
+      await parent.identity("dev-user").allow(["s3:GetObject"]).apply().apply();
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      const actualStatement =
-        actualBody.identities["dev-user"].inline_policies[0].Statement[0];
+      const actualStatement = actualBody.identities["dev-user"].inline_policies[0].Statement[0];
       expect(actualStatement.Resource).toBe("*");
     });
 
@@ -179,11 +166,7 @@ describe("IdentityBuilder", () => {
       const expectedActions = ["dynamodb:DeleteItem"];
 
       // Act
-      await parent
-        .identity("readonly-user")
-        .deny(expectedActions)
-        .apply()
-        .apply();
+      await parent.identity("readonly-user").deny(expectedActions).apply().apply();
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);

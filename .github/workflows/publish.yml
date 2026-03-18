@@ -14,11 +14,11 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
-        working-directory: core
+        working-directory: lang/python/core
       - run: make lint
-        working-directory: core
+        working-directory: lang/python/core
       - run: make format-check
-        working-directory: core
+        working-directory: lang/python/core
 
   analysis:
     runs-on: ubuntu-latest
@@ -29,13 +29,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
-        working-directory: core
+        working-directory: lang/python/core
       - run: make complexity
-        working-directory: core
+        working-directory: lang/python/core
       - run: make cpd
-        working-directory: core
+        working-directory: lang/python/core
       - run: make pylint
-        working-directory: core
+        working-directory: lang/python/core
 
   test:
     runs-on: ubuntu-latest
@@ -46,9 +46,9 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
-        working-directory: core
+        working-directory: lang/python/core
       - run: make test
-        working-directory: core
+        working-directory: lang/python/core
 
   test-e2e:
     runs-on: ubuntu-latest
@@ -66,9 +66,9 @@ jobs:
           docker pull public.ecr.aws/lambda/python:3.12
           docker pull public.ecr.aws/lambda/nodejs:20
       - run: make install
-        working-directory: core
+        working-directory: lang/python/core
       - run: make test-e2e
-        working-directory: core
+        working-directory: lang/python/core
 
   build:
     needs: [lint, analysis, test, test-e2e]
@@ -80,13 +80,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: make install
-        working-directory: core
+        working-directory: lang/python/core
       - run: uv build
-        working-directory: core
+        working-directory: lang/python/core
       - uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: core/dist/
+          path: lang/python/core/dist/
 
   publish:
     needs: build

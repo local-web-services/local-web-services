@@ -13,8 +13,8 @@ type cdkManifest struct {
 }
 
 type cdkArtifact struct {
-	Type       string             `json:"type"`
-	Properties cdkArtifactProps   `json:"properties"`
+	Type       string           `json:"type"`
+	Properties cdkArtifactProps `json:"properties"`
 }
 
 type cdkArtifactProps struct {

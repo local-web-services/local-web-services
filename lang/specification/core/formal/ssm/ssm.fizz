@@ -1,0 +1,189 @@
+---
+deadlock_detection: false
+options:
+  max_concurrent_actions: 1
+  max_actions: 8
+---
+# SSM Parameter Store Formal Specification
+# Models parameters with versioning, types, tags, and overwrite semantics.
+
+PARAM_NAMES = ["param1", "param2"]
+PARAM_TYPES = ["String", "SecureString"]
+TAG_KEYS = ["env", "team"]
+
+action Init:
+    param_exists = {}
+    param_value = {}
+    param_type = {}
+    param_version = {}
+    param_tag = {}
+    errors = []
+
+# step: a parameter is stored in SSM
+# result: the parameter exists with version 1
+# guard: the parameter does not already exist or has been deleted
+# guard_violation: the parameter already exists
+atomic action PutParameterCreate:
+    oneof pname in PARAM_NAMES:
+        if pname not in param_exists or param_exists[pname] == False:
+            oneof ptype in PARAM_TYPES:
+                param_exists[pname] = True
+                param_value[pname] = "value1"
+                param_type[pname] = ptype
+                param_version[pname] = 1
+
+# step: an existing parameter value is updated
+# result: the parameter has a new value and an incremented version
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter is active
+# guard_violation: the parameter is not active
+atomic action PutParameterOverwrite:
+    oneof pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] == True:
+                param_value[pname] = "value2"
+                param_version[pname] = param_version[pname] + 1
+
+# step: a parameter is written without overwrite when it already exists
+# result: a ParameterAlreadyExists error is recorded
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter is active
+# guard_violation: the parameter is not active
+atomic action PutParameterNoOverwriteConflict:
+    oneof pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] == True:
+                errors.append("ParameterAlreadyExists:" + pname)
+
+# step: a parameter is retrieved from SSM
+# result: the parameter value is returned
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter is active
+# guard_violation: the parameter is not active
+atomic action GetParameter:
+    oneof pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] == True:
+                pass
+
+# step: multiple parameters are retrieved from SSM
+# result: the parameter values are returned
+atomic action GetParameters:
+    pass
+
+# step: parameters under a path are retrieved from SSM
+# result: the parameters under the path are returned
+atomic action GetParametersByPath:
+    pass
+
+# step: parameters are described
+# result: the parameter metadata is returned
+atomic action DescribeParameters:
+    pass
+
+# step: a parameter is deleted from SSM
+# result: the parameter no longer exists
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter is active
+# guard_violation: the parameter is not active
+atomic action DeleteParameter:
+    oneof pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] == True:
+                param_exists[pname] = False
+
+# step: multiple parameters are deleted from SSM
+# result: the parameters no longer exist
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter is active
+# guard_violation: the parameter is not active
+atomic action DeleteParameters:
+    oneof pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] == True:
+                param_exists[pname] = False
+
+# step: tags are added to a parameter
+# result: the tags are associated with the parameter
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter is active
+# guard_violation: the parameter is not active
+atomic action AddTagsToResource:
+    oneof pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] == True:
+                oneof tkey in TAG_KEYS:
+                    param_tag[pname + "#" + tkey] = True
+
+# step: tags are removed from a parameter
+# result: the tags are disassociated from the parameter
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter is active
+# guard_violation: the parameter is not active
+# guard: the tag is associated with the parameter
+# guard_violation: the tag is not associated with the parameter
+# guard: the tag association is active
+# guard_violation: the tag association is not active
+atomic action RemoveTagsFromResource:
+    oneof pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] == True:
+                oneof tkey in TAG_KEYS:
+                    if (pname + "#" + tkey) in param_tag:
+                        if param_tag[pname + "#" + tkey] == True:
+                            param_tag[pname + "#" + tkey] = False
+
+# step: tags for a parameter are listed
+# result: the list of tags is returned
+# guard: the parameter exists
+# guard_violation: the parameter does not exist
+# guard: the parameter is active
+# guard_violation: the parameter is not active
+atomic action ListTagsForResource:
+    oneof pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] == True:
+                pass
+
+# check: every parameter version is a positive integer
+always assertion VersionIsPositive:
+    for pname in PARAM_NAMES:
+        if pname in param_version:
+            if param_version[pname] < 1:
+                return False
+    return True
+
+# check: every parameter has a valid type (String, SecureString, or StringList)
+always assertion TypeIsValid:
+    valid_types = ["String", "SecureString", "StringList"]
+    for pname in PARAM_NAMES:
+        if pname in param_type:
+            if param_type[pname] not in valid_types:
+                return False
+    return True
+
+# check: param_exists values are always valid booleans
+always assertion ParamExistsValuesValid:
+    for pname in PARAM_NAMES:
+        if pname in param_exists:
+            if param_exists[pname] != True and param_exists[pname] != False:
+                return False
+    return True
+
+# check: the error log only contains ParameterAlreadyExists entries
+always assertion ErrorLogEntriesAreValid:
+    for entry in errors:
+        valid = False
+        for pname in PARAM_NAMES:
+            if entry == "ParameterAlreadyExists:" + pname:
+                valid = True
+        if not valid:
+            return False
+    return True

@@ -16,9 +16,9 @@ type FakeBuilder struct {
 }
 
 type fakeRule struct {
-	Operation    string          `json:"operation"`
+	Operation    string            `json:"operation"`
 	MatchHeaders map[string]string `json:"match_headers,omitempty"`
-	Response     fakeResponse    `json:"response"`
+	Response     fakeResponse      `json:"response"`
 }
 
 type fakeResponse struct {
