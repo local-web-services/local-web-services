@@ -1,6 +1,6 @@
 module github.com/local-web-services/local-web-services-go-sdk
 
-go 1.21
+go 1.23
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.3
