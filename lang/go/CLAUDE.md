@@ -147,25 +147,28 @@ is not acceptable.
 
 ## CI Job Naming and Structure
 
-Job name format: `go-{project}-test`
+Job name format: `go-{project}-{lint|test}`
 
 ### Jobs
 
 | Job | Command | Needs Docker | Depends on |
 |---|---|---|---|
-| `go-core-test` | `go test ./...` in `lang/go/core` | No | — |
-| `go-sdk-test` | `go test ./...` in `lang/go/sdk` | No | `go-core-test` |
-| `go-example-test` | `go test ./...` in `lang/go/example` | No | `go-sdk-test` |
+| `go-core-lint` | `make format-check` in `lang/go/core` | No | — |
+| `go-core-test` | `make test` in `lang/go/core` | No | — |
+| `go-sdk-lint` | `make lint format-check` in `lang/go/sdk` | No | `go-core-lint`, `go-core-test` |
+| `go-sdk-test` | `make test` in `lang/go/sdk` | No | `go-core-lint`, `go-core-test` |
+| `go-example-lint` | `make format-check` in `lang/go/example` | No | `go-sdk-lint`, `go-sdk-test` |
+| `go-example-test` | `make test` in `lang/go/example` | No | `go-sdk-lint`, `go-sdk-test` |
 
 ### Change detection gating
 
-All three jobs are gated on the `go` filter:
+Each project has its own filter that cascades upstream paths:
 
-```
-lang/go/**
-```
-
-A change to any file under `lang/go/` triggers all three jobs.
+| Filter | Paths |
+|---|---|
+| `go-core` | `lang/go/core/**`, `lang/specification/**` |
+| `go-sdk` | `lang/go/sdk/**`, `lang/go/core/**`, `lang/specification/**` |
+| `go-example` | `lang/go/example/**`, `lang/go/sdk/**`, `lang/go/core/**`, `lang/specification/**` |
 
 ---
 
