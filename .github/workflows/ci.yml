@@ -49,30 +49,36 @@ jobs:
               - 'lang/python/arch_tests/**'
               - 'lang/python/sdk/**'
               - 'lang/python/example/**'
+              - 'lang/specification/**'
             python-sdk:
               - 'lang/python/sdk/**'
               - 'lang/python/core/**'
               - 'lang/python/arch_tests/**'
               - 'lang/python/example/**'
+              - 'lang/specification/**'
             python-example:
               - 'lang/python/example/**'
               - 'lang/python/sdk/**'
               - 'lang/python/core/**'
               - 'lang/python/arch_tests/**'
+              - 'lang/specification/**'
             core:
               - 'lang/python/core/**'
             typescript-core:
               - 'lang/typescript/core/**'
               - 'lang/typescript/arch_tests/**'
+              - 'lang/specification/**'
             typescript-sdk:
               - 'lang/typescript/sdk/**'
               - 'lang/typescript/core/**'
               - 'lang/typescript/arch_tests/**'
+              - 'lang/specification/**'
             typescript-example:
               - 'lang/typescript/example/**'
               - 'lang/typescript/sdk/**'
               - 'lang/typescript/core/**'
               - 'lang/typescript/arch_tests/**'
+              - 'lang/specification/**'
             java-core:
               - 'lang/java/core/**'
               - 'lang/java/arch_tests/**'
