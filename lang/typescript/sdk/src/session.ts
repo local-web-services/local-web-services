@@ -18,7 +18,8 @@ import { S3Helper } from "./resources/s3";
 import { FakeBuilder } from "./builders/fake";
 import { ChaosBuilder } from "./builders/chaos";
 import { IamBuilder } from "./builders/iam";
-import { LogCapture } from "./logs";
+import { LifecycleBuilder } from "./builders/lifecycle";
+import { LogCapture, LogEntry } from "./logs";
 
 // Port offsets relative to the base port (matches ldk.py _create_providers)
 const SERVICE_OFFSETS: Record<string, number> = {
@@ -141,6 +142,16 @@ export function stateMachine(
   roleArn?: string,
 ): Resource {
   return { _spec: { stateMachines: [{ name, definition, roleArn }] } };
+}
+
+/** Declare an SSM Parameter Store parameter resource. */
+export function parameter(name: string): Resource {
+  return { _spec: { parameters: [{ name }] } };
+}
+
+/** Declare a Secrets Manager secret resource. */
+export function secret(name: string): Resource {
+  return { _spec: { secrets: [{ name }] } };
 }
 
 export class LwsSession {
@@ -448,6 +459,18 @@ export class LwsSession {
 
   get iam(): IamBuilder {
     return new IamBuilder(this._basePort);
+  }
+
+  lifecycle(service: string): LifecycleBuilder {
+    return new LifecycleBuilder(service, this._basePort);
+  }
+
+  async recentLogs(): Promise<LogEntry[]> {
+    const response = await fetch(`http://127.0.0.1:${this._basePort}/_ldk/logs/recent`);
+    if (!response.ok) {
+      return [];
+    }
+    return response.json() as Promise<LogEntry[]>;
   }
 
   // ── Resource pre-creation ───────────────────────────────────────────────────

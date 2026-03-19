@@ -853,6 +853,25 @@ public class AbstractSteps {
     // no-op: invariant check
   }
 
+  @Then("the table enters {string} state and all its items are removed")
+  public void theTableEntersStateAndAllItsItemsAreRemoved(String state) {
+    // Arrange
+    assertTrue(world.lastSuccess, "Expected DeleteTable to succeed but got: " + world.lastOutput);
+
+    // Act
+    try (DynamoDbClient client = world.dynamodbClient()) {
+      List<String> actualTables = client.listTables().tableNames();
+
+      // Assert
+      assertFalse(
+          actualTables.contains(TEST_DDB_TABLE),
+          "Expected table \""
+              + TEST_DDB_TABLE
+              + "\" to be removed after deletion but it still appears in: "
+              + actualTables);
+    }
+  }
+
   @Given("there are writes pending propagation to the \"GSI\"")
   public void thereAreWritesPendingPropagationToTheGsi() {
     Assumptions.assumeTrue(false, "not applicable in fake");

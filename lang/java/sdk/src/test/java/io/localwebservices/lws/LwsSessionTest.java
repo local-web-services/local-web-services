@@ -403,4 +403,20 @@ class LwsSessionTest {
         spec.getQueues().isEmpty(),
         "expected 0 queues (intrinsic name skipped), got: " + spec.getQueues());
   }
+
+  @Test
+  void lifecycleBuilder_storesCreateAndDeleteDwellMs() throws Exception {
+    // Arrange
+    int basePort = LwsSession.findFreePort();
+    LwsSession session = new LwsSession(basePort, (Process) null);
+    int expectedCreateDwellMs = 500;
+    int expectedDeleteDwellMs = 200;
+
+    // Act
+    LifecycleBuilder builder =
+        session.lifecycle("dynamodb").createDwellMs(expectedCreateDwellMs).deleteDwellMs(expectedDeleteDwellMs);
+
+    // Assert
+    assertNotNull(builder);
+  }
 }

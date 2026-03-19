@@ -405,8 +405,15 @@ Given("the message's queue exists", function (this: LwsWorld) {
   // no-op
 });
 
-Given("the message's queue does not exist", function (this: LwsWorld) {
-  return "pending";
+Given("the message's queue does not exist", async function (this: LwsWorld) {
+  // Delete the queue so it does not exist when the receive is attempted
+  const client = this.sqsClient();
+  const queueUrl = this.sqsQueueUrl(TEST_SQS_QUEUE);
+  try {
+    await client.send(new DeleteQueueCommand({ QueueUrl: queueUrl }));
+  } catch {
+    // ignore if already absent
+  }
 });
 
 Given("the message's queue is {string}", function (this: LwsWorld, _state: string) {
@@ -1285,6 +1292,25 @@ Then(
   "the table is marked as {string} and all its items are removed",
   function (this: LwsWorld, _state: string) {
     // no-op: invariant check
+  },
+);
+
+Then(
+  'the table enters {string} state and all its items are removed',
+  async function (this: LwsWorld, _state: string) {
+    // Verify the delete succeeded and the table no longer exists
+    assert.strictEqual(
+      this.lastResult.success,
+      true,
+      `Expected DeleteTable to succeed but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
+    const client = this.dynamodbClient();
+    const result = await client.send(new ListTablesCommand({}));
+    const actualTables = result.TableNames ?? [];
+    assert.ok(
+      !actualTables.includes(TEST_DDB_TABLE),
+      `Expected table "${TEST_DDB_TABLE}" to be removed after deletion but it still appears in: ${actualTables.join(", ")}`,
+    );
   },
 );
 

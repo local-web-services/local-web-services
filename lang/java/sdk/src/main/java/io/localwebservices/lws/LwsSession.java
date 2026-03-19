@@ -414,6 +414,11 @@ public class LwsSession implements AutoCloseable {
     return new IamBuilder(this);
   }
 
+  /** Returns a {@link LifecycleBuilder} for configuring lifecycle simulation of the given service. */
+  public LifecycleBuilder lifecycle(String service) {
+    return new LifecycleBuilder(this, service);
+  }
+
   /** Returns a {@link DynamoDbHelper} bound to the given table name. */
   public DynamoDbHelper dynamoDb(String tableName) {
     return new DynamoDbHelper(tableName, dynamoDbClient());

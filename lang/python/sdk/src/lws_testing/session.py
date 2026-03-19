@@ -341,6 +341,20 @@ class LwsSession:
 
         return S3Helper(bucket_name, self.client("s3"))
 
+    def port_for(self, service: str) -> int:
+        """Return the local port number for the given service.
+
+        Args:
+            service: AWS service name (e.g. ``"dynamodb"``, ``"sqs"``).
+        """
+        port = self._ports.get(service)
+        if port is None:
+            raise ValueError(
+                f"Service {service!r} is not available in this session. "
+                f"Available: {sorted(self._ports)}"
+            )
+        return port
+
     def queue_url(self, queue_name: str) -> str:
         """Return the local SQS URL for *queue_name*.
 

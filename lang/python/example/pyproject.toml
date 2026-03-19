@@ -7,6 +7,9 @@ dependencies = [
     "boto3",
 ]
 
+[project.optional-dependencies]
+test = []
+
 [project.urls]
 Homepage = "https://local-web-services.github.io"
 Repository = "https://github.com/local-web-services/local-web-services"

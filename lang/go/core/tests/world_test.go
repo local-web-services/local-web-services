@@ -103,6 +103,32 @@ type World struct {
 	// in the Given steps (used for stepfunctions_s3api get-object scenarios).
 	s3ObjectExists bool
 
+	// ebBusIsDeleted tracks whether the EventBridge bus has been explicitly deleted
+	// in a Given step (used for stepfunctions_events and related cross-service scenarios).
+	ebBusIsDeleted bool
+
+	// ebBusNotActive tracks whether the EventBridge bus is unavailable (does not exist or not ACTIVE)
+	// in a Given step (used for configure_event_publishing bus-validation scenarios).
+	ebBusNotActive bool
+
+	// ebRuleCreated tracks whether an EventBridge rule has been enabled (used for events_dynamodb).
+	ebRuleCreated bool
+
+	// snsTopicHasMessage tracks whether the SNS topic has an AVAILABLE message (used for events_sns).
+	snsTopicHasMessage bool
+
+	// s3TargetBusDeleted tracks whether the target EventBridge bus has been deleted
+	// (used for s3api_events cross-service scenarios).
+	s3TargetBusDeleted bool
+
+	// s3TargetTopicDeleted tracks whether the target SNS topic has been deleted
+	// (used for s3api_sns cross-service scenarios).
+	s3TargetTopicDeleted bool
+
+	// s3TargetQueueDeleted tracks whether the target SQS queue has been deleted
+	// (used for s3api_sqs cross-service scenarios).
+	s3TargetQueueDeleted bool
+
 	awsCfg aws.Config
 }
 

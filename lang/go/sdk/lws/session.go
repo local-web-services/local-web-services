@@ -12,9 +12,21 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/apigateway"
+	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
+	"github.com/aws/aws-sdk-go-v2/service/docdb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	dynamodbtypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/aws/aws-sdk-go-v2/service/elasticache"
+	"github.com/aws/aws-sdk-go-v2/service/elasticsearchservice"
+	"github.com/aws/aws-sdk-go-v2/service/glacier"
+	"github.com/aws/aws-sdk-go-v2/service/lambda"
+	"github.com/aws/aws-sdk-go-v2/service/memorydb"
+	"github.com/aws/aws-sdk-go-v2/service/neptune"
+	"github.com/aws/aws-sdk-go-v2/service/opensearch"
+	"github.com/aws/aws-sdk-go-v2/service/rds"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3tables"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/aws/aws-sdk-go-v2/service/sfn"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
@@ -353,6 +365,102 @@ func (s *Session) SSMClient() *ssm.Client {
 func (s *Session) SecretsManagerClient() *secretsmanager.Client {
 	port, _ := s.PortFor("secretsmanager")
 	return secretsmanager.NewFromConfig(s.awsCfg, func(o *secretsmanager.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// CognitoIdentityProviderClient returns a pre-configured Cognito Identity Provider client.
+func (s *Session) CognitoIdentityProviderClient() *cognitoidentityprovider.Client {
+	port, _ := s.PortFor("cognitoidp")
+	return cognitoidentityprovider.NewFromConfig(s.awsCfg, func(o *cognitoidentityprovider.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// APIGatewayClient returns a pre-configured API Gateway client.
+func (s *Session) APIGatewayClient() *apigateway.Client {
+	port, _ := s.PortFor("apigateway")
+	return apigateway.NewFromConfig(s.awsCfg, func(o *apigateway.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// LambdaClient returns a pre-configured Lambda client.
+func (s *Session) LambdaClient() *lambda.Client {
+	port, _ := s.PortFor("lambda")
+	return lambda.NewFromConfig(s.awsCfg, func(o *lambda.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// RDSClient returns a pre-configured RDS client.
+func (s *Session) RDSClient() *rds.Client {
+	port, _ := s.PortFor("rds")
+	return rds.NewFromConfig(s.awsCfg, func(o *rds.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// DocDBClient returns a pre-configured DocumentDB client.
+func (s *Session) DocDBClient() *docdb.Client {
+	port, _ := s.PortFor("docdb")
+	return docdb.NewFromConfig(s.awsCfg, func(o *docdb.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// NeptuneClient returns a pre-configured Neptune client.
+func (s *Session) NeptuneClient() *neptune.Client {
+	port, _ := s.PortFor("neptune")
+	return neptune.NewFromConfig(s.awsCfg, func(o *neptune.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// ElastiCacheClient returns a pre-configured ElastiCache client.
+func (s *Session) ElastiCacheClient() *elasticache.Client {
+	port, _ := s.PortFor("elasticache")
+	return elasticache.NewFromConfig(s.awsCfg, func(o *elasticache.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// MemoryDBClient returns a pre-configured MemoryDB client.
+func (s *Session) MemoryDBClient() *memorydb.Client {
+	port, _ := s.PortFor("memorydb")
+	return memorydb.NewFromConfig(s.awsCfg, func(o *memorydb.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// GlacierClient returns a pre-configured Glacier client.
+func (s *Session) GlacierClient() *glacier.Client {
+	port, _ := s.PortFor("glacier")
+	return glacier.NewFromConfig(s.awsCfg, func(o *glacier.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// ElasticsearchClient returns a pre-configured Elasticsearch Service client.
+func (s *Session) ElasticsearchClient() *elasticsearchservice.Client {
+	port, _ := s.PortFor("elasticsearch")
+	return elasticsearchservice.NewFromConfig(s.awsCfg, func(o *elasticsearchservice.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// OpenSearchClient returns a pre-configured OpenSearch client.
+func (s *Session) OpenSearchClient() *opensearch.Client {
+	port, _ := s.PortFor("opensearch")
+	return opensearch.NewFromConfig(s.awsCfg, func(o *opensearch.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// S3TablesClient returns a pre-configured S3 Tables client.
+func (s *Session) S3TablesClient() *s3tables.Client {
+	port, _ := s.PortFor("s3tables")
+	return s3tables.NewFromConfig(s.awsCfg, func(o *s3tables.Options) {
 		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
 	})
 }

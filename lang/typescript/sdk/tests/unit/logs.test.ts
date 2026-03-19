@@ -132,6 +132,55 @@ describe("LogCapture", () => {
     });
   });
 
+  describe("assertCallCount", () => {
+    it("does not throw when the call count matches exactly", () => {
+      // Arrange
+      injectEntries([
+        { service: "dynamodb", operation: "PutItem" },
+        { service: "dynamodb", operation: "PutItem" },
+      ]);
+      const expectedCount = 2;
+
+      // Act & Assert
+      expect(() => capture.assertCallCount("dynamodb", "PutItem", expectedCount)).not.toThrow();
+    });
+
+    it("throws when the call count is lower than expected", () => {
+      // Arrange
+      injectEntries([{ service: "dynamodb", operation: "PutItem" }]);
+      const expectedCount = 2;
+
+      // Act & Assert
+      expect(() => capture.assertCallCount("dynamodb", "PutItem", expectedCount)).toThrow(
+        "Expected dynamodb.PutItem to be called 2 time(s), but was called 1 time(s).",
+      );
+    });
+
+    it("throws when the call count is higher than expected", () => {
+      // Arrange
+      injectEntries([
+        { service: "dynamodb", operation: "PutItem" },
+        { service: "dynamodb", operation: "PutItem" },
+        { service: "dynamodb", operation: "PutItem" },
+      ]);
+      const expectedCount = 1;
+
+      // Act & Assert
+      expect(() => capture.assertCallCount("dynamodb", "PutItem", expectedCount)).toThrow(
+        "Expected dynamodb.PutItem to be called 1 time(s), but was called 3 time(s).",
+      );
+    });
+
+    it("does not throw when expected count is zero and no matching entries exist", () => {
+      // Arrange
+      injectEntries([{ service: "s3", operation: "GetObject" }]);
+      const expectedCount = 0;
+
+      // Act & Assert
+      expect(() => capture.assertCallCount("dynamodb", "PutItem", expectedCount)).not.toThrow();
+    });
+  });
+
   describe("assertNoErrors", () => {
     it("does not throw when there are no ERROR-level entries", () => {
       // Arrange

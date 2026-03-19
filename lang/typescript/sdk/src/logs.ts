@@ -91,4 +91,18 @@ export class LogCapture {
       );
     }
   }
+
+  assertCallCount(service: string, operation: string, expectedCount: number): void {
+    const matching = this.entries.filter(
+      (e) =>
+        (e.service ?? "").toLowerCase() === service.toLowerCase() && e.operation === operation,
+    );
+    const actualCount = matching.length;
+    if (actualCount !== expectedCount) {
+      throw new Error(
+        `Expected ${service}.${operation} to be called ${expectedCount} time(s), ` +
+          `but was called ${actualCount} time(s).`,
+      );
+    }
+  }
 }
