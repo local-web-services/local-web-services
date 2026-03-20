@@ -44,12 +44,12 @@ def test_port_for_returns_distinct_ports_for_different_services():
     actual_sqs_port = session.port_for("sqs")
 
     # Assert
-    assert actual_dynamodb_port == expected_dynamodb_port, (
-        f"Expected {expected_dynamodb_port!r} but got {actual_dynamodb_port!r}"
-    )
-    assert actual_sqs_port == expected_sqs_port, (
-        f"Expected {expected_sqs_port!r} but got {actual_sqs_port!r}"
-    )
-    assert actual_dynamodb_port != actual_sqs_port, (
-        f"Expected values to differ but both were {actual_dynamodb_port!r}"
-    )
+    assert (
+        actual_dynamodb_port == expected_dynamodb_port
+    ), f"Expected {expected_dynamodb_port!r} but got {actual_dynamodb_port!r}"
+    assert (
+        actual_sqs_port == expected_sqs_port
+    ), f"Expected {expected_sqs_port!r} but got {actual_sqs_port!r}"
+    assert (
+        actual_dynamodb_port != actual_sqs_port
+    ), f"Expected values to differ but both were {actual_dynamodb_port!r}"

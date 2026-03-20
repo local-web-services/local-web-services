@@ -26,9 +26,9 @@ def test_for_service_returns_only_matching_entries():
     actual_entries = capture.for_service("dynamodb")
 
     # Assert
-    assert len(actual_entries) == expected_count, (
-        f"Expected {expected_count!r} but got {len(actual_entries)!r}"
-    )
+    assert (
+        len(actual_entries) == expected_count
+    ), f"Expected {expected_count!r} but got {len(actual_entries)!r}"
 
 
 def test_for_service_is_case_insensitive():
@@ -43,9 +43,9 @@ def test_for_service_is_case_insensitive():
     actual_entries = capture.for_service("dynamodb")
 
     # Assert
-    assert len(actual_entries) == expected_count, (
-        f"Expected {expected_count!r} but got {len(actual_entries)!r}"
-    )
+    assert (
+        len(actual_entries) == expected_count
+    ), f"Expected {expected_count!r} but got {len(actual_entries)!r}"
 
 
 def test_for_service_returns_empty_list_when_no_match():
@@ -60,9 +60,9 @@ def test_for_service_returns_empty_list_when_no_match():
     actual_entries = capture.for_service("dynamodb")
 
     # Assert
-    assert actual_entries == expected_entries, (
-        f"Expected {expected_entries!r} but got {actual_entries!r}"
-    )
+    assert (
+        actual_entries == expected_entries
+    ), f"Expected {expected_entries!r} but got {actual_entries!r}"
 
 
 def test_for_operation_returns_only_matching_entries():
@@ -79,9 +79,9 @@ def test_for_operation_returns_only_matching_entries():
     actual_entries = capture.for_operation("PutItem")
 
     # Assert
-    assert len(actual_entries) == expected_count, (
-        f"Expected {expected_count!r} but got {len(actual_entries)!r}"
-    )
+    assert (
+        len(actual_entries) == expected_count
+    ), f"Expected {expected_count!r} but got {len(actual_entries)!r}"
 
 
 def test_for_operation_returns_empty_list_when_no_match():
@@ -96,9 +96,9 @@ def test_for_operation_returns_empty_list_when_no_match():
     actual_entries = capture.for_operation("DeleteItem")
 
     # Assert
-    assert actual_entries == expected_entries, (
-        f"Expected {expected_entries!r} but got {actual_entries!r}"
-    )
+    assert (
+        actual_entries == expected_entries
+    ), f"Expected {expected_entries!r} but got {actual_entries!r}"
 
 
 def test_assert_call_count_passes_when_count_matches():
