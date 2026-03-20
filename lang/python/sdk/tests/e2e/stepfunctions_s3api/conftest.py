@@ -172,13 +172,13 @@ def no_execution_is_running():
 
 
 @given("an object slot is available")
-def object_slot_available():
-    """No-op: always room for objects."""
+def object_slot_available(lws_session):
+    lws_session.capacity("s3").unlimited().apply()
 
 
 @given("no object slot is available")
-def no_object_slot_available():
-    pytest.skip("Cannot exhaust object slot limit")
+def no_object_slot_available(lws_session):
+    lws_session.capacity("s3").exhaust().apply()
 
 
 @given('an object "EXISTS" in the target bucket')

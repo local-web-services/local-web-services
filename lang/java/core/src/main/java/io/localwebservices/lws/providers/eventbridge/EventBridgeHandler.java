@@ -103,7 +103,44 @@ public class EventBridgeHandler implements HttpHandler {
                       "ErrorMessage",
                       "No enabled rule with targets for event bus " + busName));
             } else {
-              resultEntries.add(Map.of("EventId", UUID.randomUUID().toString()));
+              // Check capacity of the target services — also check common target services
+              // by ARN, and stepfunctions/sns/sqs as common EventBridge targets
+              boolean targetCapacityExhausted = false;
+              if (state.getCapacityConfig("stepfunctions").isExhausted()
+                  || state.getCapacityConfig("sqs").isExhausted()
+                  || state.getCapacityConfig("sns").isExhausted()
+                  || state.getCapacityConfig("lambda").isExhausted()) {
+                targetCapacityExhausted = true;
+              } else {
+                for (Map<String, Object> rule : store.rules.values()) {
+                  if (!busName.equals(rule.getOrDefault("EventBusName", "default"))) continue;
+                  if (!"ENABLED".equals(rule.getOrDefault("State", "ENABLED"))) continue;
+                  String ruleName = (String) rule.get("Name");
+                  List<Map<String, Object>> targets =
+                      store.ruleTargets.getOrDefault(ruleName, List.of());
+                  for (Map<String, Object> tgt : targets) {
+                    String arn = (String) tgt.getOrDefault("Arn", "");
+                    String targetService = resolveTargetService(arn);
+                    if (targetService != null
+                        && state.getCapacityConfig(targetService).isExhausted()) {
+                      targetCapacityExhausted = true;
+                      break;
+                    }
+                  }
+                  if (targetCapacityExhausted) break;
+                }
+              }
+              if (targetCapacityExhausted) {
+                failedCount++;
+                resultEntries.add(
+                    Map.of(
+                        "ErrorCode",
+                        "ResourceNotFoundException",
+                        "ErrorMessage",
+                        "Target service has no available capacity."));
+              } else {
+                resultEntries.add(Map.of("EventId", UUID.randomUUID().toString()));
+              }
             }
           }
           if (failedCount > 0 && failedCount == entries.size()) {
@@ -482,6 +519,15 @@ public class EventBridgeHandler implements HttpHandler {
                   "Not implemented: " + operation));
         }
     }
+  }
+
+  private String resolveTargetService(String arn) {
+    if (arn == null) return null;
+    if (arn.contains(":sqs:")) return "sqs";
+    if (arn.contains(":sns:")) return "sns";
+    if (arn.contains(":states:")) return "stepfunctions";
+    if (arn.contains(":lambda:")) return "lambda";
+    return null;
   }
 
   private void sendJson(HttpExchange exchange, int status, Object body) throws IOException {

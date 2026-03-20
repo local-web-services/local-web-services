@@ -171,6 +171,17 @@ public class DynamoDbHandler implements HttpHandler {
         }
       case "PutItem":
         {
+          if (state.getCapacityConfig("dynamodb").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ProvisionedThroughputExceededException",
+                    "message",
+                    "The level of configured provisioned throughput for the table was exceeded."));
+            break;
+          }
           String tableName = (String) body.get("TableName");
           Map<String, Object> item = (Map<String, Object>) body.get("Item");
           store.putItem(tableName, item);

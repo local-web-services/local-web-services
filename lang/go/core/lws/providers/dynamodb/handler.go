@@ -687,6 +687,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
 			return
 		}
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "No item slot is available", 400)
+			return
+		}
 		item, _ := body["Item"].(map[string]interface{})
 		if item == nil {
 			writeErr(w, "ValidationException", "Item is required", 400)

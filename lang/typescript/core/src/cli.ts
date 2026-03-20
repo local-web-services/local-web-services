@@ -111,3 +111,33 @@ export async function lifecycleDisable(port: number, service: string): Promise<v
     [service]: { enabled: false, create_dwell_ms: 0, delete_dwell_ms: 0 },
   });
 }
+
+/** Get capacity status — returns per-service capacity config. */
+export async function capacityStatus(port: number): Promise<unknown> {
+  return get(`${BASE_URL(port)}/_ldk/capacity`);
+}
+
+/** Exhaust capacity for a service (set slots to 0). */
+export async function capacityExhaust(port: number, service: string): Promise<void> {
+  await post(`${BASE_URL(port)}/_ldk/capacity`, {
+    [service]: { slots: 0 },
+  });
+}
+
+/** Set capacity slots for a service. */
+export async function capacitySetSlots(
+  port: number,
+  service: string,
+  slots: number | null,
+): Promise<void> {
+  await post(`${BASE_URL(port)}/_ldk/capacity`, {
+    [service]: { slots },
+  });
+}
+
+/** Reset capacity for a service (unlimited). */
+export async function capacityUnlimited(port: number, service: string): Promise<void> {
+  await post(`${BASE_URL(port)}/_ldk/capacity`, {
+    [service]: { slots: null },
+  });
+}

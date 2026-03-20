@@ -64,6 +64,16 @@ public class SnsHandler implements HttpHandler {
     try {
       if (IamMiddleware.applyIamAuth(state, "sns", action, exchange, !isJson)) return;
       if (ChaosMiddleware.applyChaos(state, "sns", action, exchange, !isJson)) return;
+      if (("Publish".equals(action) || "Subscribe".equals(action))
+          && state.getCapacityConfig("sns").isExhausted()) {
+        sendError(
+            exchange,
+            "KMSThrottlingException",
+            "No capacity available for SNS operation.",
+            isJson,
+            400);
+        return;
+      }
 
       if (isJson) {
         handleJsonAction(action, jsonBody, exchange);
@@ -119,6 +129,12 @@ public class SnsHandler implements HttpHandler {
         }
       case "Publish":
         {
+          if (state.getCapacityConfig("sns").isExhausted()) {
+            sendError(
+                exchange, "KMSThrottlingException", "No capacity available for SNS delivery.", true,
+                400);
+            break;
+          }
           String publishTopicArn = (String) body.get("TopicArn");
           if (publishTopicArn == null || !store.topics.containsKey(publishTopicArn)) {
             sendError(exchange, "NotFound", "Topic not found: " + publishTopicArn, true, 400);
@@ -143,6 +159,12 @@ public class SnsHandler implements HttpHandler {
         }
       case "Subscribe":
         {
+          if (state.getCapacityConfig("sns").isExhausted()) {
+            sendError(
+                exchange, "KMSThrottlingException", "No capacity available for SNS subscription.",
+                true, 400);
+            break;
+          }
           String topicArn = (String) body.get("TopicArn");
           if (topicArn == null || !store.topics.containsKey(topicArn)) {
             sendError(exchange, "NotFound", "Topic not found: " + topicArn, true, 400);

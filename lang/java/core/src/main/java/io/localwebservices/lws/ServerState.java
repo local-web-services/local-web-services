@@ -28,6 +28,42 @@ public class ServerState {
   // Reset callbacks
   public final List<Runnable> resetCallbacks = new CopyOnWriteArrayList<>();
 
+  // capacity configs: service -> CapacityConfig
+  private final Map<String, CapacityConfig> capacityConfigs =
+      Collections.synchronizedMap(new LinkedHashMap<>());
+
+  /** Per-service capacity configuration. {@code slots=null} means unlimited; {@code slots=0} means
+   * exhausted. */
+  public static class CapacityConfig {
+    private Integer slots;
+
+    public Integer getSlots() {
+      return slots;
+    }
+
+    public void setSlots(Integer slots) {
+      this.slots = slots;
+    }
+
+    public boolean isExhausted() {
+      return slots != null && slots == 0;
+    }
+
+    public void reset() {
+      this.slots = null;
+    }
+  }
+
+  /** Returns the {@link CapacityConfig} for the given service, creating one if absent. */
+  public CapacityConfig getCapacityConfig(String service) {
+    return capacityConfigs.computeIfAbsent(service, k -> new CapacityConfig());
+  }
+
+  /** Resets capacity for all services to unlimited. */
+  public void resetAllCapacity() {
+    capacityConfigs.values().forEach(CapacityConfig::reset);
+  }
+
   public void reset() {
     chaosRules.clear();
     fakeRules.clear();
@@ -36,6 +72,7 @@ public class ServerState {
     iamIdentities.clear();
     iamResourcePolicies.clear();
     logBuffer.clear();
+    resetAllCapacity();
     for (Runnable cb : resetCallbacks) {
       try {
         cb.run();
@@ -49,5 +86,10 @@ public class ServerState {
     if (logBuffer.size() > 500) {
       ((CopyOnWriteArrayList<Map<String, Object>>) logBuffer).remove(0);
     }
+  }
+
+  /** Returns an unmodifiable snapshot of all capacity configs keyed by service name. */
+  public Map<String, CapacityConfig> getAllCapacityConfigs() {
+    return Collections.unmodifiableMap(capacityConfigs);
   }
 }

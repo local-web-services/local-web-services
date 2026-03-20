@@ -10,6 +10,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
@@ -32,11 +33,15 @@ class StepFunctionsRouter:
     """Route Step Functions API requests to a StepFunctionsProvider backend."""
 
     def __init__(
-        self, provider: StepFunctionsProvider, lifecycle: ResourceLifecycleConfig | None = None
+        self,
+        provider: StepFunctionsProvider,
+        lifecycle: ResourceLifecycleConfig | None = None,
+        capacity: AwsCapacityConfig | None = None,
     ) -> None:
         self.provider = provider
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
+        self._capacity = capacity or AwsCapacityConfig()
         self.router = APIRouter()
         self.router.add_api_route("/", self._dispatch, methods=["POST"])
 
@@ -87,6 +92,11 @@ class StepFunctionsRouter:
 
     async def _start_execution(self, body: dict) -> Response:
         """Handle StartExecution API action (STANDARD workflows only)."""
+        if self._capacity.is_exhausted:
+            return _error_response(
+                "ServiceUnavailableException", "lws: no execution slots available"
+            )
+
         sm_name = _extract_state_machine_name(body)
         input_data = _parse_input(body)
         execution_name = body.get("name")
@@ -443,6 +453,7 @@ def create_stepfunctions_app(
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     tracker_ref: list[ResourceStateTracker] | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol.
 
@@ -450,6 +461,7 @@ def create_stepfunctions_app(
         tracker_ref: Optional single-element list; if provided, the lifecycle
             ``ResourceStateTracker`` used by this app is deposited at index 0
             so callers can share it with other services (e.g. EventBridge).
+        capacity: Optional capacity configuration for slot-limit enforcement.
     """
     app = FastAPI()
     if aws_fake is not None:
@@ -460,7 +472,7 @@ def create_stepfunctions_app(
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions")
-    sfn_router = StepFunctionsRouter(provider, lifecycle=lifecycle)
+    sfn_router = StepFunctionsRouter(provider, lifecycle=lifecycle, capacity=capacity)
     if tracker_ref is not None:
         tracker_ref.append(sfn_router.tracker)
     app.include_router(sfn_router.router)

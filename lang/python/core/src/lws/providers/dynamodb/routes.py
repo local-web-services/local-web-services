@@ -14,6 +14,7 @@ from lws.interfaces.key_value_store import (
 )
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
@@ -38,11 +39,15 @@ class DynamoDbRouter:
     """Route DynamoDB wire-protocol requests to an ``IKeyValueStore`` backend."""
 
     def __init__(
-        self, store: IKeyValueStore, lifecycle: ResourceLifecycleConfig | None = None
+        self,
+        store: IKeyValueStore,
+        lifecycle: ResourceLifecycleConfig | None = None,
+        capacity: AwsCapacityConfig | None = None,
     ) -> None:
         self.store = store
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
+        self._capacity = capacity or AwsCapacityConfig()
         self.router = APIRouter()
         self.router.add_api_route("/", self._dispatch, methods=["POST"])
 
@@ -131,6 +136,8 @@ class DynamoDbRouter:
         return _json_response(result)
 
     async def _put_item(self, body: dict) -> Response:
+        if self._capacity.is_exhausted:
+            return _error_response("ServiceUnavailableException", "lws: no item slots available")
         table_name = body["TableName"]
         err = self._get_lifecycle_error(table_name)
         if err is not None:
@@ -227,6 +234,8 @@ class DynamoDbRouter:
         return _json_response({"Responses": responses})
 
     async def _batch_write_item(self, body: dict) -> Response:
+        if self._capacity.is_exhausted:
+            return _error_response("ServiceUnavailableException", "lws: no item slots available")
         request_items = body.get("RequestItems", {})
         for table_name, requests in request_items.items():
             put_items: list[dict] = []
@@ -469,6 +478,7 @@ def create_dynamodb_app(
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the DynamoDB wire protocol."""
     app = FastAPI()
@@ -478,6 +488,6 @@ def create_dynamodb_app(
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="dynamodb")
-    dynamo_router = DynamoDbRouter(store, lifecycle=lifecycle)
+    dynamo_router = DynamoDbRouter(store, lifecycle=lifecycle, capacity=capacity)
     app.include_router(dynamo_router.router)
     return app

@@ -116,13 +116,13 @@ def sm_does_not_exist():
 
 
 @given("the execution slot is available")
-def execution_slot_available():
-    """No-op: always room for executions."""
+def execution_slot_available(lws_session):
+    lws_session.capacity("stepfunctions").unlimited().apply()
 
 
 @given("the execution slot is not available")
-def execution_slot_not_available():
-    pytest.skip("Cannot exhaust execution slot limit")
+def execution_slot_not_available(lws_session):
+    lws_session.capacity("stepfunctions").exhaust().apply()
 
 
 @given("the execution exists")

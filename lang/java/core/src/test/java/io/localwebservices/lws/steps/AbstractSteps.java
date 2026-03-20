@@ -338,13 +338,13 @@ public class AbstractSteps {
   }
 
   @Given("the message slot is available")
-  public void theMessageSlotIsAvailable() {
-    // no-op
+  public void theMessageSlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "sqs");
   }
 
   @Given("the message slot is not available")
-  public void theMessageSlotIsNotAvailable() {
-    Assumptions.assumeTrue(false, "not applicable in fake");
+  public void theMessageSlotIsNotAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "sqs");
   }
 
   @Given("the message exists")
@@ -1718,13 +1718,13 @@ public class AbstractSteps {
   }
 
   @Given("the subscription slot is available")
-  public void theSubscriptionSlotIsAvailable() {
-    // no-op
+  public void theSubscriptionSlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "sns");
   }
 
   @Given("the subscription slot is not available")
-  public void theSubscriptionSlotIsNotAvailable() {
-    Assumptions.assumeTrue(false, "not applicable in fake");
+  public void theSubscriptionSlotIsNotAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "sns");
   }
 
   @Given("the subscription exists")
@@ -1806,8 +1806,8 @@ public class AbstractSteps {
   }
 
   @Given("a delivery slot is available")
-  public void aDeliverySlotIsAvailable() {
-    // no-op
+  public void aDeliverySlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "sns");
   }
 
   @Given("no confirmed subscription exists for the topic")
@@ -1821,8 +1821,8 @@ public class AbstractSteps {
   }
 
   @Given("no delivery slot is available")
-  public void noDeliverySlotIsAvailable() {
-    Assumptions.assumeTrue(false, "not applicable in fake");
+  public void noDeliverySlotIsAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "sns");
   }
 
   @Given("the delivery exists")
@@ -2518,13 +2518,13 @@ public class AbstractSteps {
   }
 
   @Given("the execution slot is available")
-  public void theExecutionSlotIsAvailable() {
-    // no-op
+  public void theExecutionSlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "stepfunctions");
   }
 
   @Given("the execution slot is not available")
-  public void theExecutionSlotIsNotAvailable() {
-    Assumptions.assumeTrue(false, "not applicable in fake");
+  public void theExecutionSlotIsNotAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "stepfunctions");
   }
 
   @Given("the execution exists")

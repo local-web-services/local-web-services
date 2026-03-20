@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
@@ -270,10 +271,12 @@ def _register_object_routes(
     provider: S3Provider,
     lc: ResourceLifecycleConfig | None = None,
     tracker: ResourceStateTracker | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> None:
     """Register object-level S3 routes on *app*."""
     _lc = lc or ResourceLifecycleConfig()
     _tracker = tracker or ResourceStateTracker(_lc)
+    _capacity = capacity or AwsCapacityConfig()
 
     @app.api_route("/{bucket}/{key:path}", methods=["POST"])
     async def post_object(bucket: str, key: str, request: Request) -> Response:
@@ -284,6 +287,8 @@ def _register_object_routes(
 
     @app.api_route("/{bucket}/{key:path}", methods=["PUT"])
     async def put_object(bucket: str, key: str, request: Request) -> Response:
+        if _capacity.is_exhausted:
+            return _error_xml("ServiceUnavailableException", "lws: no object slots available", 503)
         err = _s3_bucket_lifecycle_error(bucket, _lc, _tracker)
         if err is not None:
             return err
@@ -358,6 +363,7 @@ def create_s3_app(
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -375,7 +381,7 @@ def create_s3_app(
     async def list_buckets() -> Response:
         return await _list_all_buckets(provider)
 
-    _register_object_routes(app, provider, _lc, _tracker)
+    _register_object_routes(app, provider, _lc, _tracker, capacity)
     _register_bucket_routes(app, provider, _lc, _tracker)
 
     # Wrap the ASGI app with virtual-hosted-style rewriting so requests

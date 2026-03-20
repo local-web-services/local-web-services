@@ -149,13 +149,13 @@ def messages_queue_is_not_active(lws_session):
 
 
 @given("the message slot is available")
-def message_slot_available():
-    """No-op: always room for messages in an empty queue."""
+def message_slot_available(lws_session):
+    lws_session.capacity("sqs").unlimited().apply()
 
 
 @given("the message slot is not available")
-def message_slot_not_available():
-    pytest.skip("Cannot exhaust the message slot limit in isolated context")
+def message_slot_not_available(lws_session):
+    lws_session.capacity("sqs").exhaust().apply()
 
 
 # ── Given: DLQ / redrive setup ────────────────────────────────────────

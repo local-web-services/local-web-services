@@ -3,6 +3,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { v4 as uuidv4 } from "uuid";
 import type { ServerState } from "../../types";
+import { isExhausted } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
@@ -10,6 +11,15 @@ import { createRequestContext, recordLog } from "../../middleware/logging";
 
 const REGION = "us-east-1";
 const ACCOUNT_ID = "000000000000";
+
+/** Infer the service name from a target ARN for capacity checking. */
+function serviceFromArn(arn: string): string | null {
+  if (arn.includes(":sqs:")) return "sqs";
+  if (arn.includes(":sns:")) return "sns";
+  if (arn.includes(":states:")) return "stepfunctions";
+  if (arn.includes(":lambda:")) return "lambda";
+  return null;
+}
 
 interface EventBus {
   name: string;
@@ -228,17 +238,29 @@ export class EventBridgeStore {
    *   "bus_not_found" if event bus doesn't exist
    *   "no_enabled_rule" if no ENABLED rule is on that bus
    *   "no_target" if no enabled rule has any targets
+   *   "capacity_exhausted" if a target service has no available capacity slots
    */
   putEvents(
     busName: string,
     events: Array<Record<string, unknown>>,
-  ): null | "bus_not_found" | "no_enabled_rule" | "no_target" {
+    capacityConfigs?: Record<string, { slots: number | null }>,
+  ): null | "bus_not_found" | "no_enabled_rule" | "no_target" | "capacity_exhausted" {
     const bus = this.getActiveEventBus(busName);
     if (!bus) return "bus_not_found";
     const enabledRules = bus.rules.filter((r) => r.state === "ENABLED");
     if (enabledRules.length === 0) return "no_enabled_rule";
     const rulesWithTargets = enabledRules.filter((r) => r.targets.length > 0);
     if (rulesWithTargets.length === 0) return "no_target";
+    if (capacityConfigs) {
+      for (const rule of rulesWithTargets) {
+        for (const target of rule.targets) {
+          const service = serviceFromArn(target.Arn);
+          if (service && isExhausted(capacityConfigs[service] ?? { slots: null })) {
+            return "capacity_exhausted";
+          }
+        }
+      }
+    }
     this.eventLog.push(...events);
     return null;
   }
@@ -426,7 +448,7 @@ function handleOperation(
       const entries = (body.Entries as Array<Record<string, unknown>>) ?? [];
       // Extract bus name from first entry, defaulting to "default"
       const eventBusName = (entries[0]?.EventBusName as string) ?? "default";
-      const putEventsError = store.putEvents(eventBusName, entries);
+      const putEventsError = store.putEvents(eventBusName, entries, state.capacityConfigs);
       if (putEventsError === "bus_not_found") {
         jsonReply(
           reply,
@@ -452,6 +474,17 @@ function handleOperation(
           {
             __type: "ResourceNotFoundException",
             message: "No target is associated with the rule.",
+          },
+          400,
+        );
+        return;
+      }
+      if (putEventsError === "capacity_exhausted") {
+        jsonReply(
+          reply,
+          {
+            __type: "ThrottlingException",
+            message: "No capacity slot available for target service.",
           },
           400,
         );

@@ -3,6 +3,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { v4 as uuidv4 } from "uuid";
 import type { ServerState } from "../../types";
+import { isExhausted } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
@@ -200,6 +201,22 @@ export function registerStepFunctions(
       return;
     }
     if (await applyFake(state, "stepfunctions", operation, req, reply)) {
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+
+    if (
+      operation === "StartExecution" &&
+      isExhausted(state.capacityConfigs["stepfunctions"] ?? { slots: null })
+    ) {
+      jsonReply(
+        reply,
+        {
+          __type: "ExecutionLimitExceeded",
+          message: "No execution slot available",
+        },
+        400,
+      );
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
     }

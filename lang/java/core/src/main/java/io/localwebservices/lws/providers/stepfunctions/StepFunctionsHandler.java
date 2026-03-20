@@ -183,6 +183,17 @@ public class StepFunctionsHandler implements HttpHandler {
         }
       case "StartExecution":
         {
+          if (state.getCapacityConfig("stepfunctions").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ExecutionLimitExceeded",
+                    "message",
+                    "The maximum number of running executions has been reached."));
+            break;
+          }
           String smArn = (String) body.get("stateMachineArn");
           if (!store.stateMachineExists(smArn)) {
             sendJson(
@@ -207,6 +218,17 @@ public class StepFunctionsHandler implements HttpHandler {
         }
       case "StartSyncExecution":
         {
+          if (state.getCapacityConfig("stepfunctions").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ExecutionLimitExceeded",
+                    "message",
+                    "The maximum number of running executions has been reached."));
+            break;
+          }
           String smArn = (String) body.get("stateMachineArn");
           if (!store.stateMachineExists(smArn)) {
             sendJson(

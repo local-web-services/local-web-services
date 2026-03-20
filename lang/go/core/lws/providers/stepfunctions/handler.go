@@ -741,6 +741,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			input = "{}"
 		}
 
+		if h.state.GetCapacityRule("stepfunctions").IsExhausted() {
+			writeErr(w, "ServiceUnavailableException", "No execution slot is available", 503)
+			return
+		}
+
 		h.store.mu.RLock()
 		sm, smExists := h.store.stateMachines[smArn]
 		h.store.mu.RUnlock()

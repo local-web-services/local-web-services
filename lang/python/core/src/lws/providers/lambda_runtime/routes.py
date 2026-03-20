@@ -17,6 +17,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.lambda_helpers import build_default_lambda_context
 from lws.providers._shared.request_helpers import parse_json_body
@@ -83,6 +84,7 @@ class LambdaManagementRouter:
         project_dir: Path | None = None,
         sdk_env: dict[str, str] | None = None,
         lifecycle: ResourceLifecycleConfig | None = None,
+        capacity: AwsCapacityConfig | None = None,
     ) -> None:
         self._registry = registry
         self._project_dir = project_dir
@@ -91,6 +93,7 @@ class LambdaManagementRouter:
         _lc = lifecycle or ResourceLifecycleConfig()
         self._lifecycle = _lc
         self._tracker = ResourceStateTracker(_lc)
+        self._capacity = capacity or AwsCapacityConfig()
         self.router = APIRouter()
         self._register_routes()
 
@@ -241,6 +244,14 @@ class LambdaManagementRouter:
     # -- Invocations ---------------------------------------------------------
 
     async def _invoke_function(self, function_name: str, request: Request) -> Response:
+        if self._capacity.is_exhausted:
+            return _json_response(
+                {
+                    "Message": "lws: no invocation slots available",
+                    "Type": "ServiceUnavailableException",
+                },
+                503,
+            )
         compute = self._registry.get_compute(function_name)
         if compute is None:
             return _json_response(
@@ -476,6 +487,7 @@ def create_lambda_management_app(
     project_dir: Path | None = None,
     sdk_env: dict[str, str] | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI app that speaks the Lambda management protocol."""
     if registry is None:
@@ -483,7 +495,7 @@ def create_lambda_management_app(
     app = FastAPI(title="LDK Lambda Management")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="lambda-mgmt")
     router = LambdaManagementRouter(
-        registry, project_dir=project_dir, sdk_env=sdk_env, lifecycle=lifecycle
+        registry, project_dir=project_dir, sdk_env=sdk_env, lifecycle=lifecycle, capacity=capacity
     )
     app.include_router(router.router)
     return app

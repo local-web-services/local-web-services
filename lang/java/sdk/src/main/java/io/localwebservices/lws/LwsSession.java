@@ -362,6 +362,11 @@ public class LwsSession implements AutoCloseable {
     return new ChaosBuilder(this, service);
   }
 
+  /** Returns a {@link CapacityBuilder} for the given service (e.g. {@code "stepfunctions"}). */
+  public CapacityBuilder capacity(String service) {
+    return new CapacityBuilder(this, service);
+  }
+
   /**
    * Connects to the log stream and begins recording entries. Uses WebSocket if available; falls
    * back to HTTP polling for in-process sessions.

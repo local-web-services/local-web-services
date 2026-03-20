@@ -184,23 +184,23 @@ def execution_sm_has_no_sqs_task():
 
 
 @given("an execution slot is available")
-def execution_slot_available():
-    """No-op: always room for executions."""
+def execution_slot_available(lws_session):
+    lws_session.capacity("stepfunctions").unlimited().apply()
 
 
 @given("no execution slot is available")
-def no_execution_slot_available():
-    pytest.skip("Cannot exhaust execution slot limit")
+def no_execution_slot_available(lws_session):
+    lws_session.capacity("stepfunctions").exhaust().apply()
 
 
 @given("a message slot is available")
-def message_slot_available():
-    """No-op: always room for messages."""
+def message_slot_available(lws_session):
+    lws_session.capacity("sqs").unlimited().apply()
 
 
 @given("no message slot is available")
-def no_message_slot_available():
-    pytest.skip("Cannot exhaust message slot limit")
+def no_message_slot_available(lws_session):
+    lws_session.capacity("sqs").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────

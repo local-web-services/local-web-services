@@ -32,6 +32,11 @@ class _SqsJsonHandlersMixin:
     """
 
     async def _json_send_message(self, body: dict) -> Response:
+        if self._capacity.is_exhausted:  # type: ignore[attr-defined]
+            return _json_error(
+                "ServiceUnavailableException",
+                "lws: no message slots available",
+            )
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
         err = self._get_lifecycle_error_json(queue_name)  # type: ignore[attr-defined]
         if err is not None:

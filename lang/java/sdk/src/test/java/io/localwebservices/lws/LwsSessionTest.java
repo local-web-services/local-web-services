@@ -495,4 +495,35 @@ class LwsSessionTest {
     // Assert
     assertNotNull(builder, "Expected builder to not be null");
   }
+
+  @Test
+  void capacityBuilder_exhaustReturnsBuilder() throws Exception {
+    // Arrange
+    int basePort = LwsSession.findFreePort();
+    LwsSession session = new LwsSession(basePort, (Process) null);
+    String expectedService = "stepfunctions";
+
+    // Act
+    CapacityBuilder builder = session.capacity(expectedService).exhaust();
+
+    // Assert
+    assertNotNull(builder);
+  }
+
+  @Test
+  void capacityBuilder_slotsAndUnlimitedChainsCorrectly() throws Exception {
+    // Arrange
+    int basePort = LwsSession.findFreePort();
+    LwsSession session = new LwsSession(basePort, (Process) null);
+    String expectedService = "dynamodb";
+    int expectedSlots = 5;
+
+    // Act
+    CapacityBuilder builderWithSlots = session.capacity(expectedService).slots(expectedSlots);
+    CapacityBuilder builderUnlimited = session.capacity(expectedService).unlimited();
+
+    // Assert
+    assertNotNull(builderWithSlots);
+    assertNotNull(builderUnlimited);
+  }
 }

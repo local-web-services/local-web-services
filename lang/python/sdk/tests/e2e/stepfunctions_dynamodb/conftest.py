@@ -177,13 +177,13 @@ def no_execution_is_running():
 
 
 @given("an item slot is available")
-def item_slot_available():
-    """No-op: always room for items."""
+def item_slot_available(lws_session):
+    lws_session.capacity("dynamodb").unlimited().apply()
 
 
 @given("no item slot is available")
-def no_item_slot_available():
-    pytest.skip("Cannot exhaust item slot limit")
+def no_item_slot_available(lws_session):
+    lws_session.capacity("dynamodb").exhaust().apply()
 
 
 @given('no item "EXISTS" in the target table')

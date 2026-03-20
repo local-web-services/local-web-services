@@ -9,6 +9,7 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
@@ -29,10 +30,12 @@ class CognitoRouter:
         self,
         provider: CognitoProvider,
         lifecycle: ResourceLifecycleConfig | None = None,
+        capacity: AwsCapacityConfig | None = None,
     ) -> None:
         self._provider = provider
         self._lc = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lc)
+        self._capacity = capacity or AwsCapacityConfig()
         self.router = APIRouter()
         self.router.add_api_route("/", self._dispatch, methods=["POST"])
         self.router.add_api_route("/.well-known/jwks.json", self._jwks, methods=["GET"])
@@ -249,6 +252,8 @@ class CognitoRouter:
 
     async def _admin_create_user(self, body: dict) -> Response:
         """Handle AdminCreateUser operation."""
+        if self._capacity.is_exhausted:
+            return _error_response("ServiceUnavailableException", "lws: no user slots available")
         user_pool_id = body.get("UserPoolId", "")
         err = self._check_pool_state(user_pool_id)
         if err is not None:
@@ -376,6 +381,7 @@ def create_cognito_app(
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Cognito wire protocol."""
     app = FastAPI(title="LDK Cognito")
@@ -385,6 +391,6 @@ def create_cognito_app(
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="cognito")
-    cognito_router = CognitoRouter(provider, lifecycle=lifecycle)
+    cognito_router = CognitoRouter(provider, lifecycle=lifecycle, capacity=capacity)
     app.include_router(cognito_router.router)
     return app

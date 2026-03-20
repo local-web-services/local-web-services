@@ -161,8 +161,9 @@ def _create_management_app(
     chaos_configs: dict[str, Any],
     fake_configs: dict[str, Any],
     lifecycle_configs: dict[str, Any],
+    capacity_configs: dict[str, Any] | None = None,
 ) -> Any:
-    """Build a FastAPI management app with reset, fake, chaos, and lifecycle endpoints."""
+    """Build a FastAPI management app with reset, fake, chaos, lifecycle, and capacity endpoints."""
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     from lws.api.management import _handle_reset, create_management_router
@@ -176,6 +177,7 @@ def _create_management_app(
         chaos_configs=chaos_configs,
         aws_fake_configs=fake_configs,
         lifecycle_configs=lifecycle_configs,
+        capacity_configs=capacity_configs,
     )
     app.include_router(router)
 
@@ -240,6 +242,7 @@ def _build_service_apps(
     fake_configs: dict[str, Any],
     lifecycle_configs: dict[str, Any],
     cfg: dict[str, list[Any]],
+    capacity_configs: dict[str, Any] | None = None,
 ) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
     """Build FastAPI apps for all services.
 
@@ -257,6 +260,8 @@ def _build_service_apps(
     from lws.providers.sqs.routes import create_sqs_app
     from lws.providers.ssm.routes import create_ssm_app
     from lws.providers.stepfunctions.routes import create_stepfunctions_app
+
+    _cap = capacity_configs or {}
 
     ssm_app, ssm_state = create_ssm_app(
         initial_parameters=cfg["parameters"] or None,
@@ -279,6 +284,7 @@ def _build_service_apps(
                 chaos=chaos_configs["dynamodb"],
                 aws_fake=fake_configs["dynamodb"],
                 lifecycle=lifecycle_configs["dynamodb"],
+                capacity=_cap.get("dynamodb"),
             ),
         ),
         (
@@ -289,6 +295,7 @@ def _build_service_apps(
                 chaos=chaos_configs["sqs"],
                 aws_fake=fake_configs["sqs"],
                 lifecycle=lifecycle_configs["sqs"],
+                capacity=_cap.get("sqs"),
             ),
         ),
         (
@@ -298,6 +305,7 @@ def _build_service_apps(
                 chaos=chaos_configs["s3"],
                 aws_fake=fake_configs["s3"],
                 lifecycle=lifecycle_configs["s3"],
+                capacity=_cap.get("s3"),
             ),
         ),
         (
@@ -317,6 +325,7 @@ def _build_service_apps(
                 aws_fake=fake_configs["stepfunctions"],
                 lifecycle=lifecycle_configs["stepfunctions"],
                 tracker_ref=(_sf_tracker_ref := []),
+                capacity=_cap.get("stepfunctions"),
             ),
         ),
         ("ssm", ssm_app),
@@ -403,6 +412,7 @@ async def start_services(
         ``servers_list`` is a list of ``(Server, Task)`` pairs that can be
         passed directly to :func:`stop_services`.
     """
+    from lws.providers._shared.aws_capacity import AwsCapacityConfig
     from lws.providers._shared.aws_chaos import AwsChaosConfig
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
     from lws.providers._shared.aws_operation_fake import AwsFakeConfig
@@ -414,16 +424,19 @@ async def start_services(
     chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}
     fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
     lifecycle_configs: dict[str, Any] = {s: ResourceLifecycleConfig() for s in _SERVICE_NAMES}
+    capacity_configs: dict[str, Any] = {s: AwsCapacityConfig() for s in _SERVICE_NAMES}
     ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
     mgmt_port = _free_port()
 
     service_apps, extra_providers = _build_service_apps(
-        providers, ports, chaos_configs, fake_configs, lifecycle_configs, cfg
+        providers, ports, chaos_configs, fake_configs, lifecycle_configs, cfg, capacity_configs
     )
     # Merge ssm/secretsmanager state wrappers so the management reset endpoint can reach them
     all_providers = {**providers, **extra_providers}
     await _start_providers(providers)
-    mgmt_app = _create_management_app(all_providers, chaos_configs, fake_configs, lifecycle_configs)
+    mgmt_app = _create_management_app(
+        all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs
+    )
     servers = await _start_all_servers(service_apps, ports, mgmt_app, mgmt_port)
 
     return log_handler, ports, mgmt_port, servers

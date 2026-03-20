@@ -21,3 +21,4 @@ func NewServerState() *ServerState {
 
 type FakeResponse = lwsstate.FakeResponse
 type FakeRule = lwsstate.FakeRule
+type CapacityRule = lwsstate.CapacityRule

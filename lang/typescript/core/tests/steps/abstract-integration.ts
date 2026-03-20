@@ -117,41 +117,41 @@ Given("an event slot is available", function (this: LwsWorld) {
   // no-op: always available in fake
 });
 
-Given("no event slot is available", function (this: LwsWorld) {
-  // Internal capacity limit not reachable via API
-  return "pending";
+Given("no event slot is available", async function (this: LwsWorld) {
+  await this.cli().capacityExhaust(this.managementPort, "events");
 });
 
 Given("an item slot is available", function (this: LwsWorld) {
   // no-op: always available in fake
 });
 
-Given("no item slot is available", function (this: LwsWorld) {
-  return "pending";
+Given("no item slot is available", async function (this: LwsWorld) {
+  await this.cli().capacityExhaust(this.managementPort, "dynamodb");
 });
 
 Given("a message slot is available", function (this: LwsWorld) {
   // no-op: always available in fake
 });
 
-Given("no message slot is available", function (this: LwsWorld) {
-  return "pending";
+Given("no message slot is available", async function (this: LwsWorld) {
+  await this.cli().capacityExhaust(this.managementPort, "sqs");
+  await this.cli().capacityExhaust(this.managementPort, "sns");
 });
 
 Given("an object slot is available", function (this: LwsWorld) {
   // no-op: always available in fake
 });
 
-Given("no object slot is available", function (this: LwsWorld) {
-  return "pending";
+Given("no object slot is available", async function (this: LwsWorld) {
+  await this.cli().capacityExhaust(this.managementPort, "s3");
 });
 
 Given("an execution slot is available", function (this: LwsWorld) {
   // no-op: always available in fake
 });
 
-Given("no execution slot is available", function (this: LwsWorld) {
-  return "pending";
+Given("no execution slot is available", async function (this: LwsWorld) {
+  await this.cli().capacityExhaust(this.managementPort, "stepfunctions");
 });
 
 // ---------------------------------------------------------------------------

@@ -181,13 +181,13 @@ def no_available_message_in_queue():
 
 
 @given("a message slot is available")
-def message_slot_available():
-    """No-op: always room for messages."""
+def message_slot_available(lws_session):
+    lws_session.capacity("sqs").unlimited().apply()
 
 
 @given("no message slot is available")
-def no_message_slot_available():
-    pytest.skip("Cannot exhaust message slot limit")
+def no_message_slot_available(lws_session):
+    lws_session.capacity("sqs").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────

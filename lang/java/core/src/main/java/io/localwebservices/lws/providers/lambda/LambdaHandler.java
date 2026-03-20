@@ -115,6 +115,14 @@ public class LambdaHandler implements HttpHandler {
       String name = path.split("/")[4];
       if (IamMiddleware.applyIamAuth(state, "lambda", "Invoke", exchange, false)) return;
       if (ChaosMiddleware.applyChaos(state, "lambda", "Invoke", exchange, false)) return;
+      if (state.getCapacityConfig("lambda").isExhausted()) {
+        sendJson(
+            exchange,
+            429,
+            Map.of(
+                "__type", "TooManyRequestsException", "message", "Rate Exceeded."));
+        return;
+      }
       handleInvoke(name, exchange);
       return;
     }

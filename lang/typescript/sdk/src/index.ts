@@ -14,6 +14,7 @@ export { FakeBuilder, FakeRuleBuilder } from "./builders/fake";
 export { ChaosBuilder } from "./builders/chaos";
 export { IamBuilder, IdentityBuilder } from "./builders/iam";
 export { LifecycleBuilder } from "./builders/lifecycle";
+export { CapacityBuilder } from "./builders/capacity";
 export { LogCapture } from "./logs";
 export type { LogEntry } from "./logs";
 export type {

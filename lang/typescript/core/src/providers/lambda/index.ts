@@ -2,6 +2,7 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import type { ServerState } from "../../types";
+import { isExhausted } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
@@ -424,6 +425,14 @@ export function registerLambda(app: FastifyInstance, state: ServerState): Lambda
         return;
       }
       if (await applyFake(state, "lambda", "Invoke", req, reply)) {
+        recordLog(state, ctx, req.method, req.url, reply.statusCode);
+        return;
+      }
+      if (isExhausted(state.capacityConfigs["lambda"] ?? { slots: null })) {
+        reply
+          .status(429)
+          .header("Content-Type", "application/json")
+          .send({ __type: "TooManyRequestsException", message: "No invocation slot available" });
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
       }

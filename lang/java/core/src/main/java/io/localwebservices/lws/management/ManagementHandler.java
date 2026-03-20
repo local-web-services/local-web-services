@@ -49,6 +49,10 @@ public class ManagementHandler implements HttpHandler {
           if ("GET".equalsIgnoreCase(method)) handleGetChaos(exchange);
           else handlePostChaos(exchange);
           break;
+        case "/_ldk/capacity":
+          if ("GET".equalsIgnoreCase(method)) handleGetCapacity(exchange);
+          else handlePostCapacity(exchange);
+          break;
         case "/_ldk/iam-auth":
           if ("GET".equalsIgnoreCase(method)) handleGetIam(exchange);
           else handlePostIam(exchange);
@@ -218,6 +222,36 @@ public class ManagementHandler implements HttpHandler {
         state.fakeRules.remove(service);
       } else {
         state.fakeRules.put(service, config);
+      }
+    }
+    sendJson(exchange, 200, Map.of("status", "ok"));
+  }
+
+  private void handleGetCapacity(HttpExchange exchange) throws IOException {
+    Map<String, Object> result = new LinkedHashMap<>();
+    for (String service : ALL_SERVICES) {
+      ServerState.CapacityConfig cfg = state.getCapacityConfig(service);
+      Map<String, Object> entry = new LinkedHashMap<>();
+      entry.put("slots", cfg.getSlots());
+      result.put(service, entry);
+    }
+    sendJson(exchange, 200, result);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handlePostCapacity(HttpExchange exchange) throws IOException {
+    Map<String, Object> body = readJson(exchange);
+    for (Map.Entry<String, Object> entry : body.entrySet()) {
+      String service = entry.getKey();
+      Map<String, Object> config = (Map<String, Object>) entry.getValue();
+      ServerState.CapacityConfig cfg = state.getCapacityConfig(service);
+      if (config.containsKey("slots")) {
+        Object slotsVal = config.get("slots");
+        if (slotsVal == null) {
+          cfg.reset();
+        } else {
+          cfg.setSlots(((Number) slotsVal).intValue());
+        }
       }
     }
     sendJson(exchange, 200, Map.of("status", "ok"));

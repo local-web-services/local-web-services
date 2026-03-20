@@ -10,6 +10,7 @@ Display and config-loading helpers live in ``_ldk_dev_runner``.
 from __future__ import annotations
 
 import logging
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -216,8 +217,11 @@ async def _run_dev_terraform(project_dir: Path, config: LdkConfig) -> None:
     _console = Console()
 
     port = config.port
-    data_dir = project_dir / config.data_dir
-    data_dir.mkdir(parents=True, exist_ok=True)
+    if config.persist:
+        data_dir = project_dir / config.data_dir
+        data_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        data_dir = Path(tempfile.mkdtemp(prefix="ldk-"))
 
     # Generate override file
     try:

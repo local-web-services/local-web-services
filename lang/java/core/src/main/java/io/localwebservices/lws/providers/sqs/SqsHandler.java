@@ -77,6 +77,17 @@ public class SqsHandler implements HttpHandler {
       try {
         if (IamMiddleware.applyIamAuth(state, "sqs", action, exchange, !isJson)) return;
         if (ChaosMiddleware.applyChaos(state, "sqs", action, exchange, !isJson)) return;
+        if ("SendMessage".equals(action)
+            && state.getCapacityConfig("sqs").isExhausted()
+            && !isJson) {
+          sendError(
+              exchange,
+              "AWS.SimpleQueueService.QueueDeletedRecently",
+              "The queue does not have enough capacity.",
+              false,
+              400);
+          return;
+        }
 
         if (isJson) {
           handleJsonAction(action, jsonBody, exchange.getRequestURI().getPath(), exchange);
@@ -163,6 +174,15 @@ public class SqsHandler implements HttpHandler {
         }
       case "SendMessage":
         {
+          if (state.getCapacityConfig("sqs").isExhausted()) {
+            sendError(
+                exchange,
+                "AWS.SimpleQueueService.QueueDeletedRecently",
+                "The queue does not have enough capacity.",
+                true,
+                400);
+            break;
+          }
           String queueUrl = (String) body.get("QueueUrl");
           if (queueUrl == null) queueUrl = extractQueueUrlFromPath(path);
           SqsStore.LocalQueue q = store.getQueue(queueUrl);

@@ -162,23 +162,23 @@ def target_topic_is_not_deleted(lws_session):
 
 
 @given("an object slot is available")
-def object_slot_available():
-    """No-op: always room for objects."""
+def object_slot_available(lws_session):
+    lws_session.capacity("s3").unlimited().apply()
 
 
 @given("no object slot is available")
-def no_object_slot_available():
-    pytest.skip("Cannot exhaust object slot limit")
+def no_object_slot_available(lws_session):
+    lws_session.capacity("s3").exhaust().apply()
 
 
 @given("a message slot is available")
-def message_slot_available():
-    """No-op: always room for messages."""
+def message_slot_available(lws_session):
+    lws_session.capacity("sqs").unlimited().apply()
 
 
 @given("no message slot is available")
-def no_message_slot_available():
-    pytest.skip("Cannot exhaust message slot limit")
+def no_message_slot_available(lws_session):
+    lws_session.capacity("sqs").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────

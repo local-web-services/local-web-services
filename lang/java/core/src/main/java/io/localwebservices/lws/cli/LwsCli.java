@@ -106,4 +106,21 @@ public class LwsCli {
         "/_ldk/lifecycle",
         Map.of(service, Map.of("enabled", false, "create_dwell_ms", 0, "delete_dwell_ms", 0)));
   }
+
+  /** Exhausts capacity for a service (slots=0). */
+  public static void capacityExhaust(int port, String service) throws IOException {
+    post(port, "/_ldk/capacity", Map.of(service, Map.of("slots", 0)));
+  }
+
+  /** Resets capacity for a service to unlimited (slots=null). */
+  public static void capacityUnlimited(int port, String service) throws IOException {
+    java.util.Map<String, Object> slotMap = new java.util.LinkedHashMap<>();
+    slotMap.put("slots", null);
+    post(port, "/_ldk/capacity", Map.of(service, slotMap));
+  }
+
+  /** Returns the current capacity status from the management API. */
+  public static Map<String, Object> capacityStatus(int port) throws IOException {
+    return get(port, "/_ldk/capacity");
+  }
 }
