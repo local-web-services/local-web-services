@@ -12,9 +12,17 @@ SSM_PORT=$((BASE_PORT + 12))
 SM_PORT=$((BASE_PORT + 13))
 
 echo "=== Creating order ==="
-CREATE_RESPONSE=$(curl -sf -X POST "http://localhost:${APIGW_PORT}/orders" \
+HTTP_STATUS=$(curl -s -o /tmp/create_response.json -w "%{http_code}" -X POST "http://localhost:${APIGW_PORT}/orders" \
   -H "Content-Type: application/json" \
   -d '{"customerName": "Alice", "items": ["widget", "gadget"], "total": 49.99}')
+echo "HTTP Status: $HTTP_STATUS"
+echo "Response body:"
+cat /tmp/create_response.json
+if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+  echo "ERROR: Expected 2xx, got $HTTP_STATUS"
+  exit 1
+fi
+CREATE_RESPONSE=$(cat /tmp/create_response.json)
 
 echo "$CREATE_RESPONSE" | python3 -m json.tool
 
