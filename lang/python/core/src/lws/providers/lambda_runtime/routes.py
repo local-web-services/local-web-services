@@ -59,10 +59,6 @@ _resolve_code_path = resolve_code_path
 _resolve_code_path_from_name = resolve_code_path_from_name
 
 
-# ---------------------------------------------------------------------------
-# In-memory state for stubs
-# ---------------------------------------------------------------------------
-
 
 class _LambdaState:
     def __init__(self) -> None:

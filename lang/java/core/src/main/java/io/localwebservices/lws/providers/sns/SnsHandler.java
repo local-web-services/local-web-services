@@ -131,7 +131,10 @@ public class SnsHandler implements HttpHandler {
         {
           if (state.getCapacityConfig("sns").isExhausted()) {
             sendError(
-                exchange, "KMSThrottlingException", "No capacity available for SNS delivery.", true,
+                exchange,
+                "KMSThrottlingException",
+                "No capacity available for SNS delivery.",
+                true,
                 400);
             break;
           }
@@ -161,8 +164,11 @@ public class SnsHandler implements HttpHandler {
         {
           if (state.getCapacityConfig("sns").isExhausted()) {
             sendError(
-                exchange, "KMSThrottlingException", "No capacity available for SNS subscription.",
-                true, 400);
+                exchange,
+                "KMSThrottlingException",
+                "No capacity available for SNS subscription.",
+                true,
+                400);
             break;
           }
           String topicArn = (String) body.get("TopicArn");

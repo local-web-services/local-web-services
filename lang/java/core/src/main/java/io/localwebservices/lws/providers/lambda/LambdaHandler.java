@@ -119,8 +119,7 @@ public class LambdaHandler implements HttpHandler {
         sendJson(
             exchange,
             429,
-            Map.of(
-                "__type", "TooManyRequestsException", "message", "Rate Exceeded."));
+            Map.of("__type", "TooManyRequestsException", "message", "Rate Exceeded."));
         return;
       }
       handleInvoke(name, exchange);

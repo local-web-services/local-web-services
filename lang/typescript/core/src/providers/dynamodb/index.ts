@@ -55,7 +55,10 @@ export function registerDynamoDb(app: FastifyInstance, state: ServerState): Dyna
       return;
     }
 
-    if (operation === "PutItem" && isExhausted(state.capacityConfigs["dynamodb"] ?? { slots: null })) {
+    if (
+      operation === "PutItem" &&
+      isExhausted(state.capacityConfigs["dynamodb"] ?? { slots: null })
+    ) {
       errorReply(reply, "ProvisionedThroughputExceededException", "No write capacity available");
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;

@@ -32,8 +32,10 @@ public class ServerState {
   private final Map<String, CapacityConfig> capacityConfigs =
       Collections.synchronizedMap(new LinkedHashMap<>());
 
-  /** Per-service capacity configuration. {@code slots=null} means unlimited; {@code slots=0} means
-   * exhausted. */
+  /**
+   * Per-service capacity configuration. {@code slots=null} means unlimited; {@code slots=0} means
+   * exhausted.
+   */
   public static class CapacityConfig {
     private Integer slots;
 
