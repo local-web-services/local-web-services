@@ -8,7 +8,7 @@ for (const fn of functions) {
     bundle: true,
     platform: 'node',
     target: 'node20',
-    outdir: `lambda/dist/${fn}`,
+    outdir: `lambda/${fn}`,
     external: ['@aws-sdk/*'],
   });
 }

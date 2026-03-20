@@ -1,24 +1,24 @@
 data "archive_file" "create_order" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda/dist/create-order"
+  source_dir  = "${path.module}/lambda/create-order"
   output_path = "${path.module}/.terraform-build/create-order.zip"
 }
 
 data "archive_file" "get_order" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda/dist/get-order"
+  source_dir  = "${path.module}/lambda/get-order"
   output_path = "${path.module}/.terraform-build/get-order.zip"
 }
 
 data "archive_file" "process_order" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda/dist/process-order"
+  source_dir  = "${path.module}/lambda/process-order"
   output_path = "${path.module}/.terraform-build/process-order.zip"
 }
 
 data "archive_file" "generate_receipt" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda/dist/generate-receipt"
+  source_dir  = "${path.module}/lambda/generate-receipt"
   output_path = "${path.module}/.terraform-build/generate-receipt.zip"
 }
 
