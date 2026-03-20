@@ -700,7 +700,7 @@ jobs:
 
   # ── Java Example ────────────────────────────────────────────────────────────
   java-example-lint:
-    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test, java-core-unit-test]
+    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
     if: needs.changes.outputs.java-example == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -720,7 +720,7 @@ jobs:
         run: make lint format-check cpd spotbugs
 
   java-example-e2e-test:
-    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test, java-core-unit-test]
+    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
     if: needs.changes.outputs.java-example == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -740,7 +740,7 @@ jobs:
         run: make e2e-test
 
   java-example-architecture-test:
-    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test, java-core-unit-test]
+    needs: [changes, java-sdk-lint, java-sdk-e2e-test, java-sdk-architecture-test]
     if: needs.changes.outputs.java-example == 'true'
     runs-on: ubuntu-latest
     steps:
