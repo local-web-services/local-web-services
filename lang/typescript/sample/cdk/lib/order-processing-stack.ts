@@ -80,7 +80,7 @@ export class OrderProcessingStack extends cdk.Stack {
         QUEUE_URL: orderQueue.queueUrl,
       },
       bundling: {
-        externalModules: [],
+        externalModules: ['@aws-sdk/*'],
       },
     });
 
@@ -93,7 +93,7 @@ export class OrderProcessingStack extends cdk.Stack {
         TABLE_NAME: ordersTable.tableName,
       },
       bundling: {
-        externalModules: [],
+        externalModules: ['@aws-sdk/*'],
       },
     });
 
@@ -110,7 +110,7 @@ export class OrderProcessingStack extends cdk.Stack {
         NOTIFICATION_SECRET_ARN: notificationApiKey.secretArn,
       },
       bundling: {
-        externalModules: [],
+        externalModules: ['@aws-sdk/*'],
       },
     });
 
@@ -123,7 +123,7 @@ export class OrderProcessingStack extends cdk.Stack {
         BUCKET_NAME: receiptsBucket.bucketName,
       },
       bundling: {
-        externalModules: [],
+        externalModules: ['@aws-sdk/*'],
       },
     });
 
