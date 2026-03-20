@@ -9,6 +9,6 @@ for (const fn of functions) {
     platform: 'node',
     target: 'node20',
     outdir: `lambda/dist/${fn}`,
-    external: [],
+    external: ['@aws-sdk/*'],
   });
 }
