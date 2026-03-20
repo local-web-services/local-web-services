@@ -177,9 +177,7 @@ class StepFunctionsRouter:
         execution_arn = body.get("executionArn", "")
         history = self.provider.get_execution(execution_arn)
         if history is None:
-            return _error_response(
-                "ExecutionDoesNotExist", f"Execution not found: {execution_arn}"
-            )
+            return _error_response("ExecutionDoesNotExist", f"Execution not found: {execution_arn}")
         return _json_response(_format_execution(history))
 
     async def _list_executions(self, body: dict) -> Response:
@@ -486,12 +484,8 @@ def create_stepfunctions_app(
         )
     add_iam_auth_middleware(app, "stepfunctions", iam_auth, ErrorFormat.JSON)
     if chaos is not None:
-        app.add_middleware(
-            AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON
-        )
-    app.add_middleware(
-        RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions"
-    )
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions")
     sfn_router = StepFunctionsRouter(provider, lifecycle=lifecycle, capacity=capacity)
     if tracker_ref is not None:
         tracker_ref.append(sfn_router.tracker)

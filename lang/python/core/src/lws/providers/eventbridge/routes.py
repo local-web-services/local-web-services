@@ -92,9 +92,7 @@ def _check_sf_targets(
             if sm_state in ("CREATING", "DELETING"):
                 return Response(
                     content=json.dumps(
-                        {
-                            "Error": f"State machine is not ACTIVE: {arn} (status: {sm_state})"
-                        }
+                        {"Error": f"State machine is not ACTIVE: {arn} (status: {sm_state})"}
                     ),
                     status_code=400,
                     media_type="application/json",
@@ -129,9 +127,7 @@ async def _lifecycle_delete_event_bus(
     bus_name = body.get("Name", "")
     if tracker.get_state(bus_name) == "CREATING":
         return Response(
-            content=json.dumps(
-                {"Error": f"Event bus {bus_name} is still being created"}
-            ),
+            content=json.dumps({"Error": f"Event bus {bus_name} is still being created"}),
             status_code=400,
             media_type="application/json",
         )
@@ -158,14 +154,10 @@ def _build_eventbridge_app(
     """Create and configure the FastAPI app with middleware."""
     app = FastAPI(title="LDK EventBridge")
     if aws_fake is not None:
-        app.add_middleware(
-            AwsOperationFakeMiddleware, fake_config=aws_fake, service="events"
-        )
+        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="events")
     add_iam_auth_middleware(app, "events", iam_auth, ErrorFormat.JSON)
     if chaos is not None:
-        app.add_middleware(
-            AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON
-        )
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     return app
 
 
@@ -219,11 +211,7 @@ async def _eventbridge_dispatch(
     if err is not None:
         return err
 
-    if (
-        target == "AWSEvents.PutEvents"
-        and sqs_capacity is not None
-        and sqs_capacity.is_exhausted
-    ):
+    if target == "AWSEvents.PutEvents" and sqs_capacity is not None and sqs_capacity.is_exhausted:
         return Response(
             content=json.dumps(
                 {
@@ -250,9 +238,7 @@ async def _eventbridge_dispatch(
         )
 
     if lc.enabled:
-        result = await _handle_eventbridge_lifecycle(
-            target, handler, provider, body, lc, tracker
-        )
+        result = await _handle_eventbridge_lifecycle(target, handler, provider, body, lc, tracker)
         if result is not None:
             return result
 
@@ -279,9 +265,7 @@ def create_eventbridge_app(
     _tracker = ResourceStateTracker(_lc)
 
     app = _build_eventbridge_app(chaos, aws_fake, iam_auth)
-    app.add_middleware(
-        RequestLoggingMiddleware, logger=_logger, service_name="eventbridge"
-    )
+    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="eventbridge")
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:

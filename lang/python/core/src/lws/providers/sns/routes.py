@@ -189,9 +189,7 @@ async def _sns_dispatch(
         return Response(content=xml, status_code=400, media_type="text/xml")
 
     if lc.enabled:
-        result = await _handle_sns_lifecycle(
-            action, handler, provider, params, lc, tracker
-        )
+        result = await _handle_sns_lifecycle(action, handler, provider, params, lc, tracker)
         if result is not None:
             return result
 
@@ -212,14 +210,10 @@ def create_sns_app(
 
     app = FastAPI(title="LDK SNS")
     if aws_fake is not None:
-        app.add_middleware(
-            AwsOperationFakeMiddleware, fake_config=aws_fake, service="sns"
-        )
+        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="sns")
     add_iam_auth_middleware(app, "sns", iam_auth, ErrorFormat.XML_IAM)
     if chaos is not None:
-        app.add_middleware(
-            AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM
-        )
+        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sns")
 
     @app.post("/")
