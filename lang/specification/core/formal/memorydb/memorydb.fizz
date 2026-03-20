@@ -192,7 +192,7 @@ atomic action CompleteSnapshotDeletion:
                 tag_exists[sid] = False
 
 # step: a cluster is restored from a snapshot
-# result: the restored cluster is in CREATING state
+# result: the restored cluster is in RESTORING state
 # guard: the snapshot exists
 # guard_violation: the snapshot does not exist
 # guard: the snapshot is AVAILABLE
@@ -205,11 +205,24 @@ atomic action RestoreCluster:
             if snapshot_status[sid] == "AVAILABLE":
                 oneof cid in CLUSTER_IDS:
                     if cid not in cluster_status:
-                        cluster_status[cid] = "CREATING"
+                        cluster_status[cid] = "RESTORING"
                         cluster_multi_az[cid] = True
                         cluster_acl[cid] = ""
                         cluster_writes_persisted[cid] = True
                         tag_exists[cid] = True
+
+# fake_skip: internal
+# step: a cluster restore from snapshot completes
+# result: the cluster is AVAILABLE
+# guard: the cluster exists
+# guard_violation: the cluster does not exist
+# guard: the cluster is RESTORING
+# guard_violation: the cluster is not RESTORING
+atomic action CompleteClusterRestore:
+    oneof cid in CLUSTER_IDS:
+        if cid in cluster_status:
+            if cluster_status[cid] == "RESTORING":
+                cluster_status[cid] = "AVAILABLE"
 
 # step: an ACL is created
 # result: the ACL is in CREATING state

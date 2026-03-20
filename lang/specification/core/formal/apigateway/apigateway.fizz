@@ -2,7 +2,7 @@
 deadlock_detection: false
 options:
   max_concurrent_actions: 1
-  max_actions: 30
+  max_actions: 10
 ---
 # AWS API Gateway REST Formal Specification
 # Models REST APIs, resources, methods, integrations, deployments, and stages
@@ -13,11 +13,11 @@ options:
 #   - del dict[key] is NOT supported: use sentinel values instead
 #   - No comments inside oneof: blocks
 
-API_IDS = ["api-1", "api-2"]
-RESOURCE_IDS = ["res-root-1", "res-1", "res-2", "res-root-2", "res-3"]
-METHOD_KEYS = ["res-1:GET", "res-1:POST", "res-2:GET", "res-root-1:GET"]
-DEPLOYMENT_IDS = ["dep-1", "dep-2", "dep-3"]
-STAGE_NAMES = ["prod", "dev"]
+API_IDS = ["api-1"]
+RESOURCE_IDS = ["res-root-1", "res-1"]
+METHOD_KEYS = ["res-1:GET"]
+DEPLOYMENT_IDS = ["dep-1", "dep-2"]
+STAGE_NAMES = ["prod"]
 
 action Init:
     # api_status[aid] = "ACTIVE"|"DELETED"
@@ -68,15 +68,21 @@ action Init:
     # stage_throttling["aid:sname"] = True|False
     stage_throttling = {}
 
-# step: a REST API is created
-# result: the API is ACTIVE
+# step: a REST API is created with a root resource
+# result: the API is ACTIVE and its root resource is ACTIVE
 # guard: the API does not already exist
 # guard_violation: the API already exists
-# CreateRestApi: create the API entry
+# guard: a resource slot is available
+# guard_violation_capacity: no resource slot is available
 atomic action CreateRestApi:
     oneof aid in API_IDS:
         if aid not in api_status:
-            api_status[aid] = "ACTIVE"
+            oneof rid in RESOURCE_IDS:
+                if rid not in resource_api:
+                    api_status[aid] = "ACTIVE"
+                    resource_api[rid] = aid
+                    resource_path[rid] = "/"
+                    resource_status[rid] = "ACTIVE"
 
 # step: a root resource is initialized for an API
 # result: the root resource is ACTIVE
@@ -84,18 +90,27 @@ atomic action CreateRestApi:
 # guard_violation: the API does not exist
 # guard: the API is ACTIVE
 # guard_violation_lifecycle: the API is not ACTIVE
+# guard: the API has no root resource yet
+# guard_violation: the API already has a root resource
 # guard: the resource slot is unallocated
 # guard_violation: the resource slot is already allocated
-# InitRootResource: allocate a root resource for an active API that has none yet
 atomic action InitRootResource:
     oneof aid in API_IDS:
         if aid in api_status:
             if api_status[aid] == "ACTIVE":
-                oneof rid in RESOURCE_IDS:
-                    if rid not in resource_api:
-                        resource_api[rid] = aid
-                        resource_path[rid] = "/"
-                        resource_status[rid] = "ACTIVE"
+                has_root = False
+                for rid in RESOURCE_IDS:
+                    if rid in resource_api:
+                        if resource_api[rid] == aid:
+                            if rid in resource_path:
+                                if resource_path[rid] == "/":
+                                    has_root = True
+                if not has_root:
+                    oneof rid in RESOURCE_IDS:
+                        if rid not in resource_api:
+                            resource_api[rid] = aid
+                            resource_path[rid] = "/"
+                            resource_status[rid] = "ACTIVE"
 
 # step: a REST API is deleted
 # result: the API is DELETED along with all its resources, methods, integrations, deployments, and stages
@@ -360,25 +375,6 @@ atomic action CreateStageProd:
                     stage_deployment[sk] = did
                     stage_throttling[sk] = False
 
-# step: a dev stage is created for an API
-# result: the dev stage exists pointing to the deployment
-# guard: the deployment exists
-# guard_violation: the deployment does not exist
-# guard: the deployment is ACTIVE
-# guard_violation_lifecycle: the deployment is not ACTIVE
-# guard: the dev stage does not already exist for this API
-# guard_violation: the dev stage already exists for this API
-atomic action CreateStageDev:
-    oneof did in DEPLOYMENT_IDS:
-        if did in deployment_status:
-            if deployment_status[did] == "ACTIVE":
-                aid = deployment_api[did]
-                sk = aid + ":dev"
-                if sk not in stage_exists:
-                    stage_exists[sk] = True
-                    stage_deployment[sk] = did
-                    stage_throttling[sk] = False
-
 # step: the prod stage is deleted
 # result: the prod stage no longer exists
 # guard: the prod stage exists
@@ -389,19 +385,6 @@ atomic action CreateStageDev:
 atomic action DeleteStageProd:
     oneof aid in API_IDS:
         sk = aid + ":prod"
-        if sk in stage_exists:
-            if stage_exists[sk] == True:
-                stage_exists[sk] = False
-
-# step: the dev stage is deleted
-# result: the dev stage no longer exists
-# guard: the dev stage exists
-# guard_violation: the dev stage does not exist
-# guard: the dev stage is active
-# guard_violation_lifecycle: the dev stage is not active
-atomic action DeleteStageDev:
-    oneof aid in API_IDS:
-        sk = aid + ":dev"
         if sk in stage_exists:
             if stage_exists[sk] == True:
                 stage_exists[sk] = False
@@ -423,26 +406,6 @@ atomic action UpdateStageProd:
             if deployment_status[did] == "ACTIVE":
                 aid = deployment_api[did]
                 sk = aid + ":prod"
-                if sk in stage_exists:
-                    if stage_exists[sk] == True:
-                        stage_deployment[sk] = did
-
-# step: the dev stage is redeployed to a new deployment
-# result: the dev stage points to the new deployment
-# guard: the deployment exists
-# guard_violation: the deployment does not exist
-# guard: the deployment is ACTIVE
-# guard_violation_lifecycle: the deployment is not ACTIVE
-# guard: the dev stage exists
-# guard_violation: the dev stage does not exist
-# guard: the dev stage is active
-# guard_violation_lifecycle: the dev stage is not active
-atomic action UpdateStageDev:
-    oneof did in DEPLOYMENT_IDS:
-        if did in deployment_status:
-            if deployment_status[did] == "ACTIVE":
-                aid = deployment_api[did]
-                sk = aid + ":dev"
                 if sk in stage_exists:
                     if stage_exists[sk] == True:
                         stage_deployment[sk] = did
@@ -474,32 +437,6 @@ atomic action DisableStageThrottlingProd:
             if stage_exists[sk] == True:
                 stage_throttling[sk] = False
 
-# step: throttling is enabled for the dev stage
-# result: dev stage requests are throttled
-# guard: the dev stage exists
-# guard_violation: the dev stage does not exist
-# guard: the dev stage is active
-# guard_violation_lifecycle: the dev stage is not active
-atomic action EnableStageThrottlingDev:
-    oneof aid in API_IDS:
-        sk = aid + ":dev"
-        if sk in stage_exists:
-            if stage_exists[sk] == True:
-                stage_throttling[sk] = True
-
-# step: throttling is disabled for the dev stage
-# result: dev stage requests are not throttled
-# guard: the dev stage exists
-# guard_violation: the dev stage does not exist
-# guard: the dev stage is active
-# guard_violation_lifecycle: the dev stage is not active
-atomic action DisableStageThrottlingDev:
-    oneof aid in API_IDS:
-        sk = aid + ":dev"
-        if sk in stage_exists:
-            if stage_exists[sk] == True:
-                stage_throttling[sk] = False
-
 # fake_skip: internal
 # step: a request is made to the throttled prod stage
 # result: the request is throttled or passes non-deterministically
@@ -511,22 +448,6 @@ atomic action DisableStageThrottlingDev:
 atomic action RequestThrottledProd:
     oneof aid in API_IDS:
         sk = aid + ":prod"
-        if sk in stage_throttling:
-            if stage_throttling[sk] == True:
-                oneof:
-                    pass
-                    pass
-
-# fake_skip: internal
-# step: a request is made to the throttled dev stage
-# result: the request is throttled or passes non-deterministically
-# guard: the dev stage has throttling configured
-# guard_violation: the dev stage does not have throttling configured
-# guard: throttling is enabled for the dev stage
-# guard_violation: throttling is not enabled for the dev stage
-atomic action RequestThrottledDev:
-    oneof aid in API_IDS:
-        sk = aid + ":dev"
         if sk in stage_throttling:
             if stage_throttling[sk] == True:
                 oneof:

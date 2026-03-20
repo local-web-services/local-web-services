@@ -23,7 +23,7 @@ Feature: Sqs - A Queue Is Deleted
     When a queue is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_queue @lifecycle @internal
+  @standard @negative @delete_queue @lifecycle
   Scenario: a queue is deleted fails when the queue is not "ACTIVE"
     Given the queue exists
     And the queue is not "ACTIVE"

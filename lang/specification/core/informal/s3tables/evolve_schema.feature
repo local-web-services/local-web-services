@@ -24,7 +24,7 @@ Feature: S3tables - A Table'S Schema Is Evolved
     When a table's schema is evolved
     Then the operation is rejected
 
-  @standard @negative @evolve_schema @lifecycle @internal
+  @standard @negative @evolve_schema @lifecycle
   Scenario: a table's schema is evolved fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

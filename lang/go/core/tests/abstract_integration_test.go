@@ -44,6 +44,8 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the bus is "ACTIVE"$`, func() error {
+		world.ebBusIsDeleted = false
+		world.ebBusNotActive = false
 		return nil
 	})
 
@@ -74,10 +76,14 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 		_, err := world.EventBridgeClient().DeleteEventBus(context.Background(), &eventbridge.DeleteEventBusInput{
 			Name: aws.String(testEventBus),
 		})
+		if err == nil {
+			world.ebBusIsDeleted = true
+		}
 		return err
 	})
 
 	sc.Step(`^the bus is not "DELETED"$`, func() error {
+		world.ebBusIsDeleted = false
 		return nil
 	})
 
@@ -92,6 +98,7 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.Step(`^the bus does not exist or is not "ACTIVE"$`, func() error {
 		// Bus was never created, so it does not exist (not ACTIVE).
+		world.ebBusNotActive = true
 		return nil
 	})
 
@@ -148,10 +155,15 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 		if err := ebCreateBus(world); err != nil {
 			return err
 		}
-		return ebPutRule(world)
+		if err := ebPutRule(world); err != nil {
+			return err
+		}
+		world.ebRuleCreated = true
+		return nil
 	})
 
 	sc.Step(`^no rule is "ENABLED"$`, func() error {
+		world.ebRuleCreated = false
 		return nil
 	})
 
@@ -275,10 +287,14 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 		_, err := world.SQSClient().DeleteQueue(context.Background(), &sqs.DeleteQueueInput{
 			QueueUrl: aws.String(world.SQSQueueURL(testSQSQueue)),
 		})
+		if err == nil {
+			world.s3TargetQueueDeleted = true
+		}
 		return err
 	})
 
 	sc.Step(`^the target queue is not "DELETED"$`, func() error {
+		world.s3TargetQueueDeleted = false
 		return nil
 	})
 
@@ -300,11 +316,13 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 		})
 		if err == nil {
 			world.lastTopicArn = ""
+			world.s3TargetTopicDeleted = true
 		}
 		return err
 	})
 
 	sc.Step(`^the target topic is not "DELETED"$`, func() error {
+		world.s3TargetTopicDeleted = false
 		return nil
 	})
 
@@ -328,10 +346,14 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 		_, err := world.EventBridgeClient().DeleteEventBus(context.Background(), &eventbridge.DeleteEventBusInput{
 			Name: aws.String(testEventBus),
 		})
+		if err == nil {
+			world.s3TargetBusDeleted = true
+		}
 		return err
 	})
 
 	sc.Step(`^the target bus is not "DELETED"$`, func() error {
+		world.s3TargetBusDeleted = false
 		return nil
 	})
 
@@ -894,6 +916,11 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 
 	// events_dynamodb: event matching — simulate EB routing by writing item to DDB directly.
 	sc.Step(`^an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target$`, func() error {
+		// Reject if no rule is enabled — a required precondition.
+		if !world.ebRuleCreated {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: no ENABLED rule exists to match the event"))
+			return nil
+		}
 		if err := ddbCreateTable(world); err != nil {
 			setResult(world, nil, err)
 			return nil
@@ -966,6 +993,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 			setResult(world, nil, fmt.Errorf("InvalidRequest: bucket has no notification configuration"))
 			return nil
 		}
+		// Reject when the target bus is deleted — event delivery would fail and the
+		// happy-path "event delivered" scenario cannot succeed.
+		if world.s3TargetBusDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: target EventBridge bus has been deleted"))
+			return nil
+		}
 		out, err := world.S3Client().PutObject(context.Background(), &s3.PutObjectInput{
 			Bucket: aws.String(testS3Bucket),
 			Key:    aws.String(testS3Key),
@@ -978,6 +1011,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Step(`^an object is uploaded but event delivery fails because the bus has been deleted$`, func() error {
 		if !world.s3NotificationConfigured {
 			setResult(world, nil, fmt.Errorf("InvalidRequest: bucket has no notification configuration"))
+			return nil
+		}
+		// This scenario requires the bus to be DELETED. If the bus is NOT deleted,
+		// the delivery would succeed — so the "delivery fails" scenario is rejected.
+		if !world.s3TargetBusDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: target EventBridge bus is not deleted; delivery will succeed"))
 			return nil
 		}
 		out, err := world.S3Client().PutObject(context.Background(), &s3.PutObjectInput{
@@ -1074,6 +1113,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 			setResult(world, nil, fmt.Errorf("InvalidRequest: bucket has no notification configuration"))
 			return nil
 		}
+		// Reject when the target topic is deleted — notification delivery would fail and
+		// the happy-path "notification published" scenario cannot succeed.
+		if world.s3TargetTopicDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: target SNS topic has been deleted"))
+			return nil
+		}
 		out, err := world.S3Client().PutObject(context.Background(), &s3.PutObjectInput{
 			Bucket: aws.String(testS3Bucket),
 			Key:    aws.String(testS3Key),
@@ -1086,6 +1131,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Step(`^an object is uploaded but notification delivery fails because the topic has been deleted$`, func() error {
 		if !world.s3NotificationConfigured {
 			setResult(world, nil, fmt.Errorf("InvalidRequest: bucket has no notification configuration"))
+			return nil
+		}
+		// This scenario requires the topic to be DELETED. If the topic is NOT deleted,
+		// delivery would succeed — so the "delivery fails" scenario is rejected.
+		if !world.s3TargetTopicDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: target SNS topic is not deleted; delivery will succeed"))
 			return nil
 		}
 		out, err := world.S3Client().PutObject(context.Background(), &s3.PutObjectInput{
@@ -1103,6 +1154,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 			setResult(world, nil, fmt.Errorf("InvalidRequest: bucket has no notification configuration"))
 			return nil
 		}
+		// Reject when the target queue is deleted — notification delivery would fail and
+		// the happy-path "notification queued" scenario cannot succeed.
+		if world.s3TargetQueueDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: target SQS queue has been deleted"))
+			return nil
+		}
 		out, err := world.S3Client().PutObject(context.Background(), &s3.PutObjectInput{
 			Bucket: aws.String(testS3Bucket),
 			Key:    aws.String(testS3Key),
@@ -1115,6 +1172,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Step(`^an object is uploaded but notification delivery fails because the queue has been deleted$`, func() error {
 		if !world.s3NotificationConfigured {
 			setResult(world, nil, fmt.Errorf("InvalidRequest: bucket has no notification configuration"))
+			return nil
+		}
+		// This scenario requires the queue to be DELETED. If the queue is NOT deleted,
+		// delivery would succeed — so the "delivery fails" scenario is rejected.
+		if !world.s3TargetQueueDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: target SQS queue is not deleted; delivery will succeed"))
 			return nil
 		}
 		out, err := world.S3Client().PutObject(context.Background(), &s3.PutObjectInput{
@@ -1216,6 +1279,11 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 
 	// events_sns: consume message - verify topic has "AVAILABLE" message (world.lastResult already set by prior step)
 	sc.Step(`^a subscriber consumes a message from the "SNS" topic$`, func() error {
+		// Reject if no AVAILABLE message exists on the topic — a required precondition.
+		if !world.snsTopicHasMessage {
+			setResult(world, nil, fmt.Errorf("NoMessageAvailable: no AVAILABLE message exists on the topic"))
+			return nil
+		}
 		// The "AVAILABLE message exists on the topic" Given step already set up the topic.
 		// Consuming from SNS in the fake means receiving from an SQS queue subscribed to the topic.
 		// Since the fake does not have SNS pull-based delivery, we model this as success.
@@ -1240,10 +1308,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^an "AVAILABLE" message exists on the topic$`, func() error {
+		world.snsTopicHasMessage = true
 		return nil
 	})
 
 	sc.Step(`^no "AVAILABLE" message exists on the topic$`, func() error {
+		world.snsTopicHasMessage = false
 		return nil
 	})
 
@@ -1408,6 +1478,11 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 			setResult(world, nil, fmt.Errorf("InvalidArgument: state machine already has an EventBridge bus configured"))
 			return nil
 		}
+		// Reject when the bus does not exist or is not ACTIVE.
+		if world.ebBusNotActive {
+			setResult(world, nil, fmt.Errorf("InvalidArgument: EventBridge bus does not exist or is not ACTIVE"))
+			return nil
+		}
 		setResult(world, map[string]string{"status": "configured"}, nil)
 		return nil
 	})
@@ -1416,6 +1491,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Step(`^a running execution succeeds and Step Functions delivers a "SUCCEEDED" event to the bus$`, func() error {
 		if world.lastExecutionArn == "" {
 			setResult(world, nil, fmt.Errorf("ValidationException: no execution is RUNNING"))
+			return nil
+		}
+		// Reject when the bus is DELETED — event delivery would fail, so the happy-path
+		// "event delivered" scenario cannot succeed.
+		if world.ebBusIsDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: EventBridge bus is DELETED; event cannot be delivered"))
 			return nil
 		}
 		// Simulate execution completion: the fake does not auto-complete, so we
@@ -1429,6 +1510,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 			setResult(world, nil, fmt.Errorf("ValidationException: no execution is RUNNING"))
 			return nil
 		}
+		// This scenario requires the bus to be DELETED. If the bus is NOT deleted,
+		// event delivery would succeed — so the "delivery fails" scenario is rejected.
+		if !world.ebBusIsDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: EventBridge bus is not DELETED; event delivery will succeed"))
+			return nil
+		}
 		// Simulate execution completion with failed event delivery (bus deleted).
 		setResult(world, map[string]string{"status": "SUCCEEDED", "event": "NOT_DELIVERED"}, nil)
 		return nil
@@ -1438,6 +1525,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Step(`^an execution starts and Step Functions delivers a "STARTED" event to the EventBridge bus$`, func() error {
 		if world.sfnNoTaskConfigured {
 			setResult(world, nil, fmt.Errorf("InvalidArgument: state machine has no EventBridge bus configured"))
+			return nil
+		}
+		// Reject when the bus is DELETED — event delivery would fail, so the happy-path
+		// "event delivered" scenario cannot succeed.
+		if world.ebBusIsDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: EventBridge bus is DELETED; STARTED event cannot be delivered"))
 			return nil
 		}
 		out, err := world.SFNClient().StartExecution(context.Background(), &sfn.StartExecutionInput{
@@ -1454,6 +1547,12 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Step(`^an execution starts but the "STARTED" event delivery fails because the bus is deleted$`, func() error {
 		if world.sfnNoTaskConfigured {
 			setResult(world, nil, fmt.Errorf("InvalidArgument: state machine has no EventBridge bus configured"))
+			return nil
+		}
+		// This scenario requires the bus to be DELETED. If the bus is NOT deleted,
+		// event delivery would succeed — so the "delivery fails" scenario is rejected.
+		if !world.ebBusIsDeleted {
+			setResult(world, nil, fmt.Errorf("InvalidRequest: EventBridge bus is not DELETED; STARTED event delivery will succeed"))
 			return nil
 		}
 		out, err := world.SFNClient().StartExecution(context.Background(), &sfn.StartExecutionInput{

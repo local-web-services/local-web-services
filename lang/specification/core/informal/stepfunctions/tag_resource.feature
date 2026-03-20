@@ -25,7 +25,7 @@ Feature: Stepfunctions - Tags Are Added To A State Machine
     When tags are added to a state machine
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle @internal
+  @standard @negative @tag_resource @lifecycle
   Scenario: tags are added to a state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"

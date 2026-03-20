@@ -605,6 +605,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [{ name = "boto3" }]
+provides-extras = ["test"]
 
 [package.metadata.requires-dev]
 dev = [

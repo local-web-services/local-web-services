@@ -24,7 +24,7 @@ Feature: Elasticsearch - Tags Are Added To A Domain
     When tags are added to a domain
     Then the operation is rejected
 
-  @standard @negative @add_tags @lifecycle @internal
+  @standard @negative @add_tags @lifecycle
   Scenario: tags are added to a domain fails when the domain is being deleted
     Given the domain exists
     And the domain is being deleted

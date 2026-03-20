@@ -7,7 +7,7 @@ Feature: Dynamodb - Write Throttling Is Toggled On Or Off
   Background:
     Given the system is initialized
 
-  @minimal @happy @set_throttle_writes @internal
+  @minimal @happy @set_throttle_writes
   Scenario: write throttling is toggled on or off
     When write throttling is toggled on or off
     Then writes are throttled or unthrottled

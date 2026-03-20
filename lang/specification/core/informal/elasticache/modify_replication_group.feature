@@ -25,7 +25,7 @@ Feature: Elasticache - A Replication Group Configuration Is Modified
     When a replication group configuration is modified
     Then the operation is rejected
 
-  @standard @negative @modify_replication_group @lifecycle @internal
+  @standard @negative @modify_replication_group @lifecycle
   Scenario: a replication group configuration is modified fails when the replication group is not "AVAILABLE"
     Given the replication group exists
     And the replication group is not "AVAILABLE"

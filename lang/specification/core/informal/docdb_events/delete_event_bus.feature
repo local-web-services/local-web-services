@@ -22,7 +22,7 @@ Feature: DocdbEvents - The Eventbridge Event Bus Is Deleted
     When the EventBridge event bus is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_event_bus @lifecycle @internal
+  @standard @negative @delete_event_bus @lifecycle
   Scenario: the EventBridge event bus is deleted fails when the bus is already "DELETED"
     Given the bus exists
     And the bus is already "DELETED"

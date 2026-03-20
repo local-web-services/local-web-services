@@ -26,7 +26,7 @@ Feature: StepfunctionsLambda - A Lambda Task Is Configured On The State Machine
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_task @lifecycle @internal
+  @standard @negative @configure_task @lifecycle
   Scenario: a Lambda task is configured on the state machine fails when the state machine is not "ACTIVE"
     Given the state machine exists
     And the state machine is not "ACTIVE"
@@ -50,7 +50,7 @@ Feature: StepfunctionsLambda - A Lambda Task Is Configured On The State Machine
     When a Lambda task is configured on the state machine
     Then the operation is rejected
 
-  @standard @negative @configure_task @lifecycle @internal
+  @standard @negative @configure_task @lifecycle
   Scenario: a Lambda task is configured on the state machine fails when the function is not "ACTIVE"
     Given the state machine exists
     And the state machine is "ACTIVE"

@@ -25,7 +25,7 @@ Feature: EventsSns - An Eventbridge Rule Is Created To Route Matching Events To 
     When an EventBridge rule is created to route matching events to an "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle @internal
+  @standard @negative @put_rule @lifecycle
   Scenario: an EventBridge rule is created to route matching events to an "SNS" topic fails when the event bus is not "ACTIVE"
     Given the event bus exists
     And the event bus is not "ACTIVE"
@@ -40,7 +40,7 @@ Feature: EventsSns - An Eventbridge Rule Is Created To Route Matching Events To 
     When an EventBridge rule is created to route matching events to an "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_rule @lifecycle @internal
+  @standard @negative @put_rule @lifecycle
   Scenario: an EventBridge rule is created to route matching events to an "SNS" topic fails when the topic is not "ACTIVE"
     Given the event bus exists
     And the event bus is "ACTIVE"

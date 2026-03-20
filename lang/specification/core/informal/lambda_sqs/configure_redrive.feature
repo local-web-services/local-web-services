@@ -27,7 +27,7 @@ Feature: LambdaSqs - The Sqs Queue Is Configured With A Dead-Letter Queue
     When the "SQS" queue is configured with a dead-letter queue
     Then the operation is rejected
 
-  @standard @negative @configure_redrive @lifecycle @internal
+  @standard @negative @configure_redrive @lifecycle
   Scenario: the "SQS" queue is configured with a dead-letter queue fails when the source queue is not "ACTIVE"
     Given the source queue exists
     And the source queue is not "ACTIVE"
@@ -42,7 +42,7 @@ Feature: LambdaSqs - The Sqs Queue Is Configured With A Dead-Letter Queue
     When the "SQS" queue is configured with a dead-letter queue
     Then the operation is rejected
 
-  @standard @negative @configure_redrive @lifecycle @internal
+  @standard @negative @configure_redrive @lifecycle
   Scenario: the "SQS" queue is configured with a dead-letter queue fails when the dead-letter queue is not "ACTIVE"
     Given the source queue exists
     And the source queue is "ACTIVE"

@@ -2,7 +2,7 @@
 Feature: Neptune - A Database Cluster Creation Fails
 
   # Generated from FizzBee spec: neptune.fizz
-  # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, NoAvailableInstancesOnFailedCluster
+  # Safety invariants: ValidClusterStatus, ValidInstanceStatus, ValidSnapshotStatus, StoppedClusterHasNoAvailableInstances, StoppedClusterInstancesNotModifiable, NoAvailableInstancesOnDeletedCluster, BackingUpClusterHasSnapshot, NoAvailableInstancesOnFailedCluster
 
   Background:
     Given the system is initialized
@@ -19,6 +19,7 @@ Feature: Neptune - A Database Cluster Creation Fails
     And a stopped cluster has no available instances
     And instances on a stopped or stopping cluster are not in "MODIFYING" state
     And a deleted cluster has no available instances
+    And every backing-up cluster has a corresponding in-progress snapshot
     And a failed cluster has no available instances
 
   @standard @negative @fail_cluster_creation @internal

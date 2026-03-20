@@ -35,7 +35,7 @@ Feature: Lambda - An Event Source Mapping Is Created
     When an event source mapping is created
     Then the operation is rejected
 
-  @standard @negative @create_event_source_mapping @lifecycle @internal
+  @standard @negative @create_event_source_mapping @lifecycle
   Scenario: an event source mapping is created fails when the function is not "ACTIVE"
     Given the event source mapping does not already exist
     And the function exists

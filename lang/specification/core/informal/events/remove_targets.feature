@@ -45,7 +45,7 @@ Feature: Events - Targets Are Removed From A Rule
     When targets are removed from a rule
     Then the operation is rejected
 
-  @standard @negative @remove_targets @internal
+  @standard @negative @remove_targets
   Scenario: targets are removed from a rule fails when the target association is not active
     Given the rule exists
     And the rule is not "DELETED"

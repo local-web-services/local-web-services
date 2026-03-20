@@ -25,7 +25,7 @@ Feature: S3apiLambda - An S3 Event Notification Is Configured To Invoke A Lambda
     When an S3 event notification is configured to invoke a Lambda function on object "PUT"
     Then the operation is rejected
 
-  @standard @negative @configure_notification @lifecycle @internal
+  @standard @negative @configure_notification @lifecycle
   Scenario: an S3 event notification is configured to invoke a Lambda function on object "PUT" fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"
@@ -49,7 +49,7 @@ Feature: S3apiLambda - An S3 Event Notification Is Configured To Invoke A Lambda
     When an S3 event notification is configured to invoke a Lambda function on object "PUT"
     Then the operation is rejected
 
-  @standard @negative @configure_notification @lifecycle @internal
+  @standard @negative @configure_notification @lifecycle
   Scenario: an S3 event notification is configured to invoke a Lambda function on object "PUT" fails when the function is not "ACTIVE"
     Given the bucket exists
     And the bucket is "ACTIVE"

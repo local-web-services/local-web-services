@@ -257,74 +257,42 @@ public class LwsSession implements AutoCloseable {
 
   /** Returns a pre-configured RDS client pointing at the local emulator. */
   public RdsClient rdsClient() {
-    return RdsClient.builder()
-        .endpointOverride(endpointFor("rds"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider(testCredentials())
-        .build();
+    return AwsClientFactory.rdsClient(this);
   }
 
   /** Returns a pre-configured DocDB client pointing at the local emulator. */
   public DocDbClient docDbClient() {
-    return DocDbClient.builder()
-        .endpointOverride(endpointFor("docdb"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider(testCredentials())
-        .build();
+    return AwsClientFactory.docDbClient(this);
   }
 
   /** Returns a pre-configured Neptune client pointing at the local emulator. */
   public NeptuneClient neptuneClient() {
-    return NeptuneClient.builder()
-        .endpointOverride(endpointFor("neptune"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider(testCredentials())
-        .build();
+    return AwsClientFactory.neptuneClient(this);
   }
 
   /** Returns a pre-configured ElastiCache client pointing at the local emulator. */
   public ElastiCacheClient elastiCacheClient() {
-    return ElastiCacheClient.builder()
-        .endpointOverride(endpointFor("elasticache"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider(testCredentials())
-        .build();
+    return AwsClientFactory.elastiCacheClient(this);
   }
 
   /** Returns a pre-configured MemoryDB client pointing at the local emulator. */
   public MemoryDbClient memoryDbClient() {
-    return MemoryDbClient.builder()
-        .endpointOverride(endpointFor("memorydb"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider(testCredentials())
-        .build();
+    return AwsClientFactory.memoryDbClient(this);
   }
 
   /** Returns a pre-configured Glacier client pointing at the local emulator. */
   public GlacierClient glacierClient() {
-    return GlacierClient.builder()
-        .endpointOverride(endpointFor("glacier"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider(testCredentials())
-        .build();
+    return AwsClientFactory.glacierClient(this);
   }
 
   /** Returns a pre-configured Elasticsearch client pointing at the local emulator. */
   public ElasticsearchClient elasticsearchClient() {
-    return ElasticsearchClient.builder()
-        .endpointOverride(endpointFor("elasticsearch"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider(testCredentials())
-        .build();
+    return AwsClientFactory.elasticsearchClient(this);
   }
 
   /** Returns a pre-configured OpenSearch client pointing at the local emulator. */
   public OpenSearchClient openSearchClient() {
-    return OpenSearchClient.builder()
-        .endpointOverride(endpointFor("opensearch"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider(testCredentials())
-        .build();
+    return AwsClientFactory.openSearchClient(this);
   }
 
   /** Returns a pre-configured S3Tables client pointing at the local emulator. */
@@ -412,6 +380,13 @@ public class LwsSession implements AutoCloseable {
   /** Returns an {@link IamBuilder} for configuring IAM authentication mode. */
   public IamBuilder iam() {
     return new IamBuilder(this);
+  }
+
+  /**
+   * Returns a {@link LifecycleBuilder} for configuring lifecycle simulation of the given service.
+   */
+  public LifecycleBuilder lifecycle(String service) {
+    return new LifecycleBuilder(this, service);
   }
 
   /** Returns a {@link DynamoDbHelper} bound to the given table name. */

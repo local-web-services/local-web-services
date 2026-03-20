@@ -22,7 +22,7 @@ Feature: LambdaRds - A Multi-Az Failover Begins On The Rds Instance
     When a Multi-"AZ" failover begins on the "RDS" instance
     Then the operation is rejected
 
-  @standard @negative @d_b_failover_begins @lifecycle @internal
+  @standard @negative @d_b_failover_begins @lifecycle
   Scenario: a Multi-"AZ" failover begins on the "RDS" instance fails when the instance is not "AVAILABLE"
     Given the instance exists
     And the instance is not "AVAILABLE"

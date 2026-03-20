@@ -19,7 +19,7 @@ Feature: S3apiSns - An Object Is Uploaded And S3 Publishes A Notification To The
     And every "PUBLISHED" notification references an object that exists
     And every "PUBLISHED" notification references a topic that exists
 
-  @standard @negative @put_object_with_notification @lifecycle @internal
+  @standard @negative @put_object_with_notification @lifecycle
   Scenario: an object is uploaded and S3 publishes a notification to the "SNS" topic fails when the bucket is not "ACTIVE"
     Given the bucket is not "ACTIVE"
     When an object is uploaded and S3 publishes a notification to the "SNS" topic
@@ -32,7 +32,7 @@ Feature: S3apiSns - An Object Is Uploaded And S3 Publishes A Notification To The
     When an object is uploaded and S3 publishes a notification to the "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_object_with_notification @lifecycle @internal
+  @standard @negative @put_object_with_notification @lifecycle
   Scenario: an object is uploaded and S3 publishes a notification to the "SNS" topic fails when the target topic is "DELETED"
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration
@@ -40,7 +40,7 @@ Feature: S3apiSns - An Object Is Uploaded And S3 Publishes A Notification To The
     When an object is uploaded and S3 publishes a notification to the "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_object_with_notification @capacity @internal
+  @standard @negative @put_object_with_notification @capacity
   Scenario: an object is uploaded and S3 publishes a notification to the "SNS" topic fails when no object slot is available
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration
@@ -49,7 +49,7 @@ Feature: S3apiSns - An Object Is Uploaded And S3 Publishes A Notification To The
     When an object is uploaded and S3 publishes a notification to the "SNS" topic
     Then the operation is rejected
 
-  @standard @negative @put_object_with_notification @capacity @internal
+  @standard @negative @put_object_with_notification @capacity
   Scenario: an object is uploaded and S3 publishes a notification to the "SNS" topic fails when no message slot is available
     Given the bucket is "ACTIVE"
     And the bucket has a notification configuration

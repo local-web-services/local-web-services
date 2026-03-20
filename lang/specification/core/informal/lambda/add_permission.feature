@@ -27,7 +27,7 @@ Feature: Lambda - A Permission Is Added To A Function'S Resource Policy
     When a permission is added to a function's resource policy
     Then the operation is rejected
 
-  @standard @negative @add_permission @lifecycle @internal
+  @standard @negative @add_permission @lifecycle
   Scenario: a permission is added to a function's resource policy fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"

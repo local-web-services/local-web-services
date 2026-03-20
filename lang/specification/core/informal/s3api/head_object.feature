@@ -26,7 +26,7 @@ Feature: S3api - Object Metadata Is Retrieved From A Bucket
     When object metadata is retrieved from a bucket
     Then the operation is rejected
 
-  @standard @negative @head_object @lifecycle @internal
+  @standard @negative @head_object @lifecycle
   Scenario: object metadata is retrieved from a bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

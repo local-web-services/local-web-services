@@ -22,7 +22,7 @@ Feature: StepfunctionsDocdb - The Documentdb Cluster Is Stopped
     When the DocumentDB cluster is stopped
     Then the operation is rejected
 
-  @standard @negative @stop_cluster @lifecycle @internal
+  @standard @negative @stop_cluster @lifecycle
   Scenario: the DocumentDB cluster is stopped fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

@@ -168,6 +168,7 @@ def api_is_not_active(world):
 
 
 @given("the resource slot is unallocated")
+@given("a resource slot is available")
 def resource_slot_unallocated():
     """No-op: fresh state has no allocated resource slots."""
 
@@ -457,6 +458,7 @@ def prod_stage_does_not_have_throttling_configured(world):
 
 
 @when('a "REST" "API" is created')
+@when('a "REST" "API" is created with a root resource')
 def create_rest_api(client: TestClient, world):
     r = client.post("/restapis", json={"name": INT_API_NAME})
     if r.status_code < 300:
@@ -1010,6 +1012,7 @@ def request_throttled_prod(client: TestClient, world):
 
 
 @then('the "API" is "ACTIVE"')
+@then('the "API" is "ACTIVE" and its root resource is "ACTIVE"')
 def api_is_active_then(world):
     actual_result = world["result"]
     assert actual_result is not None, "Expected REST API creation result but got None"

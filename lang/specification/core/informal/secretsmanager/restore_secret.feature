@@ -29,14 +29,14 @@ Feature: Secretsmanager - A Deleted Secret Is Restored Within The Recovery Windo
     When a deleted secret is restored within the recovery window
     Then the operation is rejected
 
-  @standard @negative @restore_secret @lifecycle @internal
+  @standard @negative @restore_secret @lifecycle
   Scenario: a deleted secret is restored within the recovery window fails when the secret is not "DELETED"
     Given the secret exists
     And the secret is not "DELETED"
     When a deleted secret is restored within the recovery window
     Then the operation is rejected
 
-  @standard @negative @restore_secret @lifecycle @internal
+  @standard @negative @restore_secret @lifecycle
   Scenario: a deleted secret is restored within the recovery window fails when the recovery window is not open
     Given the secret exists
     And the secret is "DELETED"

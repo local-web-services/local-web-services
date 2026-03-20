@@ -57,10 +57,16 @@ class _FakeRuleBuilder:
         self._parent = parent
         self._operation = operation
         self._match_headers: dict[str, str] = {}
+        self._delay_ms: int = 0
 
     def with_header(self, name: str, value: str) -> _FakeRuleBuilder:
         """Add an additional header match constraint."""
         self._match_headers[name] = value
+        return self
+
+    def delay_ms(self, ms: int) -> _FakeRuleBuilder:
+        """Set an artificial delay before responding."""
+        self._delay_ms = int(ms)
         return self
 
     def respond(
@@ -91,7 +97,7 @@ class _FakeRuleBuilder:
             "response": {
                 "status": status,
                 "content_type": content_type,
-                "delay_ms": delay_ms,
+                "delay_ms": delay_ms or self._delay_ms,
             },
         }
         if body_str:

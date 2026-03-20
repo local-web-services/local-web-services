@@ -15,7 +15,7 @@ Feature: LambdaDocdb - The Documentdb Cluster Is Started
     And every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function
     And every existing document references a cluster that exists
 
-  @standard @negative @start_cluster @lifecycle @internal
+  @standard @negative @start_cluster @lifecycle
   Scenario: the DocumentDB cluster is started fails when the cluster is not "STOPPED"
     Given the cluster is not "STOPPED"
     When the DocumentDB cluster is started

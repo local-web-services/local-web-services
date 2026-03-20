@@ -22,7 +22,7 @@ Feature: StepfunctionsEvents - A Running Execution Succeeds But The Succeeded Ev
     When a running execution succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted
     Then the operation is rejected
 
-  @standard @negative @execution_succeeds_event_fails @lifecycle @internal
+  @standard @negative @execution_succeeds_event_fails @lifecycle
   Scenario: a running execution succeeds but the "SUCCEEDED" event delivery fails because the bus is deleted fails when the bus is not "DELETED"
     Given an execution is "RUNNING"
     And the bus is not "DELETED"

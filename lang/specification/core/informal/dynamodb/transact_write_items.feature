@@ -28,14 +28,14 @@ Feature: Dynamodb - A Transactional Write Is Initiated Across One Or More Items
     When a transactional write is initiated across one or more items
     Then the operation is rejected
 
-  @standard @negative @transact_write_items @lifecycle @internal
+  @standard @negative @transact_write_items @lifecycle
   Scenario: a transactional write is initiated across one or more items fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When a transactional write is initiated across one or more items
     Then the operation is rejected
 
-  @standard @negative @transact_write_items @capacity @internal
+  @standard @negative @transact_write_items @capacity
   Scenario: a transactional write is initiated across one or more items fails when writes are throttled
     Given the table exists
     And the table is "ACTIVE"
@@ -43,7 +43,7 @@ Feature: Dynamodb - A Transactional Write Is Initiated Across One Or More Items
     When a transactional write is initiated across one or more items
     Then the operation is rejected
 
-  @standard @negative @transact_write_items @internal
+  @standard @negative @transact_write_items
   Scenario: a transactional write is initiated across one or more items fails when a transaction is currently in progress
     Given the table exists
     And the table is "ACTIVE"

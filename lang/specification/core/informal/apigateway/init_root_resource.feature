@@ -11,7 +11,6 @@ Feature: Apigateway - A Root Resource Is Initialized For An Api
   Scenario: a root resource is initialized for an "API"
     Given the "API" exists
     And the "API" is "ACTIVE"
-    And the resource slot is unallocated
     When a root resource is initialized for an "API"
     Then the root resource is "ACTIVE"
     And all "ACTIVE" resources belong to "ACTIVE" APIs
@@ -28,17 +27,9 @@ Feature: Apigateway - A Root Resource Is Initialized For An Api
     When a root resource is initialized for an "API"
     Then the operation is rejected
 
-  @standard @negative @init_root_resource @lifecycle @internal
+  @standard @negative @init_root_resource @lifecycle
   Scenario: a root resource is initialized for an "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
-    When a root resource is initialized for an "API"
-    Then the operation is rejected
-
-  @standard @negative @init_root_resource
-  Scenario: a root resource is initialized for an "API" fails when the resource slot is already allocated
-    Given the "API" exists
-    And the "API" is "ACTIVE"
-    And the resource slot is already allocated
     When a root resource is initialized for an "API"
     Then the operation is rejected

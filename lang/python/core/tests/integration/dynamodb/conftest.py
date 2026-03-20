@@ -619,6 +619,7 @@ def table_is_active_then(client: TestClient):
 
 
 @then("the table is deleted")
+@then('the table enters "DELETING" state and all its items are removed')
 def table_is_deleted_then(client: TestClient):
     r = _post(client, "ListTables", {})
     actual_tables = r.json().get("TableNames", [])

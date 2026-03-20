@@ -28,7 +28,7 @@ Feature: Secretsmanager - Tags Are Added To An Active Secret
     When tags are added to an active secret
     Then the operation is rejected
 
-  @standard @negative @tag_resource @lifecycle @internal
+  @standard @negative @tag_resource @lifecycle
   Scenario: tags are added to an active secret fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

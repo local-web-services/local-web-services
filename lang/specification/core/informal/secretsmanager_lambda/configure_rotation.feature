@@ -17,7 +17,7 @@ Feature: SecretsmanagerLambda - Rotation Is Configured On The Secret Linking It 
     And every "ROTATING" secret has an "IN_PROGRESS" rotation invocation
     And every successful rotation invocation recorded which secret it rotated
 
-  @standard @negative @configure_rotation @lifecycle @internal
+  @standard @negative @configure_rotation @lifecycle
   Scenario: rotation is configured on the secret linking it to the Lambda rotation function fails when the secret does not exist or is not "ACTIVE"
     Given the secret does not exist or is not "ACTIVE"
     When rotation is configured on the secret linking it to the Lambda rotation function

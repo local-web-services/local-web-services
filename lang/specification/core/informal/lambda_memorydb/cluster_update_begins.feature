@@ -22,7 +22,7 @@ Feature: LambdaMemorydb - A Memorydb Cluster Update Begins
     When a MemoryDB cluster update begins
     Then the operation is rejected
 
-  @standard @negative @cluster_update_begins @lifecycle @internal
+  @standard @negative @cluster_update_begins @lifecycle
   Scenario: a MemoryDB cluster update begins fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

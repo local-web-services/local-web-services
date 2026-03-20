@@ -41,7 +41,7 @@ export class IamBuilder {
 
 export class IdentityBuilder {
   private inlinePolicies: Array<Record<string, unknown>> = [];
-  private boundary: Record<string, unknown> | undefined;
+  private boundaryPolicy: Record<string, unknown> | undefined;
 
   constructor(
     private readonly parent: IamBuilder,
@@ -62,11 +62,19 @@ export class IdentityBuilder {
     return this;
   }
 
+  boundary(actions: string[], resource = "*"): IdentityBuilder {
+    this.boundaryPolicy = {
+      Version: "2012-10-17",
+      Statement: [{ Effect: "Allow", Action: actions, Resource: resource }],
+    };
+    return this;
+  }
+
   apply(): IamBuilder {
     const config: Record<string, unknown> = {
       inline_policies: this.inlinePolicies,
     };
-    if (this.boundary) config.boundary_policy = this.boundary;
+    if (this.boundaryPolicy) config.boundary_policy = this.boundaryPolicy;
     this.parent._registerIdentity(this.name, config);
     return this.parent;
   }

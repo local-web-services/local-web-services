@@ -44,7 +44,7 @@ Feature: CognitoIdp - An Admin Initiates Authentication On Behalf Of A Confirmed
     When an admin initiates authentication on behalf of a confirmed enabled user
     Then the operation is rejected
 
-  @standard @negative @admin_initiate_auth @capacity @internal
+  @standard @negative @admin_initiate_auth @capacity
   Scenario: an admin initiates authentication on behalf of a confirmed enabled user fails when the session slot is not available
     Given the user exists
     And the user is "CONFIRMED"

@@ -24,7 +24,7 @@ Feature: S3api - Versioning Is Configured On A Bucket
     When versioning is configured on a bucket
     Then the operation is rejected
 
-  @standard @negative @put_bucket_versioning @lifecycle @internal
+  @standard @negative @put_bucket_versioning @lifecycle
   Scenario: versioning is configured on a bucket fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

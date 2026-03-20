@@ -13,7 +13,7 @@ Feature: Rds - A Database Instance Is Restored From A Snapshot
     And the snapshot is "AVAILABLE"
     And the target instance slot is available
     When a database instance is restored from a snapshot
-    Then the restored instance is in "CREATING" state
+    Then the restored instance is in "RESTORING" state
     And every database instance has a valid status
     And every database snapshot has a valid status
     And every backing-up instance has a corresponding in-progress snapshot
@@ -24,7 +24,7 @@ Feature: Rds - A Database Instance Is Restored From A Snapshot
     When a database instance is restored from a snapshot
     Then the operation is rejected
 
-  @standard @negative @restore_d_b_instance_from_d_b_snapshot @lifecycle @internal
+  @standard @negative @restore_d_b_instance_from_d_b_snapshot @lifecycle
   Scenario: a database instance is restored from a snapshot fails when the snapshot is not "AVAILABLE"
     Given the snapshot exists
     And the snapshot is not "AVAILABLE"

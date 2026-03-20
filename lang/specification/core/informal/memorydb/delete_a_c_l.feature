@@ -25,7 +25,7 @@ Feature: Memorydb - An Acl Is Deleted
     When an "ACL" is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_a_c_l @lifecycle @internal
+  @standard @negative @delete_a_c_l @lifecycle
   Scenario: an "ACL" is deleted fails when the "ACL" is not "ACTIVE"
     Given the "ACL" exists
     And the "ACL" is not "ACTIVE"

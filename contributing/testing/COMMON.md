@@ -2,6 +2,17 @@
 
 This document defines the testing conventions shared across all test levels (unit, integration, E2E). It is intended for both human contributors and AI agents.
 
+## Zero Defect Policy
+
+**We have a zero defect policy. All tests must pass. There are no acceptable failing tests.**
+
+- Never skip, suppress, or filter out a failing test to make CI green
+- Never use `pytest.skip()`, `@skip`, `@xfail`, `xit`, or `test.skip` as a workaround for unimplemented behaviour
+- Never use `--no-verify` to bypass the pre-commit hook
+- If a Gherkin scenario is tagged `@internal` (requires internal/private API state not reachable via public AWS API) or `@capacity` (requires enforcing slot limits the fake does not implement), it is filtered from the standard test run via `addopts` — this is the only permitted form of exclusion, and it must be declared in the spec via the tag, not silently skipped in step definitions
+- The Gherkin feature files in `lang/specification/` are the **source of truth**. Implementation must be updated to match the spec — the spec is never changed to match the implementation
+- When a pre-commit hook check fails, fix the root cause; do not bypass the hook
+
 ## Test Levels
 
 Every new feature must include tests at the appropriate levels:

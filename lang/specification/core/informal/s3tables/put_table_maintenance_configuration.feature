@@ -24,7 +24,7 @@ Feature: S3tables - Maintenance Configuration Is Applied To A Table
     When maintenance configuration is applied to a table
     Then the operation is rejected
 
-  @standard @negative @put_table_maintenance_configuration @lifecycle @internal
+  @standard @negative @put_table_maintenance_configuration @lifecycle
   Scenario: maintenance configuration is applied to a table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

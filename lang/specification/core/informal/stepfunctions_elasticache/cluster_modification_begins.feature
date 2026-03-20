@@ -22,7 +22,7 @@ Feature: StepfunctionsElasticache - A Cluster Modification Begins
     When a cluster modification begins
     Then the operation is rejected
 
-  @standard @negative @cluster_modification_begins @lifecycle @internal
+  @standard @negative @cluster_modification_begins @lifecycle
   Scenario: a cluster modification begins fails when the cluster is not "AVAILABLE"
     Given the cluster exists
     And the cluster is not "AVAILABLE"

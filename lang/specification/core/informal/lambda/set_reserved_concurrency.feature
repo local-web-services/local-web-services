@@ -27,7 +27,7 @@ Feature: Lambda - Reserved Concurrency Is Set For A Function
     When reserved concurrency is set for a function
     Then the operation is rejected
 
-  @standard @negative @set_reserved_concurrency @lifecycle @internal
+  @standard @negative @set_reserved_concurrency @lifecycle
   Scenario: reserved concurrency is set for a function fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"

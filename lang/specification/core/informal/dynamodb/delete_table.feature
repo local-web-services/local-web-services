@@ -12,7 +12,7 @@ Feature: Dynamodb - A Table Is Deleted
     Given the table exists
     And the table is "ACTIVE"
     When a table is deleted
-    Then the table is marked as "DELETED" and all its items are removed
+    Then the table enters "DELETING" state and all its items are removed
     And every table has a valid status ("CREATING", "ACTIVE", or "DELETED")
     And "GSI" pending write count is never negative
     And transaction status is always a valid value
@@ -26,7 +26,7 @@ Feature: Dynamodb - A Table Is Deleted
     When a table is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_table @lifecycle @internal
+  @standard @negative @delete_table @lifecycle
   Scenario: a table is deleted fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"

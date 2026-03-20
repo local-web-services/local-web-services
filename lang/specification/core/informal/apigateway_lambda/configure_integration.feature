@@ -26,7 +26,7 @@ Feature: ApigatewayLambda - A Lambda Integration Is Configured On The Rest Api
     When a Lambda integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle @internal
+  @standard @negative @configure_integration @lifecycle
   Scenario: a Lambda integration is configured on the "REST" "API" fails when the "API" is not "ACTIVE"
     Given the "API" exists
     And the "API" is not "ACTIVE"
@@ -50,7 +50,7 @@ Feature: ApigatewayLambda - A Lambda Integration Is Configured On The Rest Api
     When a Lambda integration is configured on the "REST" "API"
     Then the operation is rejected
 
-  @standard @negative @configure_integration @lifecycle @internal
+  @standard @negative @configure_integration @lifecycle
   Scenario: a Lambda integration is configured on the "REST" "API" fails when the function is not "ACTIVE"
     Given the "API" exists
     And the "API" is "ACTIVE"

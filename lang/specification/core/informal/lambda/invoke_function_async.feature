@@ -28,14 +28,14 @@ Feature: Lambda - A Function Is Invoked Asynchronously
     When a function is invoked asynchronously
     Then the operation is rejected
 
-  @standard @negative @invoke_function_async @lifecycle @internal
+  @standard @negative @invoke_function_async @lifecycle
   Scenario: a function is invoked asynchronously fails when the function is not "ACTIVE"
     Given the function exists
     And the function is not "ACTIVE"
     When a function is invoked asynchronously
     Then the operation is rejected
 
-  @standard @negative @invoke_function_async @capacity @internal
+  @standard @negative @invoke_function_async @capacity
   Scenario: a function is invoked asynchronously fails when no async slot is available
     Given the function exists
     And the function is "ACTIVE"

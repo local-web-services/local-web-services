@@ -29,7 +29,7 @@ Feature: Apigateway - The Prod Stage Is Redeployed To A New Deployment
     When the prod stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_prod @lifecycle @internal
+  @standard @negative @update_stage_prod @lifecycle
   Scenario: the prod stage is redeployed to a new deployment fails when the deployment is not "ACTIVE"
     Given the deployment exists
     And the deployment is not "ACTIVE"
@@ -44,7 +44,7 @@ Feature: Apigateway - The Prod Stage Is Redeployed To A New Deployment
     When the prod stage is redeployed to a new deployment
     Then the operation is rejected
 
-  @standard @negative @update_stage_prod @lifecycle @internal
+  @standard @negative @update_stage_prod @lifecycle
   Scenario: the prod stage is redeployed to a new deployment fails when the prod stage is not active
     Given the deployment exists
     And the deployment is "ACTIVE"

@@ -337,9 +337,12 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the message's queue does not exist$`, func() error {
-		// Default state: no queue has been created. The queue URL resolves to a
-		// non-existent queue and ReceiveMessage will return QueueDoesNotExist.
-		return nil
+		// The "the message exists" step creates the queue; delete it so that
+		// ReceiveMessage will return QueueDoesNotExist as expected.
+		_, err := world.SQSClient().DeleteQueue(context.Background(), &sqs.DeleteQueueInput{
+			QueueUrl: aws.String(world.SQSQueueURL(testSQSQueue)),
+		})
+		return err
 	})
 
 	sc.Step(`^the message's queue is "ACTIVE"$`, func() error {
@@ -845,6 +848,27 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.Step(`^the table is marked as "DELETED"$`, func() error {
 		return verifySuccess(world)
+	})
+
+	sc.Step(`^the table enters "([^"]*)" state and all its items are removed$`, func(_ string) error {
+		// Arrange
+		if err := verifySuccess(world); err != nil {
+			return err
+		}
+
+		// Act
+		result, err := world.DynamoDBClient().ListTables(context.Background(), &dynamodb.ListTablesInput{})
+		if err != nil {
+			return fmt.Errorf("list tables: %w", err)
+		}
+
+		// Assert
+		for _, actualTable := range result.TableNames {
+			if actualTable == testDDBTable {
+				return fmt.Errorf("expected table %q to be removed after deletion but it still exists", testDDBTable)
+			}
+		}
+		return nil
 	})
 
 	sc.Step(`^the table metadata is returned$`, func() error {
@@ -2516,21 +2540,28 @@ func registerAbstractSteps(sc *godog.ScenarioContext, world *World) {
 	})
 
 	sc.Step(`^the parameter is not active$`, func() error {
-		// Create a parameter then delete it so it is inactive (does not exist).
+		// Create parameters then delete them so they are inactive (do not exist).
+		// "the parameter exists" creates both testSSMParam and testSSMParam2; delete
+		// both so that DeleteParameters finds no active parameters and is rejected.
 		// This state is reachable via public APIs.
-		_, err := world.SSMClient().PutParameter(context.Background(), &ssm.PutParameterInput{
-			Name:      aws.String(testSSMParam),
-			Value:     aws.String(testSSMValue),
-			Type:      ssmtypes.ParameterTypeString,
-			Overwrite: aws.Bool(true),
-		})
-		if err != nil {
-			return err
+		for _, name := range []string{testSSMParam, testSSMParam2} {
+			_, err := world.SSMClient().PutParameter(context.Background(), &ssm.PutParameterInput{
+				Name:      aws.String(name),
+				Value:     aws.String(testSSMValue),
+				Type:      ssmtypes.ParameterTypeString,
+				Overwrite: aws.Bool(true),
+			})
+			if err != nil {
+				return err
+			}
+			_, err = world.SSMClient().DeleteParameter(context.Background(), &ssm.DeleteParameterInput{
+				Name: aws.String(name),
+			})
+			if err != nil {
+				return err
+			}
 		}
-		_, err = world.SSMClient().DeleteParameter(context.Background(), &ssm.DeleteParameterInput{
-			Name: aws.String(testSSMParam),
-		})
-		return err
+		return nil
 	})
 
 	sc.Step(`^the parameter does not exist$`, func() error {

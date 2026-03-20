@@ -26,7 +26,7 @@ Feature: Glacier - An Archive Is Uploaded To A Vault
     When an archive is uploaded to a vault
     Then the operation is rejected
 
-  @standard @negative @upload_archive @lifecycle @internal
+  @standard @negative @upload_archive @lifecycle
   Scenario: an archive is uploaded to a vault fails when the vault is not "ACTIVE"
     Given the vault exists
     And the vault is not "ACTIVE"

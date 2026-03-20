@@ -26,14 +26,14 @@ Feature: SnsLambda - A Message Is Published To An Sns Topic And Asynchronously I
     When a message is published to an "SNS" topic and asynchronously invokes the subscribed Lambda function
     Then the operation is rejected
 
-  @standard @negative @publish_and_invoke @lifecycle @internal
+  @standard @negative @publish_and_invoke @lifecycle
   Scenario: a message is published to an "SNS" topic and asynchronously invokes the subscribed Lambda function fails when the topic is not "ACTIVE"
     Given the topic exists
     And the topic is not "ACTIVE"
     When a message is published to an "SNS" topic and asynchronously invokes the subscribed Lambda function
     Then the operation is rejected
 
-  @standard @negative @publish_and_invoke @lifecycle @internal
+  @standard @negative @publish_and_invoke @lifecycle
   Scenario: a message is published to an "SNS" topic and asynchronously invokes the subscribed Lambda function fails when no confirmed subscription exists for the topic
     Given the topic exists
     And the topic is "ACTIVE"
@@ -41,7 +41,7 @@ Feature: SnsLambda - A Message Is Published To An Sns Topic And Asynchronously I
     When a message is published to an "SNS" topic and asynchronously invokes the subscribed Lambda function
     Then the operation is rejected
 
-  @standard @negative @publish_and_invoke @lifecycle @internal
+  @standard @negative @publish_and_invoke @lifecycle
   Scenario: a message is published to an "SNS" topic and asynchronously invokes the subscribed Lambda function fails when the subscribed function is not "ACTIVE"
     Given the topic exists
     And the topic is "ACTIVE"
@@ -50,7 +50,7 @@ Feature: SnsLambda - A Message Is Published To An Sns Topic And Asynchronously I
     When a message is published to an "SNS" topic and asynchronously invokes the subscribed Lambda function
     Then the operation is rejected
 
-  @standard @negative @publish_and_invoke @capacity @internal
+  @standard @negative @publish_and_invoke @capacity
   Scenario: a message is published to an "SNS" topic and asynchronously invokes the subscribed Lambda function fails when no invocation slot is available
     Given the topic exists
     And the topic is "ACTIVE"

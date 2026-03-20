@@ -28,7 +28,7 @@ Feature: Apigateway - A Prod Stage Is Created For An Api
     When a prod stage is created for an "API"
     Then the operation is rejected
 
-  @standard @negative @create_stage_prod @lifecycle @internal
+  @standard @negative @create_stage_prod @lifecycle
   Scenario: a prod stage is created for an "API" fails when the deployment is not "ACTIVE"
     Given the deployment exists
     And the deployment is not "ACTIVE"

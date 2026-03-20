@@ -27,14 +27,14 @@ Feature: Dynamodb - An Item Is Conditionally Written To The Table
     When an item is conditionally written to the table
     Then the operation is rejected
 
-  @standard @negative @conditional_put_item @lifecycle @internal
+  @standard @negative @conditional_put_item @lifecycle
   Scenario: an item is conditionally written to the table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When an item is conditionally written to the table
     Then the operation is rejected
 
-  @standard @negative @conditional_put_item @capacity @internal
+  @standard @negative @conditional_put_item @capacity
   Scenario: an item is conditionally written to the table fails when writes are throttled
     Given the table exists
     And the table is "ACTIVE"

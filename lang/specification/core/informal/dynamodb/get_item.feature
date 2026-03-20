@@ -27,14 +27,14 @@ Feature: Dynamodb - An Item Is Read From The Table
     When an item is read from the table
     Then the operation is rejected
 
-  @standard @negative @get_item @lifecycle @internal
+  @standard @negative @get_item @lifecycle
   Scenario: an item is read from the table fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When an item is read from the table
     Then the operation is rejected
 
-  @standard @negative @get_item @capacity @internal
+  @standard @negative @get_item @capacity
   Scenario: an item is read from the table fails when reads are throttled
     Given the table exists
     And the table is "ACTIVE"

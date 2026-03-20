@@ -22,7 +22,7 @@ Feature: LambdaSsm - A Parameter Is Deleted From Ssm Parameter Store
     When a parameter is deleted from "SSM" Parameter Store
     Then the operation is rejected
 
-  @standard @negative @delete_parameter @lifecycle @internal
+  @standard @negative @delete_parameter @lifecycle
   Scenario: a parameter is deleted from "SSM" Parameter Store fails when the parameter is already "DELETED"
     Given the parameter exists
     And the parameter is already "DELETED"

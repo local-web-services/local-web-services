@@ -26,7 +26,7 @@ Feature: S3api - A Multipart Upload Is Aborted
     When a multipart upload is aborted
     Then the operation is rejected
 
-  @standard @negative @abort_multipart_upload @lifecycle @internal
+  @standard @negative @abort_multipart_upload @lifecycle
   Scenario: a multipart upload is aborted fails when the bucket is not "ACTIVE"
     Given the bucket exists
     And the bucket is not "ACTIVE"

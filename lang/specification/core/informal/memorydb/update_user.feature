@@ -25,7 +25,7 @@ Feature: Memorydb - A User Is Updated
     When a user is updated
     Then the operation is rejected
 
-  @standard @negative @update_user @lifecycle @internal
+  @standard @negative @update_user @lifecycle
   Scenario: a user is updated fails when the user is not "ACTIVE"
     Given the user exists
     And the user is not "ACTIVE"

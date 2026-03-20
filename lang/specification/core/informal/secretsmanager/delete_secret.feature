@@ -28,7 +28,7 @@ Feature: Secretsmanager - A Secret Is Deleted
     When a secret is deleted
     Then the operation is rejected
 
-  @standard @negative @delete_secret @lifecycle @internal
+  @standard @negative @delete_secret @lifecycle
   Scenario: a secret is deleted fails when the secret is not "ACTIVE"
     Given the secret exists
     And the secret is not "ACTIVE"

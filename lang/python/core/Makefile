@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install lint format format-check complexity cpd pylint unit-test integration-test architecture-test test check
+.PHONY: help install lint format format-check complexity cpd pylint unit-test integration-test architecture-test test test-e2e check
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
@@ -40,5 +40,8 @@ architecture-test: ## Run architecture constraint tests
 	uv run pytest tests/architecture
 
 test: unit-test integration-test architecture-test ## Run all tests (unit + integration + architecture)
+
+test-e2e: ## No-op: core has no e2e tests (e2e lives in sdk and example)
+	@true
 
 check: lint format-check complexity cpd pylint test ## Run all checks (what CI runs)

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { LwsSession } from "../../src/session";
+import { LwsSession, parameter, secret } from "../../src/session";
 
 // Mock the in-process server so _start() never spawns a real HTTP server.
 const mockServerClose = jest.fn().mockResolvedValue(undefined);
@@ -240,6 +240,82 @@ describe("LwsSession", () => {
       expect(process.env.AWS_DEFAULT_REGION).toBe("us-east-1");
 
       await session.close();
+    });
+  });
+
+  describe("lifecycle", () => {
+    it("returns a LifecycleBuilder for the given service", async () => {
+      // Arrange
+      const session = await LwsSession.create({});
+      const expectedService = "dynamodb";
+
+      // Act
+      const actual = session.lifecycle(expectedService);
+
+      // Assert
+      expect(actual).toBeDefined();
+
+      await session.close();
+    });
+  });
+
+  describe("recentLogs", () => {
+    it("calls /_ldk/logs/recent and returns parsed log entries", async () => {
+      // Arrange
+      const expectedEntries = [{ service: "dynamodb", operation: "PutItem", level: "INFO" }];
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValue(expectedEntries),
+      });
+      const session = await LwsSession.create({});
+
+      // Act
+      const actualEntries = await session.recentLogs();
+
+      // Assert
+      expect(actualEntries).toEqual(expectedEntries);
+
+      await session.close();
+    });
+
+    it("returns an empty array when the endpoint responds with a non-ok status", async () => {
+      // Arrange
+      (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: false });
+      const session = await LwsSession.create({});
+
+      // Act
+      const actualEntries = await session.recentLogs();
+
+      // Assert
+      expect(actualEntries).toEqual([]);
+
+      await session.close();
+    });
+  });
+
+  describe("parameter", () => {
+    it("returns a resource with the correct spec shape for an SSM parameter", () => {
+      // Arrange
+      const expectedName = "/app/config/key";
+
+      // Act
+      const actual = parameter(expectedName);
+
+      // Assert
+      expect(actual._spec.parameters).toEqual([{ name: expectedName }]);
+    });
+  });
+
+  describe("secret", () => {
+    it("returns a resource with the correct spec shape for a Secrets Manager secret", () => {
+      // Arrange
+      const expectedName = "my-app-secret";
+
+      // Act
+      const actual = secret(expectedName);
+
+      // Assert
+      expect(actual._spec.secrets).toEqual([{ name: expectedName }]);
     });
   });
 

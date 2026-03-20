@@ -886,3 +886,18 @@ def transaction_slot_is_free_then(world):
 @then('the "GSI" is consistent with the table')
 def gsi_is_consistent_with_table():
     pytest.skip("Cannot verify GSI consistency in this abstract context")
+
+
+@then('the table enters "DELETING" state and all its items are removed')
+def table_enters_deleting_state_then(lws_session, world):
+    expected_error = None
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected delete operation to succeed but got: {actual_error}"
+    client = _dynamo(lws_session)
+    resp = client.list_tables()
+    actual_tables = resp.get("TableNames", [])
+    assert (
+        TEST_TABLE not in actual_tables
+    ), f"Expected table '{TEST_TABLE}' to be removed but found in: {actual_tables}"

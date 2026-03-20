@@ -35,7 +35,7 @@ Feature: Apigateway - A Get Method Is Created On A Resource
     When a "GET" method is created on a resource
     Then the operation is rejected
 
-  @standard @negative @put_method_get @lifecycle @internal
+  @standard @negative @put_method_get @lifecycle
   Scenario: a "GET" method is created on a resource fails when the resource is not "ACTIVE"
     Given the method does not already exist
     And the resource exists

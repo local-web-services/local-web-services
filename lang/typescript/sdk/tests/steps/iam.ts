@@ -13,7 +13,7 @@ Given("a running session with IAM enforce mode active", async function (this: Sd
     .mode("enforce")
     .defaultIdentity("test-user")
     .identity("test-user")
-    .allow(["stepfunctions:*"])
+    .allow(["states:*"])
     .apply()
     .apply();
 });
@@ -24,15 +24,10 @@ Given(
   "IAM is in enforce mode with identity {string} allowed all {string} actions",
   async function (this: SdkWorld, identityName: string, actionPattern: string) {
     assert.ok(this.session, "No session");
-    // Translate AWS IAM action prefixes to the prefixes the core uses.
-    // The core uses service name e.g. "stepfunctions:*" not "states:*".
-    const normalizedPattern = actionPattern
-      .replace(/^states:/, "stepfunctions:")
-      .replace(/^execute-api:/, "apigateway:");
     await this.session!.iam.mode("enforce")
       .defaultIdentity(identityName)
       .identity(identityName)
-      .allow([normalizedPattern])
+      .allow([actionPattern])
       .apply()
       .apply();
   },

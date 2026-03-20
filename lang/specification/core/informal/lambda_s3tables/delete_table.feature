@@ -22,7 +22,7 @@ Feature: LambdaS3tables - A Table Deletion Is Initiated
     When a table deletion is initiated
     Then the operation is rejected
 
-  @standard @negative @delete_table @lifecycle @internal
+  @standard @negative @delete_table @lifecycle
   Scenario: a table deletion is initiated fails when the table is already "DELETING"
     Given the table exists
     And the table is already "DELETING"

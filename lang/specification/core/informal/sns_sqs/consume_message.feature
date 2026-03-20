@@ -16,7 +16,7 @@ Feature: SnsSqs - A Message Is Consumed From The Sqs Queue
     And every "AVAILABLE" message belongs to an "ACTIVE" queue
     And a message can only be delivered if a confirmed subscription exists for the topic
 
-  @standard @negative @consume_message @lifecycle @internal
+  @standard @negative @consume_message @lifecycle
   Scenario: a message is consumed from the "SQS" queue fails when no "AVAILABLE" message exists in the queue
     Given no "AVAILABLE" message exists in the queue
     When a message is consumed from the "SQS" queue

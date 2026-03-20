@@ -24,7 +24,7 @@ Feature: Ssm - Multiple Parameters Are Deleted From Ssm
     When multiple parameters are deleted from "SSM"
     Then the operation is rejected
 
-  @standard @negative @delete_parameters @internal
+  @standard @negative @delete_parameters
   Scenario: multiple parameters are deleted from "SSM" fails when the parameter is not active
     Given the parameter exists
     And the parameter is not active

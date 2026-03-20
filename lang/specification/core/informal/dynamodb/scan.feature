@@ -27,14 +27,14 @@ Feature: Dynamodb - All Items In The Table Are Scanned
     When all items in the table are scanned
     Then the operation is rejected
 
-  @standard @negative @scan @lifecycle @internal
+  @standard @negative @scan @lifecycle
   Scenario: all items in the table are scanned fails when the table is not "ACTIVE"
     Given the table exists
     And the table is not "ACTIVE"
     When all items in the table are scanned
     Then the operation is rejected
 
-  @standard @negative @scan @capacity @internal
+  @standard @negative @scan @capacity
   Scenario: all items in the table are scanned fails when reads are throttled
     Given the table exists
     And the table is "ACTIVE"

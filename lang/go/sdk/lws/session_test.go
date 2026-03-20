@@ -566,3 +566,193 @@ func TestChaosBuilder_storesConfig(t *testing.T) {
 		t.Errorf("TimeoutRate = %v, want 0.2", builder.cfg.TimeoutRate)
 	}
 }
+
+func TestLifecycleBuilder_storesCreateAndDeleteDwellMs(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+	expectedCreateDwellMs := 500
+	expectedDeleteDwellMs := 200
+
+	// Act
+	builder := session.Lifecycle("dynamodb").
+		CreateDwellMs(expectedCreateDwellMs).
+		DeleteDwellMs(expectedDeleteDwellMs)
+
+	// Assert
+	if builder.config["create_dwell_ms"] != expectedCreateDwellMs {
+		t.Errorf("CreateDwellMs: expected %d, got %v", expectedCreateDwellMs, builder.config["create_dwell_ms"])
+	}
+	if builder.config["delete_dwell_ms"] != expectedDeleteDwellMs {
+		t.Errorf("DeleteDwellMs: expected %d, got %v", expectedDeleteDwellMs, builder.config["delete_dwell_ms"])
+	}
+}
+
+func TestLifecycleBuilder_serviceStoredCorrectly(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+	expectedService := "dynamodb"
+
+	// Act
+	builder := session.Lifecycle(expectedService)
+
+	// Assert
+	if builder.service != expectedService {
+		t.Errorf("service = %q, want %q", builder.service, expectedService)
+	}
+}
+
+func TestSession_cognitoIdentityProviderClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.CognitoIdentityProviderClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("CognitoIdentityProviderClient() returned nil")
+	}
+}
+
+func TestSession_apiGatewayClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.APIGatewayClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("APIGatewayClient() returned nil")
+	}
+}
+
+func TestSession_lambdaClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.LambdaClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("LambdaClient() returned nil")
+	}
+}
+
+func TestSession_rdsClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.RDSClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("RDSClient() returned nil")
+	}
+}
+
+func TestSession_docDBClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.DocDBClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("DocDBClient() returned nil")
+	}
+}
+
+func TestSession_neptuneClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.NeptuneClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("NeptuneClient() returned nil")
+	}
+}
+
+func TestSession_elastiCacheClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.ElastiCacheClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("ElastiCacheClient() returned nil")
+	}
+}
+
+func TestSession_memoryDBClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.MemoryDBClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("MemoryDBClient() returned nil")
+	}
+}
+
+func TestSession_glacierClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.GlacierClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("GlacierClient() returned nil")
+	}
+}
+
+func TestSession_elasticsearchClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.ElasticsearchClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("ElasticsearchClient() returned nil")
+	}
+}
+
+func TestSession_openSearchClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.OpenSearchClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("OpenSearchClient() returned nil")
+	}
+}
+
+func TestSession_s3TablesClient_returnsNonNilClient(t *testing.T) {
+	// Arrange
+	session := &Session{basePort: 10000}
+
+	// Act
+	actualClient := session.S3TablesClient()
+
+	// Assert
+	if actualClient == nil {
+		t.Error("S3TablesClient() returned nil")
+	}
+}

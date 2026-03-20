@@ -26,7 +26,7 @@ Feature: Elasticache - A Replica Is Added To A Replication Group
     When a replica is added to a replication group
     Then the operation is rejected
 
-  @standard @negative @add_replica_to_cache_cluster @lifecycle @internal
+  @standard @negative @add_replica_to_cache_cluster @lifecycle
   Scenario: a replica is added to a replication group fails when the replication group is not "AVAILABLE"
     Given the replication group exists
     And the replication group is not "AVAILABLE"

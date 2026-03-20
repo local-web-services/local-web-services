@@ -25,7 +25,7 @@ Feature: Stepfunctions - A Running Execution Is Stopped
     When a running execution is stopped
     Then the operation is rejected
 
-  @standard @negative @stop_execution @lifecycle @internal
+  @standard @negative @stop_execution @lifecycle
   Scenario: a running execution is stopped fails when the execution is not "RUNNING"
     Given the execution exists
     And the execution is not "RUNNING"
