@@ -173,6 +173,11 @@ def resource_slot_unallocated():
     """No-op: fresh state has no allocated resource slots."""
 
 
+@given("no resource slot is available")
+def no_resource_slot_available(world):
+    pytest.skip("Cannot exhaust resource slots in stateless integration tests.")
+
+
 @given("the resource slot is already allocated")
 def resource_slot_already_allocated(world):
     pytest.skip("Cannot force a resource slot collision in stateless integration tests.")
