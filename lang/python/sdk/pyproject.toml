@@ -47,10 +47,9 @@ packages = ["src/lws_testing"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-m 'not internal and not capacity'"
 markers = [
-    "internal: scenarios tagged @internal in Gherkin (excluded from standard test runs)",
-    "capacity: scenarios tagged @capacity in Gherkin (excluded from standard test runs)",
+    "internal: scenarios tagged @internal in Gherkin",
+    "capacity: scenarios tagged @capacity in Gherkin",
 ]
 
 [dependency-groups]
