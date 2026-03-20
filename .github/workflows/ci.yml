@@ -29,8 +29,14 @@ jobs:
       go-core: ${{ steps.filter.outputs.go-core }}
       go-sdk: ${{ steps.filter.outputs.go-sdk }}
       go-example: ${{ steps.filter.outputs.go-example }}
-      sample-cdk: ${{ steps.filter.outputs.sample-cdk }}
-      sample-hcl: ${{ steps.filter.outputs.sample-hcl }}
+      python-sample-cdk: ${{ steps.filter.outputs.python-sample-cdk }}
+      python-sample-hcl: ${{ steps.filter.outputs.python-sample-hcl }}
+      typescript-sample-cdk: ${{ steps.filter.outputs.typescript-sample-cdk }}
+      typescript-sample-hcl: ${{ steps.filter.outputs.typescript-sample-hcl }}
+      java-sample-cdk: ${{ steps.filter.outputs.java-sample-cdk }}
+      java-sample-hcl: ${{ steps.filter.outputs.java-sample-hcl }}
+      go-sample-cdk: ${{ steps.filter.outputs.go-sample-cdk }}
+      go-sample-hcl: ${{ steps.filter.outputs.go-sample-hcl }}
       specification: ${{ steps.filter.outputs.specification }}
     steps:
       - uses: actions/checkout@v4
@@ -97,12 +103,38 @@ jobs:
               - 'lang/go/sdk/**'
               - 'lang/go/core/**'
               - 'lang/specification/**'
-            sample-cdk:
+            python-sample-cdk:
+              - 'lang/python/sample/cdk/**'
               - 'lang/python/core/**'
-              - 'sample-project/cdk/**'
-            sample-hcl:
+              - 'lang/python/sdk/**'
+            python-sample-hcl:
+              - 'lang/python/sample/hcl/**'
               - 'lang/python/core/**'
-              - 'sample-project/hcl/**'
+              - 'lang/python/sdk/**'
+            typescript-sample-cdk:
+              - 'lang/typescript/sample/cdk/**'
+              - 'lang/typescript/core/**'
+              - 'lang/typescript/sdk/**'
+            typescript-sample-hcl:
+              - 'lang/typescript/sample/hcl/**'
+              - 'lang/typescript/core/**'
+              - 'lang/typescript/sdk/**'
+            java-sample-cdk:
+              - 'lang/java/sample/cdk/**'
+              - 'lang/java/core/**'
+              - 'lang/java/sdk/**'
+            java-sample-hcl:
+              - 'lang/java/sample/hcl/**'
+              - 'lang/java/core/**'
+              - 'lang/java/sdk/**'
+            go-sample-cdk:
+              - 'lang/go/sample/cdk/**'
+              - 'lang/go/core/**'
+              - 'lang/go/sdk/**'
+            go-sample-hcl:
+              - 'lang/go/sample/hcl/**'
+              - 'lang/go/core/**'
+              - 'lang/go/sdk/**'
             specification:
               - 'lang/specification/core/formal/**'
 
@@ -828,16 +860,110 @@ jobs:
       - run: make e2e-test
         working-directory: lang/python/example
 
-  # ── Sample Project CDK ──────────────────────────────────────────────────────
-  sample-project-cdk-build:
-    needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
+  # ── Python Sample CDK ───────────────────────────────────────────────────────
+  python-sample-cdk-build:
+    needs: [changes, python-example-lint, python-example-unit-test, python-example-architecture-test, python-example-e2e-test]
     if: |
       always() &&
-      needs.changes.outputs.sample-cdk == 'true' &&
-      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
-      (needs.python-sdk-unit-test.result == 'success' || needs.python-sdk-unit-test.result == 'skipped') &&
-      (needs.python-sdk-architecture-test.result == 'success' || needs.python-sdk-architecture-test.result == 'skipped') &&
-      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
+      needs.changes.outputs.python-sample-cdk == 'true' &&
+      (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
+      (needs.python-example-unit-test.result == 'success' || needs.python-example-unit-test.result == 'skipped') &&
+      (needs.python-example-architecture-test.result == 'success' || needs.python-example-architecture-test.result == 'skipped') &&
+      (needs.python-example-e2e-test.result == 'success' || needs.python-example-e2e-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+      - name: Install ldk and lws
+        run: uv pip install --system -e lang/python/core
+      - name: Install CDK dependencies
+        working-directory: lang/python/sample/cdk
+        run: npm ci
+      - name: CDK Synth
+        working-directory: lang/python/sample/cdk
+        run: npx cdk synth
+      - name: Start ldk dev
+        working-directory: lang/python/sample/cdk
+        run: ldk dev &
+      - name: Wait for ldk to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+              echo "ldk is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ldk failed to start" && exit 1
+      - name: Run test-orders.sh
+        working-directory: lang/python/sample/cdk
+        run: ./test-orders.sh
+
+  # ── Python Sample HCL ───────────────────────────────────────────────────────
+  python-sample-hcl-build:
+    needs: [changes, python-example-lint, python-example-unit-test, python-example-architecture-test, python-example-e2e-test]
+    if: |
+      always() &&
+      needs.changes.outputs.python-sample-hcl == 'true' &&
+      (needs.python-example-lint.result == 'success' || needs.python-example-lint.result == 'skipped') &&
+      (needs.python-example-unit-test.result == 'success' || needs.python-example-unit-test.result == 'skipped') &&
+      (needs.python-example-architecture-test.result == 'success' || needs.python-example-architecture-test.result == 'skipped') &&
+      (needs.python-example-e2e-test.result == 'success' || needs.python-example-e2e-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: opentofu/setup-opentofu@v1
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/python:3.12
+      - name: Install ldk and lws
+        run: uv pip install --system -e lang/python/core
+      - name: Start ldk dev
+        working-directory: lang/python/sample/hcl
+        run: ldk dev &
+      - name: Wait for ldk to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+              echo "ldk is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ldk failed to start" && exit 1
+      - name: OpenTofu Init
+        working-directory: lang/python/sample/hcl
+        run: tofu init
+      - name: OpenTofu Apply
+        working-directory: lang/python/sample/hcl
+        run: tofu apply -auto-approve
+      - name: Run test-orders.sh
+        working-directory: lang/python/sample/hcl
+        run: ./test-orders.sh
+
+  # ── TypeScript Sample CDK ────────────────────────────────────────────────────
+  typescript-sample-cdk-build:
+    needs: [changes, typescript-example-lint, typescript-example-unit-test, typescript-example-architecture-test, typescript-example-e2e-test]
+    if: |
+      always() &&
+      needs.changes.outputs.typescript-sample-cdk == 'true' &&
+      (needs.typescript-example-lint.result == 'success' || needs.typescript-example-lint.result == 'skipped') &&
+      (needs.typescript-example-unit-test.result == 'success' || needs.typescript-example-unit-test.result == 'skipped') &&
+      (needs.typescript-example-architecture-test.result == 'success' || needs.typescript-example-architecture-test.result == 'skipped') &&
+      (needs.typescript-example-e2e-test.result == 'success' || needs.typescript-example-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -854,13 +980,13 @@ jobs:
       - name: Install ldk and lws
         run: uv pip install --system -e lang/python/core
       - name: Install CDK dependencies
-        working-directory: sample-project/cdk
+        working-directory: lang/typescript/sample/cdk
         run: npm ci
       - name: CDK Synth
-        working-directory: sample-project/cdk
+        working-directory: lang/typescript/sample/cdk
         run: npx cdk synth
       - name: Start ldk dev
-        working-directory: sample-project/cdk
+        working-directory: lang/typescript/sample/cdk
         run: ldk dev &
       - name: Wait for ldk to be ready
         run: |
@@ -873,19 +999,19 @@ jobs:
           done
           echo "ldk failed to start" && exit 1
       - name: Run test-orders.sh
-        working-directory: sample-project/cdk
+        working-directory: lang/typescript/sample/cdk
         run: ./test-orders.sh
 
-  # ── Sample Project HCL ──────────────────────────────────────────────────────
-  sample-project-hcl-build:
-    needs: [changes, python-sdk-lint, python-sdk-unit-test, python-sdk-architecture-test, python-sdk-e2e-test]
+  # ── TypeScript Sample HCL ────────────────────────────────────────────────────
+  typescript-sample-hcl-build:
+    needs: [changes, typescript-example-lint, typescript-example-unit-test, typescript-example-architecture-test, typescript-example-e2e-test]
     if: |
       always() &&
-      needs.changes.outputs.sample-hcl == 'true' &&
-      (needs.python-sdk-lint.result == 'success' || needs.python-sdk-lint.result == 'skipped') &&
-      (needs.python-sdk-unit-test.result == 'success' || needs.python-sdk-unit-test.result == 'skipped') &&
-      (needs.python-sdk-architecture-test.result == 'success' || needs.python-sdk-architecture-test.result == 'skipped') &&
-      (needs.python-sdk-e2e-test.result == 'success' || needs.python-sdk-e2e-test.result == 'skipped')
+      needs.changes.outputs.typescript-sample-hcl == 'true' &&
+      (needs.typescript-example-lint.result == 'success' || needs.typescript-example-lint.result == 'skipped') &&
+      (needs.typescript-example-unit-test.result == 'success' || needs.typescript-example-unit-test.result == 'skipped') &&
+      (needs.typescript-example-architecture-test.result == 'success' || needs.typescript-example-architecture-test.result == 'skipped') &&
+      (needs.typescript-example-e2e-test.result == 'success' || needs.typescript-example-e2e-test.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -893,14 +1019,20 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - uses: opentofu/setup-opentofu@v1
       - name: Pull Lambda Docker images
         run: |
           docker pull public.ecr.aws/lambda/nodejs:20
       - name: Install ldk and lws
         run: uv pip install --system -e lang/python/core
+      - name: Build TypeScript lambdas
+        working-directory: lang/typescript/sample/hcl
+        run: npm ci && npm run build
       - name: Start ldk dev
-        working-directory: sample-project/hcl
+        working-directory: lang/typescript/sample/hcl
         run: ldk dev &
       - name: Wait for ldk to be ready
         run: |
@@ -913,13 +1045,235 @@ jobs:
           done
           echo "ldk failed to start" && exit 1
       - name: OpenTofu Init
-        working-directory: sample-project/hcl
+        working-directory: lang/typescript/sample/hcl
         run: tofu init
       - name: OpenTofu Apply
-        working-directory: sample-project/hcl
+        working-directory: lang/typescript/sample/hcl
         run: tofu apply -auto-approve
       - name: Run test-orders.sh
-        working-directory: sample-project/hcl
+        working-directory: lang/typescript/sample/hcl
+        run: ./test-orders.sh
+
+  # ── Java Sample CDK ──────────────────────────────────────────────────────────
+  java-sample-cdk-build:
+    needs: [changes, java-example-lint, java-example-e2e-test, java-example-architecture-test]
+    if: |
+      always() &&
+      needs.changes.outputs.java-sample-cdk == 'true' &&
+      (needs.java-example-lint.result == 'success' || needs.java-example-lint.result == 'skipped') &&
+      (needs.java-example-e2e-test.result == 'success' || needs.java-example-e2e-test.result == 'skipped') &&
+      (needs.java-example-architecture-test.result == 'success' || needs.java-example-architecture-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/java:21
+      - name: Install ldk and lws
+        run: uv pip install --system -e lang/python/core
+      - name: Build fat JAR
+        working-directory: lang/java/sample/cdk/lambda
+        run: mvn package -q
+      - name: Install CDK dependencies
+        working-directory: lang/java/sample/cdk
+        run: npm ci
+      - name: CDK Synth
+        working-directory: lang/java/sample/cdk
+        run: npx cdk synth
+      - name: Start ldk dev
+        working-directory: lang/java/sample/cdk
+        run: ldk dev &
+      - name: Wait for ldk to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+              echo "ldk is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ldk failed to start" && exit 1
+      - name: Run test-orders.sh
+        working-directory: lang/java/sample/cdk
+        run: ./test-orders.sh
+
+  # ── Java Sample HCL ──────────────────────────────────────────────────────────
+  java-sample-hcl-build:
+    needs: [changes, java-example-lint, java-example-e2e-test, java-example-architecture-test]
+    if: |
+      always() &&
+      needs.changes.outputs.java-sample-hcl == 'true' &&
+      (needs.java-example-lint.result == 'success' || needs.java-example-lint.result == 'skipped') &&
+      (needs.java-example-e2e-test.result == 'success' || needs.java-example-e2e-test.result == 'skipped') &&
+      (needs.java-example-architecture-test.result == 'success' || needs.java-example-architecture-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+      - uses: opentofu/setup-opentofu@v1
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/java:21
+      - name: Install ldk and lws
+        run: uv pip install --system -e lang/python/core
+      - name: Build fat JAR
+        working-directory: lang/java/sample/hcl/lambda
+        run: mvn package -q
+      - name: Start ldk dev
+        working-directory: lang/java/sample/hcl
+        run: ldk dev &
+      - name: Wait for ldk to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+              echo "ldk is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ldk failed to start" && exit 1
+      - name: OpenTofu Init
+        working-directory: lang/java/sample/hcl
+        run: tofu init
+      - name: OpenTofu Apply
+        working-directory: lang/java/sample/hcl
+        run: tofu apply -auto-approve
+      - name: Run test-orders.sh
+        working-directory: lang/java/sample/hcl
+        run: ./test-orders.sh
+
+  # ── Go Sample CDK ────────────────────────────────────────────────────────────
+  go-sample-cdk-build:
+    needs: [changes, go-example-lint, go-example-test]
+    if: |
+      always() &&
+      needs.changes.outputs.go-sample-cdk == 'true' &&
+      (needs.go-example-lint.result == 'success' || needs.go-example-lint.result == 'skipped') &&
+      (needs.go-example-test.result == 'success' || needs.go-example-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/provided:al2023
+      - name: Install ldk and lws
+        run: uv pip install --system -e lang/python/core
+      - name: Build Go lambda binaries
+        run: |
+          for fn in create-order get-order process-order generate-receipt; do
+            pushd lang/go/sample/cdk/lambda/$fn
+            go mod tidy
+            GOOS=linux GOARCH=amd64 go build -o bootstrap .
+            zip bootstrap.zip bootstrap
+            rm bootstrap
+            popd
+          done
+      - name: Install CDK dependencies
+        working-directory: lang/go/sample/cdk
+        run: npm ci
+      - name: CDK Synth
+        working-directory: lang/go/sample/cdk
+        run: npx cdk synth
+      - name: Start ldk dev
+        working-directory: lang/go/sample/cdk
+        run: ldk dev &
+      - name: Wait for ldk to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+              echo "ldk is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ldk failed to start" && exit 1
+      - name: Run test-orders.sh
+        working-directory: lang/go/sample/cdk
+        run: ./test-orders.sh
+
+  # ── Go Sample HCL ────────────────────────────────────────────────────────────
+  go-sample-hcl-build:
+    needs: [changes, go-example-lint, go-example-test]
+    if: |
+      always() &&
+      needs.changes.outputs.go-sample-hcl == 'true' &&
+      (needs.go-example-lint.result == 'success' || needs.go-example-lint.result == 'skipped') &&
+      (needs.go-example-test.result == 'success' || needs.go-example-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - uses: opentofu/setup-opentofu@v1
+      - name: Pull Lambda Docker images
+        run: |
+          docker pull public.ecr.aws/lambda/provided:al2023
+      - name: Install ldk and lws
+        run: uv pip install --system -e lang/python/core
+      - name: Build Go lambda binaries
+        run: |
+          for fn in create-order get-order process-order generate-receipt; do
+            pushd lang/go/sample/hcl/lambda/$fn
+            go mod tidy
+            GOOS=linux GOARCH=amd64 go build -o bootstrap .
+            zip bootstrap.zip bootstrap
+            rm bootstrap
+            popd
+          done
+      - name: Start ldk dev
+        working-directory: lang/go/sample/hcl
+        run: ldk dev &
+      - name: Wait for ldk to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/_ldk/status | python3 -c "import sys,json; d=json.load(sys.stdin); exit(0 if d.get('running') else 1)" 2>/dev/null; then
+              echo "ldk is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "ldk failed to start" && exit 1
+      - name: OpenTofu Init
+        working-directory: lang/go/sample/hcl
+        run: tofu init
+      - name: OpenTofu Apply
+        working-directory: lang/go/sample/hcl
+        run: tofu apply -auto-approve
+      - name: Run test-orders.sh
+        working-directory: lang/go/sample/hcl
         run: ./test-orders.sh
 
   # ── Go Example ──────────────────────────────────────────────────────────────
