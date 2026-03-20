@@ -27,10 +27,14 @@ class TestCreateTopic:
         actual_arn = await provider.create_topic(topic_name)
 
         # Assert
-        assert topic_name in actual_arn
+        assert topic_name in actual_arn, f"Expected {topic_name!r} to be in {actual_arn!r}"
         actual_topics = provider.list_topics()
-        assert len(actual_topics) == expected_topic_count
-        assert actual_topics[0].topic_name == topic_name
+        assert (
+            len(actual_topics) == expected_topic_count
+        ), f"Expected {expected_topic_count!r} but got {len(actual_topics)!r}"
+        assert (
+            actual_topics[0].topic_name == topic_name
+        ), f"Expected {topic_name!r} but got {actual_topics[0].topic_name!r}"
 
     @pytest.mark.asyncio
     async def test_create_topic_duplicate_raises(self, provider: SnsProvider) -> None:

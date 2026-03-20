@@ -84,9 +84,11 @@ class TestDeleteTable:
         resp = await client.post("/", json={"TableName": "MyTable"}, headers=_target("DeleteTable"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "TableDescription" in data
+        assert "TableDescription" in data, f'Expected {"TableDescription"!r} to be in {data!r}'
         fake_store.delete_table.assert_awaited_once_with("MyTable")
 
     @pytest.mark.asyncio
@@ -102,7 +104,11 @@ class TestDeleteTable:
         resp = await client.post("/", json={"TableName": "MyTable"}, headers=_target("DeleteTable"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_error_type = data["__type"]
-        assert actual_error_type == expected_error_type
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

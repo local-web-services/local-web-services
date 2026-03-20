@@ -22,9 +22,11 @@ class TestIdentityStoreRegister:
 
         # Assert
         actual_identity = store.get_identity(expected_name)
-        assert actual_identity is not None
+        assert actual_identity is not None, "Expected value to be set but was None"
         actual_policies = actual_identity.inline_policies
-        assert actual_policies == expected_policies
+        assert (
+            actual_policies == expected_policies
+        ), f"Expected {expected_policies!r} but got {actual_policies!r}"
 
     def test_register_identity_updates_existing(self):
         # Arrange
@@ -38,9 +40,11 @@ class TestIdentityStoreRegister:
 
         # Assert
         actual_identity = store.get_identity(name)
-        assert actual_identity is not None
+        assert actual_identity is not None, "Expected value to be set but was None"
         actual_policies = actual_identity.inline_policies
-        assert actual_policies == expected_policies
+        assert (
+            actual_policies == expected_policies
+        ), f"Expected {expected_policies!r} but got {actual_policies!r}"
 
     def test_register_identity_with_no_policies_creates_empty(self):
         # Arrange
@@ -52,6 +56,6 @@ class TestIdentityStoreRegister:
 
         # Assert
         actual_identity = store.get_identity(expected_name)
-        assert actual_identity is not None
+        assert actual_identity is not None, "Expected value to be set but was None"
         actual_policies = actual_identity.inline_policies
-        assert actual_policies == []
+        assert actual_policies == [], f"Expected {[]!r} but got {actual_policies!r}"

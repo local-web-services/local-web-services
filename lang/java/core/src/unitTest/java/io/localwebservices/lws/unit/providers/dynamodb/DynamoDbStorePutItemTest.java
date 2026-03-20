@@ -29,7 +29,7 @@ public class DynamoDbStorePutItemTest {
     Map<String, Object> actualItem = store.getItem("T", keyAttr);
 
     // Assert
-    assertNotNull(actualItem);
+    assertNotNull(actualItem, "Expected actualItem to not be null");
   }
 
   @Test
@@ -48,8 +48,8 @@ public class DynamoDbStorePutItemTest {
     Map<String, Object> actualItem = store.getItem("T", keyAttr);
 
     // Assert
-    assertNotNull(actualItem);
-    assertEquals(expectedName, actualItem.get("name"));
+    assertNotNull(actualItem, "Expected actualItem to not be null");
+    assertEquals(expectedName, actualItem.get("name"), "Expected name to match");
   }
 
   @Test
@@ -62,7 +62,7 @@ public class DynamoDbStorePutItemTest {
     Map<String, Object> actualItem = store.getItem("T", keyAttr);
 
     // Assert
-    assertNull(actualItem);
+    assertNull(actualItem, "Expected actualItem to be null");
   }
 
   @Test
@@ -79,6 +79,6 @@ public class DynamoDbStorePutItemTest {
     Map<String, Object> actualItem = store.getItem("Composite", keyAttr);
 
     // Assert
-    assertNotNull(actualItem);
+    assertNotNull(actualItem, "Expected actualItem to not be null");
   }
 }

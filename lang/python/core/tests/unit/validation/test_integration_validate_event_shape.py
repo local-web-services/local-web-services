@@ -84,7 +84,7 @@ class TestValidateEventShape:
         issues = validate_event_shape(engine, "handler1", "api_gateway", event)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_invalid_api_gateway_event(self) -> None:
         # Arrange
@@ -96,7 +96,9 @@ class TestValidateEventShape:
 
         # Assert
         actual_warn_issues = [i for i in issues if i.level == ValidationLevel.WARN]
-        assert len(actual_warn_issues) >= expected_min_warn_issues
+        assert (
+            len(actual_warn_issues) >= expected_min_warn_issues
+        ), f"Expected {len(actual_warn_issues)!r} >= {expected_min_warn_issues!r}"
 
     def test_valid_sqs_event(self) -> None:
         # Arrange
@@ -115,4 +117,4 @@ class TestValidateEventShape:
         issues = validate_event_shape(engine, "handler1", "sqs", event)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"

@@ -68,7 +68,7 @@ class TestSetAssignment:
 
         # Assert
         actual_name = result["name"]
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     def test_set_number(self) -> None:
         # Arrange
@@ -84,7 +84,9 @@ class TestSetAssignment:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_set_new_attribute(self) -> None:
         # Arrange
@@ -100,7 +102,9 @@ class TestSetAssignment:
 
         # Assert
         actual_color = result["color"]
-        assert actual_color == expected_color
+        assert (
+            actual_color == expected_color
+        ), f"Expected {expected_color!r} but got {actual_color!r}"
 
     def test_set_multiple_attributes(self) -> None:
         # Arrange
@@ -118,8 +122,8 @@ class TestSetAssignment:
         # Assert
         actual_a = result["a"]
         actual_b = result["b"]
-        assert actual_a == expected_a
-        assert actual_b == expected_b
+        assert actual_a == expected_a, f"Expected {expected_a!r} but got {actual_a!r}"
+        assert actual_b == expected_b, f"Expected {expected_b!r} but got {actual_b!r}"
 
     def test_set_with_name_ref(self) -> None:
         # Arrange
@@ -136,4 +140,6 @@ class TestSetAssignment:
 
         # Assert
         actual_reserved = result["reserved"]
-        assert actual_reserved == expected_reserved
+        assert (
+            actual_reserved == expected_reserved
+        ), f"Expected {expected_reserved!r} but got {actual_reserved!r}"

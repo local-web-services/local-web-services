@@ -66,7 +66,9 @@ class TestUserStorePasswordReset:
         user_info = await store.authenticate(username, new_password)
         actual_username = user_info["username"]
         expected_username = username
-        assert actual_username == expected_username
+        assert (
+            actual_username == expected_username
+        ), f"Expected {expected_username!r} but got {actual_username!r}"
 
     async def test_expired_code_raises(self, store: UserStore) -> None:
         # Arrange

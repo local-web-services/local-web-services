@@ -42,10 +42,18 @@ class TestEventBridgeStubOperations:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type
-        assert "lws" in body["message"]
-        assert "EventBridge" in body["message"]
-        assert "TestConnection" in body["message"]
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
+        assert (
+            "EventBridge" in body["message"]
+        ), f'Expected {"EventBridge"!r} to be in {body["message"]!r}'
+        assert (
+            "TestConnection" in body["message"]
+        ), f'Expected {"TestConnection"!r} to be in {body["message"]!r}'

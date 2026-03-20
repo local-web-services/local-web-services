@@ -34,7 +34,9 @@ class TestCreateBucket:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_create_bucket_duplicate_returns_error(
@@ -50,4 +52,6 @@ class TestCreateBucket:
 
         # Assert
         expected_status = 409
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"

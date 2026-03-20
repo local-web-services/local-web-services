@@ -84,10 +84,12 @@ class TestFakeHeaderFilter:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         actual_pk = body["Item"]["pk"]["S"]
-        assert actual_pk == expected_pk
+        assert actual_pk == expected_pk, f"Expected {expected_pk!r} but got {actual_pk!r}"
 
     async def test_missing_header_falls_through(self, client: httpx.AsyncClient):
         """Verify GetItem without matching header falls through to real provider."""
@@ -102,11 +104,15 @@ class TestFakeHeaderFilter:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         # Real provider returns empty Item (key doesn't exist)
         actual_item = body.get("Item")
-        assert actual_item is None or "pk" not in actual_item
+        assert (
+            actual_item is None or "pk" not in actual_item
+        ), f'Expected {actual_item is None or "pk"!r} to not be in {actual_item!r}'
 
     async def test_wrong_header_value_falls_through(self, client: httpx.AsyncClient):
         """Verify GetItem with wrong header value falls through to real provider."""
@@ -124,4 +130,6 @@ class TestFakeHeaderFilter:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"

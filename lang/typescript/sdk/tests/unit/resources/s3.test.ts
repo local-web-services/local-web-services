@@ -30,11 +30,23 @@ describe("S3Helper", () => {
       await helper.put(expectedKey, expectedContent, "text/plain");
 
       // Assert
-      expect(send).toHaveBeenCalledTimes(1);
+      expect(
+        send,
+        "Expected send to have been called once for PutObjectCommand",
+      ).toHaveBeenCalledTimes(1);
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.Bucket).toBe(EXPECTED_BUCKET);
-      expect(actualCommand.input.Key).toBe(expectedKey);
-      expect(actualCommand.input.ContentType).toBe("text/plain");
+      expect(
+        actualCommand.input.Bucket,
+        "Expected PutObjectCommand to use the correct bucket name",
+      ).toBe(EXPECTED_BUCKET);
+      expect(
+        actualCommand.input.Key,
+        "Expected PutObjectCommand to use the correct object key",
+      ).toBe(expectedKey);
+      expect(
+        actualCommand.input.ContentType,
+        "Expected PutObjectCommand to use the correct content type",
+      ).toBe("text/plain");
     });
   });
 
@@ -50,7 +62,10 @@ describe("S3Helper", () => {
       const actual = await helper.get("some-key");
 
       // Assert
-      expect(actual.toString("utf-8")).toBe(expectedContent);
+      expect(
+        actual.toString("utf-8"),
+        "Expected get to return the object body decoded as UTF-8",
+      ).toBe(expectedContent);
     });
   });
 
@@ -66,7 +81,9 @@ describe("S3Helper", () => {
       const actual = await helper.getText("some-key");
 
       // Assert
-      expect(actual).toBe(expectedText);
+      expect(actual, "Expected getText to return the object body as a UTF-8 string").toBe(
+        expectedText,
+      );
     });
   });
 
@@ -83,8 +100,14 @@ describe("S3Helper", () => {
 
       // Assert
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.Bucket).toBe(EXPECTED_BUCKET);
-      expect(actualCommand.input.Key).toBe(expectedKey);
+      expect(
+        actualCommand.input.Bucket,
+        "Expected DeleteObjectCommand to use the correct bucket name",
+      ).toBe(EXPECTED_BUCKET);
+      expect(
+        actualCommand.input.Key,
+        "Expected DeleteObjectCommand to use the correct object key",
+      ).toBe(expectedKey);
     });
   });
 
@@ -102,8 +125,14 @@ describe("S3Helper", () => {
       const actual = await helper.listKeys();
 
       // Assert
-      expect(actual).toEqual(["a.txt", "b.txt"]);
-      expect(send).toHaveBeenCalledTimes(1);
+      expect(actual, "Expected listKeys to return all object keys from a single page").toEqual([
+        "a.txt",
+        "b.txt",
+      ]);
+      expect(
+        send,
+        "Expected send to have been called once for a single-page list",
+      ).toHaveBeenCalledTimes(1);
     });
 
     it("paginates until there is no NextContinuationToken", async () => {
@@ -124,8 +153,14 @@ describe("S3Helper", () => {
       const actual = await helper.listKeys();
 
       // Assert
-      expect(actual).toEqual(["a.txt", "b.txt"]);
-      expect(send).toHaveBeenCalledTimes(2);
+      expect(actual, "Expected listKeys to return all object keys across both pages").toEqual([
+        "a.txt",
+        "b.txt",
+      ]);
+      expect(
+        send,
+        "Expected send to have been called twice for a two-page list",
+      ).toHaveBeenCalledTimes(2);
     });
 
     it("passes a prefix filter when provided", async () => {
@@ -140,7 +175,10 @@ describe("S3Helper", () => {
 
       // Assert
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.Prefix).toBe(expectedPrefix);
+      expect(
+        actualCommand.input.Prefix,
+        "Expected the list command to use the configured prefix filter",
+      ).toBe(expectedPrefix);
     });
   });
 
@@ -155,7 +193,10 @@ describe("S3Helper", () => {
       });
 
       // Act & Assert
-      await expect(helper.assertObjectExists("target.txt")).resolves.toBeUndefined();
+      await expect(
+        helper.assertObjectExists("target.txt"),
+        "Expected assertObjectExists to resolve when the key exists",
+      ).resolves.toBeUndefined();
     });
 
     it("throws when the key does not exist", async () => {
@@ -165,9 +206,10 @@ describe("S3Helper", () => {
       send.mockResolvedValue({ Contents: [], NextContinuationToken: undefined });
 
       // Act & Assert
-      await expect(helper.assertObjectExists("missing.txt")).rejects.toThrow(
-        'Expected object "missing.txt" to exist in bucket',
-      );
+      await expect(
+        helper.assertObjectExists("missing.txt"),
+        "Expected assertObjectExists to reject when the key does not exist",
+      ).rejects.toThrow('Expected object "missing.txt" to exist in bucket');
     });
   });
 
@@ -183,7 +225,10 @@ describe("S3Helper", () => {
       const expectedCount = 2;
 
       // Act & Assert
-      await expect(helper.assertObjectCount(expectedCount)).resolves.toBeUndefined();
+      await expect(
+        helper.assertObjectCount(expectedCount),
+        "Expected assertObjectCount to resolve when the object count matches",
+      ).resolves.toBeUndefined();
     });
 
     it("throws when the object count does not match", async () => {
@@ -197,7 +242,10 @@ describe("S3Helper", () => {
       const expectedCount = 3;
 
       // Act & Assert
-      await expect(helper.assertObjectCount(expectedCount)).rejects.toThrow("Expected 3 object(s)");
+      await expect(
+        helper.assertObjectCount(expectedCount),
+        "Expected assertObjectCount to reject when the object count does not match",
+      ).rejects.toThrow("Expected 3 object(s)");
     });
   });
 });

@@ -19,19 +19,21 @@ class TestGraphBuilding:
         graph = build_graph(app_model)
 
         # Should have nodes for tables, functions, and API
-        assert len(graph.nodes) >= 4  # 1 table + 2 functions + 1 API
+        assert len(graph.nodes) >= 4  # 1 table + 2 functions + 1 API, "Expected assertion to pass"
 
         # Should have edges (triggers and data dependencies)
-        assert len(graph.edges) >= 1
+        assert len(graph.edges) >= 1, f"Expected {len(graph.edges)!r} >= {1!r}"
 
     def test_topological_sort_tables_before_functions(self):
         app_model = parse_assembly(CDK_OUT)
         graph = build_graph(app_model)
         order = graph.topological_sort()
 
-        assert len(order) > 0
+        assert len(order) > 0, f"Expected {len(order)!r} > {0!r}"
         # All nodes should be in the sort result (no cycles)
-        assert len(order) == len(graph.nodes)
+        assert len(order) == len(
+            graph.nodes
+        ), f"Expected {len(graph.nodes)!r} but got {len(order)!r}"
 
     def test_no_cycles(self):
         # Arrange
@@ -44,4 +46,6 @@ class TestGraphBuilding:
 
         # Assert
         actual_cycle_count = len(cycles)
-        assert actual_cycle_count == expected_cycle_count
+        assert (
+            actual_cycle_count == expected_cycle_count
+        ), f"Expected {expected_cycle_count!r} but got {actual_cycle_count!r}"

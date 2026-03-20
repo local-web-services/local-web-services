@@ -119,7 +119,7 @@ class TestResolveCommand:
     def test_local_command_takes_precedence(self) -> None:
         svc = _make_service(local_command=["npm", "start"])
         cmd = _resolve_command(svc)
-        assert cmd == ["npm", "start"]
+        assert cmd == ["npm", "start"], f'Expected {["npm", "start"]!r} but got {cmd!r}'
 
     def test_entry_point_plus_command(self) -> None:
         container = _make_container(
@@ -128,16 +128,21 @@ class TestResolveCommand:
         )
         svc = _make_service(containers=[container], local_command=None)
         cmd = _resolve_command(svc)
-        assert cmd == ["python", "-m", "flask", "run"]
+        assert cmd == [
+            "python",
+            "-m",
+            "flask",
+            "run",
+        ], f'Expected {["python", "-m", "flask", "run"]!r} but got {cmd!r}'
 
     def test_command_only(self) -> None:
         container = _make_container(entry_point=[], command=["node", "index.js"])
         svc = _make_service(containers=[container], local_command=None)
         cmd = _resolve_command(svc)
-        assert cmd == ["node", "index.js"]
+        assert cmd == ["node", "index.js"], f'Expected {["node", "index.js"]!r} but got {cmd!r}'
 
     def test_empty_when_no_command(self) -> None:
         container = _make_container(entry_point=[], command=[])
         svc = _make_service(containers=[container], local_command=None)
         cmd = _resolve_command(svc)
-        assert cmd == []
+        assert cmd == [], f"Expected {[]!r} but got {cmd!r}"

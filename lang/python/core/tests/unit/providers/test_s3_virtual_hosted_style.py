@@ -48,10 +48,14 @@ class TestVirtualHostedStyle:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         result = await provider.storage.get_object(expected_bucket, expected_key)
-        assert result is not None
-        assert result["body"] == expected_body
+        assert result is not None, "Expected value to be set but was None"
+        assert (
+            result["body"] == expected_body
+        ), f'Expected {expected_body!r} but got {result["body"]!r}'
 
     @pytest.mark.asyncio
     async def test_get_object_via_virtual_hosted_style(
@@ -72,8 +76,10 @@ class TestVirtualHostedStyle:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
-        assert resp.content == expected_body
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.content == expected_body, f"Expected {expected_body!r} but got {resp.content!r}"
 
     @pytest.mark.asyncio
     async def test_head_bucket_via_virtual_hosted_style(
@@ -91,7 +97,9 @@ class TestVirtualHostedStyle:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_path_style_still_works(
@@ -106,7 +114,9 @@ class TestVirtualHostedStyle:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_localhost_virtual_hosted_style(
@@ -127,7 +137,11 @@ class TestVirtualHostedStyle:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         result = await provider.storage.get_object(expected_bucket, expected_key)
-        assert result is not None
-        assert result["body"] == expected_body
+        assert result is not None, "Expected value to be set but was None"
+        assert (
+            result["body"] == expected_body
+        ), f'Expected {expected_body!r} but got {result["body"]!r}'

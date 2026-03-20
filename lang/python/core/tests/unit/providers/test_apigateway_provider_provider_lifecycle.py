@@ -111,18 +111,18 @@ class TestProviderLifecycle:
         provider = _make_provider(routes=[], compute_providers={})
         expected_name = "api-gateway"
         actual_name = provider.name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     @pytest.mark.asyncio
     async def test_health_check_before_start(self) -> None:
         provider = _make_provider(routes=[], compute_providers={})
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_health_check_after_start_and_stop(self) -> None:
         """Start and stop cycle without binding a real port (start sets RUNNING)."""
         provider = _make_provider(routes=[], compute_providers={})
         await provider.start()
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
         await provider.stop()
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"

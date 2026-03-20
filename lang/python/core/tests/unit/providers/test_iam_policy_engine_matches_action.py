@@ -15,7 +15,7 @@ class TestMatchesAction:
         actual = _matches_action(pattern, action)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     def test_wildcard_all(self):
         # Arrange
@@ -26,7 +26,7 @@ class TestMatchesAction:
         actual = _matches_action(pattern, action)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     def test_service_wildcard(self):
         # Arrange
@@ -37,7 +37,7 @@ class TestMatchesAction:
         actual = _matches_action(pattern, action)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     def test_no_match(self):
         # Arrange
@@ -48,7 +48,7 @@ class TestMatchesAction:
         actual = _matches_action(pattern, action)
 
         # Assert
-        assert actual is False
+        assert actual is False, "Expected value to be truthy"
 
     def test_case_insensitive(self):
         # Arrange
@@ -59,4 +59,4 @@ class TestMatchesAction:
         actual = _matches_action(pattern, action)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"

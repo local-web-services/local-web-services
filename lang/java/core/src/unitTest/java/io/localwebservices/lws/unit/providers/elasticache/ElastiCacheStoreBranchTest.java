@@ -20,7 +20,10 @@ public class ElastiCacheStoreBranchTest {
     List<Map<String, Object>> actualClusters = store.describeCacheClusters("nonexistent-id");
 
     // Assert
-    assertEquals(expectedCount, actualClusters.size());
+    assertEquals(
+        expectedCount,
+        actualClusters.size(),
+        "Expected actualClusters.size() to match expectedCount");
   }
 
   @Test
@@ -37,7 +40,8 @@ public class ElastiCacheStoreBranchTest {
     List<Map<String, Object>> actualGroups = store.describeReplicationGroups("nonexistent-id");
 
     // Assert
-    assertEquals(expectedCount, actualGroups.size());
+    assertEquals(
+        expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
   }
 
   @Test
@@ -55,6 +59,7 @@ public class ElastiCacheStoreBranchTest {
     List<Map<String, Object>> actualGroups = store.describeCacheSubnetGroups("nonexistent-name");
 
     // Assert
-    assertEquals(expectedCount, actualGroups.size());
+    assertEquals(
+        expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
   }
 }

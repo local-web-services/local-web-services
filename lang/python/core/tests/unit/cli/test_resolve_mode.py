@@ -20,7 +20,7 @@ class TestResolveMode:
         actual = _resolve_mode(tmp_path, config, expected_mode)
 
         # Assert
-        assert actual == expected_mode
+        assert actual == expected_mode, f"Expected {expected_mode!r} but got {actual!r}"
 
     def test_cli_override_terraform(self, tmp_path) -> None:
         from lws.cli.ldk import _resolve_mode
@@ -33,7 +33,7 @@ class TestResolveMode:
         actual = _resolve_mode(tmp_path, config, expected_mode)
 
         # Assert
-        assert actual == expected_mode
+        assert actual == expected_mode, f"Expected {expected_mode!r} but got {actual!r}"
 
     def test_config_mode_used_when_no_override(self, tmp_path) -> None:
         from lws.cli.ldk import _resolve_mode
@@ -46,7 +46,7 @@ class TestResolveMode:
         actual = _resolve_mode(tmp_path, config, None)
 
         # Assert
-        assert actual == expected_mode
+        assert actual == expected_mode, f"Expected {expected_mode!r} but got {actual!r}"
 
     def test_invalid_mode_raises(self, tmp_path) -> None:
         from lws.cli.ldk import _resolve_mode
@@ -67,7 +67,7 @@ class TestResolveMode:
         actual = _resolve_mode(tmp_path, config, None)
 
         # Assert
-        assert actual == expected_mode
+        assert actual == expected_mode, f"Expected {expected_mode!r} but got {actual!r}"
 
     def test_auto_detect_cdk(self, tmp_path) -> None:
         from lws.cli.ldk import _resolve_mode
@@ -81,7 +81,7 @@ class TestResolveMode:
         actual = _resolve_mode(tmp_path, config, None)
 
         # Assert
-        assert actual == expected_mode
+        assert actual == expected_mode, f"Expected {expected_mode!r} but got {actual!r}"
 
     def test_ambiguous_raises(self, tmp_path) -> None:
         from lws.cli.ldk import _resolve_mode

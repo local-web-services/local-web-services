@@ -35,9 +35,9 @@ class TestFileWatcherLifecycle:
             exclude_patterns=[],
         )
         watcher.start()
-        assert watcher._observer is not None
+        assert watcher._observer is not None, "Expected value to be set but was None"
         watcher.stop()
-        assert watcher._observer is None
+        assert watcher._observer is None, f"Expected None but got {watcher._observer!r}"
 
     def test_stop_without_start(self) -> None:
         """Stopping a watcher that was never started should be a no-op."""
@@ -60,7 +60,7 @@ class TestFileWatcherLifecycle:
         watcher.start()
         first_observer = watcher._observer
         watcher.start()  # Should be ignored
-        assert watcher._observer is first_observer
+        assert watcher._observer is first_observer, "Expected value to be truthy"
         watcher.stop()
 
     def test_on_change_registers_callback(self) -> None:
@@ -75,7 +75,9 @@ class TestFileWatcherLifecycle:
         watcher.on_change(lambda p: None)
 
         # Assert
-        assert len(watcher._callbacks) == expected_callback_count
+        assert (
+            len(watcher._callbacks) == expected_callback_count
+        ), f"Expected {expected_callback_count!r} but got {len(watcher._callbacks)!r}"
 
     def test_callback_receives_events_after_start(self) -> None:
         """A callback registered before start() should receive file events."""
@@ -94,6 +96,6 @@ class TestFileWatcherLifecycle:
         try:
             (Path(tmpdir) / "test.txt").write_text("hello")
             time.sleep(1.0)
-            assert len(received) >= 1
+            assert len(received) >= 1, f"Expected {len(received)!r} >= {1!r}"
         finally:
             watcher.stop()

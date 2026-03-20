@@ -21,7 +21,7 @@ class TestFindNodeId:
         actual = _find_node_id(graph, NodeType.DYNAMODB_TABLE, expected_node_id)
 
         # Assert
-        assert actual == expected_node_id
+        assert actual == expected_node_id, f"Expected {expected_node_id!r} but got {actual!r}"
 
     def test_config_match(self):
         # Arrange
@@ -39,7 +39,7 @@ class TestFindNodeId:
         actual = _find_node_id(graph, NodeType.DYNAMODB_TABLE, "Items")
 
         # Assert
-        assert actual == expected_node_id
+        assert actual == expected_node_id, f"Expected {expected_node_id!r} but got {actual!r}"
 
     def test_fallback_returns_name(self):
         # Arrange
@@ -50,4 +50,4 @@ class TestFindNodeId:
         actual = _find_node_id(graph, NodeType.DYNAMODB_TABLE, expected_fallback)
 
         # Assert
-        assert actual == expected_fallback
+        assert actual == expected_fallback, f"Expected {expected_fallback!r} but got {actual!r}"

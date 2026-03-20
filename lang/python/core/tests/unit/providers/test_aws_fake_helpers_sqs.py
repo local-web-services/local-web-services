@@ -16,8 +16,16 @@ class TestSQSReceiveMessage:
         actual_response = expand_helpers("sqs", "receive-message", helpers)
 
         # Assert
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert expected_root_element in actual_response.body
-        assert expected_message_element in actual_response.body
-        assert f"<Body>{expected_body_content}</Body>" in actual_response.body
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert (
+            actual_response.content_type == expected_content_type
+        ), f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert (
+            expected_root_element in actual_response.body
+        ), f"Expected {expected_root_element!r} to be in {actual_response.body!r}"
+        assert (
+            expected_message_element in actual_response.body
+        ), f"Expected {expected_message_element!r} to be in {actual_response.body!r}"
+        assert (
+            f"<Body>{expected_body_content}</Body>" in actual_response.body
+        ), f"Expected {expected_body_content!r} in body"

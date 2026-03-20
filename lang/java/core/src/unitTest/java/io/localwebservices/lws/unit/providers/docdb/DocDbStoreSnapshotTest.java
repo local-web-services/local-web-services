@@ -25,8 +25,11 @@ public class DocDbStoreSnapshotTest {
     Map<String, Object> actualSnapshot = store.createSnapshot(params);
 
     // Assert
-    assertNotNull(actualSnapshot);
-    assertEquals(expectedSnapshotId, actualSnapshot.get("DBClusterSnapshotIdentifier"));
+    assertNotNull(actualSnapshot, "Expected actualSnapshot to not be null");
+    assertEquals(
+        expectedSnapshotId,
+        actualSnapshot.get("DBClusterSnapshotIdentifier"),
+        "Expected snapshotId to match");
   }
 
   @Test
@@ -48,8 +51,14 @@ public class DocDbStoreSnapshotTest {
     List<Map<String, Object>> actualSnapshots = store.describeSnapshots("snap-a");
 
     // Assert
-    assertEquals(expectedSize, actualSnapshots.size());
-    assertEquals(expectedId, actualSnapshots.get(0).get("DBClusterSnapshotIdentifier"));
+    assertEquals(
+        expectedSize,
+        actualSnapshots.size(),
+        "Expected actualSnapshots.size() to match expectedSize");
+    assertEquals(
+        expectedId,
+        actualSnapshots.get(0).get("DBClusterSnapshotIdentifier"),
+        "Expected id to match");
   }
 
   @Test
@@ -70,7 +79,10 @@ public class DocDbStoreSnapshotTest {
     List<Map<String, Object>> actualSnapshots = store.describeSnapshots(null);
 
     // Assert
-    assertEquals(expectedSize, actualSnapshots.size());
+    assertEquals(
+        expectedSize,
+        actualSnapshots.size(),
+        "Expected actualSnapshots.size() to match expectedSize");
   }
 
   @Test
@@ -88,9 +100,13 @@ public class DocDbStoreSnapshotTest {
     Map<String, Object> actualDeleted = store.deleteSnapshot("my-snap");
 
     // Assert
-    assertNotNull(actualDeleted);
-    assertEquals(expectedId, actualDeleted.get("DBClusterSnapshotIdentifier"));
-    assertEquals(expectedRemainingSize, store.describeSnapshots(null).size());
+    assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
+    assertEquals(
+        expectedId, actualDeleted.get("DBClusterSnapshotIdentifier"), "Expected id to match");
+    assertEquals(
+        expectedRemainingSize,
+        store.describeSnapshots(null).size(),
+        "Expected store.describeSnapshots(null).size() to match expectedRemainingSize");
   }
 
   @Test
@@ -102,6 +118,6 @@ public class DocDbStoreSnapshotTest {
     Map<String, Object> actualDeleted = store.deleteSnapshot("does-not-exist");
 
     // Assert
-    assertNull(actualDeleted);
+    assertNull(actualDeleted, "Expected actualDeleted to be null");
   }
 }

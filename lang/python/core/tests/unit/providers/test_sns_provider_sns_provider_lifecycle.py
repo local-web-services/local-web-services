@@ -115,23 +115,25 @@ class TestSnsProviderLifecycle:
     def test_name(self) -> None:
         provider = SnsProvider(topics=[])
         expected_name = "sns"
-        assert provider.name == expected_name
+        assert (
+            provider.name == expected_name
+        ), f"Expected {expected_name!r} but got {provider.name!r}"
 
     @pytest.mark.asyncio
     async def test_health_check_before_start(self) -> None:
         provider = SnsProvider(topics=_topic_configs())
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_start_sets_running(self) -> None:
         provider = await _started_provider()
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_stop_clears_topics(self) -> None:
         provider = await _started_provider()
         await provider.stop()
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_list_topics(self) -> None:
@@ -145,5 +147,9 @@ class TestSnsProviderLifecycle:
         actual_names = {t.topic_name for t in actual_topics}
 
         # Assert
-        assert len(actual_topics) == expected_count
-        assert actual_names == expected_names
+        assert (
+            len(actual_topics) == expected_count
+        ), f"Expected {expected_count!r} but got {len(actual_topics)!r}"
+        assert (
+            actual_names == expected_names
+        ), f"Expected {expected_names!r} but got {actual_names!r}"

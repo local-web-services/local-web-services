@@ -15,4 +15,4 @@ class TestRenderRandomChoice:
         actual = render_template(template)
 
         # Assert
-        assert actual in expected_choices
+        assert actual in expected_choices, f"Expected {actual!r} to be in {expected_choices!r}"

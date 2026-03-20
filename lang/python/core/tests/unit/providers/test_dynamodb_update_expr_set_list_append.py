@@ -68,7 +68,7 @@ class TestSetListAppend:
 
         # Assert
         actual_tags = result["tags"]
-        assert actual_tags == expected_tags
+        assert actual_tags == expected_tags, f"Expected {expected_tags!r} but got {actual_tags!r}"
 
     def test_list_append_prepend(self) -> None:
         # Arrange
@@ -84,7 +84,7 @@ class TestSetListAppend:
 
         # Assert
         actual_tags = result["tags"]
-        assert actual_tags == expected_tags
+        assert actual_tags == expected_tags, f"Expected {expected_tags!r} but got {actual_tags!r}"
 
     def test_list_append_to_missing(self) -> None:
         # Arrange
@@ -100,4 +100,4 @@ class TestSetListAppend:
 
         # Assert
         actual_tags = result["tags"]
-        assert actual_tags == expected_tags
+        assert actual_tags == expected_tags, f"Expected {expected_tags!r} but got {actual_tags!r}"

@@ -82,7 +82,9 @@ class TestResourcesEndpoint:
         resp = client.get("/_ldk/resources")
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
     def test_returns_port(self, client):
         # Arrange
@@ -93,7 +95,7 @@ class TestResourcesEndpoint:
 
         # Assert
         actual_port = data["port"]
-        assert actual_port == expected_port
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
 
     def test_returns_services(self, client):
         # Arrange
@@ -107,10 +109,18 @@ class TestResourcesEndpoint:
 
         # Assert
         actual_services = data["services"]
-        assert expected_apigateway in actual_services
-        assert expected_dynamodb in actual_services
-        assert expected_sqs in actual_services
-        assert expected_stepfunctions in actual_services
+        assert (
+            expected_apigateway in actual_services
+        ), f"Expected {expected_apigateway!r} to be in {actual_services!r}"
+        assert (
+            expected_dynamodb in actual_services
+        ), f"Expected {expected_dynamodb!r} to be in {actual_services!r}"
+        assert (
+            expected_sqs in actual_services
+        ), f"Expected {expected_sqs!r} to be in {actual_services!r}"
+        assert (
+            expected_stepfunctions in actual_services
+        ), f"Expected {expected_stepfunctions!r} to be in {actual_services!r}"
 
     def test_apigateway_has_route_details(self, client):
         # Arrange
@@ -126,16 +136,22 @@ class TestResourcesEndpoint:
         # Assert
         apigw = data["services"]["apigateway"]
         actual_port = apigw["port"]
-        assert actual_port == expected_port
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
         actual_resource_count = len(apigw["resources"])
-        assert actual_resource_count == expected_resource_count
+        assert (
+            actual_resource_count == expected_resource_count
+        ), f"Expected {expected_resource_count!r} but got {actual_resource_count!r}"
         route = apigw["resources"][0]
         actual_path = route["path"]
-        assert actual_path == expected_path
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
         actual_method = route["method"]
-        assert actual_method == expected_method
+        assert (
+            actual_method == expected_method
+        ), f"Expected {expected_method!r} but got {actual_method!r}"
         actual_handler = route["handler"]
-        assert actual_handler == expected_handler
+        assert (
+            actual_handler == expected_handler
+        ), f"Expected {expected_handler!r} but got {actual_handler!r}"
 
     def test_dynamodb_has_port_and_resources(self, client):
         # Arrange
@@ -149,11 +165,15 @@ class TestResourcesEndpoint:
         # Assert
         dynamo = data["services"]["dynamodb"]
         actual_port = dynamo["port"]
-        assert actual_port == expected_port
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
         actual_resource_count = len(dynamo["resources"])
-        assert actual_resource_count == expected_resource_count
+        assert (
+            actual_resource_count == expected_resource_count
+        ), f"Expected {expected_resource_count!r} but got {actual_resource_count!r}"
         actual_table_name = dynamo["resources"][0]["name"]
-        assert actual_table_name == expected_table_name
+        assert (
+            actual_table_name == expected_table_name
+        ), f"Expected {expected_table_name!r} but got {actual_table_name!r}"
 
     def test_sqs_has_queue_url(self, client):
         # Arrange
@@ -165,7 +185,7 @@ class TestResourcesEndpoint:
         # Assert
         sqs = data["services"]["sqs"]
         actual_queue_url = sqs["resources"][0]["queue_url"]
-        assert actual_queue_url.startswith(expected_url_prefix)
+        assert actual_queue_url.startswith(expected_url_prefix), "Expected value to be truthy"
 
     def test_stepfunctions_has_arn(self, client):
         # Arrange
@@ -177,7 +197,9 @@ class TestResourcesEndpoint:
         # Assert
         sfn = data["services"]["stepfunctions"]
         actual_arn = sfn["resources"][0]["arn"]
-        assert expected_arn_prefix in actual_arn
+        assert (
+            expected_arn_prefix in actual_arn
+        ), f"Expected {expected_arn_prefix!r} to be in {actual_arn!r}"
 
     def test_empty_metadata(self):
         """When no resource_metadata is provided, returns empty dict."""
@@ -198,4 +220,4 @@ class TestResourcesEndpoint:
         actual_data = c.get("/_ldk/resources").json()
 
         # Assert
-        assert actual_data == expected_data
+        assert actual_data == expected_data, f"Expected {expected_data!r} but got {actual_data!r}"

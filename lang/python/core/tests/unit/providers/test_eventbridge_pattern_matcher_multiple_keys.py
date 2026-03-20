@@ -56,7 +56,7 @@ class TestMultipleKeys:
             "source": "aws.ec2",
             "detail-type": "EC2 Instance State-change Notification",
         }
-        assert match_event(pattern, event) is True
+        assert match_event(pattern, event) is True, "Expected value to be truthy"
 
     def test_partial_match_fails(self) -> None:
         pattern = {
@@ -67,4 +67,4 @@ class TestMultipleKeys:
             "source": "aws.ec2",
             "detail-type": "Something Else",
         }
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"

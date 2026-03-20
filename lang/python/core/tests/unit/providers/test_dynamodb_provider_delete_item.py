@@ -123,7 +123,7 @@ class TestDeleteItem:
         result = await provider.get_item("orders", {"orderId": "o1", "itemId": "i1"})
 
         # Assert
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     async def test_delete_nonexistent_no_error(self, provider: SqliteDynamoProvider) -> None:
         # Should not raise

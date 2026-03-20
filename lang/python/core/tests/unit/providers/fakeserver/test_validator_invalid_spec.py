@@ -24,7 +24,9 @@ class TestInvalidSpec:
         issues = validate_against_spec(config, spec)
 
         # Assert
-        assert len(issues) == 1
+        assert len(issues) == 1, f"Expected {1!r} but got {len(issues)!r}"
         expected_level = "ERROR"
         actual_level = issues[0].level
-        assert actual_level == expected_level
+        assert (
+            actual_level == expected_level
+        ), f"Expected {expected_level!r} but got {actual_level!r}"

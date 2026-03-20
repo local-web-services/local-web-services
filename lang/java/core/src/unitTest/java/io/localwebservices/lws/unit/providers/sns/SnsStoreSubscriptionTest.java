@@ -28,7 +28,7 @@ class SnsStoreSubscriptionTest {
 
     // Assert
     var actualSubscription = store.subscriptions.get(subArn);
-    assertNotNull(actualSubscription);
+    assertNotNull(actualSubscription, "Expected actualSubscription to not be null");
   }
 
   @Test
@@ -41,7 +41,7 @@ class SnsStoreSubscriptionTest {
 
     // Assert
     var actualAttrs = store.subscriptionAttrs.get(subArn);
-    assertNotNull(actualAttrs);
+    assertNotNull(actualAttrs, "Expected actualAttrs to not be null");
   }
 
   @Test
@@ -54,7 +54,7 @@ class SnsStoreSubscriptionTest {
 
     // Assert
     var actualTags = store.resourceTags.get(arn);
-    assertNotNull(actualTags);
+    assertNotNull(actualTags, "Expected actualTags to not be null");
   }
 
   @Test
@@ -67,6 +67,6 @@ class SnsStoreSubscriptionTest {
     store.reset();
 
     // Assert
-    assertTrue(store.subscriptionAttrs.isEmpty());
+    assertTrue(store.subscriptionAttrs.isEmpty(), "Expected store.subscriptionAttrs to be empty");
   }
 }

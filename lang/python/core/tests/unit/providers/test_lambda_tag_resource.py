@@ -32,7 +32,7 @@ class TestTagResource:
             f"/2017-03-31/tags/{_FUNC_ARN}",
             json={"Tags": {"env": "prod", "team": "backend"}},
         )
-        assert resp.status_code == 204
+        assert resp.status_code == 204, f"Expected {204!r} but got {resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_tags_are_returned_by_list_tags(self, client) -> None:
@@ -42,10 +42,12 @@ class TestTagResource:
         )
 
         resp = await client.get(f"/2017-03-31/tags/{_FUNC_ARN}")
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["Tags"]["env"] == "prod"
-        assert data["Tags"]["team"] == "backend"
+        assert data["Tags"]["env"] == "prod", f'Expected {"prod"!r} but got {data["Tags"]["env"]!r}'
+        assert (
+            data["Tags"]["team"] == "backend"
+        ), f'Expected {"backend"!r} but got {data["Tags"]["team"]!r}'
 
     @pytest.mark.asyncio
     async def test_tag_resource_merges_tags(self, client) -> None:
@@ -59,10 +61,12 @@ class TestTagResource:
         )
 
         resp = await client.get(f"/2017-03-31/tags/{_FUNC_ARN}")
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["Tags"]["env"] == "prod"
-        assert data["Tags"]["team"] == "backend"
+        assert data["Tags"]["env"] == "prod", f'Expected {"prod"!r} but got {data["Tags"]["env"]!r}'
+        assert (
+            data["Tags"]["team"] == "backend"
+        ), f'Expected {"backend"!r} but got {data["Tags"]["team"]!r}'
 
     @pytest.mark.asyncio
     async def test_tag_resource_overwrites_existing_key(self, client) -> None:
@@ -76,8 +80,10 @@ class TestTagResource:
         )
 
         resp = await client.get(f"/2017-03-31/tags/{_FUNC_ARN}")
-        assert resp.status_code == 200
-        assert resp.json()["Tags"]["env"] == "prod"
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
+        assert (
+            resp.json()["Tags"]["env"] == "prod"
+        ), f'Expected {"prod"!r} but got {resp.json()["Tags"]["env"]!r}'
 
     @pytest.mark.asyncio
     async def test_tag_resource_via_2015_api_version(self, client) -> None:
@@ -85,11 +91,13 @@ class TestTagResource:
             f"/2015-03-31/tags/{_FUNC_ARN}",
             json={"Tags": {"env": "staging"}},
         )
-        assert resp.status_code == 204
+        assert resp.status_code == 204, f"Expected {204!r} but got {resp.status_code!r}"
 
         resp = await client.get(f"/2015-03-31/tags/{_FUNC_ARN}")
-        assert resp.status_code == 200
-        assert resp.json()["Tags"]["env"] == "staging"
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
+        assert (
+            resp.json()["Tags"]["env"] == "staging"
+        ), f'Expected {"staging"!r} but got {resp.json()["Tags"]["env"]!r}'
 
     @pytest.mark.asyncio
     async def test_tags_stored_in_registry(self, client, registry) -> None:
@@ -99,4 +107,4 @@ class TestTagResource:
         )
 
         tags = registry.get_tags(_FUNC_ARN)
-        assert tags == {"env": "prod"}
+        assert tags == {"env": "prod"}, "Expected {!r} but got {!r}".format({"env": "prod"}, tags)

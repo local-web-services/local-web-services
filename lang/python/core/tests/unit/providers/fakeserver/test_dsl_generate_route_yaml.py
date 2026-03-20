@@ -15,5 +15,5 @@ class TestGenerateRouteYaml:
         actual = generate_route_yaml("/v1/users", method="GET", status=200)
 
         # Assert
-        assert expected_path in actual
-        assert expected_method in actual
+        assert expected_path in actual, f"Expected {expected_path!r} to be in {actual!r}"
+        assert expected_method in actual, f"Expected {expected_method!r} to be in {actual!r}"

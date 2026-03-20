@@ -115,19 +115,19 @@ class TestFilterPolicyAnythingBut:
     def test_anything_but_excludes_value(self) -> None:
         attrs = {"color": {"DataType": "String", "StringValue": "red"}}
         policy = {"color": [{"anything-but": ["red"]}]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"
 
     def test_anything_but_passes_different_value(self) -> None:
         attrs = {"color": {"DataType": "String", "StringValue": "green"}}
         policy = {"color": [{"anything-but": ["red"]}]}
-        assert matches_filter_policy(attrs, policy) is True
+        assert matches_filter_policy(attrs, policy) is True, "Expected value to be truthy"
 
     def test_anything_but_multiple_exclusions(self) -> None:
         attrs = {"color": {"DataType": "String", "StringValue": "blue"}}
         policy = {"color": [{"anything-but": ["red", "blue"]}]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"
 
     def test_anything_but_missing_attribute(self) -> None:
         attrs = {}
         policy = {"color": [{"anything-but": ["red"]}]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"

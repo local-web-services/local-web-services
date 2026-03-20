@@ -89,7 +89,7 @@ class TestValidateOperation:
         )
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_permission_denied(self) -> None:
         # Arrange
@@ -108,7 +108,9 @@ class TestValidateOperation:
 
         # Assert
         actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(actual_error_issues) >= expected_min_error_issues
+        assert (
+            len(actual_error_issues) >= expected_min_error_issues
+        ), f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"
 
     def test_strict_mode_raises(self) -> None:
         # Arrange

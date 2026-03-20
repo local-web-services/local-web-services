@@ -38,8 +38,8 @@ class TestDeleteRuleRoute:
             {"Name": "test-rule", "EventPattern": '{"source":["test"]}'},
         )
         resp = await _request(client, "DeleteRule", {"Name": "test-rule"})
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
 
     async def test_delete_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
         resp = await _request(client, "DeleteRule", {"Name": "nope"})
-        assert resp.status_code == 400
+        assert resp.status_code == 400, f"Expected {400!r} but got {resp.status_code!r}"

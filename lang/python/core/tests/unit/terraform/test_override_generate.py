@@ -22,17 +22,21 @@ class TestGenerateOverride:
         override_path = generate_override(port, tmp_path)
 
         # Assert
-        assert override_path.exists()
-        assert override_path.name == OVERRIDE_FILENAME
+        assert override_path.exists(), "Expected value to be truthy"
+        assert (
+            override_path.name == OVERRIDE_FILENAME
+        ), f"Expected {OVERRIDE_FILENAME!r} but got {override_path.name!r}"
 
         actual_content = override_path.read_text()
-        assert MARKER_COMMENT in actual_content
+        assert (
+            MARKER_COMMENT in actual_content
+        ), f"Expected {MARKER_COMMENT!r} to be in {actual_content!r}"
 
         # Verify endpoint URLs (base port + 1 through 13)
         assert f"http://localhost:{port + 1}" in actual_content  # dynamodb
-        assert f"http://localhost:{port + 2}" in actual_content  # sqs
-        assert f"http://localhost:{port + 3}" in actual_content  # s3
-        assert f"http://localhost:{port + 4}" in actual_content  # sns
+        assert f"http://localhost:{port + 2}" in actual_content  # sqs, "Expected assertion to pass"
+        assert f"http://localhost:{port + 3}" in actual_content  # s3, "Expected assertion to pass"
+        assert f"http://localhost:{port + 4}" in actual_content  # sns, "Expected assertion to pass"
         assert f"http://localhost:{port + 5}" in actual_content  # cloudwatchevents
         assert f"http://localhost:{port + 6}" in actual_content  # stepfunctions
         assert f"http://localhost:{port + 7}" in actual_content  # cognitoidp
@@ -44,8 +48,12 @@ class TestGenerateOverride:
         assert f"http://localhost:{port + 13}" in actual_content  # secretsmanager
 
         # Verify both V1 and V2 API Gateway endpoints point to same port
-        assert f'apigateway       = "http://localhost:{expected_apigw_port}"' in actual_content
-        assert f'apigatewayv2     = "http://localhost:{expected_apigw_port}"' in actual_content
+        assert (
+            f'apigateway       = "http://localhost:{expected_apigw_port}"' in actual_content
+        ), f"Expected apigateway port {expected_apigw_port!r} in content"
+        assert (
+            f'apigatewayv2     = "http://localhost:{expected_apigw_port}"' in actual_content
+        ), f"Expected apigatewayv2 port {expected_apigw_port!r} in content"
 
     def test_overwrites_lws_generated_file(self, tmp_path: Path) -> None:
         """Overwrite existing LWS-generated override file."""
@@ -58,10 +66,14 @@ class TestGenerateOverride:
         actual_path = generate_override(port, tmp_path)
 
         # Assert
-        assert actual_path == override_path
+        assert actual_path == override_path, f"Expected {override_path!r} but got {actual_path!r}"
         actual_content = override_path.read_text()
-        assert "Old content" not in actual_content
-        assert f"http://localhost:{port + 1}" in actual_content
+        assert (
+            "Old content" not in actual_content
+        ), f'Expected {"Old content"!r} to not be in {actual_content!r}'
+        assert (
+            f"http://localhost:{port + 1}" in actual_content
+        ), "Expected {!r} to be in {!r}".format(f"http://localhost:{port + 1}", actual_content)
 
     def test_refuses_to_overwrite_user_file(self, tmp_path: Path) -> None:
         """Raise FileExistsError when trying to overwrite user-created file."""
@@ -75,5 +87,9 @@ class TestGenerateOverride:
             generate_override(3000, tmp_path)
 
         actual_error_message = str(exc_info.value)
-        assert OVERRIDE_FILENAME in actual_error_message
-        assert expected_error_fragment in actual_error_message
+        assert (
+            OVERRIDE_FILENAME in actual_error_message
+        ), f"Expected {OVERRIDE_FILENAME!r} to be in {actual_error_message!r}"
+        assert (
+            expected_error_fragment in actual_error_message
+        ), f"Expected {expected_error_fragment!r} to be in {actual_error_message!r}"

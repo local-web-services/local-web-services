@@ -29,7 +29,7 @@ class TestFileChangeHandlerMatches:
             include_patterns=["src/*"],
             exclude_patterns=[],
         )
-        assert handler._matches("src/main.py") is True
+        assert handler._matches("src/main.py") is True, "Expected value to be truthy"
 
     def test_include_pattern_does_not_match(self) -> None:
         """A path that does not match any include pattern should be rejected."""
@@ -38,7 +38,7 @@ class TestFileChangeHandlerMatches:
             include_patterns=["src/*"],
             exclude_patterns=[],
         )
-        assert handler._matches("docs/readme.md") is False
+        assert handler._matches("docs/readme.md") is False, "Expected value to be truthy"
 
     def test_exclude_pattern_rejects(self) -> None:
         """A path matching an exclude pattern should be rejected even if it matches include."""
@@ -48,7 +48,7 @@ class TestFileChangeHandlerMatches:
             exclude_patterns=["node_modules/*"],
         )
         # fnmatch "node_modules/*" matches one level deep
-        assert handler._matches("node_modules/index.js") is False
+        assert handler._matches("node_modules/index.js") is False, "Expected value to be truthy"
 
     def test_exclude_node_modules(self) -> None:
         """Paths under node_modules should be excluded."""
@@ -57,7 +57,7 @@ class TestFileChangeHandlerMatches:
             include_patterns=["*"],
             exclude_patterns=["node_modules*"],
         )
-        assert handler._matches("node_modules/pkg/index.js") is False
+        assert handler._matches("node_modules/pkg/index.js") is False, "Expected value to be truthy"
 
     def test_exclude_git_directory(self) -> None:
         """Paths under .git should be excluded."""
@@ -66,7 +66,7 @@ class TestFileChangeHandlerMatches:
             include_patterns=["*"],
             exclude_patterns=[".git*"],
         )
-        assert handler._matches(".git/config") is False
+        assert handler._matches(".git/config") is False, "Expected value to be truthy"
 
     def test_no_include_patterns_accepts_all(self) -> None:
         """When no include patterns are provided, all non-excluded paths should match."""
@@ -75,7 +75,7 @@ class TestFileChangeHandlerMatches:
             include_patterns=[],
             exclude_patterns=[],
         )
-        assert handler._matches("anything/goes.txt") is True
+        assert handler._matches("anything/goes.txt") is True, "Expected value to be truthy"
 
     def test_multiple_include_patterns(self) -> None:
         """A path matching any of several include patterns should be accepted."""
@@ -84,9 +84,9 @@ class TestFileChangeHandlerMatches:
             include_patterns=["src/*", "lib/*"],
             exclude_patterns=[],
         )
-        assert handler._matches("src/app.py") is True
-        assert handler._matches("lib/utils.py") is True
-        assert handler._matches("test/test_app.py") is False
+        assert handler._matches("src/app.py") is True, "Expected value to be truthy"
+        assert handler._matches("lib/utils.py") is True, "Expected value to be truthy"
+        assert handler._matches("test/test_app.py") is False, "Expected value to be truthy"
 
     def test_exclude_takes_precedence(self) -> None:
         """Exclude patterns should override include patterns."""
@@ -95,5 +95,5 @@ class TestFileChangeHandlerMatches:
             include_patterns=["*.py"],
             exclude_patterns=["test_*.py"],
         )
-        assert handler._matches("main.py") is True
-        assert handler._matches("test_main.py") is False
+        assert handler._matches("main.py") is True, "Expected value to be truthy"
+        assert handler._matches("test_main.py") is False, "Expected value to be truthy"

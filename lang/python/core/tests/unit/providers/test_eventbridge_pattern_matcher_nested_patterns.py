@@ -58,7 +58,7 @@ class TestNestedPatterns:
             "source": "aws.ec2",
             "detail": {"state": "running", "instance-id": "i-12345"},
         }
-        assert match_event(pattern, event) is True
+        assert match_event(pattern, event) is True, "Expected value to be truthy"
 
     def test_nested_detail_no_match(self) -> None:
         pattern = {
@@ -71,7 +71,7 @@ class TestNestedPatterns:
             "source": "aws.ec2",
             "detail": {"state": "running"},
         }
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"
 
     def test_deeply_nested_match(self) -> None:
         pattern = {
@@ -86,9 +86,9 @@ class TestNestedPatterns:
                 "bucket": {"name": "my-bucket", "arn": "arn:..."},
             },
         }
-        assert match_event(pattern, event) is True
+        assert match_event(pattern, event) is True, "Expected value to be truthy"
 
     def test_nested_non_dict_event_value(self) -> None:
         pattern = {"detail": {"nested": {"key": ["val"]}}}
         event = {"detail": {"nested": "not-a-dict"}}
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"

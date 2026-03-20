@@ -24,7 +24,9 @@ public class DynamoDbStoreCrudTest {
     store.createTable(expectedName, "pk", "S", null, null, List.of());
 
     // Assert
-    assertTrue(store.tableExists(expectedName));
+    assertTrue(
+        store.tableExists(expectedName),
+        "Expected condition to be true: store.tableExists(expectedName)");
   }
 
   @Test
@@ -36,7 +38,7 @@ public class DynamoDbStoreCrudTest {
     boolean actualResult = store.tableExists("nonexistent");
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -59,7 +61,9 @@ public class DynamoDbStoreCrudTest {
     store.deleteTable(tableName);
 
     // Assert
-    assertFalse(store.tableExists(tableName));
+    assertFalse(
+        store.tableExists(tableName),
+        "Expected condition to be false: store.tableExists(tableName)");
   }
 
   @Test
@@ -83,9 +87,10 @@ public class DynamoDbStoreCrudTest {
     List<String> actualNames = store.listTables();
 
     // Assert
-    assertEquals(expectedCount, actualNames.size());
-    assertTrue(actualNames.contains("table-a"));
-    assertTrue(actualNames.contains("table-b"));
+    assertEquals(
+        expectedCount, actualNames.size(), "Expected actualNames.size() to match expectedCount");
+    assertTrue(actualNames.contains("table-a"), "Expected value to contain expected substring");
+    assertTrue(actualNames.contains("table-b"), "Expected value to contain expected substring");
   }
 
   @Test
@@ -98,7 +103,7 @@ public class DynamoDbStoreCrudTest {
     store.reset();
 
     // Assert
-    assertFalse(store.tableExists("reset-table"));
+    assertFalse(store.tableExists("reset-table"), "Expected values to match");
   }
 
   @Test
@@ -115,8 +120,8 @@ public class DynamoDbStoreCrudTest {
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", Map.of("S", "key-1")));
 
     // Assert
-    assertNotNull(actualItem);
-    assertEquals(expectedItem.get("value"), actualItem.get("value"));
+    assertNotNull(actualItem, "Expected actualItem to not be null");
+    assertEquals(expectedItem.get("value"), actualItem.get("value"), "Expected values to match");
   }
 
   @Test
@@ -130,7 +135,7 @@ public class DynamoDbStoreCrudTest {
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", Map.of("S", "missing")));
 
     // Assert
-    assertNull(actualItem);
+    assertNull(actualItem, "Expected actualItem to be null");
   }
 
   @Test
@@ -146,7 +151,9 @@ public class DynamoDbStoreCrudTest {
     store.deleteItem(tableName, Map.of("pk", Map.of("S", "to-delete")));
 
     // Assert
-    assertNull(store.getItem(tableName, Map.of("pk", Map.of("S", "to-delete"))));
+    assertNull(
+        store.getItem(tableName, Map.of("pk", Map.of("S", "to-delete"))),
+        "Expected values to match");
   }
 
   @Test
@@ -169,9 +176,9 @@ public class DynamoDbStoreCrudTest {
     Map<String, Object> actualDesc = store.describeTable(expectedName);
 
     // Assert
-    assertEquals(expectedName, actualDesc.get("TableName"));
-    assertEquals("ACTIVE", actualDesc.get("TableStatus"));
-    assertNotNull(actualDesc.get("KeySchema"));
+    assertEquals(expectedName, actualDesc.get("TableName"), "Expected name to match");
+    assertEquals("ACTIVE", actualDesc.get("TableStatus"), "Expected values to match");
+    assertNotNull(actualDesc.get("KeySchema"), "Expected values to match");
   }
 
   @Test
@@ -199,7 +206,7 @@ public class DynamoDbStoreCrudTest {
         store.getItem(tableName, Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s1")));
     Map<String, Object> actualItem2 =
         store.getItem(tableName, Map.of("pk", Map.of("S", "p1"), "sk", Map.of("S", "s2")));
-    assertNotNull(actualItem1);
-    assertNotNull(actualItem2);
+    assertNotNull(actualItem1, "Expected actualItem1 to not be null");
+    assertNotNull(actualItem2, "Expected actualItem2 to not be null");
   }
 }

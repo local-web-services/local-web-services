@@ -19,10 +19,16 @@ class TestAwsFakeResponseDefaults:
 
         # Assert
         expected_status = 200
-        assert actual_status == expected_status
-        assert actual_headers == {}
-        assert actual_body is None
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_headers == {}, f"Expected {({})!r} but got {actual_headers!r}"
+        assert actual_body is None, f"Expected None but got {actual_body!r}"
         expected_content_type = "application/json"
-        assert actual_content_type == expected_content_type
+        assert (
+            actual_content_type == expected_content_type
+        ), f"Expected {expected_content_type!r} but got {actual_content_type!r}"
         expected_delay_ms = 0
-        assert actual_delay_ms == expected_delay_ms
+        assert (
+            actual_delay_ms == expected_delay_ms
+        ), f"Expected {expected_delay_ms!r} but got {actual_delay_ms!r}"

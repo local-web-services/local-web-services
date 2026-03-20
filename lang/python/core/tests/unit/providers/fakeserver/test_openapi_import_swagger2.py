@@ -35,4 +35,4 @@ class TestImportSwagger2:
         generated = import_openapi_spec(spec, output_dir)
 
         # Assert
-        assert len(generated) > 0
+        assert len(generated) > 0, f"Expected {len(generated)!r} > {0!r}"

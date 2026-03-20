@@ -127,15 +127,19 @@ class TestPostRequestWithBody:
         expected_status = 201
         expected_method = "POST"
         expected_path = "/orders"
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
 
         event: dict = fake_compute.invoke.call_args[0][0]
         actual_method = event["httpMethod"]
         actual_path = event["path"]
-        assert actual_method == expected_method
-        assert actual_path == expected_path
+        assert (
+            actual_method == expected_method
+        ), f"Expected {expected_method!r} but got {actual_method!r}"
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
 
         # Body should be the JSON string
         parsed_body = json.loads(event["body"])
-        assert parsed_body == body_dict
-        assert event["isBase64Encoded"] is False
+        assert parsed_body == body_dict, f"Expected {body_dict!r} but got {parsed_body!r}"
+        assert event["isBase64Encoded"] is False, "Expected value to be truthy"

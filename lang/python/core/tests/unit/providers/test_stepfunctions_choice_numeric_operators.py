@@ -56,8 +56,8 @@ class TestNumericOperators:
             comparison_operator="NumericEquals",
             comparison_value=42,
         )
-        assert evaluate_rule(rule, {"n": 42}) is True
-        assert evaluate_rule(rule, {"n": 43}) is False
+        assert evaluate_rule(rule, {"n": 42}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"n": 43}) is False, "Expected value to be truthy"
 
     def test_numeric_greater_than(self) -> None:
         rule = ChoiceRule(
@@ -66,8 +66,8 @@ class TestNumericOperators:
             comparison_operator="NumericGreaterThan",
             comparison_value=10,
         )
-        assert evaluate_rule(rule, {"n": 20}) is True
-        assert evaluate_rule(rule, {"n": 5}) is False
+        assert evaluate_rule(rule, {"n": 20}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"n": 5}) is False, "Expected value to be truthy"
 
     def test_numeric_less_than(self) -> None:
         rule = ChoiceRule(
@@ -76,8 +76,8 @@ class TestNumericOperators:
             comparison_operator="NumericLessThan",
             comparison_value=10,
         )
-        assert evaluate_rule(rule, {"n": 5}) is True
-        assert evaluate_rule(rule, {"n": 15}) is False
+        assert evaluate_rule(rule, {"n": 5}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"n": 15}) is False, "Expected value to be truthy"
 
     def test_numeric_greater_than_equals(self) -> None:
         rule = ChoiceRule(
@@ -86,9 +86,9 @@ class TestNumericOperators:
             comparison_operator="NumericGreaterThanEquals",
             comparison_value=10,
         )
-        assert evaluate_rule(rule, {"n": 10}) is True
-        assert evaluate_rule(rule, {"n": 11}) is True
-        assert evaluate_rule(rule, {"n": 9}) is False
+        assert evaluate_rule(rule, {"n": 10}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"n": 11}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"n": 9}) is False, "Expected value to be truthy"
 
     def test_numeric_less_than_equals(self) -> None:
         rule = ChoiceRule(
@@ -97,9 +97,9 @@ class TestNumericOperators:
             comparison_operator="NumericLessThanEquals",
             comparison_value=10,
         )
-        assert evaluate_rule(rule, {"n": 10}) is True
-        assert evaluate_rule(rule, {"n": 9}) is True
-        assert evaluate_rule(rule, {"n": 11}) is False
+        assert evaluate_rule(rule, {"n": 10}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"n": 9}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"n": 11}) is False, "Expected value to be truthy"
 
     def test_numeric_with_float(self) -> None:
         rule = ChoiceRule(
@@ -108,8 +108,8 @@ class TestNumericOperators:
             comparison_operator="NumericGreaterThan",
             comparison_value=1.5,
         )
-        assert evaluate_rule(rule, {"n": 2.0}) is True
-        assert evaluate_rule(rule, {"n": 1.0}) is False
+        assert evaluate_rule(rule, {"n": 2.0}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"n": 1.0}) is False, "Expected value to be truthy"
 
     def test_numeric_with_non_number(self) -> None:
         rule = ChoiceRule(
@@ -118,4 +118,4 @@ class TestNumericOperators:
             comparison_operator="NumericEquals",
             comparison_value=42,
         )
-        assert evaluate_rule(rule, {"n": "42"}) is False
+        assert evaluate_rule(rule, {"n": "42"}) is False, "Expected value to be truthy"

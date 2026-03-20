@@ -31,4 +31,4 @@ class TestDeleteBucketCleansWebsite:
         # Assert — re-create bucket and verify config is gone
         await provider.create_bucket(bucket_name)
         actual_config = provider.get_bucket_website(bucket_name)
-        assert actual_config is None
+        assert actual_config is None, f"Expected None but got {actual_config!r}"

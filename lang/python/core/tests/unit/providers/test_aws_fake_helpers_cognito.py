@@ -27,10 +27,22 @@ class TestCognitoInitiateAuth:
         # Assert
         actual_body = json.loads(actual_response.body)
         actual_auth = actual_body["AuthenticationResult"]
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert actual_auth["IdToken"] == expected_id_token
-        assert actual_auth["AccessToken"] == expected_access_token
-        assert actual_auth["RefreshToken"] == expected_refresh_token
-        assert actual_auth["ExpiresIn"] == expected_expires_in
-        assert actual_auth["TokenType"] == expected_token_type
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert (
+            actual_response.content_type == expected_content_type
+        ), f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert (
+            actual_auth["IdToken"] == expected_id_token
+        ), f'Expected {expected_id_token!r} but got {actual_auth["IdToken"]!r}'
+        assert (
+            actual_auth["AccessToken"] == expected_access_token
+        ), f'Expected {expected_access_token!r} but got {actual_auth["AccessToken"]!r}'
+        assert (
+            actual_auth["RefreshToken"] == expected_refresh_token
+        ), f'Expected {expected_refresh_token!r} but got {actual_auth["RefreshToken"]!r}'
+        assert (
+            actual_auth["ExpiresIn"] == expected_expires_in
+        ), f'Expected {expected_expires_in!r} but got {actual_auth["ExpiresIn"]!r}'
+        assert (
+            actual_auth["TokenType"] == expected_token_type
+        ), f'Expected {expected_token_type!r} but got {actual_auth["TokenType"]!r}'

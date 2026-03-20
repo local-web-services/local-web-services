@@ -118,7 +118,7 @@ class TestFilterPolicyMultipleConditions:
             "size": {"DataType": "String", "StringValue": "large"},
         }
         policy = {"color": ["red"], "size": ["large"]}
-        assert matches_filter_policy(attrs, policy) is True
+        assert matches_filter_policy(attrs, policy) is True, "Expected value to be truthy"
 
     def test_partial_match_fails(self) -> None:
         attrs = {
@@ -126,4 +126,4 @@ class TestFilterPolicyMultipleConditions:
             "size": {"DataType": "String", "StringValue": "small"},
         }
         policy = {"color": ["red"], "size": ["large"]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"

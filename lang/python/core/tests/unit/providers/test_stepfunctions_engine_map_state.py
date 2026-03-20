@@ -101,8 +101,14 @@ class TestMapState:
             },
             input_data=[1, 2, 3],
         )
-        assert history.status == ExecutionStatus.SUCCEEDED
-        assert history.output_data == [1, 2, 3]
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert history.output_data == [
+            1,
+            2,
+            3,
+        ], f"Expected {[1, 2, 3]!r} but got {history.output_data!r}"
 
     async def test_map_with_items_path(self) -> None:
         history = await run_engine(
@@ -122,7 +128,11 @@ class TestMapState:
             },
             input_data={"items": [10, 20, 30]},
         )
-        assert history.output_data == [10, 20, 30]
+        assert history.output_data == [
+            10,
+            20,
+            30,
+        ], f"Expected {[10, 20, 30]!r} but got {history.output_data!r}"
 
     async def test_map_with_max_concurrency(self) -> None:
         history = await run_engine(
@@ -142,7 +152,12 @@ class TestMapState:
             },
             input_data=[1, 2, 3, 4],
         )
-        assert history.output_data == [1, 2, 3, 4]
+        assert history.output_data == [
+            1,
+            2,
+            3,
+            4,
+        ], f"Expected {[1, 2, 3, 4]!r} but got {history.output_data!r}"
 
     async def test_map_preserves_order(self) -> None:
         history = await run_engine(
@@ -161,7 +176,13 @@ class TestMapState:
             },
             input_data=["a", "b", "c", "d", "e"],
         )
-        assert history.output_data == ["a", "b", "c", "d", "e"]
+        assert history.output_data == [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+        ], f'Expected {["a", "b", "c", "d", "e"]!r} but got {history.output_data!r}'
 
     async def test_map_with_parameters_context(self) -> None:
         history = await run_engine(
@@ -185,9 +206,17 @@ class TestMapState:
             },
             input_data={"items": ["a", "b"]},
         )
-        assert history.status == ExecutionStatus.SUCCEEDED
-        assert history.output_data[0] == {"value": "a", "index": 0}
-        assert history.output_data[1] == {"value": "b", "index": 1}
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert history.output_data[0] == {
+            "value": "a",
+            "index": 0,
+        }, f"Expected {history.output_data[0]!r}"
+        assert history.output_data[1] == {
+            "value": "b",
+            "index": 1,
+        }, f"Expected {history.output_data[1]!r}"
 
     async def test_map_with_result_path(self) -> None:
         history = await run_engine(
@@ -208,8 +237,13 @@ class TestMapState:
             },
             input_data={"items": [1, 2], "keep": "me"},
         )
-        assert history.output_data["keep"] == "me"
-        assert history.output_data["results"] == [1, 2]
+        assert (
+            history.output_data["keep"] == "me"
+        ), f'Expected {"me"!r} but got {history.output_data["keep"]!r}'
+        assert history.output_data["results"] == [
+            1,
+            2,
+        ], f'Expected {[1, 2]!r} but got {history.output_data["results"]!r}'
 
     async def test_map_with_catch(self) -> None:
         history = await run_engine(
@@ -244,5 +278,9 @@ class TestMapState:
             },
             input_data=[1],
         )
-        assert history.status == ExecutionStatus.SUCCEEDED
-        assert history.output_data == "recovered"
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert (
+            history.output_data == "recovered"
+        ), f'Expected {"recovered"!r} but got {history.output_data!r}'

@@ -40,7 +40,9 @@ class TestOpenSearchDataPlaneEndpoint:
 
         # Assert
         actual_endpoint = result["DomainStatus"]["Endpoint"]
-        assert actual_endpoint == expected_endpoint
+        assert (
+            actual_endpoint == expected_endpoint
+        ), f"Expected {expected_endpoint!r} but got {actual_endpoint!r}"
         fake_cm.start_container.assert_called_once_with("test-domain")
 
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
@@ -58,7 +60,9 @@ class TestOpenSearchDataPlaneEndpoint:
 
         # Assert
         actual_endpoint = result["DomainStatus"]["Endpoint"]
-        assert expected_suffix in actual_endpoint
+        assert (
+            expected_suffix in actual_endpoint
+        ), f"Expected {expected_suffix!r} to be in {actual_endpoint!r}"
 
     def test_delete_domain_stops_container(self) -> None:
         # Arrange

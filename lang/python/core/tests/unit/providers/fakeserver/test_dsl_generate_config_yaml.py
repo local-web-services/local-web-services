@@ -15,8 +15,10 @@ class TestGenerateConfigYaml:
         actual = generate_config_yaml("my-api")
 
         # Assert
-        assert expected_name_line in actual
-        assert expected_protocol_line in actual
+        assert expected_name_line in actual, f"Expected {expected_name_line!r} to be in {actual!r}"
+        assert (
+            expected_protocol_line in actual
+        ), f"Expected {expected_protocol_line!r} to be in {actual!r}"
 
     def test_with_port(self):
         # Arrange
@@ -26,4 +28,4 @@ class TestGenerateConfigYaml:
         actual = generate_config_yaml("api", port=4000)
 
         # Assert
-        assert expected_port_line in actual
+        assert expected_port_line in actual, f"Expected {expected_port_line!r} to be in {actual!r}"

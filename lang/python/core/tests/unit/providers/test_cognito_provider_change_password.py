@@ -61,7 +61,9 @@ class TestCognitoProviderChangePassword:
 
         # Assert
         result = await provider.initiate_auth("USER_PASSWORD_AUTH", username, new_password)
-        assert "AuthenticationResult" in result
+        assert (
+            "AuthenticationResult" in result
+        ), f'Expected {"AuthenticationResult"!r} to be in {result!r}'
 
     async def test_change_password_wrong_old_raises(self, provider: CognitoProvider) -> None:
         # Arrange

@@ -18,8 +18,10 @@ def test_delay_ms_stores_value_and_returns_self():
 
     # Assert
     actual_delay_ms = rule_builder._delay_ms
-    assert actual_delay_ms == expected_delay_ms
-    assert actual_result is rule_builder
+    assert (
+        actual_delay_ms == expected_delay_ms
+    ), f"Expected {expected_delay_ms!r} but got {actual_delay_ms!r}"
+    assert actual_result is rule_builder, "Expected value to be truthy"
 
 
 def test_delay_ms_included_in_respond_payload():
@@ -37,9 +39,11 @@ def test_delay_ms_included_in_respond_payload():
         fake_builder.operation("PutItem").delay_ms(expected_delay_ms).respond(status=200)
 
     # Assert
-    assert len(captured_payloads) == 1
+    assert len(captured_payloads) == 1, f"Expected {1!r} but got {len(captured_payloads)!r}"
     actual_delay_ms = captured_payloads[0]["dynamodb"]["rules"][0]["response"]["delay_ms"]
-    assert actual_delay_ms == expected_delay_ms
+    assert (
+        actual_delay_ms == expected_delay_ms
+    ), f"Expected {expected_delay_ms!r} but got {actual_delay_ms!r}"
 
 
 def test_delay_ms_defaults_to_zero_when_not_called():
@@ -50,7 +54,9 @@ def test_delay_ms_defaults_to_zero_when_not_called():
 
     # Act / Assert
     actual_delay_ms = rule_builder._delay_ms
-    assert actual_delay_ms == expected_delay_ms
+    assert (
+        actual_delay_ms == expected_delay_ms
+    ), f"Expected {expected_delay_ms!r} but got {actual_delay_ms!r}"
 
 
 def test_respond_delay_ms_param_overrides_chained_delay_ms():
@@ -71,4 +77,6 @@ def test_respond_delay_ms_param_overrides_chained_delay_ms():
 
     # Assert
     actual_delay_ms = captured_payloads[0]["dynamodb"]["rules"][0]["response"]["delay_ms"]
-    assert actual_delay_ms == expected_delay_ms
+    assert (
+        actual_delay_ms == expected_delay_ms
+    ), f"Expected {expected_delay_ms!r} but got {actual_delay_ms!r}"

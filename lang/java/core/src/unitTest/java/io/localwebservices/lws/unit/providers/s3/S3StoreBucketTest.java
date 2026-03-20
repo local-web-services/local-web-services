@@ -21,7 +21,10 @@ public class S3StoreBucketTest {
 
     // Assert
     String actualBucketName = (String) store.buckets.get(expectedBucketName).get("BucketName");
-    assertEquals(expectedBucketName, actualBucketName);
+    assertEquals(
+        expectedBucketName,
+        actualBucketName,
+        "Expected actualBucketName to equal expectedBucketName");
   }
 
   @Test
@@ -35,7 +38,9 @@ public class S3StoreBucketTest {
     store.buckets.remove(expectedBucketName);
 
     // Assert
-    assertNull(store.buckets.get(expectedBucketName));
+    assertNull(
+        store.buckets.get(expectedBucketName),
+        "Expected store.buckets.get(expectedBucketName) to be null");
   }
 
   @Test
@@ -51,7 +56,8 @@ public class S3StoreBucketTest {
 
     // Assert
     String actualTagValue = store.bucketTags.get(expectedBucketName).get(expectedTagKey);
-    assertEquals(expectedTagValue, actualTagValue);
+    assertEquals(
+        expectedTagValue, actualTagValue, "Expected actualTagValue to equal expectedTagValue");
   }
 
   @Test
@@ -66,7 +72,7 @@ public class S3StoreBucketTest {
 
     // Assert
     String actualPolicy = store.bucketPolicies.get(expectedBucketName);
-    assertEquals(expectedPolicy, actualPolicy);
+    assertEquals(expectedPolicy, actualPolicy, "Expected actualPolicy to equal expectedPolicy");
   }
 
   @Test
@@ -79,7 +85,7 @@ public class S3StoreBucketTest {
     store.reset();
 
     // Assert
-    assertTrue(store.buckets.isEmpty());
+    assertTrue(store.buckets.isEmpty(), "Expected store.buckets to be empty");
   }
 
   @Test
@@ -92,7 +98,7 @@ public class S3StoreBucketTest {
     store.reset();
 
     // Assert
-    assertTrue(store.bucketTags.isEmpty());
+    assertTrue(store.bucketTags.isEmpty(), "Expected store.bucketTags to be empty");
   }
 
   @Test
@@ -105,6 +111,6 @@ public class S3StoreBucketTest {
     store.reset();
 
     // Assert
-    assertTrue(store.bucketPolicies.isEmpty());
+    assertTrue(store.bucketPolicies.isEmpty(), "Expected store.bucketPolicies to be empty");
   }
 }

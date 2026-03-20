@@ -68,9 +68,19 @@ class TestMixed:
         result = resolve_env_vars(env, resource_registry=registry)
 
         # Assert
-        assert result["PLAIN"] == expected_plain
-        assert result["TABLE"] == expected_table
-        assert result["ARN"] == expected_arn
-        assert result["JOINED"] == expected_joined
-        assert result["SUBBED"] == expected_subbed
-        assert result["SELECTED"] == expected_selected
+        assert (
+            result["PLAIN"] == expected_plain
+        ), f'Expected {expected_plain!r} but got {result["PLAIN"]!r}'
+        assert (
+            result["TABLE"] == expected_table
+        ), f'Expected {expected_table!r} but got {result["TABLE"]!r}'
+        assert result["ARN"] == expected_arn, f'Expected {expected_arn!r} but got {result["ARN"]!r}'
+        assert (
+            result["JOINED"] == expected_joined
+        ), f'Expected {expected_joined!r} but got {result["JOINED"]!r}'
+        assert (
+            result["SUBBED"] == expected_subbed
+        ), f'Expected {expected_subbed!r} but got {result["SUBBED"]!r}'
+        assert (
+            result["SELECTED"] == expected_selected
+        ), f'Expected {expected_selected!r} but got {result["SELECTED"]!r}'

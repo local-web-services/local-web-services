@@ -76,9 +76,9 @@ class TestManagedProcessEnv:
         call_kwargs = fake_exec.call_args.kwargs
         env = call_kwargs["env"]
         # OS env should be present
-        assert "PATH" in env
+        assert "PATH" in env, f'Expected {"PATH"!r} to be in {env!r}'
         # Config env should be present
-        assert env["MY_VAR"] == "my_val"
+        assert env["MY_VAR"] == "my_val", f'Expected {"my_val"!r} but got {env["MY_VAR"]!r}'
 
     def test_send_signal_handles_process_not_found(self) -> None:
         mp = ManagedProcess(_make_config())

@@ -22,7 +22,10 @@ describe("ChaosBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.error_rate).toBe(expectedRate);
+      expect(
+        actualBody.dynamodb.error_rate,
+        "Expected dynamodb error_rate to match the configured rate",
+      ).toBe(expectedRate);
     });
   });
 
@@ -38,8 +41,14 @@ describe("ChaosBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.sqs.latency_min_ms).toBe(expectedMin);
-      expect(actualBody.sqs.latency_max_ms).toBe(expectedMax);
+      expect(
+        actualBody.sqs.latency_min_ms,
+        "Expected sqs latency_min_ms to match the configured minimum",
+      ).toBe(expectedMin);
+      expect(
+        actualBody.sqs.latency_max_ms,
+        "Expected sqs latency_max_ms to match the configured maximum",
+      ).toBe(expectedMax);
     });
   });
 
@@ -54,7 +63,10 @@ describe("ChaosBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.s3.connection_reset_rate).toBe(expectedRate);
+      expect(
+        actualBody.s3.connection_reset_rate,
+        "Expected s3 connection_reset_rate to match the configured rate",
+      ).toBe(expectedRate);
     });
   });
 
@@ -69,7 +81,10 @@ describe("ChaosBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.timeout_rate).toBe(expectedRate);
+      expect(
+        actualBody.dynamodb.timeout_rate,
+        "Expected dynamodb timeout_rate to match the configured rate",
+      ).toBe(expectedRate);
     });
   });
 
@@ -82,7 +97,10 @@ describe("ChaosBuilder", () => {
       await builder.errorRate(0.2).apply();
 
       // Assert
-      expect(fakeFetch).toHaveBeenCalledWith(
+      expect(
+        fakeFetch,
+        "Expected fetch to have been called with the chaos management URL and correct headers",
+      ).toHaveBeenCalledWith(
         EXPECTED_CHAOS_URL,
         expect.objectContaining({
           method: "POST",
@@ -90,7 +108,10 @@ describe("ChaosBuilder", () => {
         }),
       );
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.enabled).toBe(true);
+      expect(
+        actualBody.dynamodb.enabled,
+        "Expected dynamodb enabled flag to be true after apply",
+      ).toBe(true);
     });
 
     it("supports method chaining for multiple chaos settings", async () => {
@@ -102,10 +123,22 @@ describe("ChaosBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.error_rate).toBe(0.1);
-      expect(actualBody.dynamodb.latency_min_ms).toBe(50);
-      expect(actualBody.dynamodb.latency_max_ms).toBe(200);
-      expect(actualBody.dynamodb.timeout_rate).toBe(0.05);
+      expect(
+        actualBody.dynamodb.error_rate,
+        "Expected dynamodb error_rate to be set via method chaining",
+      ).toBe(0.1);
+      expect(
+        actualBody.dynamodb.latency_min_ms,
+        "Expected dynamodb latency_min_ms to be set via method chaining",
+      ).toBe(50);
+      expect(
+        actualBody.dynamodb.latency_max_ms,
+        "Expected dynamodb latency_max_ms to be set via method chaining",
+      ).toBe(200);
+      expect(
+        actualBody.dynamodb.timeout_rate,
+        "Expected dynamodb timeout_rate to be set via method chaining",
+      ).toBe(0.05);
     });
   });
 
@@ -118,13 +151,19 @@ describe("ChaosBuilder", () => {
       await builder.clear();
 
       // Assert
-      expect(fakeFetch).toHaveBeenCalledWith(
-        EXPECTED_CHAOS_URL,
-        expect.objectContaining({ method: "POST" }),
-      );
+      expect(
+        fakeFetch,
+        "Expected fetch to have been called with the chaos management URL and POST method",
+      ).toHaveBeenCalledWith(EXPECTED_CHAOS_URL, expect.objectContaining({ method: "POST" }));
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.enabled).toBe(false);
-      expect(actualBody.dynamodb.error_rate).toBe(0.0);
+      expect(
+        actualBody.dynamodb.enabled,
+        "Expected dynamodb enabled flag to be false after clear",
+      ).toBe(false);
+      expect(
+        actualBody.dynamodb.error_rate,
+        "Expected dynamodb error_rate to be 0 after clear",
+      ).toBe(0.0);
     });
   });
 });

@@ -65,7 +65,9 @@ class TestManagementIamAuthGet:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
 
     def test_get_returns_mode_when_bundle_present(self, client_with_bundle):
         # Arrange
@@ -77,7 +79,7 @@ class TestManagementIamAuthGet:
         # Assert
         data = resp.json()
         actual_mode = data["mode"]
-        assert actual_mode == expected_mode
+        assert actual_mode == expected_mode, f"Expected {expected_mode!r} but got {actual_mode!r}"
 
     def test_get_returns_default_identity_when_bundle_present(self, client_with_bundle):
         # Arrange
@@ -89,7 +91,9 @@ class TestManagementIamAuthGet:
         # Assert
         data = resp.json()
         actual_default_identity = data["default_identity"]
-        assert actual_default_identity == expected_default_identity
+        assert (
+            actual_default_identity == expected_default_identity
+        ), f"Expected {expected_default_identity!r} but got {actual_default_identity!r}"
 
     def test_get_returns_services_when_bundle_present(self, client_with_bundle):
         # Arrange
@@ -101,7 +105,9 @@ class TestManagementIamAuthGet:
         # Assert
         data = resp.json()
         actual_services = data["services"]
-        assert actual_services == expected_services
+        assert (
+            actual_services == expected_services
+        ), f"Expected {expected_services!r} but got {actual_services!r}"
 
     def test_get_returns_enabled_false_when_no_bundle(self, client_without_bundle):
         # Arrange
@@ -113,7 +119,9 @@ class TestManagementIamAuthGet:
         # Assert
         data = resp.json()
         actual_enabled = data["enabled"]
-        assert actual_enabled == expected_enabled
+        assert (
+            actual_enabled == expected_enabled
+        ), f"Expected {expected_enabled!r} but got {actual_enabled!r}"
 
     def test_get_returns_200_when_no_bundle(self, client_without_bundle):
         # Arrange
@@ -124,7 +132,9 @@ class TestManagementIamAuthGet:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
 
     def test_get_returns_identity_header_when_bundle_present(self, client_with_bundle):
         # Arrange
@@ -136,7 +146,9 @@ class TestManagementIamAuthGet:
         # Assert
         data = resp.json()
         actual_identity_header = data["identity_header"]
-        assert actual_identity_header == expected_identity_header
+        assert (
+            actual_identity_header == expected_identity_header
+        ), f"Expected {expected_identity_header!r} but got {actual_identity_header!r}"
 
     def test_get_returns_service_config_when_services_present(self):
         # Arrange
@@ -163,4 +175,4 @@ class TestManagementIamAuthGet:
         # Assert
         data = resp.json()
         actual_mode = data["services"]["dynamodb"]["mode"]
-        assert actual_mode == expected_mode
+        assert actual_mode == expected_mode, f"Expected {expected_mode!r} but got {actual_mode!r}"

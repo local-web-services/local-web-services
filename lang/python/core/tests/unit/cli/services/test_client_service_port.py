@@ -35,7 +35,7 @@ class TestServicePort:
         actual_port = await client.service_port(service_name)
 
         # Assert
-        assert actual_port == expected_port
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
 
     @pytest.mark.asyncio
     async def test_raises_for_missing_service(self):

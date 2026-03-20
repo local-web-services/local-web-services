@@ -160,25 +160,25 @@ class TestDeadLetterQueue:
         # Act
         # First receive (count=1)
         msgs = await queue_with_dlq.receive_messages()
-        assert len(msgs) == 1
+        assert len(msgs) == 1, f"Expected {1!r} but got {len(msgs)!r}"
 
         # Wait for visibility timeout
         await asyncio.sleep(1.1)
 
         # Second receive (count=2, now equals max_receive_count)
         msgs = await queue_with_dlq.receive_messages()
-        assert len(msgs) == 1
+        assert len(msgs) == 1, f"Expected {1!r} but got {len(msgs)!r}"
 
         # Wait for visibility timeout again
         await asyncio.sleep(1.1)
 
         # Third attempt: message should be routed to DLQ (count >= max)
         msgs = await queue_with_dlq.receive_messages()
-        assert len(msgs) == 0
+        assert len(msgs) == 0, f"Expected {0!r} but got {len(msgs)!r}"
 
         # Assert
         # Message should now be in DLQ
         dlq_msgs = await dlq.receive_messages()
-        assert len(dlq_msgs) == 1
+        assert len(dlq_msgs) == 1, f"Expected {1!r} but got {len(dlq_msgs)!r}"
         actual_body = dlq_msgs[0].body
-        assert actual_body == expected_body
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"

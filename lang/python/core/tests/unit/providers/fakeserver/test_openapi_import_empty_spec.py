@@ -17,4 +17,4 @@ class TestEmptySpec:
         generated = import_openapi_spec(spec, output_dir)
 
         # Assert
-        assert len(generated) == 0
+        assert len(generated) == 0, f"Expected {0!r} but got {len(generated)!r}"

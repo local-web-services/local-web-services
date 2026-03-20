@@ -25,8 +25,9 @@ public class ElastiCacheStoreReplicationGroupTest {
     Map<String, Object> actualGroup = store.createReplicationGroup(params);
 
     // Assert
-    assertNotNull(actualGroup);
-    assertEquals(expectedGroupId, actualGroup.get("ReplicationGroupId"));
+    assertNotNull(actualGroup, "Expected actualGroup to not be null");
+    assertEquals(
+        expectedGroupId, actualGroup.get("ReplicationGroupId"), "Expected groupId to match");
   }
 
   @Test
@@ -42,7 +43,7 @@ public class ElastiCacheStoreReplicationGroupTest {
     Map<String, Object> actualGroup = store.createReplicationGroup(params);
 
     // Assert
-    assertEquals(expectedStatus, actualGroup.get("Status"));
+    assertEquals(expectedStatus, actualGroup.get("Status"), "Expected status to match");
   }
 
   @Test
@@ -63,8 +64,10 @@ public class ElastiCacheStoreReplicationGroupTest {
     List<Map<String, Object>> actualGroups = store.describeReplicationGroups("rg-one");
 
     // Assert
-    assertEquals(expectedCount, actualGroups.size());
-    assertEquals("rg-one", actualGroups.get(0).get("ReplicationGroupId"));
+    assertEquals(
+        expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
+    assertEquals(
+        "rg-one", actualGroups.get(0).get("ReplicationGroupId"), "Expected values to match");
   }
 
   @Test
@@ -85,7 +88,8 @@ public class ElastiCacheStoreReplicationGroupTest {
     List<Map<String, Object>> actualGroups = store.describeReplicationGroups(null);
 
     // Assert
-    assertEquals(expectedCount, actualGroups.size());
+    assertEquals(
+        expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
   }
 
   @Test
@@ -102,10 +106,13 @@ public class ElastiCacheStoreReplicationGroupTest {
     Map<String, Object> actualDeleted = store.deleteReplicationGroup("delete-rg");
 
     // Assert
-    assertNotNull(actualDeleted);
-    assertEquals("delete-rg", actualDeleted.get("ReplicationGroupId"));
+    assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
+    assertEquals("delete-rg", actualDeleted.get("ReplicationGroupId"), "Expected values to match");
     List<Map<String, Object>> actualRemaining = store.describeReplicationGroups(null);
-    assertEquals(expectedCount, actualRemaining.size());
+    assertEquals(
+        expectedCount,
+        actualRemaining.size(),
+        "Expected actualRemaining.size() to match expectedCount");
   }
 
   @Test
@@ -118,6 +125,6 @@ public class ElastiCacheStoreReplicationGroupTest {
     Map<String, Object> actualDeleted = store.deleteReplicationGroup(unknownId);
 
     // Assert
-    assertNull(actualDeleted);
+    assertNull(actualDeleted, "Expected actualDeleted to be null");
   }
 }

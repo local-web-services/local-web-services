@@ -17,7 +17,7 @@ public class EventBridgeStoreEventBusTest {
     EventBridgeStore store = new EventBridgeStore();
 
     // Assert
-    assertTrue(store.eventBuses.containsKey("default"));
+    assertTrue(store.eventBuses.containsKey("default"), "Expected map to contain the expected key");
   }
 
   @Test
@@ -30,7 +30,8 @@ public class EventBridgeStoreEventBusTest {
     store.eventBuses.put(expectedBusName, Map.of("Name", expectedBusName));
 
     // Assert
-    assertTrue(store.eventBuses.containsKey(expectedBusName));
+    assertTrue(
+        store.eventBuses.containsKey(expectedBusName), "Expected map to contain the expected key");
   }
 
   @Test
@@ -44,7 +45,8 @@ public class EventBridgeStoreEventBusTest {
     store.reset();
 
     // Assert
-    assertFalse(store.eventBuses.containsKey(expectedBusName));
+    assertFalse(
+        store.eventBuses.containsKey(expectedBusName), "Expected map to not contain the key");
   }
 
   @Test
@@ -57,6 +59,6 @@ public class EventBridgeStoreEventBusTest {
     store.reset();
 
     // Assert
-    assertTrue(store.eventBuses.containsKey("default"));
+    assertTrue(store.eventBuses.containsKey("default"), "Expected map to contain the expected key");
   }
 }

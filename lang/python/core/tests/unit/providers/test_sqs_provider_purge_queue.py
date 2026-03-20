@@ -30,7 +30,7 @@ class TestPurgeQueue:
 
         # Assert
         msgs = await provider.receive_messages(queue_name)
-        assert msgs == []
+        assert msgs == [], f"Expected {[]!r} but got {msgs!r}"
 
     @pytest.mark.asyncio
     async def test_purge_nonexistent_raises(self, provider: SqsProvider) -> None:

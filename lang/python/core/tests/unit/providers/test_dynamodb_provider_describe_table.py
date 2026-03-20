@@ -78,24 +78,48 @@ class TestDescribeTable:
         actual_item_count = result["ItemCount"]
         actual_size_bytes = result["TableSizeBytes"]
         actual_throughput = result["ProvisionedThroughput"]
-        assert actual_table_name == expected_table_name
-        assert actual_status == expected_status
-        assert actual_arn == expected_arn
-        assert actual_item_count == expected_item_count
-        assert actual_size_bytes == expected_size_bytes
-        assert "CreationDateTime" in result
-        assert actual_throughput == expected_throughput
+        assert (
+            actual_table_name == expected_table_name
+        ), f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_arn == expected_arn, f"Expected {expected_arn!r} but got {actual_arn!r}"
+        assert (
+            actual_item_count == expected_item_count
+        ), f"Expected {expected_item_count!r} but got {actual_item_count!r}"
+        assert (
+            actual_size_bytes == expected_size_bytes
+        ), f"Expected {expected_size_bytes!r} but got {actual_size_bytes!r}"
+        assert "CreationDateTime" in result, f'Expected {"CreationDateTime"!r} to be in {result!r}'
+        assert (
+            actual_throughput == expected_throughput
+        ), f"Expected {expected_throughput!r} but got {actual_throughput!r}"
 
         # Check KeySchema
         key_schema = result["KeySchema"]
-        assert len(key_schema) == expected_key_schema_count
-        assert {"AttributeName": "pk", "KeyType": "HASH"} in key_schema
-        assert {"AttributeName": "sk", "KeyType": "RANGE"} in key_schema
+        assert (
+            len(key_schema) == expected_key_schema_count
+        ), f"Expected {expected_key_schema_count!r} but got {len(key_schema)!r}"
+        assert {
+            "AttributeName": "pk",
+            "KeyType": "HASH",
+        } in key_schema, "Expected pk HASH key in schema"
+        assert {
+            "AttributeName": "sk",
+            "KeyType": "RANGE",
+        } in key_schema, "Expected sk RANGE key in schema"
 
         # Check AttributeDefinitions
         attr_defs = result["AttributeDefinitions"]
-        assert {"AttributeName": "pk", "AttributeType": "S"} in attr_defs
-        assert {"AttributeName": "sk", "AttributeType": "S"} in attr_defs
+        assert {
+            "AttributeName": "pk",
+            "AttributeType": "S",
+        } in attr_defs, "Expected pk S attribute in defs"
+        assert {
+            "AttributeName": "sk",
+            "AttributeType": "S",
+        } in attr_defs, "Expected sk S attribute in defs"
 
     @pytest.mark.asyncio
     async def test_describe_table_with_gsi(self, provider: SqliteDynamoProvider) -> None:
@@ -110,11 +134,17 @@ class TestDescribeTable:
 
         # Assert
         gsis = result["GlobalSecondaryIndexes"]
-        assert len(gsis) == expected_gsi_count
+        assert (
+            len(gsis) == expected_gsi_count
+        ), f"Expected {expected_gsi_count!r} but got {len(gsis)!r}"
         actual_index_name = gsis[0]["IndexName"]
         actual_projection_type = gsis[0]["Projection"]["ProjectionType"]
-        assert actual_index_name == expected_index_name
-        assert actual_projection_type == expected_projection_type
+        assert (
+            actual_index_name == expected_index_name
+        ), f"Expected {expected_index_name!r} but got {actual_index_name!r}"
+        assert (
+            actual_projection_type == expected_projection_type
+        ), f"Expected {expected_projection_type!r} but got {actual_projection_type!r}"
 
     @pytest.mark.asyncio
     async def test_describe_table_nonexistent_raises(self, provider: SqliteDynamoProvider) -> None:

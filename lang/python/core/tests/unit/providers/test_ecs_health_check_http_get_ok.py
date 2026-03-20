@@ -25,8 +25,8 @@ class TestHttpGetOk:
     async def test_returns_false_on_connection_error(self) -> None:
         # Port 1 is almost certainly not listening
         result = await _http_get_ok("http://localhost:1/health", timeout=0.1)
-        assert result is False
+        assert result is False, "Expected value to be truthy"
 
     async def test_returns_false_on_invalid_url(self) -> None:
         result = await _http_get_ok("not-a-url", timeout=0.1)
-        assert result is False
+        assert result is False, "Expected value to be truthy"

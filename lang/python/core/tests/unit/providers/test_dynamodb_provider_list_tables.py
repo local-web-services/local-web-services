@@ -56,7 +56,7 @@ class TestListTables:
     @pytest.mark.asyncio
     async def test_list_tables_empty(self, provider: SqliteDynamoProvider) -> None:
         tables = await provider.list_tables()
-        assert tables == []
+        assert tables == [], f"Expected {[]!r} but got {tables!r}"
 
     @pytest.mark.asyncio
     async def test_list_tables_sorted(self, provider: SqliteDynamoProvider) -> None:
@@ -70,4 +70,6 @@ class TestListTables:
         actual_tables = await provider.list_tables()
 
         # Assert
-        assert actual_tables == expected_tables
+        assert (
+            actual_tables == expected_tables
+        ), f"Expected {expected_tables!r} but got {actual_tables!r}"

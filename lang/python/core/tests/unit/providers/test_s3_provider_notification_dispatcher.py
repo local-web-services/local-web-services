@@ -72,9 +72,11 @@ class TestNotificationDispatcher:
 
         # Assert
         expected_count = 1
-        assert len(received) == expected_count
+        assert (
+            len(received) == expected_count
+        ), f"Expected {expected_count!r} but got {len(received)!r}"
         actual_key = received[0]["s3"]["object"]["key"]
-        assert actual_key == expected_key
+        assert actual_key == expected_key, f"Expected {expected_key!r} but got {actual_key!r}"
 
     async def test_dispatch_prefix_filter(self) -> None:
         # Arrange
@@ -95,9 +97,11 @@ class TestNotificationDispatcher:
 
         # Assert
         expected_count = 1
-        assert len(received) == expected_count
+        assert (
+            len(received) == expected_count
+        ), f"Expected {expected_count!r} but got {len(received)!r}"
         actual_key = received[0]["s3"]["object"]["key"]
-        assert actual_key == expected_key
+        assert actual_key == expected_key, f"Expected {expected_key!r} but got {actual_key!r}"
 
     async def test_dispatch_suffix_filter(self) -> None:
         # Arrange
@@ -117,7 +121,9 @@ class TestNotificationDispatcher:
 
         # Assert
         expected_count = 1
-        assert len(received) == expected_count
+        assert (
+            len(received) == expected_count
+        ), f"Expected {expected_count!r} but got {len(received)!r}"
 
     async def test_dispatch_wrong_bucket_ignored(self) -> None:
         # Arrange
@@ -135,7 +141,9 @@ class TestNotificationDispatcher:
 
         # Assert
         expected_count = 0
-        assert len(received) == expected_count
+        assert (
+            len(received) == expected_count
+        ), f"Expected {expected_count!r} but got {len(received)!r}"
 
     async def test_dispatch_wrong_event_type_ignored(self) -> None:
         # Arrange
@@ -154,7 +162,9 @@ class TestNotificationDispatcher:
 
         # Assert
         expected_count = 0
-        assert len(received) == expected_count
+        assert (
+            len(received) == expected_count
+        ), f"Expected {expected_count!r} but got {len(received)!r}"
 
     async def test_dispatch_exact_event_match(self) -> None:
         # Arrange
@@ -174,7 +184,9 @@ class TestNotificationDispatcher:
 
         # Assert
         expected_count = 1
-        assert len(received) == expected_count
+        assert (
+            len(received) == expected_count
+        ), f"Expected {expected_count!r} but got {len(received)!r}"
 
     async def test_provider_notification_on_put(self, provider: S3Provider) -> None:
         # Arrange
@@ -193,9 +205,11 @@ class TestNotificationDispatcher:
 
         # Assert
         expected_count = 1
-        assert len(received) == expected_count
+        assert (
+            len(received) == expected_count
+        ), f"Expected {expected_count!r} but got {len(received)!r}"
         actual_key = received[0]["s3"]["object"]["key"]
-        assert actual_key == expected_key
+        assert actual_key == expected_key, f"Expected {expected_key!r} but got {actual_key!r}"
 
     async def test_provider_notification_on_delete(self, provider: S3Provider) -> None:
         # Arrange
@@ -215,4 +229,6 @@ class TestNotificationDispatcher:
 
         # Assert
         expected_count = 1
-        assert len(received) == expected_count
+        assert (
+            len(received) == expected_count
+        ), f"Expected {expected_count!r} but got {len(received)!r}"

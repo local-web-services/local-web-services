@@ -109,12 +109,16 @@ class TestTransactGetItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "Responses" in data
-        assert len(data["Responses"]) == expected_response_count
+        assert "Responses" in data, f'Expected {"Responses"!r} to be in {data!r}'
+        assert (
+            len(data["Responses"]) == expected_response_count
+        ), f'Expected {expected_response_count!r} but got {len(data["Responses"])!r}'
         actual_pk = data["Responses"][0]["Item"]["pk"]
-        assert actual_pk == expected_pk
+        assert actual_pk == expected_pk, f"Expected {expected_pk!r} but got {actual_pk!r}"
 
     @pytest.mark.asyncio
     async def test_transact_get_items_not_found(
@@ -139,10 +143,16 @@ class TestTransactGetItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert len(data["Responses"]) == expected_response_count
-        assert data["Responses"][0] == {}
+        assert (
+            len(data["Responses"]) == expected_response_count
+        ), f'Expected {expected_response_count!r} but got {len(data["Responses"])!r}'
+        assert data["Responses"][0] == {}, "Expected {!r} but got {!r}".format(
+            {}, data["Responses"][0]
+        )
 
     @pytest.mark.asyncio
     async def test_transact_get_items_multiple(
@@ -168,12 +178,22 @@ class TestTransactGetItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert len(data["Responses"]) == expected_response_count
-        assert "Item" in data["Responses"][0]
-        assert data["Responses"][1] == {}
-        assert "Item" in data["Responses"][2]
+        assert (
+            len(data["Responses"]) == expected_response_count
+        ), f'Expected {expected_response_count!r} but got {len(data["Responses"])!r}'
+        assert (
+            "Item" in data["Responses"][0]
+        ), f'Expected {"Item"!r} to be in {data["Responses"][0]!r}'
+        assert data["Responses"][1] == {}, "Expected {!r} but got {!r}".format(
+            {}, data["Responses"][1]
+        )
+        assert (
+            "Item" in data["Responses"][2]
+        ), f'Expected {"Item"!r} to be in {data["Responses"][2]!r}'
 
     @pytest.mark.asyncio
     async def test_transact_get_items_empty(
@@ -188,8 +208,12 @@ class TestTransactGetItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
-        assert resp.json() == expected_response
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert (
+            resp.json() == expected_response
+        ), f"Expected {expected_response!r} but got {resp.json()!r}"
 
     @pytest.mark.asyncio
     async def test_transact_get_items_integration(
@@ -243,13 +267,23 @@ class TestTransactGetItems:
             resp = await real_client.post("/", json=payload, headers=_target("TransactGetItems"))
 
             # Assert
-            assert resp.status_code == expected_status_code
+            assert (
+                resp.status_code == expected_status_code
+            ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
             data = resp.json()
-            assert len(data["Responses"]) == expected_response_count
+            assert (
+                len(data["Responses"]) == expected_response_count
+            ), f'Expected {expected_response_count!r} but got {len(data["Responses"])!r}'
             actual_first_name = data["Responses"][0]["Item"]["name"]
             actual_third_name = data["Responses"][2]["Item"]["name"]
-            assert actual_first_name == expected_first_name
-            assert data["Responses"][1] == {}
-            assert actual_third_name == expected_third_name
+            assert (
+                actual_first_name == expected_first_name
+            ), f"Expected {expected_first_name!r} but got {actual_first_name!r}"
+            assert data["Responses"][1] == {}, "Expected {!r} but got {!r}".format(
+                {}, data["Responses"][1]
+            )
+            assert (
+                actual_third_name == expected_third_name
+            ), f"Expected {expected_third_name!r} but got {actual_third_name!r}"
         finally:
             await real_provider.stop()

@@ -63,9 +63,9 @@ class TestRemove:
         result = apply_update_expression(item, "REMOVE temp")
 
         # Assert
-        assert "temp" not in result
+        assert "temp" not in result, f'Expected {"temp"!r} to not be in {result!r}'
         actual_keep = result["keep"]
-        assert actual_keep == expected_keep
+        assert actual_keep == expected_keep, f"Expected {expected_keep!r} but got {actual_keep!r}"
 
     def test_remove_multiple_attributes(self) -> None:
         # Arrange
@@ -76,10 +76,10 @@ class TestRemove:
         result = apply_update_expression(item, "REMOVE a, b")
 
         # Assert
-        assert "a" not in result
-        assert "b" not in result
+        assert "a" not in result, f'Expected {"a"!r} to not be in {result!r}'
+        assert "b" not in result, f'Expected {"b"!r} to not be in {result!r}'
         actual_c = result["c"]
-        assert actual_c == expected_c
+        assert actual_c == expected_c, f"Expected {expected_c!r} but got {actual_c!r}"
 
     def test_remove_nonexistent_no_error(self) -> None:
         # Arrange
@@ -90,7 +90,7 @@ class TestRemove:
         result = apply_update_expression(item, "REMOVE missing")
 
         # Assert
-        assert result == expected_result
+        assert result == expected_result, f"Expected {expected_result!r} but got {result!r}"
 
     def test_remove_with_name_ref(self) -> None:
         item = {"pk": "1", "reserved": "value"}
@@ -99,4 +99,4 @@ class TestRemove:
             "REMOVE #r",
             expression_names={"#r": "reserved"},
         )
-        assert "reserved" not in result
+        assert "reserved" not in result, f'Expected {"reserved"!r} to not be in {result!r}'

@@ -95,7 +95,9 @@ class TestEventSourceManager:
         dispatcher.register_handler.assert_called_once()
         actual_table = dispatcher.register_handler.call_args[0][0]
         expected_table = "my-table"
-        assert actual_table == expected_table
+        assert (
+            actual_table == expected_table
+        ), f"Expected {expected_table!r} but got {actual_table!r}"
 
     async def test_stop_all_stops_all_pollers(self) -> None:
         # Arrange
@@ -140,7 +142,7 @@ class TestEventSourceManager:
 
         # Assert
         expected = "MyFunc"
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_extract_function_name_plain(self) -> None:
         # Act
@@ -148,7 +150,7 @@ class TestEventSourceManager:
 
         # Assert
         expected = "MyFunc"
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_extract_queue_name(self) -> None:
         # Act
@@ -156,7 +158,7 @@ class TestEventSourceManager:
 
         # Assert
         expected = "my-queue"
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_extract_table_name(self) -> None:
         # Act
@@ -166,4 +168,4 @@ class TestEventSourceManager:
 
         # Assert
         expected = "my-table"
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

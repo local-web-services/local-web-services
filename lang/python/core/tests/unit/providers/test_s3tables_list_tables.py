@@ -39,9 +39,11 @@ class TestListTables:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
-        assert actual_body["tables"] == []
+        assert actual_body["tables"] == [], f'Expected {[]!r} but got {actual_body["tables"]!r}'
 
     def test_list_tables_returns_created(self, client: TestClient) -> None:
         # Arrange
@@ -61,10 +63,12 @@ class TestListTables:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         actual_names = [t["name"] for t in actual_body["tables"]]
-        assert table_name in actual_names
+        assert table_name in actual_names, f"Expected {table_name!r} to be in {actual_names!r}"
 
     def test_list_tables_returns_multiple(self, client: TestClient) -> None:
         # Arrange
@@ -90,7 +94,9 @@ class TestListTables:
         expected_count = 2
         actual_body = response.json()
         actual_count = len(actual_body["tables"])
-        assert actual_count == expected_count
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_list_tables_bucket_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -103,7 +109,9 @@ class TestListTables:
         # Assert
         expected_status = 404
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_list_tables_namespace_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -117,4 +125,6 @@ class TestListTables:
         # Assert
         expected_status = 404
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"

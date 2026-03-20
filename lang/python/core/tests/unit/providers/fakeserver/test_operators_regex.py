@@ -14,7 +14,7 @@ class TestRegexOperator:
         actual = evaluate_operator("$regex", "pay_12345", r"pay_\d+")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_regex_no_match(self):
         # Arrange
@@ -24,7 +24,7 @@ class TestRegexOperator:
         actual = evaluate_operator("$regex", "order_abc", r"pay_\d+")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_regex_none_actual(self):
         # Arrange
@@ -34,4 +34,4 @@ class TestRegexOperator:
         actual = evaluate_operator("$regex", None, r".*")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

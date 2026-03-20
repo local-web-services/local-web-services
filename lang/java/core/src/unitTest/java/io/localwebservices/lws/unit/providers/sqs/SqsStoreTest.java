@@ -25,9 +25,9 @@ public class SqsStoreTest {
     String actualUrl = store.queueUrl(expectedName);
 
     // Assert
-    assertTrue(actualUrl.contains("4566"));
-    assertTrue(actualUrl.contains(expectedAccount));
-    assertTrue(actualUrl.contains(expectedName));
+    assertTrue(actualUrl.contains("4566"), "Expected value to contain expected substring");
+    assertTrue(actualUrl.contains(expectedAccount), "Expected value to contain expected substring");
+    assertTrue(actualUrl.contains(expectedName), "Expected value to contain expected substring");
   }
 
   @Test
@@ -40,9 +40,9 @@ public class SqsStoreTest {
     LocalQueue actualQueue = store.createQueue(expectedName, Map.of());
 
     // Assert
-    assertNotNull(actualQueue);
-    assertEquals(expectedName, actualQueue.name);
-    assertNotNull(actualQueue.url);
+    assertNotNull(actualQueue, "Expected actualQueue to not be null");
+    assertEquals(expectedName, actualQueue.name, "Expected actualQueue.name to equal expectedName");
+    assertNotNull(actualQueue.url, "Expected actualQueue.url to not be null");
   }
 
   @Test
@@ -54,7 +54,7 @@ public class SqsStoreTest {
     LocalQueue actualQueue = store.createQueue("orders.fifo", Map.of());
 
     // Assert
-    assertTrue(actualQueue.isFifo);
+    assertTrue(actualQueue.isFifo, "Expected condition to be true: actualQueue.isFifo");
   }
 
   @Test
@@ -68,8 +68,8 @@ public class SqsStoreTest {
     LocalQueue actualQueue = store.getQueue(expectedName);
 
     // Assert
-    assertNotNull(actualQueue);
-    assertEquals(expectedName, actualQueue.name);
+    assertNotNull(actualQueue, "Expected actualQueue to not be null");
+    assertEquals(expectedName, actualQueue.name, "Expected actualQueue.name to equal expectedName");
   }
 
   @Test
@@ -83,8 +83,8 @@ public class SqsStoreTest {
     LocalQueue actualQueue = store.getQueue(created.url);
 
     // Assert
-    assertNotNull(actualQueue);
-    assertEquals(queueName, actualQueue.name);
+    assertNotNull(actualQueue, "Expected actualQueue to not be null");
+    assertEquals(queueName, actualQueue.name, "Expected actualQueue.name to equal queueName");
   }
 
   @Test
@@ -96,7 +96,7 @@ public class SqsStoreTest {
     LocalQueue actualQueue = store.getQueue(null);
 
     // Assert
-    assertNull(actualQueue);
+    assertNull(actualQueue, "Expected actualQueue to be null");
   }
 
   @Test
@@ -111,7 +111,8 @@ public class SqsStoreTest {
     List<LocalQueue> actualQueues = store.listQueues(null);
 
     // Assert
-    assertEquals(expectedCount, actualQueues.size());
+    assertEquals(
+        expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
   }
 
   @Test
@@ -127,7 +128,8 @@ public class SqsStoreTest {
     List<LocalQueue> actualQueues = store.listQueues("prefix");
 
     // Assert
-    assertEquals(expectedCount, actualQueues.size());
+    assertEquals(
+        expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
   }
 
   @Test
@@ -141,7 +143,7 @@ public class SqsStoreTest {
     store.deleteQueue(queueName);
 
     // Assert
-    assertNull(store.getQueue(queueName));
+    assertNull(store.getQueue(queueName), "Expected store.getQueue(queueName) to be null");
   }
 
   @Test
@@ -154,7 +156,8 @@ public class SqsStoreTest {
     store.reset();
 
     // Assert
-    assertEquals(0, store.listQueues(null).size());
+    assertEquals(
+        0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
   }
 
   @Test
@@ -167,8 +170,8 @@ public class SqsStoreTest {
     String actualMessageId = queue.sendMessage("hello", 0);
 
     // Assert
-    assertNotNull(actualMessageId);
-    assertFalse(actualMessageId.isEmpty());
+    assertNotNull(actualMessageId, "Expected actualMessageId to not be null");
+    assertFalse(actualMessageId.isEmpty(), "Expected actualMessageId to not be empty");
   }
 
   @Test
@@ -182,8 +185,8 @@ public class SqsStoreTest {
     List<SqsStore.SqsMessage> actualMessages = queue.receiveMessages(10);
 
     // Assert
-    assertEquals(1, actualMessages.size());
-    assertEquals("body-content", actualMessages.get(0).body);
+    assertEquals(1, actualMessages.size(), "Expected actualMessages.size() to match 1");
+    assertEquals("body-content", actualMessages.get(0).body, "Expected values to match");
   }
 
   @Test
@@ -199,7 +202,9 @@ public class SqsStoreTest {
     queue.deleteMessage(expectedReceiptHandle);
 
     // Assert
-    assertFalse(queue.hasMessage(expectedReceiptHandle));
+    assertFalse(
+        queue.hasMessage(expectedReceiptHandle),
+        "Expected condition to be false: queue.hasMessage(expectedReceiptHandle)");
   }
 
   @Test
@@ -215,7 +220,7 @@ public class SqsStoreTest {
     boolean actualResult = queue.hasMessage(expectedReceiptHandle);
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -228,7 +233,7 @@ public class SqsStoreTest {
     boolean actualResult = queue.hasMessage(null);
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -244,7 +249,10 @@ public class SqsStoreTest {
     queue.purge();
 
     // Assert
-    assertEquals(expectedCount, queue.approximateMessageCount());
+    assertEquals(
+        expectedCount,
+        queue.approximateMessageCount(),
+        "Expected queue.approximateMessageCount() to match expectedCount");
   }
 
   @Test
@@ -260,7 +268,8 @@ public class SqsStoreTest {
     queue.changeVisibility(receiptHandle, 30);
 
     // Assert — message should now be invisible (0 visible messages)
-    assertEquals(0, queue.approximateMessageCount());
+    assertEquals(
+        0, queue.approximateMessageCount(), "Expected queue.approximateMessageCount() to match 0");
   }
 
   @Test
@@ -277,7 +286,10 @@ public class SqsStoreTest {
     Map<String, String> actualTags = store.getQueueTags(queueName);
 
     // Assert
-    assertEquals(expectedValue, actualTags.get(expectedKey));
+    assertEquals(
+        expectedValue,
+        actualTags.get(expectedKey),
+        "Expected actualTags.get(expectedKey) to equal expectedValue");
   }
 
   @Test
@@ -293,8 +305,8 @@ public class SqsStoreTest {
 
     // Assert
     Map<String, String> actualTags = store.getQueueTags(queueName);
-    assertFalse(actualTags.containsKey("env"));
-    assertTrue(actualTags.containsKey("team"));
+    assertFalse(actualTags.containsKey("env"), "Expected map to not contain the key");
+    assertTrue(actualTags.containsKey("team"), "Expected map to contain the expected key");
   }
 
   @Test
@@ -307,7 +319,8 @@ public class SqsStoreTest {
     Map<String, String> actualTags = store.getQueueTags("nonexistent");
 
     // Assert
-    assertEquals(expectedSize, actualTags.size());
+    assertEquals(
+        expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
   }
 
   @Test
@@ -319,7 +332,7 @@ public class SqsStoreTest {
     String actualMd5 = SqsStore.md5("hello");
 
     // Assert
-    assertEquals(expectedMd5, actualMd5);
+    assertEquals(expectedMd5, actualMd5, "Expected actualMd5 to equal expectedMd5");
   }
 
   @Test
@@ -334,7 +347,10 @@ public class SqsStoreTest {
             "timeout-queue", Map.of("VisibilityTimeout", String.valueOf(expectedTimeout)));
 
     // Assert
-    assertEquals(expectedTimeout, actualQueue.visibilityTimeout);
+    assertEquals(
+        expectedTimeout,
+        actualQueue.visibilityTimeout,
+        "Expected actualQueue.visibilityTimeout to equal expectedTimeout");
   }
 
   @Test
@@ -349,7 +365,7 @@ public class SqsStoreTest {
     int actualCount = queue.approximateMessageCount();
 
     // Assert
-    assertEquals(expectedCount, actualCount);
+    assertEquals(expectedCount, actualCount, "Expected actualCount to match expectedCount");
   }
 
   @Test
@@ -361,7 +377,7 @@ public class SqsStoreTest {
     LocalQueue actualQueue = store.createQueue("my-queue", Map.of("FifoQueue", "true"));
 
     // Assert
-    assertTrue(actualQueue.isFifo);
+    assertTrue(actualQueue.isFifo, "Expected condition to be true: actualQueue.isFifo");
   }
 
   @Test
@@ -376,7 +392,8 @@ public class SqsStoreTest {
     List<SqsStore.LocalQueue> actualQueues = store.listQueues("");
 
     // Assert
-    assertEquals(expectedCount, actualQueues.size());
+    assertEquals(
+        expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
   }
 
   @Test
@@ -388,7 +405,8 @@ public class SqsStoreTest {
     store.deleteQueue("ghost-queue");
 
     // Assert
-    assertEquals(0, store.listQueues(null).size());
+    assertEquals(
+        0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
   }
 
   @Test
@@ -400,7 +418,8 @@ public class SqsStoreTest {
     store.setQueueTags("nonexistent", Map.of("key", "value"));
 
     // Assert — no exception, store unchanged
-    assertEquals(0, store.listQueues(null).size());
+    assertEquals(
+        0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
   }
 
   @Test
@@ -413,6 +432,6 @@ public class SqsStoreTest {
     store.removeQueueTags("no-tags-queue", List.of("env"));
 
     // Assert
-    assertTrue(store.getQueueTags("no-tags-queue").isEmpty());
+    assertTrue(store.getQueueTags("no-tags-queue").isEmpty(), "Expected values to match");
   }
 }

@@ -33,8 +33,8 @@ class TestImportOpenApi3:
         generated = import_openapi_spec(spec, output_dir)
 
         # Assert
-        assert len(generated) > 0
-        assert (output_dir / "spec.yaml").exists()
+        assert len(generated) > 0, f"Expected {len(generated)!r} > {0!r}"
+        assert (output_dir / "spec.yaml").exists(), "Expected value to be truthy"
 
     def test_multiple_paths(self, tmp_path):
         # Arrange
@@ -64,7 +64,9 @@ class TestImportOpenApi3:
 
         # Assert
         expected_count = 2
-        assert len(generated) == expected_count
+        assert (
+            len(generated) == expected_count
+        ), f"Expected {expected_count!r} but got {len(generated)!r}"
 
     def test_no_overwrite_skips_existing(self, tmp_path):
         # Arrange
@@ -92,10 +94,12 @@ class TestImportOpenApi3:
         generated = import_openapi_spec(spec, output_dir, overwrite=False)
 
         # Assert
-        assert len(generated) == 0
+        assert len(generated) == 0, f"Expected {0!r} but got {len(generated)!r}"
         expected_content = "existing content"
         actual_content = existing.read_text()
-        assert actual_content == expected_content
+        assert (
+            actual_content == expected_content
+        ), f"Expected {expected_content!r} but got {actual_content!r}"
 
     def test_overwrite_replaces_existing(self, tmp_path):
         # Arrange
@@ -123,4 +127,4 @@ class TestImportOpenApi3:
         generated = import_openapi_spec(spec, output_dir, overwrite=True)
 
         # Assert
-        assert len(generated) == 1
+        assert len(generated) == 1, f"Expected {1!r} but got {len(generated)!r}"

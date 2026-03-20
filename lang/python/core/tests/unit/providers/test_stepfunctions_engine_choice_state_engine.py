@@ -114,7 +114,9 @@ class TestChoiceStateEngine:
             },
             input_data={"value": 20},
         )
-        assert history.output_data == {"size": "big"}
+        assert history.output_data == {"size": "big"}, "Expected {!r} but got {!r}".format(
+            {"size": "big"}, history.output_data
+        )
 
     async def test_choice_default_branch(self) -> None:
         history = await run_engine(
@@ -146,7 +148,9 @@ class TestChoiceStateEngine:
             },
             input_data={"value": 5},
         )
-        assert history.output_data == {"size": "small"}
+        assert history.output_data == {"size": "small"}, "Expected {!r} but got {!r}".format(
+            {"size": "small"}, history.output_data
+        )
 
     async def test_choice_no_match_no_default_fails(self) -> None:
         history = await run_engine(
@@ -168,7 +172,9 @@ class TestChoiceStateEngine:
             },
             input_data={"value": "different"},
         )
-        assert history.status == ExecutionStatus.FAILED
+        assert (
+            history.status == ExecutionStatus.FAILED
+        ), f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
 
     async def test_choice_string_equals(self) -> None:
         history = await run_engine(
@@ -200,7 +206,7 @@ class TestChoiceStateEngine:
             },
             input_data={"status": "ok"},
         )
-        assert history.output_data == "good"
+        assert history.output_data == "good", f'Expected {"good"!r} but got {history.output_data!r}'
 
     async def test_choice_boolean_equals(self) -> None:
         history = await run_engine(
@@ -224,7 +230,7 @@ class TestChoiceStateEngine:
             },
             input_data={"flag": True},
         )
-        assert history.output_data == "yes"
+        assert history.output_data == "yes", f'Expected {"yes"!r} but got {history.output_data!r}'
 
     async def test_choice_and_combinator(self) -> None:
         history = await run_engine(
@@ -264,7 +270,7 @@ class TestChoiceStateEngine:
             },
             input_data={"x": 5, "y": 3},
         )
-        assert history.output_data == "both"
+        assert history.output_data == "both", f'Expected {"both"!r} but got {history.output_data!r}'
 
     async def test_choice_not_combinator(self) -> None:
         history = await run_engine(
@@ -298,4 +304,6 @@ class TestChoiceStateEngine:
             },
             input_data={"x": 5},
         )
-        assert history.output_data == "nonzero"
+        assert (
+            history.output_data == "nonzero"
+        ), f'Expected {"nonzero"!r} but got {history.output_data!r}'

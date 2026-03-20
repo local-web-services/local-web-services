@@ -54,10 +54,18 @@ class TestBucketPolicy:
         get_resp = await client.get(f"/{bucket_name}?policy")
 
         # Assert
-        assert put_resp.status_code == expected_put_status
-        assert get_resp.status_code == expected_get_status
-        assert "s3:GetObject" in get_resp.text
-        assert get_resp.headers["content-type"] == expected_content_type
+        assert (
+            put_resp.status_code == expected_put_status
+        ), f"Expected {expected_put_status!r} but got {put_resp.status_code!r}"
+        assert (
+            get_resp.status_code == expected_get_status
+        ), f"Expected {expected_get_status!r} but got {get_resp.status_code!r}"
+        assert (
+            "s3:GetObject" in get_resp.text
+        ), f'Expected {"s3:GetObject"!r} to be in {get_resp.text!r}'
+        assert (
+            get_resp.headers["content-type"] == expected_content_type
+        ), f'Expected {expected_content_type!r} but got {get_resp.headers["content-type"]!r}'
 
     @pytest.mark.asyncio
     async def test_get_bucket_policy_default(
@@ -71,9 +79,11 @@ class TestBucketPolicy:
         resp = await client.get("/my-bucket?policy")
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "2012-10-17" in resp.text
-        assert "Statement" in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "2012-10-17" in resp.text, f'Expected {"2012-10-17"!r} to be in {resp.text!r}'
+        assert "Statement" in resp.text, f'Expected {"Statement"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_put_bucket_policy_no_such_bucket(self, client: httpx.AsyncClient) -> None:
@@ -86,8 +96,10 @@ class TestBucketPolicy:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
-        assert "NoSuchBucket" in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "NoSuchBucket" in resp.text, f'Expected {"NoSuchBucket"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_get_bucket_policy_no_such_bucket(self, client: httpx.AsyncClient) -> None:
@@ -96,5 +108,7 @@ class TestBucketPolicy:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
-        assert "NoSuchBucket" in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "NoSuchBucket" in resp.text, f'Expected {"NoSuchBucket"!r} to be in {resp.text!r}'

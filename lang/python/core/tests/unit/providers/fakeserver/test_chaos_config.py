@@ -14,7 +14,7 @@ class TestChaosConfig:
         chaos = ChaosConfig()
 
         # Assert
-        assert chaos.enabled is False
-        assert chaos.error_rate == 0.0
-        assert chaos.latency_min_ms == 0
-        assert chaos.latency_max_ms == 0
+        assert chaos.enabled is False, "Expected value to be truthy"
+        assert chaos.error_rate == 0.0, f"Expected {0.0!r} but got {chaos.error_rate!r}"
+        assert chaos.latency_min_ms == 0, f"Expected {0!r} but got {chaos.latency_min_ms!r}"
+        assert chaos.latency_max_ms == 0, f"Expected {0!r} but got {chaos.latency_max_ms!r}"

@@ -18,4 +18,4 @@ class TestResourceStateTrackerRemoveState:
         actual_state = tracker.get_state(resource_id)
 
         # Assert
-        assert actual_state is None
+        assert actual_state is None, f"Expected None but got {actual_state!r}"

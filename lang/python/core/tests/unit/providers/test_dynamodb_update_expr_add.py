@@ -68,7 +68,9 @@ class TestAdd:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_add_creates_number_if_missing(self) -> None:
         # Arrange
@@ -84,7 +86,9 @@ class TestAdd:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_add_to_set(self) -> None:
         # Arrange
@@ -100,7 +104,7 @@ class TestAdd:
 
         # Assert
         actual_tags = result["tags"]
-        assert actual_tags == expected_tags
+        assert actual_tags == expected_tags, f"Expected {expected_tags!r} but got {actual_tags!r}"
 
     def test_add_creates_set_if_missing(self) -> None:
         # Arrange
@@ -116,7 +120,7 @@ class TestAdd:
 
         # Assert
         actual_tags = result["tags"]
-        assert actual_tags == expected_tags
+        assert actual_tags == expected_tags, f"Expected {expected_tags!r} but got {actual_tags!r}"
 
     def test_add_number_set(self) -> None:
         # Arrange
@@ -132,4 +136,6 @@ class TestAdd:
 
         # Assert
         actual_numbers = result["numbers"]
-        assert actual_numbers == expected_numbers
+        assert (
+            actual_numbers == expected_numbers
+        ), f"Expected {expected_numbers!r} but got {actual_numbers!r}"

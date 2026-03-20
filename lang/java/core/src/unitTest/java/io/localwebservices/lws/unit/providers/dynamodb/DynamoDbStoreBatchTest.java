@@ -32,8 +32,8 @@ public class DynamoDbStoreBatchTest {
     Map<String, Object> actualItem2 = store.getItem("T", key2);
 
     // Assert
-    assertNotNull(actualItem1);
-    assertNotNull(actualItem2);
+    assertNotNull(actualItem1, "Expected actualItem1 to not be null");
+    assertNotNull(actualItem2, "Expected actualItem2 to not be null");
   }
 
   @Test
@@ -52,7 +52,8 @@ public class DynamoDbStoreBatchTest {
     List<Map<String, Object>> actualItems = store.batchGetItems("T", keys);
 
     // Assert
-    assertEquals(expectedSize, actualItems.size());
+    assertEquals(
+        expectedSize, actualItems.size(), "Expected actualItems.size() to match expectedSize");
   }
 
   @Test
@@ -66,6 +67,6 @@ public class DynamoDbStoreBatchTest {
     List<Map<String, Object>> actualItems = store.batchGetItems("T", keys);
 
     // Assert
-    assertTrue(actualItems.isEmpty());
+    assertTrue(actualItems.isEmpty(), "Expected actualItems to be empty");
   }
 }

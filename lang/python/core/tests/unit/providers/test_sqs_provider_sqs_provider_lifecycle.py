@@ -153,21 +153,23 @@ class TestSqsProviderLifecycle:
     async def test_name(self, provider: SqsProvider) -> None:
         expected_name = "sqs"
         actual_name = provider.name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     async def test_health_check_running(self, provider: SqsProvider) -> None:
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     async def test_health_check_stopped(self) -> None:
         p = SqsProvider(queues=[QueueConfig(queue_name="q")])
-        assert await p.health_check() is False
+        assert await p.health_check() is False, "Expected value to be truthy"
 
     async def test_stop_clears_queues(self) -> None:
         p = SqsProvider(queues=[QueueConfig(queue_name="q")])
         await p.start()
-        assert p.get_queue("q") is not None
+        assert p.get_queue("q") is not None, "Expected value to be set but was None"
         await p.stop()
-        assert p.get_queue("q") is None
+        assert p.get_queue("q") is None, f'Expected None but got {p.get_queue("q")!r}'
 
     async def test_implements_iqueue(self, provider: SqsProvider) -> None:
-        assert isinstance(provider, IQueue)
+        assert isinstance(
+            provider, IQueue
+        ), f"Expected instance of {IQueue!r} but got {type(provider)!r}"

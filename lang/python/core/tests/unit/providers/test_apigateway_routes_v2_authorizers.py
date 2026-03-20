@@ -49,11 +49,15 @@ class TestV2AuthorizerCrud:
 
         # Assert
         expected_status = 201
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["name"] == expected_name
-        assert data["authorizerType"] == expected_type
-        assert "authorizerId" in data
+        assert data["name"] == expected_name, f'Expected {expected_name!r} but got {data["name"]!r}'
+        assert (
+            data["authorizerType"] == expected_type
+        ), f'Expected {expected_type!r} but got {data["authorizerType"]!r}'
+        assert "authorizerId" in data, f'Expected {"authorizerId"!r} to be in {data!r}'
 
     @pytest.mark.asyncio
     async def test_list_authorizers(self, client) -> None:
@@ -74,8 +78,12 @@ class TestV2AuthorizerCrud:
         # Assert
         expected_status = 200
         expected_count = 2
-        assert resp.status_code == expected_status
-        assert len(resp.json()["items"]) == expected_count
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            len(resp.json()["items"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(resp.json()["items"])!r}'
 
     @pytest.mark.asyncio
     async def test_get_authorizer(self, client) -> None:
@@ -93,8 +101,12 @@ class TestV2AuthorizerCrud:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
-        assert resp.json()["name"] == expected_name
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            resp.json()["name"] == expected_name
+        ), f'Expected {expected_name!r} but got {resp.json()["name"]!r}'
 
     @pytest.mark.asyncio
     async def test_get_authorizer_not_found(self, client) -> None:
@@ -106,7 +118,9 @@ class TestV2AuthorizerCrud:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_delete_authorizer(self, client) -> None:
@@ -124,9 +138,13 @@ class TestV2AuthorizerCrud:
         # Assert
         expected_delete_status = 204
         expected_not_found_status = 404
-        assert resp.status_code == expected_delete_status
+        assert (
+            resp.status_code == expected_delete_status
+        ), f"Expected {expected_delete_status!r} but got {resp.status_code!r}"
         get_resp = await client.get(f"/v2/apis/{api_id}/authorizers/{authorizer_id}")
-        assert get_resp.status_code == expected_not_found_status
+        assert (
+            get_resp.status_code == expected_not_found_status
+        ), f"Expected {expected_not_found_status!r} but got {get_resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_create_authorizer_api_not_found(self, client) -> None:
@@ -139,7 +157,9 @@ class TestV2AuthorizerCrud:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_route_stores_authorization_type(self, client) -> None:
@@ -160,7 +180,11 @@ class TestV2AuthorizerCrud:
 
         # Assert
         expected_status = 201
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_auth_type = data["authorizationType"]
-        assert actual_auth_type == expected_auth_type
+        assert (
+            actual_auth_type == expected_auth_type
+        ), f"Expected {expected_auth_type!r} but got {actual_auth_type!r}"

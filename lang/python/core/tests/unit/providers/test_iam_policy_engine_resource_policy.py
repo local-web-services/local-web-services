@@ -34,6 +34,10 @@ class TestEvaluateResourcePolicy:
         actual_decision, actual_reason = evaluate(context)
 
         # Assert
-        assert actual_decision == Decision.ALLOW
+        assert (
+            actual_decision == Decision.ALLOW
+        ), f"Expected {Decision.ALLOW!r} but got {actual_decision!r}"
         expected_reason = "Resource policy Allow"
-        assert actual_reason == expected_reason
+        assert (
+            actual_reason == expected_reason
+        ), f"Expected {expected_reason!r} but got {actual_reason!r}"

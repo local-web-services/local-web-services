@@ -26,7 +26,7 @@ public class CognitoIdpStoreUserTest {
 
     // Assert
     Map<String, Object> actualUser = store.users.get(expectedPoolId).get(expectedUsername);
-    assertNotNull(actualUser);
+    assertNotNull(actualUser, "Expected actualUser to not be null");
   }
 
   @Test
@@ -45,7 +45,7 @@ public class CognitoIdpStoreUserTest {
 
     // Assert
     Map<String, Object> actualUser = store.users.get(expectedPoolId).get(expectedUsername);
-    assertNull(actualUser);
+    assertNull(actualUser, "Expected actualUser to be null");
   }
 
   @Test
@@ -61,6 +61,6 @@ public class CognitoIdpStoreUserTest {
     store.reset();
 
     // Assert
-    assertTrue(store.users.isEmpty());
+    assertTrue(store.users.isEmpty(), "Expected store.users to be empty");
   }
 }

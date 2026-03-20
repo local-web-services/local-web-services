@@ -14,7 +14,7 @@ class TestInOperator:
         actual = evaluate_operator("$in", "a", ["a", "b", "c"])
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_in_no_match(self):
         # Arrange
@@ -24,7 +24,7 @@ class TestInOperator:
         actual = evaluate_operator("$in", "d", ["a", "b", "c"])
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_in_non_list(self):
         # Arrange
@@ -34,4 +34,4 @@ class TestInOperator:
         actual = evaluate_operator("$in", "a", "abc")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

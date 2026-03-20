@@ -34,12 +34,12 @@ class TestDeleteEventBusRoute:
     async def test_delete_existing(self, client: httpx.AsyncClient) -> None:
         await _request(client, "CreateEventBus", {"Name": "to-delete"})
         resp = await _request(client, "DeleteEventBus", {"Name": "to-delete"})
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
 
     async def test_delete_nonexistent(self, client: httpx.AsyncClient) -> None:
         resp = await _request(client, "DeleteEventBus", {"Name": "nope"})
-        assert resp.status_code == 400
+        assert resp.status_code == 400, f"Expected {400!r} but got {resp.status_code!r}"
 
     async def test_delete_default(self, client: httpx.AsyncClient) -> None:
         resp = await _request(client, "DeleteEventBus", {"Name": "default"})
-        assert resp.status_code == 400
+        assert resp.status_code == 400, f"Expected {400!r} but got {resp.status_code!r}"

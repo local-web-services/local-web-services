@@ -52,7 +52,7 @@ class TestFnJoin:
 
         # Assert
         actual_url = result["URL"]
-        assert actual_url == expected_url
+        assert actual_url == expected_url, f"Expected {expected_url!r} but got {actual_url!r}"
 
     def test_join_with_empty_delimiter(self) -> None:
         # Arrange
@@ -64,7 +64,7 @@ class TestFnJoin:
 
         # Assert
         actual_url = result["URL"]
-        assert actual_url == expected_url
+        assert actual_url == expected_url, f"Expected {expected_url!r} but got {actual_url!r}"
 
     def test_join_resolves_nested_refs(self) -> None:
         # Arrange
@@ -84,4 +84,6 @@ class TestFnJoin:
 
         # Assert
         actual_endpoint = result["ENDPOINT"]
-        assert actual_endpoint == expected_endpoint
+        assert (
+            actual_endpoint == expected_endpoint
+        ), f"Expected {expected_endpoint!r} but got {actual_endpoint!r}"

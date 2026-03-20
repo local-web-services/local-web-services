@@ -51,8 +51,8 @@ class TestJWKS:
 
     def test_jwks_has_keys(self, issuer: TokenIssuer) -> None:
         jwks = issuer.get_jwks()
-        assert "keys" in jwks
-        assert len(jwks["keys"]) == 1
+        assert "keys" in jwks, f'Expected {"keys"!r} to be in {jwks!r}'
+        assert len(jwks["keys"]) == 1, f'Expected {1!r} but got {len(jwks["keys"])!r}'
 
     def test_jwk_structure(self, issuer: TokenIssuer) -> None:
         # Act
@@ -62,9 +62,9 @@ class TestJWKS:
         expected_kty = "RSA"
         expected_alg = "RS256"
         expected_use = "sig"
-        assert jwk["kty"] == expected_kty
-        assert jwk["alg"] == expected_alg
-        assert jwk["use"] == expected_use
-        assert "kid" in jwk
-        assert "n" in jwk
-        assert "e" in jwk
+        assert jwk["kty"] == expected_kty, f'Expected {expected_kty!r} but got {jwk["kty"]!r}'
+        assert jwk["alg"] == expected_alg, f'Expected {expected_alg!r} but got {jwk["alg"]!r}'
+        assert jwk["use"] == expected_use, f'Expected {expected_use!r} but got {jwk["use"]!r}'
+        assert "kid" in jwk, f'Expected {"kid"!r} to be in {jwk!r}'
+        assert "n" in jwk, f'Expected {"n"!r} to be in {jwk!r}'
+        assert "e" in jwk, f'Expected {"e"!r} to be in {jwk!r}'

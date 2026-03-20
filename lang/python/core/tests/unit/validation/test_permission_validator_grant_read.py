@@ -76,7 +76,7 @@ class TestGrantRead:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_read_allows_query(self) -> None:
         # Arrange
@@ -87,7 +87,7 @@ class TestGrantRead:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_read_allows_scan(self) -> None:
         # Arrange
@@ -98,7 +98,7 @@ class TestGrantRead:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_read_denies_put(self) -> None:
         # Arrange
@@ -111,9 +111,15 @@ class TestGrantRead:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert issues[0].level == ValidationLevel.ERROR
-        assert expected_grant_type in issues[0].message
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            issues[0].level == ValidationLevel.ERROR
+        ), f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
+        assert (
+            expected_grant_type in issues[0].message
+        ), f"Expected {expected_grant_type!r} to be in {issues[0].message!r}"
 
     def test_read_denies_delete(self) -> None:
         # Arrange
@@ -125,5 +131,9 @@ class TestGrantRead:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert issues[0].level == ValidationLevel.ERROR
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            issues[0].level == ValidationLevel.ERROR
+        ), f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"

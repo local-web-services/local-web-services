@@ -51,11 +51,17 @@ class TestTags:
         # Assert
         expected_tag_count = 1
         actual_tag_count = len(result["TagList"])
-        assert actual_tag_count == expected_tag_count
+        assert (
+            actual_tag_count == expected_tag_count
+        ), f"Expected {expected_tag_count!r} but got {actual_tag_count!r}"
         actual_tag_key = result["TagList"][0]["Key"]
         actual_tag_value = result["TagList"][0]["Value"]
-        assert actual_tag_key == expected_tag_key
-        assert actual_tag_value == expected_tag_value
+        assert (
+            actual_tag_key == expected_tag_key
+        ), f"Expected {expected_tag_key!r} but got {actual_tag_key!r}"
+        assert (
+            actual_tag_value == expected_tag_value
+        ), f"Expected {expected_tag_value!r} but got {actual_tag_value!r}"
 
     def test_untag_resource(self, client: TestClient) -> None:
         # Arrange
@@ -81,7 +87,7 @@ class TestTags:
         result = _post(client, "ListTags", {"ResourceArn": resource_arn})
 
         # Assert
-        assert result["TagList"] == []
+        assert result["TagList"] == [], f'Expected {[]!r} but got {result["TagList"]!r}'
 
     def test_list_tags_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -93,7 +99,9 @@ class TestTags:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"
 
     def test_tag_nonexistent_resource(self, client: TestClient) -> None:
         # Arrange
@@ -112,4 +120,6 @@ class TestTags:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

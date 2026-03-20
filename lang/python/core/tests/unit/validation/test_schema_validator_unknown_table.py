@@ -86,4 +86,4 @@ class TestUnknownTable:
     def test_unknown_table_returns_empty(self) -> None:
         ctx = _make_context(resource_id="nonexistent", data={"pk": "val"})
         issues = _make_validator().validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"

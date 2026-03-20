@@ -42,10 +42,16 @@ class TestInvocationResult:
         )
 
         # Assert
-        assert result.payload == expected_payload
-        assert result.error is None
-        assert result.duration_ms == expected_duration_ms
-        assert result.request_id == expected_request_id
+        assert (
+            result.payload == expected_payload
+        ), f"Expected {expected_payload!r} but got {result.payload!r}"
+        assert result.error is None, f"Expected None but got {result.error!r}"
+        assert (
+            result.duration_ms == expected_duration_ms
+        ), f"Expected {expected_duration_ms!r} but got {result.duration_ms!r}"
+        assert (
+            result.request_id == expected_request_id
+        ), f"Expected {expected_request_id!r} but got {result.request_id!r}"
 
     def test_error_result(self) -> None:
         # Arrange
@@ -62,5 +68,7 @@ class TestInvocationResult:
         )
 
         # Assert
-        assert result.payload is None
-        assert result.error == expected_error
+        assert result.payload is None, f"Expected None but got {result.payload!r}"
+        assert (
+            result.error == expected_error
+        ), f"Expected {expected_error!r} but got {result.error!r}"

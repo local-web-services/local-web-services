@@ -31,7 +31,7 @@ class SqsStorePurgeTest {
 
     // Assert
     int actualCount = queue.approximateMessageCount();
-    assertEquals(0, actualCount);
+    assertEquals(0, actualCount, "Expected actualCount to match 0");
   }
 
   @Test
@@ -47,7 +47,7 @@ class SqsStorePurgeTest {
     int actualCount = queue.approximateMessageCount();
 
     // Assert
-    assertEquals(0, actualCount);
+    assertEquals(0, actualCount, "Expected actualCount to match 0");
   }
 
   @Test
@@ -59,6 +59,6 @@ class SqsStorePurgeTest {
     String actualHash = SqsStore.md5("hello");
 
     // Assert
-    assertEquals(expectedHash, actualHash);
+    assertEquals(expectedHash, actualHash, "Expected actualHash to equal expectedHash");
   }
 }

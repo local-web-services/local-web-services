@@ -98,9 +98,9 @@ class TestProviderSignUp:
 
     async def test_sign_up_auto_confirmed(self, provider: CognitoProvider) -> None:
         result = await provider.sign_up("alice", "Password1A", {"email": "a@b.com"})
-        assert result["UserConfirmed"] is True
-        assert "UserSub" in result
+        assert result["UserConfirmed"] is True, "Expected value to be truthy"
+        assert "UserSub" in result, f'Expected {"UserSub"!r} to be in {result!r}'
 
     async def test_sign_up_not_auto_confirmed(self, no_confirm_provider: CognitoProvider) -> None:
         result = await no_confirm_provider.sign_up("bob", "Password1A")
-        assert result["UserConfirmed"] is False
+        assert result["UserConfirmed"] is False, "Expected value to be truthy"

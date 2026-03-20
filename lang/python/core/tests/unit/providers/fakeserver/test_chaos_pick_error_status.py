@@ -16,7 +16,9 @@ class TestPickErrorStatus:
         actual_status = _pick_error_status(chaos)
 
         # Assert
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_with_status_codes(self):
         # Arrange
@@ -33,4 +35,6 @@ class TestPickErrorStatus:
         actual_status = _pick_error_status(chaos)
 
         # Assert
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"

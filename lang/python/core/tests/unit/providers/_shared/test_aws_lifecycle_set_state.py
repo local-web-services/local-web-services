@@ -18,4 +18,6 @@ class TestResourceStateTrackerSetAndGetState:
         actual_state = tracker.get_state(resource_id)
 
         # Assert
-        assert actual_state == expected_state
+        assert (
+            actual_state == expected_state
+        ), f"Expected {expected_state!r} but got {actual_state!r}"

@@ -134,12 +134,18 @@ class TestParseTaskDefinition:
             ]
         }
         containers = parse_task_definition(props)
-        assert len(containers) == 1
-        assert containers[0].name == "web"
-        assert containers[0].image == "nginx:latest"
-        assert containers[0].environment == {"ENV": "prod"}
-        assert containers[0].port_mappings[0]["ContainerPort"] == 80
+        assert len(containers) == 1, f"Expected {1!r} but got {len(containers)!r}"
+        assert containers[0].name == "web", f'Expected {"web"!r} but got {containers[0].name!r}'
+        assert (
+            containers[0].image == "nginx:latest"
+        ), f'Expected {"nginx:latest"!r} but got {containers[0].image!r}'
+        assert containers[0].environment == {"ENV": "prod"}, "Expected {!r} but got {!r}".format(
+            {"ENV": "prod"}, containers[0].environment
+        )
+        assert (
+            containers[0].port_mappings[0]["ContainerPort"] == 80
+        ), f'Expected {80!r} but got {containers[0].port_mappings[0]["ContainerPort"]!r}'
 
     def test_empty_container_definitions(self) -> None:
         containers = parse_task_definition({})
-        assert containers == []
+        assert containers == [], f"Expected {[]!r} but got {containers!r}"

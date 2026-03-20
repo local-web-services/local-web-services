@@ -42,10 +42,12 @@ class TestDescribeDBEngineVersions:
 
         # Assert
         versions = result["DBEngineVersions"]
-        assert len(versions) > 0
+        assert len(versions) > 0, f"Expected {len(versions)!r} > {0!r}"
         for v in versions:
             actual_engine = v["Engine"]
-            assert actual_engine == expected_engine
+            assert (
+                actual_engine == expected_engine
+            ), f"Expected {expected_engine!r} but got {actual_engine!r}"
 
     def test_describe_mysql_versions(self, client: TestClient) -> None:
         # Arrange
@@ -60,10 +62,12 @@ class TestDescribeDBEngineVersions:
 
         # Assert
         versions = result["DBEngineVersions"]
-        assert len(versions) > 0
+        assert len(versions) > 0, f"Expected {len(versions)!r} > {0!r}"
         for v in versions:
             actual_engine = v["Engine"]
-            assert actual_engine == expected_engine
+            assert (
+                actual_engine == expected_engine
+            ), f"Expected {expected_engine!r} but got {actual_engine!r}"
 
     def test_describe_all_engine_versions(self, client: TestClient) -> None:
         # Arrange — no engine filter
@@ -74,8 +78,8 @@ class TestDescribeDBEngineVersions:
         # Assert
         versions = result["DBEngineVersions"]
         engines = {v["Engine"] for v in versions}
-        assert "postgres" in engines
-        assert "mysql" in engines
+        assert "postgres" in engines, f'Expected {"postgres"!r} to be in {engines!r}'
+        assert "mysql" in engines, f'Expected {"mysql"!r} to be in {engines!r}'
 
     def test_describe_unknown_engine_returns_empty(self, client: TestClient) -> None:
         # Arrange
@@ -89,7 +93,9 @@ class TestDescribeDBEngineVersions:
         )
 
         # Assert
-        assert len(result["DBEngineVersions"]) == expected_count
+        assert (
+            len(result["DBEngineVersions"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(result["DBEngineVersions"])!r}'
 
     def test_version_entry_has_required_fields(self, client: TestClient) -> None:
         # Arrange
@@ -104,8 +110,14 @@ class TestDescribeDBEngineVersions:
 
         # Assert
         version = result["DBEngineVersions"][0]
-        assert "Engine" in version
-        assert "EngineVersion" in version
-        assert "DBParameterGroupFamily" in version
-        assert "DBEngineDescription" in version
-        assert "DBEngineVersionDescription" in version
+        assert "Engine" in version, f'Expected {"Engine"!r} to be in {version!r}'
+        assert "EngineVersion" in version, f'Expected {"EngineVersion"!r} to be in {version!r}'
+        assert (
+            "DBParameterGroupFamily" in version
+        ), f'Expected {"DBParameterGroupFamily"!r} to be in {version!r}'
+        assert (
+            "DBEngineDescription" in version
+        ), f'Expected {"DBEngineDescription"!r} to be in {version!r}'
+        assert (
+            "DBEngineVersionDescription" in version
+        ), f'Expected {"DBEngineVersionDescription"!r} to be in {version!r}'

@@ -56,7 +56,7 @@ class TestTypeCheckOperators:
             comparison_operator="IsPresent",
             comparison_value=True,
         )
-        assert evaluate_rule(rule, {"x": 1}) is True
+        assert evaluate_rule(rule, {"x": 1}) is True, "Expected value to be truthy"
 
     def test_is_present_false_when_missing(self) -> None:
         rule = ChoiceRule(
@@ -65,7 +65,7 @@ class TestTypeCheckOperators:
             comparison_operator="IsPresent",
             comparison_value=True,
         )
-        assert evaluate_rule(rule, {"y": 1}) is False
+        assert evaluate_rule(rule, {"y": 1}) is False, "Expected value to be truthy"
 
     def test_is_present_inverted(self) -> None:
         rule = ChoiceRule(
@@ -74,7 +74,7 @@ class TestTypeCheckOperators:
             comparison_operator="IsPresent",
             comparison_value=False,
         )
-        assert evaluate_rule(rule, {"y": 1}) is True
+        assert evaluate_rule(rule, {"y": 1}) is True, "Expected value to be truthy"
 
     def test_is_null_true(self) -> None:
         rule = ChoiceRule(
@@ -83,8 +83,8 @@ class TestTypeCheckOperators:
             comparison_operator="IsNull",
             comparison_value=True,
         )
-        assert evaluate_rule(rule, {"x": None}) is True
-        assert evaluate_rule(rule, {"x": 1}) is False
+        assert evaluate_rule(rule, {"x": None}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"x": 1}) is False, "Expected value to be truthy"
 
     def test_is_string(self) -> None:
         rule = ChoiceRule(
@@ -93,8 +93,8 @@ class TestTypeCheckOperators:
             comparison_operator="IsString",
             comparison_value=True,
         )
-        assert evaluate_rule(rule, {"x": "hello"}) is True
-        assert evaluate_rule(rule, {"x": 123}) is False
+        assert evaluate_rule(rule, {"x": "hello"}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"x": 123}) is False, "Expected value to be truthy"
 
     def test_is_numeric(self) -> None:
         rule = ChoiceRule(
@@ -103,10 +103,10 @@ class TestTypeCheckOperators:
             comparison_operator="IsNumeric",
             comparison_value=True,
         )
-        assert evaluate_rule(rule, {"x": 42}) is True
-        assert evaluate_rule(rule, {"x": 3.14}) is True
-        assert evaluate_rule(rule, {"x": "42"}) is False
-        assert evaluate_rule(rule, {"x": True}) is False
+        assert evaluate_rule(rule, {"x": 42}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"x": 3.14}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"x": "42"}) is False, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"x": True}) is False, "Expected value to be truthy"
 
     def test_is_boolean(self) -> None:
         rule = ChoiceRule(
@@ -115,6 +115,6 @@ class TestTypeCheckOperators:
             comparison_operator="IsBoolean",
             comparison_value=True,
         )
-        assert evaluate_rule(rule, {"x": True}) is True
-        assert evaluate_rule(rule, {"x": False}) is True
-        assert evaluate_rule(rule, {"x": 1}) is False
+        assert evaluate_rule(rule, {"x": True}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"x": False}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"x": 1}) is False, "Expected value to be truthy"

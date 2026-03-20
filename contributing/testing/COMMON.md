@@ -100,6 +100,66 @@ result = provider.get_item(table_name, key)
 - Length checks: `assert len(items) == 2` is fine when the count is obvious from context. Extract to `expected_count` only when the number is not immediately clear.
 - Checking key presence: `assert "key" in result` is fine when the key name is self-documenting.
 
+## Assertion Failure Messages
+
+Every assertion must include a human-readable failure message. Raw assertion failures (e.g., `AssertionError: False != True`) give no debugging context — a message explains *what* the test expected and what it got.
+
+### Python
+
+```python
+# Bad
+assert actual_count == expected_count
+
+# Good
+assert actual_count == expected_count, f"Expected {expected_count!r} items but got {actual_count!r}"
+```
+
+For existence and boolean checks:
+
+```python
+# Bad
+assert actual_value is not None
+assert actual_flag
+
+# Good
+assert actual_value is not None, "Expected value to be set but was None"
+assert actual_flag, "Expected flag to be True"
+```
+
+### Java (JUnit 5)
+
+Add the message as the **third** argument to `assertEquals` and the **second** argument to unary assertions:
+
+```java
+// Bad
+assertEquals(expectedCount, actualCount);
+assertNull(actualValue);
+assertTrue(actualFlag);
+assertNotNull(actualValue);
+
+// Good
+assertEquals(expectedCount, actualCount, "Expected count to match after put");
+assertNull(actualValue, "Expected value to be null");
+assertTrue(actualFlag, "Expected flag to be true");
+assertNotNull(actualValue, "Expected value to not be null");
+```
+
+### TypeScript (Jest + jest-expect-message)
+
+Pass the message as the **second** argument to `expect()`:
+
+```typescript
+// Bad
+expect(actualResult).toBe(expectedResult);
+
+// Good
+expect(actualResult, "Expected result to match identity builder").toBe(expectedResult);
+```
+
+### Go (Godog)
+
+Go step definitions return `fmt.Errorf()` with context — this is already the correct pattern and no change is needed.
+
 ## Running Tests
 
 ```bash
@@ -128,6 +188,7 @@ Before submitting a pull request, verify:
 - [ ] E2E tests cover every new `lws` CLI command (one feature file + wiring file per command)
 - [ ] Unit and integration tests follow the Arrange / Act / Assert pattern with section comments
 - [ ] E2E tests use Gherkin / pytest-bdd (see [END_TO_END.md](END_TO_END.md))
+- [ ] Every assertion includes a human-readable failure message (see "Assertion Failure Messages" section)
 - [ ] No magic strings in assertions — all extracted to `expected_*` / `actual_*` variables
 - [ ] No repeated strings — all stored in named variables
 - [ ] Resource names in E2E tests are unique and descriptive

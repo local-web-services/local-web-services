@@ -123,11 +123,11 @@ class TestIssueLevels:
         del event["httpMethod"]
         ctx = _make_context("api_gateway", event)
         issues = EventShapeValidator().validate(ctx)
-        assert all(i.level == ValidationLevel.WARN for i in issues)
+        assert all(i.level == ValidationLevel.WARN for i in issues), "Expected value to be truthy"
 
     def test_wrong_type_is_warn(self) -> None:
         event = _valid_api_gateway_event()
         event["headers"] = 42
         ctx = _make_context("api_gateway", event)
         issues = EventShapeValidator().validate(ctx)
-        assert all(i.level == ValidationLevel.WARN for i in issues)
+        assert all(i.level == ValidationLevel.WARN for i in issues), "Expected value to be truthy"

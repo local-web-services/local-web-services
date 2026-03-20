@@ -25,9 +25,9 @@ public class SecretsManagerStoreBranchTest {
 
     // Assert
     List<Map<String, Object>> actualSecrets = store.listSecrets();
-    assertTrue(actualSecrets.isEmpty());
+    assertTrue(actualSecrets.isEmpty(), "Expected actualSecrets to be empty");
     boolean actualExists = store.secretExists("s1");
-    assertFalse(actualExists);
+    assertFalse(actualExists, "Expected condition to be false: actualExists");
   }
 
   @Test
@@ -40,7 +40,7 @@ public class SecretsManagerStoreBranchTest {
     Map<String, Object> actualSecret = store.createSecret("mySecret", "{}", null, expectedTags);
 
     // Assert
-    assertNotNull(actualSecret.get("Tags"));
+    assertNotNull(actualSecret.get("Tags"), "Expected values to match");
   }
 
   @Test
@@ -54,7 +54,7 @@ public class SecretsManagerStoreBranchTest {
     Map<String, Object> actualSecret = store.findSecret(expectedArn);
 
     // Assert
-    assertNull(actualSecret);
+    assertNull(actualSecret, "Expected actualSecret to be null");
   }
 
   @Test
@@ -68,7 +68,7 @@ public class SecretsManagerStoreBranchTest {
 
     // Assert
     boolean actualExists = store.secretExists("realSecret");
-    assertTrue(actualExists);
+    assertTrue(actualExists, "Expected condition to be true: actualExists");
   }
 
   @Test
@@ -82,6 +82,6 @@ public class SecretsManagerStoreBranchTest {
     boolean actualExists = store.secretExists("mySecret");
 
     // Assert
-    assertFalse(actualExists);
+    assertFalse(actualExists, "Expected condition to be false: actualExists");
   }
 }

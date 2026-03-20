@@ -22,7 +22,9 @@ describe("IamBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.mode).toBe(expectedMode);
+      expect(actualBody.mode, "Expected the IAM payload mode to match the configured mode").toBe(
+        expectedMode,
+      );
     });
   });
 
@@ -37,7 +39,10 @@ describe("IamBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.default_identity).toBe(expectedIdentity);
+      expect(
+        actualBody.default_identity,
+        "Expected the IAM payload default_identity to match the configured identity",
+      ).toBe(expectedIdentity);
     });
   });
 
@@ -50,7 +55,10 @@ describe("IamBuilder", () => {
       await builder.apply();
 
       // Assert
-      expect(fakeFetch).toHaveBeenCalledWith(
+      expect(
+        fakeFetch,
+        "Expected fetch to have been called with the IAM management URL and correct headers",
+      ).toHaveBeenCalledWith(
         EXPECTED_IAM_URL,
         expect.objectContaining({
           method: "POST",
@@ -70,7 +78,10 @@ describe("IamBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.mode).toBeUndefined();
+      expect(
+        actualBody.mode,
+        "Expected mode to be undefined in the clean payload after state reset",
+      ).toBeUndefined();
     });
 
     it("includes identities in the payload when registered", async () => {
@@ -82,8 +93,14 @@ describe("IamBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.identities).toBeDefined();
-      expect(actualBody.identities["read-only"]).toBeDefined();
+      expect(
+        actualBody.identities,
+        "Expected identities to be defined in the payload",
+      ).toBeDefined();
+      expect(
+        actualBody.identities["read-only"],
+        "Expected the read-only identity to be defined in the payload",
+      ).toBeDefined();
     });
   });
 
@@ -96,7 +113,9 @@ describe("IamBuilder", () => {
       const actual = builder.identity("test-user");
 
       // Assert
-      expect(actual).toBeInstanceOf(IdentityBuilder);
+      expect(actual, "Expected identity() to return an IdentityBuilder instance").toBeInstanceOf(
+        IdentityBuilder,
+      );
     });
   });
 });
@@ -122,9 +141,18 @@ describe("IdentityBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualPolicy = actualBody.identities["dev-user"].inline_policies[0];
-      expect(actualPolicy.Statement[0].Effect).toBe("Allow");
-      expect(actualPolicy.Statement[0].Action).toEqual(expectedActions);
-      expect(actualPolicy.Statement[0].Resource).toBe(expectedResource);
+      expect(
+        actualPolicy.Statement[0].Effect,
+        "Expected the first statement effect to be Allow",
+      ).toBe("Allow");
+      expect(
+        actualPolicy.Statement[0].Action,
+        "Expected the first statement actions to match the configured actions",
+      ).toEqual(expectedActions);
+      expect(
+        actualPolicy.Statement[0].Resource,
+        "Expected the first statement resource to match the configured resource",
+      ).toBe(expectedResource);
     });
 
     it("defaults resource to * when not specified", async () => {
@@ -137,7 +165,10 @@ describe("IdentityBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualStatement = actualBody.identities["dev-user"].inline_policies[0].Statement[0];
-      expect(actualStatement.Resource).toBe("*");
+      expect(
+        actualStatement.Resource,
+        "Expected the default resource to be * when no resource is specified",
+      ).toBe("*");
     });
 
     it("supports method chaining to add multiple allow statements", async () => {
@@ -155,7 +186,10 @@ describe("IdentityBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualPolicies = actualBody.identities["dev-user"].inline_policies;
-      expect(actualPolicies).toHaveLength(2);
+      expect(
+        actualPolicies,
+        "Expected two inline policies after chaining two allow calls",
+      ).toHaveLength(2);
     });
   });
 
@@ -172,8 +206,11 @@ describe("IdentityBuilder", () => {
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualStatement =
         actualBody.identities["readonly-user"].inline_policies[0].Statement[0];
-      expect(actualStatement.Effect).toBe("Deny");
-      expect(actualStatement.Action).toEqual(expectedActions);
+      expect(actualStatement.Effect, "Expected the deny statement effect to be Deny").toBe("Deny");
+      expect(
+        actualStatement.Action,
+        "Expected the deny statement actions to match the configured actions",
+      ).toEqual(expectedActions);
     });
   });
 });

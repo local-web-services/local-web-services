@@ -117,9 +117,9 @@ def _fake_process() -> AsyncMock:
 class TestContainerDefinition:
     def test_defaults(self) -> None:
         cd = ContainerDefinition(name="web")
-        assert cd.image == ""
-        assert cd.command == []
-        assert cd.entry_point == []
-        assert cd.environment == {}
-        assert cd.port_mappings == []
-        assert cd.health_check is None
+        assert cd.image == "", f'Expected {""!r} but got {cd.image!r}'
+        assert cd.command == [], f"Expected {[]!r} but got {cd.command!r}"
+        assert cd.entry_point == [], f"Expected {[]!r} but got {cd.entry_point!r}"
+        assert cd.environment == {}, f"Expected {({})!r} but got {cd.environment!r}"
+        assert cd.port_mappings == [], f"Expected {[]!r} but got {cd.port_mappings!r}"
+        assert cd.health_check is None, f"Expected None but got {cd.health_check!r}"

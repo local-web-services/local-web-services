@@ -81,7 +81,7 @@ class TestCreateEngine:
 
         # Assert
         # No graph, no table configs -> some validators produce no issues
-        assert isinstance(issues, list)
+        assert isinstance(issues, list), f"Expected instance of {list!r} but got {type(issues)!r}"
 
     def test_creates_engine_with_table_configs(self) -> None:
         # Arrange
@@ -91,7 +91,9 @@ class TestCreateEngine:
         engine = create_validation_engine(table_configs=_make_table_config())
 
         # Assert
-        assert len(engine._validators) >= expected_min_validators
+        assert (
+            len(engine._validators) >= expected_min_validators
+        ), f"Expected {len(engine._validators)!r} >= {expected_min_validators!r}"
 
     def test_creates_engine_with_strict_mode(self) -> None:
         # Arrange
@@ -101,4 +103,6 @@ class TestCreateEngine:
         engine = create_validation_engine(strictness=expected_strictness)
 
         # Assert
-        assert engine._strictness.value == expected_strictness
+        assert (
+            engine._strictness.value == expected_strictness
+        ), f"Expected {expected_strictness!r} but got {engine._strictness.value!r}"

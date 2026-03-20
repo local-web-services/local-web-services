@@ -21,7 +21,7 @@ class TestDeleteRule:
         await provider.delete_rule("my-rule")
         rules = provider.list_rules()
         rule_names = [r.rule_name for r in rules]
-        assert "my-rule" not in rule_names
+        assert "my-rule" not in rule_names, f'Expected {"my-rule"!r} to not be in {rule_names!r}'
 
     async def test_delete_nonexistent_rule_raises(self, provider: EventBridgeProvider) -> None:
         with pytest.raises(KeyError, match="Rule not found"):

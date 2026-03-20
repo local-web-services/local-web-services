@@ -72,13 +72,15 @@ class TestExtractApiRoutes:
         routes = extract_api_routes(resources)
 
         # Assert
-        assert len(routes) == 1
+        assert len(routes) == 1, f"Expected {1!r} but got {len(routes)!r}"
         actual_method = routes[0].http_method
         actual_path = routes[0].resource_path
         actual_uri = routes[0].integration_uri
-        assert actual_method == expected_method
-        assert actual_path == expected_path
-        assert actual_uri == expected_uri
+        assert (
+            actual_method == expected_method
+        ), f"Expected {expected_method!r} but got {actual_method!r}"
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
+        assert actual_uri == expected_uri, f"Expected {expected_uri!r} but got {actual_uri!r}"
 
     def test_http_api_v2_route(self):
         # Arrange
@@ -99,11 +101,13 @@ class TestExtractApiRoutes:
         routes = extract_api_routes(resources)
 
         # Assert
-        assert len(routes) == 1
+        assert len(routes) == 1, f"Expected {1!r} but got {len(routes)!r}"
         actual_method = routes[0].http_method
         actual_path = routes[0].resource_path
-        assert actual_method == expected_method
-        assert actual_path == expected_path
+        assert (
+            actual_method == expected_method
+        ), f"Expected {expected_method!r} but got {actual_method!r}"
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
 
     def test_http_api_v2_route_resolves_integration_uri(self):
         """V2 route Target with Fn::Join should resolve to the integration's IntegrationUri."""
@@ -146,14 +150,16 @@ class TestExtractApiRoutes:
         routes = extract_api_routes(resources)
 
         # Assert
-        assert len(routes) == 1
+        assert len(routes) == 1, f"Expected {1!r} but got {len(routes)!r}"
         actual_method = routes[0].http_method
         actual_path = routes[0].resource_path
         actual_uri = routes[0].integration_uri
-        assert actual_method == expected_method
-        assert actual_path == expected_path
+        assert (
+            actual_method == expected_method
+        ), f"Expected {expected_method!r} but got {actual_method!r}"
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
         # Should resolve to the integration's IntegrationUri, not the route's Target
-        assert actual_uri == expected_uri
+        assert actual_uri == expected_uri, f"Expected {expected_uri!r} but got {actual_uri!r}"
 
     def test_http_api_v2_route_no_integration_resource_falls_back(self):
         """When the Ref in Target doesn't match an integration resource, use Target as-is."""
@@ -182,9 +188,9 @@ class TestExtractApiRoutes:
         routes = extract_api_routes(resources)
 
         # Assert
-        assert len(routes) == 1
+        assert len(routes) == 1, f"Expected {1!r} but got {len(routes)!r}"
         actual_uri = routes[0].integration_uri
-        assert actual_uri == expected_uri
+        assert actual_uri == expected_uri, f"Expected {expected_uri!r} but got {actual_uri!r}"
 
     def test_mixed_v1_and_v2(self):
         # Arrange
@@ -216,15 +222,19 @@ class TestExtractApiRoutes:
         routes = extract_api_routes(resources)
 
         # Assert
-        assert len(routes) == expected_count
+        assert len(routes) == expected_count, f"Expected {expected_count!r} but got {len(routes)!r}"
         actual_methods = {r.http_method for r in routes}
-        assert actual_methods == expected_methods
+        assert (
+            actual_methods == expected_methods
+        ), f"Expected {expected_methods!r} but got {actual_methods!r}"
 
     def test_no_routes(self):
         resources = [
             CfnResource("Fn", "AWS::Lambda::Function", {}),
         ]
-        assert extract_api_routes(resources) == []
+        assert (
+            extract_api_routes(resources) == []
+        ), f"Expected {[]!r} but got {extract_api_routes(resources)!r}"
 
     def test_method_without_matching_resource(self):
         # Arrange
@@ -245,7 +255,7 @@ class TestExtractApiRoutes:
         routes = extract_api_routes(resources)
 
         # Assert
-        assert len(routes) == 1
+        assert len(routes) == 1, f"Expected {1!r} but got {len(routes)!r}"
         # Falls back to "/" when resource not in path map
         actual_path = routes[0].resource_path
-        assert actual_path == expected_path
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"

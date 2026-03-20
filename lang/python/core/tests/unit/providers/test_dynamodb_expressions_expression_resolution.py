@@ -51,7 +51,7 @@ class TestExpressionResolution:
             "#rw = :v",
             expression_names={"#rw": "reserved_word"},
             expression_values={":v": {"S": "hello"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_value_ref_resolution_number(self) -> None:
         item = {"count": 42}
@@ -59,7 +59,7 @@ class TestExpressionResolution:
             item,
             "count = :c",
             expression_values={":c": {"N": "42"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_value_ref_resolution_bool(self) -> None:
         item = {"active": True}
@@ -67,7 +67,7 @@ class TestExpressionResolution:
             item,
             "active = :v",
             expression_values={":v": {"BOOL": True}},
-        )
+        ), "Expected value to be truthy"
 
     def test_combined_names_and_values(self) -> None:
         item = {"status": "active", "age": 30}
@@ -76,4 +76,4 @@ class TestExpressionResolution:
             "#s = :sv AND #a > :av",
             expression_names={"#s": "status", "#a": "age"},
             expression_values={":sv": {"S": "active"}, ":av": {"N": "20"}},
-        )
+        ), "Expected value to be truthy"

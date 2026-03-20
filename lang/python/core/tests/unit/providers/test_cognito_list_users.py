@@ -49,9 +49,9 @@ class TestListUsers:
             "ListUsers",
             {"UserPoolId": POOL_ID},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["Users"] == []
+        assert data["Users"] == [], f'Expected {[]!r} but got {data["Users"]!r}'
 
     async def test_list_after_creating_users(self, client: httpx.AsyncClient) -> None:
         # Arrange
@@ -78,18 +78,26 @@ class TestListUsers:
         # Assert
         expected_status = 200
         expected_count = 2
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_count = len(data["Users"])
-        assert actual_count == expected_count
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
         actual_usernames = {u["Username"] for u in data["Users"]}
-        assert actual_usernames == expected_usernames
+        assert (
+            actual_usernames == expected_usernames
+        ), f"Expected {expected_usernames!r} but got {actual_usernames!r}"
         for user in data["Users"]:
             actual_user_status = user["UserStatus"]
-            assert actual_user_status == expected_user_status
-            assert user["Enabled"] is True
+            assert (
+                actual_user_status == expected_user_status
+            ), f"Expected {expected_user_status!r} but got {actual_user_status!r}"
+            assert user["Enabled"] is True, "Expected value to be truthy"
             attrs = {a["Name"]: a["Value"] for a in user["Attributes"]}
-            assert "sub" in attrs
+            assert "sub" in attrs, f'Expected {"sub"!r} to be in {attrs!r}'
 
     async def test_list_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
         # Act
@@ -102,6 +110,10 @@ class TestListUsers:
         # Assert
         expected_status = 400
         expected_error_type = "ResourceNotFoundException"
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

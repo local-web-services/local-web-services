@@ -53,7 +53,7 @@ class TestFnGetAtt:
 
         # Assert
         actual_arn = result["TABLE_ARN"]
-        assert actual_arn == expected_arn
+        assert actual_arn == expected_arn, f"Expected {expected_arn!r} but got {actual_arn!r}"
 
     def test_get_att_unresolvable_uses_composite_key(self) -> None:
         # Arrange
@@ -65,4 +65,4 @@ class TestFnGetAtt:
 
         # Assert
         actual_arn = result["TABLE_ARN"]
-        assert actual_arn == expected_arn
+        assert actual_arn == expected_arn, f"Expected {expected_arn!r} but got {actual_arn!r}"

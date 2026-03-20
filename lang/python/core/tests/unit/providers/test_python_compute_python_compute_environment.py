@@ -83,9 +83,13 @@ class TestPythonComputeEnvironment:
         env = provider._build_env(context)
 
         # Assert
-        assert "PATH" in env
-        assert env["APP_ENV"] == expected_app_env
-        assert env["AWS_ENDPOINT_URL_DYNAMODB"] == expected_dynamodb_url
+        assert "PATH" in env, f'Expected {"PATH"!r} to be in {env!r}'
+        assert (
+            env["APP_ENV"] == expected_app_env
+        ), f'Expected {expected_app_env!r} but got {env["APP_ENV"]!r}'
+        assert (
+            env["AWS_ENDPOINT_URL_DYNAMODB"] == expected_dynamodb_url
+        ), f'Expected {expected_dynamodb_url!r} but got {env["AWS_ENDPOINT_URL_DYNAMODB"]!r}'
 
     def test_env_sets_ldk_vars(self) -> None:
         """LDK-specific env vars are set from config and context."""
@@ -103,13 +107,27 @@ class TestPythonComputeEnvironment:
         expected_timeout = "30"
         expected_function_name = "my-func"
         expected_memory_size = "128"
-        assert env["LDK_HANDLER"] == expected_handler
-        assert env["LDK_CODE_PATH"] == expected_code_path
-        assert env["LDK_REQUEST_ID"] == expected_request_id
-        assert env["LDK_FUNCTION_ARN"] == expected_function_arn
-        assert env["LDK_TIMEOUT"] == expected_timeout
-        assert env["AWS_LAMBDA_FUNCTION_NAME"] == expected_function_name
-        assert env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] == expected_memory_size
+        assert (
+            env["LDK_HANDLER"] == expected_handler
+        ), f'Expected {expected_handler!r} but got {env["LDK_HANDLER"]!r}'
+        assert (
+            env["LDK_CODE_PATH"] == expected_code_path
+        ), f'Expected {expected_code_path!r} but got {env["LDK_CODE_PATH"]!r}'
+        assert (
+            env["LDK_REQUEST_ID"] == expected_request_id
+        ), f'Expected {expected_request_id!r} but got {env["LDK_REQUEST_ID"]!r}'
+        assert (
+            env["LDK_FUNCTION_ARN"] == expected_function_arn
+        ), f'Expected {expected_function_arn!r} but got {env["LDK_FUNCTION_ARN"]!r}'
+        assert (
+            env["LDK_TIMEOUT"] == expected_timeout
+        ), f'Expected {expected_timeout!r} but got {env["LDK_TIMEOUT"]!r}'
+        assert (
+            env["AWS_LAMBDA_FUNCTION_NAME"] == expected_function_name
+        ), f'Expected {expected_function_name!r} but got {env["AWS_LAMBDA_FUNCTION_NAME"]!r}'
+        assert (
+            env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] == expected_memory_size
+        ), f'Expected {expected_memory_size!r} but got {env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"]!r}'
 
     def test_sdk_env_overrides_config_env(self) -> None:
         """sdk_env takes precedence over config.environment for the same key."""
@@ -122,7 +140,9 @@ class TestPythonComputeEnvironment:
         env = provider._build_env(context)
 
         # Assert
-        assert env["SHARED_KEY"] == expected_value
+        assert (
+            env["SHARED_KEY"] == expected_value
+        ), f'Expected {expected_value!r} but got {env["SHARED_KEY"]!r}'
 
     def test_debug_port_env_var_when_set(self) -> None:
         """LDK_DEBUG_PORT should be set when debug_port is provided."""
@@ -134,7 +154,9 @@ class TestPythonComputeEnvironment:
 
         # Assert
         expected_debug_port = "5678"
-        assert env["LDK_DEBUG_PORT"] == expected_debug_port
+        assert (
+            env["LDK_DEBUG_PORT"] == expected_debug_port
+        ), f'Expected {expected_debug_port!r} but got {env["LDK_DEBUG_PORT"]!r}'
 
     def test_no_debug_port_env_var_by_default(self) -> None:
         """LDK_DEBUG_PORT should not be set when debug_port is None."""
@@ -144,7 +166,7 @@ class TestPythonComputeEnvironment:
         context = _make_context()
         env = provider._build_env(context)
 
-        assert "LDK_DEBUG_PORT" not in env
+        assert "LDK_DEBUG_PORT" not in env, f'Expected {"LDK_DEBUG_PORT"!r} to not be in {env!r}'
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_passes_env_to_subprocess(self, fake_exec: AsyncMock) -> None:
@@ -165,6 +187,12 @@ class TestPythonComputeEnvironment:
         expected_handler = "handler.main"
         call_kwargs = fake_exec.call_args.kwargs
         env_passed = call_kwargs["env"]
-        assert env_passed["SDK_VAR"] == expected_sdk_var
-        assert env_passed["CFG_VAR"] == expected_cfg_var
-        assert env_passed["LDK_HANDLER"] == expected_handler
+        assert (
+            env_passed["SDK_VAR"] == expected_sdk_var
+        ), f'Expected {expected_sdk_var!r} but got {env_passed["SDK_VAR"]!r}'
+        assert (
+            env_passed["CFG_VAR"] == expected_cfg_var
+        ), f'Expected {expected_cfg_var!r} but got {env_passed["CFG_VAR"]!r}'
+        assert (
+            env_passed["LDK_HANDLER"] == expected_handler
+        ), f'Expected {expected_handler!r} but got {env_passed["LDK_HANDLER"]!r}'

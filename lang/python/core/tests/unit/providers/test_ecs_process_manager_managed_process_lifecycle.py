@@ -79,15 +79,15 @@ class TestManagedProcessLifecycle:
         await mp.start()
 
         # Assert
-        assert mp.is_running is True
+        assert mp.is_running is True, "Expected value to be truthy"
         actual_pid = mp.pid
-        assert actual_pid == expected_pid
+        assert actual_pid == expected_pid, f"Expected {expected_pid!r} but got {actual_pid!r}"
         fake_exec.assert_called_once()
         call_kwargs = fake_exec.call_args.kwargs
         actual_port = call_kwargs["env"]["PORT"]
         actual_cwd = call_kwargs["cwd"]
-        assert actual_port == expected_port
-        assert actual_cwd == expected_cwd
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
+        assert actual_cwd == expected_cwd, f"Expected {expected_cwd!r} but got {actual_cwd!r}"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_stop_sends_sigterm(self, fake_exec: AsyncMock) -> None:
@@ -99,7 +99,7 @@ class TestManagedProcessLifecycle:
         await mp.stop()
 
         proc.send_signal.assert_called_with(signal.SIGTERM)
-        assert mp.is_running is False
+        assert mp.is_running is False, "Expected value to be truthy"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_stop_sends_sigkill_after_grace(self, fake_exec: AsyncMock) -> None:
@@ -135,12 +135,12 @@ class TestManagedProcessLifecycle:
         await mp.stop()
 
         proc.send_signal.assert_not_called()
-        assert mp.is_running is False
+        assert mp.is_running is False, "Expected value to be truthy"
 
     async def test_is_running_false_before_start(self) -> None:
         mp = ManagedProcess(_make_config())
-        assert mp.is_running is False
+        assert mp.is_running is False, "Expected value to be truthy"
 
     async def test_pid_none_before_start(self) -> None:
         mp = ManagedProcess(_make_config())
-        assert mp.pid is None
+        assert mp.pid is None, f"Expected None but got {mp.pid!r}"

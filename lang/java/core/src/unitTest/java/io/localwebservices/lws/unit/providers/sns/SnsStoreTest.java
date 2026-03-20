@@ -21,9 +21,9 @@ public class SnsStoreTest {
     String actualArn = store.topicArn(topicName);
 
     // Assert
-    assertTrue(actualArn.contains(expectedAccount));
-    assertTrue(actualArn.contains(expectedRegion));
-    assertTrue(actualArn.contains(topicName));
+    assertTrue(actualArn.contains(expectedAccount), "Expected value to contain expected substring");
+    assertTrue(actualArn.contains(expectedRegion), "Expected value to contain expected substring");
+    assertTrue(actualArn.contains(topicName), "Expected value to contain expected substring");
   }
 
   @Test
@@ -38,8 +38,8 @@ public class SnsStoreTest {
     store.reset();
 
     // Assert
-    assertFalse(store.topics.containsKey(topicArn));
-    assertFalse(store.subscriptions.containsKey("sub-1"));
+    assertFalse(store.topics.containsKey(topicArn), "Expected map to not contain the key");
+    assertFalse(store.subscriptions.containsKey("sub-1"), "Expected map to not contain the key");
   }
 
   @Test
@@ -52,6 +52,6 @@ public class SnsStoreTest {
     store.topics.put(topicArn, Map.of("TopicArn", topicArn));
 
     // Assert
-    assertTrue(store.topics.containsKey(topicArn));
+    assertTrue(store.topics.containsKey(topicArn), "Expected map to contain the expected key");
   }
 }

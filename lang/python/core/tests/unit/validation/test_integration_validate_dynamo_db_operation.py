@@ -87,7 +87,7 @@ class TestValidateDynamoDBOperation:
         )
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_missing_key_attribute(self) -> None:
         # Arrange
@@ -110,8 +110,10 @@ class TestValidateDynamoDBOperation:
 
         # Assert
         actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(actual_error_issues) >= expected_min_error_issues
-        assert any("sk" in i.message for i in actual_error_issues)
+        assert (
+            len(actual_error_issues) >= expected_min_error_issues
+        ), f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"
+        assert any("sk" in i.message for i in actual_error_issues), "Expected value to be truthy"
 
     def test_no_item_provided(self) -> None:
         # Arrange
@@ -134,4 +136,6 @@ class TestValidateDynamoDBOperation:
         # Assert
         # Missing pk and sk
         actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(actual_error_issues) >= expected_min_error_issues
+        assert (
+            len(actual_error_issues) >= expected_min_error_issues
+        ), f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"

@@ -122,12 +122,12 @@ class TestProviderLifecycle:
         actual_name = provider.name
 
         # Assert
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     async def test_health_check_running(self, provider: SqliteDynamoProvider) -> None:
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     async def test_health_check_stopped(self, tmp_path: Path) -> None:
         p = SqliteDynamoProvider(data_dir=tmp_path, tables=[_simple_table_config()])
         # Not started yet -- no connections
-        assert await p.health_check() is False
+        assert await p.health_check() is False, "Expected value to be truthy"

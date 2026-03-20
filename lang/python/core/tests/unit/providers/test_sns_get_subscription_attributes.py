@@ -51,16 +51,32 @@ class TestGetSubscriptionAttributes:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "GetSubscriptionAttributesResponse" in resp.text
-        assert "<key>Protocol</key>" in resp.text
-        assert f"<value>{protocol}</value>" in resp.text
-        assert "<key>Endpoint</key>" in resp.text
-        assert f"<value>{endpoint}</value>" in resp.text
-        assert "<key>TopicArn</key>" in resp.text
-        assert TOPIC_ARN in resp.text
-        assert "<key>SubscriptionArn</key>" in resp.text
-        assert sub_arn in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "GetSubscriptionAttributesResponse" in resp.text
+        ), f'Expected {"GetSubscriptionAttributesResponse"!r} to be in {resp.text!r}'
+        assert (
+            "<key>Protocol</key>" in resp.text
+        ), f'Expected {"<key>Protocol</key>"!r} to be in {resp.text!r}'
+        assert f"<value>{protocol}</value>" in resp.text, "Expected {!r} to be in {!r}".format(
+            f"<value>{protocol}</value>", resp.text
+        )
+        assert (
+            "<key>Endpoint</key>" in resp.text
+        ), f'Expected {"<key>Endpoint</key>"!r} to be in {resp.text!r}'
+        assert f"<value>{endpoint}</value>" in resp.text, "Expected {!r} to be in {!r}".format(
+            f"<value>{endpoint}</value>", resp.text
+        )
+        assert (
+            "<key>TopicArn</key>" in resp.text
+        ), f'Expected {"<key>TopicArn</key>"!r} to be in {resp.text!r}'
+        assert TOPIC_ARN in resp.text, f"Expected {TOPIC_ARN!r} to be in {resp.text!r}"
+        assert (
+            "<key>SubscriptionArn</key>" in resp.text
+        ), f'Expected {"<key>SubscriptionArn</key>"!r} to be in {resp.text!r}'
+        assert sub_arn in resp.text, f"Expected {sub_arn!r} to be in {resp.text!r}"
 
     @pytest.mark.asyncio
     async def test_get_subscription_attributes_not_found(
@@ -78,5 +94,7 @@ class TestGetSubscriptionAttributes:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
-        assert "NotFound" in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "NotFound" in resp.text, f'Expected {"NotFound"!r} to be in {resp.text!r}'

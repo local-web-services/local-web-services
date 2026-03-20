@@ -56,9 +56,11 @@ class TestStreamViewTypeFiltering:
             record = handler.invocations[0]["Records"][0]
             dynamodb = record["dynamodb"]
             actual_keys = dynamodb["Keys"]
-            assert actual_keys == expected_keys
-            assert "NewImage" not in dynamodb
-            assert "OldImage" not in dynamodb
+            assert (
+                actual_keys == expected_keys
+            ), f"Expected {expected_keys!r} but got {actual_keys!r}"
+            assert "NewImage" not in dynamodb, f'Expected {"NewImage"!r} to not be in {dynamodb!r}'
+            assert "OldImage" not in dynamodb, f'Expected {"OldImage"!r} to not be in {dynamodb!r}'
         finally:
             await dispatcher.stop()
 
@@ -90,7 +92,7 @@ class TestStreamViewTypeFiltering:
             # Assert
             record = handler.invocations[0]["Records"][0]
             dynamodb = record["dynamodb"]
-            assert "NewImage" in dynamodb
-            assert "OldImage" not in dynamodb
+            assert "NewImage" in dynamodb, f'Expected {"NewImage"!r} to be in {dynamodb!r}'
+            assert "OldImage" not in dynamodb, f'Expected {"OldImage"!r} to not be in {dynamodb!r}'
         finally:
             await dispatcher.stop()

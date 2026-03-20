@@ -52,4 +52,4 @@ class TestRemoveTagsFromResource:
 
         # Assert
         result = _post(client, "ListTagsForResource", {"ResourceName": cluster_arn})
-        assert result["TagList"] == []
+        assert result["TagList"] == [], f'Expected {[]!r} but got {result["TagList"]!r}'

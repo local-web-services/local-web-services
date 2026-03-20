@@ -18,7 +18,7 @@ class TestEnsureDynamoJson:
         actual_item = _ensure_dynamo_json(item)
 
         # Assert
-        assert actual_item == item
+        assert actual_item == item, f"Expected {item!r} but got {actual_item!r}"
 
     def test_fully_plain_item_wrapped(self) -> None:
         # Arrange
@@ -28,7 +28,7 @@ class TestEnsureDynamoJson:
         actual_item = _ensure_dynamo_json({"orderId": "o1", "count": 3})
 
         # Assert
-        assert actual_item == expected_item
+        assert actual_item == expected_item, f"Expected {expected_item!r} but got {actual_item!r}"
 
     def test_mixed_item_normalised(self) -> None:
         # Arrange
@@ -47,7 +47,7 @@ class TestEnsureDynamoJson:
         actual_item = _ensure_dynamo_json(mixed_item)
 
         # Assert
-        assert actual_item == expected_item
+        assert actual_item == expected_item, f"Expected {expected_item!r} but got {actual_item!r}"
 
     def test_empty_item(self) -> None:
         # Arrange
@@ -55,4 +55,4 @@ class TestEnsureDynamoJson:
         actual_item = _ensure_dynamo_json({})
 
         # Assert
-        assert actual_item == {}
+        assert actual_item == {}, f"Expected {({})!r} but got {actual_item!r}"

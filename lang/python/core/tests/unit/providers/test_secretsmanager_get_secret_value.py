@@ -40,13 +40,17 @@ class TestGetSecretValue:
         result = _post(client, "GetSecretValue", {"SecretId": secret_name})
 
         # Assert
-        assert result["SecretString"] == expected_secret_value
-        assert result["Name"] == secret_name
-        assert "VersionId" in result
+        assert (
+            result["SecretString"] == expected_secret_value
+        ), f'Expected {expected_secret_value!r} but got {result["SecretString"]!r}'
+        assert result["Name"] == secret_name, f'Expected {secret_name!r} but got {result["Name"]!r}'
+        assert "VersionId" in result, f'Expected {"VersionId"!r} to be in {result!r}'
 
     def test_get_missing(self, client: TestClient) -> None:
         result = _post(client, "GetSecretValue", {"SecretId": "nope"})
 
         # Assert
         expected_error_type = "ResourceNotFoundException"
-        assert result["__type"] == expected_error_type
+        assert (
+            result["__type"] == expected_error_type
+        ), f'Expected {expected_error_type!r} but got {result["__type"]!r}'

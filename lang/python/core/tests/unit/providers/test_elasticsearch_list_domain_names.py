@@ -37,7 +37,9 @@ class TestListDomainNames:
         result = _post(client, "ListDomainNames")
 
         # Assert
-        assert len(result["DomainNames"]) == expected_count
+        assert (
+            len(result["DomainNames"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(result["DomainNames"])!r}'
 
     def test_list_with_domains(self, client: TestClient) -> None:
         # Arrange
@@ -51,7 +53,9 @@ class TestListDomainNames:
         result = _post(client, "ListDomainNames")
 
         # Assert
-        assert len(result["DomainNames"]) == expected_count
+        assert (
+            len(result["DomainNames"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(result["DomainNames"])!r}'
         names = [d["DomainName"] for d in result["DomainNames"]]
-        assert domain_name_a in names
-        assert domain_name_b in names
+        assert domain_name_a in names, f"Expected {domain_name_a!r} to be in {names!r}"
+        assert domain_name_b in names, f"Expected {domain_name_b!r} to be in {names!r}"

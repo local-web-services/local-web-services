@@ -38,8 +38,8 @@ class TestGetParametersByPath:
 
         # Assert
         names = [p["Name"] for p in result["Parameters"]]
-        assert direct_child in names
-        assert nested_child not in names
+        assert direct_child in names, f"Expected {direct_child!r} to be in {names!r}"
+        assert nested_child not in names, f"Expected {nested_child!r} to not be in {names!r}"
 
     def test_recursive(self, client: TestClient) -> None:
         direct_child = "/app/key1"
@@ -50,5 +50,5 @@ class TestGetParametersByPath:
 
         # Assert
         names = [p["Name"] for p in result["Parameters"]]
-        assert direct_child in names
-        assert nested_child in names
+        assert direct_child in names, f"Expected {direct_child!r} to be in {names!r}"
+        assert nested_child in names, f"Expected {nested_child!r} to be in {names!r}"

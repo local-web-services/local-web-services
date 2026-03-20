@@ -95,7 +95,9 @@ class TestWaitState:
             },
             input_data={"x": 1},
         )
-        assert history.status == ExecutionStatus.SUCCEEDED
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
 
     async def test_wait_seconds_path(self) -> None:
         history = await run_engine(
@@ -108,7 +110,9 @@ class TestWaitState:
             },
             input_data={"delay": 1},
         )
-        assert history.status == ExecutionStatus.SUCCEEDED
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
 
     async def test_wait_preserves_input(self) -> None:
         history = await run_engine(
@@ -121,4 +125,6 @@ class TestWaitState:
             },
             input_data={"preserved": True},
         )
-        assert history.output_data == {"preserved": True}
+        assert history.output_data == {"preserved": True}, "Expected {!r} but got {!r}".format(
+            {"preserved": True}, history.output_data
+        )

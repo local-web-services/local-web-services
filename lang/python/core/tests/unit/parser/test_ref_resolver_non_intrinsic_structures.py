@@ -15,7 +15,9 @@ class TestNonIntrinsicStructures:
         actual_value = r.resolve("hello")
 
         # Assert
-        assert actual_value == expected_value
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_plain_int_passthrough(self):
         # Arrange
@@ -26,7 +28,9 @@ class TestNonIntrinsicStructures:
         actual_value = r.resolve(42)
 
         # Assert
-        assert actual_value == expected_value
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_plain_dict_values_resolved(self):
         # Arrange
@@ -37,7 +41,9 @@ class TestNonIntrinsicStructures:
         actual_value = r.resolve({"Key": {"Ref": "X"}, "Other": "literal"})
 
         # Assert
-        assert actual_value == expected_value
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_list_elements_resolved(self):
         # Arrange
@@ -48,4 +54,6 @@ class TestNonIntrinsicStructures:
         actual_value = r.resolve([{"Ref": "A"}, "plain"])
 
         # Assert
-        assert actual_value == expected_value
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"

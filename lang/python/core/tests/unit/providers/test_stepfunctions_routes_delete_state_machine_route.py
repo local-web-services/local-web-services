@@ -53,7 +53,9 @@ class TestDeleteStateMachineRoute:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
     async def test_delete_nonexistent(self, client: httpx.AsyncClient) -> None:
         # Arrange
@@ -69,4 +71,6 @@ class TestDeleteStateMachineRoute:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"

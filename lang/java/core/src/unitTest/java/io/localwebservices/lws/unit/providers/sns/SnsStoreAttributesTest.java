@@ -29,7 +29,7 @@ class SnsStoreAttributesTest {
 
     // Assert
     var actualAttrs = store.subscriptionAttrs.get(subArn);
-    assertEquals(expectedAttrs, actualAttrs);
+    assertEquals(expectedAttrs, actualAttrs, "Expected actualAttrs to equal expectedAttrs");
   }
 
   @Test
@@ -43,6 +43,6 @@ class SnsStoreAttributesTest {
 
     // Assert
     var actualTags = store.resourceTags.get(arn);
-    assertEquals(expectedTags, actualTags);
+    assertEquals(expectedTags, actualTags, "Expected actualTags to equal expectedTags");
   }
 }

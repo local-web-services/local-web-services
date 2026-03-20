@@ -14,7 +14,7 @@ class TestNumericOperators:
         actual = evaluate_operator("$gt", 10, 5)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_gt_no_match(self):
         # Arrange
@@ -24,7 +24,7 @@ class TestNumericOperators:
         actual = evaluate_operator("$gt", 5, 10)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_gte_equal(self):
         # Arrange
@@ -34,7 +34,7 @@ class TestNumericOperators:
         actual = evaluate_operator("$gte", 5, 5)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_lt_match(self):
         # Arrange
@@ -44,7 +44,7 @@ class TestNumericOperators:
         actual = evaluate_operator("$lt", 3, 10)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_lte_equal(self):
         # Arrange
@@ -54,7 +54,7 @@ class TestNumericOperators:
         actual = evaluate_operator("$lte", 10, 10)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_numeric_with_non_numeric(self):
         # Arrange
@@ -64,4 +64,4 @@ class TestNumericOperators:
         actual = evaluate_operator("$gt", "abc", 5)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

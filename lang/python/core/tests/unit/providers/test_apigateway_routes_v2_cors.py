@@ -47,7 +47,9 @@ class TestV2Cors:
 
         # Assert
         actual_origin = headers["access-control-allow-origin"]
-        assert actual_origin == expected_origin
+        assert (
+            actual_origin == expected_origin
+        ), f"Expected {expected_origin!r} but got {actual_origin!r}"
 
     def test_specific_origin_match(self) -> None:
         # Arrange
@@ -59,7 +61,9 @@ class TestV2Cors:
 
         # Assert
         actual_origin = headers["access-control-allow-origin"]
-        assert actual_origin == expected_origin
+        assert (
+            actual_origin == expected_origin
+        ), f"Expected {expected_origin!r} but got {actual_origin!r}"
 
     def test_specific_origin_no_match(self) -> None:
         # Arrange
@@ -69,7 +73,9 @@ class TestV2Cors:
         headers = _build_cors_headers(cors, "http://example.com")
 
         # Assert
-        assert "access-control-allow-origin" not in headers
+        assert (
+            "access-control-allow-origin" not in headers
+        ), f'Expected {"access-control-allow-origin"!r} to not be in {headers!r}'
 
     def test_allow_methods(self) -> None:
         # Arrange
@@ -81,7 +87,9 @@ class TestV2Cors:
 
         # Assert
         actual_methods = headers["access-control-allow-methods"]
-        assert actual_methods == expected_methods
+        assert (
+            actual_methods == expected_methods
+        ), f"Expected {expected_methods!r} but got {actual_methods!r}"
 
     def test_allow_credentials(self) -> None:
         # Arrange
@@ -93,7 +101,9 @@ class TestV2Cors:
 
         # Assert
         actual_credentials = headers["access-control-allow-credentials"]
-        assert actual_credentials == expected_credentials
+        assert (
+            actual_credentials == expected_credentials
+        ), f"Expected {expected_credentials!r} but got {actual_credentials!r}"
 
     def test_max_age(self) -> None:
         # Arrange
@@ -105,7 +115,9 @@ class TestV2Cors:
 
         # Assert
         actual_max_age = headers["access-control-max-age"]
-        assert actual_max_age == expected_max_age
+        assert (
+            actual_max_age == expected_max_age
+        ), f"Expected {expected_max_age!r} but got {actual_max_age!r}"
 
     @pytest.fixture
     def registry(self):
@@ -161,11 +173,17 @@ class TestV2Cors:
 
         # Assert
         expected_status = 204
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_origin = resp.headers.get("access-control-allow-origin")
-        assert actual_origin == expected_origin
+        assert (
+            actual_origin == expected_origin
+        ), f"Expected {expected_origin!r} but got {actual_origin!r}"
         actual_methods = resp.headers.get("access-control-allow-methods")
-        assert actual_methods == expected_methods
+        assert (
+            actual_methods == expected_methods
+        ), f"Expected {expected_methods!r} but got {actual_methods!r}"
 
     @pytest.mark.asyncio
     async def test_proxy_response_includes_cors(self, client, registry) -> None:
@@ -207,6 +225,10 @@ class TestV2Cors:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_origin = resp.headers.get("access-control-allow-origin")
-        assert actual_origin == expected_origin
+        assert (
+            actual_origin == expected_origin
+        ), f"Expected {expected_origin!r} but got {actual_origin!r}"

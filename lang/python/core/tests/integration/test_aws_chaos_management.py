@@ -48,11 +48,15 @@ class TestChaosManagementApi:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         actual_services = set(body.keys())
-        assert actual_services == expected_services
-        assert body["dynamodb"]["enabled"] is False
+        assert (
+            actual_services == expected_services
+        ), f"Expected {expected_services!r} but got {actual_services!r}"
+        assert body["dynamodb"]["enabled"] is False, "Expected value to be truthy"
 
     async def test_post_chaos_enables_service(self, client: httpx.AsyncClient, chaos_configs):
         """Verify POST /_ldk/chaos enables chaos for a service."""
@@ -67,14 +71,22 @@ class TestChaosManagementApi:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
-        assert "dynamodb" in body["updated"]
+        assert (
+            "dynamodb" in body["updated"]
+        ), f'Expected {"dynamodb"!r} to be in {body["updated"]!r}'
         actual_enabled = chaos_configs["dynamodb"].enabled
-        assert actual_enabled == expected_enabled
+        assert (
+            actual_enabled == expected_enabled
+        ), f"Expected {expected_enabled!r} but got {actual_enabled!r}"
         expected_error_rate = 0.5
         actual_error_rate = chaos_configs["dynamodb"].error_rate
-        assert actual_error_rate == expected_error_rate
+        assert (
+            actual_error_rate == expected_error_rate
+        ), f"Expected {expected_error_rate!r} but got {actual_error_rate!r}"
 
     async def test_post_chaos_ignores_unknown_service(self, client: httpx.AsyncClient):
         """Verify POST /_ldk/chaos ignores unknown services."""
@@ -87,6 +99,8 @@ class TestChaosManagementApi:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
-        assert body["updated"] == []
+        assert body["updated"] == [], f'Expected {[]!r} but got {body["updated"]!r}'

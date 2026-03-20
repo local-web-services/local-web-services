@@ -50,9 +50,13 @@ class TestTagResourceProvider:
         tags = provider.list_tags_for_resource(arn)
 
         # Assert
-        assert len(tags) == 1
-        assert tags[0]["Key"] == expected_key
-        assert tags[0]["Value"] == expected_value
+        assert len(tags) == 1, f"Expected {1!r} but got {len(tags)!r}"
+        assert (
+            tags[0]["Key"] == expected_key
+        ), f'Expected {expected_key!r} but got {tags[0]["Key"]!r}'
+        assert (
+            tags[0]["Value"] == expected_value
+        ), f'Expected {expected_value!r} but got {tags[0]["Value"]!r}'
 
     async def test_tag_overwrite(self, provider: EventBridgeProvider) -> None:
         # Arrange
@@ -65,8 +69,10 @@ class TestTagResourceProvider:
         tags = provider.list_tags_for_resource(arn)
 
         # Assert
-        assert len(tags) == 1
-        assert tags[0]["Value"] == expected_value
+        assert len(tags) == 1, f"Expected {1!r} but got {len(tags)!r}"
+        assert (
+            tags[0]["Value"] == expected_value
+        ), f'Expected {expected_value!r} but got {tags[0]["Value"]!r}'
 
     async def test_untag(self, provider: EventBridgeProvider) -> None:
         arn = "arn:aws:events:us-east-1:000000000000:rule/my-rule"
@@ -79,12 +85,12 @@ class TestTagResourceProvider:
         )
         provider.untag_resource(arn, ["env"])
         tags = provider.list_tags_for_resource(arn)
-        assert len(tags) == 1
-        assert tags[0]["Key"] == "team"
+        assert len(tags) == 1, f"Expected {1!r} but got {len(tags)!r}"
+        assert tags[0]["Key"] == "team", f'Expected {"team"!r} but got {tags[0]["Key"]!r}'
 
     async def test_list_tags_unknown_arn_returns_empty(self, provider: EventBridgeProvider) -> None:
         tags = provider.list_tags_for_resource("arn:aws:events:us-east-1:000000000000:rule/unknown")
-        assert tags == []
+        assert tags == [], f"Expected {[]!r} but got {tags!r}"
 
     async def test_untag_unknown_arn_is_noop(self, provider: EventBridgeProvider) -> None:
         provider.untag_resource("arn:...", ["env"])  # should not raise

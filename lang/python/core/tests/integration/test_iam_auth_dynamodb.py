@@ -92,10 +92,12 @@ class TestIamAuthDynamoDbEnforce:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
         body = response.json()
         actual_type = body["__type"]
-        assert actual_type == expected_type
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
 
     async def test_allows_get_item(self, client: httpx.AsyncClient):
         """GetItem should be allowed through."""
@@ -111,4 +113,6 @@ class TestIamAuthDynamoDbEnforce:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"

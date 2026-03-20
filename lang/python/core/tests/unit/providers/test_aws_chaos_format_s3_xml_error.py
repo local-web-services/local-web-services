@@ -15,9 +15,17 @@ class TestFormatS3XmlError:
 
         # Assert
         expected_status = 404
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.body.decode() if isinstance(response.body, bytes) else response.body
-        assert "<Code>NoSuchKey</Code>" in body
-        assert "<Message>The specified key does not exist.</Message>" in body
+        assert (
+            "<Code>NoSuchKey</Code>" in body
+        ), f'Expected {"<Code>NoSuchKey</Code>"!r} to be in {body!r}'
+        assert (
+            "<Message>The specified key does not exist.</Message>" in body
+        ), f'Expected {"<Message>The specified key does not exist.</Message>"!r} to be in {body!r}'
         expected_media_type = "application/xml"
-        assert response.media_type == expected_media_type
+        assert (
+            response.media_type == expected_media_type
+        ), f"Expected {expected_media_type!r} but got {response.media_type!r}"

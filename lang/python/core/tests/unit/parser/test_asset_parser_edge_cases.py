@@ -26,7 +26,7 @@ class TestEdgeCases:
         result = parse_assets(cdk_out)
 
         # Assert
-        assert result == {}
+        assert result == {}, f"Expected {({})!r} but got {result!r}"
 
     def test_empty_artifacts(self, cdk_out: Path):
         # Arrange
@@ -36,7 +36,7 @@ class TestEdgeCases:
         result = parse_assets(cdk_out)
 
         # Assert
-        assert result == {}
+        assert result == {}, f"Expected {({})!r} but got {result!r}"
 
     def test_missing_asset_manifest_file(self, cdk_out: Path, caplog):
         """Asset manifest referenced but file doesn't exist."""
@@ -58,4 +58,4 @@ class TestEdgeCases:
             result = parse_assets(cdk_out)
 
         # Assert
-        assert result == {}
+        assert result == {}, f"Expected {({})!r} but got {result!r}"

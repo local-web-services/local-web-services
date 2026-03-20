@@ -99,12 +99,12 @@ class TestProviderLifecycle:
     async def test_name(self, provider: CognitoProvider) -> None:
         expected_name = "cognito"
         actual_name = provider.name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     async def test_health_check_running(self, provider: CognitoProvider) -> None:
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     async def test_health_check_stopped(self, tmp_path: Path) -> None:
         config = _default_config()
         p = CognitoProvider(data_dir=tmp_path, config=config)
-        assert await p.health_check() is False
+        assert await p.health_check() is False, "Expected value to be truthy"

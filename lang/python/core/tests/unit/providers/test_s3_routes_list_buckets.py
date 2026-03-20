@@ -40,10 +40,14 @@ class TestListBuckets:
         resp = await client.get("/")
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "ListAllMyBucketsResult" in resp.text
-        assert bucket_a in resp.text
-        assert bucket_b in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "ListAllMyBucketsResult" in resp.text
+        ), f'Expected {"ListAllMyBucketsResult"!r} to be in {resp.text!r}'
+        assert bucket_a in resp.text, f"Expected {bucket_a!r} to be in {resp.text!r}"
+        assert bucket_b in resp.text, f"Expected {bucket_b!r} to be in {resp.text!r}"
 
     @pytest.mark.asyncio
     async def test_list_buckets_empty(self, client: httpx.AsyncClient) -> None:
@@ -52,5 +56,9 @@ class TestListBuckets:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
-        assert "ListAllMyBucketsResult" in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "ListAllMyBucketsResult" in resp.text
+        ), f'Expected {"ListAllMyBucketsResult"!r} to be in {resp.text!r}'

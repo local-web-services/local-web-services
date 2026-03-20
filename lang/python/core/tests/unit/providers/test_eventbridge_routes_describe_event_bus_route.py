@@ -33,10 +33,10 @@ async def _request(client: httpx.AsyncClient, target: str, body: dict) -> httpx.
 class TestDescribeEventBusRoute:
     async def test_describe_default(self, client: httpx.AsyncClient) -> None:
         resp = await _request(client, "DescribeEventBus", {"Name": "default"})
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["Name"] == "default"
+        assert data["Name"] == "default", f'Expected {"default"!r} but got {data["Name"]!r}'
 
     async def test_describe_nonexistent(self, client: httpx.AsyncClient) -> None:
         resp = await _request(client, "DescribeEventBus", {"Name": "nope"})
-        assert resp.status_code == 400
+        assert resp.status_code == 400, f"Expected {400!r} but got {resp.status_code!r}"

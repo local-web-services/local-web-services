@@ -14,4 +14,4 @@ class TestRenderRandomInt:
         actual = render_template(template)
 
         # Assert
-        assert 1 <= int(actual) <= 100
+        assert 1 <= int(actual) <= 100, f"Expected {1!r} <= {int(actual) <= 100!r}"

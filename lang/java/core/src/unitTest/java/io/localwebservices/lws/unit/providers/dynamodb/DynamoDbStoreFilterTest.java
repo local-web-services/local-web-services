@@ -36,7 +36,7 @@ public class DynamoDbStoreFilterTest {
     boolean actualResult = store.evaluateFilter(item, null, null, null);
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -50,7 +50,7 @@ public class DynamoDbStoreFilterTest {
     boolean actualResult = store.evaluateFilter(item, "", null, null);
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -71,7 +71,9 @@ public class DynamoDbStoreFilterTest {
     // Note: this exercises the between parsing path; actual result depends on parse
     // The key thing is the branch is exercised
     // Assert — method returns a boolean without exception
-    assertTrue(actualResult || !actualResult);
+    assertTrue(
+        actualResult || !actualResult,
+        "Expected condition to be true: actualResult || !actualResult");
   }
 
   @Test
@@ -90,7 +92,7 @@ public class DynamoDbStoreFilterTest {
             Map.of(":lo", strAttr("2024-01"), ":hi", strAttr("2024-12")));
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -104,7 +106,7 @@ public class DynamoDbStoreFilterTest {
     boolean actualResult = store.evaluateFilter(item, "begins_with(sk)", null, null);
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -120,7 +122,7 @@ public class DynamoDbStoreFilterTest {
             item, "#s = :v", Map.of("#s", "status"), Map.of(":v", strAttr("active")));
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -135,7 +137,7 @@ public class DynamoDbStoreFilterTest {
         store.evaluateFilter(item, "status = :missing", null, Map.of(":v", strAttr("active")));
 
     // Assert — expected is null so returns false
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -149,7 +151,7 @@ public class DynamoDbStoreFilterTest {
     boolean actualResult = store.evaluateFilter(item, "some_literal_no_eq", null, null);
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -173,7 +175,8 @@ public class DynamoDbStoreFilterTest {
         store.scan(tableName, "count = :val", null, Map.of(":val", numAttr("10")), null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -187,7 +190,7 @@ public class DynamoDbStoreFilterTest {
     boolean actualResult = store.evaluateFilter(item, "tag = :v", null, Map.of(":v", "hot"));
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -202,7 +205,7 @@ public class DynamoDbStoreFilterTest {
         store.evaluateFilter(item, "missing = :v", null, Map.of(":v", strAttr("x")));
 
     // Assert — resolveScalarFromItem returns null → String.valueOf(null)="null", not equal to "x"
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -226,7 +229,8 @@ public class DynamoDbStoreFilterTest {
         store.scan(tableName, "active = :val", null, Map.of(":val", boolVal), null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -248,7 +252,9 @@ public class DynamoDbStoreFilterTest {
             Map.of(":lo", strAttr("10"), ":hi", strAttr("90")));
 
     // Assert — exercises the between code path
-    assertTrue(actualResult || !actualResult);
+    assertTrue(
+        actualResult || !actualResult,
+        "Expected condition to be true: actualResult || !actualResult");
   }
 
   @Test
@@ -271,7 +277,7 @@ public class DynamoDbStoreFilterTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k1")));
-    assertEquals(strAttr("myValue"), actualItem.get("myField"));
+    assertEquals(strAttr("myValue"), actualItem.get("myField"), "Expected values to match");
   }
 
   @Test
@@ -294,7 +300,7 @@ public class DynamoDbStoreFilterTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k2")));
-    assertEquals("directValue", actualItem.get("myField"));
+    assertEquals("directValue", actualItem.get("myField"), "Expected values to match");
   }
 
   @Test
@@ -313,7 +319,9 @@ public class DynamoDbStoreFilterTest {
         tableName, Map.of("pk", strAttr("k3")), "REMOVE #e", Map.of("#e", "extra"), null);
 
     // Assert — already covered by DynamoDbStoreQueryTest but exercises exprNames path
-    assertNull(store.getItem(tableName, Map.of("pk", strAttr("k3"))).get("extra"));
+    assertNull(
+        store.getItem(tableName, Map.of("pk", strAttr("k3"))).get("extra"),
+        "Expected values to match");
   }
 
   @Test
@@ -330,7 +338,9 @@ public class DynamoDbStoreFilterTest {
     store.updateItem(tableName, Map.of("pk", strAttr("k4")), "SET noEqualsHere", null, null);
 
     // Assert — no exception; item unchanged
-    assertFalse(store.getItem(tableName, Map.of("pk", strAttr("k4"))).containsKey("noEqualsHere"));
+    assertFalse(
+        store.getItem(tableName, Map.of("pk", strAttr("k4"))).containsKey("noEqualsHere"),
+        "Expected map to not contain the key");
   }
 
   @Test
@@ -347,7 +357,9 @@ public class DynamoDbStoreFilterTest {
     store.updateItem(tableName, Map.of("pk", strAttr("k5")), "ADD singletoken", null, null);
 
     // Assert — no exception
-    assertTrue(store.getItem(tableName, Map.of("pk", strAttr("k5"))).containsKey("pk"));
+    assertTrue(
+        store.getItem(tableName, Map.of("pk", strAttr("k5"))).containsKey("pk"),
+        "Expected map to contain the expected key");
   }
 
   @Test
@@ -366,7 +378,7 @@ public class DynamoDbStoreFilterTest {
             new java.util.HashMap<>()); // non-null but empty map → get returns null
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -385,7 +397,9 @@ public class DynamoDbStoreFilterTest {
     boolean actualResult = store.evaluateFilter(item, "data = anyLiteral", null, null);
 
     // Assert — doesn't throw; BOOL false branch exercised in resolveScalarValue
-    assertTrue(actualResult || !actualResult);
+    assertTrue(
+        actualResult || !actualResult,
+        "Expected condition to be true: actualResult || !actualResult");
   }
 
   @Test
@@ -410,7 +424,7 @@ public class DynamoDbStoreFilterTest {
             Map.of(":val", strAttr("red")));
 
     // Assert
-    assertEquals(strAttr("red"), updatedItem.get("color"));
+    assertEquals(strAttr("red"), updatedItem.get("color"), "Expected values to match");
   }
 
   @Test
@@ -433,7 +447,7 @@ public class DynamoDbStoreFilterTest {
             Map.of(":other", strAttr("unused"))); // exprValues non-null, valExpr has no :
 
     // Assert
-    assertEquals("large", updatedItem.get("size"));
+    assertEquals("large", updatedItem.get("size"), "Expected values to match");
   }
 
   @Test
@@ -456,7 +470,7 @@ public class DynamoDbStoreFilterTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k")));
-    assertEquals("literalValue", actualItem.get("realAttr"));
+    assertEquals("literalValue", actualItem.get("realAttr"), "Expected values to match");
   }
 
   @Test
@@ -479,7 +493,7 @@ public class DynamoDbStoreFilterTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k")));
-    assertEquals(strAttr("resolved"), actualItem.get("#attr"));
+    assertEquals(strAttr("resolved"), actualItem.get("#attr"), "Expected values to match");
   }
 
   @Test
@@ -503,6 +517,6 @@ public class DynamoDbStoreFilterTest {
 
     // Assert — delta is set directly since existing is null (not instanceof Map)
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k")));
-    assertEquals(numAttr("1"), actualItem.get("counter"));
+    assertEquals(numAttr("1"), actualItem.get("counter"), "Expected values to match");
   }
 }

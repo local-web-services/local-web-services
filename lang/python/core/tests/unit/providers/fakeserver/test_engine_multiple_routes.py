@@ -27,9 +27,9 @@ class TestMultipleRoutes:
         result = engine.match(method="GET", path="/v1/users")
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_type = result[0].body["type"]
-        assert actual_type == expected_type
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
 
     def test_second_route_matches(self):
         # Arrange
@@ -42,6 +42,6 @@ class TestMultipleRoutes:
         result = engine.match(method="GET", path="/v1/users/123")
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_type = result[0].body["type"]
-        assert actual_type == expected_type
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"

@@ -68,7 +68,7 @@ class TestDelete:
 
         # Assert
         actual_tags = result["tags"]
-        assert actual_tags == expected_tags
+        assert actual_tags == expected_tags, f"Expected {expected_tags!r} but got {actual_tags!r}"
 
     def test_delete_from_number_set(self) -> None:
         # Arrange
@@ -84,7 +84,9 @@ class TestDelete:
 
         # Assert
         actual_numbers = result["numbers"]
-        assert actual_numbers == expected_numbers
+        assert (
+            actual_numbers == expected_numbers
+        ), f"Expected {expected_numbers!r} but got {actual_numbers!r}"
 
     def test_delete_nonexistent_elements(self) -> None:
         # Arrange
@@ -100,7 +102,7 @@ class TestDelete:
 
         # Assert
         actual_tags = result["tags"]
-        assert actual_tags == expected_tags
+        assert actual_tags == expected_tags, f"Expected {expected_tags!r} but got {actual_tags!r}"
 
     def test_delete_from_missing_attribute(self) -> None:
         item = {"pk": "1"}
@@ -110,4 +112,4 @@ class TestDelete:
             expression_values={":rem": {"SS": ["a"]}},
         )
         # No error, attribute just not there
-        assert "tags" not in result
+        assert "tags" not in result, f'Expected {"tags"!r} to not be in {result!r}'

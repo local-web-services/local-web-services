@@ -29,7 +29,9 @@ class TestDeleteTopic:
 
         # Assert
         actual_topics = provider.list_topics()
-        assert len(actual_topics) == expected_topic_count
+        assert (
+            len(actual_topics) == expected_topic_count
+        ), f"Expected {expected_topic_count!r} but got {len(actual_topics)!r}"
 
     @pytest.mark.asyncio
     async def test_delete_nonexistent_raises(self, provider: SnsProvider) -> None:

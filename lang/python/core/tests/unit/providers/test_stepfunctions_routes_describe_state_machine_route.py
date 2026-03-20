@@ -55,10 +55,14 @@ class TestDescribeStateMachineRoute:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["name"] == expected_name
-        assert data["status"] == expected_status
+        assert data["name"] == expected_name, f'Expected {expected_name!r} but got {data["name"]!r}'
+        assert (
+            data["status"] == expected_status
+        ), f'Expected {expected_status!r} but got {data["status"]!r}'
 
     async def test_describe_nonexistent(self, client: httpx.AsyncClient) -> None:
         # Arrange
@@ -74,4 +78,6 @@ class TestDescribeStateMachineRoute:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"

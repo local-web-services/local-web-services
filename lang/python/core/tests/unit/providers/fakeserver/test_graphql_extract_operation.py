@@ -18,10 +18,12 @@ class TestExtractOperationInfo:
 
         # Assert
         expected_type = "Query"
-        assert op_type == expected_type
+        assert op_type == expected_type, f"Expected {expected_type!r} but got {op_type!r}"
         expected_field = "user"
-        assert field_name == expected_field
-        assert variables == {"id": "u1"}
+        assert field_name == expected_field, f"Expected {expected_field!r} but got {field_name!r}"
+        assert variables == {"id": "u1"}, "Expected {!r} but got {!r}".format(
+            {"id": "u1"}, variables
+        )
 
     def test_mutation_operation(self):
         # Arrange
@@ -35,7 +37,7 @@ class TestExtractOperationInfo:
 
         # Assert
         expected_type = "Mutation"
-        assert op_type == expected_type
+        assert op_type == expected_type, f"Expected {expected_type!r} but got {op_type!r}"
 
     def test_operation_name_from_body(self):
         # Arrange
@@ -49,4 +51,4 @@ class TestExtractOperationInfo:
 
         # Assert
         expected_field = "user"
-        assert field_name == expected_field
+        assert field_name == expected_field, f"Expected {expected_field!r} but got {field_name!r}"

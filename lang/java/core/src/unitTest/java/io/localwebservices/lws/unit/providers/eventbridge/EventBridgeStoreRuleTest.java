@@ -22,7 +22,9 @@ public class EventBridgeStoreRuleTest {
     store.rules.put(expectedRuleName, Map.of("Name", expectedRuleName, "State", expectedRuleState));
 
     // Assert
-    assertNotNull(store.rules.get(expectedRuleName));
+    assertNotNull(
+        store.rules.get(expectedRuleName),
+        "Expected store.rules.get(expectedRuleName) to not be null");
   }
 
   @Test
@@ -36,7 +38,8 @@ public class EventBridgeStoreRuleTest {
     store.rules.remove(expectedRuleName);
 
     // Assert
-    assertNull(store.rules.get(expectedRuleName));
+    assertNull(
+        store.rules.get(expectedRuleName), "Expected store.rules.get(expectedRuleName) to be null");
   }
 
   @Test
@@ -49,7 +52,7 @@ public class EventBridgeStoreRuleTest {
     store.reset();
 
     // Assert
-    assertTrue(store.rules.isEmpty());
+    assertTrue(store.rules.isEmpty(), "Expected store.rules to be empty");
   }
 
   @Test
@@ -66,6 +69,7 @@ public class EventBridgeStoreRuleTest {
 
     // Assert
     int actualRuleCount = store.rules.size();
-    assertEquals(expectedRuleCount, actualRuleCount);
+    assertEquals(
+        expectedRuleCount, actualRuleCount, "Expected actualRuleCount to match expectedRuleCount");
   }
 }

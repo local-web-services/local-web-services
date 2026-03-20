@@ -40,7 +40,9 @@ class TestDescribeDBInstances:
 
         # Assert
         actual_count = len(result["DBInstances"])
-        assert actual_count == expected_count
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_describe_instance_by_id(self, client: TestClient) -> None:
         # Arrange
@@ -55,9 +57,13 @@ class TestDescribeDBInstances:
         )
 
         # Assert
-        assert len(result["DBInstances"]) == 1
+        assert (
+            len(result["DBInstances"]) == 1
+        ), f'Expected {1!r} but got {len(result["DBInstances"])!r}'
         actual_identifier = result["DBInstances"][0]["DBInstanceIdentifier"]
-        assert actual_identifier == instance_id
+        assert (
+            actual_identifier == instance_id
+        ), f"Expected {instance_id!r} but got {actual_identifier!r}"
 
     def test_describe_instance_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -72,4 +78,6 @@ class TestDescribeDBInstances:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

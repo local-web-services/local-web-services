@@ -23,8 +23,8 @@ public class GlacierStoreArchiveTest {
     String actualArchiveId = store.uploadArchive(vaultName, description, size);
 
     // Assert
-    assertNotNull(actualArchiveId);
-    assertFalse(actualArchiveId.isEmpty());
+    assertNotNull(actualArchiveId, "Expected actualArchiveId to not be null");
+    assertFalse(actualArchiveId.isEmpty(), "Expected actualArchiveId to not be empty");
   }
 
   @Test
@@ -39,7 +39,10 @@ public class GlacierStoreArchiveTest {
     List<Map<String, Object>> actualArchives = store.listArchives(vaultName);
 
     // Assert
-    assertEquals(expectedArchiveCount, actualArchives.size());
+    assertEquals(
+        expectedArchiveCount,
+        actualArchives.size(),
+        "Expected actualArchives.size() to match expectedArchiveCount");
   }
 
   @Test
@@ -55,7 +58,10 @@ public class GlacierStoreArchiveTest {
 
     // Assert
     List<Map<String, Object>> actualArchives = store.listArchives(vaultName);
-    assertEquals(expectedArchiveCount, actualArchives.size());
+    assertEquals(
+        expectedArchiveCount,
+        actualArchives.size(),
+        "Expected actualArchives.size() to match expectedArchiveCount");
   }
 
   @Test
@@ -69,7 +75,10 @@ public class GlacierStoreArchiveTest {
     List<Map<String, Object>> actualArchives = store.listArchives(vaultName);
 
     // Assert
-    assertNotNull(actualArchives);
-    assertEquals(expectedArchiveCount, actualArchives.size());
+    assertNotNull(actualArchives, "Expected actualArchives to not be null");
+    assertEquals(
+        expectedArchiveCount,
+        actualArchives.size(),
+        "Expected actualArchives.size() to match expectedArchiveCount");
   }
 }

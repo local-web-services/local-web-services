@@ -53,10 +53,12 @@ class TestTokenizer:
 
         # Assert
         types = [t.type for t in tokens]
-        assert "IDENT" in types
-        assert "OP" in types
-        assert "VALUE_REF" in types
-        assert types[-1] == expected_last_type
+        assert "IDENT" in types, f'Expected {"IDENT"!r} to be in {types!r}'
+        assert "OP" in types, f'Expected {"OP"!r} to be in {types!r}'
+        assert "VALUE_REF" in types, f'Expected {"VALUE_REF"!r} to be in {types!r}'
+        assert (
+            types[-1] == expected_last_type
+        ), f"Expected {expected_last_type!r} but got {types[-1]!r}"
 
     def test_name_ref(self) -> None:
         # Arrange
@@ -69,8 +71,10 @@ class TestTokenizer:
         # Assert
         actual_type = tokens[0].type
         actual_value = tokens[0].value
-        assert actual_type == expected_type
-        assert actual_value == expected_value
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_logical_keywords(self) -> None:
         # Act
@@ -78,9 +82,9 @@ class TestTokenizer:
 
         # Assert
         types = [t.type for t in tokens if t.type not in ("EOF",)]
-        assert "AND" in types
-        assert "OR" in types
-        assert "NOT" in types
+        assert "AND" in types, f'Expected {"AND"!r} to be in {types!r}'
+        assert "OR" in types, f'Expected {"OR"!r} to be in {types!r}'
+        assert "NOT" in types, f'Expected {"NOT"!r} to be in {types!r}'
 
     def test_between_keyword(self) -> None:
         # Act
@@ -88,7 +92,7 @@ class TestTokenizer:
 
         # Assert
         types = [t.type for t in tokens]
-        assert "BETWEEN" in types
+        assert "BETWEEN" in types, f'Expected {"BETWEEN"!r} to be in {types!r}'
 
     def test_in_keyword(self) -> None:
         # Act
@@ -96,10 +100,10 @@ class TestTokenizer:
 
         # Assert
         types = [t.type for t in tokens]
-        assert "IN" in types
-        assert "LPAREN" in types
-        assert "RPAREN" in types
-        assert "COMMA" in types
+        assert "IN" in types, f'Expected {"IN"!r} to be in {types!r}'
+        assert "LPAREN" in types, f'Expected {"LPAREN"!r} to be in {types!r}'
+        assert "RPAREN" in types, f'Expected {"RPAREN"!r} to be in {types!r}'
+        assert "COMMA" in types, f'Expected {"COMMA"!r} to be in {types!r}'
 
     def test_function_call(self) -> None:
         # Arrange
@@ -114,6 +118,12 @@ class TestTokenizer:
         actual_first_type = tokens[0].type
         actual_first_value = tokens[0].value
         actual_second_type = tokens[1].type
-        assert actual_first_type == expected_first_type
-        assert actual_first_value == expected_first_value
-        assert actual_second_type == expected_second_type
+        assert (
+            actual_first_type == expected_first_type
+        ), f"Expected {expected_first_type!r} but got {actual_first_type!r}"
+        assert (
+            actual_first_value == expected_first_value
+        ), f"Expected {expected_first_value!r} but got {actual_first_value!r}"
+        assert (
+            actual_second_type == expected_second_type
+        ), f"Expected {expected_second_type!r} but got {actual_second_type!r}"

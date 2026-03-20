@@ -83,8 +83,12 @@ class TestListTables:
         resp = await client.post("/", json={}, headers=_target("ListTables"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_table_names = data["TableNames"]
-        assert actual_table_names == expected_table_names
+        assert (
+            actual_table_names == expected_table_names
+        ), f"Expected {expected_table_names!r} but got {actual_table_names!r}"
         fake_store.list_tables.assert_awaited_once()

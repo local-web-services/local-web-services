@@ -102,7 +102,7 @@ class TestEdgeCases:
         model = parse_assembly(tmp_path)
 
         # Assert
-        assert model == AppModel()
+        assert model == AppModel(), f"Expected {AppModel()!r} but got {model!r}"
 
     def test_stack_with_missing_template(self, tmp_path: Path):
         # Arrange
@@ -123,7 +123,7 @@ class TestEdgeCases:
         model = parse_assembly(cdk_out)
 
         # Assert
-        assert model == AppModel()
+        assert model == AppModel(), f"Expected {AppModel()!r} but got {model!r}"
 
     def test_lambda_with_no_code(self, tmp_path: Path):
         # Arrange
@@ -153,5 +153,7 @@ class TestEdgeCases:
         model = parse_assembly(cdk_out)
 
         # Assert
-        assert len(model.functions) == 1
-        assert model.functions[0].code_path is None
+        assert len(model.functions) == 1, f"Expected {1!r} but got {len(model.functions)!r}"
+        assert (
+            model.functions[0].code_path is None
+        ), f"Expected None but got {model.functions[0].code_path!r}"

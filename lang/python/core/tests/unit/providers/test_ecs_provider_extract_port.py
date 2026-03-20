@@ -119,7 +119,7 @@ class TestExtractPort:
     def test_extracts_host_port(self) -> None:
         svc = _make_service()
         port = EcsProvider._extract_port(svc)
-        assert port == 8080
+        assert port == 8080, f"Expected {8080!r} but got {port!r}"
 
     def test_falls_back_to_container_port(self) -> None:
         container = _make_container(
@@ -127,10 +127,10 @@ class TestExtractPort:
         )
         svc = _make_service(containers=[container])
         port = EcsProvider._extract_port(svc)
-        assert port == 3000
+        assert port == 3000, f"Expected {3000!r} but got {port!r}"
 
     def test_no_port_mappings(self) -> None:
         container = _make_container(port_mappings=[])
         svc = _make_service(containers=[container])
         port = EcsProvider._extract_port(svc)
-        assert port is None
+        assert port is None, f"Expected None but got {port!r}"

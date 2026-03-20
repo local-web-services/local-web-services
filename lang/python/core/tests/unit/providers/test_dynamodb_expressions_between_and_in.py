@@ -50,7 +50,7 @@ class TestBetweenAndIn:
             item,
             "age BETWEEN :lo AND :hi",
             expression_values={":lo": {"N": "20"}, ":hi": {"N": "30"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_between_at_boundary(self) -> None:
         item = {"age": 20}
@@ -58,7 +58,7 @@ class TestBetweenAndIn:
             item,
             "age BETWEEN :lo AND :hi",
             expression_values={":lo": {"N": "20"}, ":hi": {"N": "30"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_between_out_of_range(self) -> None:
         item = {"age": 35}
@@ -66,7 +66,7 @@ class TestBetweenAndIn:
             item,
             "age BETWEEN :lo AND :hi",
             expression_values={":lo": {"N": "20"}, ":hi": {"N": "30"}},
-        )
+        ), "Expected value to be falsy"
 
     def test_in_found(self) -> None:
         item = {"status": "active"}
@@ -74,7 +74,7 @@ class TestBetweenAndIn:
             item,
             "status IN (:a, :b, :c)",
             expression_values={":a": {"S": "active"}, ":b": {"S": "pending"}, ":c": {"S": "done"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_in_not_found(self) -> None:
         item = {"status": "deleted"}
@@ -82,4 +82,4 @@ class TestBetweenAndIn:
             item,
             "status IN (:a, :b)",
             expression_values={":a": {"S": "active"}, ":b": {"S": "pending"}},
-        )
+        ), "Expected value to be falsy"

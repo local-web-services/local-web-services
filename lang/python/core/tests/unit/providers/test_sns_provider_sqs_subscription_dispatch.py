@@ -144,13 +144,23 @@ class TestSqsSubscriptionDispatch:
         fake_queue.send_message.assert_called_once()
         call_kwargs = fake_queue.send_message.call_args
         actual_queue_name = call_kwargs[1]["queue_name"]
-        assert actual_queue_name == expected_queue_name
+        assert (
+            actual_queue_name == expected_queue_name
+        ), f"Expected {expected_queue_name!r} but got {actual_queue_name!r}"
 
         actual_body = json.loads(call_kwargs[1]["message_body"])
-        assert actual_body["Type"] == expected_type
-        assert actual_body["Message"] == expected_message
-        assert actual_body["Subject"] == expected_subject
-        assert actual_body["TopicArn"] == expected_topic_arn
+        assert (
+            actual_body["Type"] == expected_type
+        ), f'Expected {expected_type!r} but got {actual_body["Type"]!r}'
+        assert (
+            actual_body["Message"] == expected_message
+        ), f'Expected {expected_message!r} but got {actual_body["Message"]!r}'
+        assert (
+            actual_body["Subject"] == expected_subject
+        ), f'Expected {expected_subject!r} but got {actual_body["Subject"]!r}'
+        assert (
+            actual_body["TopicArn"] == expected_topic_arn
+        ), f'Expected {expected_topic_arn!r} but got {actual_body["TopicArn"]!r}'
 
     @pytest.mark.asyncio
     async def test_sqs_dispatch_no_queue_provider_logs_error(self) -> None:

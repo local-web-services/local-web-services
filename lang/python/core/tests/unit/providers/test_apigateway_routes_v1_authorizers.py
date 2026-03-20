@@ -45,11 +45,13 @@ class TestV1AuthorizerCrud:
 
         # Assert
         expected_status = 201
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["name"] == expected_name
-        assert data["type"] == expected_type
-        assert "id" in data
+        assert data["name"] == expected_name, f'Expected {expected_name!r} but got {data["name"]!r}'
+        assert data["type"] == expected_type, f'Expected {expected_type!r} but got {data["type"]!r}'
+        assert "id" in data, f'Expected {"id"!r} to be in {data!r}'
 
     @pytest.mark.asyncio
     async def test_list_authorizers(self, client) -> None:
@@ -70,8 +72,12 @@ class TestV1AuthorizerCrud:
         # Assert
         expected_status = 200
         expected_count = 2
-        assert resp.status_code == expected_status
-        assert len(resp.json()["item"]) == expected_count
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            len(resp.json()["item"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(resp.json()["item"])!r}'
 
     @pytest.mark.asyncio
     async def test_get_authorizer(self, client) -> None:
@@ -89,8 +95,12 @@ class TestV1AuthorizerCrud:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
-        assert resp.json()["name"] == expected_name
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            resp.json()["name"] == expected_name
+        ), f'Expected {expected_name!r} but got {resp.json()["name"]!r}'
 
     @pytest.mark.asyncio
     async def test_get_authorizer_not_found(self, client) -> None:
@@ -102,7 +112,9 @@ class TestV1AuthorizerCrud:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_delete_authorizer(self, client) -> None:
@@ -120,9 +132,13 @@ class TestV1AuthorizerCrud:
         # Assert
         expected_delete_status = 202
         expected_not_found_status = 404
-        assert resp.status_code == expected_delete_status
+        assert (
+            resp.status_code == expected_delete_status
+        ), f"Expected {expected_delete_status!r} but got {resp.status_code!r}"
         get_resp = await client.get(f"/restapis/{rest_api_id}/authorizers/{authorizer_id}")
-        assert get_resp.status_code == expected_not_found_status
+        assert (
+            get_resp.status_code == expected_not_found_status
+        ), f"Expected {expected_not_found_status!r} but got {get_resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_create_authorizer_api_not_found(self, client) -> None:
@@ -135,4 +151,6 @@ class TestV1AuthorizerCrud:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"

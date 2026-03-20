@@ -38,7 +38,9 @@ class TestDescribeClusters:
 
         # Assert
         actual_count = len(result["Clusters"])
-        assert actual_count == expected_count
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_describe_all(self, client: TestClient) -> None:
         # Arrange
@@ -53,10 +55,12 @@ class TestDescribeClusters:
 
         # Assert
         actual_count = len(result["Clusters"])
-        assert actual_count == expected_count
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
         actual_names = [c["Name"] for c in result["Clusters"]]
-        assert cluster_a in actual_names
-        assert cluster_b in actual_names
+        assert cluster_a in actual_names, f"Expected {cluster_a!r} to be in {actual_names!r}"
+        assert cluster_b in actual_names, f"Expected {cluster_b!r} to be in {actual_names!r}"
 
     def test_describe_by_name(self, client: TestClient) -> None:
         # Arrange
@@ -67,9 +71,9 @@ class TestDescribeClusters:
         result = _post(client, "DescribeClusters", {"ClusterName": cluster_name})
 
         # Assert
-        assert len(result["Clusters"]) == 1
+        assert len(result["Clusters"]) == 1, f'Expected {1!r} but got {len(result["Clusters"])!r}'
         actual_name = result["Clusters"][0]["Name"]
-        assert actual_name == cluster_name
+        assert actual_name == cluster_name, f"Expected {cluster_name!r} but got {actual_name!r}"
 
     def test_describe_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -80,4 +84,6 @@ class TestDescribeClusters:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

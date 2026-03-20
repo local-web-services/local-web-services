@@ -16,11 +16,13 @@ class TestTraceContext:
         ctx = TraceContext()
 
         # Assert
-        assert ctx.trace_id
+        assert ctx.trace_id, "Expected value to be truthy"
         actual_trace_id_length = len(ctx.trace_id)
-        assert actual_trace_id_length == expected_trace_id_length
+        assert (
+            actual_trace_id_length == expected_trace_id_length
+        ), f"Expected {expected_trace_id_length!r} but got {actual_trace_id_length!r}"
 
     def test_defaults_none(self):
         ctx = TraceContext()
-        assert ctx.root_span is None
-        assert ctx.current_span is None
+        assert ctx.root_span is None, f"Expected None but got {ctx.root_span!r}"
+        assert ctx.current_span is None, f"Expected None but got {ctx.current_span!r}"

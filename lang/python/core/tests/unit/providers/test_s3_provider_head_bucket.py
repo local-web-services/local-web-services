@@ -29,8 +29,12 @@ class TestHeadBucket:
         actual_meta = await provider.head_bucket(bucket_name)
 
         # Assert
-        assert actual_meta["BucketName"] == bucket_name
-        assert "CreationDate" in actual_meta
+        assert (
+            actual_meta["BucketName"] == bucket_name
+        ), f'Expected {bucket_name!r} but got {actual_meta["BucketName"]!r}'
+        assert (
+            "CreationDate" in actual_meta
+        ), f'Expected {"CreationDate"!r} to be in {actual_meta!r}'
 
     @pytest.mark.asyncio
     async def test_head_nonexistent_raises(self, provider: S3Provider) -> None:

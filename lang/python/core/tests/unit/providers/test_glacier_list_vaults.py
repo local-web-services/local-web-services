@@ -25,10 +25,14 @@ class TestListVaults:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         body = response.json()
         actual_vault_count = len(body["VaultList"])
-        assert actual_vault_count == expected_vault_count
+        assert (
+            actual_vault_count == expected_vault_count
+        ), f"Expected {expected_vault_count!r} but got {actual_vault_count!r}"
 
     def test_list_vaults_returns_vault_list(self, client: TestClient) -> None:
         # Arrange
@@ -44,13 +48,17 @@ class TestListVaults:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         body = response.json()
         actual_vault_count = len(body["VaultList"])
-        assert actual_vault_count == expected_vault_count
+        assert (
+            actual_vault_count == expected_vault_count
+        ), f"Expected {expected_vault_count!r} but got {actual_vault_count!r}"
         actual_names = [v["VaultName"] for v in body["VaultList"]]
-        assert vault_name_1 in actual_names
-        assert vault_name_2 in actual_names
+        assert vault_name_1 in actual_names, f"Expected {vault_name_1!r} to be in {actual_names!r}"
+        assert vault_name_2 in actual_names, f"Expected {vault_name_2!r} to be in {actual_names!r}"
 
     def test_list_vaults_contains_vault_arn(self, client: TestClient) -> None:
         # Arrange
@@ -64,4 +72,4 @@ class TestListVaults:
         # Assert
         body = response.json()
         actual_arn = body["VaultList"][0]["VaultARN"]
-        assert actual_arn.endswith(expected_arn_suffix)
+        assert actual_arn.endswith(expected_arn_suffix), "Expected value to be truthy"

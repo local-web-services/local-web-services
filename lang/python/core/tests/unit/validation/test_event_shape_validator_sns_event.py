@@ -126,7 +126,7 @@ class TestSnsEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_missing_sns_key(self) -> None:
         # Arrange
@@ -138,5 +138,7 @@ class TestSnsEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert "Sns" in issues[0].message
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert "Sns" in issues[0].message, f'Expected {"Sns"!r} to be in {issues[0].message!r}'

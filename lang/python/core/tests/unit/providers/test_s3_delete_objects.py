@@ -56,18 +56,32 @@ class TestDeleteObjects:
         )
 
         # Assert
-        assert resp.status_code == expected_ok_status
-        assert "<DeleteResult>" in resp.text
-        assert "<Deleted><Key>key1</Key></Deleted>" in resp.text
-        assert "<Deleted><Key>key2</Key></Deleted>" in resp.text
+        assert (
+            resp.status_code == expected_ok_status
+        ), f"Expected {expected_ok_status!r} but got {resp.status_code!r}"
+        assert (
+            "<DeleteResult>" in resp.text
+        ), f'Expected {"<DeleteResult>"!r} to be in {resp.text!r}'
+        assert (
+            "<Deleted><Key>key1</Key></Deleted>" in resp.text
+        ), f'Expected {"<Deleted><Key>key1</Key></Deleted>"!r} to be in {resp.text!r}'
+        assert (
+            "<Deleted><Key>key2</Key></Deleted>" in resp.text
+        ), f'Expected {"<Deleted><Key>key2</Key></Deleted>"!r} to be in {resp.text!r}'
 
         get_resp = await client.get(f"/{bucket_name}/key3")
-        assert get_resp.status_code == expected_ok_status
+        assert (
+            get_resp.status_code == expected_ok_status
+        ), f"Expected {expected_ok_status!r} but got {get_resp.status_code!r}"
 
         get_resp1 = await client.get(f"/{bucket_name}/key1")
-        assert get_resp1.status_code == expected_gone_status
+        assert (
+            get_resp1.status_code == expected_gone_status
+        ), f"Expected {expected_gone_status!r} but got {get_resp1.status_code!r}"
         get_resp2 = await client.get(f"/{bucket_name}/key2")
-        assert get_resp2.status_code == expected_gone_status
+        assert (
+            get_resp2.status_code == expected_gone_status
+        ), f"Expected {expected_gone_status!r} but got {get_resp2.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_delete_objects_nonexistent_keys(
@@ -87,10 +101,14 @@ class TestDeleteObjects:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "<DeleteResult>" in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "<DeleteResult>" in resp.text
+        ), f'Expected {"<DeleteResult>"!r} to be in {resp.text!r}'
         # Nonexistent keys are still reported as deleted (S3 behavior)
-        assert "<Deleted>" in resp.text
+        assert "<Deleted>" in resp.text, f'Expected {"<Deleted>"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_delete_objects_malformed_xml(
@@ -108,8 +126,10 @@ class TestDeleteObjects:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "MalformedXML" in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "MalformedXML" in resp.text, f'Expected {"MalformedXML"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_delete_objects_empty_list(
@@ -128,5 +148,9 @@ class TestDeleteObjects:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "<DeleteResult>" in resp.text
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "<DeleteResult>" in resp.text
+        ), f'Expected {"<DeleteResult>"!r} to be in {resp.text!r}'

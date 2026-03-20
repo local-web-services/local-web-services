@@ -15,7 +15,7 @@ class TestMatchesResource:
         actual = _matches_resource(pattern, resource)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     def test_arn_wildcard(self):
         # Arrange
@@ -26,7 +26,7 @@ class TestMatchesResource:
         actual = _matches_resource(pattern, resource)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     def test_no_match(self):
         # Arrange
@@ -37,4 +37,4 @@ class TestMatchesResource:
         actual = _matches_resource(pattern, resource)
 
         # Assert
-        assert actual is False
+        assert actual is False, "Expected value to be truthy"

@@ -130,9 +130,13 @@ class TestQuery:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} but got {len(results)!r}"
         actual_order_ids = {r["orderId"] for r in results}
-        assert actual_order_ids == expected_order_ids
+        assert (
+            actual_order_ids == expected_order_ids
+        ), f"Expected {expected_order_ids!r} but got {actual_order_ids!r}"
 
     async def test_query_pk_and_sk_eq(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -149,9 +153,11 @@ class TestQuery:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} but got {len(results)!r}"
         actual_v = results[0]["v"]
-        assert actual_v == expected_v
+        assert actual_v == expected_v, f"Expected {expected_v!r} but got {actual_v!r}"
 
     async def test_query_pk_and_sk_range(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -171,9 +177,11 @@ class TestQuery:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} but got {len(results)!r}"
         actual_vals = sorted(r["v"] for r in results)
-        assert actual_vals == expected_vals
+        assert actual_vals == expected_vals, f"Expected {expected_vals!r} but got {actual_vals!r}"
 
     async def test_query_begins_with(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -190,7 +198,9 @@ class TestQuery:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} but got {len(results)!r}"
 
     async def test_query_with_filter(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -208,9 +218,13 @@ class TestQuery:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} but got {len(results)!r}"
         actual_status = results[0]["status"]
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_query_sk_gt(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -227,4 +241,6 @@ class TestQuery:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} but got {len(results)!r}"

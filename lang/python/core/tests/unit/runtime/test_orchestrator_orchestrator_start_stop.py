@@ -20,8 +20,8 @@ class TestOrchestratorStartStop:
     async def test_start_single_provider(self, orchestrator):
         p = FakeProvider("test-provider")
         await orchestrator.start({"p1": p}, ["p1"])
-        assert p.started
-        assert orchestrator.running
+        assert p.started, "Expected value to be truthy"
+        assert orchestrator.running, "Expected value to be truthy"
 
     async def test_start_multiple_providers_in_order(self, orchestrator):
         # Arrange
@@ -63,9 +63,15 @@ class TestOrchestratorStartStop:
         )
 
         # Assert
-        assert p1.start_order == expected_p1_order
-        assert p2.start_order == expected_p2_order
-        assert p3.start_order == expected_p3_order
+        assert (
+            p1.start_order == expected_p1_order
+        ), f"Expected {expected_p1_order!r} but got {p1.start_order!r}"
+        assert (
+            p2.start_order == expected_p2_order
+        ), f"Expected {expected_p2_order!r} but got {p2.start_order!r}"
+        assert (
+            p3.start_order == expected_p3_order
+        ), f"Expected {expected_p3_order!r} but got {p3.start_order!r}"
 
     async def test_stop_reverses_start_order(self, orchestrator):
         # Arrange
@@ -96,9 +102,13 @@ class TestOrchestratorStartStop:
         await orchestrator.stop()
 
         # Assert -- p2 should stop first (reverse order)
-        assert p2.stop_order == expected_p2_stop_order
-        assert p1.stop_order == expected_p1_stop_order
-        assert not orchestrator.running
+        assert (
+            p2.stop_order == expected_p2_stop_order
+        ), f"Expected {expected_p2_stop_order!r} but got {p2.stop_order!r}"
+        assert (
+            p1.stop_order == expected_p1_stop_order
+        ), f"Expected {expected_p1_stop_order!r} but got {p1.stop_order!r}"
+        assert not orchestrator.running, "Expected value to be falsy"
 
     async def test_stop_all_providers(self, orchestrator):
         p1 = FakeProvider("a")
@@ -106,12 +116,12 @@ class TestOrchestratorStartStop:
         await orchestrator.start({"p1": p1, "p2": p2}, ["p1", "p2"])
 
         await orchestrator.stop()
-        assert p1.stopped
-        assert p2.stopped
+        assert p1.stopped, "Expected value to be truthy"
+        assert p2.stopped, "Expected value to be truthy"
 
     async def test_start_with_empty_providers(self, orchestrator):
         await orchestrator.start({}, [])
-        assert orchestrator.running
+        assert orchestrator.running, "Expected value to be truthy"
 
     async def test_stop_idempotent_when_empty(self, orchestrator):
         await orchestrator.stop()  # Should not raise

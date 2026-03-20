@@ -15,7 +15,13 @@ class TestSNSPublish:
         actual_response = expand_helpers("sns", "publish", helpers)
 
         # Assert
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert expected_root_element in actual_response.body
-        assert f"<MessageId>{expected_message_id}</MessageId>" in actual_response.body
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert (
+            actual_response.content_type == expected_content_type
+        ), f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert (
+            expected_root_element in actual_response.body
+        ), f"Expected {expected_root_element!r} to be in {actual_response.body!r}"
+        assert (
+            f"<MessageId>{expected_message_id}</MessageId>" in actual_response.body
+        ), f"Expected {expected_message_id!r} in body"

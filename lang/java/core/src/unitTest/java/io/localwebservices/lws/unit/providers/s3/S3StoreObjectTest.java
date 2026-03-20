@@ -46,7 +46,9 @@ public class S3StoreObjectTest {
     store.objects.get(expectedBucketName).remove(expectedKey);
 
     // Assert
-    assertNull(store.objects.get(expectedBucketName).get(expectedKey));
+    assertNull(
+        store.objects.get(expectedBucketName).get(expectedKey),
+        "Expected store.objects.get(expectedBucketName).get(expectedKey) to be null");
   }
 
   @Test
@@ -64,7 +66,10 @@ public class S3StoreObjectTest {
 
     // Assert
     String actualContentType = store.objectMetadata.get(expectedMetadataKey).get("Content-Type");
-    assertEquals(expectedContentType, actualContentType);
+    assertEquals(
+        expectedContentType,
+        actualContentType,
+        "Expected actualContentType to equal expectedContentType");
   }
 
   @Test
@@ -81,6 +86,6 @@ public class S3StoreObjectTest {
     store.reset();
 
     // Assert
-    assertTrue(store.objects.isEmpty());
+    assertTrue(store.objects.isEmpty(), "Expected store.objects to be empty");
   }
 }

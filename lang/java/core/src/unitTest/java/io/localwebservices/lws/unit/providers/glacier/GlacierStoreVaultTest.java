@@ -23,9 +23,11 @@ public class GlacierStoreVaultTest {
     Map<String, Object> actualVault = store.createVault(vaultName);
 
     // Assert
-    assertEquals(expectedVaultName, actualVault.get("VaultName"));
-    assertNotNull(actualVault.get("VaultARN"));
-    assertTrue(actualVault.get("VaultARN").toString().contains("my-vault"));
+    assertEquals(expectedVaultName, actualVault.get("VaultName"), "Expected vaultName to match");
+    assertNotNull(actualVault.get("VaultARN"), "Expected values to match");
+    assertTrue(
+        actualVault.get("VaultARN").toString().contains("my-vault"),
+        "Expected value to contain expected substring");
   }
 
   @Test
@@ -40,8 +42,8 @@ public class GlacierStoreVaultTest {
     Map<String, Object> actualVault = store.getVault(vaultName);
 
     // Assert
-    assertNotNull(actualVault);
-    assertEquals(expectedVaultName, actualVault.get("VaultName"));
+    assertNotNull(actualVault, "Expected actualVault to not be null");
+    assertEquals(expectedVaultName, actualVault.get("VaultName"), "Expected vaultName to match");
   }
 
   @Test
@@ -54,7 +56,7 @@ public class GlacierStoreVaultTest {
     Map<String, Object> actualVault = store.getVault(vaultName);
 
     // Assert
-    assertNull(actualVault);
+    assertNull(actualVault, "Expected actualVault to be null");
   }
 
   @Test
@@ -69,7 +71,8 @@ public class GlacierStoreVaultTest {
     List<Map<String, Object>> actualVaults = store.listVaults();
 
     // Assert
-    assertEquals(expectedSize, actualVaults.size());
+    assertEquals(
+        expectedSize, actualVaults.size(), "Expected actualVaults.size() to match expectedSize");
   }
 
   @Test
@@ -83,7 +86,7 @@ public class GlacierStoreVaultTest {
     store.deleteVault(vaultName);
 
     // Assert
-    assertNull(store.getVault(vaultName));
+    assertNull(store.getVault(vaultName), "Expected store.getVault(vaultName) to be null");
   }
 
   @Test
@@ -98,6 +101,7 @@ public class GlacierStoreVaultTest {
 
     // Assert
     List<Map<String, Object>> actualVaults = store.listVaults();
-    assertEquals(expectedSize, actualVaults.size());
+    assertEquals(
+        expectedSize, actualVaults.size(), "Expected actualVaults.size() to match expectedSize");
   }
 }

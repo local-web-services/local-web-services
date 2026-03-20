@@ -26,8 +26,9 @@ public class DynamoDbStoreScanTest {
     List<Map<String, Object>> actualItems = store.scan("T", null, null, null, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
-    assertTrue(actualItems.isEmpty());
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertTrue(actualItems.isEmpty(), "Expected actualItems to be empty");
   }
 
   @Test
@@ -42,7 +43,8 @@ public class DynamoDbStoreScanTest {
     List<Map<String, Object>> actualItems = store.scan("T", null, null, null, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -58,7 +60,8 @@ public class DynamoDbStoreScanTest {
     List<Map<String, Object>> actualItems = store.scan("T", null, null, null, 2, null);
 
     // Assert
-    assertEquals(expectedSize, actualItems.size());
+    assertEquals(
+        expectedSize, actualItems.size(), "Expected actualItems.size() to match expectedSize");
   }
 
   @Test
@@ -73,6 +76,7 @@ public class DynamoDbStoreScanTest {
     List<Map<String, Object>> actualItems = store.scan("T", null, null, null, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 }

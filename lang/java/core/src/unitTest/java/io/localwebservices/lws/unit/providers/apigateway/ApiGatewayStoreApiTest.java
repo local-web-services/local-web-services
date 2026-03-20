@@ -24,7 +24,7 @@ public class ApiGatewayStoreApiTest {
 
     // Assert
     String actualApiName = (String) store.apis.get(expectedApiId).get("name");
-    assertEquals(expectedApiName, actualApiName);
+    assertEquals(expectedApiName, actualApiName, "Expected actualApiName to equal expectedApiName");
   }
 
   @Test
@@ -38,7 +38,7 @@ public class ApiGatewayStoreApiTest {
     store.apis.remove(apiId);
 
     // Assert
-    assertNull(store.apis.get(apiId));
+    assertNull(store.apis.get(apiId), "Expected store.apis.get(apiId) to be null");
   }
 
   @Test
@@ -49,9 +49,10 @@ public class ApiGatewayStoreApiTest {
     String actualId = ApiGatewayStore.shortId();
 
     // Assert
-    assertNotNull(actualId);
+    assertNotNull(actualId, "Expected actualId to not be null");
     int expectedLength = 10;
-    assertEquals(expectedLength, actualId.length());
+    assertEquals(
+        expectedLength, actualId.length(), "Expected actualId.length() to match expectedLength");
   }
 
   @Test
@@ -63,7 +64,8 @@ public class ApiGatewayStoreApiTest {
     String actualSecondId = ApiGatewayStore.shortId();
 
     // Assert
-    assertNotEquals(actualFirstId, actualSecondId);
+    assertNotEquals(
+        actualFirstId, actualSecondId, "Expected actualFirstId and actualSecondId to differ");
   }
 
   @Test
@@ -76,6 +78,6 @@ public class ApiGatewayStoreApiTest {
     store.reset();
 
     // Assert
-    assertTrue(store.apis.isEmpty());
+    assertTrue(store.apis.isEmpty(), "Expected store.apis to be empty");
   }
 }

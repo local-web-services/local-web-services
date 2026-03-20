@@ -28,7 +28,7 @@ class TestDeleteQueue:
 
         # Assert
         queues = await provider.list_queues()
-        assert queue_name not in queues
+        assert queue_name not in queues, f"Expected {queue_name!r} to not be in {queues!r}"
 
     @pytest.mark.asyncio
     async def test_delete_nonexistent_raises(self, provider: SqsProvider) -> None:

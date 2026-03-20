@@ -48,10 +48,16 @@ class TestListUserPools:
         expected_status = 200
         expected_pool_count = 1
         expected_pool_name = "test-pool"
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "UserPools" in data
+        assert "UserPools" in data, f'Expected {"UserPools"!r} to be in {data!r}'
         actual_pool_count = len(data["UserPools"])
-        assert actual_pool_count == expected_pool_count
+        assert (
+            actual_pool_count == expected_pool_count
+        ), f"Expected {expected_pool_count!r} but got {actual_pool_count!r}"
         actual_pool_name = data["UserPools"][0]["Name"]
-        assert actual_pool_name == expected_pool_name
+        assert (
+            actual_pool_name == expected_pool_name
+        ), f"Expected {expected_pool_name!r} but got {actual_pool_name!r}"

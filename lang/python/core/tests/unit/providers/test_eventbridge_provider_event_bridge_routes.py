@@ -145,12 +145,16 @@ class TestEventBridgeRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert (
+            response.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {response.status_code!r}"
         body = response.json()
-        assert "Entries" in body
-        assert len(body["Entries"]) == 1
-        assert body["Entries"][0]["EventId"]
-        assert body["FailedEntryCount"] == expected_failed_count
+        assert "Entries" in body, f'Expected {"Entries"!r} to be in {body!r}'
+        assert len(body["Entries"]) == 1, f'Expected {1!r} but got {len(body["Entries"])!r}'
+        assert body["Entries"][0]["EventId"], "Expected value to be truthy"
+        assert (
+            body["FailedEntryCount"] == expected_failed_count
+        ), f'Expected {expected_failed_count!r} but got {body["FailedEntryCount"]!r}'
 
     @pytest.mark.asyncio
     async def test_put_rule_action(self) -> None:
@@ -167,10 +171,12 @@ class TestEventBridgeRoutes:
                 },
             )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected {200!r} but got {response.status_code!r}"
         body = response.json()
-        assert "RuleArn" in body
-        assert "test-rule" in body["RuleArn"]
+        assert "RuleArn" in body, f'Expected {"RuleArn"!r} to be in {body!r}'
+        assert (
+            "test-rule" in body["RuleArn"]
+        ), f'Expected {"test-rule"!r} to be in {body["RuleArn"]!r}'
 
     @pytest.mark.asyncio
     async def test_put_targets_action(self) -> None:
@@ -197,9 +203,13 @@ class TestEventBridgeRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert (
+            response.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {response.status_code!r}"
         body = response.json()
-        assert body["FailedEntryCount"] == expected_failed_count
+        assert (
+            body["FailedEntryCount"] == expected_failed_count
+        ), f'Expected {expected_failed_count!r} but got {body["FailedEntryCount"]!r}'
 
     @pytest.mark.asyncio
     async def test_put_targets_nonexistent_rule(self) -> None:
@@ -220,7 +230,9 @@ class TestEventBridgeRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert (
+            response.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {response.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_list_rules_action(self) -> None:
@@ -234,11 +246,13 @@ class TestEventBridgeRoutes:
                 json={},
             )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected {200!r} but got {response.status_code!r}"
         body = response.json()
-        assert "Rules" in body
-        assert len(body["Rules"]) == 1
-        assert body["Rules"][0]["Name"] == "my-rule"
+        assert "Rules" in body, f'Expected {"Rules"!r} to be in {body!r}'
+        assert len(body["Rules"]) == 1, f'Expected {1!r} but got {len(body["Rules"])!r}'
+        assert (
+            body["Rules"][0]["Name"] == "my-rule"
+        ), f'Expected {"my-rule"!r} but got {body["Rules"][0]["Name"]!r}'
 
     @pytest.mark.asyncio
     async def test_list_event_buses_action(self) -> None:
@@ -252,12 +266,12 @@ class TestEventBridgeRoutes:
                 json={},
             )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected {200!r} but got {response.status_code!r}"
         body = response.json()
-        assert "EventBuses" in body
+        assert "EventBuses" in body, f'Expected {"EventBuses"!r} to be in {body!r}'
         names = {b["Name"] for b in body["EventBuses"]}
-        assert "default" in names
-        assert "custom-bus" in names
+        assert "default" in names, f'Expected {"default"!r} to be in {names!r}'
+        assert "custom-bus" in names, f'Expected {"custom-bus"!r} to be in {names!r}'
 
     @pytest.mark.asyncio
     async def test_unknown_target_returns_error(self) -> None:
@@ -276,13 +290,19 @@ class TestEventBridgeRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert (
+            response.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {response.status_code!r}"
         body = response.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type
-        assert "lws" in body["message"]
-        assert "EventBridge" in body["message"]
-        assert "Bogus" in body["message"]
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
+        assert (
+            "EventBridge" in body["message"]
+        ), f'Expected {"EventBridge"!r} to be in {body["message"]!r}'
+        assert "Bogus" in body["message"], f'Expected {"Bogus"!r} to be in {body["message"]!r}'
 
     @pytest.mark.asyncio
     async def test_empty_body_handling(self) -> None:
@@ -296,4 +316,4 @@ class TestEventBridgeRoutes:
                 content=b"",
             )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected {200!r} but got {response.status_code!r}"

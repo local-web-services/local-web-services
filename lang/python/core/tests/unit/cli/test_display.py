@@ -40,12 +40,12 @@ def test_format_invocation_log_200() -> None:
     result = format_invocation_log(expected_method, expected_path, expected_handler, 152.0, 200)
 
     # Assert
-    assert expected_method in result
-    assert expected_path in result
-    assert expected_handler in result
-    assert expected_duration in result
-    assert expected_status in result
-    assert expected_markup in result
+    assert expected_method in result, f"Expected {expected_method!r} to be in {result!r}"
+    assert expected_path in result, f"Expected {expected_path!r} to be in {result!r}"
+    assert expected_handler in result, f"Expected {expected_handler!r} to be in {result!r}"
+    assert expected_duration in result, f"Expected {expected_duration!r} to be in {result!r}"
+    assert expected_status in result, f"Expected {expected_status!r} to be in {result!r}"
+    assert expected_markup in result, f"Expected {expected_markup!r} to be in {result!r}"
 
 
 def test_format_invocation_log_500() -> None:
@@ -62,12 +62,12 @@ def test_format_invocation_log_500() -> None:
     result = format_invocation_log(expected_method, expected_path, expected_handler, 10.0, 500)
 
     # Assert
-    assert expected_method in result
-    assert expected_path in result
-    assert expected_handler in result
-    assert expected_duration in result
-    assert expected_status in result
-    assert expected_markup in result
+    assert expected_method in result, f"Expected {expected_method!r} to be in {result!r}"
+    assert expected_path in result, f"Expected {expected_path!r} to be in {result!r}"
+    assert expected_handler in result, f"Expected {expected_handler!r} to be in {result!r}"
+    assert expected_duration in result, f"Expected {expected_duration!r} to be in {result!r}"
+    assert expected_status in result, f"Expected {expected_status!r} to be in {result!r}"
+    assert expected_markup in result, f"Expected {expected_markup!r} to be in {result!r}"
 
 
 def test_format_invocation_log_404() -> None:
@@ -80,8 +80,8 @@ def test_format_invocation_log_404() -> None:
     result = format_invocation_log("GET", "/missing", "notFound", 5.0, 404)
 
     # Assert
-    assert expected_status in result
-    assert expected_markup in result
+    assert expected_status in result, f"Expected {expected_status!r} to be in {result!r}"
+    assert expected_markup in result, f"Expected {expected_markup!r} to be in {result!r}"
 
 
 def test_format_invocation_log_timestamp_format() -> None:
@@ -101,9 +101,9 @@ def test_print_banner_does_not_raise() -> None:
     try:
         print_banner("0.1.0", "my-project")
         output = buf.getvalue()
-        assert "LDK" in output
-        assert "0.1.0" in output
-        assert "my-project" in output
+        assert "LDK" in output, f'Expected {"LDK"!r} to be in {output!r}'
+        assert "0.1.0" in output, f'Expected {"0.1.0"!r} to be in {output!r}'
+        assert "my-project" in output, f'Expected {"my-project"!r} to be in {output!r}'
     finally:
         display.console = original
 
@@ -124,16 +124,16 @@ def test_print_resource_summary_with_sample_data() -> None:
         print_resource_summary(routes, tables, functions)
         output = buf.getvalue()
 
-        assert "API Route" in output
-        assert "/users" in output
-        assert "listUsers" in output
-        assert "Table" in output
-        assert "UsersTable" in output
-        assert "OrdersTable" in output
-        assert "Function" in output
-        assert "processOrder" in output
-        assert "sendEmail" in output
-        assert "Local Details" in output
+        assert "API Route" in output, f'Expected {"API Route"!r} to be in {output!r}'
+        assert "/users" in output, f'Expected {"/users"!r} to be in {output!r}'
+        assert "listUsers" in output, f'Expected {"listUsers"!r} to be in {output!r}'
+        assert "Table" in output, f'Expected {"Table"!r} to be in {output!r}'
+        assert "UsersTable" in output, f'Expected {"UsersTable"!r} to be in {output!r}'
+        assert "OrdersTable" in output, f'Expected {"OrdersTable"!r} to be in {output!r}'
+        assert "Function" in output, f'Expected {"Function"!r} to be in {output!r}'
+        assert "processOrder" in output, f'Expected {"processOrder"!r} to be in {output!r}'
+        assert "sendEmail" in output, f'Expected {"sendEmail"!r} to be in {output!r}'
+        assert "Local Details" in output, f'Expected {"Local Details"!r} to be in {output!r}'
     finally:
         display.console = original
 
@@ -162,10 +162,18 @@ def test_print_resource_summary_with_local_details() -> None:
         )
         output = buf.getvalue()
 
-        assert "lws apigateway test-invoke-method --resource /orders --http-method GET" in output
-        assert "lws dynamodb scan --table-name OrdersTable" in output
-        assert "ldk invoke processOrder" in output
-        assert "lws sqs receive-message --queue-name MyQueue" in output
+        assert (
+            "lws apigateway test-invoke-method --resource /orders --http-method GET" in output
+        ), f"Expected to be in {output!r}"
+        assert (
+            "lws dynamodb scan --table-name OrdersTable" in output
+        ), f'Expected {"lws dynamodb scan --table-name OrdersTable"!r} to be in {output!r}'
+        assert (
+            "ldk invoke processOrder" in output
+        ), f'Expected {"ldk invoke processOrder"!r} to be in {output!r}'
+        assert (
+            "lws sqs receive-message --queue-name MyQueue" in output
+        ), f'Expected {"lws sqs receive-message --queue-name MyQueue"!r} to be in {output!r}'
     finally:
         display.console = original
 
@@ -178,8 +186,10 @@ def test_print_error_without_detail() -> None:
     try:
         print_error("Something went wrong")
         output = buf.getvalue()
-        assert "Error:" in output
-        assert "Something went wrong" in output
+        assert "Error:" in output, f'Expected {"Error:"!r} to be in {output!r}'
+        assert (
+            "Something went wrong" in output
+        ), f'Expected {"Something went wrong"!r} to be in {output!r}'
     finally:
         display.console = original
 
@@ -192,9 +202,11 @@ def test_print_error_with_detail() -> None:
     try:
         print_error("Connection failed", detail="Retried 3 times")
         output = buf.getvalue()
-        assert "Error:" in output
-        assert "Connection failed" in output
-        assert "Retried 3 times" in output
+        assert "Error:" in output, f'Expected {"Error:"!r} to be in {output!r}'
+        assert (
+            "Connection failed" in output
+        ), f'Expected {"Connection failed"!r} to be in {output!r}'
+        assert "Retried 3 times" in output, f'Expected {"Retried 3 times"!r} to be in {output!r}'
     finally:
         display.console = original
 
@@ -215,10 +227,10 @@ def test_print_startup_complete() -> None:
     try:
         print_startup_complete(port=3000, num_routes=5, num_tables=2, num_functions=3)
         output = buf.getvalue()
-        assert expected_ready in output
-        assert expected_host in output
-        assert expected_routes in output
-        assert expected_tables in output
-        assert expected_functions in output
+        assert expected_ready in output, f"Expected {expected_ready!r} to be in {output!r}"
+        assert expected_host in output, f"Expected {expected_host!r} to be in {output!r}"
+        assert expected_routes in output, f"Expected {expected_routes!r} to be in {output!r}"
+        assert expected_tables in output, f"Expected {expected_tables!r} to be in {output!r}"
+        assert expected_functions in output, f"Expected {expected_functions!r} to be in {output!r}"
     finally:
         display.console = original

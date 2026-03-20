@@ -37,7 +37,7 @@ class TestCreateDockerClientSocketDiscovery:
             actual_client = create_docker_client()
 
         # Assert
-        assert actual_client is fake_sock_client
+        assert actual_client is fake_sock_client, "Expected value to be truthy"
         fake_docker.DockerClient.assert_called_once_with(base_url=f"unix://{expected_sock}")
 
     def test_rancher_desktop_socket(self, tmp_path):
@@ -69,7 +69,7 @@ class TestCreateDockerClientSocketDiscovery:
             actual_client = create_docker_client()
 
         # Assert
-        assert actual_client is fake_sock_client
+        assert actual_client is fake_sock_client, "Expected value to be truthy"
         fake_docker.DockerClient.assert_called_once_with(base_url=f"unix://{expected_sock}")
 
     def test_docker_desktop_socket(self, tmp_path):
@@ -101,7 +101,7 @@ class TestCreateDockerClientSocketDiscovery:
             actual_client = create_docker_client()
 
         # Assert
-        assert actual_client is fake_sock_client
+        assert actual_client is fake_sock_client, "Expected value to be truthy"
         fake_docker.DockerClient.assert_called_once_with(base_url=f"unix://{expected_sock}")
 
     def test_skips_socket_that_exists_but_fails_ping(self, tmp_path):
@@ -138,4 +138,4 @@ class TestCreateDockerClientSocketDiscovery:
             actual_client = create_docker_client()
 
         # Assert
-        assert actual_client is fake_good_client
+        assert actual_client is fake_good_client, "Expected value to be truthy"

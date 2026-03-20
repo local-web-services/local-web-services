@@ -23,8 +23,12 @@ class TestBuildHttpResponse:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status
-        assert response.body == expected_body.encode()
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
+        assert (
+            response.body == expected_body.encode()
+        ), f"Expected {expected_body.encode()!r} but got {response.body!r}"
 
     def test_response_with_headers(self):
         # Arrange
@@ -40,7 +44,9 @@ class TestBuildHttpResponse:
 
         # Assert
         actual_content_type = response.headers.get("content-type")
-        assert actual_content_type == expected_content_type
+        assert (
+            actual_content_type == expected_content_type
+        ), f"Expected {expected_content_type!r} but got {actual_content_type!r}"
 
     def test_base64_encoded_response(self):
         # Arrange
@@ -56,7 +62,7 @@ class TestBuildHttpResponse:
         response = build_http_response(lambda_result)
 
         # Assert
-        assert response.body == raw_bytes
+        assert response.body == raw_bytes, f"Expected {raw_bytes!r} but got {response.body!r}"
 
     def test_response_with_cookies(self):
         # Arrange
@@ -72,7 +78,9 @@ class TestBuildHttpResponse:
 
         # Assert
         actual_cookies = response.headers.getlist("set-cookie")
-        assert expected_cookie in actual_cookies
+        assert (
+            expected_cookie in actual_cookies
+        ), f"Expected {expected_cookie!r} to be in {actual_cookies!r}"
 
     def test_none_response(self):
         # Arrange
@@ -84,7 +92,9 @@ class TestBuildHttpResponse:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_string_response(self):
         # Arrange
@@ -96,8 +106,12 @@ class TestBuildHttpResponse:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status
-        assert response.body == expected_body.encode()
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
+        assert (
+            response.body == expected_body.encode()
+        ), f"Expected {expected_body.encode()!r} but got {response.body!r}"
 
     def test_dict_body_serialized_to_json(self):
         # Arrange
@@ -114,7 +128,9 @@ class TestBuildHttpResponse:
         actual_body = json.loads(response.body)
         expected_message = "hello"
         actual_message = actual_body["message"]
-        assert actual_message == expected_message
+        assert (
+            actual_message == expected_message
+        ), f"Expected {expected_message!r} but got {actual_message!r}"
 
     def test_error_status_code(self):
         # Arrange
@@ -129,7 +145,9 @@ class TestBuildHttpResponse:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_default_status_code(self):
         # Arrange
@@ -141,4 +159,6 @@ class TestBuildHttpResponse:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"

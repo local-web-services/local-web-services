@@ -125,11 +125,15 @@ class TestPutAndGetItem:
         result = await provider.get_item("orders", {"orderId": "o1", "itemId": "i1"})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_order_id = result["orderId"]
         actual_quantity = result["quantity"]
-        assert actual_order_id == expected_order_id
-        assert actual_quantity == expected_quantity
+        assert (
+            actual_order_id == expected_order_id
+        ), f"Expected {expected_order_id!r} but got {actual_order_id!r}"
+        assert (
+            actual_quantity == expected_quantity
+        ), f"Expected {expected_quantity!r} but got {actual_quantity!r}"
 
     async def test_round_trip_dynamo_json(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -145,9 +149,11 @@ class TestPutAndGetItem:
         result = await provider.get_item("orders", {"orderId": {"S": "o2"}, "itemId": {"S": "i2"}})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_order_id = result["orderId"]
-        assert actual_order_id == expected_order_id
+        assert (
+            actual_order_id == expected_order_id
+        ), f"Expected {expected_order_id!r} but got {actual_order_id!r}"
 
     async def test_put_overwrites_existing(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -159,16 +165,16 @@ class TestPutAndGetItem:
         result = await provider.get_item("orders", {"orderId": "o1", "itemId": "i1"})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_v = result["v"]
-        assert actual_v == expected_v
+        assert actual_v == expected_v, f"Expected {expected_v!r} but got {actual_v!r}"
 
     async def test_get_missing_returns_none(self, provider: SqliteDynamoProvider) -> None:
         # Act
         result = await provider.get_item("orders", {"orderId": "nope", "itemId": "nada"})
 
         # Assert
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     async def test_pk_only_table(self, pk_provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -179,6 +185,6 @@ class TestPutAndGetItem:
         result = await pk_provider.get_item("users", {"userId": "u1"})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_name = result["name"]
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"

@@ -125,14 +125,16 @@ class TestGetNextFireTime:
         base = 1000.0
         expected_next_time = 1300.0
         actual_next_time = get_next_fire_time("rate(5 minutes)", base_time=base)
-        assert actual_next_time == expected_next_time
+        assert (
+            actual_next_time == expected_next_time
+        ), f"Expected {expected_next_time!r} but got {actual_next_time!r}"
 
     def test_cron_next_fire(self) -> None:
         # Use a known base time: 2024-01-01 00:00:00 UTC
         base = 1704067200.0
         next_time = get_next_fire_time("cron(0 12 * * ? *)", base_time=base)
         # Next fire should be 2024-01-01 12:00:00 UTC
-        assert next_time > base
+        assert next_time > base, f"Expected {next_time!r} > {base!r}"
 
     def test_unsupported_expression(self) -> None:
         with pytest.raises(ValueError, match="Unsupported"):

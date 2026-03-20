@@ -86,9 +86,9 @@ class TestNonKeyOperations:
     def test_scan_skipped(self) -> None:
         ctx = _make_context(operation="scan", data={})
         issues = _make_validator().validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_query_skipped(self) -> None:
         ctx = _make_context(operation="query", data={})
         issues = _make_validator().validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"

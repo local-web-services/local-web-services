@@ -43,7 +43,7 @@ async def client(app):
 
 def _create_queue(client: TestClient, name: str = TEST_QUEUE) -> None:
     r = client.post("/", data={"Action": "CreateQueue", "QueueName": name})
-    assert r.status_code == 200
+    assert r.status_code == 200, f"Expected {200!r} but got {r.status_code!r}"
 
 
 def _send_message(client: TestClient, queue_url: str = QUEUE_URL) -> None:
@@ -51,7 +51,7 @@ def _send_message(client: TestClient, queue_url: str = QUEUE_URL) -> None:
         "/",
         data={"Action": "SendMessage", "QueueUrl": queue_url, "MessageBody": TEST_MESSAGE},
     )
-    assert r.status_code == 200
+    assert r.status_code == 200, f"Expected {200!r} but got {r.status_code!r}"
 
 
 def _receive_message(client: TestClient, queue_url: str = QUEUE_URL) -> dict | None:

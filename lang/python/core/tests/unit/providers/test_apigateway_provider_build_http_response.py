@@ -127,10 +127,14 @@ class TestBuildHttpResponse:
         resp = build_http_response(result)
 
         # Assert
-        assert resp.status_code == expected_status
-        assert resp.body == expected_body
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.body == expected_body, f"Expected {expected_body!r} but got {resp.body!r}"
         actual_header_value = resp.headers["x-custom"]
-        assert actual_header_value == expected_header_value
+        assert (
+            actual_header_value == expected_header_value
+        ), f"Expected {expected_header_value!r} but got {actual_header_value!r}"
 
     def test_error_response(self) -> None:
         # Arrange
@@ -147,10 +151,14 @@ class TestBuildHttpResponse:
 
         # Assert
         expected_status = 500
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         body = json.loads(resp.body)
         actual_error = body["error"]
-        assert actual_error == expected_error
+        assert (
+            actual_error == expected_error
+        ), f"Expected {expected_error!r} but got {actual_error!r}"
 
     def test_missing_payload_defaults(self) -> None:
         # Arrange
@@ -167,5 +175,7 @@ class TestBuildHttpResponse:
         # Assert
         expected_status = 200
         expected_body = b""
-        assert resp.status_code == expected_status
-        assert resp.body == expected_body
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.body == expected_body, f"Expected {expected_body!r} but got {resp.body!r}"

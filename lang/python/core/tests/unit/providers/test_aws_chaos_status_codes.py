@@ -22,4 +22,6 @@ class TestAwsErrorStatusCodes:
         actual_mappings = {k: AWS_ERROR_STATUS_CODES[k] for k in expected_mappings}
 
         # Assert
-        assert actual_mappings == expected_mappings
+        assert (
+            actual_mappings == expected_mappings
+        ), f"Expected {expected_mappings!r} but got {actual_mappings!r}"

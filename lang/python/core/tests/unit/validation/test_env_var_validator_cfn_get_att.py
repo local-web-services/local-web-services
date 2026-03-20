@@ -72,7 +72,7 @@ class TestCfnGetAtt:
         issues = validator.validate(ctx)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_fn_getatt_unknown_resource(self) -> None:
         # Arrange
@@ -86,8 +86,12 @@ class TestCfnGetAtt:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert expected_resource_name in issues[0].message
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            expected_resource_name in issues[0].message
+        ), f"Expected {expected_resource_name!r} to be in {issues[0].message!r}"
 
     def test_bang_getatt_unknown_resource(self) -> None:
         # Arrange
@@ -101,5 +105,9 @@ class TestCfnGetAtt:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert expected_resource_name in issues[0].message
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            expected_resource_name in issues[0].message
+        ), f"Expected {expected_resource_name!r} to be in {issues[0].message!r}"

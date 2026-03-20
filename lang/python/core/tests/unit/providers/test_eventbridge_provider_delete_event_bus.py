@@ -21,7 +21,7 @@ class TestDeleteEventBus:
         await provider.delete_event_bus("to-delete")
         buses = provider.list_buses()
         bus_names = [b.bus_name for b in buses]
-        assert "to-delete" not in bus_names
+        assert "to-delete" not in bus_names, f'Expected {"to-delete"!r} to not be in {bus_names!r}'
 
     async def test_delete_nonexistent_raises(self, provider: EventBridgeProvider) -> None:
         with pytest.raises(KeyError, match="Event bus not found"):

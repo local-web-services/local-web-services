@@ -44,7 +44,9 @@ class TestFunctionUrlCors:
         # Assert
         expected_status = 204
         actual_status = resp.status_code
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_preflight_includes_cors_headers(self, cors_client: httpx.AsyncClient):
         # Arrange
@@ -58,8 +60,12 @@ class TestFunctionUrlCors:
 
         # Assert
         actual_origin = resp.headers.get("access-control-allow-origin")
-        assert actual_origin == expected_origin
-        assert "access-control-allow-methods" in resp.headers
+        assert (
+            actual_origin == expected_origin
+        ), f"Expected {expected_origin!r} but got {actual_origin!r}"
+        assert (
+            "access-control-allow-methods" in resp.headers
+        ), f'Expected {"access-control-allow-methods"!r} to be in {resp.headers!r}'
 
     async def test_regular_request_includes_cors_headers(self, cors_client: httpx.AsyncClient):
         # Arrange
@@ -73,7 +79,9 @@ class TestFunctionUrlCors:
 
         # Assert
         actual_origin = resp.headers.get("access-control-allow-origin")
-        assert actual_origin == expected_origin
+        assert (
+            actual_origin == expected_origin
+        ), f"Expected {expected_origin!r} but got {actual_origin!r}"
 
     async def test_max_age_header(self, cors_client: httpx.AsyncClient):
         # Arrange
@@ -87,7 +95,9 @@ class TestFunctionUrlCors:
 
         # Assert
         actual_max_age = resp.headers.get("access-control-max-age")
-        assert actual_max_age == expected_max_age
+        assert (
+            actual_max_age == expected_max_age
+        ), f"Expected {expected_max_age!r} but got {actual_max_age!r}"
 
     async def test_no_cors_config_no_headers(self, client: httpx.AsyncClient):
         # Arrange
@@ -97,4 +107,6 @@ class TestFunctionUrlCors:
         resp = await client.get(path)
 
         # Assert
-        assert "access-control-allow-origin" not in resp.headers
+        assert (
+            "access-control-allow-origin" not in resp.headers
+        ), f'Expected {"access-control-allow-origin"!r} to not be in {resp.headers!r}'

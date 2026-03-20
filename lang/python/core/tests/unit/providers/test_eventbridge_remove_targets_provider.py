@@ -51,8 +51,8 @@ class TestRemoveTargetsProvider:
         )
         await provider.remove_targets("my-rule", ["t1", "t3"])
         targets = provider.list_targets_by_rule("my-rule")
-        assert len(targets) == 1
-        assert targets[0]["Id"] == "t2"
+        assert len(targets) == 1, f"Expected {1!r} but got {len(targets)!r}"
+        assert targets[0]["Id"] == "t2", f'Expected {"t2"!r} but got {targets[0]["Id"]!r}'
 
     async def test_remove_targets_nonexistent_rule_raises(
         self, provider: EventBridgeProvider

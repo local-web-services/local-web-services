@@ -121,7 +121,9 @@ class TestGetRequestProxyEvent:
         expected_method = "GET"
         expected_path = "/items"
         expected_stage = "local"
-        assert response.status_code == expected_status
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
 
         # Inspect the event passed to invoke
         call_args = fake_compute.invoke.call_args
@@ -131,10 +133,18 @@ class TestGetRequestProxyEvent:
         actual_path = event["path"]
         actual_stage = event["requestContext"]["stage"]
         actual_resource = event["resource"]
-        assert actual_method == expected_method
-        assert actual_path == expected_path
-        assert event["body"] is None
-        assert event["isBase64Encoded"] is False
-        assert event["requestContext"]["httpMethod"] == expected_method
-        assert actual_stage == expected_stage
-        assert actual_resource == expected_path
+        assert (
+            actual_method == expected_method
+        ), f"Expected {expected_method!r} but got {actual_method!r}"
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
+        assert event["body"] is None, f'Expected None but got {event["body"]!r}'
+        assert event["isBase64Encoded"] is False, "Expected value to be truthy"
+        assert (
+            event["requestContext"]["httpMethod"] == expected_method
+        ), f'Expected {expected_method!r} but got {event["requestContext"]["httpMethod"]!r}'
+        assert (
+            actual_stage == expected_stage
+        ), f"Expected {expected_stage!r} but got {actual_stage!r}"
+        assert (
+            actual_resource == expected_path
+        ), f"Expected {expected_path!r} but got {actual_resource!r}"

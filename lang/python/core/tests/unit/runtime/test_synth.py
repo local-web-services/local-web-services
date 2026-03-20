@@ -17,13 +17,13 @@ from lws.runtime.synth import SynthError, ensure_synth, is_synth_stale
 
 def test_is_synth_stale_no_cdk_out(tmp_path: Path) -> None:
     """When cdk.out does not exist, synth should be considered stale."""
-    assert is_synth_stale(tmp_path) is True
+    assert is_synth_stale(tmp_path) is True, "Expected value to be truthy"
 
 
 def test_is_synth_stale_no_manifest(tmp_path: Path) -> None:
     """When cdk.out exists but manifest.json is missing, synth is stale."""
     (tmp_path / "cdk.out").mkdir()
-    assert is_synth_stale(tmp_path) is True
+    assert is_synth_stale(tmp_path) is True, "Expected value to be truthy"
 
 
 def test_is_synth_stale_source_newer(tmp_path: Path) -> None:
@@ -38,7 +38,7 @@ def test_is_synth_stale_source_newer(tmp_path: Path) -> None:
     src_file = tmp_path / "app.ts"
     src_file.write_text("// source")
 
-    assert is_synth_stale(tmp_path) is True
+    assert is_synth_stale(tmp_path) is True, "Expected value to be truthy"
 
 
 def test_is_synth_stale_manifest_newer(tmp_path: Path) -> None:
@@ -53,7 +53,7 @@ def test_is_synth_stale_manifest_newer(tmp_path: Path) -> None:
     manifest = cdk_out / "manifest.json"
     manifest.write_text("{}")
 
-    assert is_synth_stale(tmp_path) is False
+    assert is_synth_stale(tmp_path) is False, "Expected value to be truthy"
 
 
 def test_is_synth_stale_excludes_node_modules(tmp_path: Path) -> None:
@@ -68,7 +68,7 @@ def test_is_synth_stale_excludes_node_modules(tmp_path: Path) -> None:
     nm.mkdir(parents=True)
     (nm / "index.js").write_text("// lib")
 
-    assert is_synth_stale(tmp_path) is False
+    assert is_synth_stale(tmp_path) is False, "Expected value to be truthy"
 
 
 # ---------------------------------------------------------------------------
@@ -114,7 +114,9 @@ async def test_ensure_synth_force_always_runs(tmp_path: Path) -> None:
         actual_result = await ensure_synth(tmp_path, force=True)
 
     # Assert
-    assert actual_result == expected_result
+    assert (
+        actual_result == expected_result
+    ), f"Expected {expected_result!r} but got {actual_result!r}"
     fake_exec.assert_awaited_once()
 
 
@@ -138,7 +140,9 @@ async def test_ensure_synth_raises_synth_error(tmp_path: Path) -> None:
         with pytest.raises(SynthError, match="exit code 2") as exc_info:
             await ensure_synth(tmp_path)
 
-    assert exc_info.value.exit_code == expected_exit_code
+    assert (
+        exc_info.value.exit_code == expected_exit_code
+    ), f"Expected {expected_exit_code!r} but got {exc_info.value.exit_code!r}"
 
 
 @pytest.mark.asyncio
@@ -155,7 +159,9 @@ async def test_ensure_synth_skips_when_not_stale(tmp_path: Path) -> None:
         actual_result = await ensure_synth(tmp_path, force=False)
 
     # Assert
-    assert actual_result == expected_result
+    assert (
+        actual_result == expected_result
+    ), f"Expected {expected_result!r} but got {actual_result!r}"
     fake_exec.assert_not_awaited()
 
 
@@ -181,5 +187,7 @@ async def test_ensure_synth_runs_when_stale(tmp_path: Path) -> None:
         actual_result = await ensure_synth(tmp_path)
 
     # Assert
-    assert actual_result == expected_result
+    assert (
+        actual_result == expected_result
+    ), f"Expected {expected_result!r} but got {actual_result!r}"
     fake_exec.assert_awaited_once()

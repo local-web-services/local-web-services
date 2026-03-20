@@ -54,25 +54,27 @@ class TestS3ProviderLifecycle:
 
     async def test_name(self, provider: S3Provider) -> None:
         expected_name = "s3"
-        assert provider.name == expected_name
+        assert (
+            provider.name == expected_name
+        ), f"Expected {expected_name!r} but got {provider.name!r}"
 
     async def test_health_check_running(self, provider: S3Provider) -> None:
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     async def test_health_check_stopped(self, tmp_path: Path) -> None:
         p = S3Provider(data_dir=tmp_path, buckets=["bucket"])
-        assert await p.health_check() is False
+        assert await p.health_check() is False, "Expected value to be truthy"
 
     async def test_start_creates_bucket_dirs(self, tmp_path: Path) -> None:
         p = S3Provider(data_dir=tmp_path, buckets=["alpha", "beta"])
         await p.start()
-        assert (tmp_path / "s3" / "alpha").is_dir()
-        assert (tmp_path / "s3" / "beta").is_dir()
+        assert (tmp_path / "s3" / "alpha").is_dir(), "Expected value to be truthy"
+        assert (tmp_path / "s3" / "beta").is_dir(), "Expected value to be truthy"
         await p.stop()
 
     async def test_stop_marks_unhealthy(self, tmp_path: Path) -> None:
         p = S3Provider(data_dir=tmp_path, buckets=["bucket"])
         await p.start()
-        assert await p.health_check() is True
+        assert await p.health_check() is True, "Expected value to be truthy"
         await p.stop()
-        assert await p.health_check() is False
+        assert await p.health_check() is False, "Expected value to be truthy"

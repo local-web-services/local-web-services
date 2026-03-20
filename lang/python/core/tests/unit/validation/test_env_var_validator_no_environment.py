@@ -72,4 +72,4 @@ class TestNoEnvironment:
             data={},
         )
         issues = validator.validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"

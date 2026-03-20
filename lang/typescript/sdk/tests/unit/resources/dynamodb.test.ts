@@ -22,10 +22,19 @@ describe("DynamoDBHelper", () => {
       await helper.put(expectedItem);
 
       // Assert
-      expect(send).toHaveBeenCalledTimes(1);
+      expect(
+        send,
+        "Expected send to have been called once for PutItemCommand",
+      ).toHaveBeenCalledTimes(1);
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.TableName).toBe("Orders");
-      expect(actualCommand.input.Item).toEqual(expectedItem);
+      expect(
+        actualCommand.input.TableName,
+        "Expected PutItemCommand to use the Orders table name",
+      ).toBe("Orders");
+      expect(
+        actualCommand.input.Item,
+        "Expected PutItemCommand to use the configured item",
+      ).toEqual(expectedItem);
     });
   });
 
@@ -44,7 +53,7 @@ describe("DynamoDBHelper", () => {
       const actual = await helper.get({ id: { S: "1" } });
 
       // Assert
-      expect(actual).toEqual(expectedItem);
+      expect(actual, "Expected get to return the item from the response").toEqual(expectedItem);
     });
 
     it("returns undefined when the item is not found", async () => {
@@ -57,7 +66,7 @@ describe("DynamoDBHelper", () => {
       const actual = await helper.get({ id: { S: "missing" } });
 
       // Assert
-      expect(actual).toBeUndefined();
+      expect(actual, "Expected get to return undefined when the item is not found").toBeUndefined();
     });
   });
 
@@ -73,10 +82,19 @@ describe("DynamoDBHelper", () => {
       await helper.delete(expectedKey);
 
       // Assert
-      expect(send).toHaveBeenCalledTimes(1);
+      expect(
+        send,
+        "Expected send to have been called once for DeleteItemCommand",
+      ).toHaveBeenCalledTimes(1);
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.TableName).toBe("Orders");
-      expect(actualCommand.input.Key).toEqual(expectedKey);
+      expect(
+        actualCommand.input.TableName,
+        "Expected DeleteItemCommand to use the Orders table name",
+      ).toBe("Orders");
+      expect(
+        actualCommand.input.Key,
+        "Expected DeleteItemCommand to use the configured key",
+      ).toEqual(expectedKey);
     });
   });
 
@@ -95,8 +113,11 @@ describe("DynamoDBHelper", () => {
       const actual = await helper.scan();
 
       // Assert
-      expect(actual).toEqual(expectedItems);
-      expect(send).toHaveBeenCalledTimes(1);
+      expect(actual, "Expected scan to return all items from a single page").toEqual(expectedItems);
+      expect(
+        send,
+        "Expected send to have been called once for a single-page scan",
+      ).toHaveBeenCalledTimes(1);
     });
 
     it("paginates until there is no LastEvaluatedKey", async () => {
@@ -117,8 +138,11 @@ describe("DynamoDBHelper", () => {
       const actual = await helper.scan();
 
       // Assert
-      expect(actual).toHaveLength(2);
-      expect(send).toHaveBeenCalledTimes(2);
+      expect(actual, "Expected scan to return all items across both pages").toHaveLength(2);
+      expect(
+        send,
+        "Expected send to have been called twice for a two-page scan",
+      ).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -134,7 +158,9 @@ describe("DynamoDBHelper", () => {
       const actual = await helper.assertItemExists({ id: { S: "1" } });
 
       // Assert
-      expect(actual).toEqual(expectedItem);
+      expect(actual, "Expected assertItemExists to return the item when it exists").toEqual(
+        expectedItem,
+      );
     });
 
     it("throws when the item does not exist", async () => {
@@ -145,7 +171,10 @@ describe("DynamoDBHelper", () => {
       const expectedKey = { id: { S: "missing" } };
 
       // Act & Assert
-      await expect(helper.assertItemExists(expectedKey)).rejects.toThrow("Expected item with key");
+      await expect(
+        helper.assertItemExists(expectedKey),
+        "Expected assertItemExists to reject when the item does not exist",
+      ).rejects.toThrow("Expected item with key");
     });
   });
 
@@ -158,7 +187,10 @@ describe("DynamoDBHelper", () => {
       const expectedCount = 1;
 
       // Act & Assert
-      await expect(helper.assertItemCount(expectedCount)).resolves.toBeUndefined();
+      await expect(
+        helper.assertItemCount(expectedCount),
+        "Expected assertItemCount to resolve when the item count matches",
+      ).resolves.toBeUndefined();
     });
 
     it("throws when the item count does not match", async () => {
@@ -171,7 +203,10 @@ describe("DynamoDBHelper", () => {
       const expectedCount = 1;
 
       // Act & Assert
-      await expect(helper.assertItemCount(expectedCount)).rejects.toThrow("Expected 1 item(s)");
+      await expect(
+        helper.assertItemCount(expectedCount),
+        "Expected assertItemCount to reject when the item count does not match",
+      ).rejects.toThrow("Expected 1 item(s)");
     });
   });
 });

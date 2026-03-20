@@ -21,7 +21,7 @@ class TestDetectProjectType:
         actual_type = detect_project_type(tmp_path)
 
         # Assert
-        assert actual_type == expected_type
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
 
     def test_terraform_project(self, tmp_path: Path) -> None:
         """Detect Terraform project when .tf files exist."""
@@ -34,7 +34,7 @@ class TestDetectProjectType:
         actual_type = detect_project_type(tmp_path)
 
         # Assert
-        assert actual_type == expected_type
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
 
     def test_ambiguous_project(self, tmp_path: Path) -> None:
         """Detect ambiguous project when both cdk.out and .tf files exist."""
@@ -49,7 +49,7 @@ class TestDetectProjectType:
         actual_type = detect_project_type(tmp_path)
 
         # Assert
-        assert actual_type == expected_type
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
 
     def test_no_project(self, tmp_path: Path) -> None:
         """Detect no project when directory is empty."""
@@ -60,4 +60,4 @@ class TestDetectProjectType:
         actual_type = detect_project_type(tmp_path)
 
         # Assert
-        assert actual_type == expected_type
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"

@@ -62,18 +62,26 @@ class TestSendMessageBatchJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
         actual_successful_count = len(data["Successful"])
         actual_failed_count = len(data["Failed"])
-        assert actual_successful_count == expected_successful_count
-        assert actual_failed_count == expected_failed_count
+        assert (
+            actual_successful_count == expected_successful_count
+        ), f"Expected {expected_successful_count!r} but got {actual_successful_count!r}"
+        assert (
+            actual_failed_count == expected_failed_count
+        ), f"Expected {expected_failed_count!r} but got {actual_failed_count!r}"
 
         actual_ids = {entry["Id"] for entry in data["Successful"]}
-        assert actual_ids == expected_ids
+        assert actual_ids == expected_ids, f"Expected {expected_ids!r} but got {actual_ids!r}"
         for entry in data["Successful"]:
-            assert "MessageId" in entry
-            assert "MD5OfMessageBody" in entry
+            assert "MessageId" in entry, f'Expected {"MessageId"!r} to be in {entry!r}'
+            assert (
+                "MD5OfMessageBody" in entry
+            ), f'Expected {"MD5OfMessageBody"!r} to be in {entry!r}'
 
     @pytest.mark.asyncio
     async def test_send_message_batch_empty_entries(
@@ -94,10 +102,12 @@ class TestSendMessageBatchJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
-        assert data["Successful"] == []
-        assert data["Failed"] == []
+        assert data["Successful"] == [], f'Expected {[]!r} but got {data["Successful"]!r}'
+        assert data["Failed"] == [], f'Expected {[]!r} but got {data["Failed"]!r}'
 
     @pytest.mark.asyncio
     async def test_send_message_batch_messages_receivable(
@@ -133,8 +143,14 @@ class TestSendMessageBatchJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
         actual_bodies = {msg["Body"] for msg in data["Messages"]}
-        assert expected_body_a in actual_bodies
-        assert expected_body_b in actual_bodies
+        assert (
+            expected_body_a in actual_bodies
+        ), f"Expected {expected_body_a!r} to be in {actual_bodies!r}"
+        assert (
+            expected_body_b in actual_bodies
+        ), f"Expected {expected_body_b!r} to be in {actual_bodies!r}"

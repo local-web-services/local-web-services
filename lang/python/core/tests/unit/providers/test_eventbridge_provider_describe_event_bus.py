@@ -18,13 +18,13 @@ async def provider() -> EventBridgeProvider:
 class TestDescribeEventBus:
     async def test_describe_default(self, provider: EventBridgeProvider) -> None:
         attrs = provider.describe_event_bus("default")
-        assert attrs["Name"] == "default"
-        assert "Arn" in attrs
+        assert attrs["Name"] == "default", f'Expected {"default"!r} but got {attrs["Name"]!r}'
+        assert "Arn" in attrs, f'Expected {"Arn"!r} to be in {attrs!r}'
 
     async def test_describe_created_bus(self, provider: EventBridgeProvider) -> None:
         await provider.create_event_bus("my-bus")
         attrs = provider.describe_event_bus("my-bus")
-        assert attrs["Name"] == "my-bus"
+        assert attrs["Name"] == "my-bus", f'Expected {"my-bus"!r} but got {attrs["Name"]!r}'
 
     async def test_describe_nonexistent_raises(self, provider: EventBridgeProvider) -> None:
         with pytest.raises(KeyError, match="Event bus not found"):

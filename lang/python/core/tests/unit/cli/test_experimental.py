@@ -14,7 +14,7 @@ class TestIsExperimentalService:
         actual = is_experimental_service("test-service")
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
         # Cleanup
         EXPERIMENTAL_SERVICES.discard("test-service")
@@ -27,7 +27,7 @@ class TestIsExperimentalService:
         actual = is_experimental_service("chaos")
 
         # Assert
-        assert actual is False
+        assert actual is False, "Expected value to be truthy"
 
     def test_unknown_service_returns_false(self):
         # Arrange
@@ -37,4 +37,4 @@ class TestIsExperimentalService:
         actual = is_experimental_service("nonexistent")
 
         # Assert
-        assert actual is False
+        assert actual is False, "Expected value to be truthy"

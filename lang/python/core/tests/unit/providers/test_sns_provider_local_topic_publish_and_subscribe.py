@@ -125,8 +125,10 @@ class TestLocalTopicPublishAndSubscribe:
         actual_arn = await topic.add_subscription(protocol="lambda", endpoint="my-func")
 
         # Assert
-        assert actual_arn.startswith(expected_arn_prefix)
-        assert len(topic.subscribers) == expected_subscriber_count
+        assert actual_arn.startswith(expected_arn_prefix), "Expected value to be truthy"
+        assert (
+            len(topic.subscribers) == expected_subscriber_count
+        ), f"Expected {expected_subscriber_count!r} but got {len(topic.subscribers)!r}"
 
     @pytest.mark.asyncio
     async def test_publish_returns_uuid_message_id(self) -> None:
@@ -138,9 +140,11 @@ class TestLocalTopicPublishAndSubscribe:
         actual_message_id = await topic.publish(message="hello")
 
         # Assert
-        assert actual_message_id
+        assert actual_message_id, "Expected value to be truthy"
         actual_parts = actual_message_id.split("-")
-        assert len(actual_parts) == expected_uuid_parts
+        assert (
+            len(actual_parts) == expected_uuid_parts
+        ), f"Expected {expected_uuid_parts!r} but got {len(actual_parts)!r}"
 
     @pytest.mark.asyncio
     async def test_multiple_subscribers(self) -> None:
@@ -153,8 +157,12 @@ class TestLocalTopicPublishAndSubscribe:
         actual_arn2 = await topic.add_subscription(protocol="sqs", endpoint="queue-b")
 
         # Assert
-        assert actual_arn1 != actual_arn2
-        assert len(topic.subscribers) == expected_subscriber_count
+        assert (
+            actual_arn1 != actual_arn2
+        ), f"Expected values to differ but both were {actual_arn1!r}"
+        assert (
+            len(topic.subscribers) == expected_subscriber_count
+        ), f"Expected {expected_subscriber_count!r} but got {len(topic.subscribers)!r}"
 
     @pytest.mark.asyncio
     async def test_get_matching_subscribers_no_filter(self) -> None:
@@ -168,7 +176,9 @@ class TestLocalTopicPublishAndSubscribe:
         actual_matching = topic.get_matching_subscribers()
 
         # Assert
-        assert len(actual_matching) == expected_matching_count
+        assert (
+            len(actual_matching) == expected_matching_count
+        ), f"Expected {expected_matching_count!r} but got {len(actual_matching)!r}"
 
     @pytest.mark.asyncio
     async def test_get_matching_subscribers_with_filter(self) -> None:
@@ -188,5 +198,9 @@ class TestLocalTopicPublishAndSubscribe:
         actual_matching = topic.get_matching_subscribers(attrs)
 
         # Assert
-        assert len(actual_matching) == expected_matching_count
-        assert actual_matching[0].endpoint == expected_endpoint
+        assert (
+            len(actual_matching) == expected_matching_count
+        ), f"Expected {expected_matching_count!r} but got {len(actual_matching)!r}"
+        assert (
+            actual_matching[0].endpoint == expected_endpoint
+        ), f"Expected {expected_endpoint!r} but got {actual_matching[0].endpoint!r}"

@@ -125,8 +125,12 @@ class TestParallelState:
 
         # Assert
         actual_output = history.output_data
-        assert history.status == ExecutionStatus.SUCCEEDED
-        assert actual_output == expected_output
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert (
+            actual_output == expected_output
+        ), f"Expected {expected_output!r} but got {actual_output!r}"
 
     async def test_parallel_preserves_order(self) -> None:
         # Arrange
@@ -179,7 +183,9 @@ class TestParallelState:
 
         # Assert
         actual_output = history.output_data
-        assert actual_output == expected_output
+        assert (
+            actual_output == expected_output
+        ), f"Expected {expected_output!r} but got {actual_output!r}"
 
     async def test_parallel_branch_failure_with_catch(self) -> None:
         history = await run_engine(
@@ -226,8 +232,12 @@ class TestParallelState:
                 },
             },
         )
-        assert history.status == ExecutionStatus.SUCCEEDED
-        assert history.output_data == {"recovered": True}
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert history.output_data == {"recovered": True}, "Expected {!r} but got {!r}".format(
+            {"recovered": True}, history.output_data
+        )
 
     async def test_parallel_with_result_path(self) -> None:
         history = await run_engine(
@@ -255,8 +265,10 @@ class TestParallelState:
             },
             input_data={"original": True},
         )
-        assert history.output_data["original"] is True
-        assert history.output_data["branches"] == ["b1"]
+        assert history.output_data["original"] is True, "Expected value to be truthy"
+        assert history.output_data["branches"] == [
+            "b1"
+        ], f'Expected {["b1"]!r} but got {history.output_data["branches"]!r}'
 
     async def test_parallel_then_next_state(self) -> None:
         history = await run_engine(
@@ -287,4 +299,6 @@ class TestParallelState:
                 },
             },
         )
-        assert history.output_data == "after-parallel"
+        assert (
+            history.output_data == "after-parallel"
+        ), f'Expected {"after-parallel"!r} but got {history.output_data!r}'

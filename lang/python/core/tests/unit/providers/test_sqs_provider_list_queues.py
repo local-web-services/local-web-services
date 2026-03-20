@@ -23,7 +23,7 @@ class TestListQueues:
         queues = await provider.list_queues()
 
         # Assert
-        assert queues == []
+        assert queues == [], f"Expected {[]!r} but got {queues!r}"
 
     @pytest.mark.asyncio
     async def test_list_queues_sorted(self, provider: SqsProvider) -> None:
@@ -37,4 +37,6 @@ class TestListQueues:
         actual_queues = await provider.list_queues()
 
         # Assert
-        assert actual_queues == expected_queues
+        assert (
+            actual_queues == expected_queues
+        ), f"Expected {expected_queues!r} but got {actual_queues!r}"

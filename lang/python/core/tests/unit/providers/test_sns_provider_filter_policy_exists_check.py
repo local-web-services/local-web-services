@@ -115,19 +115,19 @@ class TestFilterPolicyExistsCheck:
     def test_exists_true_with_attribute_present(self) -> None:
         attrs = {"color": {"DataType": "String", "StringValue": "red"}}
         policy = {"color": [{"exists": True}]}
-        assert matches_filter_policy(attrs, policy) is True
+        assert matches_filter_policy(attrs, policy) is True, "Expected value to be truthy"
 
     def test_exists_true_with_attribute_missing(self) -> None:
         attrs = {}
         policy = {"color": [{"exists": True}]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"
 
     def test_exists_false_with_attribute_missing(self) -> None:
         attrs = {}
         policy = {"color": [{"exists": False}]}
-        assert matches_filter_policy(attrs, policy) is True
+        assert matches_filter_policy(attrs, policy) is True, "Expected value to be truthy"
 
     def test_exists_false_with_attribute_present(self) -> None:
         attrs = {"color": {"DataType": "String", "StringValue": "red"}}
         policy = {"color": [{"exists": False}]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"

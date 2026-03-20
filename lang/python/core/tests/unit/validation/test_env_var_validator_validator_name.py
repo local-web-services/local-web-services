@@ -66,4 +66,4 @@ class TestValidatorName:
         expected_name = "env_var"
         graph = _make_graph([])
         actual_name = EnvVarValidator(graph).name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"

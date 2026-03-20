@@ -63,7 +63,9 @@ class TestUpdateItemDynamoJson:
 
         # Assert
         actual_status = result["status"]
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_set_new_attribute_stays_dynamo_json(
         self, provider: SqliteDynamoProvider
@@ -85,7 +87,7 @@ class TestUpdateItemDynamoJson:
 
         # Assert
         actual_note = result["note"]
-        assert actual_note == expected_note
+        assert actual_note == expected_note, f"Expected {expected_note!r} but got {actual_note!r}"
 
     async def test_get_after_update_returns_dynamo_json(
         self, provider: SqliteDynamoProvider
@@ -116,7 +118,9 @@ class TestUpdateItemDynamoJson:
 
         # Assert
         actual_status = fetched["status"]
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_set_numeric_attribute_stays_dynamo_json(
         self, provider: SqliteDynamoProvider
@@ -142,4 +146,4 @@ class TestUpdateItemDynamoJson:
 
         # Assert
         actual_qty = result["qty"]
-        assert actual_qty == expected_qty
+        assert actual_qty == expected_qty, f"Expected {expected_qty!r} but got {actual_qty!r}"

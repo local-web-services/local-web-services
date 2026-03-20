@@ -97,9 +97,11 @@ class TestProviderStopExecution:
         # Assert
         history = provider.get_execution(arn)
         actual_status = history.status.value
-        assert history is not None
-        assert actual_status == expected_status
-        assert history.end_time is not None
+        assert history is not None, "Expected value to be set but was None"
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
+        assert history.end_time is not None, "Expected value to be set but was None"
 
     async def test_stop_execution_with_error_cause(self, provider: StepFunctionsProvider) -> None:
         """Provider.stop_execution should store error and cause."""
@@ -117,9 +119,13 @@ class TestProviderStopExecution:
 
         # Assert
         history = provider.get_execution(arn)
-        assert history is not None
-        assert history.error == expected_error
-        assert history.cause == expected_cause
+        assert history is not None, "Expected value to be set but was None"
+        assert (
+            history.error == expected_error
+        ), f"Expected {expected_error!r} but got {history.error!r}"
+        assert (
+            history.cause == expected_cause
+        ), f"Expected {expected_cause!r} but got {history.cause!r}"
 
     async def test_stop_nonexistent_execution_raises(self, provider: StepFunctionsProvider) -> None:
         """Provider.stop_execution should raise KeyError for unknown ARN."""

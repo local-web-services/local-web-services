@@ -23,8 +23,8 @@ public class GlacierStoreJobTest {
     String actualJobId = store.initiateJob(vaultName, jobParams);
 
     // Assert
-    assertNotNull(actualJobId);
-    assertFalse(actualJobId.isEmpty());
+    assertNotNull(actualJobId, "Expected actualJobId to not be null");
+    assertFalse(actualJobId.isEmpty(), "Expected actualJobId to not be empty");
   }
 
   @Test
@@ -40,8 +40,8 @@ public class GlacierStoreJobTest {
     Map<String, Object> actualJob = store.getJob(vaultName, jobId);
 
     // Assert
-    assertNotNull(actualJob);
-    assertEquals(expectedStatusCode, actualJob.get("StatusCode"));
+    assertNotNull(actualJob, "Expected actualJob to not be null");
+    assertEquals(expectedStatusCode, actualJob.get("StatusCode"), "Expected statusCode to match");
   }
 
   @Test
@@ -55,7 +55,7 @@ public class GlacierStoreJobTest {
     Map<String, Object> actualJob = store.getJob(vaultName, unknownJobId);
 
     // Assert
-    assertNull(actualJob);
+    assertNull(actualJob, "Expected actualJob to be null");
   }
 
   @Test
@@ -70,7 +70,10 @@ public class GlacierStoreJobTest {
     List<Map<String, Object>> actualJobs = store.listJobs(vaultName);
 
     // Assert
-    assertEquals(expectedJobCount, actualJobs.size());
+    assertEquals(
+        expectedJobCount,
+        actualJobs.size(),
+        "Expected actualJobs.size() to match expectedJobCount");
   }
 
   @Test
@@ -84,7 +87,10 @@ public class GlacierStoreJobTest {
     List<Map<String, Object>> actualJobs = store.listJobs(vaultName);
 
     // Assert
-    assertNotNull(actualJobs);
-    assertEquals(expectedJobCount, actualJobs.size());
+    assertNotNull(actualJobs, "Expected actualJobs to not be null");
+    assertEquals(
+        expectedJobCount,
+        actualJobs.size(),
+        "Expected actualJobs.size() to match expectedJobCount");
   }
 }

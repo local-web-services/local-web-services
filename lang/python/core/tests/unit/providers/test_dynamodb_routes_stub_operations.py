@@ -35,10 +35,18 @@ class TestDynamoDbStubOperations:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type
-        assert "lws" in body["message"]
-        assert "DynamoDB" in body["message"]
-        assert "SomeUnknownOp" in body["message"]
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
+        assert (
+            "DynamoDB" in body["message"]
+        ), f'Expected {"DynamoDB"!r} to be in {body["message"]!r}'
+        assert (
+            "SomeUnknownOp" in body["message"]
+        ), f'Expected {"SomeUnknownOp"!r} to be in {body["message"]!r}'

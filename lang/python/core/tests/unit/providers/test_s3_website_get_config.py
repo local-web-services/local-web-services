@@ -28,7 +28,7 @@ class TestGetBucketWebsite:
         actual_config = provider.get_bucket_website(bucket_name)
 
         # Assert
-        assert actual_config is None
+        assert actual_config is None, f"Expected None but got {actual_config!r}"
 
     @pytest.mark.asyncio
     async def test_get_bucket_website_nonexistent_bucket_raises(self, provider: S3Provider) -> None:

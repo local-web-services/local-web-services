@@ -44,7 +44,7 @@ class TestProviderUnsubscribe:
         actual_result = await provider.unsubscribe(sub_arn)
 
         # Assert
-        assert actual_result is True
+        assert actual_result is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_unsubscribe_returns_false_when_not_found(
@@ -55,4 +55,4 @@ class TestProviderUnsubscribe:
         actual_result = await provider.unsubscribe("arn:aws:sns:us-east-1:000000000000:x:nope")
 
         # Assert
-        assert actual_result is False
+        assert actual_result is False, "Expected value to be truthy"

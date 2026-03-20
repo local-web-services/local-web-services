@@ -15,9 +15,11 @@ class TestPickError:
 
         # Assert
         expected_type = "InternalServerError"
-        assert error.type == expected_type
+        assert error.type == expected_type, f"Expected {expected_type!r} but got {error.type!r}"
         expected_status = 500
-        assert error.status_code == expected_status
+        assert (
+            error.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {error.status_code!r}"
 
     def test_returns_configured_error(self):
         # Arrange
@@ -32,4 +34,4 @@ class TestPickError:
         error = _pick_error(config)
 
         # Assert
-        assert error.type == expected_type
+        assert error.type == expected_type, f"Expected {expected_type!r} but got {error.type!r}"

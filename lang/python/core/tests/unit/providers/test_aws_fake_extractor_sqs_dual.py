@@ -37,7 +37,9 @@ class TestExtractorSqsDual:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     def test_form_action_receive_message(self):
         # Arrange
@@ -52,7 +54,9 @@ class TestExtractorSqsDual:
         actual_operation = extractor(request, body)
 
         # Assert
-        assert actual_operation == expected_operation
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     def test_neither_returns_none(self):
         # Arrange
@@ -63,4 +67,4 @@ class TestExtractorSqsDual:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation is None
+        assert actual_operation is None, f"Expected None but got {actual_operation!r}"

@@ -15,4 +15,4 @@ class TestRenderQueryParams:
         actual = render_template(template, query_params={"page": expected})
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

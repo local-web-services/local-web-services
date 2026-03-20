@@ -22,7 +22,7 @@ class TestCreateDockerClientFromEnv:
             actual_client = create_docker_client()
 
         # Assert
-        assert actual_client is expected_client
+        assert actual_client is expected_client, "Expected value to be truthy"
         fake_docker.from_env.assert_called_once()
 
     def test_from_env_ping_failure_falls_through(self, tmp_path):
@@ -53,4 +53,4 @@ class TestCreateDockerClientFromEnv:
             actual_client = create_docker_client()
 
         # Assert
-        assert actual_client is fake_sock_client
+        assert actual_client is fake_sock_client, "Expected value to be truthy"

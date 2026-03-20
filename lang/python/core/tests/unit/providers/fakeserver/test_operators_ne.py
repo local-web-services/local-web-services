@@ -14,7 +14,7 @@ class TestNeOperator:
         actual = evaluate_operator("$ne", "hello", "world")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_ne_no_match(self):
         # Arrange
@@ -24,4 +24,4 @@ class TestNeOperator:
         actual = evaluate_operator("$ne", "hello", "hello")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

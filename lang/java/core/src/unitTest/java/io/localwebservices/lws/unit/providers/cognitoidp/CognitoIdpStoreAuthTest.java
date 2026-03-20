@@ -22,7 +22,7 @@ public class CognitoIdpStoreAuthTest {
 
     // Assert
     Map<String, Object> actualSession = store.authSessions.get(expectedSessionId);
-    assertNotNull(actualSession);
+    assertNotNull(actualSession, "Expected actualSession to not be null");
   }
 
   @Test
@@ -38,7 +38,7 @@ public class CognitoIdpStoreAuthTest {
 
     // Assert
     Map<String, Object> actualSession = store.authSessions.get(expectedSessionId);
-    assertNull(actualSession);
+    assertNull(actualSession, "Expected actualSession to be null");
   }
 
   @Test
@@ -52,6 +52,6 @@ public class CognitoIdpStoreAuthTest {
     store.reset();
 
     // Assert
-    assertTrue(store.authSessions.isEmpty());
+    assertTrue(store.authSessions.isEmpty(), "Expected store.authSessions to be empty");
   }
 }

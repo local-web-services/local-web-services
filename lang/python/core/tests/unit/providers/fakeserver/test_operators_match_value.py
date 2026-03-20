@@ -14,7 +14,7 @@ class TestMatchValue:
         actual = match_value("hello", "hello")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_operator_dict(self):
         # Arrange
@@ -24,7 +24,7 @@ class TestMatchValue:
         actual = match_value(10, {"$gt": 5, "$lt": 20})
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_operator_dict_partial_fail(self):
         # Arrange
@@ -34,7 +34,7 @@ class TestMatchValue:
         actual = match_value(10, {"$gt": 5, "$lt": 8})
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_unknown_operator(self):
         # Arrange
@@ -44,4 +44,4 @@ class TestMatchValue:
         actual = evaluate_operator("$unknown", "a", "b")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

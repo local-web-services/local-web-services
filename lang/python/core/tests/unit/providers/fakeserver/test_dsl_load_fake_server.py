@@ -34,11 +34,11 @@ class TestLoadFakeServer:
         # Assert
         expected_name = "payment-api"
         actual_name = config.name
-        assert actual_name == expected_name
-        assert len(config.routes) == 1
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
+        assert len(config.routes) == 1, f"Expected {1!r} but got {len(config.routes)!r}"
         expected_port = 3100
         actual_port = config.port
-        assert actual_port == expected_port
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
 
     def test_missing_config_raises(self, tmp_path):
         # Arrange

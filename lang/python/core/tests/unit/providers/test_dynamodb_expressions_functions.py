@@ -46,19 +46,27 @@ class TestFunctions:
 
     def test_attribute_exists_true(self) -> None:
         item = {"name": "Alice"}
-        assert evaluate_filter_expression(item, "attribute_exists(name)")
+        assert evaluate_filter_expression(
+            item, "attribute_exists(name)"
+        ), "Expected value to be truthy"
 
     def test_attribute_exists_false(self) -> None:
         item = {"name": "Alice"}
-        assert not evaluate_filter_expression(item, "attribute_exists(age)")
+        assert not evaluate_filter_expression(
+            item, "attribute_exists(age)"
+        ), "Expected value to be falsy"
 
     def test_attribute_not_exists_true(self) -> None:
         item = {"name": "Alice"}
-        assert evaluate_filter_expression(item, "attribute_not_exists(age)")
+        assert evaluate_filter_expression(
+            item, "attribute_not_exists(age)"
+        ), "Expected value to be truthy"
 
     def test_attribute_not_exists_false(self) -> None:
         item = {"name": "Alice"}
-        assert not evaluate_filter_expression(item, "attribute_not_exists(name)")
+        assert not evaluate_filter_expression(
+            item, "attribute_not_exists(name)"
+        ), "Expected value to be falsy"
 
     def test_attribute_exists_with_name_ref(self) -> None:
         item = {"status": "active"}
@@ -66,7 +74,7 @@ class TestFunctions:
             item,
             "attribute_exists(#s)",
             expression_names={"#s": "status"},
-        )
+        ), "Expected value to be truthy"
 
     def test_begins_with_true(self) -> None:
         item = {"name": "Alice"}
@@ -74,7 +82,7 @@ class TestFunctions:
             item,
             "begins_with(name, :prefix)",
             expression_values={":prefix": {"S": "Al"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_begins_with_false(self) -> None:
         item = {"name": "Alice"}
@@ -82,7 +90,7 @@ class TestFunctions:
             item,
             "begins_with(name, :prefix)",
             expression_values={":prefix": {"S": "Bo"}},
-        )
+        ), "Expected value to be falsy"
 
     def test_contains_string(self) -> None:
         item = {"name": "Alice in Wonderland"}
@@ -90,7 +98,7 @@ class TestFunctions:
             item,
             "contains(name, :sub)",
             expression_values={":sub": {"S": "Wonder"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_contains_string_false(self) -> None:
         item = {"name": "Alice"}
@@ -98,7 +106,7 @@ class TestFunctions:
             item,
             "contains(name, :sub)",
             expression_values={":sub": {"S": "Bob"}},
-        )
+        ), "Expected value to be falsy"
 
     def test_contains_list(self) -> None:
         item = {"tags": ["python", "aws", "dynamodb"]}
@@ -106,7 +114,7 @@ class TestFunctions:
             item,
             "contains(tags, :tag)",
             expression_values={":tag": {"S": "aws"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_size_string(self) -> None:
         item = {"name": "Alice"}
@@ -114,7 +122,7 @@ class TestFunctions:
             item,
             "size(name) = :v",
             expression_values={":v": {"N": "5"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_size_list(self) -> None:
         item = {"tags": ["a", "b", "c"]}
@@ -122,7 +130,7 @@ class TestFunctions:
             item,
             "size(tags) > :v",
             expression_values={":v": {"N": "2"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_size_missing_attr(self) -> None:
         item = {"name": "Alice"}
@@ -131,4 +139,4 @@ class TestFunctions:
             item,
             "size(tags) = :v",
             expression_values={":v": {"N": "0"}},
-        )
+        ), "Expected value to be truthy"

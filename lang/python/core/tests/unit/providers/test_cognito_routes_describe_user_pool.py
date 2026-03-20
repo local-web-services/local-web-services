@@ -53,8 +53,12 @@ class TestDescribeUserPool:
         # Assert
         expected_status = 200
         expected_pool_name = "test-pool"
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_pool_name = data["UserPool"]["Name"]
-        assert actual_pool_name == expected_pool_name
-        assert "Arn" in data["UserPool"]
+        assert (
+            actual_pool_name == expected_pool_name
+        ), f"Expected {expected_pool_name!r} but got {actual_pool_name!r}"
+        assert "Arn" in data["UserPool"], f'Expected {"Arn"!r} to be in {data["UserPool"]!r}'

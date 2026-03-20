@@ -171,9 +171,11 @@ class TestLongPolling:
         # Assert
         actual_message_count = len(messages)
         actual_body = messages[0].body
-        assert actual_message_count == expected_message_count
-        assert actual_body == expected_body
-        assert elapsed < 3  # Should not wait full 5 seconds
+        assert (
+            actual_message_count == expected_message_count
+        ), f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
+        assert elapsed < 3  # Should not wait full 5 seconds, "Expected assertion to pass"
         await task
 
     async def test_long_poll_times_out(self, queue: LocalQueue) -> None:
@@ -182,7 +184,7 @@ class TestLongPolling:
         messages = await queue.receive_messages(max_messages=1, wait_time_seconds=0.3)
         elapsed = time.monotonic() - start
 
-        assert messages == []
+        assert messages == [], f"Expected {[]!r} but got {messages!r}"
         assert elapsed >= 0.2  # Should have waited close to the timeout
 
     async def test_short_poll_returns_immediately(self, queue: LocalQueue) -> None:
@@ -191,5 +193,5 @@ class TestLongPolling:
         messages = await queue.receive_messages(max_messages=1, wait_time_seconds=0)
         elapsed = time.monotonic() - start
 
-        assert messages == []
-        assert elapsed < 0.5
+        assert messages == [], f"Expected {[]!r} but got {messages!r}"
+        assert elapsed < 0.5, f"Expected {elapsed!r} < {0.5!r}"

@@ -71,10 +71,16 @@ class TestNestedConstructs:
         # Assert
         stack = nodes[0]
         api = stack.children[0]
-        assert api.category == expected_api_category
-        assert len(api.children) == 1
+        assert (
+            api.category == expected_api_category
+        ), f"Expected {expected_api_category!r} but got {api.category!r}"
+        assert len(api.children) == 1, f"Expected {1!r} but got {len(api.children)!r}"
         resource = api.children[0]
-        assert resource.id == expected_resource_id
-        assert len(resource.children) == 1
+        assert (
+            resource.id == expected_resource_id
+        ), f"Expected {expected_resource_id!r} but got {resource.id!r}"
+        assert len(resource.children) == 1, f"Expected {1!r} but got {len(resource.children)!r}"
         method = resource.children[0]
-        assert method.id == expected_method_id
+        assert (
+            method.id == expected_method_id
+        ), f"Expected {expected_method_id!r} but got {method.id!r}"

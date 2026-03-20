@@ -19,4 +19,6 @@ class TestOutputJson:
         actual_value = parsed["key"]
 
         # Assert
-        assert actual_value == expected_value
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"

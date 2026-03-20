@@ -57,7 +57,7 @@ class TestBinaryPayloads:
         actual = is_binary_content_type(content_type)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     def test_image_png_is_binary(self) -> None:
         # Arrange
@@ -67,7 +67,7 @@ class TestBinaryPayloads:
         actual = is_binary_content_type(content_type)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     def test_audio_prefix_is_binary(self) -> None:
         # Arrange
@@ -77,7 +77,7 @@ class TestBinaryPayloads:
         actual = is_binary_content_type(content_type)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     def test_json_is_not_binary(self) -> None:
         # Arrange
@@ -87,7 +87,7 @@ class TestBinaryPayloads:
         actual = is_binary_content_type(content_type)
 
         # Assert
-        assert actual is False
+        assert actual is False, "Expected value to be truthy"
 
     def test_content_type_with_charset(self) -> None:
         # Arrange
@@ -97,7 +97,7 @@ class TestBinaryPayloads:
         actual = is_binary_content_type(content_type)
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_binary_body_is_base64_encoded(self) -> None:
@@ -119,8 +119,10 @@ class TestBinaryPayloads:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_body = event["body"]
-        assert actual_body == expected_encoded
-        assert event["isBase64Encoded"] is True
+        assert (
+            actual_body == expected_encoded
+        ), f"Expected {expected_encoded!r} but got {actual_body!r}"
+        assert event["isBase64Encoded"] is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_text_body_is_not_encoded(self) -> None:
@@ -141,8 +143,8 @@ class TestBinaryPayloads:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_body = event["body"]
-        assert actual_body == expected_body
-        assert event["isBase64Encoded"] is False
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
+        assert event["isBase64Encoded"] is False, "Expected value to be truthy"
 
     def test_base64_response_body_decoded(self) -> None:
         # Arrange
@@ -165,7 +167,9 @@ class TestBinaryPayloads:
 
         # Assert
         actual_content = resp.body
-        assert actual_content == expected_content
+        assert (
+            actual_content == expected_content
+        ), f"Expected {expected_content!r} but got {actual_content!r}"
 
     def test_non_base64_response_body_unchanged(self) -> None:
         # Arrange
@@ -182,4 +186,4 @@ class TestBinaryPayloads:
 
         # Assert
         actual_body = resp.body.decode("utf-8")
-        assert actual_body == expected_body
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"

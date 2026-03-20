@@ -176,30 +176,34 @@ class TestProviderLifecycle:
 
     async def test_name(self, provider: StepFunctionsProvider) -> None:
         expected_name = "stepfunctions"
-        assert provider.name == expected_name
+        assert (
+            provider.name == expected_name
+        ), f"Expected {expected_name!r} but got {provider.name!r}"
 
     async def test_health_check_running(self, provider: StepFunctionsProvider) -> None:
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     async def test_health_check_stopped(self) -> None:
         p = StepFunctionsProvider(
             state_machines=[StateMachineConfig(name="sm", definition=SIMPLE_PASS_DEFINITION)]
         )
-        assert await p.health_check() is False
+        assert await p.health_check() is False, "Expected value to be truthy"
 
     async def test_stop_clears_state(self) -> None:
         p = StepFunctionsProvider(
             state_machines=[StateMachineConfig(name="sm", definition=SIMPLE_PASS_DEFINITION)]
         )
         await p.start()
-        assert p.get_definition("sm") is not None
+        assert p.get_definition("sm") is not None, "Expected value to be set but was None"
         await p.stop()
-        assert p.get_definition("sm") is None
+        assert p.get_definition("sm") is None, f'Expected None but got {p.get_definition("sm")!r}'
 
     async def test_implements_istatemachine(self, provider: StepFunctionsProvider) -> None:
-        assert isinstance(provider, IStateMachine)
+        assert isinstance(
+            provider, IStateMachine
+        ), f"Expected instance of {IStateMachine!r} but got {type(provider)!r}"
 
     async def test_list_state_machines(self, provider: StepFunctionsProvider) -> None:
         names = provider.list_state_machines()
-        assert "simple-pass" in names
-        assert "two-step" in names
+        assert "simple-pass" in names, f'Expected {"simple-pass"!r} to be in {names!r}'
+        assert "two-step" in names, f'Expected {"two-step"!r} to be in {names!r}'

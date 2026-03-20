@@ -32,12 +32,20 @@ class TestParseOperationFileMultiple:
         rules = parse_operation_file(op_file, service, tmp_path)
 
         # Assert
-        assert len(rules) == 2
+        assert len(rules) == 2, f"Expected {2!r} but got {len(rules)!r}"
         actual_first_operation = rules[0].operation
         actual_second_operation = rules[1].operation
         actual_first_status = rules[0].response.status
         actual_second_status = rules[1].response.status
-        assert actual_first_operation == expected_first_operation
-        assert actual_second_operation == expected_second_operation
-        assert actual_first_status == expected_first_status
-        assert actual_second_status == expected_second_status
+        assert (
+            actual_first_operation == expected_first_operation
+        ), f"Expected {expected_first_operation!r} but got {actual_first_operation!r}"
+        assert (
+            actual_second_operation == expected_second_operation
+        ), f"Expected {expected_second_operation!r} but got {actual_second_operation!r}"
+        assert (
+            actual_first_status == expected_first_status
+        ), f"Expected {expected_first_status!r} but got {actual_first_status!r}"
+        assert (
+            actual_second_status == expected_second_status
+        ), f"Expected {expected_second_status!r} but got {actual_second_status!r}"

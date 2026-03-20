@@ -43,7 +43,9 @@ class TestCreateDBCluster:
 
         # Assert
         actual_cluster_id = result["DBCluster"]["DBClusterIdentifier"]
-        assert actual_cluster_id == expected_cluster_id
+        assert (
+            actual_cluster_id == expected_cluster_id
+        ), f"Expected {expected_cluster_id!r} but got {actual_cluster_id!r}"
 
     def test_create_cluster_response_fields(self, client: TestClient) -> None:
         # Arrange
@@ -62,11 +64,15 @@ class TestCreateDBCluster:
         cluster = result["DBCluster"]
         actual_engine = cluster["Engine"]
         actual_status = cluster["Status"]
-        assert actual_engine == expected_engine
-        assert actual_status == expected_status
-        assert "Endpoint" in cluster
-        assert "DBClusterArn" in cluster
-        assert "Port" in cluster
+        assert (
+            actual_engine == expected_engine
+        ), f"Expected {expected_engine!r} but got {actual_engine!r}"
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
+        assert "Endpoint" in cluster, f'Expected {"Endpoint"!r} to be in {cluster!r}'
+        assert "DBClusterArn" in cluster, f'Expected {"DBClusterArn"!r} to be in {cluster!r}'
+        assert "Port" in cluster, f'Expected {"Port"!r} to be in {cluster!r}'
 
     def test_create_duplicate_cluster_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -79,7 +85,9 @@ class TestCreateDBCluster:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"
 
     def test_create_cluster_without_identifier_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -90,4 +98,6 @@ class TestCreateDBCluster:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

@@ -31,7 +31,7 @@ public class DynamoDbStoreUpdateItemTest {
     Map<String, Object> actualItem = store.getItem("T", keyAttr);
 
     // Assert
-    assertNotNull(actualItem);
-    assertEquals(expectedName, actualItem.get("name"));
+    assertNotNull(actualItem, "Expected actualItem to not be null");
+    assertEquals(expectedName, actualItem.get("name"), "Expected name to match");
   }
 }

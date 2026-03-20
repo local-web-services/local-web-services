@@ -75,5 +75,5 @@ class TestTokenValidation:
         # Assert
         expected_alg = "RS256"
         actual_alg = header["alg"]
-        assert actual_alg == expected_alg
-        assert "kid" in header
+        assert actual_alg == expected_alg, f"Expected {expected_alg!r} but got {actual_alg!r}"
+        assert "kid" in header, f'Expected {"kid"!r} to be in {header!r}'

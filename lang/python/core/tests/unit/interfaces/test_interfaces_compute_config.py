@@ -43,9 +43,13 @@ class TestComputeConfig:
         )
 
         # Assert
-        assert cfg.timeout == expected_timeout
-        assert cfg.memory_size == expected_memory_size
-        assert cfg.environment == {}
+        assert (
+            cfg.timeout == expected_timeout
+        ), f"Expected {expected_timeout!r} but got {cfg.timeout!r}"
+        assert (
+            cfg.memory_size == expected_memory_size
+        ), f"Expected {expected_memory_size!r} but got {cfg.memory_size!r}"
+        assert cfg.environment == {}, f"Expected {({})!r} but got {cfg.environment!r}"
 
     def test_custom_values(self) -> None:
         from pathlib import Path
@@ -67,6 +71,12 @@ class TestComputeConfig:
         )
 
         # Assert
-        assert cfg.timeout == expected_timeout
-        assert cfg.memory_size == expected_memory_size
-        assert cfg.environment == expected_environment
+        assert (
+            cfg.timeout == expected_timeout
+        ), f"Expected {expected_timeout!r} but got {cfg.timeout!r}"
+        assert (
+            cfg.memory_size == expected_memory_size
+        ), f"Expected {expected_memory_size!r} but got {cfg.memory_size!r}"
+        assert (
+            cfg.environment == expected_environment
+        ), f"Expected {expected_environment!r} but got {cfg.environment!r}"

@@ -40,11 +40,15 @@ class TestCreateEventBusRoute:
         resp = await _request(client, "CreateEventBus", {"Name": bus_name})
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "EventBusArn" in data
-        assert bus_name in data["EventBusArn"]
+        assert "EventBusArn" in data, f'Expected {"EventBusArn"!r} to be in {data!r}'
+        assert (
+            bus_name in data["EventBusArn"]
+        ), f'Expected {bus_name!r} to be in {data["EventBusArn"]!r}'
 
     async def test_create_missing_name(self, client: httpx.AsyncClient) -> None:
         resp = await _request(client, "CreateEventBus", {})
-        assert resp.status_code == 400
+        assert resp.status_code == 400, f"Expected {400!r} but got {resp.status_code!r}"

@@ -14,7 +14,7 @@ class TestExistsOperator:
         actual = evaluate_operator("$exists", "value", True)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_exists_false(self):
         # Arrange
@@ -24,4 +24,4 @@ class TestExistsOperator:
         actual = evaluate_operator("$exists", None, False)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

@@ -32,13 +32,13 @@ class TestProviderExceptions:
     """Provider exception hierarchy is correct."""
 
     def test_provider_error_is_exception(self) -> None:
-        assert issubclass(ProviderError, Exception)
+        assert issubclass(ProviderError, Exception), "Expected value to be truthy"
 
     def test_start_error_inherits_provider_error(self) -> None:
-        assert issubclass(ProviderStartError, ProviderError)
+        assert issubclass(ProviderStartError, ProviderError), "Expected value to be truthy"
 
     def test_stop_error_inherits_provider_error(self) -> None:
-        assert issubclass(ProviderStopError, ProviderError)
+        assert issubclass(ProviderStopError, ProviderError), "Expected value to be truthy"
 
     def test_raise_start_error(self) -> None:
         with pytest.raises(ProviderStartError):

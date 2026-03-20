@@ -42,9 +42,13 @@ class TestHeadBucket:
         resp = await client.head("/my-bucket")
 
         # Assert
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_region = resp.headers.get("x-amz-bucket-region")
-        assert actual_region == expected_region
+        assert (
+            actual_region == expected_region
+        ), f"Expected {expected_region!r} but got {actual_region!r}"
 
     @pytest.mark.asyncio
     async def test_head_bucket_not_found(self, client: httpx.AsyncClient) -> None:
@@ -53,4 +57,6 @@ class TestHeadBucket:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"

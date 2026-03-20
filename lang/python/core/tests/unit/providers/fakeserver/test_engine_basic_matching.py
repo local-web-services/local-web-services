@@ -26,9 +26,11 @@ class TestBasicRouteMatching:
         result = engine.match(method="GET", path="/v1/health")
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_status = result[0].status
-        assert actual_status == expected_status
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_no_match_wrong_path(self):
         # Arrange
@@ -39,7 +41,7 @@ class TestBasicRouteMatching:
         result = engine.match(method="GET", path="/v1/other")
 
         # Assert
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     def test_no_match_wrong_method(self):
         # Arrange
@@ -50,4 +52,4 @@ class TestBasicRouteMatching:
         result = engine.match(method="POST", path="/v1/health")
 
         # Assert
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"

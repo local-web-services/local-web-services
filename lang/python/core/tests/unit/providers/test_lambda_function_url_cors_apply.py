@@ -19,7 +19,9 @@ class TestApplyCorsHeaders:
 
         # Assert
         actual_origin = response.headers.get("access-control-allow-origin")
-        assert actual_origin == expected_origin
+        assert (
+            actual_origin == expected_origin
+        ), f"Expected {expected_origin!r} but got {actual_origin!r}"
 
     def test_specific_origin_match(self):
         # Arrange
@@ -32,7 +34,9 @@ class TestApplyCorsHeaders:
 
         # Assert
         actual_origin = response.headers.get("access-control-allow-origin")
-        assert actual_origin == expected_origin
+        assert (
+            actual_origin == expected_origin
+        ), f"Expected {expected_origin!r} but got {actual_origin!r}"
 
     def test_origin_not_in_list(self):
         # Arrange
@@ -45,7 +49,9 @@ class TestApplyCorsHeaders:
 
         # Assert
         actual_origin = response.headers.get("access-control-allow-origin")
-        assert actual_origin == expected_fallback
+        assert (
+            actual_origin == expected_fallback
+        ), f"Expected {expected_fallback!r} but got {actual_origin!r}"
 
     def test_allow_methods(self):
         # Arrange
@@ -58,7 +64,9 @@ class TestApplyCorsHeaders:
 
         # Assert
         actual_methods = response.headers.get("access-control-allow-methods")
-        assert actual_methods == expected_methods
+        assert (
+            actual_methods == expected_methods
+        ), f"Expected {expected_methods!r} but got {actual_methods!r}"
 
     def test_allow_headers(self):
         # Arrange
@@ -71,7 +79,9 @@ class TestApplyCorsHeaders:
 
         # Assert
         actual_headers = response.headers.get("access-control-allow-headers")
-        assert actual_headers == expected_headers
+        assert (
+            actual_headers == expected_headers
+        ), f"Expected {expected_headers!r} but got {actual_headers!r}"
 
     def test_expose_headers(self):
         # Arrange
@@ -84,7 +94,9 @@ class TestApplyCorsHeaders:
 
         # Assert
         actual_expose = response.headers.get("access-control-expose-headers")
-        assert actual_expose == expected_expose
+        assert (
+            actual_expose == expected_expose
+        ), f"Expected {expected_expose!r} but got {actual_expose!r}"
 
     def test_max_age(self):
         # Arrange
@@ -97,7 +109,9 @@ class TestApplyCorsHeaders:
 
         # Assert
         actual_max_age = response.headers.get("access-control-max-age")
-        assert actual_max_age == expected_max_age
+        assert (
+            actual_max_age == expected_max_age
+        ), f"Expected {expected_max_age!r} but got {actual_max_age!r}"
 
     def test_allow_credentials(self):
         # Arrange
@@ -110,7 +124,9 @@ class TestApplyCorsHeaders:
 
         # Assert
         actual_credentials = response.headers.get("access-control-allow-credentials")
-        assert actual_credentials == expected_credentials
+        assert (
+            actual_credentials == expected_credentials
+        ), f"Expected {expected_credentials!r} but got {actual_credentials!r}"
 
     def test_empty_cors_config(self):
         # Arrange
@@ -121,4 +137,6 @@ class TestApplyCorsHeaders:
         apply_cors_headers(response, cors_config)
 
         # Assert
-        assert "access-control-allow-origin" not in response.headers
+        assert (
+            "access-control-allow-origin" not in response.headers
+        ), f'Expected {"access-control-allow-origin"!r} to not be in {response.headers!r}'

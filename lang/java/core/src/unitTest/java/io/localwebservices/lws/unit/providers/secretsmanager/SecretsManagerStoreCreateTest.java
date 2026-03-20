@@ -23,8 +23,8 @@ public class SecretsManagerStoreCreateTest {
     Map<String, Object> actualSecret = store.createSecret(expectedName, "{}", null, null);
 
     // Assert
-    assertEquals(expectedName, actualSecret.get("Name"));
-    assertNotNull(actualSecret.get("ARN"));
+    assertEquals(expectedName, actualSecret.get("Name"), "Expected name to match");
+    assertNotNull(actualSecret.get("ARN"), "Expected values to match");
   }
 
   @Test
@@ -38,8 +38,9 @@ public class SecretsManagerStoreCreateTest {
     String actualArn = store.secretArn(secretName);
 
     // Assert
-    assertTrue(actualArn.contains(secretName));
-    assertTrue(actualArn.contains(expectedArnPrefix));
+    assertTrue(actualArn.contains(secretName), "Expected value to contain expected substring");
+    assertTrue(
+        actualArn.contains(expectedArnPrefix), "Expected value to contain expected substring");
   }
 
   @Test
@@ -53,7 +54,7 @@ public class SecretsManagerStoreCreateTest {
     Map<String, Object> actualSecret = store.findSecret(secretName);
 
     // Assert
-    assertNotNull(actualSecret);
+    assertNotNull(actualSecret, "Expected actualSecret to not be null");
   }
 
   @Test
@@ -68,7 +69,7 @@ public class SecretsManagerStoreCreateTest {
     Map<String, Object> actualSecret = store.findSecret(expectedArn);
 
     // Assert
-    assertNotNull(actualSecret);
+    assertNotNull(actualSecret, "Expected actualSecret to not be null");
   }
 
   @Test
@@ -80,7 +81,7 @@ public class SecretsManagerStoreCreateTest {
     Map<String, Object> actualSecret = store.findSecret("doesNotExist");
 
     // Assert
-    assertNull(actualSecret);
+    assertNull(actualSecret, "Expected actualSecret to be null");
   }
 
   @Test
@@ -94,7 +95,7 @@ public class SecretsManagerStoreCreateTest {
     boolean actualResult = store.secretExists(secretName);
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -106,7 +107,7 @@ public class SecretsManagerStoreCreateTest {
     boolean actualResult = store.secretExists("mySecret");
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -121,6 +122,7 @@ public class SecretsManagerStoreCreateTest {
     List<Map<String, Object>> actualSecrets = store.listSecrets();
 
     // Assert
-    assertEquals(expectedSize, actualSecrets.size());
+    assertEquals(
+        expectedSize, actualSecrets.size(), "Expected actualSecrets.size() to match expectedSize");
   }
 }

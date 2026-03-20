@@ -76,7 +76,7 @@ class TestLwsStatus:
 
         # Assert
         output = json.loads(capsys.readouterr().out)
-        assert output["running"] is True
+        assert output["running"] is True, "Expected value to be truthy"
         actual_provider_count = len(output["providers"])
         actual_first_provider_name = output["providers"][0]["name"]
         actual_service_count = len(output["services"])
@@ -85,13 +85,27 @@ class TestLwsStatus:
         actual_first_service_resources = output["services"][0]["resources"]
         actual_second_service_resources = output["services"][1]["resources"]
 
-        assert actual_provider_count == expected_provider_count
-        assert actual_first_provider_name == expected_first_provider_name
-        assert actual_service_count == expected_service_count
-        assert actual_first_service_name == expected_first_service_name
-        assert actual_first_service_port == expected_first_service_port
-        assert actual_first_service_resources == expected_first_service_resources
-        assert actual_second_service_resources == expected_second_service_resources
+        assert (
+            actual_provider_count == expected_provider_count
+        ), f"Expected {expected_provider_count!r} but got {actual_provider_count!r}"
+        assert (
+            actual_first_provider_name == expected_first_provider_name
+        ), f"Expected {expected_first_provider_name!r} but got {actual_first_provider_name!r}"
+        assert (
+            actual_service_count == expected_service_count
+        ), f"Expected {expected_service_count!r} but got {actual_service_count!r}"
+        assert (
+            actual_first_service_name == expected_first_service_name
+        ), f"Expected {expected_first_service_name!r} but got {actual_first_service_name!r}"
+        assert (
+            actual_first_service_port == expected_first_service_port
+        ), f"Expected {expected_first_service_port!r} but got {actual_first_service_port!r}"
+        assert (
+            actual_first_service_resources == expected_first_service_resources
+        ), f"Expected {expected_first_service_resources!r}"
+        assert (
+            actual_second_service_resources == expected_second_service_resources
+        ), f"Expected {expected_second_service_resources!r}"
 
     @pytest.mark.asyncio
     async def test_default_outputs_table(self, capsys):
@@ -113,12 +127,12 @@ class TestLwsStatus:
             patcher.stop()
 
         output = capsys.readouterr().out
-        assert "LDK is running" in output
-        assert "dynamodb" in output
-        assert "sqs" in output
-        assert "healthy" in output
-        assert "3001" in output
-        assert "3002" in output
+        assert "LDK is running" in output, f'Expected {"LDK is running"!r} to be in {output!r}'
+        assert "dynamodb" in output, f'Expected {"dynamodb"!r} to be in {output!r}'
+        assert "sqs" in output, f'Expected {"sqs"!r} to be in {output!r}'
+        assert "healthy" in output, f'Expected {"healthy"!r} to be in {output!r}'
+        assert "3001" in output, f'Expected {"3001"!r} to be in {output!r}'
+        assert "3002" in output, f'Expected {"3002"!r} to be in {output!r}'
 
     @pytest.mark.asyncio
     async def test_status_exits_when_not_running(self):
@@ -139,4 +153,4 @@ class TestLwsStatus:
 
         runner = CliRunner()
         result = runner.invoke(app, ["--help"])
-        assert "status" in result.output
+        assert "status" in result.output, f'Expected {"status"!r} to be in {result.output!r}'

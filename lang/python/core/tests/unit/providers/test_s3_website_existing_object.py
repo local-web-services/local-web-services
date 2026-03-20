@@ -48,6 +48,6 @@ class TestExistingObjectNotAffected:
         response = await client.get("/web-bucket/style.css")
 
         # Assert
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected {200!r} but got {response.status_code!r}"
         actual_body = response.content
-        assert actual_body == expected_body
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"

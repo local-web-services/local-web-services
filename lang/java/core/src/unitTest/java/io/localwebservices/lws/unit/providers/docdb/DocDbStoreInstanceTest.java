@@ -25,8 +25,8 @@ public class DocDbStoreInstanceTest {
     Map<String, Object> actualInstance = store.createInstance(params);
 
     // Assert
-    assertNotNull(actualInstance);
-    assertEquals(expectedId, actualInstance.get("DBInstanceIdentifier"));
+    assertNotNull(actualInstance, "Expected actualInstance to not be null");
+    assertEquals(expectedId, actualInstance.get("DBInstanceIdentifier"), "Expected id to match");
   }
 
   @Test
@@ -46,8 +46,12 @@ public class DocDbStoreInstanceTest {
     List<Map<String, Object>> actualInstances = store.describeInstances("instance-a");
 
     // Assert
-    assertEquals(expectedSize, actualInstances.size());
-    assertEquals(expectedId, actualInstances.get(0).get("DBInstanceIdentifier"));
+    assertEquals(
+        expectedSize,
+        actualInstances.size(),
+        "Expected actualInstances.size() to match expectedSize");
+    assertEquals(
+        expectedId, actualInstances.get(0).get("DBInstanceIdentifier"), "Expected id to match");
   }
 
   @Test
@@ -66,7 +70,10 @@ public class DocDbStoreInstanceTest {
     List<Map<String, Object>> actualInstances = store.describeInstances(null);
 
     // Assert
-    assertEquals(expectedSize, actualInstances.size());
+    assertEquals(
+        expectedSize,
+        actualInstances.size(),
+        "Expected actualInstances.size() to match expectedSize");
   }
 
   @Test
@@ -83,9 +90,12 @@ public class DocDbStoreInstanceTest {
     Map<String, Object> actualDeleted = store.deleteInstance("my-instance");
 
     // Assert
-    assertNotNull(actualDeleted);
-    assertEquals(expectedId, actualDeleted.get("DBInstanceIdentifier"));
-    assertEquals(expectedRemainingSize, store.describeInstances(null).size());
+    assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
+    assertEquals(expectedId, actualDeleted.get("DBInstanceIdentifier"), "Expected id to match");
+    assertEquals(
+        expectedRemainingSize,
+        store.describeInstances(null).size(),
+        "Expected store.describeInstances(null).size() to match expectedRemainingSize");
   }
 
   @Test
@@ -97,6 +107,6 @@ public class DocDbStoreInstanceTest {
     Map<String, Object> actualDeleted = store.deleteInstance("does-not-exist");
 
     // Assert
-    assertNull(actualDeleted);
+    assertNull(actualDeleted, "Expected actualDeleted to be null");
   }
 }

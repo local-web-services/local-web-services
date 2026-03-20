@@ -57,9 +57,9 @@ class TestParseAssetsFromAssetManifest:
         result = parse_assets(cdk_out)
 
         # Assert
-        assert asset_hash in result
+        assert asset_hash in result, f"Expected {asset_hash!r} to be in {result!r}"
         actual_path = result[asset_hash]
-        assert actual_path == expected_path
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
 
     def test_multiple_file_assets(self, cdk_out: Path):
         # Arrange
@@ -92,9 +92,9 @@ class TestParseAssetsFromAssetManifest:
         result = parse_assets(cdk_out)
 
         # Assert
-        assert len(result) == expected_count
-        assert "hash1" in result
-        assert "hash2" in result
+        assert len(result) == expected_count, f"Expected {expected_count!r} but got {len(result)!r}"
+        assert "hash1" in result, f'Expected {"hash1"!r} to be in {result!r}'
+        assert "hash2" in result, f'Expected {"hash2"!r} to be in {result!r}'
 
     def test_docker_image_asset(self, cdk_out: Path):
         # Arrange
@@ -127,7 +127,7 @@ class TestParseAssetsFromAssetManifest:
         result = parse_assets(cdk_out)
 
         # Assert
-        assert "docker1" in result
+        assert "docker1" in result, f'Expected {"docker1"!r} to be in {result!r}'
 
     def test_cdk_asset_manifest_type(self, cdk_out: Path):
         """Modern CDK emits ``cdk:asset-manifest`` instead of ``aws:cdk:asset-manifest``."""
@@ -164,6 +164,6 @@ class TestParseAssetsFromAssetManifest:
         result = parse_assets(cdk_out)
 
         # Assert
-        assert asset_hash in result
+        assert asset_hash in result, f"Expected {asset_hash!r} to be in {result!r}"
         actual_path = result[asset_hash]
-        assert actual_path == expected_path
+        assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"

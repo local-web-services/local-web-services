@@ -18,8 +18,8 @@ public class ApiGatewayStoreTest {
     String actualId = ApiGatewayStore.shortId();
 
     // Assert
-    assertNotNull(actualId);
-    assertFalse(actualId.isEmpty());
+    assertNotNull(actualId, "Expected actualId to not be null");
+    assertFalse(actualId.isEmpty(), "Expected actualId to not be empty");
   }
 
   @Test
@@ -36,10 +36,11 @@ public class ApiGatewayStoreTest {
     store.reset();
 
     // Assert
-    assertFalse(store.apis.containsKey(expectedApiId));
-    assertFalse(store.resources.containsKey(expectedApiId));
-    assertFalse(store.deployments.containsKey(expectedApiId));
-    assertFalse(store.stages.containsKey(expectedApiId));
+    assertFalse(store.apis.containsKey(expectedApiId), "Expected map to not contain the key");
+    assertFalse(store.resources.containsKey(expectedApiId), "Expected map to not contain the key");
+    assertFalse(
+        store.deployments.containsKey(expectedApiId), "Expected map to not contain the key");
+    assertFalse(store.stages.containsKey(expectedApiId), "Expected map to not contain the key");
   }
 
   @Test
@@ -52,6 +53,6 @@ public class ApiGatewayStoreTest {
     store.apis.put(expectedApiId, Map.of("id", expectedApiId));
 
     // Assert
-    assertTrue(store.apis.containsKey(expectedApiId));
+    assertTrue(store.apis.containsKey(expectedApiId), "Expected map to contain the expected key");
   }
 }

@@ -20,7 +20,10 @@ describe("FakeBuilder", () => {
       await builder.clear();
 
       // Assert
-      expect(fakeFetch).toHaveBeenCalledWith(
+      expect(
+        fakeFetch,
+        "Expected fetch to have been called with the fake management URL and correct headers",
+      ).toHaveBeenCalledWith(
         EXPECTED_MGMT_URL,
         expect.objectContaining({
           method: "POST",
@@ -28,8 +31,13 @@ describe("FakeBuilder", () => {
         }),
       );
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.enabled).toBe(false);
-      expect(actualBody.dynamodb.rules).toEqual([]);
+      expect(actualBody.dynamodb.enabled, "Expected dynamodb enabled to be false after clear").toBe(
+        false,
+      );
+      expect(
+        actualBody.dynamodb.rules,
+        "Expected dynamodb rules to be an empty array after clear",
+      ).toEqual([]);
     });
   });
 
@@ -42,7 +50,9 @@ describe("FakeBuilder", () => {
       const actual = builder.operation("PutItem");
 
       // Assert
-      expect(actual).toBeInstanceOf(FakeRuleBuilder);
+      expect(actual, "Expected operation() to return a FakeRuleBuilder instance").toBeInstanceOf(
+        FakeRuleBuilder,
+      );
     });
   });
 });
@@ -71,9 +81,18 @@ describe("FakeRuleBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualRule = actualBody.dynamodb.rules[0];
-      expect(actualRule.operation).toBe(expectedOperation);
-      expect(actualRule.response.status).toBe(expectedStatus);
-      expect(actualRule.response.body).toBe(expectedBody);
+      expect(
+        actualRule.operation,
+        "Expected the rule operation to match the configured operation",
+      ).toBe(expectedOperation);
+      expect(
+        actualRule.response.status,
+        "Expected the rule response status to match the configured status",
+      ).toBe(expectedStatus);
+      expect(
+        actualRule.response.body,
+        "Expected the rule response body to match the configured body",
+      ).toBe(expectedBody);
     });
 
     it("JSON-encodes an object body", async () => {
@@ -86,7 +105,10 @@ describe("FakeRuleBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.rules[0].response.body).toBe(JSON.stringify(expectedPayload));
+      expect(
+        actualBody.dynamodb.rules[0].response.body,
+        "Expected the object body to be JSON-encoded in the rule response",
+      ).toBe(JSON.stringify(expectedPayload));
     });
 
     it("uses default status 200 when not specified", async () => {
@@ -98,7 +120,10 @@ describe("FakeRuleBuilder", () => {
 
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
-      expect(actualBody.dynamodb.rules[0].response.status).toBe(200);
+      expect(
+        actualBody.dynamodb.rules[0].response.status,
+        "Expected the default response status to be 200 when not specified",
+      ).toBe(200);
     });
 
     it("returns the parent FakeBuilder", async () => {
@@ -109,7 +134,9 @@ describe("FakeRuleBuilder", () => {
       const actual = await builder.operation("GetItem").respond({});
 
       // Assert
-      expect(actual).toBe(builder);
+      expect(actual, "Expected respond() to return the parent FakeBuilder for chaining").toBe(
+        builder,
+      );
     });
   });
 
@@ -127,10 +154,19 @@ describe("FakeRuleBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualRule = actualBody.dynamodb.rules[0];
-      expect(actualRule.response.status).toBe(expectedStatus);
+      expect(
+        actualRule.response.status,
+        "Expected the error rule response status to match the configured status",
+      ).toBe(expectedStatus);
       const parsedRuleBody = JSON.parse(actualRule.response.body);
-      expect(parsedRuleBody.__type).toBe(expectedErrorType);
-      expect(parsedRuleBody.message).toBe(expectedMessage);
+      expect(
+        parsedRuleBody.__type,
+        "Expected the error rule body __type to match the configured error type",
+      ).toBe(expectedErrorType);
+      expect(
+        parsedRuleBody.message,
+        "Expected the error rule body message to match the configured message",
+      ).toBe(expectedMessage);
     });
   });
 
@@ -150,7 +186,10 @@ describe("FakeRuleBuilder", () => {
       // Assert
       const actualBody = JSON.parse(fakeFetch.mock.calls[0][1].body);
       const actualMatchHeaders = actualBody.dynamodb.rules[0].match_headers;
-      expect(actualMatchHeaders[expectedHeaderName]).toBe(expectedHeaderValue);
+      expect(
+        actualMatchHeaders[expectedHeaderName],
+        "Expected match_headers to contain the configured header value",
+      ).toBe(expectedHeaderValue);
     });
   });
 });
