@@ -14,10 +14,21 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
+from lws.providers._shared.aws_chaos import (
+    AwsChaosConfig,
+    AwsChaosMiddleware,
+    ErrorFormat,
+)
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+)
+from lws.providers._shared.aws_operation_fake import (
+    AwsFakeConfig,
+    AwsOperationFakeMiddleware,
+)
 from lws.providers.sns._sns_handlers import _ACTION_HANDLERS
 from lws.providers.sns.provider import SnsProvider
 
@@ -141,6 +152,7 @@ async def _sns_dispatch(
     provider: SnsProvider,
     lc: ResourceLifecycleConfig,
     tracker: ResourceStateTracker,
+    sqs_capacity: AwsCapacityConfig | None = None,
 ) -> Response:
     """Route a single SNS request."""
     params = await _parse_form(request)
@@ -149,6 +161,17 @@ async def _sns_dispatch(
     err = _check_sns_topic_lifecycle(action, params, lc, tracker)
     if err is not None:
         return err
+
+    if action == "Publish" and sqs_capacity is not None and sqs_capacity.is_exhausted:
+        xml = (
+            "<ErrorResponse><Error>"
+            "<Code>ServiceUnavailableException</Code>"
+            "<Message>lws: no message slots available</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=503, media_type="text/xml")
 
     handler = _ACTION_HANDLERS.get(action)
     if handler is None:
@@ -166,7 +189,9 @@ async def _sns_dispatch(
         return Response(content=xml, status_code=400, media_type="text/xml")
 
     if lc.enabled:
-        result = await _handle_sns_lifecycle(action, handler, provider, params, lc, tracker)
+        result = await _handle_sns_lifecycle(
+            action, handler, provider, params, lc, tracker
+        )
         if result is not None:
             return result
 
@@ -179,6 +204,7 @@ def create_sns_app(
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    sqs_capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the SNS wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -186,14 +212,18 @@ def create_sns_app(
 
     app = FastAPI(title="LDK SNS")
     if aws_fake is not None:
-        app.add_middleware(AwsOperationFakeMiddleware, fake_config=aws_fake, service="sns")
+        app.add_middleware(
+            AwsOperationFakeMiddleware, fake_config=aws_fake, service="sns"
+        )
     add_iam_auth_middleware(app, "sns", iam_auth, ErrorFormat.XML_IAM)
     if chaos is not None:
-        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)
+        app.add_middleware(
+            AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM
+        )
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sns")
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        return await _sns_dispatch(request, provider, _lc, _tracker)
+        return await _sns_dispatch(request, provider, _lc, _tracker, sqs_capacity)
 
     return app

@@ -203,9 +203,13 @@ def _convert_spec(spec: dict[str, Any]) -> dict[str, list[Any]]:
     return {
         "tables": [_make_table_config(t) for t in spec.get("tables", [])],
         "queues": [_make_queue_config(q) for q in spec.get("queues", [])],
-        "buckets": [b if isinstance(b, str) else b["name"] for b in spec.get("buckets", [])],
+        "buckets": [
+            b if isinstance(b, str) else b["name"] for b in spec.get("buckets", [])
+        ],
         "topics": [_make_topic_config(t) for t in spec.get("topics", [])],
-        "state_machines": [_make_state_machine_config(sm) for sm in spec.get("state_machines", [])],
+        "state_machines": [
+            _make_state_machine_config(sm) for sm in spec.get("state_machines", [])
+        ],
         "parameters": [_make_initial_parameter(p) for p in spec.get("parameters", [])],
         "secrets": [_make_initial_secret(s) for s in spec.get("secrets", [])],
     }
@@ -315,6 +319,7 @@ def _build_service_apps(
                 chaos=chaos_configs["sns"],
                 aws_fake=fake_configs["sns"],
                 lifecycle=lifecycle_configs["sns"],
+                sqs_capacity=_cap.get("sqs"),
             ),
         ),
         (
@@ -338,6 +343,7 @@ def _build_service_apps(
                 aws_fake=fake_configs["events"],
                 lifecycle=lifecycle_configs["events"],
                 sf_tracker=_sf_tracker_ref[0] if _sf_tracker_ref else None,
+                sqs_capacity=_cap.get("sqs"),
             ),
         ),
         (
@@ -382,7 +388,9 @@ async def _start_all_servers(
     for svc, app in service_apps:
         server, task = await start_uvicorn_server(app, ports[svc], host="127.0.0.1")
         servers.append((server, task))
-    mgmt_server, mgmt_task = await start_uvicorn_server(mgmt_app, mgmt_port, host="127.0.0.1")
+    mgmt_server, mgmt_task = await start_uvicorn_server(
+        mgmt_app, mgmt_port, host="127.0.0.1"
+    )
     servers.append((mgmt_server, mgmt_task))
     return servers
 
@@ -423,13 +431,21 @@ async def start_services(
 
     chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}
     fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
-    lifecycle_configs: dict[str, Any] = {s: ResourceLifecycleConfig() for s in _SERVICE_NAMES}
+    lifecycle_configs: dict[str, Any] = {
+        s: ResourceLifecycleConfig() for s in _SERVICE_NAMES
+    }
     capacity_configs: dict[str, Any] = {s: AwsCapacityConfig() for s in _SERVICE_NAMES}
     ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
     mgmt_port = _free_port()
 
     service_apps, extra_providers = _build_service_apps(
-        providers, ports, chaos_configs, fake_configs, lifecycle_configs, cfg, capacity_configs
+        providers,
+        ports,
+        chaos_configs,
+        fake_configs,
+        lifecycle_configs,
+        cfg,
+        capacity_configs,
     )
     # Merge ssm/secretsmanager state wrappers so the management reset endpoint can reach them
     all_providers = {**providers, **extra_providers}

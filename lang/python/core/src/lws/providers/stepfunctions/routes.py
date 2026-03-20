@@ -11,10 +11,20 @@ from fastapi import APIRouter, FastAPI, Request, Response
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
 from lws.providers._shared.aws_capacity import AwsCapacityConfig
-from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_chaos import (
+    AwsChaosConfig,
+    AwsChaosMiddleware,
+    ErrorFormat,
+)
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+)
+from lws.providers._shared.aws_operation_fake import (
+    AwsFakeConfig,
+    AwsOperationFakeMiddleware,
+)
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.stepfunctions._stepfunctions_helpers import (
     _error_response,
@@ -135,6 +145,10 @@ class StepFunctionsRouter:
 
     async def _start_sync_execution(self, body: dict) -> Response:
         """Handle StartSyncExecution API action (EXPRESS workflows only)."""
+        if self._capacity.is_exhausted:
+            return _error_response(
+                "ServiceUnavailableException", "lws: no execution slots available"
+            )
         sm_name = _extract_state_machine_name(body)
         input_data = _parse_input(body)
         execution_name = body.get("name")
@@ -163,7 +177,9 @@ class StepFunctionsRouter:
         execution_arn = body.get("executionArn", "")
         history = self.provider.get_execution(execution_arn)
         if history is None:
-            return _error_response("ExecutionDoesNotExist", f"Execution not found: {execution_arn}")
+            return _error_response(
+                "ExecutionDoesNotExist", f"Execution not found: {execution_arn}"
+            )
         return _json_response(_format_execution(history))
 
     async def _list_executions(self, body: dict) -> Response:
@@ -470,8 +486,12 @@ def create_stepfunctions_app(
         )
     add_iam_auth_middleware(app, "stepfunctions", iam_auth, ErrorFormat.JSON)
     if chaos is not None:
-        app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
-    app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions")
+        app.add_middleware(
+            AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON
+        )
+    app.add_middleware(
+        RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions"
+    )
     sfn_router = StepFunctionsRouter(provider, lifecycle=lifecycle, capacity=capacity)
     if tracker_ref is not None:
         tracker_ref.append(sfn_router.tracker)
