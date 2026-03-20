@@ -30,7 +30,7 @@ module.exports = {
       "../../../lang/specification/core/informal/stepfunctions_ssm/**/*.feature",
       "../../../lang/specification/core/informal/organizations/**/*.feature",
     ],
-    tags: "@minimal or @standard",
+    tags: "(@minimal or @standard) and not @internal",
     format: ["progress"],
     timeout: 30000,
     strict: false,
