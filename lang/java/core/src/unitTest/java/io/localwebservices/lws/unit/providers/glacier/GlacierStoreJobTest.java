@@ -41,7 +41,7 @@ public class GlacierStoreJobTest {
 
     // Assert
     assertNotNull(actualJob, "Expected actualJob to not be null");
-    assertEquals(expectedStatusCode, actualJob.get("StatusCode"), "Expected actualJob.get("StatusCode") to equal expectedStatusCode");
+    assertEquals(expectedStatusCode, actualJob.get("StatusCode"), "Expected statusCode to match");
   }
 
   @Test

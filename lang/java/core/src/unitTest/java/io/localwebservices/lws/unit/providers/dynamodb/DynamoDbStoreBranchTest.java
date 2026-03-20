@@ -46,7 +46,7 @@ public class DynamoDbStoreBranchTest {
 
     // Assert
     assertNotNull(actualItem, "Expected actualItem to not be null");
-    assertEquals(strAttr("widget"), actualItem.get("name"), "Expected actualItem.get("name") to equal strAttr("widget")");
+    assertEquals(strAttr("widget"), actualItem.get("name"), "Expected values to match");
   }
 
   @Test
@@ -150,7 +150,7 @@ public class DynamoDbStoreBranchTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("r1")));
-    assertEquals(strAttr("new-label"), actualItem.get("label"), "Expected actualItem.get("label") to equal strAttr("new-label")");
+    assertEquals(strAttr("new-label"), actualItem.get("label"), "Expected values to match");
   }
 
   @Test
@@ -248,7 +248,7 @@ public class DynamoDbStoreBranchTest {
 
     // Assert
     assertNotNull(actualItem, "Expected actualItem to not be null");
-    assertEquals("value", actualItem.get("data"), "Expected actualItem.get("data") to equal "value"");
+    assertEquals("value", actualItem.get("data"), "Expected values to match");
   }
 
   @Test

@@ -23,8 +23,8 @@ public class GlacierStoreVaultTest {
     Map<String, Object> actualVault = store.createVault(vaultName);
 
     // Assert
-    assertEquals(expectedVaultName, actualVault.get("VaultName"), "Expected actualVault.get("VaultName") to equal expectedVaultName");
-    assertNotNull(actualVault.get("VaultARN"), "Expected actualVault.get("VaultARN") to not be null");
+    assertEquals(expectedVaultName, actualVault.get("VaultName"), "Expected vaultName to match");
+    assertNotNull(actualVault.get("VaultARN"), "Expected values to match");
     assertTrue(actualVault.get("VaultARN").toString().contains("my-vault"), "Expected value to contain expected substring");
   }
 
@@ -41,7 +41,7 @@ public class GlacierStoreVaultTest {
 
     // Assert
     assertNotNull(actualVault, "Expected actualVault to not be null");
-    assertEquals(expectedVaultName, actualVault.get("VaultName"), "Expected actualVault.get("VaultName") to equal expectedVaultName");
+    assertEquals(expectedVaultName, actualVault.get("VaultName"), "Expected vaultName to match");
   }
 
   @Test

@@ -46,7 +46,9 @@ class TestDeleteQueueJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
 
     @pytest.mark.asyncio
     async def test_delete_queue_not_found(self, client: httpx.AsyncClient) -> None:
@@ -62,6 +64,10 @@ class TestDeleteQueueJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
         data = resp.json()
-        assert "NonExistentQueue" in data["__type"], f'Expected {"NonExistentQueue"!r} to be in {data["__type"]!r}'
+        assert "NonExistentQueue" in data["__type"], (
+            f'Expected {"NonExistentQueue"!r} to be in {data["__type"]!r}'
+        )

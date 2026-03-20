@@ -31,6 +31,12 @@ class TestBuildGsi:
         gsi = _build_gsi(raw)
 
         # Assert
-        assert gsi.index_name == expected_index_name, f"Expected {expected_index_name!r} but got {gsi.index_name!r}"
-        assert gsi.key_schema.partition_key.name == expected_partition_key_name, f"Expected {expected_partition_key_name!r} but got {gsi.key_schema.partition_key.name!r}"
-        assert gsi.projection_type == expected_projection_type, f"Expected {expected_projection_type!r} but got {gsi.projection_type!r}"
+        assert gsi.index_name == expected_index_name, (
+            f"Expected {expected_index_name!r} but got {gsi.index_name!r}"
+        )
+        assert gsi.key_schema.partition_key.name == expected_partition_key_name, (
+            f"Expected {expected_partition_key_name!r}"
+        )
+        assert gsi.projection_type == expected_projection_type, (
+            f"Expected {expected_projection_type!r} but got {gsi.projection_type!r}"
+        )

@@ -57,4 +57,4 @@ class TestPassthrough:
         actual_env = resolve_env_vars({}, resource_registry={})
 
         # Assert
-        assert actual_env == {}, "Expected {0!r} but got {1!r}".format({}, actual_env)
+        assert actual_env == {}, f"Expected {({})!r} but got {actual_env!r}"

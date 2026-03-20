@@ -37,8 +37,12 @@ def test_dynamodb_put_and_get_item(session):
 
     # Assert
     actual_item = response["Item"]
-    assert actual_item["id"]["S"] == "order-1", f'Expected {"order-1"!r} but got {actual_item["id"]["S"]!r}'
-    assert actual_item["status"]["S"] == "pending", f'Expected {"pending"!r} but got {actual_item["status"]["S"]!r}'
+    assert actual_item["id"]["S"] == "order-1", (
+        f'Expected {"order-1"!r} but got {actual_item["id"]["S"]!r}'
+    )
+    assert actual_item["status"]["S"] == "pending", (
+        f'Expected {"pending"!r} but got {actual_item["status"]["S"]!r}'
+    )
 
 
 def test_dynamodb_helper_scan(session):
@@ -66,7 +70,9 @@ def test_s3_put_and_get(session):
     actual_content = bucket.get("test/file.txt")
 
     # Assert
-    assert actual_content == expected_content, f"Expected {expected_content!r} but got {actual_content!r}"
+    assert actual_content == expected_content, (
+        f"Expected {expected_content!r} but got {actual_content!r}"
+    )
 
 
 def test_sqs_send_and_receive(session):
@@ -81,7 +87,9 @@ def test_sqs_send_and_receive(session):
 
     # Assert
     assert len(messages) == 1, f"Expected {1!r} but got {len(messages)!r}"
-    assert messages[0]["Body"] == expected_body, f'Expected {expected_body!r} but got {messages[0]["Body"]!r}'
+    assert messages[0]["Body"] == expected_body, (
+        f'Expected {expected_body!r} but got {messages[0]["Body"]!r}'
+    )
 
 
 def test_session_reset_clears_state(session):
@@ -146,4 +154,6 @@ def test_queue_url_returns_local_url(session):
 
     # Assert
     assert "127.0.0.1" in actual_url, f'Expected {"127.0.0.1"!r} to be in {actual_url!r}'
-    assert expected_queue_name in actual_url, f"Expected {expected_queue_name!r} to be in {actual_url!r}"
+    assert expected_queue_name in actual_url, (
+        f"Expected {expected_queue_name!r} to be in {actual_url!r}"
+    )

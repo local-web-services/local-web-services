@@ -55,7 +55,7 @@ public class SsmStoreDeleteTest {
     assertEquals(expectedDeletedCount, actualDeleted.size(), "Expected actualDeleted.size() to match expectedDeletedCount");
     assertTrue(actualDeleted.contains("/del/a"), "Expected value to contain expected substring");
     assertTrue(actualDeleted.contains("/del/b"), "Expected value to contain expected substring");
-    assertEquals(expectedMissingCount, store.getParameters(List.of("/del/a", "/del/b")).size(), "Expected store.getParameters(List.of("/del/a", "/del/b")).size() to match expectedMissingCount");
+    assertEquals(expectedMissingCount, store.getParameters(List.of("/del/a", "/del/b")).size(), "Expected missingCount to match");
   }
 
   @Test
@@ -72,8 +72,8 @@ public class SsmStoreDeleteTest {
 
     // Assert
     assertEquals(expectedCount, actualParams.size(), "Expected actualParams.size() to match expectedCount");
-    assertEquals(expectedName, actualParams.get(0).get("Name"), "Expected actualParams.get(0).get("Name") to equal expectedName");
-    assertEquals(expectedType, actualParams.get(0).get("Type"), "Expected actualParams.get(0).get("Type") to equal expectedType");
+    assertEquals(expectedName, actualParams.get(0).get("Name"), "Expected name to match");
+    assertEquals(expectedType, actualParams.get(0).get("Type"), "Expected type to match");
   }
 
   @Test

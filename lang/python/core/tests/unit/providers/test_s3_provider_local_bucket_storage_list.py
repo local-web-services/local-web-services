@@ -86,7 +86,9 @@ class TestLocalBucketStorageList:
         actual_keys = [item["key"] for item in result["contents"]]
 
         # Assert
-        assert len(actual_keys) == expected_count, f"Expected {expected_count!r} but got {len(actual_keys)!r}"
+        assert len(actual_keys) == expected_count, (
+            f"Expected {expected_count!r} but got {len(actual_keys)!r}"
+        )
         assert all(k.startswith(prefix) for k in actual_keys), "Expected value to be truthy"
 
     async def test_list_pagination(self, storage: LocalBucketStorage) -> None:
@@ -99,7 +101,9 @@ class TestLocalBucketStorageList:
 
         # Act / Assert - First page
         page1 = await storage.list_objects(bucket, max_keys=page_size)
-        assert len(page1["contents"]) == page_size, f'Expected {page_size!r} but got {len(page1["contents"])!r}'
+        assert len(page1["contents"]) == page_size, (
+            f'Expected {page_size!r} but got {len(page1["contents"])!r}'
+        )
         assert page1["is_truncated"] is True, "Expected value to be truthy"
         assert page1["next_token"] is not None, "Expected value to be set but was None"
 
@@ -107,7 +111,9 @@ class TestLocalBucketStorageList:
         page2 = await storage.list_objects(
             bucket, max_keys=page_size, continuation_token=page1["next_token"]
         )
-        assert len(page2["contents"]) == page_size, f'Expected {page_size!r} but got {len(page2["contents"])!r}'
+        assert len(page2["contents"]) == page_size, (
+            f'Expected {page_size!r} but got {len(page2["contents"])!r}'
+        )
         assert page2["is_truncated"] is True, "Expected value to be truthy"
 
         # Act / Assert - Third page
@@ -119,4 +125,6 @@ class TestLocalBucketStorageList:
 
         # Assert - All keys collected
         all_keys = [item["key"] for page in [page1, page2, page3] for item in page["contents"]]
-        assert len(all_keys) == expected_total_keys, f"Expected {expected_total_keys!r} but got {len(all_keys)!r}"
+        assert len(all_keys) == expected_total_keys, (
+            f"Expected {expected_total_keys!r} but got {len(all_keys)!r}"
+        )

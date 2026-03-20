@@ -106,15 +106,21 @@ class TestGetExecutionHistory:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         assert "events" in data, f'Expected {"events"!r} to be in {data!r}'
         events = data["events"]
         assert len(events) >= 1, f"Expected {len(events)!r} >= {1!r}"
         actual_first_event_type = events[0]["type"]
         actual_last_event_type = events[-1]["type"]
-        assert actual_first_event_type == expected_first_event_type, f"Expected {expected_first_event_type!r} but got {actual_first_event_type!r}"
-        assert actual_last_event_type == expected_last_event_type, f"Expected {expected_last_event_type!r} but got {actual_last_event_type!r}"
+        assert actual_first_event_type == expected_first_event_type, (
+            f"Expected {expected_first_event_type!r} but got {actual_first_event_type!r}"
+        )
+        assert actual_last_event_type == expected_last_event_type, (
+            f"Expected {expected_last_event_type!r} but got {actual_last_event_type!r}"
+        )
 
     async def test_get_execution_history_with_max_results(self, client: httpx.AsyncClient) -> None:
         """GetExecutionHistory should respect maxResults."""
@@ -153,10 +159,14 @@ class TestGetExecutionHistory:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )
 
     async def test_get_execution_history_aborted_execution(self, client: httpx.AsyncClient) -> None:
         """GetExecutionHistory for an aborted execution should include ExecutionAborted event."""
@@ -188,8 +198,12 @@ class TestGetExecutionHistory:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         events = data["events"]
         actual_last_event_type = events[-1]["type"]
-        assert actual_last_event_type == expected_last_event_type, f"Expected {expected_last_event_type!r} but got {actual_last_event_type!r}"
+        assert actual_last_event_type == expected_last_event_type, (
+            f"Expected {expected_last_event_type!r} but got {actual_last_event_type!r}"
+        )

@@ -96,13 +96,19 @@ class TestUpdateTable:
         resp = await fake_client.post("/", json=payload, headers=_target("UpdateTable"))
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         assert "TableDescription" in data, f'Expected {"TableDescription"!r} to be in {data!r}'
         actual_table_name = data["TableDescription"]["TableName"]
         actual_table_status = data["TableDescription"]["TableStatus"]
-        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
-        assert actual_table_status == expected_table_status, f"Expected {expected_table_status!r} but got {actual_table_status!r}"
+        assert actual_table_name == expected_table_name, (
+            f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        )
+        assert actual_table_status == expected_table_status, (
+            f"Expected {expected_table_status!r} but got {actual_table_status!r}"
+        )
         fake_store.describe_table.assert_awaited_once_with("MyTable")
 
     @pytest.mark.asyncio
@@ -119,10 +125,14 @@ class TestUpdateTable:
         resp = await fake_client.post("/", json=payload, headers=_target("UpdateTable"))
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         actual_error_type = data["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )
 
     @pytest.mark.asyncio
     async def test_update_table_integration(
@@ -141,12 +151,20 @@ class TestUpdateTable:
             resp = await real_client.post("/", json=payload, headers=_target("UpdateTable"))
 
             # Assert
-            assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+            assert resp.status_code == expected_status_code, (
+                f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+            )
             data = resp.json()
             actual_table_name = data["TableDescription"]["TableName"]
             actual_table_status = data["TableDescription"]["TableStatus"]
-            assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
-            assert actual_table_status == expected_table_status, f"Expected {expected_table_status!r} but got {actual_table_status!r}"
-            assert data["TableDescription"]["TableArn"].endswith(expected_arn_suffix), "Expected value to be truthy"
+            assert actual_table_name == expected_table_name, (
+                f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+            )
+            assert actual_table_status == expected_table_status, (
+                f"Expected {expected_table_status!r} but got {actual_table_status!r}"
+            )
+            assert data["TableDescription"]["TableArn"].endswith(expected_arn_suffix), (
+                "Expected value to be truthy"
+            )
         finally:
             await real_provider.stop()

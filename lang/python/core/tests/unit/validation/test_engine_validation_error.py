@@ -78,5 +78,9 @@ class TestValidationError:
 
         # Assert
         assert err.issues == issues, f"Expected {issues!r} but got {err.issues!r}"
-        assert expected_issue_summary in actual_str, f"Expected {expected_issue_summary!r} to be in {actual_str!r}"
-        assert expected_message_1 in actual_str, f"Expected {expected_message_1!r} to be in {actual_str!r}"
+        assert expected_issue_summary in actual_str, (
+            f"Expected {expected_issue_summary!r} to be in {actual_str!r}"
+        )
+        assert expected_message_1 in actual_str, (
+            f"Expected {expected_message_1!r} to be in {actual_str!r}"
+        )

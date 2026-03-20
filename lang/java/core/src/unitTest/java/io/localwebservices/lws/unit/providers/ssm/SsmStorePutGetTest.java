@@ -25,8 +25,8 @@ public class SsmStorePutGetTest {
         store.putParameter(expectedName, expectedValue, "String", false);
 
     // Assert
-    assertEquals(expectedName, actualParam.get("Name"), "Expected actualParam.get("Name") to equal expectedName");
-    assertEquals(expectedValue, actualParam.get("Value"), "Expected actualParam.get("Value") to equal expectedValue");
+    assertEquals(expectedName, actualParam.get("Name"), "Expected name to match");
+    assertEquals(expectedValue, actualParam.get("Value"), "Expected value to match");
   }
 
   @Test
@@ -41,7 +41,7 @@ public class SsmStorePutGetTest {
 
     // Assert
     assertNotNull(actualParam, "Expected actualParam to not be null");
-    assertEquals(expectedName, actualParam.get("Name"), "Expected actualParam.get("Name") to equal expectedName");
+    assertEquals(expectedName, actualParam.get("Name"), "Expected name to match");
   }
 
   @Test
@@ -67,7 +67,7 @@ public class SsmStorePutGetTest {
     Map<String, Object> actualParam = store.getParameter("myParam");
 
     // Assert
-    assertEquals(expectedType, actualParam.get("Type"), "Expected actualParam.get("Type") to equal expectedType");
+    assertEquals(expectedType, actualParam.get("Type"), "Expected type to match");
   }
 
   @Test

@@ -54,11 +54,17 @@ class TestTags:
 
         # Assert
         expected_tag_count = 1
-        assert len(result["TagList"]) == expected_tag_count, f'Expected {expected_tag_count!r} but got {len(result["TagList"])!r}'
+        assert len(result["TagList"]) == expected_tag_count, (
+            f'Expected {expected_tag_count!r} but got {len(result["TagList"])!r}'
+        )
         actual_tag_key = result["TagList"][0]["Key"]
         actual_tag_value = result["TagList"][0]["Value"]
-        assert actual_tag_key == expected_tag_key, f"Expected {expected_tag_key!r} but got {actual_tag_key!r}"
-        assert actual_tag_value == expected_tag_value, f"Expected {expected_tag_value!r} but got {actual_tag_value!r}"
+        assert actual_tag_key == expected_tag_key, (
+            f"Expected {expected_tag_key!r} but got {actual_tag_key!r}"
+        )
+        assert actual_tag_value == expected_tag_value, (
+            f"Expected {expected_tag_value!r} but got {actual_tag_value!r}"
+        )
 
     def test_remove_tags(self, client: TestClient) -> None:
         # Arrange
@@ -95,7 +101,9 @@ class TestTags:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )
 
     def test_add_tags_to_cluster(self, client: TestClient) -> None:
         # Arrange
@@ -122,8 +130,14 @@ class TestTags:
 
         # Assert
         expected_tag_count = 1
-        assert len(result["TagList"]) == expected_tag_count, f'Expected {expected_tag_count!r} but got {len(result["TagList"])!r}'
+        assert len(result["TagList"]) == expected_tag_count, (
+            f'Expected {expected_tag_count!r} but got {len(result["TagList"])!r}'
+        )
         actual_tag_key = result["TagList"][0]["Key"]
         actual_tag_value = result["TagList"][0]["Value"]
-        assert actual_tag_key == expected_tag_key, f"Expected {expected_tag_key!r} but got {actual_tag_key!r}"
-        assert actual_tag_value == expected_tag_value, f"Expected {expected_tag_value!r} but got {actual_tag_value!r}"
+        assert actual_tag_key == expected_tag_key, (
+            f"Expected {expected_tag_key!r} but got {actual_tag_key!r}"
+        )
+        assert actual_tag_value == expected_tag_value, (
+            f"Expected {expected_tag_value!r} but got {actual_tag_value!r}"
+        )

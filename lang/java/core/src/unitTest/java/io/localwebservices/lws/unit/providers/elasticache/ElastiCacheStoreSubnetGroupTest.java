@@ -25,7 +25,7 @@ public class ElastiCacheStoreSubnetGroupTest {
 
     // Assert
     assertNotNull(actualGroup, "Expected actualGroup to not be null");
-    assertEquals(expectedGroupName, actualGroup.get("CacheSubnetGroupName"), "Expected actualGroup.get("CacheSubnetGroupName") to equal expectedGroupName");
+    assertEquals(expectedGroupName, actualGroup.get("CacheSubnetGroupName"), "Expected groupName to match");
   }
 
   @Test
@@ -41,7 +41,7 @@ public class ElastiCacheStoreSubnetGroupTest {
     Map<String, Object> actualGroup = store.createCacheSubnetGroup(params);
 
     // Assert
-    assertEquals(expectedVpcId, actualGroup.get("VpcId"), "Expected actualGroup.get("VpcId") to equal expectedVpcId");
+    assertEquals(expectedVpcId, actualGroup.get("VpcId"), "Expected vpcId to match");
   }
 
   @Test
@@ -63,7 +63,7 @@ public class ElastiCacheStoreSubnetGroupTest {
 
     // Assert
     assertEquals(expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
-    assertEquals("sg-one", actualGroups.get(0).get("CacheSubnetGroupName"), "Expected actualGroups.get(0).get("CacheSubnetGroupName") to equal "sg-one"");
+    assertEquals("sg-one", actualGroups.get(0).get("CacheSubnetGroupName"), "Expected values to match");
   }
 
   @Test

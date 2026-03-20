@@ -119,11 +119,15 @@ class TestQueryStringParameterExtraction:
 
         expected_status = 200
         expected_query_params = {"q": "hello", "page": "2"}
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
 
         event: dict = fake_compute.invoke.call_args[0][0]
         actual_query_params = event["queryStringParameters"]
-        assert actual_query_params == expected_query_params, f"Expected {expected_query_params!r} but got {actual_query_params!r}"
+        assert actual_query_params == expected_query_params, (
+            f"Expected {expected_query_params!r} but got {actual_query_params!r}"
+        )
 
     @pytest.mark.asyncio
     async def test_no_query_string_gives_none(self) -> None:
@@ -137,4 +141,6 @@ class TestQueryStringParameterExtraction:
             await client.get("/items")
 
         event: dict = fake_compute.invoke.call_args[0][0]
-        assert event["queryStringParameters"] is None, f'Expected None but got {event["queryStringParameters"]!r}'
+        assert event["queryStringParameters"] is None, (
+            f'Expected None but got {event["queryStringParameters"]!r}'
+        )

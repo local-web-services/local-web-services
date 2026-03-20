@@ -146,5 +146,7 @@ class TestS3Event:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
         assert "s3" in issues[0].message, f'Expected {"s3"!r} to be in {issues[0].message!r}'

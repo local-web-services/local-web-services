@@ -125,8 +125,16 @@ class TestLambdaContextPassed:
         actual_function_name = context.function_name
         actual_memory = context.memory_limit_in_mb
         actual_timeout = context.timeout_seconds
-        assert actual_function_name == expected_function_name, f"Expected {expected_function_name!r} but got {actual_function_name!r}"
-        assert actual_memory == expected_memory, f"Expected {expected_memory!r} but got {actual_memory!r}"
-        assert actual_timeout == expected_timeout, f"Expected {expected_timeout!r} but got {actual_timeout!r}"
+        assert actual_function_name == expected_function_name, (
+            f"Expected {expected_function_name!r} but got {actual_function_name!r}"
+        )
+        assert actual_memory == expected_memory, (
+            f"Expected {expected_memory!r} but got {actual_memory!r}"
+        )
+        assert actual_timeout == expected_timeout, (
+            f"Expected {expected_timeout!r} but got {actual_timeout!r}"
+        )
         assert context.aws_request_id  # non-empty string, "Expected value to be truthy"
-        assert expected_function_name in context.invoked_function_arn, f"Expected {expected_function_name!r} to be in {context.invoked_function_arn!r}"
+        assert expected_function_name in context.invoked_function_arn, (
+            f"Expected {expected_function_name!r} to be in {context.invoked_function_arn!r}"
+        )

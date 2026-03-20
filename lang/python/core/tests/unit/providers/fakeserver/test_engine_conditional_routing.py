@@ -29,7 +29,9 @@ class TestConditionalRouting:
         # Assert
         assert result is not None, "Expected value to be set but was None"
         actual_version = result[0].body["version"]
-        assert actual_version == expected_version, f"Expected {expected_version!r} but got {actual_version!r}"
+        assert actual_version == expected_version, (
+            f"Expected {expected_version!r} but got {actual_version!r}"
+        )
 
     def test_header_no_match_falls_through(self):
         # Arrange
@@ -53,7 +55,9 @@ class TestConditionalRouting:
         # Assert
         assert result is not None, "Expected value to be set but was None"
         actual_version = result[0].body["version"]
-        assert actual_version == expected_version, f"Expected {expected_version!r} but got {actual_version!r}"
+        assert actual_version == expected_version, (
+            f"Expected {expected_version!r} but got {actual_version!r}"
+        )
 
     def test_path_param_regex_match(self):
         # Arrange
@@ -77,7 +81,9 @@ class TestConditionalRouting:
         # Assert
         assert result is not None, "Expected value to be set but was None"
         actual_status = result[0].status
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
 
     def test_query_param_match(self):
         # Arrange
@@ -101,7 +107,9 @@ class TestConditionalRouting:
         # Assert
         assert result is not None, "Expected value to be set but was None"
         actual_filter = result[0].body["filter"]
-        assert actual_filter == expected_filter, f"Expected {expected_filter!r} but got {actual_filter!r}"
+        assert actual_filter == expected_filter, (
+            f"Expected {expected_filter!r} but got {actual_filter!r}"
+        )
 
     def test_body_matcher(self):
         # Arrange

@@ -159,4 +159,6 @@ class TestInternalPublish:
         fake_compute.invoke.assert_called_once()
         event = fake_compute.invoke.call_args[0][0]
         assert event["source"] == "aws.s3", f'Expected {"aws.s3"!r} but got {event["source"]!r}'
-        assert event["detail"]["bucket"] == "my-bucket", f'Expected {"my-bucket"!r} but got {event["detail"]["bucket"]!r}'
+        assert event["detail"]["bucket"] == "my-bucket", (
+            f'Expected {"my-bucket"!r} but got {event["detail"]["bucket"]!r}'
+        )

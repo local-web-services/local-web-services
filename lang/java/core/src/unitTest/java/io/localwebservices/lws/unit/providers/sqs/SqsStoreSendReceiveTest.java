@@ -41,7 +41,7 @@ class SqsStoreSendReceiveTest {
 
     // Assert
     assertEquals(1, actualMessages.size(), "Expected actualMessages.size() to match 1");
-    assertEquals("hello", actualMessages.get(0).body, "Expected actualMessages.get(0).body to equal "hello"");
+    assertEquals("hello", actualMessages.get(0).body, "Expected values to match");
   }
 
   @Test

@@ -64,8 +64,12 @@ class TestAccessToken:
         actual_username = claims["cognito:username"]
         actual_token_use = claims["token_use"]
         assert actual_sub == expected_sub, f"Expected {expected_sub!r} but got {actual_sub!r}"
-        assert actual_username == expected_username, f"Expected {expected_username!r} but got {actual_username!r}"
-        assert actual_token_use == expected_token_use, f"Expected {expected_token_use!r} but got {actual_token_use!r}"
+        assert actual_username == expected_username, (
+            f"Expected {expected_username!r} but got {actual_username!r}"
+        )
+        assert actual_token_use == expected_token_use, (
+            f"Expected {expected_token_use!r} but got {actual_token_use!r}"
+        )
 
     def test_access_token_has_scope(self, issuer: TokenIssuer) -> None:
         # Act
@@ -83,4 +87,6 @@ class TestAccessToken:
         # Assert
         expected_client_id = "test-client-id"
         actual_client_id = claims["client_id"]
-        assert actual_client_id == expected_client_id, f"Expected {expected_client_id!r} but got {actual_client_id!r}"
+        assert actual_client_id == expected_client_id, (
+            f"Expected {expected_client_id!r} but got {actual_client_id!r}"
+        )

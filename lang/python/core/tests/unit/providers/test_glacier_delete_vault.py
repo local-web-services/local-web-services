@@ -26,7 +26,9 @@ class TestDeleteVault:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
 
     def test_delete_vault_not_found_returns_404(self, client: TestClient) -> None:
         # Arrange
@@ -38,10 +40,14 @@ class TestDeleteVault:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
         body = response.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )
 
     def test_delete_vault_removes_vault(self, client: TestClient) -> None:
         # Arrange
@@ -55,4 +61,6 @@ class TestDeleteVault:
         # Assert
         describe_response = client.get(f"/-/vaults/{vault_name}")
         actual_describe_status = describe_response.status_code
-        assert actual_describe_status == expected_describe_status, f"Expected {expected_describe_status!r} but got {actual_describe_status!r}"
+        assert actual_describe_status == expected_describe_status, (
+            f"Expected {expected_describe_status!r} but got {actual_describe_status!r}"
+        )

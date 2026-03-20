@@ -52,10 +52,14 @@ class TestResetEndpoint:
         resp = client.post("/_ldk/reset")
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         actual_status = data["status"]
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
 
     def test_reset_returns_provider_count(self, client):
         # Arrange
@@ -69,4 +73,6 @@ class TestResetEndpoint:
         assert "providers_reset" in data, f'Expected {"providers_reset"!r} to be in {data!r}'
         # No providers have a reset() method, so count should be 0
         actual_providers_reset = data["providers_reset"]
-        assert actual_providers_reset == expected_providers_reset, f"Expected {expected_providers_reset!r} but got {actual_providers_reset!r}"
+        assert actual_providers_reset == expected_providers_reset, (
+            f"Expected {expected_providers_reset!r} but got {actual_providers_reset!r}"
+        )

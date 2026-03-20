@@ -271,7 +271,7 @@ public class DynamoDbStoreFilterTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k1")));
-    assertEquals(strAttr("myValue"), actualItem.get("myField"), "Expected actualItem.get("myField") to equal strAttr("myValue")");
+    assertEquals(strAttr("myValue"), actualItem.get("myField"), "Expected values to match");
   }
 
   @Test
@@ -294,7 +294,7 @@ public class DynamoDbStoreFilterTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k2")));
-    assertEquals("directValue", actualItem.get("myField"), "Expected actualItem.get("myField") to equal "directValue"");
+    assertEquals("directValue", actualItem.get("myField"), "Expected values to match");
   }
 
   @Test
@@ -313,7 +313,7 @@ public class DynamoDbStoreFilterTest {
         tableName, Map.of("pk", strAttr("k3")), "REMOVE #e", Map.of("#e", "extra"), null);
 
     // Assert — already covered by DynamoDbStoreQueryTest but exercises exprNames path
-    assertNull(store.getItem(tableName, Map.of("pk", strAttr("k3"))).get("extra"), "Expected store.getItem(tableName, Map.of("pk", strAttr("k3"))).get("extra") to be null");
+    assertNull(store.getItem(tableName, Map.of("pk", strAttr("k3"))).get("extra"), "Expected values to match");
   }
 
   @Test
@@ -410,7 +410,7 @@ public class DynamoDbStoreFilterTest {
             Map.of(":val", strAttr("red")));
 
     // Assert
-    assertEquals(strAttr("red"), updatedItem.get("color"), "Expected updatedItem.get("color") to equal strAttr("red")");
+    assertEquals(strAttr("red"), updatedItem.get("color"), "Expected values to match");
   }
 
   @Test
@@ -433,7 +433,7 @@ public class DynamoDbStoreFilterTest {
             Map.of(":other", strAttr("unused"))); // exprValues non-null, valExpr has no :
 
     // Assert
-    assertEquals("large", updatedItem.get("size"), "Expected updatedItem.get("size") to match "large"");
+    assertEquals("large", updatedItem.get("size"), "Expected values to match");
   }
 
   @Test
@@ -456,7 +456,7 @@ public class DynamoDbStoreFilterTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k")));
-    assertEquals("literalValue", actualItem.get("realAttr"), "Expected actualItem.get("realAttr") to equal "literalValue"");
+    assertEquals("literalValue", actualItem.get("realAttr"), "Expected values to match");
   }
 
   @Test
@@ -479,7 +479,7 @@ public class DynamoDbStoreFilterTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k")));
-    assertEquals(strAttr("resolved"), actualItem.get("#attr"), "Expected actualItem.get("#attr") to equal strAttr("resolved")");
+    assertEquals(strAttr("resolved"), actualItem.get("#attr"), "Expected values to match");
   }
 
   @Test
@@ -503,6 +503,6 @@ public class DynamoDbStoreFilterTest {
 
     // Assert — delta is set directly since existing is null (not instanceof Map)
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k")));
-    assertEquals(numAttr("1"), actualItem.get("counter"), "Expected actualItem.get("counter") to match numAttr("1")");
+    assertEquals(numAttr("1"), actualItem.get("counter"), "Expected values to match");
   }
 }

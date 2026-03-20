@@ -86,9 +86,13 @@ class TestNodeJsComputeEnvironment:
         # os.environ should be present (spot-check PATH)
         assert "PATH" in env, f'Expected {"PATH"!r} to be in {env!r}'
         # config.environment
-        assert env["APP_ENV"] == expected_app_env, f'Expected {expected_app_env!r} but got {env["APP_ENV"]!r}'
+        assert env["APP_ENV"] == expected_app_env, (
+            f'Expected {expected_app_env!r} but got {env["APP_ENV"]!r}'
+        )
         # sdk_env
-        assert env["AWS_ENDPOINT_URL_DYNAMODB"] == expected_dynamodb_url, f'Expected {expected_dynamodb_url!r} but got {env["AWS_ENDPOINT_URL_DYNAMODB"]!r}'
+        assert env["AWS_ENDPOINT_URL_DYNAMODB"] == expected_dynamodb_url, (
+            f'Expected {expected_dynamodb_url!r} but got {env["AWS_ENDPOINT_URL_DYNAMODB"]!r}'
+        )
 
     def test_env_sets_ldk_vars(self) -> None:
         """LDK-specific env vars are set from config and context."""
@@ -105,12 +109,24 @@ class TestNodeJsComputeEnvironment:
         expected_function_arn = "arn:aws:lambda:us-east-1:123456789012:function:my-func"
         expected_function_name = "my-func"
         expected_memory_size = "128"
-        assert env["LDK_HANDLER"] == expected_handler, f'Expected {expected_handler!r} but got {env["LDK_HANDLER"]!r}'
-        assert env["LDK_CODE_PATH"] == expected_code_path, f'Expected {expected_code_path!r} but got {env["LDK_CODE_PATH"]!r}'
-        assert env["LDK_REQUEST_ID"] == expected_request_id, f'Expected {expected_request_id!r} but got {env["LDK_REQUEST_ID"]!r}'
-        assert env["LDK_FUNCTION_ARN"] == expected_function_arn, f'Expected {expected_function_arn!r} but got {env["LDK_FUNCTION_ARN"]!r}'
-        assert env["AWS_LAMBDA_FUNCTION_NAME"] == expected_function_name, f'Expected {expected_function_name!r} but got {env["AWS_LAMBDA_FUNCTION_NAME"]!r}'
-        assert env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] == expected_memory_size, f'Expected {expected_memory_size!r} but got {env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"]!r}'
+        assert env["LDK_HANDLER"] == expected_handler, (
+            f'Expected {expected_handler!r} but got {env["LDK_HANDLER"]!r}'
+        )
+        assert env["LDK_CODE_PATH"] == expected_code_path, (
+            f'Expected {expected_code_path!r} but got {env["LDK_CODE_PATH"]!r}'
+        )
+        assert env["LDK_REQUEST_ID"] == expected_request_id, (
+            f'Expected {expected_request_id!r} but got {env["LDK_REQUEST_ID"]!r}'
+        )
+        assert env["LDK_FUNCTION_ARN"] == expected_function_arn, (
+            f'Expected {expected_function_arn!r} but got {env["LDK_FUNCTION_ARN"]!r}'
+        )
+        assert env["AWS_LAMBDA_FUNCTION_NAME"] == expected_function_name, (
+            f'Expected {expected_function_name!r} but got {env["AWS_LAMBDA_FUNCTION_NAME"]!r}'
+        )
+        assert env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"] == expected_memory_size, (
+            f'Expected {expected_memory_size!r} but got {env["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"]!r}'
+        )
 
     def test_sdk_env_overrides_config_env(self) -> None:
         """sdk_env takes precedence over config.environment for the same key."""
@@ -123,7 +139,9 @@ class TestNodeJsComputeEnvironment:
         env = provider._build_env(context)
 
         # Assert
-        assert env["SHARED_KEY"] == expected_value, f'Expected {expected_value!r} but got {env["SHARED_KEY"]!r}'
+        assert env["SHARED_KEY"] == expected_value, (
+            f'Expected {expected_value!r} but got {env["SHARED_KEY"]!r}'
+        )
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_passes_env_to_subprocess(self, fake_exec: AsyncMock) -> None:
@@ -144,6 +162,12 @@ class TestNodeJsComputeEnvironment:
         expected_handler = "index.handler"
         call_kwargs = fake_exec.call_args.kwargs
         env_passed = call_kwargs["env"]
-        assert env_passed["SDK_VAR"] == expected_sdk_var, f'Expected {expected_sdk_var!r} but got {env_passed["SDK_VAR"]!r}'
-        assert env_passed["CFG_VAR"] == expected_cfg_var, f'Expected {expected_cfg_var!r} but got {env_passed["CFG_VAR"]!r}'
-        assert env_passed["LDK_HANDLER"] == expected_handler, f'Expected {expected_handler!r} but got {env_passed["LDK_HANDLER"]!r}'
+        assert env_passed["SDK_VAR"] == expected_sdk_var, (
+            f'Expected {expected_sdk_var!r} but got {env_passed["SDK_VAR"]!r}'
+        )
+        assert env_passed["CFG_VAR"] == expected_cfg_var, (
+            f'Expected {expected_cfg_var!r} but got {env_passed["CFG_VAR"]!r}'
+        )
+        assert env_passed["LDK_HANDLER"] == expected_handler, (
+            f'Expected {expected_handler!r} but got {env_passed["LDK_HANDLER"]!r}'
+        )

@@ -121,7 +121,9 @@ class TestEventBridgeProviderLifecycle:
     def test_name(self) -> None:
         expected_name = "eventbridge"
         provider = EventBridgeProvider()
-        assert provider.name == expected_name, f"Expected {expected_name!r} but got {provider.name!r}"
+        assert provider.name == expected_name, (
+            f"Expected {expected_name!r} but got {provider.name!r}"
+        )
 
     @pytest.mark.asyncio
     async def test_health_check_before_start(self) -> None:
@@ -159,4 +161,6 @@ class TestEventBridgeProviderLifecycle:
         provider = await _started_provider()
         rules = provider.list_rules("default")
         assert len(rules) == 1, f"Expected {1!r} but got {len(rules)!r}"
-        assert rules[0].rule_name == "my-rule", f'Expected {"my-rule"!r} but got {rules[0].rule_name!r}'
+        assert rules[0].rule_name == "my-rule", (
+            f'Expected {"my-rule"!r} but got {rules[0].rule_name!r}'
+        )

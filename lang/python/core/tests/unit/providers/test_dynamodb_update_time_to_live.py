@@ -99,12 +99,18 @@ class TestUpdateTimeToLive:
         resp = await fake_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
-        assert "TimeToLiveSpecification" in data, f'Expected {"TimeToLiveSpecification"!r} to be in {data!r}'
+        assert "TimeToLiveSpecification" in data, (
+            f'Expected {"TimeToLiveSpecification"!r} to be in {data!r}'
+        )
         spec = data["TimeToLiveSpecification"]
         actual_attribute_name = spec["AttributeName"]
-        assert actual_attribute_name == expected_attribute_name, f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        assert actual_attribute_name == expected_attribute_name, (
+            f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        )
         assert spec["Enabled"] is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
@@ -124,11 +130,15 @@ class TestUpdateTimeToLive:
         resp = await fake_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         spec = data["TimeToLiveSpecification"]
         actual_attribute_name = spec["AttributeName"]
-        assert actual_attribute_name == expected_attribute_name, f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        assert actual_attribute_name == expected_attribute_name, (
+            f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        )
         assert spec["Enabled"] is False, "Expected value to be truthy"
 
     @pytest.mark.asyncio
@@ -142,9 +152,13 @@ class TestUpdateTimeToLive:
         resp = await fake_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         spec = data["TimeToLiveSpecification"]
         actual_attribute_name = spec["AttributeName"]
-        assert actual_attribute_name == expected_attribute_name, f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        assert actual_attribute_name == expected_attribute_name, (
+            f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        )
         assert spec["Enabled"] is False, "Expected value to be truthy"

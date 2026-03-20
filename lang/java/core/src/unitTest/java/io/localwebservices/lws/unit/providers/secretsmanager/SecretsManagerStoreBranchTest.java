@@ -40,7 +40,7 @@ public class SecretsManagerStoreBranchTest {
     Map<String, Object> actualSecret = store.createSecret("mySecret", "{}", null, expectedTags);
 
     // Assert
-    assertNotNull(actualSecret.get("Tags"), "Expected actualSecret.get("Tags") to not be null");
+    assertNotNull(actualSecret.get("Tags"), "Expected values to match");
   }
 
   @Test

@@ -47,7 +47,9 @@ class TestDeleteAndRestore:
         # But can restore
         _post(client, "RestoreSecret", {"SecretId": secret_name})
         got = _post(client, "GetSecretValue", {"SecretId": secret_name})
-        assert got["SecretString"] == expected_secret_value, f'Expected {expected_secret_value!r} but got {got["SecretString"]!r}'
+        assert got["SecretString"] == expected_secret_value, (
+            f'Expected {expected_secret_value!r} but got {got["SecretString"]!r}'
+        )
 
     def test_force_delete(self, client: TestClient) -> None:
         secret_name = "del-force"
@@ -61,4 +63,6 @@ class TestDeleteAndRestore:
 
         # Assert
         expected_error_type = "ResourceNotFoundException"
-        assert result["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {result["__type"]!r}'
+        assert result["__type"] == expected_error_type, (
+            f'Expected {expected_error_type!r} but got {result["__type"]!r}'
+        )

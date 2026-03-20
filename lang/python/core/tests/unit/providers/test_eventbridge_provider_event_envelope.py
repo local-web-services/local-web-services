@@ -141,13 +141,25 @@ class TestEventEnvelope:
         event = _build_event_envelope(entry, expected_id)
 
         # Assert
-        assert event["version"] == expected_version, f'Expected {expected_version!r} but got {event["version"]!r}'
+        assert event["version"] == expected_version, (
+            f'Expected {expected_version!r} but got {event["version"]!r}'
+        )
         assert event["id"] == expected_id, f'Expected {expected_id!r} but got {event["id"]!r}'
-        assert event["source"] == expected_source, f'Expected {expected_source!r} but got {event["source"]!r}'
-        assert event["account"] == expected_account, f'Expected {expected_account!r} but got {event["account"]!r}'
-        assert event["region"] == expected_region, f'Expected {expected_region!r} but got {event["region"]!r}'
-        assert event["detail-type"] == expected_detail_type, f'Expected {expected_detail_type!r} but got {event["detail-type"]!r}'
-        assert event["detail"]["orderId"] == expected_order_id, f'Expected {expected_order_id!r} but got {event["detail"]["orderId"]!r}'
+        assert event["source"] == expected_source, (
+            f'Expected {expected_source!r} but got {event["source"]!r}'
+        )
+        assert event["account"] == expected_account, (
+            f'Expected {expected_account!r} but got {event["account"]!r}'
+        )
+        assert event["region"] == expected_region, (
+            f'Expected {expected_region!r} but got {event["region"]!r}'
+        )
+        assert event["detail-type"] == expected_detail_type, (
+            f'Expected {expected_detail_type!r} but got {event["detail-type"]!r}'
+        )
+        assert event["detail"]["orderId"] == expected_order_id, (
+            f'Expected {expected_order_id!r} but got {event["detail"]["orderId"]!r}'
+        )
         assert event["resources"] == [], f'Expected {[]!r} but got {event["resources"]!r}'
         assert event["time"], "Expected value to be truthy"
 
@@ -158,7 +170,7 @@ class TestEventEnvelope:
             "Detail": "not-valid-json{",
         }
         event = _build_event_envelope(entry, "evt-002")
-        assert event["detail"] == {}, "Expected {0!r} but got {1!r}".format({}, event["detail"])
+        assert event["detail"] == {}, "Expected {!r} but got {!r}".format({}, event["detail"])
 
     def test_build_event_envelope_dict_detail(self) -> None:
         entry = {
@@ -167,7 +179,9 @@ class TestEventEnvelope:
             "Detail": {"already": "dict"},
         }
         event = _build_event_envelope(entry, "evt-003")
-        assert event["detail"]["already"] == "dict", f'Expected {"dict"!r} but got {event["detail"]["already"]!r}'
+        assert event["detail"]["already"] == "dict", (
+            f'Expected {"dict"!r} but got {event["detail"]["already"]!r}'
+        )
 
     def test_build_scheduled_event(self) -> None:
         # Arrange
@@ -184,14 +198,24 @@ class TestEventEnvelope:
         event = _build_scheduled_event(rule)
 
         # Assert
-        assert event["source"] == expected_source, f'Expected {expected_source!r} but got {event["source"]!r}'
-        assert event["detail-type"] == expected_detail_type, f'Expected {expected_detail_type!r} but got {event["detail-type"]!r}'
-        assert event["detail"] == {}, "Expected {0!r} but got {1!r}".format({}, event["detail"])
-        assert rule_name in event["resources"][0], f'Expected {rule_name!r} to be in {event["resources"][0]!r}'
+        assert event["source"] == expected_source, (
+            f'Expected {expected_source!r} but got {event["source"]!r}'
+        )
+        assert event["detail-type"] == expected_detail_type, (
+            f'Expected {expected_detail_type!r} but got {event["detail-type"]!r}'
+        )
+        assert event["detail"] == {}, "Expected {!r} but got {!r}".format({}, event["detail"])
+        assert rule_name in event["resources"][0], (
+            f'Expected {rule_name!r} to be in {event["resources"][0]!r}'
+        )
 
     def test_extract_function_name_from_arn(self) -> None:
         arn = "arn:aws:lambda:us-east-1:000000000000:function:my-func"
-        assert _extract_function_name(arn) == "my-func", f'Expected {"my-func"!r} but got {_extract_function_name(arn)!r}'
+        assert _extract_function_name(arn) == "my-func", (
+            f'Expected {"my-func"!r} but got {_extract_function_name(arn)!r}'
+        )
 
     def test_extract_function_name_plain(self) -> None:
-        assert _extract_function_name("my-func") == "my-func", f'Expected {"my-func"!r} but got {_extract_function_name("my-func")!r}'
+        assert _extract_function_name("my-func") == "my-func", (
+            f'Expected {"my-func"!r} but got {_extract_function_name("my-func")!r}'
+        )

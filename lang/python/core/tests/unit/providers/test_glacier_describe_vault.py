@@ -26,10 +26,14 @@ class TestDescribeVault:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
         body = response.json()
         actual_vault_name = body["VaultName"]
-        assert actual_vault_name == vault_name, f"Expected {vault_name!r} but got {actual_vault_name!r}"
+        assert actual_vault_name == vault_name, (
+            f"Expected {vault_name!r} but got {actual_vault_name!r}"
+        )
         assert "VaultARN" in body, f'Expected {"VaultARN"!r} to be in {body!r}'
         assert "CreationDate" in body, f'Expected {"CreationDate"!r} to be in {body!r}'
 
@@ -57,7 +61,11 @@ class TestDescribeVault:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
         body = response.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )

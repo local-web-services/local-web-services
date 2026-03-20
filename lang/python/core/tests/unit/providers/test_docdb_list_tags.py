@@ -41,7 +41,9 @@ class TestListTagsForResource:
         # Assert
         expected_count = 0
         actual_count = len(result["TagList"])
-        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
+        assert actual_count == expected_count, (
+            f"Expected {expected_count!r} but got {actual_count!r}"
+        )
 
     def test_list_tags_with_initial_tags(self, client: TestClient) -> None:
         # Arrange
@@ -64,8 +66,14 @@ class TestListTagsForResource:
         # Assert
         expected_count = 1
         actual_count = len(result["TagList"])
-        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
+        assert actual_count == expected_count, (
+            f"Expected {expected_count!r} but got {actual_count!r}"
+        )
         actual_key = result["TagList"][0]["Key"]
         actual_value = result["TagList"][0]["Value"]
-        assert actual_key == expected_tag_key, f"Expected {expected_tag_key!r} but got {actual_key!r}"
-        assert actual_value == expected_tag_value, f"Expected {expected_tag_value!r} but got {actual_value!r}"
+        assert actual_key == expected_tag_key, (
+            f"Expected {expected_tag_key!r} but got {actual_key!r}"
+        )
+        assert actual_value == expected_tag_value, (
+            f"Expected {expected_tag_value!r} but got {actual_value!r}"
+        )

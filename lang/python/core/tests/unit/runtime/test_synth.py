@@ -114,7 +114,9 @@ async def test_ensure_synth_force_always_runs(tmp_path: Path) -> None:
         actual_result = await ensure_synth(tmp_path, force=True)
 
     # Assert
-    assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+    assert actual_result == expected_result, (
+        f"Expected {expected_result!r} but got {actual_result!r}"
+    )
     fake_exec.assert_awaited_once()
 
 
@@ -138,7 +140,9 @@ async def test_ensure_synth_raises_synth_error(tmp_path: Path) -> None:
         with pytest.raises(SynthError, match="exit code 2") as exc_info:
             await ensure_synth(tmp_path)
 
-    assert exc_info.value.exit_code == expected_exit_code, f"Expected {expected_exit_code!r} but got {exc_info.value.exit_code!r}"
+    assert exc_info.value.exit_code == expected_exit_code, (
+        f"Expected {expected_exit_code!r} but got {exc_info.value.exit_code!r}"
+    )
 
 
 @pytest.mark.asyncio
@@ -155,7 +159,9 @@ async def test_ensure_synth_skips_when_not_stale(tmp_path: Path) -> None:
         actual_result = await ensure_synth(tmp_path, force=False)
 
     # Assert
-    assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+    assert actual_result == expected_result, (
+        f"Expected {expected_result!r} but got {actual_result!r}"
+    )
     fake_exec.assert_not_awaited()
 
 
@@ -181,5 +187,7 @@ async def test_ensure_synth_runs_when_stale(tmp_path: Path) -> None:
         actual_result = await ensure_synth(tmp_path)
 
     # Assert
-    assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+    assert actual_result == expected_result, (
+        f"Expected {expected_result!r} but got {actual_result!r}"
+    )
     fake_exec.assert_awaited_once()

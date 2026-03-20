@@ -68,7 +68,7 @@ public class StepFunctionsStoreStateMachineTest {
 
     // Assert
     assertNotNull(actualMachine, "Expected actualMachine to not be null");
-    assertEquals(expectedName, actualMachine.get("name"), "Expected actualMachine.get("name") to equal expectedName");
+    assertEquals(expectedName, actualMachine.get("name"), "Expected name to match");
   }
 
   @Test
@@ -113,7 +113,7 @@ public class StepFunctionsStoreStateMachineTest {
 
     // Assert
     Map<String, Object> actualMachine = store.getStateMachine(arn);
-    assertEquals(expectedDefinition, actualMachine.get("definition"), "Expected actualMachine.get("definition") to equal expectedDefinition");
+    assertEquals(expectedDefinition, actualMachine.get("definition"), "Expected definition to match");
   }
 
   @Test

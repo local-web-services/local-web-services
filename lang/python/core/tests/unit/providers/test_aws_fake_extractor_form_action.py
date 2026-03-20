@@ -35,4 +35,6 @@ class TestExtractorFormActionQueryParam:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation, f"Expected {expected_operation!r} but got {actual_operation!r}"
+        assert actual_operation == expected_operation, (
+            f"Expected {expected_operation!r} but got {actual_operation!r}"
+        )

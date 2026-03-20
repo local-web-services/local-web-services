@@ -25,10 +25,16 @@ class TestCreateTableBucket:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
         actual_body = response.json()
-        assert "tableBucketARN" in actual_body, f'Expected {"tableBucketARN"!r} to be in {actual_body!r}'
-        assert bucket_name in actual_body["tableBucketARN"], f'Expected {bucket_name!r} to be in {actual_body["tableBucketARN"]!r}'
+        assert "tableBucketARN" in actual_body, (
+            f'Expected {"tableBucketARN"!r} to be in {actual_body!r}'
+        )
+        assert bucket_name in actual_body["tableBucketARN"], (
+            f'Expected {bucket_name!r} to be in {actual_body["tableBucketARN"]!r}'
+        )
 
     def test_create_table_bucket_duplicate_returns_conflict(self, client: TestClient) -> None:
         # Arrange
@@ -41,10 +47,14 @@ class TestCreateTableBucket:
         # Assert
         expected_status = 409
         actual_status = response.status_code
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
         actual_body = response.json()
         expected_error_type = "ConflictException"
-        assert actual_body["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'
+        assert actual_body["__type"] == expected_error_type, (
+            f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'
+        )
 
     def test_create_table_bucket_missing_name_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -56,7 +66,11 @@ class TestCreateTableBucket:
         # Assert
         expected_status = 400
         actual_status = response.status_code
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
         actual_body = response.json()
         expected_error_type = "BadRequestException"
-        assert actual_body["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'
+        assert actual_body["__type"] == expected_error_type, (
+            f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'
+        )

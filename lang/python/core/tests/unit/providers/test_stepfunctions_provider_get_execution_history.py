@@ -97,7 +97,9 @@ class TestProviderGetExecutionHistory:
         # Assert
         assert len(events) >= 1, f"Expected {len(events)!r} >= {1!r}"
         actual_first_event_type = events[0]["type"]
-        assert actual_first_event_type == expected_first_event_type, f"Expected {expected_first_event_type!r} but got {actual_first_event_type!r}"
+        assert actual_first_event_type == expected_first_event_type, (
+            f"Expected {expected_first_event_type!r} but got {actual_first_event_type!r}"
+        )
 
     async def test_get_execution_history_max_results(self, provider: StepFunctionsProvider) -> None:
         """Provider.get_execution_history should respect max_results."""

@@ -96,7 +96,9 @@ class TestValidateEventShape:
 
         # Assert
         actual_warn_issues = [i for i in issues if i.level == ValidationLevel.WARN]
-        assert len(actual_warn_issues) >= expected_min_warn_issues, f"Expected {len(actual_warn_issues)!r} >= {expected_min_warn_issues!r}"
+        assert len(actual_warn_issues) >= expected_min_warn_issues, (
+            f"Expected {len(actual_warn_issues)!r} >= {expected_min_warn_issues!r}"
+        )
 
     def test_valid_sqs_event(self) -> None:
         # Arrange

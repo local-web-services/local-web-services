@@ -112,7 +112,9 @@ class TestUpdateStateMachine:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         assert "updateDate" in data, f'Expected {"updateDate"!r} to be in {data!r}'
 
@@ -122,9 +124,13 @@ class TestUpdateStateMachine:
             "DescribeStateMachine",
             {"stateMachineArn": "arn:aws:states:us-east-1:000000000000:stateMachine:test-sm"},
         )
-        assert desc_resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {desc_resp.status_code!r}"
+        assert desc_resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {desc_resp.status_code!r}"
+        )
         actual_role_arn = desc_resp.json()["roleArn"]
-        assert actual_role_arn == expected_role_arn, f"Expected {expected_role_arn!r} but got {actual_role_arn!r}"
+        assert actual_role_arn == expected_role_arn, (
+            f"Expected {expected_role_arn!r} but got {actual_role_arn!r}"
+        )
 
     async def test_update_nonexistent_state_machine_returns_error(
         self, client: httpx.AsyncClient
@@ -145,10 +151,14 @@ class TestUpdateStateMachine:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )
 
     async def test_update_definition_changes_behavior(self, client: httpx.AsyncClient) -> None:
         """After updating definition, new executions should use the new definition."""
@@ -180,9 +190,15 @@ class TestUpdateStateMachine:
         )
 
         # Assert
-        assert exec_resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {exec_resp.status_code!r}"
+        assert exec_resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {exec_resp.status_code!r}"
+        )
         data = exec_resp.json()
         actual_status = data["status"]
         actual_output = json.loads(data["output"])
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
-        assert actual_output == expected_output, f"Expected {expected_output!r} but got {actual_output!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
+        assert actual_output == expected_output, (
+            f"Expected {expected_output!r} but got {actual_output!r}"
+        )

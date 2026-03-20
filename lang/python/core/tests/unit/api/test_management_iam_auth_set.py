@@ -65,7 +65,9 @@ class TestManagementIamAuthSet:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
 
     def test_post_returns_error_message_when_no_bundle(self, client_without_bundle):
         # Arrange
@@ -77,7 +79,9 @@ class TestManagementIamAuthSet:
         # Assert
         data = resp.json()
         actual_error = data["error"]
-        assert actual_error == expected_error, f"Expected {expected_error!r} but got {actual_error!r}"
+        assert actual_error == expected_error, (
+            f"Expected {expected_error!r} but got {actual_error!r}"
+        )
 
     def test_post_updates_global_mode(self, client_with_bundle):
         # Arrange
@@ -106,7 +110,9 @@ class TestManagementIamAuthSet:
         assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_service_mode = data["config"]["services"]["dynamodb"]["mode"]
-        assert actual_service_mode == expected_service_mode, f"Expected {expected_service_mode!r} but got {actual_service_mode!r}"
+        assert actual_service_mode == expected_service_mode, (
+            f"Expected {expected_service_mode!r} but got {actual_service_mode!r}"
+        )
 
     def test_post_returns_config_in_response(self, client_with_bundle):
         # Arrange
@@ -131,7 +137,9 @@ class TestManagementIamAuthSet:
         assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_identity = data["config"]["default_identity"]
-        assert actual_identity == expected_identity, f"Expected {expected_identity!r} but got {actual_identity!r}"
+        assert actual_identity == expected_identity, (
+            f"Expected {expected_identity!r} but got {actual_identity!r}"
+        )
 
     def test_post_creates_new_service_config_when_absent(self, client_with_bundle):
         # Arrange
@@ -186,7 +194,9 @@ class TestManagementIamAuthSet:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
 
     def test_post_registers_identity_retrievable_from_store(self):
         # Arrange
@@ -213,4 +223,6 @@ class TestManagementIamAuthSet:
         actual_identity = bundle.identity_store.get_identity(expected_name)
         assert actual_identity is not None, "Expected value to be set but was None"
         actual_policies = actual_identity.inline_policies
-        assert actual_policies == [{"Version": "2012-10-17", "Statement": []}], "Expected {0!r} but got {1!r}".format([{"Version": "2012-10-17", "Statement": []}], actual_policies)
+        assert actual_policies == [{"Version": "2012-10-17", "Statement": []}], (
+            f"Expected {actual_policies!r}"
+        )

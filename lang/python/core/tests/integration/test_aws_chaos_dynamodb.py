@@ -74,12 +74,16 @@ class TestDynamoDbChaosJsonFormat:
         )
 
         # Assert
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
         body = response.json()
         actual_type = body["__type"]
         assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
         actual_message = body["message"]
-        assert actual_message == expected_message, f"Expected {expected_message!r} but got {actual_message!r}"
+        assert actual_message == expected_message, (
+            f"Expected {expected_message!r} but got {actual_message!r}"
+        )
 
     async def test_chaos_disabled_passes_through(
         self, provider, client: httpx.AsyncClient, chaos_config
@@ -97,7 +101,9 @@ class TestDynamoDbChaosJsonFormat:
         )
 
         # Assert
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
 
     async def test_chaos_latency_does_not_break_response(self, provider, tmp_path):
         """Verify latency injection still returns a valid response."""
@@ -120,4 +126,6 @@ class TestDynamoDbChaosJsonFormat:
             )
 
         # Assert
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )

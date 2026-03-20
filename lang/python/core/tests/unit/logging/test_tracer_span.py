@@ -18,7 +18,9 @@ class TestSpan:
         # Assert
         assert span.span_id, "Expected value to be truthy"
         actual_span_id_length = len(span.span_id)
-        assert actual_span_id_length == expected_span_id_length, f"Expected {expected_span_id_length!r} but got {actual_span_id_length!r}"
+        assert actual_span_id_length == expected_span_id_length, (
+            f"Expected {expected_span_id_length!r} but got {actual_span_id_length!r}"
+        )
 
     def test_span_duration_zero_when_not_ended(self):
         span = Span(name="test")
@@ -34,7 +36,9 @@ class TestSpan:
 
         # Assert
         actual_duration_ms = span.duration_ms
-        assert abs(actual_duration_ms - expected_duration_ms) < tolerance, f"Expected {abs(actual_duration_ms - expected_duration_ms)!r} < {tolerance!r}"
+        assert abs(actual_duration_ms - expected_duration_ms) < tolerance, (
+            f"Expected {abs(actual_duration_ms - expected_duration_ms)!r} < {tolerance!r}"
+        )
 
     def test_span_children_default_empty(self):
         span = Span(name="test")
@@ -42,4 +46,4 @@ class TestSpan:
 
     def test_span_attributes_default_empty(self):
         span = Span(name="test")
-        assert span.attributes == {}, "Expected {0!r} but got {1!r}".format({}, span.attributes)
+        assert span.attributes == {}, f"Expected {({})!r} but got {span.attributes!r}"

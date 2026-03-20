@@ -26,7 +26,7 @@ public class DocDbStoreSnapshotTest {
 
     // Assert
     assertNotNull(actualSnapshot, "Expected actualSnapshot to not be null");
-    assertEquals(expectedSnapshotId, actualSnapshot.get("DBClusterSnapshotIdentifier"), "Expected actualSnapshot.get("DBClusterSnapshotIdentifier") to equal expectedSnapshotId");
+    assertEquals(expectedSnapshotId, actualSnapshot.get("DBClusterSnapshotIdentifier"), "Expected snapshotId to match");
   }
 
   @Test
@@ -49,7 +49,7 @@ public class DocDbStoreSnapshotTest {
 
     // Assert
     assertEquals(expectedSize, actualSnapshots.size(), "Expected actualSnapshots.size() to match expectedSize");
-    assertEquals(expectedId, actualSnapshots.get(0).get("DBClusterSnapshotIdentifier"), "Expected actualSnapshots.get(0).get("DBClusterSnapshotIdentifier") to equal expectedId");
+    assertEquals(expectedId, actualSnapshots.get(0).get("DBClusterSnapshotIdentifier"), "Expected id to match");
   }
 
   @Test
@@ -89,7 +89,7 @@ public class DocDbStoreSnapshotTest {
 
     // Assert
     assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
-    assertEquals(expectedId, actualDeleted.get("DBClusterSnapshotIdentifier"), "Expected actualDeleted.get("DBClusterSnapshotIdentifier") to equal expectedId");
+    assertEquals(expectedId, actualDeleted.get("DBClusterSnapshotIdentifier"), "Expected id to match");
     assertEquals(expectedRemainingSize, store.describeSnapshots(null).size(), "Expected store.describeSnapshots(null).size() to match expectedRemainingSize");
   }
 

@@ -33,9 +33,15 @@ class TestCollectLambdaUrls:
         assert len(result) == 1, f"Expected {1!r} but got {len(result)!r}"
         actual_url = result[0]
         expected_logical_id = "MyFunctionUrl"
-        assert actual_url.function_name == expected_function_name, f"Expected {expected_function_name!r} but got {actual_url.function_name!r}"
-        assert actual_url.auth_type == expected_auth_type, f"Expected {expected_auth_type!r} but got {actual_url.auth_type!r}"
-        assert actual_url.logical_id == expected_logical_id, f"Expected {expected_logical_id!r} but got {actual_url.logical_id!r}"
+        assert actual_url.function_name == expected_function_name, (
+            f"Expected {expected_function_name!r} but got {actual_url.function_name!r}"
+        )
+        assert actual_url.auth_type == expected_auth_type, (
+            f"Expected {expected_auth_type!r} but got {actual_url.auth_type!r}"
+        )
+        assert actual_url.logical_id == expected_logical_id, (
+            f"Expected {expected_logical_id!r} but got {actual_url.logical_id!r}"
+        )
 
     def test_collects_lambda_url_with_ref(self):
         # Arrange
@@ -70,7 +76,9 @@ class TestCollectLambdaUrls:
         # Assert
         assert len(result) == 1, f"Expected {1!r} but got {len(result)!r}"
         actual_function_name = result[0].function_name
-        assert actual_function_name == expected_function_name, f"Expected {expected_function_name!r} but got {actual_function_name!r}"
+        assert actual_function_name == expected_function_name, (
+            f"Expected {expected_function_name!r} but got {actual_function_name!r}"
+        )
 
     def test_collects_cors_config(self):
         # Arrange

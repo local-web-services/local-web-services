@@ -51,15 +51,17 @@ class TestApplyResultPath:
     def test_null_discards_result(self) -> None:
         original = {"x": 1}
         result = apply_result_path(original, "discarded", None)
-        assert result == {"x": 1}, "Expected {0!r} but got {1!r}".format({"x": 1}, result)
+        assert result == {"x": 1}, "Expected {!r} but got {!r}".format({"x": 1}, result)
 
     def test_root_replaces_input(self) -> None:
         result = apply_result_path({"x": 1}, {"y": 2}, "$")
-        assert result == {"y": 2}, "Expected {0!r} but got {1!r}".format({"y": 2}, result)
+        assert result == {"y": 2}, "Expected {!r} but got {!r}".format({"y": 2}, result)
 
     def test_nested_path_sets_value(self) -> None:
         result = apply_result_path({"x": 1}, "hello", "$.greeting")
-        assert result == {"x": 1, "greeting": "hello"}, "Expected {0!r} but got {1!r}".format({"x": 1, "greeting": "hello"}, result)
+        assert result == {"x": 1, "greeting": "hello"}, (
+            "Expected {!r} but got {!r}".format({"x": 1, "greeting": "hello"}, result)
+        )
 
     def test_deep_nested_path(self) -> None:
         result = apply_result_path({"x": 1}, "val", "$.a.b")

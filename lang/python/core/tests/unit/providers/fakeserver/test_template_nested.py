@@ -33,8 +33,12 @@ class TestRenderNested:
         # Assert
         actual_first = actual[0]
         actual_second = actual[1]
-        assert actual_first == expected_first, f"Expected {expected_first!r} but got {actual_first!r}"
-        assert actual_second == expected_second, f"Expected {expected_second!r} but got {actual_second!r}"
+        assert actual_first == expected_first, (
+            f"Expected {expected_first!r} but got {actual_first!r}"
+        )
+        assert actual_second == expected_second, (
+            f"Expected {expected_second!r} but got {actual_second!r}"
+        )
 
     def test_non_string_passthrough(self):
         # Arrange

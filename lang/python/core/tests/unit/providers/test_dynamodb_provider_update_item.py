@@ -130,7 +130,9 @@ class TestUpdateItem:
 
         # Assert
         actual_status = result["status"]
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
 
     async def test_set_new_attribute(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -197,5 +199,9 @@ class TestUpdateItem:
         # Assert
         actual_color = result["color"]
         actual_order_id = result["orderId"]
-        assert actual_color == expected_color, f"Expected {expected_color!r} but got {actual_color!r}"
-        assert actual_order_id == expected_order_id, f"Expected {expected_order_id!r} but got {actual_order_id!r}"
+        assert actual_color == expected_color, (
+            f"Expected {expected_color!r} but got {actual_color!r}"
+        )
+        assert actual_order_id == expected_order_id, (
+            f"Expected {expected_order_id!r} but got {actual_order_id!r}"
+        )

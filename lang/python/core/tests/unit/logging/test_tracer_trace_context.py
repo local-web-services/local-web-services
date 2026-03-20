@@ -18,7 +18,9 @@ class TestTraceContext:
         # Assert
         assert ctx.trace_id, "Expected value to be truthy"
         actual_trace_id_length = len(ctx.trace_id)
-        assert actual_trace_id_length == expected_trace_id_length, f"Expected {expected_trace_id_length!r} but got {actual_trace_id_length!r}"
+        assert actual_trace_id_length == expected_trace_id_length, (
+            f"Expected {expected_trace_id_length!r} but got {actual_trace_id_length!r}"
+        )
 
     def test_defaults_none(self):
         ctx = TraceContext()

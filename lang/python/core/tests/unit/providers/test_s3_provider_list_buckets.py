@@ -31,4 +31,6 @@ class TestListBuckets:
         await provider.create_bucket("middle")
 
         buckets = await provider.list_buckets()
-        assert buckets == ["alpha", "middle", "zebra"], f'Expected {["alpha", "middle", "zebra"]!r} but got {buckets!r}'
+        assert buckets == ["alpha", "middle", "zebra"], (
+            f'Expected {["alpha", "middle", "zebra"]!r} but got {buckets!r}'
+        )

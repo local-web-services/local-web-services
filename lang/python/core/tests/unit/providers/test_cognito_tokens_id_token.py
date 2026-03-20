@@ -62,9 +62,15 @@ class TestIdToken:
 
         # Assert
         assert claims["sub"] == expected_sub, f'Expected {expected_sub!r} but got {claims["sub"]!r}'
-        assert claims["cognito:username"] == expected_username, f'Expected {expected_username!r} but got {claims["cognito:username"]!r}'
-        assert claims["email"] == expected_email, f'Expected {expected_email!r} but got {claims["email"]!r}'
-        assert claims["token_use"] == expected_token_use, f'Expected {expected_token_use!r} but got {claims["token_use"]!r}'
+        assert claims["cognito:username"] == expected_username, (
+            f'Expected {expected_username!r} but got {claims["cognito:username"]!r}'
+        )
+        assert claims["email"] == expected_email, (
+            f'Expected {expected_email!r} but got {claims["email"]!r}'
+        )
+        assert claims["token_use"] == expected_token_use, (
+            f'Expected {expected_token_use!r} but got {claims["token_use"]!r}'
+        )
 
     def test_id_token_has_required_claims(self, issuer: TokenIssuer) -> None:
         # Act
@@ -79,7 +85,9 @@ class TestIdToken:
         assert "aud" in claims, f'Expected {"aud"!r} to be in {claims!r}'
         assert "exp" in claims, f'Expected {"exp"!r} to be in {claims!r}'
         assert "iat" in claims, f'Expected {"iat"!r} to be in {claims!r}'
-        assert claims["token_use"] == expected_token_use, f'Expected {expected_token_use!r} but got {claims["token_use"]!r}'
+        assert claims["token_use"] == expected_token_use, (
+            f'Expected {expected_token_use!r} but got {claims["token_use"]!r}'
+        )
 
     def test_id_token_issuer(self, issuer: TokenIssuer) -> None:
         # Act
@@ -89,7 +97,9 @@ class TestIdToken:
         # Assert
         expected_issuer = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_TestPool"
         actual_issuer = claims["iss"]
-        assert actual_issuer == expected_issuer, f"Expected {expected_issuer!r} but got {actual_issuer!r}"
+        assert actual_issuer == expected_issuer, (
+            f"Expected {expected_issuer!r} but got {actual_issuer!r}"
+        )
 
     def test_id_token_audience(self, issuer: TokenIssuer) -> None:
         # Act
@@ -99,7 +109,9 @@ class TestIdToken:
         # Assert
         expected_audience = "test-client-id"
         actual_audience = claims["aud"]
-        assert actual_audience == expected_audience, f"Expected {expected_audience!r} but got {actual_audience!r}"
+        assert actual_audience == expected_audience, (
+            f"Expected {expected_audience!r} but got {actual_audience!r}"
+        )
 
     def test_id_token_expiry(self, issuer: TokenIssuer) -> None:
         # Act

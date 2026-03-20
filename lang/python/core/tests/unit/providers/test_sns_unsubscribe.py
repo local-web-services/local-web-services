@@ -47,10 +47,16 @@ class TestUnsubscribe:
         resp = await client.post("/", data={"Action": "Unsubscribe", "SubscriptionArn": sub_arn})
 
         # Assert
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
-        assert "UnsubscribeResponse" in resp.text, f'Expected {"UnsubscribeResponse"!r} to be in {resp.text!r}'
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
+        assert "UnsubscribeResponse" in resp.text, (
+            f'Expected {"UnsubscribeResponse"!r} to be in {resp.text!r}'
+        )
         actual_topic = provider.get_topic(topic_name)
-        assert len(actual_topic.subscribers) == expected_subscriber_count, f"Expected {expected_subscriber_count!r} but got {len(actual_topic.subscribers)!r}"
+        assert len(actual_topic.subscribers) == expected_subscriber_count, (
+            f"Expected {expected_subscriber_count!r} but got {len(actual_topic.subscribers)!r}"
+        )
 
     @pytest.mark.asyncio
     async def test_unsubscribe_not_found(
@@ -68,7 +74,9 @@ class TestUnsubscribe:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
         assert "NotFound" in resp.text, f'Expected {"NotFound"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
@@ -94,7 +102,13 @@ class TestUnsubscribe:
         resp = await client.post("/", data={"Action": "Unsubscribe", "SubscriptionArn": sub_arn_1})
 
         # Assert
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
         actual_topic = provider.get_topic(topic_name)
-        assert len(actual_topic.subscribers) == expected_remaining_count, f"Expected {expected_remaining_count!r} but got {len(actual_topic.subscribers)!r}"
-        assert actual_topic.subscribers[0].subscription_arn == sub_arn_2, f"Expected {sub_arn_2!r} but got {actual_topic.subscribers[0].subscription_arn!r}"
+        assert len(actual_topic.subscribers) == expected_remaining_count, (
+            f"Expected {expected_remaining_count!r} but got {len(actual_topic.subscribers)!r}"
+        )
+        assert actual_topic.subscribers[0].subscription_arn == sub_arn_2, (
+            f"Expected {sub_arn_2!r} but got {actual_topic.subscribers[0].subscription_arn!r}"
+        )

@@ -63,7 +63,9 @@ class TestLocalBucketStorageDelete:
 
         # Assert
         assert actual_existed is True, "Expected value to be truthy"
-        assert await storage.get_object(bucket, key) is None, f"Expected None but got {await storage.get_object(bucket, key)!r}"
+        assert await storage.get_object(bucket, key) is None, (
+            f"Expected None but got {await storage.get_object(bucket, key)!r}"
+        )
 
     async def test_delete_nonexistent(self, storage: LocalBucketStorage) -> None:
         # Act

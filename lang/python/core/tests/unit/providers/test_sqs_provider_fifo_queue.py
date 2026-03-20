@@ -164,7 +164,9 @@ class TestFifoQueue:
 
         # Assert
         actual_bodies = [m.body for m in messages]
-        assert actual_bodies == expected_bodies, f"Expected {expected_bodies!r} but got {actual_bodies!r}"
+        assert actual_bodies == expected_bodies, (
+            f"Expected {expected_bodies!r} but got {actual_bodies!r}"
+        )
 
     async def test_fifo_content_based_dedup(self, fifo_queue: LocalQueue) -> None:
         """Sending the same body twice should deduplicate."""
@@ -180,7 +182,9 @@ class TestFifoQueue:
         # Assert
         assert id1 == id2  # same message returned, "Expected assertion to pass"
         actual_message_count = len(messages)
-        assert actual_message_count == expected_message_count, f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        assert actual_message_count == expected_message_count, (
+            f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        )
 
     async def test_fifo_explicit_dedup_id(self) -> None:
         # Arrange
@@ -197,7 +201,9 @@ class TestFifoQueue:
         assert id1 == id2, f"Expected {id2!r} but got {id1!r}"
         actual_message_count = len(messages)
         actual_body = messages[0].body
-        assert actual_message_count == expected_message_count, f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        assert actual_message_count == expected_message_count, (
+            f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        )
         assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
     async def test_fifo_different_dedup_ids(self) -> None:
@@ -212,7 +218,9 @@ class TestFifoQueue:
 
         # Assert
         actual_message_count = len(messages)
-        assert actual_message_count == expected_message_count, f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        assert actual_message_count == expected_message_count, (
+            f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        )
 
     async def test_fifo_group_ordering_no_head_of_line_blocking(self) -> None:
         """Messages from different groups should not block each other."""
@@ -232,7 +240,9 @@ class TestFifoQueue:
         # Assert
         assert len(msgs) == 1, f"Expected {1!r} but got {len(msgs)!r}"
         actual_first_body = msgs[0].body
-        assert actual_first_body == expected_first_body, f"Expected {expected_first_body!r} but got {actual_first_body!r}"
+        assert actual_first_body == expected_first_body, (
+            f"Expected {expected_first_body!r} but got {actual_first_body!r}"
+        )
 
         # Act - g1 is blocked (head message in flight), but g2 should be available
         msgs = await q.receive_messages(max_messages=1)
@@ -240,4 +250,6 @@ class TestFifoQueue:
         # Assert
         assert len(msgs) == 1, f"Expected {1!r} but got {len(msgs)!r}"
         actual_second_body = msgs[0].body
-        assert actual_second_body == expected_second_body, f"Expected {expected_second_body!r} but got {actual_second_body!r}"
+        assert actual_second_body == expected_second_body, (
+            f"Expected {expected_second_body!r} but got {actual_second_body!r}"
+        )

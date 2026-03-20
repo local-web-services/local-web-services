@@ -124,7 +124,9 @@ class TestUserStoreSignUp:
         # Assert
         assert user is not None, "Expected value to be set but was None"
         actual_email = user["attributes"]["email"]
-        assert actual_email == expected_email, f"Expected {expected_email!r} but got {actual_email!r}"
+        assert actual_email == expected_email, (
+            f"Expected {expected_email!r} but got {actual_email!r}"
+        )
 
     async def test_sign_up_auto_confirmed(self, store: UserStore) -> None:
         # Arrange

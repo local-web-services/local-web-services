@@ -138,5 +138,7 @@ class TestEcsProviderHealthCheck:
         await provider.start()
 
         # Checker was created
-        assert "web-api" in provider._checkers, f'Expected {"web-api"!r} to be in {provider._checkers!r}'
+        assert "web-api" in provider._checkers, (
+            f'Expected {"web-api"!r} to be in {provider._checkers!r}'
+        )
         await provider.stop()

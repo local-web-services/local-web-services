@@ -50,10 +50,18 @@ class TestCreateDBCluster:
         actual_identifier = actual_cluster["DBClusterIdentifier"]
         actual_engine = actual_cluster["Engine"]
         actual_status = actual_cluster["Status"]
-        assert actual_identifier == cluster_id, f"Expected {cluster_id!r} but got {actual_identifier!r}"
-        assert actual_engine == expected_engine, f"Expected {expected_engine!r} but got {actual_engine!r}"
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
-        assert "DBClusterArn" in actual_cluster, f'Expected {"DBClusterArn"!r} to be in {actual_cluster!r}'
+        assert actual_identifier == cluster_id, (
+            f"Expected {cluster_id!r} but got {actual_identifier!r}"
+        )
+        assert actual_engine == expected_engine, (
+            f"Expected {expected_engine!r} but got {actual_engine!r}"
+        )
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
+        assert "DBClusterArn" in actual_cluster, (
+            f'Expected {"DBClusterArn"!r} to be in {actual_cluster!r}'
+        )
 
     def test_create_duplicate_cluster_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -74,4 +82,6 @@ class TestCreateDBCluster:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )

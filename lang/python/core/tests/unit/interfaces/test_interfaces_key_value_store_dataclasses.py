@@ -62,7 +62,9 @@ class TestKeyValueStoreDataclasses:
         # Assert
         assert schema.sort_key is not None, "Expected value to be set but was None"
         actual_sort_key_name = schema.sort_key.name
-        assert actual_sort_key_name == expected_sort_key_name, f"Expected {expected_sort_key_name!r} but got {actual_sort_key_name!r}"
+        assert actual_sort_key_name == expected_sort_key_name, (
+            f"Expected {expected_sort_key_name!r} but got {actual_sort_key_name!r}"
+        )
 
     def test_gsi_definition_defaults(self) -> None:
         # Arrange
@@ -78,7 +80,9 @@ class TestKeyValueStoreDataclasses:
 
         # Assert
         actual_projection_type = gsi.projection_type
-        assert actual_projection_type == expected_projection_type, f"Expected {expected_projection_type!r} but got {actual_projection_type!r}"
+        assert actual_projection_type == expected_projection_type, (
+            f"Expected {expected_projection_type!r} but got {actual_projection_type!r}"
+        )
 
     def test_table_config(self) -> None:
         # Arrange
@@ -94,5 +98,7 @@ class TestKeyValueStoreDataclasses:
 
         # Assert
         actual_table_name = cfg.table_name
-        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert actual_table_name == expected_table_name, (
+            f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        )
         assert cfg.gsi_definitions == [], f"Expected {[]!r} but got {cfg.gsi_definitions!r}"

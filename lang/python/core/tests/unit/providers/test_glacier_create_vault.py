@@ -25,7 +25,9 @@ class TestCreateVault:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
 
     def test_create_vault_returns_location_header(self, client: TestClient) -> None:
         # Arrange
@@ -50,4 +52,6 @@ class TestCreateVault:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )

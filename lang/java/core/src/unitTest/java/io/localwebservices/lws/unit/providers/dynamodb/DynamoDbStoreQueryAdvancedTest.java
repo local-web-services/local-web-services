@@ -78,8 +78,8 @@ class DynamoDbStoreQueryAdvancedTest {
 
     // Assert
     assertEquals(3, actualItems.size(), "Expected actualItems.size() to match 3");
-    assertEquals(expectedFirstSk, ((Map<?, ?>) actualItems.get(0).get("sk")).get("S"), "Expected ((Map<?, ?>) actualItems.get(0).get("sk")).get("S") to equal expectedFirstSk");
-    assertEquals(expectedLastSk, ((Map<?, ?>) actualItems.get(2).get("sk")).get("S"), "Expected ((Map<?, ?>) actualItems.get(2).get("sk")).get("S") to equal expectedLastSk");
+    assertEquals(expectedFirstSk, ((Map<?, ?>) actualItems.get(0).get("sk")).get("S"), "Expected firstSk to match");
+    assertEquals(expectedLastSk, ((Map<?, ?>) actualItems.get(2).get("sk")).get("S"), "Expected lastSk to match");
   }
 
   @Test
@@ -116,7 +116,7 @@ class DynamoDbStoreQueryAdvancedTest {
 
     // Assert
     assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
-    assertEquals(expectedSk, ((Map<?, ?>) actualItems.get(0).get("sk")).get("S"), "Expected ((Map<?, ?>) actualItems.get(0).get("sk")).get("S") to equal expectedSk");
+    assertEquals(expectedSk, ((Map<?, ?>) actualItems.get(0).get("sk")).get("S"), "Expected sk to match");
   }
 
   @Test
@@ -200,7 +200,7 @@ class DynamoDbStoreQueryAdvancedTest {
 
     // Assert
     assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
-    assertEquals(expectedPk, ((Map<?, ?>) actualItems.get(0).get("pk")).get("S"), "Expected ((Map<?, ?>) actualItems.get(0).get("pk")).get("S") to equal expectedPk");
+    assertEquals(expectedPk, ((Map<?, ?>) actualItems.get(0).get("pk")).get("S"), "Expected pk to match");
   }
 
   @Test
@@ -245,6 +245,6 @@ class DynamoDbStoreQueryAdvancedTest {
 
     // Assert
     assertNotNull(actualItem, "Expected actualItem to not be null");
-    assertEquals(expectedName, ((Map<?, ?>) actualItem.get("name")).get("S"), "Expected ((Map<?, ?>) actualItem.get("name")).get("S") to equal expectedName");
+    assertEquals(expectedName, ((Map<?, ?>) actualItem.get("name")).get("S"), "Expected name to match");
   }
 }

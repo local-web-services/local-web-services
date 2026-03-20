@@ -26,7 +26,9 @@ class TestAssumeRole:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
         xml = resp.text
         assert "AssumeRoleResponse" in xml, f'Expected {"AssumeRoleResponse"!r} to be in {xml!r}'
         assert "AccessKeyId" in xml, f'Expected {"AccessKeyId"!r} to be in {xml!r}'

@@ -119,7 +119,9 @@ class TestBinaryPayloads:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_body = event["body"]
-        assert actual_body == expected_encoded, f"Expected {expected_encoded!r} but got {actual_body!r}"
+        assert actual_body == expected_encoded, (
+            f"Expected {expected_encoded!r} but got {actual_body!r}"
+        )
         assert event["isBase64Encoded"] is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
@@ -165,7 +167,9 @@ class TestBinaryPayloads:
 
         # Assert
         actual_content = resp.body
-        assert actual_content == expected_content, f"Expected {expected_content!r} but got {actual_content!r}"
+        assert actual_content == expected_content, (
+            f"Expected {expected_content!r} but got {actual_content!r}"
+        )
 
     def test_non_base64_response_body_unchanged(self) -> None:
         # Arrange

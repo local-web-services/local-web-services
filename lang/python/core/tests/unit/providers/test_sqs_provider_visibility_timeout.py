@@ -171,7 +171,9 @@ class TestVisibilityTimeout:
         # Assert
         assert len(msgs2) == 1, f"Expected {1!r} but got {len(msgs2)!r}"
         actual_receive_count = msgs2[0].receive_count
-        assert actual_receive_count == expected_receive_count, f"Expected {expected_receive_count!r} but got {actual_receive_count!r}"
+        assert actual_receive_count == expected_receive_count, (
+            f"Expected {expected_receive_count!r} but got {actual_receive_count!r}"
+        )
 
     async def test_delay_seconds(self, queue: LocalQueue) -> None:
         await queue.send_message("delayed", delay_seconds=10)

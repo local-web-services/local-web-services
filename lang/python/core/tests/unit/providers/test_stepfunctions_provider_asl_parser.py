@@ -194,11 +194,19 @@ class TestAslParser:
         defn = parse_definition(SIMPLE_PASS_DEFINITION)
 
         # Assert
-        assert defn.start_at == expected_start_at, f"Expected {expected_start_at!r} but got {defn.start_at!r}"
-        assert expected_start_at in defn.states, f"Expected {expected_start_at!r} to be in {defn.states!r}"
+        assert defn.start_at == expected_start_at, (
+            f"Expected {expected_start_at!r} but got {defn.start_at!r}"
+        )
+        assert expected_start_at in defn.states, (
+            f"Expected {expected_start_at!r} to be in {defn.states!r}"
+        )
         state = defn.states[expected_start_at]
-        assert isinstance(state, PassState), f"Expected instance of {PassState!r} but got {type(state)!r}"
-        assert state.result == expected_result, f"Expected {expected_result!r} but got {state.result!r}"
+        assert isinstance(state, PassState), (
+            f"Expected instance of {PassState!r} but got {type(state)!r}"
+        )
+        assert state.result == expected_result, (
+            f"Expected {expected_result!r} but got {state.result!r}"
+        )
         assert state.end is True, "Expected value to be truthy"
 
     def test_parse_task_state(self) -> None:
@@ -222,9 +230,13 @@ class TestAslParser:
 
         # Assert
         state = defn.states["MyTask"]
-        assert isinstance(state, TaskState), f"Expected instance of {TaskState!r} but got {type(state)!r}"
+        assert isinstance(state, TaskState), (
+            f"Expected instance of {TaskState!r} but got {type(state)!r}"
+        )
         assert "myFunc" in state.resource, f'Expected {"myFunc"!r} to be in {state.resource!r}'
-        assert state.timeout_seconds == expected_timeout, f"Expected {expected_timeout!r} but got {state.timeout_seconds!r}"
+        assert state.timeout_seconds == expected_timeout, (
+            f"Expected {expected_timeout!r} but got {state.timeout_seconds!r}"
+        )
 
     def test_parse_choice_state(self) -> None:
         # Arrange
@@ -254,9 +266,13 @@ class TestAslParser:
 
         # Assert
         state = defn.states["Check"]
-        assert isinstance(state, ChoiceState), f"Expected instance of {ChoiceState!r} but got {type(state)!r}"
+        assert isinstance(state, ChoiceState), (
+            f"Expected instance of {ChoiceState!r} but got {type(state)!r}"
+        )
         assert len(state.choices) == 1, f"Expected {1!r} but got {len(state.choices)!r}"
-        assert state.default == expected_default, f"Expected {expected_default!r} but got {state.default!r}"
+        assert state.default == expected_default, (
+            f"Expected {expected_default!r} but got {state.default!r}"
+        )
 
     def test_parse_wait_state(self) -> None:
         defn = parse_definition(
@@ -273,7 +289,9 @@ class TestAslParser:
             }
         )
         state = defn.states["Wait"]
-        assert isinstance(state, WaitState), f"Expected instance of {WaitState!r} but got {type(state)!r}"
+        assert isinstance(state, WaitState), (
+            f"Expected instance of {WaitState!r} but got {type(state)!r}"
+        )
         assert state.seconds == 5, f"Expected {5!r} but got {state.seconds!r}"
 
     def test_parse_parallel_state(self) -> None:
@@ -295,7 +313,9 @@ class TestAslParser:
             }
         )
         state = defn.states["Parallel"]
-        assert isinstance(state, ParallelState), f"Expected instance of {ParallelState!r} but got {type(state)!r}"
+        assert isinstance(state, ParallelState), (
+            f"Expected instance of {ParallelState!r} but got {type(state)!r}"
+        )
         assert len(state.branches) == 1, f"Expected {1!r} but got {len(state.branches)!r}"
 
     def test_parse_map_state(self) -> None:
@@ -316,20 +336,26 @@ class TestAslParser:
             }
         )
         state = defn.states["MapIt"]
-        assert isinstance(state, MapState), f"Expected instance of {MapState!r} but got {type(state)!r}"
+        assert isinstance(state, MapState), (
+            f"Expected instance of {MapState!r} but got {type(state)!r}"
+        )
         assert state.max_concurrency == 3, f"Expected {3!r} but got {state.max_concurrency!r}"
 
     def test_parse_fail_state(self) -> None:
         expected_error = "CustomError"
         defn = parse_definition(FAIL_DEFINITION)
         state = defn.states["Oops"]
-        assert isinstance(state, FailState), f"Expected instance of {FailState!r} but got {type(state)!r}"
+        assert isinstance(state, FailState), (
+            f"Expected instance of {FailState!r} but got {type(state)!r}"
+        )
         assert state.error == expected_error, f"Expected {expected_error!r} but got {state.error!r}"
 
     def test_parse_succeed_state(self) -> None:
         defn = parse_definition(SUCCEED_DEFINITION)
         state = defn.states["Done"]
-        assert isinstance(state, SucceedState), f"Expected instance of {SucceedState!r} but got {type(state)!r}"
+        assert isinstance(state, SucceedState), (
+            f"Expected instance of {SucceedState!r} but got {type(state)!r}"
+        )
 
     def test_parse_retry_catch(self) -> None:
         defn = parse_definition(
@@ -360,9 +386,13 @@ class TestAslParser:
             }
         )
         state = defn.states["TaskWithRetry"]
-        assert isinstance(state, TaskState), f"Expected instance of {TaskState!r} but got {type(state)!r}"
+        assert isinstance(state, TaskState), (
+            f"Expected instance of {TaskState!r} but got {type(state)!r}"
+        )
         assert len(state.retry) == 1, f"Expected {1!r} but got {len(state.retry)!r}"
-        assert state.retry[0].max_attempts == 3, f"Expected {3!r} but got {state.retry[0].max_attempts!r}"
+        assert state.retry[0].max_attempts == 3, (
+            f"Expected {3!r} but got {state.retry[0].max_attempts!r}"
+        )
         assert len(state.catch) == 1, f"Expected {1!r} but got {len(state.catch)!r}"
 
     def test_parse_comment(self) -> None:
@@ -374,11 +404,15 @@ class TestAslParser:
                 "States": {"S1": {"Type": "Succeed", "Comment": "done"}},
             }
         )
-        assert defn.comment == expected_comment, f"Expected {expected_comment!r} but got {defn.comment!r}"
+        assert defn.comment == expected_comment, (
+            f"Expected {expected_comment!r} but got {defn.comment!r}"
+        )
 
     def test_parse_from_string(self) -> None:
         defn = parse_definition(SIMPLE_PASS_DEFINITION)
-        assert isinstance(defn, StateMachineDefinition), f"Expected instance of {StateMachineDefinition!r} but got {type(defn)!r}"
+        assert isinstance(defn, StateMachineDefinition), (
+            f"Expected instance of {StateMachineDefinition!r} but got {type(defn)!r}"
+        )
 
     def test_unknown_state_type_raises(self) -> None:
         with pytest.raises(ValueError, match="Unknown state type"):

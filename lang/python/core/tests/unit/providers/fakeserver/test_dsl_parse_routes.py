@@ -50,7 +50,9 @@ class TestParseRoutes:
         parsed = parse_routes(routes_dir, "graphql")
 
         # Assert
-        assert len(parsed["graphql_routes"]) == 1, f'Expected {1!r} but got {len(parsed["graphql_routes"])!r}'
+        assert len(parsed["graphql_routes"]) == 1, (
+            f'Expected {1!r} but got {len(parsed["graphql_routes"])!r}'
+        )
         expected_op = "Query.user"
         actual_op = parsed["graphql_routes"][0].operation
         assert actual_op == expected_op, f"Expected {expected_op!r} but got {actual_op!r}"
@@ -74,10 +76,14 @@ class TestParseRoutes:
         parsed = parse_routes(routes_dir, "grpc")
 
         # Assert
-        assert len(parsed["grpc_routes"]) == 1, f'Expected {1!r} but got {len(parsed["grpc_routes"])!r}'
+        assert len(parsed["grpc_routes"]) == 1, (
+            f'Expected {1!r} but got {len(parsed["grpc_routes"])!r}'
+        )
         expected_service = "payment.PaymentService"
         actual_service = parsed["grpc_routes"][0].service
-        assert actual_service == expected_service, f"Expected {expected_service!r} but got {actual_service!r}"
+        assert actual_service == expected_service, (
+            f"Expected {expected_service!r} but got {actual_service!r}"
+        )
 
     def test_empty_routes_dir(self, tmp_path):
         # Arrange
@@ -111,7 +117,11 @@ class TestParseRoutes:
         parsed = parse_routes(routes_dir, "rest")
 
         # Assert
-        assert len(parsed["routes"][0].responses) == 2, f'Expected {2!r} but got {len(parsed["routes"][0].responses)!r}'
+        assert len(parsed["routes"][0].responses) == 2, (
+            f'Expected {2!r} but got {len(parsed["routes"][0].responses)!r}'
+        )
         expected_first_status = 410
         actual_first_status = parsed["routes"][0].responses[0][1].status
-        assert actual_first_status == expected_first_status, f"Expected {expected_first_status!r} but got {actual_first_status!r}"
+        assert actual_first_status == expected_first_status, (
+            f"Expected {expected_first_status!r} but got {actual_first_status!r}"
+        )

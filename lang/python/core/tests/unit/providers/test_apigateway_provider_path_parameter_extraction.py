@@ -124,12 +124,18 @@ class TestPathParameterExtraction:
         expected_path_params = {"order_id": "abc-123"}
         expected_path = "/orders/abc-123"
         expected_resource = "/orders/{order_id}"
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
 
         event: dict = fake_compute.invoke.call_args[0][0]
         actual_path_params = event["pathParameters"]
         actual_path = event["path"]
         actual_resource = event["resource"]
-        assert actual_path_params == expected_path_params, f"Expected {expected_path_params!r} but got {actual_path_params!r}"
+        assert actual_path_params == expected_path_params, (
+            f"Expected {expected_path_params!r} but got {actual_path_params!r}"
+        )
         assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
-        assert actual_resource == expected_resource, f"Expected {expected_resource!r} but got {actual_resource!r}"
+        assert actual_resource == expected_resource, (
+            f"Expected {expected_resource!r} but got {actual_resource!r}"
+        )

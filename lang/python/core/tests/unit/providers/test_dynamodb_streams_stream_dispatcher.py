@@ -60,7 +60,9 @@ class TestStreamDispatcher:
             assert "Records" in event, f'Expected {"Records"!r} to be in {event!r}'
             assert len(event["Records"]) >= 1, f'Expected {len(event["Records"])!r} >= {1!r}'
             actual_event_name = event["Records"][0]["eventName"]
-            assert actual_event_name == expected_event_name, f"Expected {expected_event_name!r} but got {actual_event_name!r}"
+            assert actual_event_name == expected_event_name, (
+                f"Expected {expected_event_name!r} but got {actual_event_name!r}"
+            )
         finally:
             await dispatcher.stop()
 
@@ -83,7 +85,9 @@ class TestStreamDispatcher:
             await asyncio.sleep(0.15)
 
             # Assert
-            assert len(handler.invocations) == expected_invocation_count, f"Expected {expected_invocation_count!r} but got {len(handler.invocations)!r}"
+            assert len(handler.invocations) == expected_invocation_count, (
+                f"Expected {expected_invocation_count!r} but got {len(handler.invocations)!r}"
+            )
         finally:
             await dispatcher.stop()
 
@@ -133,7 +137,9 @@ class TestStreamDispatcher:
 
             # Assert
             actual_total_records = sum(len(inv["Records"]) for inv in handler.invocations)
-            assert actual_total_records == expected_total_records, f"Expected {expected_total_records!r} but got {actual_total_records!r}"
+            assert actual_total_records == expected_total_records, (
+                f"Expected {expected_total_records!r} but got {actual_total_records!r}"
+            )
         finally:
             await dispatcher.stop()
 

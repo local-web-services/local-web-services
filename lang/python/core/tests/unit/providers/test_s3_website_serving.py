@@ -97,5 +97,9 @@ class TestIndexDocumentResolution:
         response = await client.get("/web-bucket/missing")
 
         # Assert
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
-        assert b"NoSuchKey" in response.content, f'Expected {b"NoSuchKey"!r} to be in {response.content!r}'
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
+        assert b"NoSuchKey" in response.content, (
+            f'Expected {b"NoSuchKey"!r} to be in {response.content!r}'
+        )

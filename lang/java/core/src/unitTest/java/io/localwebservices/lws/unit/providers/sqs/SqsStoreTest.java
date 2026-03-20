@@ -183,7 +183,7 @@ public class SqsStoreTest {
 
     // Assert
     assertEquals(1, actualMessages.size(), "Expected actualMessages.size() to match 1");
-    assertEquals("body-content", actualMessages.get(0).body, "Expected actualMessages.get(0).body to equal "body-content"");
+    assertEquals("body-content", actualMessages.get(0).body, "Expected values to match");
   }
 
   @Test
@@ -413,6 +413,6 @@ public class SqsStoreTest {
     store.removeQueueTags("no-tags-queue", List.of("env"));
 
     // Assert
-    assertTrue(store.getQueueTags("no-tags-queue").isEmpty(), "Expected store.getQueueTags("no-tags-queue") to be empty");
+    assertTrue(store.getQueueTags("no-tags-queue").isEmpty(), "Expected values to match");
   }
 }

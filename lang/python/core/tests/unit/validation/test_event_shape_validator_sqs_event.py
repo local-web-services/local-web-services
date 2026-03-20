@@ -149,8 +149,12 @@ class TestSqsEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert "messageId" in issues[0].message, f'Expected {"messageId"!r} to be in {issues[0].message!r}'
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert "messageId" in issues[0].message, (
+            f'Expected {"messageId"!r} to be in {issues[0].message!r}'
+        )
 
     def test_record_wrong_type_body(self) -> None:
         # Arrange
@@ -170,5 +174,7 @@ class TestSqsEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
         assert "body" in issues[0].message, f'Expected {"body"!r} to be in {issues[0].message!r}'

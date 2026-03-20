@@ -43,7 +43,9 @@ class TestElastiCacheDataPlaneEndpoint:
         actual_endpoint = result["CacheCluster"]["ConfigurationEndpoint"]
         actual_address = actual_endpoint["Address"]
         actual_port = actual_endpoint["Port"]
-        assert actual_address == expected_address, f"Expected {expected_address!r} but got {actual_address!r}"
+        assert actual_address == expected_address, (
+            f"Expected {expected_address!r} but got {actual_address!r}"
+        )
         assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
         fake_cm.start_container.assert_called_once_with("test-cluster")
 
@@ -65,7 +67,9 @@ class TestElastiCacheDataPlaneEndpoint:
         actual_endpoint = result["CacheCluster"]["ConfigurationEndpoint"]
         actual_address = actual_endpoint["Address"]
         actual_port = actual_endpoint["Port"]
-        assert actual_address == expected_address, f"Expected {expected_address!r} but got {actual_address!r}"
+        assert actual_address == expected_address, (
+            f"Expected {expected_address!r} but got {actual_address!r}"
+        )
         assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
 
     def test_delete_cluster_stops_container(self) -> None:

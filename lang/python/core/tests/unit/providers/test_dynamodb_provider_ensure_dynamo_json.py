@@ -55,4 +55,4 @@ class TestEnsureDynamoJson:
         actual_item = _ensure_dynamo_json({})
 
         # Assert
-        assert actual_item == {}, "Expected {0!r} but got {1!r}".format({}, actual_item)
+        assert actual_item == {}, f"Expected {({})!r} but got {actual_item!r}"

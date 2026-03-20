@@ -176,7 +176,9 @@ class TestProviderLifecycle:
 
     async def test_name(self, provider: StepFunctionsProvider) -> None:
         expected_name = "stepfunctions"
-        assert provider.name == expected_name, f"Expected {expected_name!r} but got {provider.name!r}"
+        assert provider.name == expected_name, (
+            f"Expected {expected_name!r} but got {provider.name!r}"
+        )
 
     async def test_health_check_running(self, provider: StepFunctionsProvider) -> None:
         assert await provider.health_check() is True, "Expected value to be truthy"
@@ -197,7 +199,9 @@ class TestProviderLifecycle:
         assert p.get_definition("sm") is None, f'Expected None but got {p.get_definition("sm")!r}'
 
     async def test_implements_istatemachine(self, provider: StepFunctionsProvider) -> None:
-        assert isinstance(provider, IStateMachine), f"Expected instance of {IStateMachine!r} but got {type(provider)!r}"
+        assert isinstance(provider, IStateMachine), (
+            f"Expected instance of {IStateMachine!r} but got {type(provider)!r}"
+        )
 
     async def test_list_state_machines(self, provider: StepFunctionsProvider) -> None:
         names = provider.list_state_machines()

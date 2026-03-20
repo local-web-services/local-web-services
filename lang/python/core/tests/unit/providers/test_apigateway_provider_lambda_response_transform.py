@@ -126,9 +126,15 @@ class TestLambdaResponseTransform:
         expected_status = 200
         expected_body = {"id": "123"}
         expected_content_type = "application/json"
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
-        assert response.json() == expected_body, f"Expected {expected_body!r} but got {response.json()!r}"
-        assert response.headers["content-type"] == expected_content_type, f'Expected {expected_content_type!r} but got {response.headers["content-type"]!r}'
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
+        assert response.json() == expected_body, (
+            f"Expected {expected_body!r} but got {response.json()!r}"
+        )
+        assert response.headers["content-type"] == expected_content_type, (
+            f'Expected {expected_content_type!r} but got {response.headers["content-type"]!r}'
+        )
 
     @pytest.mark.asyncio
     async def test_custom_status_code(self) -> None:
@@ -146,4 +152,6 @@ class TestLambdaResponseTransform:
 
         # Assert
         expected_status = 204
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )

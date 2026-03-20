@@ -72,7 +72,9 @@ class TestEvaluateChoiceRules:
         actual_next_state = evaluate_choice_rules(rules, {"x": 5})
 
         # Assert
-        assert actual_next_state == expected_next_state, f"Expected {expected_next_state!r} but got {actual_next_state!r}"
+        assert actual_next_state == expected_next_state, (
+            f"Expected {expected_next_state!r} but got {actual_next_state!r}"
+        )
 
     def test_no_match_returns_none(self) -> None:
         rules = [

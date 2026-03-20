@@ -63,7 +63,9 @@ class TestS3ProviderCRUD:
         actual_result = await provider.get_object(bucket, key)
 
         # Assert
-        assert actual_result == expected_body, f"Expected {expected_body!r} but got {actual_result!r}"
+        assert actual_result == expected_body, (
+            f"Expected {expected_body!r} but got {actual_result!r}"
+        )
 
     async def test_get_nonexistent(self, provider: S3Provider) -> None:
         result = await provider.get_object("test-bucket", "nope")
@@ -79,7 +81,9 @@ class TestS3ProviderCRUD:
         await provider.delete_object(bucket, key)
 
         # Assert
-        assert await provider.get_object(bucket, key) is None, f"Expected None but got {await provider.get_object(bucket, key)!r}"
+        assert await provider.get_object(bucket, key) is None, (
+            f"Expected None but got {await provider.get_object(bucket, key)!r}"
+        )
 
     async def test_list_objects(self, provider: S3Provider) -> None:
         # Arrange
@@ -92,7 +96,9 @@ class TestS3ProviderCRUD:
         actual_keys = await provider.list_objects(bucket)
 
         # Assert
-        assert sorted(actual_keys) == expected_keys, f"Expected {expected_keys!r} but got {sorted(actual_keys)!r}"
+        assert sorted(actual_keys) == expected_keys, (
+            f"Expected {expected_keys!r} but got {sorted(actual_keys)!r}"
+        )
 
     async def test_list_objects_with_prefix(self, provider: S3Provider) -> None:
         # Arrange
@@ -106,7 +112,9 @@ class TestS3ProviderCRUD:
         actual_keys = await provider.list_objects(bucket, prefix="logs/")
 
         # Assert
-        assert sorted(actual_keys) == expected_keys, f"Expected {expected_keys!r} but got {sorted(actual_keys)!r}"
+        assert sorted(actual_keys) == expected_keys, (
+            f"Expected {expected_keys!r} but got {sorted(actual_keys)!r}"
+        )
 
     async def test_put_with_content_type(self, provider: S3Provider) -> None:
         # Arrange
@@ -120,4 +128,6 @@ class TestS3ProviderCRUD:
 
         # Assert
         assert actual_obj is not None, "Expected value to be set but was None"
-        assert actual_obj["content_type"] == expected_content_type, f'Expected {expected_content_type!r} but got {actual_obj["content_type"]!r}'
+        assert actual_obj["content_type"] == expected_content_type, (
+            f'Expected {expected_content_type!r} but got {actual_obj["content_type"]!r}'
+        )

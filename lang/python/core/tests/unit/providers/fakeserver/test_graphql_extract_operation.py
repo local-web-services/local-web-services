@@ -21,7 +21,9 @@ class TestExtractOperationInfo:
         assert op_type == expected_type, f"Expected {expected_type!r} but got {op_type!r}"
         expected_field = "user"
         assert field_name == expected_field, f"Expected {expected_field!r} but got {field_name!r}"
-        assert variables == {"id": "u1"}, "Expected {0!r} but got {1!r}".format({"id": "u1"}, variables)
+        assert variables == {"id": "u1"}, (
+            "Expected {!r} but got {!r}".format({"id": "u1"}, variables)
+        )
 
     def test_mutation_operation(self):
         # Arrange

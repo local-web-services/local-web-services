@@ -75,7 +75,9 @@ class TestFileWatcherLifecycle:
         watcher.on_change(lambda p: None)
 
         # Assert
-        assert len(watcher._callbacks) == expected_callback_count, f"Expected {expected_callback_count!r} but got {len(watcher._callbacks)!r}"
+        assert len(watcher._callbacks) == expected_callback_count, (
+            f"Expected {expected_callback_count!r} but got {len(watcher._callbacks)!r}"
+        )
 
     def test_callback_receives_events_after_start(self) -> None:
         """A callback registered before start() should receive file events."""

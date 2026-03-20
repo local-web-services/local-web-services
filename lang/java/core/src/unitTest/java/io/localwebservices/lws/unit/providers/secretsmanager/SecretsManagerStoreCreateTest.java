@@ -23,8 +23,8 @@ public class SecretsManagerStoreCreateTest {
     Map<String, Object> actualSecret = store.createSecret(expectedName, "{}", null, null);
 
     // Assert
-    assertEquals(expectedName, actualSecret.get("Name"), "Expected actualSecret.get("Name") to equal expectedName");
-    assertNotNull(actualSecret.get("ARN"), "Expected actualSecret.get("ARN") to not be null");
+    assertEquals(expectedName, actualSecret.get("Name"), "Expected name to match");
+    assertNotNull(actualSecret.get("ARN"), "Expected values to match");
   }
 
   @Test

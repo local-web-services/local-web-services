@@ -25,9 +25,13 @@ def test_lws_session_spec_defaults():
     assert session._spec["queues"] == [], f'Expected {[]!r} but got {session._spec["queues"]!r}'
     assert session._spec["buckets"] == [], f'Expected {[]!r} but got {session._spec["buckets"]!r}'
     assert session._spec["topics"] == [], f'Expected {[]!r} but got {session._spec["topics"]!r}'
-    assert session._spec["state_machines"] == [], f'Expected {[]!r} but got {session._spec["state_machines"]!r}'
+    assert session._spec["state_machines"] == [], (
+        f'Expected {[]!r} but got {session._spec["state_machines"]!r}'
+    )
     assert session._spec["secrets"] == [], f'Expected {[]!r} but got {session._spec["secrets"]!r}'
-    assert session._spec["parameters"] == [], f'Expected {[]!r} but got {session._spec["parameters"]!r}'
+    assert session._spec["parameters"] == [], (
+        f'Expected {[]!r} but got {session._spec["parameters"]!r}'
+    )
 
 
 def test_log_capture_importable():

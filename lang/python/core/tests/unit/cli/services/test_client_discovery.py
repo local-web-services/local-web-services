@@ -52,8 +52,12 @@ class TestDiscovery:
             actual_port = result["port"]
 
             # Assert
-            assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
-            assert expected_service_name in result["services"], f'Expected {expected_service_name!r} to be in {result["services"]!r}'
+            assert actual_port == expected_port, (
+                f"Expected {expected_port!r} but got {actual_port!r}"
+            )
+            assert expected_service_name in result["services"], (
+                f'Expected {expected_service_name!r} to be in {result["services"]!r}'
+            )
 
     @pytest.mark.asyncio
     async def test_discover_caches_result(self):

@@ -84,4 +84,6 @@ class TestFnJoin:
 
         # Assert
         actual_endpoint = result["ENDPOINT"]
-        assert actual_endpoint == expected_endpoint, f"Expected {expected_endpoint!r} but got {actual_endpoint!r}"
+        assert actual_endpoint == expected_endpoint, (
+            f"Expected {expected_endpoint!r} but got {actual_endpoint!r}"
+        )

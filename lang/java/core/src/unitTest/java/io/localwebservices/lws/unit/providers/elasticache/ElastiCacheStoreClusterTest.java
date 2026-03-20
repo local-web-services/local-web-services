@@ -25,7 +25,7 @@ public class ElastiCacheStoreClusterTest {
 
     // Assert
     assertNotNull(actualCluster, "Expected actualCluster to not be null");
-    assertEquals(expectedClusterId, actualCluster.get("CacheClusterId"), "Expected actualCluster.get("CacheClusterId") to equal expectedClusterId");
+    assertEquals(expectedClusterId, actualCluster.get("CacheClusterId"), "Expected clusterId to match");
   }
 
   @Test
@@ -40,7 +40,7 @@ public class ElastiCacheStoreClusterTest {
     Map<String, Object> actualCluster = store.createCacheCluster(params);
 
     // Assert
-    assertEquals(expectedEngine, actualCluster.get("Engine"), "Expected actualCluster.get("Engine") to equal expectedEngine");
+    assertEquals(expectedEngine, actualCluster.get("Engine"), "Expected engine to match");
   }
 
   @Test
@@ -55,7 +55,7 @@ public class ElastiCacheStoreClusterTest {
     Map<String, Object> actualCluster = store.createCacheCluster(params);
 
     // Assert
-    assertEquals(expectedStatus, actualCluster.get("CacheClusterStatus"), "Expected actualCluster.get("CacheClusterStatus") to equal expectedStatus");
+    assertEquals(expectedStatus, actualCluster.get("CacheClusterStatus"), "Expected status to match");
   }
 
   @Test
@@ -75,7 +75,7 @@ public class ElastiCacheStoreClusterTest {
 
     // Assert
     assertEquals(expectedCount, actualClusters.size(), "Expected actualClusters.size() to match expectedCount");
-    assertEquals("cluster-a", actualClusters.get(0).get("CacheClusterId"), "Expected actualClusters.get(0).get("CacheClusterId") to equal "cluster-a"");
+    assertEquals("cluster-a", actualClusters.get(0).get("CacheClusterId"), "Expected values to match");
   }
 
   @Test
@@ -111,7 +111,7 @@ public class ElastiCacheStoreClusterTest {
 
     // Assert
     assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
-    assertEquals("delete-cluster", actualDeleted.get("CacheClusterId"), "Expected actualDeleted.get("CacheClusterId") to equal "delete-cluster"");
+    assertEquals("delete-cluster", actualDeleted.get("CacheClusterId"), "Expected values to match");
     List<Map<String, Object>> actualRemaining = store.describeCacheClusters(null);
     assertEquals(expectedCount, actualRemaining.size(), "Expected actualRemaining.size() to match expectedCount");
   }

@@ -53,7 +53,9 @@ class TestListDeadLetterSourceQueuesJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
         data = resp.json()
         assert data["QueueUrls"] == [], f'Expected {[]!r} but got {data["QueueUrls"]!r}'
 
@@ -89,10 +91,14 @@ class TestListDeadLetterSourceQueuesJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
         data = resp.json()
         actual_source_count = len(data["QueueUrls"])
-        assert actual_source_count == expected_source_count, f"Expected {expected_source_count!r} but got {actual_source_count!r}"
+        assert actual_source_count == expected_source_count, (
+            f"Expected {expected_source_count!r} but got {actual_source_count!r}"
+        )
         urls = data["QueueUrls"]
         assert any(source_name_1 in url for url in urls), "Expected value to be truthy"
         assert any(source_name_2 in url for url in urls), "Expected value to be truthy"
@@ -114,6 +120,10 @@ class TestListDeadLetterSourceQueuesJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
         data = resp.json()
-        assert "NonExistentQueue" in data["__type"], f'Expected {"NonExistentQueue"!r} to be in {data["__type"]!r}'
+        assert "NonExistentQueue" in data["__type"], (
+            f'Expected {"NonExistentQueue"!r} to be in {data["__type"]!r}'
+        )

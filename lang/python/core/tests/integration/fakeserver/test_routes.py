@@ -60,7 +60,9 @@ class TestBasicRouting:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
         actual_id = response.json()["id"]
         assert actual_id == expected_id, f"Expected {expected_id!r} but got {actual_id!r}"
 
@@ -74,7 +76,9 @@ class TestBasicRouting:
 
         # Assert
         expected_status = 404
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
 
 
 class TestConditionalRouting:
@@ -88,7 +92,9 @@ class TestConditionalRouting:
 
         # Assert
         expected_status = 410
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
 
     async def test_header_match(self, conditional_config):
         # Arrange
@@ -101,7 +107,9 @@ class TestConditionalRouting:
         # Assert
         expected_version = 2
         actual_version = response.json()["version"]
-        assert actual_version == expected_version, f"Expected {expected_version!r} but got {actual_version!r}"
+        assert actual_version == expected_version, (
+            f"Expected {expected_version!r} but got {actual_version!r}"
+        )
 
     async def test_catch_all_fallthrough(self, conditional_config):
         # Arrange
@@ -114,7 +122,9 @@ class TestConditionalRouting:
         # Assert
         expected_version = 1
         actual_version = response.json()["version"]
-        assert actual_version == expected_version, f"Expected {expected_version!r} but got {actual_version!r}"
+        assert actual_version == expected_version, (
+            f"Expected {expected_version!r} but got {actual_version!r}"
+        )
 
 
 class TestManagementEndpoints:
@@ -143,7 +153,9 @@ class TestManagementEndpoints:
         assert response.json()["chaos"]["enabled"] is True, "Expected value to be truthy"
         expected_error_rate = 0.5
         actual_error_rate = response.json()["chaos"]["error_rate"]
-        assert actual_error_rate == expected_error_rate, f"Expected {expected_error_rate!r} but got {actual_error_rate!r}"
+        assert actual_error_rate == expected_error_rate, (
+            f"Expected {expected_error_rate!r} but got {actual_error_rate!r}"
+        )
 
 
 class TestPostWithBody:
@@ -165,5 +177,7 @@ class TestPostWithBody:
 
         # Assert
         expected_status = 201
-        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert response.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {response.status_code!r}"
+        )
         assert response.json()["created"] is True, "Expected value to be truthy"

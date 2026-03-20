@@ -170,4 +170,6 @@ class TestSqsProviderLifecycle:
         assert p.get_queue("q") is None, f'Expected None but got {p.get_queue("q")!r}'
 
     async def test_implements_iqueue(self, provider: SqsProvider) -> None:
-        assert isinstance(provider, IQueue), f"Expected instance of {IQueue!r} but got {type(provider)!r}"
+        assert isinstance(provider, IQueue), (
+            f"Expected instance of {IQueue!r} but got {type(provider)!r}"
+        )

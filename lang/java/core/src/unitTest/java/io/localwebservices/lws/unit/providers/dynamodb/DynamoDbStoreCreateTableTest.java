@@ -127,7 +127,7 @@ public class DynamoDbStoreCreateTableTest {
     Map<String, Object> actualDesc = store.describeTable(expectedTableName);
 
     // Assert
-    assertEquals(expectedTableName, actualDesc.get("TableName"), "Expected actualDesc.get("TableName") to equal expectedTableName");
+    assertEquals(expectedTableName, actualDesc.get("TableName"), "Expected tableName to match");
   }
 
   @Test

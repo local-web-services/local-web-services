@@ -68,4 +68,6 @@ class TestAddIamAuthMiddleware:
         # Assert
         expected_middleware_count = 1
         actual_middleware_count = len(app.user_middleware)
-        assert actual_middleware_count == expected_middleware_count, f"Expected {expected_middleware_count!r} but got {actual_middleware_count!r}"
+        assert actual_middleware_count == expected_middleware_count, (
+            f"Expected {expected_middleware_count!r} but got {actual_middleware_count!r}"
+        )

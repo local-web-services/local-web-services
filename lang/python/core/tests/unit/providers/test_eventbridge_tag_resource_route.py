@@ -52,7 +52,9 @@ class TestTagResourceRoute:
             "TagResource",
             {"ResourceARN": arn, "Tags": [{"Key": expected_key, "Value": expected_value}]},
         )
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
 
         resp = await _request(
             client,
@@ -61,11 +63,17 @@ class TestTagResourceRoute:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         assert len(data["Tags"]) == 1, f'Expected {1!r} but got {len(data["Tags"])!r}'
-        assert data["Tags"][0]["Key"] == expected_key, f'Expected {expected_key!r} but got {data["Tags"][0]["Key"]!r}'
-        assert data["Tags"][0]["Value"] == expected_value, f'Expected {expected_value!r} but got {data["Tags"][0]["Value"]!r}'
+        assert data["Tags"][0]["Key"] == expected_key, (
+            f'Expected {expected_key!r} but got {data["Tags"][0]["Key"]!r}'
+        )
+        assert data["Tags"][0]["Value"] == expected_value, (
+            f'Expected {expected_value!r} but got {data["Tags"][0]["Value"]!r}'
+        )
 
     async def test_untag(self, client: httpx.AsyncClient) -> None:
         arn = "arn:aws:events:us-east-1:000000000000:rule/test-rule"

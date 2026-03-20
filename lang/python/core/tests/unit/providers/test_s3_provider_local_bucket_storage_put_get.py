@@ -67,12 +67,20 @@ class TestLocalBucketStoragePutGet:
 
         # Assert
         assert "ETag" in result, f'Expected {"ETag"!r} to be in {result!r}'
-        assert result["ETag"] == f'"{expected_etag}"', "Expected {0!r} but got {1!r}".format(f'"{expected_etag}"', result["ETag"])
+        assert result["ETag"] == f'"{expected_etag}"', (
+            "Expected {!r} but got {!r}".format(f'"{expected_etag}"', result["ETag"])
+        )
         assert actual_obj is not None, "Expected value to be set but was None"
         assert actual_obj["body"] == body, f'Expected {body!r} but got {actual_obj["body"]!r}'
-        assert actual_obj["content_type"] == expected_content_type, f'Expected {expected_content_type!r} but got {actual_obj["content_type"]!r}'
-        assert actual_obj["size"] == len(body), f'Expected {len(body)!r} but got {actual_obj["size"]!r}'
-        assert actual_obj["etag"] == expected_etag, f'Expected {expected_etag!r} but got {actual_obj["etag"]!r}'
+        assert actual_obj["content_type"] == expected_content_type, (
+            f'Expected {expected_content_type!r} but got {actual_obj["content_type"]!r}'
+        )
+        assert actual_obj["size"] == len(body), (
+            f'Expected {len(body)!r} but got {actual_obj["size"]!r}'
+        )
+        assert actual_obj["etag"] == expected_etag, (
+            f'Expected {expected_etag!r} but got {actual_obj["etag"]!r}'
+        )
 
     async def test_put_with_content_type(self, storage: LocalBucketStorage) -> None:
         # Arrange
@@ -86,7 +94,9 @@ class TestLocalBucketStoragePutGet:
 
         # Assert
         assert actual_obj is not None, "Expected value to be set but was None"
-        assert actual_obj["content_type"] == expected_content_type, f'Expected {expected_content_type!r} but got {actual_obj["content_type"]!r}'
+        assert actual_obj["content_type"] == expected_content_type, (
+            f'Expected {expected_content_type!r} but got {actual_obj["content_type"]!r}'
+        )
 
     async def test_put_with_metadata(self, storage: LocalBucketStorage) -> None:
         # Arrange
@@ -100,7 +110,9 @@ class TestLocalBucketStoragePutGet:
 
         # Assert
         assert actual_obj is not None, "Expected value to be set but was None"
-        assert actual_obj["metadata"] == expected_metadata, f'Expected {expected_metadata!r} but got {actual_obj["metadata"]!r}'
+        assert actual_obj["metadata"] == expected_metadata, (
+            f'Expected {expected_metadata!r} but got {actual_obj["metadata"]!r}'
+        )
 
     async def test_get_nonexistent_returns_none(self, storage: LocalBucketStorage) -> None:
         result = await storage.get_object("nobucket", "nokey")
@@ -119,7 +131,9 @@ class TestLocalBucketStoragePutGet:
 
         # Assert
         assert actual_obj is not None, "Expected value to be set but was None"
-        assert actual_obj["body"] == expected_body, f'Expected {expected_body!r} but got {actual_obj["body"]!r}'
+        assert actual_obj["body"] == expected_body, (
+            f'Expected {expected_body!r} but got {actual_obj["body"]!r}'
+        )
 
     async def test_nested_key(self, storage: LocalBucketStorage) -> None:
         # Arrange
@@ -133,4 +147,6 @@ class TestLocalBucketStoragePutGet:
 
         # Assert
         assert actual_obj is not None, "Expected value to be set but was None"
-        assert actual_obj["body"] == expected_body, f'Expected {expected_body!r} but got {actual_obj["body"]!r}'
+        assert actual_obj["body"] == expected_body, (
+            f'Expected {expected_body!r} but got {actual_obj["body"]!r}'
+        )

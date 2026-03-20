@@ -42,5 +42,9 @@ class TestDescribeParameters:
         # Assert
         assert len(result["Parameters"]) >= 1, f'Expected {len(result["Parameters"])!r} >= {1!r}'
         param = result["Parameters"][0]
-        assert param["Name"] == expected_name, f'Expected {expected_name!r} but got {param["Name"]!r}'
-        assert param["Description"] == expected_description, f'Expected {expected_description!r} but got {param["Description"]!r}'
+        assert param["Name"] == expected_name, (
+            f'Expected {expected_name!r} but got {param["Name"]!r}'
+        )
+        assert param["Description"] == expected_description, (
+            f'Expected {expected_description!r} but got {param["Description"]!r}'
+        )

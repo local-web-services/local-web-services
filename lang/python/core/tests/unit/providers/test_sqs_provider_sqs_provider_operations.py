@@ -163,11 +163,15 @@ class TestSqsProviderOperations:
         actual_message_count = len(messages)
         actual_body = messages[0]["Body"]
         actual_message_id = messages[0]["MessageId"]
-        assert actual_message_count == expected_message_count, f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        assert actual_message_count == expected_message_count, (
+            f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        )
         assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
         assert actual_message_id == msg_id, f"Expected {msg_id!r} but got {actual_message_id!r}"
         assert "MD5OfBody" in messages[0], f'Expected {"MD5OfBody"!r} to be in {messages[0]!r}'
-        assert "ReceiptHandle" in messages[0], f'Expected {"ReceiptHandle"!r} to be in {messages[0]!r}'
+        assert "ReceiptHandle" in messages[0], (
+            f'Expected {"ReceiptHandle"!r} to be in {messages[0]!r}'
+        )
 
     async def test_delete(self, provider: SqsProvider) -> None:
         await provider.send_message("queue-a", "delete me")
@@ -190,7 +194,9 @@ class TestSqsProviderOperations:
 
         # Assert
         actual_attributes = messages[0]["MessageAttributes"]
-        assert actual_attributes == expected_attributes, f"Expected {expected_attributes!r} but got {actual_attributes!r}"
+        assert actual_attributes == expected_attributes, (
+            f"Expected {expected_attributes!r} but got {actual_attributes!r}"
+        )
 
     async def test_create_queue(self, provider: SqsProvider) -> None:
         provider.create_queue_from_config(QueueConfig(queue_name="dynamic-queue"))

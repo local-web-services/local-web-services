@@ -113,9 +113,15 @@ class TestPartitionKey:
         issues = _make_validator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert issues[0].level == ValidationLevel.ERROR, f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
-        assert expected_message in issues[0].message, f"Expected {expected_message!r} to be in {issues[0].message!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert issues[0].level == ValidationLevel.ERROR, (
+            f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
+        )
+        assert expected_message in issues[0].message, (
+            f"Expected {expected_message!r} to be in {issues[0].message!r}"
+        )
 
     def test_pk_type_mismatch_dynamo_json(self) -> None:
         # Arrange
@@ -129,10 +135,18 @@ class TestPartitionKey:
         issues = _make_validator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert expected_message_fragment in issues[0].message, f"Expected {expected_message_fragment!r} to be in {issues[0].message!r}"
-        assert expected_type in issues[0].message, f"Expected {expected_type!r} to be in {issues[0].message!r}"
-        assert actual_type in issues[0].message, f"Expected {actual_type!r} to be in {issues[0].message!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert expected_message_fragment in issues[0].message, (
+            f"Expected {expected_message_fragment!r} to be in {issues[0].message!r}"
+        )
+        assert expected_type in issues[0].message, (
+            f"Expected {expected_type!r} to be in {issues[0].message!r}"
+        )
+        assert actual_type in issues[0].message, (
+            f"Expected {actual_type!r} to be in {issues[0].message!r}"
+        )
 
     def test_pk_type_mismatch_plain_value(self) -> None:
         # Arrange
@@ -146,5 +160,9 @@ class TestPartitionKey:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert expected_message_fragment in issues[0].message, f"Expected {expected_message_fragment!r} to be in {issues[0].message!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert expected_message_fragment in issues[0].message, (
+            f"Expected {expected_message_fragment!r} to be in {issues[0].message!r}"
+        )

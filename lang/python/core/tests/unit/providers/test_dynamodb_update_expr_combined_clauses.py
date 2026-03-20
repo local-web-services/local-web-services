@@ -89,7 +89,9 @@ class TestCombinedClauses:
         actual_count = result["count"]
         assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
         assert "temp" not in result, f'Expected {"temp"!r} to not be in {result!r}'
-        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
+        assert actual_count == expected_count, (
+            f"Expected {expected_count!r} but got {actual_count!r}"
+        )
 
     def test_all_four_clauses(self) -> None:
         # Arrange
@@ -121,5 +123,7 @@ class TestCombinedClauses:
         actual_tags = result["tags"]
         assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
         assert "temp" not in result, f'Expected {"temp"!r} to not be in {result!r}'
-        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
+        assert actual_count == expected_count, (
+            f"Expected {expected_count!r} but got {actual_count!r}"
+        )
         assert actual_tags == expected_tags, f"Expected {expected_tags!r} but got {actual_tags!r}"

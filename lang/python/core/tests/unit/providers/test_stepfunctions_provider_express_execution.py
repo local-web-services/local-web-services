@@ -182,7 +182,9 @@ class TestExpressExecution:
 
         # Assert
         actual_status = result["status"]
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
         assert "output" in result, f'Expected {"output"!r} to be in {result!r}'
 
     async def test_express_blocks_until_complete(
@@ -197,5 +199,7 @@ class TestExpressExecution:
 
         # Assert
         actual_status = result["status"]
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
         assert "executionArn" in result, f'Expected {"executionArn"!r} to be in {result!r}'

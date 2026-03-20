@@ -60,7 +60,9 @@ class TestValidToken:
         actual_sub = claims["sub"]
         actual_username = claims["cognito:username"]
         assert actual_sub == expected_sub, f"Expected {expected_sub!r} but got {actual_sub!r}"
-        assert actual_username == expected_username, f"Expected {expected_username!r} but got {actual_username!r}"
+        assert actual_username == expected_username, (
+            f"Expected {expected_username!r} but got {actual_username!r}"
+        )
 
     def test_claims_context(self, issuer: TokenIssuer, authorizer: CognitoAuthorizer) -> None:
         # Arrange
@@ -74,11 +76,21 @@ class TestValidToken:
         context = authorizer.build_claims_context(claims)
 
         # Assert
-        assert context["sub"] == expected_sub, f'Expected {expected_sub!r} but got {context["sub"]!r}'
-        assert context["cognito:username"] == expected_username, f'Expected {expected_username!r} but got {context["cognito:username"]!r}'
-        assert context["email"] == expected_email, f'Expected {expected_email!r} but got {context["email"]!r}'
+        assert context["sub"] == expected_sub, (
+            f'Expected {expected_sub!r} but got {context["sub"]!r}'
+        )
+        assert context["cognito:username"] == expected_username, (
+            f'Expected {expected_username!r} but got {context["cognito:username"]!r}'
+        )
+        assert context["email"] == expected_email, (
+            f'Expected {expected_email!r} but got {context["email"]!r}'
+        )
         assert "exp" in context, f'Expected {"exp"!r} to be in {context!r}'
         assert "iat" in context, f'Expected {"iat"!r} to be in {context!r}'
         # Numeric claims converted to strings
-        assert isinstance(context["exp"], str), f'Expected instance of {str!r} but got {type(context["exp"])!r}'
-        assert isinstance(context["iat"], str), f'Expected instance of {str!r} but got {type(context["iat"])!r}'
+        assert isinstance(context["exp"], str), (
+            f'Expected instance of {str!r} but got {type(context["exp"])!r}'
+        )
+        assert isinstance(context["iat"], str), (
+            f'Expected instance of {str!r} but got {type(context["iat"])!r}'
+        )

@@ -49,7 +49,7 @@ public class DynamoDbStorePutItemTest {
 
     // Assert
     assertNotNull(actualItem, "Expected actualItem to not be null");
-    assertEquals(expectedName, actualItem.get("name"), "Expected actualItem.get("name") to equal expectedName");
+    assertEquals(expectedName, actualItem.get("name"), "Expected name to match");
   }
 
   @Test

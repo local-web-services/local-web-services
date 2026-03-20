@@ -15,7 +15,9 @@ class TestAwsErrorSpec:
 
         # Assert
         expected_weight = 1.0
-        assert actual_weight == expected_weight, f"Expected {expected_weight!r} but got {actual_weight!r}"
+        assert actual_weight == expected_weight, (
+            f"Expected {expected_weight!r} but got {actual_weight!r}"
+        )
 
     def test_explicit_status_code(self):
         # Arrange
@@ -30,4 +32,6 @@ class TestAwsErrorSpec:
         actual_status = error.status_code
 
         # Assert
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )

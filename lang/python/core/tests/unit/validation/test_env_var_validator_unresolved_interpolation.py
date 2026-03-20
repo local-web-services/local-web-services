@@ -75,10 +75,18 @@ class TestUnresolvedInterpolation:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert issues[0].level == ValidationLevel.ERROR, f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
-        assert expected_ref_name in issues[0].message, f"Expected {expected_ref_name!r} to be in {issues[0].message!r}"
-        assert expected_env_var_name in issues[0].message, f"Expected {expected_env_var_name!r} to be in {issues[0].message!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert issues[0].level == ValidationLevel.ERROR, (
+            f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
+        )
+        assert expected_ref_name in issues[0].message, (
+            f"Expected {expected_ref_name!r} to be in {issues[0].message!r}"
+        )
+        assert expected_env_var_name in issues[0].message, (
+            f"Expected {expected_env_var_name!r} to be in {issues[0].message!r}"
+        )
 
     def test_arn_like_ref_is_skipped(self) -> None:
         # Arrange

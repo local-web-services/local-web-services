@@ -39,8 +39,12 @@ class TestResetCommand:
         result = runner.invoke(app, ["reset", "--yes", "--project-dir", str(tmp_path)])
 
         # Assert
-        assert result.exit_code == expected_exit_code, f"Expected {expected_exit_code!r} but got {result.exit_code!r}"
-        assert expected_message in result.output, f"Expected {expected_message!r} to be in {result.output!r}"
+        assert result.exit_code == expected_exit_code, (
+            f"Expected {expected_exit_code!r} but got {result.exit_code!r}"
+        )
+        assert expected_message in result.output, (
+            f"Expected {expected_message!r} to be in {result.output!r}"
+        )
 
     def test_reset_with_yes_flag(self, tmp_path):
         """Reset with --yes should skip confirmation and delete data."""
@@ -58,10 +62,16 @@ class TestResetCommand:
         result = runner.invoke(app, ["reset", "--yes", "--project-dir", str(tmp_path)])
 
         # Assert
-        assert result.exit_code == expected_exit_code, f"Expected {expected_exit_code!r} but got {result.exit_code!r}"
-        assert expected_message in result.output, f"Expected {expected_message!r} to be in {result.output!r}"
+        assert result.exit_code == expected_exit_code, (
+            f"Expected {expected_exit_code!r} but got {result.exit_code!r}"
+        )
+        assert expected_message in result.output, (
+            f"Expected {expected_message!r} to be in {result.output!r}"
+        )
         actual_remaining_count = len(list(data_dir.iterdir()))
-        assert actual_remaining_count == expected_remaining_count, f"Expected {expected_remaining_count!r} but got {actual_remaining_count!r}"
+        assert actual_remaining_count == expected_remaining_count, (
+            f"Expected {expected_remaining_count!r} but got {actual_remaining_count!r}"
+        )
 
     def test_reset_without_yes_declines(self, tmp_path):
         """Reset without --yes should prompt and respect 'n'."""
@@ -80,8 +90,12 @@ class TestResetCommand:
         )
 
         # Assert
-        assert result.exit_code == expected_exit_code, f"Expected {expected_exit_code!r} but got {result.exit_code!r}"
-        assert expected_message in result.output, f"Expected {expected_message!r} to be in {result.output!r}"
+        assert result.exit_code == expected_exit_code, (
+            f"Expected {expected_exit_code!r} but got {result.exit_code!r}"
+        )
+        assert expected_message in result.output, (
+            f"Expected {expected_message!r} to be in {result.output!r}"
+        )
         assert (data_dir / "test.db").exists(), "Expected value to be truthy"
 
     def test_reset_empty_data_dir(self, tmp_path):
@@ -95,5 +109,9 @@ class TestResetCommand:
         result = runner.invoke(app, ["reset", "--yes", "--project-dir", str(tmp_path)])
 
         # Assert
-        assert result.exit_code == expected_exit_code, f"Expected {expected_exit_code!r} but got {result.exit_code!r}"
-        assert "empty" in result.output.lower() or "Nothing to reset" in result.output, f'Expected {"empty"!r} to be in {result.output.lower() or "Nothing to reset" in result.output!r}'
+        assert result.exit_code == expected_exit_code, (
+            f"Expected {expected_exit_code!r} but got {result.exit_code!r}"
+        )
+        assert "empty" in result.output.lower() or "Nothing to reset" in result.output, (
+            "Expected output to contain empty or Nothing to reset"
+        )

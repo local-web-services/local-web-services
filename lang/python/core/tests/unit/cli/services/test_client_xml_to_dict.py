@@ -24,7 +24,9 @@ class TestXmlToDict:
         # Assert
         assert expected_root_key in result, f"Expected {expected_root_key!r} to be in {result!r}"
         actual_message_id = result[expected_root_key]["SendMessageResult"]["MessageId"]
-        assert actual_message_id == expected_message_id, f"Expected {expected_message_id!r} but got {actual_message_id!r}"
+        assert actual_message_id == expected_message_id, (
+            f"Expected {expected_message_id!r} but got {actual_message_id!r}"
+        )
 
     def test_empty_elements(self):
         # Arrange
@@ -36,4 +38,6 @@ class TestXmlToDict:
         actual_empty_value = result["Response"]["Empty"]
 
         # Assert
-        assert actual_empty_value == expected_empty_value, f"Expected {expected_empty_value!r} but got {actual_empty_value!r}"
+        assert actual_empty_value == expected_empty_value, (
+            f"Expected {expected_empty_value!r} but got {actual_empty_value!r}"
+        )

@@ -28,8 +28,12 @@ class TestGetQueueAttributes:
 
         # Assert
         assert "QueueArn" in attrs, f'Expected {"QueueArn"!r} to be in {attrs!r}'
-        assert queue_name in attrs["QueueArn"], f'Expected {queue_name!r} to be in {attrs["QueueArn"]!r}'
-        assert "ApproximateNumberOfMessages" in attrs, f'Expected {"ApproximateNumberOfMessages"!r} to be in {attrs!r}'
+        assert queue_name in attrs["QueueArn"], (
+            f'Expected {queue_name!r} to be in {attrs["QueueArn"]!r}'
+        )
+        assert "ApproximateNumberOfMessages" in attrs, (
+            f'Expected {"ApproximateNumberOfMessages"!r} to be in {attrs!r}'
+        )
         assert "VisibilityTimeout" in attrs, f'Expected {"VisibilityTimeout"!r} to be in {attrs!r}'
 
     @pytest.mark.asyncio

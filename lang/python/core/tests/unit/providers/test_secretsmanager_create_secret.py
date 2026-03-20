@@ -38,7 +38,9 @@ class TestCreateSecret:
         )
 
         # Assert
-        assert result["Name"] == expected_name, f'Expected {expected_name!r} but got {result["Name"]!r}'
+        assert result["Name"] == expected_name, (
+            f'Expected {expected_name!r} but got {result["Name"]!r}'
+        )
         assert "ARN" in result, f'Expected {"ARN"!r} to be in {result!r}'
         assert "VersionId" in result, f'Expected {"VersionId"!r} to be in {result!r}'
 
@@ -47,7 +49,9 @@ class TestCreateSecret:
         result = _post(client, "CreateSecret", {"Name": expected_name})
 
         # Assert
-        assert result["Name"] == expected_name, f'Expected {expected_name!r} but got {result["Name"]!r}'
+        assert result["Name"] == expected_name, (
+            f'Expected {expected_name!r} but got {result["Name"]!r}'
+        )
         assert "VersionId" not in result, f'Expected {"VersionId"!r} to not be in {result!r}'
 
     def test_create_duplicate(self, client: TestClient) -> None:
@@ -57,4 +61,6 @@ class TestCreateSecret:
 
         # Assert
         expected_error_type = "ResourceExistsException"
-        assert result["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {result["__type"]!r}'
+        assert result["__type"] == expected_error_type, (
+            f'Expected {expected_error_type!r} but got {result["__type"]!r}'
+        )

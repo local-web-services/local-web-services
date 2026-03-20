@@ -14,7 +14,9 @@ class TestPermissionsMapDefaults:
         actual = pmap.get_required_actions("dynamodb", "get-item")
 
         # Assert
-        assert actual == ["dynamodb:GetItem"], f'Expected {["dynamodb:GetItem"]!r} but got {actual!r}'
+        assert actual == ["dynamodb:GetItem"], (
+            f'Expected {["dynamodb:GetItem"]!r} but got {actual!r}'
+        )
 
     def test_unknown_service_returns_none(self):
         # Arrange

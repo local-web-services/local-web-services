@@ -49,7 +49,11 @@ class TestLoadOne:
         # Assert
         assert actual_config is not None, "Expected value to be set but was None"
         actual_service = actual_config.service
-        assert actual_service == expected_service, f"Expected {expected_service!r} but got {actual_service!r}"
+        assert actual_service == expected_service, (
+            f"Expected {expected_service!r} but got {actual_service!r}"
+        )
         assert len(actual_config.rules) == 1, f"Expected {1!r} but got {len(actual_config.rules)!r}"
         actual_operation = actual_config.rules[0].operation
-        assert actual_operation == expected_operation, f"Expected {expected_operation!r} but got {actual_operation!r}"
+        assert actual_operation == expected_operation, (
+            f"Expected {expected_operation!r} but got {actual_operation!r}"
+        )

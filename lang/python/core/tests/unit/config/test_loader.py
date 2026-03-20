@@ -26,12 +26,24 @@ def test_no_config_file_returns_defaults(tmp_path: Path) -> None:
     # Assert
     assert config.port == expected_port, f"Expected {expected_port!r} but got {config.port!r}"
     assert config.persist is True, "Expected value to be truthy"
-    assert config.data_dir == expected_data_dir, f"Expected {expected_data_dir!r} but got {config.data_dir!r}"
-    assert config.log_level == expected_log_level, f"Expected {expected_log_level!r} but got {config.log_level!r}"
-    assert config.cdk_out_dir == expected_cdk_out_dir, f"Expected {expected_cdk_out_dir!r} but got {config.cdk_out_dir!r}"
-    assert config.watch_include == expected_watch_include, f"Expected {expected_watch_include!r} but got {config.watch_include!r}"
-    assert config.watch_exclude == expected_watch_exclude, f"Expected {expected_watch_exclude!r} but got {config.watch_exclude!r}"
-    assert config.eventual_consistency_delay_ms == expected_delay_ms, f"Expected {expected_delay_ms!r} but got {config.eventual_consistency_delay_ms!r}"
+    assert config.data_dir == expected_data_dir, (
+        f"Expected {expected_data_dir!r} but got {config.data_dir!r}"
+    )
+    assert config.log_level == expected_log_level, (
+        f"Expected {expected_log_level!r} but got {config.log_level!r}"
+    )
+    assert config.cdk_out_dir == expected_cdk_out_dir, (
+        f"Expected {expected_cdk_out_dir!r} but got {config.cdk_out_dir!r}"
+    )
+    assert config.watch_include == expected_watch_include, (
+        f"Expected {expected_watch_include!r} but got {config.watch_include!r}"
+    )
+    assert config.watch_exclude == expected_watch_exclude, (
+        f"Expected {expected_watch_exclude!r} but got {config.watch_exclude!r}"
+    )
+    assert config.eventual_consistency_delay_ms == expected_delay_ms, (
+        f"Expected {expected_delay_ms!r} but got {config.eventual_consistency_delay_ms!r}"
+    )
 
 
 def test_valid_config_overrides_all_values(tmp_path: Path) -> None:
@@ -63,12 +75,24 @@ def test_valid_config_overrides_all_values(tmp_path: Path) -> None:
     # Assert
     assert config.port == expected_port, f"Expected {expected_port!r} but got {config.port!r}"
     assert config.persist is False, "Expected value to be truthy"
-    assert config.data_dir == expected_data_dir, f"Expected {expected_data_dir!r} but got {config.data_dir!r}"
-    assert config.log_level == expected_log_level, f"Expected {expected_log_level!r} but got {config.log_level!r}"
-    assert config.cdk_out_dir == expected_cdk_out_dir, f"Expected {expected_cdk_out_dir!r} but got {config.cdk_out_dir!r}"
-    assert config.watch_include == expected_watch_include, f"Expected {expected_watch_include!r} but got {config.watch_include!r}"
-    assert config.watch_exclude == expected_watch_exclude, f"Expected {expected_watch_exclude!r} but got {config.watch_exclude!r}"
-    assert config.eventual_consistency_delay_ms == expected_delay_ms, f"Expected {expected_delay_ms!r} but got {config.eventual_consistency_delay_ms!r}"
+    assert config.data_dir == expected_data_dir, (
+        f"Expected {expected_data_dir!r} but got {config.data_dir!r}"
+    )
+    assert config.log_level == expected_log_level, (
+        f"Expected {expected_log_level!r} but got {config.log_level!r}"
+    )
+    assert config.cdk_out_dir == expected_cdk_out_dir, (
+        f"Expected {expected_cdk_out_dir!r} but got {config.cdk_out_dir!r}"
+    )
+    assert config.watch_include == expected_watch_include, (
+        f"Expected {expected_watch_include!r} but got {config.watch_include!r}"
+    )
+    assert config.watch_exclude == expected_watch_exclude, (
+        f"Expected {expected_watch_exclude!r} but got {config.watch_exclude!r}"
+    )
+    assert config.eventual_consistency_delay_ms == expected_delay_ms, (
+        f"Expected {expected_delay_ms!r} but got {config.eventual_consistency_delay_ms!r}"
+    )
 
 
 def test_partial_config_keeps_remaining_defaults(tmp_path: Path) -> None:
@@ -90,15 +114,27 @@ def test_partial_config_keeps_remaining_defaults(tmp_path: Path) -> None:
 
     # Assert -- overridden values
     assert config.port == expected_port, f"Expected {expected_port!r} but got {config.port!r}"
-    assert config.log_level == expected_log_level, f"Expected {expected_log_level!r} but got {config.log_level!r}"
+    assert config.log_level == expected_log_level, (
+        f"Expected {expected_log_level!r} but got {config.log_level!r}"
+    )
 
     # Assert -- defaults preserved
     assert config.persist is True, "Expected value to be truthy"
-    assert config.data_dir == expected_default_data_dir, f"Expected {expected_default_data_dir!r} but got {config.data_dir!r}"
-    assert config.cdk_out_dir == expected_default_cdk_out_dir, f"Expected {expected_default_cdk_out_dir!r} but got {config.cdk_out_dir!r}"
-    assert config.watch_include == expected_default_watch_include, f"Expected {expected_default_watch_include!r} but got {config.watch_include!r}"
-    assert config.watch_exclude == expected_default_watch_exclude, f"Expected {expected_default_watch_exclude!r} but got {config.watch_exclude!r}"
-    assert config.eventual_consistency_delay_ms == expected_default_delay_ms, f"Expected {expected_default_delay_ms!r} but got {config.eventual_consistency_delay_ms!r}"
+    assert config.data_dir == expected_default_data_dir, (
+        f"Expected {expected_default_data_dir!r} but got {config.data_dir!r}"
+    )
+    assert config.cdk_out_dir == expected_default_cdk_out_dir, (
+        f"Expected {expected_default_cdk_out_dir!r} but got {config.cdk_out_dir!r}"
+    )
+    assert config.watch_include == expected_default_watch_include, (
+        f"Expected {expected_default_watch_include!r} but got {config.watch_include!r}"
+    )
+    assert config.watch_exclude == expected_default_watch_exclude, (
+        f"Expected {expected_default_watch_exclude!r} but got {config.watch_exclude!r}"
+    )
+    assert config.eventual_consistency_delay_ms == expected_default_delay_ms, (
+        f"Expected {expected_default_delay_ms!r} but got {config.eventual_consistency_delay_ms!r}"
+    )
 
 
 def test_invalid_port_raises_config_error(tmp_path: Path) -> None:

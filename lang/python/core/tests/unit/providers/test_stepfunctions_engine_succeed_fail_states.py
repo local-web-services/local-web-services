@@ -89,8 +89,12 @@ class TestSucceedFailStates:
             {"StartAt": "S", "States": {"S": {"Type": "Succeed"}}},
             input_data={"ok": True},
         )
-        assert history.status == ExecutionStatus.SUCCEEDED, f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
-        assert history.output_data == {"ok": True}, "Expected {0!r} but got {1!r}".format({"ok": True}, history.output_data)
+        assert history.status == ExecutionStatus.SUCCEEDED, (
+            f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        )
+        assert history.output_data == {"ok": True}, (
+            "Expected {!r} but got {!r}".format({"ok": True}, history.output_data)
+        )
 
     async def test_fail_state(self) -> None:
         # Arrange
@@ -114,9 +118,15 @@ class TestSucceedFailStates:
         # Assert
         actual_error = history.error
         actual_cause = history.cause
-        assert history.status == ExecutionStatus.FAILED, f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
-        assert actual_error == expected_error, f"Expected {expected_error!r} but got {actual_error!r}"
-        assert actual_cause == expected_cause, f"Expected {expected_cause!r} but got {actual_cause!r}"
+        assert history.status == ExecutionStatus.FAILED, (
+            f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
+        )
+        assert actual_error == expected_error, (
+            f"Expected {expected_error!r} but got {actual_error!r}"
+        )
+        assert actual_cause == expected_cause, (
+            f"Expected {expected_cause!r} but got {actual_cause!r}"
+        )
 
     async def test_fail_without_error(self) -> None:
         # Arrange
@@ -129,5 +139,9 @@ class TestSucceedFailStates:
 
         # Assert
         actual_error = history.error
-        assert history.status == ExecutionStatus.FAILED, f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
-        assert actual_error == expected_error, f"Expected {expected_error!r} but got {actual_error!r}"
+        assert history.status == ExecutionStatus.FAILED, (
+            f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
+        )
+        assert actual_error == expected_error, (
+            f"Expected {expected_error!r} but got {actual_error!r}"
+        )

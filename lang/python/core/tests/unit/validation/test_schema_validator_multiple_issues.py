@@ -94,7 +94,9 @@ class TestMultipleIssues:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
         actual_messages = {i.message for i in issues}
         assert any("pk" in m for m in actual_messages), "Expected value to be truthy"
         assert any("sk" in m for m in actual_messages), "Expected value to be truthy"

@@ -40,7 +40,9 @@ class TestDescribeDomain:
 
         # Assert
         actual_domain_name = result["DomainStatus"]["DomainName"]
-        assert actual_domain_name == expected_domain_name, f"Expected {expected_domain_name!r} but got {actual_domain_name!r}"
+        assert actual_domain_name == expected_domain_name, (
+            f"Expected {expected_domain_name!r} but got {actual_domain_name!r}"
+        )
 
     def test_describe_nonexistent_domain_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -51,4 +53,6 @@ class TestDescribeDomain:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )

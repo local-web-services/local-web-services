@@ -99,8 +99,12 @@ class TestGrantWrite:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert issues[0].level == ValidationLevel.ERROR, f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert issues[0].level == ValidationLevel.ERROR, (
+            f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
+        )
 
     def test_write_denies_query(self) -> None:
         # Arrange
@@ -112,4 +116,6 @@ class TestGrantWrite:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )

@@ -65,7 +65,9 @@ class TestLocalBucketStorageHead:
 
         # Assert
         assert actual_meta is not None, "Expected value to be set but was None"
-        assert actual_meta["size"] == expected_size, f'Expected {expected_size!r} but got {actual_meta["size"]!r}'
+        assert actual_meta["size"] == expected_size, (
+            f'Expected {expected_size!r} but got {actual_meta["size"]!r}'
+        )
         assert "body" not in actual_meta, f'Expected {"body"!r} to not be in {actual_meta!r}'
 
     async def test_head_nonexistent(self, storage: LocalBucketStorage) -> None:

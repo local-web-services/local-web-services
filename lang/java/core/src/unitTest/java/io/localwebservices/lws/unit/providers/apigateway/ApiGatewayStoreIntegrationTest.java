@@ -31,7 +31,7 @@ public class ApiGatewayStoreIntegrationTest {
         .put(resourceId, resourceData);
 
     // Assert
-    assertNotNull(store.resources.get(apiId).get(resourceId).get("integration"), "Expected store.resources.get(apiId).get(resourceId).get("integration") to not be null");
+    assertNotNull(store.resources.get(apiId).get(resourceId).get("integration"), "Expected values to match");
   }
 
   @Test
@@ -52,6 +52,6 @@ public class ApiGatewayStoreIntegrationTest {
     store.resources.get(apiId).get(resourceId).remove("integration");
 
     // Assert
-    assertNull(store.resources.get(apiId).get(resourceId).get("integration"), "Expected store.resources.get(apiId).get(resourceId).get("integration") to be null");
+    assertNull(store.resources.get(apiId).get(resourceId).get("integration"), "Expected values to match");
   }
 }

@@ -39,8 +39,12 @@ class TestListQueuesXml:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        assert "ListQueuesResponse" in resp.text, f'Expected {"ListQueuesResponse"!r} to be in {resp.text!r}'
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
+        assert "ListQueuesResponse" in resp.text, (
+            f'Expected {"ListQueuesResponse"!r} to be in {resp.text!r}'
+        )
         assert queue_name_a in resp.text, f"Expected {queue_name_a!r} to be in {resp.text!r}"
         assert queue_name_b in resp.text, f"Expected {queue_name_b!r} to be in {resp.text!r}"
 
@@ -54,5 +58,9 @@ class TestListQueuesXml:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        assert "ListQueuesResponse" in resp.text, f'Expected {"ListQueuesResponse"!r} to be in {resp.text!r}'
+        assert actual_status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        )
+        assert "ListQueuesResponse" in resp.text, (
+            f'Expected {"ListQueuesResponse"!r} to be in {resp.text!r}'
+        )

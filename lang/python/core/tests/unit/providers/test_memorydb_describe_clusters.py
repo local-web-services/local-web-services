@@ -38,7 +38,9 @@ class TestDescribeClusters:
 
         # Assert
         actual_count = len(result["Clusters"])
-        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
+        assert actual_count == expected_count, (
+            f"Expected {expected_count!r} but got {actual_count!r}"
+        )
 
     def test_describe_all(self, client: TestClient) -> None:
         # Arrange
@@ -53,7 +55,9 @@ class TestDescribeClusters:
 
         # Assert
         actual_count = len(result["Clusters"])
-        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
+        assert actual_count == expected_count, (
+            f"Expected {expected_count!r} but got {actual_count!r}"
+        )
         actual_names = [c["Name"] for c in result["Clusters"]]
         assert cluster_a in actual_names, f"Expected {cluster_a!r} to be in {actual_names!r}"
         assert cluster_b in actual_names, f"Expected {cluster_b!r} to be in {actual_names!r}"
@@ -80,4 +84,6 @@ class TestDescribeClusters:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )

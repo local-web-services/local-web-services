@@ -34,4 +34,6 @@ class TestUnknownAction:
 
         # Assert
         expected_error_type = "InvalidAction"
-        assert result["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {result["__type"]!r}'
+        assert result["__type"] == expected_error_type, (
+            f'Expected {expected_error_type!r} but got {result["__type"]!r}'
+        )

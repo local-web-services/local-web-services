@@ -74,15 +74,25 @@ class TestApiGatewayV2Proxy:
         expected_version = "2.0"
         expected_route_key = "POST /orders"
         expected_raw_path = "/orders"
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
-        assert '{"orderId": "123"}' in resp.text, "Expected {0!r} to be in {1!r}".format('{"orderId": "123"}', resp.text)
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
+        assert '{"orderId": "123"}' in resp.text, (
+            "Expected {!r} to be in {!r}".format('{"orderId": "123"}', resp.text)
+        )
 
         # Verify Lambda was invoked with V2 event format
         call_args = fake_compute.invoke.call_args
         event = call_args[0][0]
-        assert event["version"] == expected_version, f'Expected {expected_version!r} but got {event["version"]!r}'
-        assert event["routeKey"] == expected_route_key, f'Expected {expected_route_key!r} but got {event["routeKey"]!r}'
-        assert event["rawPath"] == expected_raw_path, f'Expected {expected_raw_path!r} but got {event["rawPath"]!r}'
+        assert event["version"] == expected_version, (
+            f'Expected {expected_version!r} but got {event["version"]!r}'
+        )
+        assert event["routeKey"] == expected_route_key, (
+            f'Expected {expected_route_key!r} but got {event["routeKey"]!r}'
+        )
+        assert event["rawPath"] == expected_raw_path, (
+            f'Expected {expected_raw_path!r} but got {event["rawPath"]!r}'
+        )
 
     @pytest.mark.asyncio
     async def test_proxy_with_path_variables(self, client, registry) -> None:
@@ -116,7 +126,9 @@ class TestApiGatewayV2Proxy:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
         assert "abc" in resp.text, f'Expected {"abc"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
@@ -152,7 +164,9 @@ class TestApiGatewayV2Proxy:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
         assert resp.json().get("ok") is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
@@ -162,7 +176,11 @@ class TestApiGatewayV2Proxy:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
         body = resp.json()
         assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
-        assert "API Gateway" in body["message"], f'Expected {"API Gateway"!r} to be in {body["message"]!r}'
+        assert "API Gateway" in body["message"], (
+            f'Expected {"API Gateway"!r} to be in {body["message"]!r}'
+        )

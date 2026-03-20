@@ -139,8 +139,12 @@ class TestApiGatewayEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert "httpMethod" in issues[0].message, f'Expected {"httpMethod"!r} to be in {issues[0].message!r}'
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert "httpMethod" in issues[0].message, (
+            f'Expected {"httpMethod"!r} to be in {issues[0].message!r}'
+        )
 
     def test_wrong_type_headers(self) -> None:
         # Arrange
@@ -153,8 +157,12 @@ class TestApiGatewayEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert "headers" in issues[0].message, f'Expected {"headers"!r} to be in {issues[0].message!r}'
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert "headers" in issues[0].message, (
+            f'Expected {"headers"!r} to be in {issues[0].message!r}'
+        )
         assert "dict" in issues[0].message, f'Expected {"dict"!r} to be in {issues[0].message!r}'
 
     def test_missing_multiple_fields(self) -> None:
@@ -169,4 +177,6 @@ class TestApiGatewayEvent:
         # Assert
         # Should report missing httpMethod, path, headers, requestContext
         # queryStringParameters is present with None which is valid since we check 'in data'
-        assert len(issues) >= expected_min_issues, f"Expected {len(issues)!r} >= {expected_min_issues!r}"
+        assert len(issues) >= expected_min_issues, (
+            f"Expected {len(issues)!r} >= {expected_min_issues!r}"
+        )

@@ -12,7 +12,9 @@ class TestSimpleJsonToDynamoDBJson:
         actual_result = simple_json_to_dynamodb_json({"name": "value"})
 
         # Assert
-        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+        assert actual_result == expected_result, (
+            f"Expected {expected_result!r} but got {actual_result!r}"
+        )
 
     def test_integer_value(self) -> None:
         # Arrange
@@ -22,7 +24,9 @@ class TestSimpleJsonToDynamoDBJson:
         actual_result = simple_json_to_dynamodb_json({"age": 30})
 
         # Assert
-        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+        assert actual_result == expected_result, (
+            f"Expected {expected_result!r} but got {actual_result!r}"
+        )
 
     def test_float_value(self) -> None:
         # Arrange
@@ -32,7 +36,9 @@ class TestSimpleJsonToDynamoDBJson:
         actual_result = simple_json_to_dynamodb_json({"pi": 3.14})
 
         # Assert
-        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+        assert actual_result == expected_result, (
+            f"Expected {expected_result!r} but got {actual_result!r}"
+        )
 
     def test_boolean_true(self) -> None:
         # Arrange
@@ -42,7 +48,9 @@ class TestSimpleJsonToDynamoDBJson:
         actual_result = simple_json_to_dynamodb_json({"active": True})
 
         # Assert
-        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+        assert actual_result == expected_result, (
+            f"Expected {expected_result!r} but got {actual_result!r}"
+        )
 
     def test_boolean_false(self) -> None:
         # Arrange
@@ -52,7 +60,9 @@ class TestSimpleJsonToDynamoDBJson:
         actual_result = simple_json_to_dynamodb_json({"active": False})
 
         # Assert
-        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+        assert actual_result == expected_result, (
+            f"Expected {expected_result!r} but got {actual_result!r}"
+        )
 
     def test_list_of_strings(self) -> None:
         # Arrange
@@ -62,7 +72,9 @@ class TestSimpleJsonToDynamoDBJson:
         actual_result = simple_json_to_dynamodb_json({"tags": ["a", "b"]})
 
         # Assert
-        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+        assert actual_result == expected_result, (
+            f"Expected {expected_result!r} but got {actual_result!r}"
+        )
 
     def test_none_value(self) -> None:
         # Arrange
@@ -72,7 +84,9 @@ class TestSimpleJsonToDynamoDBJson:
         actual_result = simple_json_to_dynamodb_json({"deleted": None})
 
         # Assert
-        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+        assert actual_result == expected_result, (
+            f"Expected {expected_result!r} but got {actual_result!r}"
+        )
 
     def test_nested_dict(self) -> None:
         # Arrange
@@ -82,4 +96,6 @@ class TestSimpleJsonToDynamoDBJson:
         actual_result = simple_json_to_dynamodb_json({"address": {"city": "London", "zip": "SW1"}})
 
         # Assert
-        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
+        assert actual_result == expected_result, (
+            f"Expected {expected_result!r} but got {actual_result!r}"
+        )

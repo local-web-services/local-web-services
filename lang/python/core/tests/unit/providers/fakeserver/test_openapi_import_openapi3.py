@@ -64,7 +64,9 @@ class TestImportOpenApi3:
 
         # Assert
         expected_count = 2
-        assert len(generated) == expected_count, f"Expected {expected_count!r} but got {len(generated)!r}"
+        assert len(generated) == expected_count, (
+            f"Expected {expected_count!r} but got {len(generated)!r}"
+        )
 
     def test_no_overwrite_skips_existing(self, tmp_path):
         # Arrange
@@ -95,7 +97,9 @@ class TestImportOpenApi3:
         assert len(generated) == 0, f"Expected {0!r} but got {len(generated)!r}"
         expected_content = "existing content"
         actual_content = existing.read_text()
-        assert actual_content == expected_content, f"Expected {expected_content!r} but got {actual_content!r}"
+        assert actual_content == expected_content, (
+            f"Expected {expected_content!r} but got {actual_content!r}"
+        )
 
     def test_overwrite_replaces_existing(self, tmp_path):
         # Arrange

@@ -61,7 +61,9 @@ class TestAdminDeleteUser:
 
         # Assert
         expected_delete_status = 200
-        assert resp.status_code == expected_delete_status, f"Expected {expected_delete_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_delete_status, (
+            f"Expected {expected_delete_status!r} but got {resp.status_code!r}"
+        )
 
         # Verify the user is gone
         expected_error_status = 400
@@ -71,9 +73,13 @@ class TestAdminDeleteUser:
             "AdminGetUser",
             {"UserPoolId": POOL_ID, "Username": username},
         )
-        assert resp.status_code == expected_error_status, f"Expected {expected_error_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_error_status, (
+            f"Expected {expected_error_status!r} but got {resp.status_code!r}"
+        )
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )
 
     async def test_delete_nonexistent_user_returns_error(self, client: httpx.AsyncClient) -> None:
         # Act
@@ -86,6 +92,10 @@ class TestAdminDeleteUser:
         # Assert
         expected_status = 400
         expected_error_type = "UserNotFoundException"
-        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status, (
+            f"Expected {expected_status!r} but got {resp.status_code!r}"
+        )
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )

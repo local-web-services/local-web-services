@@ -83,8 +83,12 @@ class TestEngineWarnMode:
         issues = engine.validate(_make_context())
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert issues[0].level == ValidationLevel.WARN, f"Expected {ValidationLevel.WARN!r} but got {issues[0].level!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert issues[0].level == ValidationLevel.WARN, (
+            f"Expected {ValidationLevel.WARN!r} but got {issues[0].level!r}"
+        )
 
     def test_error_in_warn_mode_does_not_raise(self) -> None:
         # Arrange
@@ -96,8 +100,12 @@ class TestEngineWarnMode:
         issues = engine.validate(_make_context())
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        assert issues[0].level == ValidationLevel.ERROR, f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )
+        assert issues[0].level == ValidationLevel.ERROR, (
+            f"Expected {ValidationLevel.ERROR!r} but got {issues[0].level!r}"
+        )
 
     def test_multiple_validators_collect_all(self) -> None:
         # Arrange
@@ -111,4 +119,6 @@ class TestEngineWarnMode:
         issues = engine.validate(_make_context())
 
         # Assert
-        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert len(issues) == expected_issue_count, (
+            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        )

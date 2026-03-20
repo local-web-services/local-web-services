@@ -26,7 +26,7 @@ public class DocDbStoreInstanceTest {
 
     // Assert
     assertNotNull(actualInstance, "Expected actualInstance to not be null");
-    assertEquals(expectedId, actualInstance.get("DBInstanceIdentifier"), "Expected actualInstance.get("DBInstanceIdentifier") to equal expectedId");
+    assertEquals(expectedId, actualInstance.get("DBInstanceIdentifier"), "Expected id to match");
   }
 
   @Test
@@ -47,7 +47,7 @@ public class DocDbStoreInstanceTest {
 
     // Assert
     assertEquals(expectedSize, actualInstances.size(), "Expected actualInstances.size() to match expectedSize");
-    assertEquals(expectedId, actualInstances.get(0).get("DBInstanceIdentifier"), "Expected actualInstances.get(0).get("DBInstanceIdentifier") to equal expectedId");
+    assertEquals(expectedId, actualInstances.get(0).get("DBInstanceIdentifier"), "Expected id to match");
   }
 
   @Test
@@ -84,7 +84,7 @@ public class DocDbStoreInstanceTest {
 
     // Assert
     assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
-    assertEquals(expectedId, actualDeleted.get("DBInstanceIdentifier"), "Expected actualDeleted.get("DBInstanceIdentifier") to equal expectedId");
+    assertEquals(expectedId, actualDeleted.get("DBInstanceIdentifier"), "Expected id to match");
     assertEquals(expectedRemainingSize, store.describeInstances(null).size(), "Expected store.describeInstances(null).size() to match expectedRemainingSize");
   }
 

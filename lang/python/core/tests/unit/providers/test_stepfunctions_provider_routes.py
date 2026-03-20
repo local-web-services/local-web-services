@@ -186,7 +186,9 @@ class TestRoutes:
 
         # Assert
         expected_status_code = 200
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         assert "executionArn" in data, f'Expected {"executionArn"!r} to be in {data!r}'
 
@@ -206,10 +208,14 @@ class TestRoutes:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         actual_status = data["status"]
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
 
     async def test_describe_execution(self, sfn_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -235,10 +241,14 @@ class TestRoutes:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         actual_status = data["status"]
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
 
     async def test_list_executions(self, sfn_client: httpx.AsyncClient) -> None:
         # Act
@@ -250,7 +260,9 @@ class TestRoutes:
 
         # Assert
         expected_status_code = 200
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
         assert "executions" in data, f'Expected {"executions"!r} to be in {data!r}'
 
@@ -267,9 +279,13 @@ class TestRoutes:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         data = resp.json()
-        assert len(data["stateMachines"]) == expected_count, f'Expected {expected_count!r} but got {len(data["stateMachines"])!r}'
+        assert len(data["stateMachines"]) == expected_count, (
+            f'Expected {expected_count!r} but got {len(data["stateMachines"])!r}'
+        )
 
     async def test_unknown_action_returns_error(self, sfn_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -284,12 +300,18 @@ class TestRoutes:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert actual_error_type == expected_error_type, (
+            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        )
         assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
-        assert "StepFunctions" in body["message"], f'Expected {"StepFunctions"!r} to be in {body["message"]!r}'
+        assert "StepFunctions" in body["message"], (
+            f'Expected {"StepFunctions"!r} to be in {body["message"]!r}'
+        )
         assert "Bogus" in body["message"], f'Expected {"Bogus"!r} to be in {body["message"]!r}'
 
     async def test_nonexistent_state_machine(self, sfn_client: httpx.AsyncClient) -> None:
@@ -306,7 +328,9 @@ class TestRoutes:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )
 
     async def test_describe_nonexistent_execution(self, sfn_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -320,4 +344,6 @@ class TestRoutes:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.status_code == expected_status_code, (
+            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        )

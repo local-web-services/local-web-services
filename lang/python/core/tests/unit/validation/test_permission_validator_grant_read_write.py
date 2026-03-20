@@ -70,24 +70,34 @@ class TestGrantReadWrite:
     def test_readwrite_allows_get(self) -> None:
         graph = _make_graph_with_grant("grantReadWrite")
         ctx = _make_context(operation="get_item", app_graph=graph)
-        assert PermissionValidator().validate(ctx) == [], f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        assert PermissionValidator().validate(ctx) == [], (
+            f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        )
 
     def test_readwrite_allows_put(self) -> None:
         graph = _make_graph_with_grant("grantReadWrite")
         ctx = _make_context(operation="put_item", app_graph=graph)
-        assert PermissionValidator().validate(ctx) == [], f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        assert PermissionValidator().validate(ctx) == [], (
+            f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        )
 
     def test_readwrite_allows_delete(self) -> None:
         graph = _make_graph_with_grant("grantReadWrite")
         ctx = _make_context(operation="delete_item", app_graph=graph)
-        assert PermissionValidator().validate(ctx) == [], f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        assert PermissionValidator().validate(ctx) == [], (
+            f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        )
 
     def test_readwrite_allows_query(self) -> None:
         graph = _make_graph_with_grant("grantReadWrite")
         ctx = _make_context(operation="query", app_graph=graph)
-        assert PermissionValidator().validate(ctx) == [], f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        assert PermissionValidator().validate(ctx) == [], (
+            f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        )
 
     def test_readwrite_allows_scan(self) -> None:
         graph = _make_graph_with_grant("grantReadWrite")
         ctx = _make_context(operation="scan", app_graph=graph)
-        assert PermissionValidator().validate(ctx) == [], f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        assert PermissionValidator().validate(ctx) == [], (
+            f"Expected {[]!r} but got {PermissionValidator().validate(ctx)!r}"
+        )

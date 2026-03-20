@@ -37,6 +37,6 @@ public class DynamoDbStoreDeleteItemTest {
     store.deleteItem("T", keyAttr);
 
     // Assert
-    assertNull(store.getItem("T", keyAttr), "Expected store.getItem("T", keyAttr) to be null");
+    assertNull(store.getItem("T", keyAttr), "Expected values to match");
   }
 }

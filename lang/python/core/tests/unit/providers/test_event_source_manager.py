@@ -95,7 +95,9 @@ class TestEventSourceManager:
         dispatcher.register_handler.assert_called_once()
         actual_table = dispatcher.register_handler.call_args[0][0]
         expected_table = "my-table"
-        assert actual_table == expected_table, f"Expected {expected_table!r} but got {actual_table!r}"
+        assert actual_table == expected_table, (
+            f"Expected {expected_table!r} but got {actual_table!r}"
+        )
 
     async def test_stop_all_stops_all_pollers(self) -> None:
         # Arrange

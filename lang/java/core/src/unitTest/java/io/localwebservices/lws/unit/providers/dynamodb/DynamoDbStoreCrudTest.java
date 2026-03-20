@@ -98,7 +98,7 @@ public class DynamoDbStoreCrudTest {
     store.reset();
 
     // Assert
-    assertFalse(store.tableExists("reset-table"), "Expected condition to be false: store.tableExists("reset-table")");
+    assertFalse(store.tableExists("reset-table"), "Expected values to match");
   }
 
   @Test
@@ -116,7 +116,7 @@ public class DynamoDbStoreCrudTest {
 
     // Assert
     assertNotNull(actualItem, "Expected actualItem to not be null");
-    assertEquals(expectedItem.get("value"), actualItem.get("value"), "Expected actualItem.get("value") to equal expectedItem.get("value")");
+    assertEquals(expectedItem.get("value"), actualItem.get("value"), "Expected values to match");
   }
 
   @Test
@@ -146,7 +146,7 @@ public class DynamoDbStoreCrudTest {
     store.deleteItem(tableName, Map.of("pk", Map.of("S", "to-delete")));
 
     // Assert
-    assertNull(store.getItem(tableName, Map.of("pk", Map.of("S", "to-delete"))), "Expected store.getItem(tableName, Map.of("pk", Map.of("S", "to-delete"))) to be null");
+    assertNull(store.getItem(tableName, Map.of("pk", Map.of("S", "to-delete"))), "Expected values to match");
   }
 
   @Test
@@ -169,9 +169,9 @@ public class DynamoDbStoreCrudTest {
     Map<String, Object> actualDesc = store.describeTable(expectedName);
 
     // Assert
-    assertEquals(expectedName, actualDesc.get("TableName"), "Expected actualDesc.get("TableName") to equal expectedName");
-    assertEquals("ACTIVE", actualDesc.get("TableStatus"), "Expected actualDesc.get("TableStatus") to equal "ACTIVE"");
-    assertNotNull(actualDesc.get("KeySchema"), "Expected actualDesc.get("KeySchema") to not be null");
+    assertEquals(expectedName, actualDesc.get("TableName"), "Expected name to match");
+    assertEquals("ACTIVE", actualDesc.get("TableStatus"), "Expected values to match");
+    assertNotNull(actualDesc.get("KeySchema"), "Expected values to match");
   }
 
   @Test

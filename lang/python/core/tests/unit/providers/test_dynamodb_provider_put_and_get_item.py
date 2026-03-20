@@ -128,8 +128,12 @@ class TestPutAndGetItem:
         assert result is not None, "Expected value to be set but was None"
         actual_order_id = result["orderId"]
         actual_quantity = result["quantity"]
-        assert actual_order_id == expected_order_id, f"Expected {expected_order_id!r} but got {actual_order_id!r}"
-        assert actual_quantity == expected_quantity, f"Expected {expected_quantity!r} but got {actual_quantity!r}"
+        assert actual_order_id == expected_order_id, (
+            f"Expected {expected_order_id!r} but got {actual_order_id!r}"
+        )
+        assert actual_quantity == expected_quantity, (
+            f"Expected {expected_quantity!r} but got {actual_quantity!r}"
+        )
 
     async def test_round_trip_dynamo_json(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -147,7 +151,9 @@ class TestPutAndGetItem:
         # Assert
         assert result is not None, "Expected value to be set but was None"
         actual_order_id = result["orderId"]
-        assert actual_order_id == expected_order_id, f"Expected {expected_order_id!r} but got {actual_order_id!r}"
+        assert actual_order_id == expected_order_id, (
+            f"Expected {expected_order_id!r} but got {actual_order_id!r}"
+        )
 
     async def test_put_overwrites_existing(self, provider: SqliteDynamoProvider) -> None:
         # Arrange

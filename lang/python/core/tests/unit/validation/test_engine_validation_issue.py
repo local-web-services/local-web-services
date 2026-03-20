@@ -76,10 +76,18 @@ class TestValidationIssue:
         )
 
         # Assert
-        assert issue.level == ValidationLevel.ERROR, f"Expected {ValidationLevel.ERROR!r} but got {issue.level!r}"
-        assert issue.message == expected_message, f"Expected {expected_message!r} but got {issue.message!r}"
-        assert issue.resource == expected_resource, f"Expected {expected_resource!r} but got {issue.resource!r}"
-        assert issue.operation == expected_operation, f"Expected {expected_operation!r} but got {issue.operation!r}"
+        assert issue.level == ValidationLevel.ERROR, (
+            f"Expected {ValidationLevel.ERROR!r} but got {issue.level!r}"
+        )
+        assert issue.message == expected_message, (
+            f"Expected {expected_message!r} but got {issue.message!r}"
+        )
+        assert issue.resource == expected_resource, (
+            f"Expected {expected_resource!r} but got {issue.resource!r}"
+        )
+        assert issue.operation == expected_operation, (
+            f"Expected {expected_operation!r} but got {issue.operation!r}"
+        )
 
     def test_issue_defaults(self) -> None:
         # Arrange
@@ -90,5 +98,9 @@ class TestValidationIssue:
         issue = ValidationIssue(level=ValidationLevel.WARN, message="hmm")
 
         # Assert
-        assert issue.resource == expected_resource, f"Expected {expected_resource!r} but got {issue.resource!r}"
-        assert issue.operation == expected_operation, f"Expected {expected_operation!r} but got {issue.operation!r}"
+        assert issue.resource == expected_resource, (
+            f"Expected {expected_resource!r} but got {issue.resource!r}"
+        )
+        assert issue.operation == expected_operation, (
+            f"Expected {expected_operation!r} but got {issue.operation!r}"
+        )

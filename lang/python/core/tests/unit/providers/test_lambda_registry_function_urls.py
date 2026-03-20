@@ -42,7 +42,9 @@ class TestLambdaRegistryFunctionUrls:
 
         # Assert
         assert removed is True, "Expected value to be truthy"
-        assert registry.get_function_url(function_name) is None, f"Expected None but got {registry.get_function_url(function_name)!r}"
+        assert registry.get_function_url(function_name) is None, (
+            f"Expected None but got {registry.get_function_url(function_name)!r}"
+        )
 
     def test_delete_nonexistent_function_url(self):
         # Arrange
@@ -87,7 +89,9 @@ class TestLambdaRegistryFunctionUrls:
         registry.register_function_url(function_name, url_config, fake_provider)
 
         # Assert
-        assert registry.function_url_providers[function_name] is fake_provider, "Expected value to be truthy"
+        assert registry.function_url_providers[function_name] is fake_provider, (
+            "Expected value to be truthy"
+        )
 
     def test_delete_removes_provider(self):
         # Arrange
@@ -102,4 +106,6 @@ class TestLambdaRegistryFunctionUrls:
         registry.delete_function_url(function_name)
 
         # Assert
-        assert function_name not in registry.function_url_providers, f"Expected {function_name!r} to not be in {registry.function_url_providers!r}"
+        assert function_name not in registry.function_url_providers, (
+            f"Expected {function_name!r} to not be in {registry.function_url_providers!r}"
+        )

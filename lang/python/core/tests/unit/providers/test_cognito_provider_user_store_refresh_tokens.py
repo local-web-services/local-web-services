@@ -106,7 +106,9 @@ class TestUserStoreRefreshTokens:
         actual_username = await store.get_refresh_token_username(token)
 
         # Assert
-        assert actual_username == expected_username, f"Expected {expected_username!r} but got {actual_username!r}"
+        assert actual_username == expected_username, (
+            f"Expected {expected_username!r} but got {actual_username!r}"
+        )
 
     async def test_unknown_refresh_token(self, store: UserStore) -> None:
         username = await store.get_refresh_token_username("unknown")

@@ -70,4 +70,6 @@ class TestListTables:
         actual_tables = await provider.list_tables()
 
         # Assert
-        assert actual_tables == expected_tables, f"Expected {expected_tables!r} but got {actual_tables!r}"
+        assert actual_tables == expected_tables, (
+            f"Expected {expected_tables!r} but got {actual_tables!r}"
+        )

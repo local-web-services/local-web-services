@@ -92,7 +92,9 @@ class TestIamAuthDynamoDbEnforce:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )
         body = response.json()
         actual_type = body["__type"]
         assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
@@ -111,4 +113,6 @@ class TestIamAuthDynamoDbEnforce:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_status == expected_status, (
+            f"Expected {expected_status!r} but got {actual_status!r}"
+        )

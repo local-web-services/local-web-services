@@ -44,7 +44,9 @@ class TestEnableDisableRuleProvider:
         await provider.put_rule("my-rule", event_pattern={"source": ["test"]})
         await provider.disable_rule("my-rule")
         result = provider.describe_rule("my-rule")
-        assert result["State"] == expected_state, f'Expected {expected_state!r} but got {result["State"]!r}'
+        assert result["State"] == expected_state, (
+            f'Expected {expected_state!r} but got {result["State"]!r}'
+        )
 
     async def test_enable_rule(self, provider: EventBridgeProvider) -> None:
         expected_state = "ENABLED"
@@ -52,7 +54,9 @@ class TestEnableDisableRuleProvider:
         await provider.disable_rule("my-rule")
         await provider.enable_rule("my-rule")
         result = provider.describe_rule("my-rule")
-        assert result["State"] == expected_state, f'Expected {expected_state!r} but got {result["State"]!r}'
+        assert result["State"] == expected_state, (
+            f'Expected {expected_state!r} but got {result["State"]!r}'
+        )
 
     async def test_disable_nonexistent_rule_raises(self, provider: EventBridgeProvider) -> None:
         with pytest.raises(KeyError, match="Rule not found"):
