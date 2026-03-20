@@ -1190,6 +1190,7 @@ jobs:
         run: |
           for fn in create-order get-order process-order generate-receipt; do
             pushd lang/go/sample/cdk/lambda/$fn
+            go mod tidy
             GOOS=linux GOARCH=amd64 go build -o bootstrap .
             zip bootstrap.zip bootstrap
             rm bootstrap
@@ -1246,6 +1247,7 @@ jobs:
         run: |
           for fn in create-order get-order process-order generate-receipt; do
             pushd lang/go/sample/hcl/lambda/$fn
+            go mod tidy
             GOOS=linux GOARCH=amd64 go build -o bootstrap .
             zip bootstrap.zip bootstrap
             rm bootstrap

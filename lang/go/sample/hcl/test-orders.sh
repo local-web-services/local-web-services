@@ -1,35 +1,47 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LWS=$(which lws)
+export AWS_ACCESS_KEY_ID=ldk-local
+export AWS_SECRET_ACCESS_KEY=ldk-local
+export AWS_DEFAULT_REGION=us-east-1
+
+BASE_PORT=3000
+APIGW_PORT=$((BASE_PORT + 8))
+SFN_PORT=$((BASE_PORT + 6))
+SSM_PORT=$((BASE_PORT + 12))
+SM_PORT=$((BASE_PORT + 13))
 
 echo "=== Creating order ==="
-CREATE_RESPONSE=$($LWS apigateway test-invoke-method \
-  --resource /orders \
-  --http-method POST \
-  --body '{"customerName": "Alice", "items": ["widget", "gadget"], "total": 49.99}')
+CREATE_RESPONSE=$(curl -sf -X POST "http://localhost:${APIGW_PORT}/orders" \
+  -H "Content-Type: application/json" \
+  -d '{"customerName": "Alice", "items": ["widget", "gadget"], "total": 49.99}')
 
 echo "$CREATE_RESPONSE" | python3 -m json.tool
 
-ORDER_ID=$(echo "$CREATE_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['body']['orderId'])")
+ORDER_ID=$(echo "$CREATE_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['orderId'])")
 echo "Order ID: $ORDER_ID"
 
 echo ""
 echo "=== Starting OrderWorkflow ==="
+SFN_ARN=$(aws --endpoint-url "http://localhost:${SFN_PORT}" stepfunctions list-state-machines \
+  --query "stateMachines[?name=='OrderWorkflow'].stateMachineArn" \
+  --output text)
+
 SFN_INPUT=$(python3 -c "import json; print(json.dumps({'orderId': '$ORDER_ID', 'items': ['widget', 'gadget'], 'total': 49.99}))")
 
-START_RESPONSE=$($LWS stepfunctions start-execution \
-  --name OrderWorkflow \
+START_RESPONSE=$(aws --endpoint-url "http://localhost:${SFN_PORT}" stepfunctions start-execution \
+  --state-machine-arn "$SFN_ARN" \
+  --name "order-$(echo "$ORDER_ID" | tr -d '-')" \
   --input "$SFN_INPUT")
 
-echo "$START_RESPONSE" | python3 -m json.tool
+echo "$START_RESPONSE"
 
 EXEC_ARN=$(echo "$START_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['executionArn'])")
 
 echo ""
 echo "=== Polling for workflow completion ==="
 for i in $(seq 1 15); do
-  DESC_RESPONSE=$($LWS stepfunctions describe-execution \
+  DESC_RESPONSE=$(aws --endpoint-url "http://localhost:${SFN_PORT}" stepfunctions describe-execution \
     --execution-arn "$EXEC_ARN")
 
   STATUS=$(echo "$DESC_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])")
@@ -42,7 +54,7 @@ for i in $(seq 1 15); do
     break
   elif [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "TIMED_OUT" ] || [ "$STATUS" = "ABORTED" ]; then
     echo "Workflow failed:"
-    echo "$DESC_RESPONSE" | python3 -m json.tool
+    echo "$DESC_RESPONSE"
     exit 1
   fi
 
@@ -51,16 +63,13 @@ done
 
 echo ""
 echo "=== Getting order ==="
-GET_RESPONSE=$($LWS apigateway test-invoke-method \
-  --resource "/orders/$ORDER_ID" \
-  --http-method GET)
-
+GET_RESPONSE=$(curl -sf "http://localhost:${APIGW_PORT}/orders/${ORDER_ID}")
 echo "$GET_RESPONSE" | python3 -m json.tool
 
 echo ""
 echo "=== Checking SSM Parameter ==="
-$LWS ssm get-parameter --name /orders/config/max-items
+aws --endpoint-url "http://localhost:${SSM_PORT}" ssm get-parameter --name /orders/config/max-items
 
 echo ""
 echo "=== Checking Secret ==="
-$LWS secretsmanager get-secret-value --secret-id orders/notification-api-key
+aws --endpoint-url "http://localhost:${SM_PORT}" secretsmanager get-secret-value --secret-id orders/notification-api-key
