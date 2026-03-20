@@ -22,16 +22,31 @@ describe("IamBuilder", () => {
 
       // Assert
       const fetchMock = global.fetch as jest.Mock;
-      expect(fetchMock, "Expected fetch to have been called with the IAM endpoint and POST method").toHaveBeenCalledWith(
+      expect(
+        fetchMock,
+        "Expected fetch to have been called with the IAM endpoint and POST method",
+      ).toHaveBeenCalledWith(
         "http://127.0.0.1:9000/_ldk/iam-auth",
         expect.objectContaining({ method: "POST" }),
       );
       const actualBody = JSON.parse((fetchMock.mock.calls[0][1] as Record<string, string>).body);
       const actualBoundary = actualBody.identities["test-user"].boundary_policy;
-      expect(actualBoundary, "Expected boundary_policy to be defined in the applied payload").toBeDefined();
-      expect(actualBoundary.Statement[0].Effect, "Expected the boundary policy statement effect to be Allow").toBe("Allow");
-      expect(actualBoundary.Statement[0].Action, "Expected the boundary policy statement actions to match the configured actions").toEqual(expectedActions);
-      expect(actualBoundary.Statement[0].Resource, "Expected the boundary policy statement resource to be *").toBe(expectedResource);
+      expect(
+        actualBoundary,
+        "Expected boundary_policy to be defined in the applied payload",
+      ).toBeDefined();
+      expect(
+        actualBoundary.Statement[0].Effect,
+        "Expected the boundary policy statement effect to be Allow",
+      ).toBe("Allow");
+      expect(
+        actualBoundary.Statement[0].Action,
+        "Expected the boundary policy statement actions to match the configured actions",
+      ).toEqual(expectedActions);
+      expect(
+        actualBoundary.Statement[0].Resource,
+        "Expected the boundary policy statement resource to be *",
+      ).toBe(expectedResource);
     });
 
     it("returns this for chaining", () => {
@@ -43,7 +58,10 @@ describe("IamBuilder", () => {
       const actualResult = identityBuilder.boundary(["dynamodb:GetItem"]);
 
       // Assert
-      expect(actualResult, "Expected boundary() to return the IdentityBuilder instance for chaining").toBe(identityBuilder);
+      expect(
+        actualResult,
+        "Expected boundary() to return the IdentityBuilder instance for chaining",
+      ).toBe(identityBuilder);
     });
   });
 });

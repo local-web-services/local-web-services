@@ -19,13 +19,20 @@ class LwsSessionTest {
     LwsSession session = new LwsSession(basePort, (Process) null);
 
     // Act & Assert
-    assertEquals(basePort + 1, session.portFor("dynamodb"), "Expected dynamodb port to equal basePort + 1");
+    assertEquals(
+        basePort + 1, session.portFor("dynamodb"), "Expected dynamodb port to equal basePort + 1");
     assertEquals(basePort + 2, session.portFor("sqs"), "Expected sqs port to equal basePort + 2");
     assertEquals(basePort + 3, session.portFor("s3"), "Expected s3 port to equal basePort + 3");
     assertEquals(basePort + 4, session.portFor("sns"), "Expected sns port to equal basePort + 4");
-    assertEquals(basePort + 6, session.portFor("stepfunctions"), "Expected stepfunctions port to equal basePort + 6");
+    assertEquals(
+        basePort + 6,
+        session.portFor("stepfunctions"),
+        "Expected stepfunctions port to equal basePort + 6");
     assertEquals(basePort + 12, session.portFor("ssm"), "Expected ssm port to equal basePort + 12");
-    assertEquals(basePort + 13, session.portFor("secretsmanager"), "Expected secretsmanager port to equal basePort + 13");
+    assertEquals(
+        basePort + 13,
+        session.portFor("secretsmanager"),
+        "Expected secretsmanager port to equal basePort + 13");
   }
 
   @Test
@@ -63,7 +70,8 @@ class LwsSessionTest {
 
     // Assert
     assertTrue(actualUrl.contains("127.0.0.1"), "Expected value to contain expected substring");
-    assertTrue(actualUrl.contains(expectedQueueName), "Expected value to contain expected substring");
+    assertTrue(
+        actualUrl.contains(expectedQueueName), "Expected value to contain expected substring");
     assertTrue(actualUrl.contains("000000000000"), "Expected value to contain expected substring");
   }
 
@@ -91,8 +99,13 @@ class LwsSessionTest {
     // Assert
     List<StateMachineSpec> actualMachines = spec.getStateMachines();
     assertEquals(1, actualMachines.size(), "Expected actualMachines.size() to match 1");
-    assertEquals(expectedName, actualMachines.get(0).getName(), "Expected actualMachines.get(0).getName() to equal expectedName");
-    assertTrue(actualMachines.get(0).getDefinition().contains("Done"), "Expected value to contain expected substring");
+    assertEquals(
+        expectedName,
+        actualMachines.get(0).getName(),
+        "Expected actualMachines.get(0).getName() to equal expectedName");
+    assertTrue(
+        actualMachines.get(0).getDefinition().contains("Done"),
+        "Expected value to contain expected substring");
   }
 
   @Test
@@ -125,9 +138,18 @@ class LwsSessionTest {
 
     // Assert
     assertEquals(1, spec.getTables().size(), "Expected spec.getTables().size() to match 1");
-    assertEquals(expectedName, spec.getTables().get(0).getName(), "Expected spec.getTables().get(0).getName() to equal expectedName");
-    assertEquals(expectedPartitionKey, spec.getTables().get(0).getPartitionKey(), "Expected spec.getTables().get(0).getPartitionKey() to equal expectedPartitionKey");
-    assertEquals(expectedSortKey, spec.getTables().get(0).getSortKey(), "Expected spec.getTables().get(0).getSortKey() to equal expectedSortKey");
+    assertEquals(
+        expectedName,
+        spec.getTables().get(0).getName(),
+        "Expected spec.getTables().get(0).getName() to equal expectedName");
+    assertEquals(
+        expectedPartitionKey,
+        spec.getTables().get(0).getPartitionKey(),
+        "Expected spec.getTables().get(0).getPartitionKey() to equal expectedPartitionKey");
+    assertEquals(
+        expectedSortKey,
+        spec.getTables().get(0).getSortKey(),
+        "Expected spec.getTables().get(0).getSortKey() to equal expectedSortKey");
   }
 
   @Test
@@ -157,11 +179,22 @@ class LwsSessionTest {
     SessionSpec spec = HclDiscovery.discover(tempDir.toString());
 
     // Assert
-    assertEquals(List.of("MyQueue"), spec.getQueues(), "Expected queues to match discovered HCL resources");
-    assertEquals(List.of("my-bucket"), spec.getBuckets(), "Expected buckets to match discovered HCL resources");
-    assertEquals(List.of("MyTopic"), spec.getTopics(), "Expected topics to match discovered HCL resources");
-    assertEquals(List.of("/app/param"), spec.getParameters(), "Expected parameters to match discovered HCL resources");
-    assertEquals(List.of("my-secret"), spec.getSecrets(), "Expected secrets to match discovered HCL resources");
+    assertEquals(
+        List.of("MyQueue"), spec.getQueues(), "Expected queues to match discovered HCL resources");
+    assertEquals(
+        List.of("my-bucket"),
+        spec.getBuckets(),
+        "Expected buckets to match discovered HCL resources");
+    assertEquals(
+        List.of("MyTopic"), spec.getTopics(), "Expected topics to match discovered HCL resources");
+    assertEquals(
+        List.of("/app/param"),
+        spec.getParameters(),
+        "Expected parameters to match discovered HCL resources");
+    assertEquals(
+        List.of("my-secret"),
+        spec.getSecrets(),
+        "Expected secrets to match discovered HCL resources");
   }
 
   @Test
@@ -208,8 +241,12 @@ class LwsSessionTest {
 
     // Assert
     assertEquals(expectedService, actualService, "Expected actualService to equal expectedService");
-    assertEquals(expectedOperation, actualOperation, "Expected actualOperation to equal expectedOperation");
-    assertEquals(expectedStatusCode, actualStatusCode, "Expected actualStatusCode to equal expectedStatusCode");
+    assertEquals(
+        expectedOperation, actualOperation, "Expected actualOperation to equal expectedOperation");
+    assertEquals(
+        expectedStatusCode,
+        actualStatusCode,
+        "Expected actualStatusCode to equal expectedStatusCode");
   }
 
   @Test
@@ -250,10 +287,18 @@ class LwsSessionTest {
     String actualService3 = entry3.service;
 
     // Assert — verify LogEntry fields are accessible and values are correct
-    assertEquals(expectedService, actualService1, "Expected actualService1 to equal expectedService");
-    assertEquals(expectedOperation, actualOperation1, "Expected actualOperation1 to equal expectedOperation");
-    assertEquals(expectedDynamoService, actualService2, "Expected actualService2 to equal expectedDynamoService");
-    assertEquals(expectedService, actualService3, "Expected actualService3 to equal expectedService");
+    assertEquals(
+        expectedService, actualService1, "Expected actualService1 to equal expectedService");
+    assertEquals(
+        expectedOperation,
+        actualOperation1,
+        "Expected actualOperation1 to equal expectedOperation");
+    assertEquals(
+        expectedDynamoService,
+        actualService2,
+        "Expected actualService2 to equal expectedDynamoService");
+    assertEquals(
+        expectedService, actualService3, "Expected actualService3 to equal expectedService");
   }
 
   @Test
@@ -346,19 +391,47 @@ class LwsSessionTest {
     String expectedSortKey = "sk";
     String expectedStateMachineName = "CdkTestStateMachine";
     assertEquals(1, spec.getTables().size(), "Expected spec.getTables().size() to match 1");
-    assertEquals(expectedTableName, spec.getTables().get(0).getName(), "Expected spec.getTables().get(0).getName() to equal expectedTableName");
-    assertEquals(expectedPartitionKey, spec.getTables().get(0).getPartitionKey(), "Expected spec.getTables().get(0).getPartitionKey() to equal expectedPartitionKey");
-    assertEquals(expectedSortKey, spec.getTables().get(0).getSortKey(), "Expected spec.getTables().get(0).getSortKey() to equal expectedSortKey");
+    assertEquals(
+        expectedTableName,
+        spec.getTables().get(0).getName(),
+        "Expected spec.getTables().get(0).getName() to equal expectedTableName");
+    assertEquals(
+        expectedPartitionKey,
+        spec.getTables().get(0).getPartitionKey(),
+        "Expected spec.getTables().get(0).getPartitionKey() to equal expectedPartitionKey");
+    assertEquals(
+        expectedSortKey,
+        spec.getTables().get(0).getSortKey(),
+        "Expected spec.getTables().get(0).getSortKey() to equal expectedSortKey");
 
-    assertEquals(List.of("CdkTestQueue"), spec.getQueues(), "Expected queues to match discovered CDK resources");
-    assertEquals(List.of("cdk-test-bucket"), spec.getBuckets(), "Expected buckets to match discovered CDK resources");
-    assertEquals(List.of("CdkTestTopic"), spec.getTopics(), "Expected topics to match discovered CDK resources");
+    assertEquals(
+        List.of("CdkTestQueue"),
+        spec.getQueues(),
+        "Expected queues to match discovered CDK resources");
+    assertEquals(
+        List.of("cdk-test-bucket"),
+        spec.getBuckets(),
+        "Expected buckets to match discovered CDK resources");
+    assertEquals(
+        List.of("CdkTestTopic"),
+        spec.getTopics(),
+        "Expected topics to match discovered CDK resources");
 
-    assertEquals(1, spec.getStateMachines().size(), "Expected spec.getStateMachines().size() to match 1");
-    assertEquals(expectedStateMachineName, spec.getStateMachines().get(0).getName(), "Expected spec.getStateMachines().get(0).getName() to equal expectedStateMachineName");
+    assertEquals(
+        1, spec.getStateMachines().size(), "Expected spec.getStateMachines().size() to match 1");
+    assertEquals(
+        expectedStateMachineName,
+        spec.getStateMachines().get(0).getName(),
+        "Expected spec.getStateMachines().get(0).getName() to equal expectedStateMachineName");
 
-    assertEquals(List.of("/cdk/test/param"), spec.getParameters(), "Expected parameters to match discovered CDK resources");
-    assertEquals(List.of("cdk-test-secret"), spec.getSecrets(), "Expected secrets to match discovered CDK resources");
+    assertEquals(
+        List.of("/cdk/test/param"),
+        spec.getParameters(),
+        "Expected parameters to match discovered CDK resources");
+    assertEquals(
+        List.of("cdk-test-secret"),
+        spec.getSecrets(),
+        "Expected secrets to match discovered CDK resources");
   }
 
   @Test

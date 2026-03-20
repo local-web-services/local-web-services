@@ -23,8 +23,12 @@ describe("LogCapture", () => {
       const actual = capture.all;
 
       // Assert
-      expect(actual, "Expected all to return entries equal to the injected entries").toEqual(expectedEntries);
-      expect(actual, "Expected all to return a copy rather than the same reference").not.toBe(expectedEntries);
+      expect(actual, "Expected all to return entries equal to the injected entries").toEqual(
+        expectedEntries,
+      );
+      expect(actual, "Expected all to return a copy rather than the same reference").not.toBe(
+        expectedEntries,
+      );
     });
   });
 
@@ -41,8 +45,14 @@ describe("LogCapture", () => {
       const actual = capture.forService("dynamodb");
 
       // Assert
-      expect(actual, "Expected forService to return 2 entries matching dynamodb (case-insensitive)").toHaveLength(2);
-      expect(actual.map((e) => e.operation), "Expected forService to return the operations for dynamodb entries in order").toEqual(["PutItem", "GetItem"]);
+      expect(
+        actual,
+        "Expected forService to return 2 entries matching dynamodb (case-insensitive)",
+      ).toHaveLength(2);
+      expect(
+        actual.map((e) => e.operation),
+        "Expected forService to return the operations for dynamodb entries in order",
+      ).toEqual(["PutItem", "GetItem"]);
     });
 
     it("returns empty array when no entries match", () => {
@@ -53,7 +63,10 @@ describe("LogCapture", () => {
       const actual = capture.forService("dynamodb");
 
       // Assert
-      expect(actual, "Expected forService to return an empty array when no entries match dynamodb").toHaveLength(0);
+      expect(
+        actual,
+        "Expected forService to return an empty array when no entries match dynamodb",
+      ).toHaveLength(0);
     });
   });
 
@@ -71,7 +84,10 @@ describe("LogCapture", () => {
 
       // Assert
       expect(actual, "Expected forOperation to return 2 entries matching PutItem").toHaveLength(2);
-      expect(actual.map((e) => e.service), "Expected forOperation to return the services for PutItem entries in order").toEqual(["dynamodb", "s3"]);
+      expect(
+        actual.map((e) => e.service),
+        "Expected forOperation to return the services for PutItem entries in order",
+      ).toEqual(["dynamodb", "s3"]);
     });
   });
 
@@ -81,7 +97,10 @@ describe("LogCapture", () => {
       injectEntries([{ service: "dynamodb", operation: "PutItem" }]);
 
       // Act & Assert
-      expect(() => capture.assertCalled("dynamodb", "PutItem"), "Expected assertCalled not to throw when a matching entry exists").not.toThrow();
+      expect(
+        () => capture.assertCalled("dynamodb", "PutItem"),
+        "Expected assertCalled not to throw when a matching entry exists",
+      ).not.toThrow();
     });
 
     it("does not throw when matching service differs only in case", () => {
@@ -89,7 +108,10 @@ describe("LogCapture", () => {
       injectEntries([{ service: "DynamoDB", operation: "PutItem" }]);
 
       // Act & Assert
-      expect(() => capture.assertCalled("dynamodb", "PutItem"), "Expected assertCalled not to throw when service name differs only in case").not.toThrow();
+      expect(
+        () => capture.assertCalled("dynamodb", "PutItem"),
+        "Expected assertCalled not to throw when service name differs only in case",
+      ).not.toThrow();
     });
 
     it("throws when no matching entry is found", () => {
@@ -97,18 +119,20 @@ describe("LogCapture", () => {
       injectEntries([{ service: "s3", operation: "GetObject" }]);
 
       // Act & Assert
-      expect(() => capture.assertCalled("dynamodb", "PutItem"), "Expected assertCalled to throw when no matching entry is found").toThrow(
-        "Expected dynamodb.PutItem to have been called",
-      );
+      expect(
+        () => capture.assertCalled("dynamodb", "PutItem"),
+        "Expected assertCalled to throw when no matching entry is found",
+      ).toThrow("Expected dynamodb.PutItem to have been called");
     });
 
     it("throws when no entries have been captured at all", () => {
       // Arrange — empty entries
 
       // Act & Assert
-      expect(() => capture.assertCalled("dynamodb", "PutItem"), "Expected assertCalled to throw when no entries have been captured").toThrow(
-        "Expected dynamodb.PutItem to have been called",
-      );
+      expect(
+        () => capture.assertCalled("dynamodb", "PutItem"),
+        "Expected assertCalled to throw when no entries have been captured",
+      ).toThrow("Expected dynamodb.PutItem to have been called");
     });
   });
 
@@ -118,7 +142,10 @@ describe("LogCapture", () => {
       injectEntries([{ service: "s3", operation: "GetObject" }]);
 
       // Act & Assert
-      expect(() => capture.assertNotCalled("dynamodb", "PutItem"), "Expected assertNotCalled not to throw when no matching entry exists").not.toThrow();
+      expect(
+        () => capture.assertNotCalled("dynamodb", "PutItem"),
+        "Expected assertNotCalled not to throw when no matching entry exists",
+      ).not.toThrow();
     });
 
     it("throws when a matching entry is found", () => {
@@ -126,9 +153,10 @@ describe("LogCapture", () => {
       injectEntries([{ service: "dynamodb", operation: "PutItem" }]);
 
       // Act & Assert
-      expect(() => capture.assertNotCalled("dynamodb", "PutItem"), "Expected assertNotCalled to throw when a matching entry is found").toThrow(
-        "Expected dynamodb.PutItem NOT to have been called",
-      );
+      expect(
+        () => capture.assertNotCalled("dynamodb", "PutItem"),
+        "Expected assertNotCalled to throw when a matching entry is found",
+      ).toThrow("Expected dynamodb.PutItem NOT to have been called");
     });
   });
 
@@ -142,7 +170,10 @@ describe("LogCapture", () => {
       const expectedCount = 2;
 
       // Act & Assert
-      expect(() => capture.assertCallCount("dynamodb", "PutItem", expectedCount), "Expected assertCallCount not to throw when call count matches exactly").not.toThrow();
+      expect(
+        () => capture.assertCallCount("dynamodb", "PutItem", expectedCount),
+        "Expected assertCallCount not to throw when call count matches exactly",
+      ).not.toThrow();
     });
 
     it("throws when the call count is lower than expected", () => {
@@ -151,9 +182,10 @@ describe("LogCapture", () => {
       const expectedCount = 2;
 
       // Act & Assert
-      expect(() => capture.assertCallCount("dynamodb", "PutItem", expectedCount), "Expected assertCallCount to throw when call count is lower than expected").toThrow(
-        "Expected dynamodb.PutItem to be called 2 time(s), but was called 1 time(s).",
-      );
+      expect(
+        () => capture.assertCallCount("dynamodb", "PutItem", expectedCount),
+        "Expected assertCallCount to throw when call count is lower than expected",
+      ).toThrow("Expected dynamodb.PutItem to be called 2 time(s), but was called 1 time(s).");
     });
 
     it("throws when the call count is higher than expected", () => {
@@ -166,9 +198,10 @@ describe("LogCapture", () => {
       const expectedCount = 1;
 
       // Act & Assert
-      expect(() => capture.assertCallCount("dynamodb", "PutItem", expectedCount), "Expected assertCallCount to throw when call count is higher than expected").toThrow(
-        "Expected dynamodb.PutItem to be called 1 time(s), but was called 3 time(s).",
-      );
+      expect(
+        () => capture.assertCallCount("dynamodb", "PutItem", expectedCount),
+        "Expected assertCallCount to throw when call count is higher than expected",
+      ).toThrow("Expected dynamodb.PutItem to be called 1 time(s), but was called 3 time(s).");
     });
 
     it("does not throw when expected count is zero and no matching entries exist", () => {
@@ -177,7 +210,10 @@ describe("LogCapture", () => {
       const expectedCount = 0;
 
       // Act & Assert
-      expect(() => capture.assertCallCount("dynamodb", "PutItem", expectedCount), "Expected assertCallCount not to throw when expected count is zero and no matching entries exist").not.toThrow();
+      expect(
+        () => capture.assertCallCount("dynamodb", "PutItem", expectedCount),
+        "Expected assertCallCount not to throw when expected count is zero and no matching entries exist",
+      ).not.toThrow();
     });
   });
 
@@ -187,7 +223,10 @@ describe("LogCapture", () => {
       injectEntries([{ service: "dynamodb", operation: "PutItem", level: "INFO" }]);
 
       // Act & Assert
-      expect(() => capture.assertNoErrors(), "Expected assertNoErrors not to throw when there are no ERROR-level entries").not.toThrow();
+      expect(
+        () => capture.assertNoErrors(),
+        "Expected assertNoErrors not to throw when there are no ERROR-level entries",
+      ).not.toThrow();
     });
 
     it("throws when an ERROR-level entry is present", () => {
@@ -198,14 +237,20 @@ describe("LogCapture", () => {
       ]);
 
       // Act & Assert
-      expect(() => capture.assertNoErrors(), "Expected assertNoErrors to throw when an ERROR-level entry is present").toThrow("Expected no ERROR log entries, but found 1");
+      expect(
+        () => capture.assertNoErrors(),
+        "Expected assertNoErrors to throw when an ERROR-level entry is present",
+      ).toThrow("Expected no ERROR log entries, but found 1");
     });
 
     it("does not throw when the entries list is empty", () => {
       // Arrange — empty entries
 
       // Act & Assert
-      expect(() => capture.assertNoErrors(), "Expected assertNoErrors not to throw when the entries list is empty").not.toThrow();
+      expect(
+        () => capture.assertNoErrors(),
+        "Expected assertNoErrors not to throw when the entries list is empty",
+      ).not.toThrow();
     });
   });
 });
