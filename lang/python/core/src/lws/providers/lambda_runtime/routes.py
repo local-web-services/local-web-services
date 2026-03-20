@@ -59,7 +59,6 @@ _resolve_code_path = resolve_code_path
 _resolve_code_path_from_name = resolve_code_path_from_name
 
 
-
 class _LambdaState:
     def __init__(self) -> None:
         self.event_source_mappings: dict[str, dict[str, Any]] = {}

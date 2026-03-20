@@ -82,7 +82,6 @@ public class EventBridgeHandler implements HttpHandler {
                       "Event bus " + busName + " does not exist."));
               continue;
             }
-            // Check if any ENABLED rule is associated with this bus and has targets
             boolean hasEnabledRuleWithTarget =
                 store.rules.values().stream()
                     .filter(r -> busName.equals(r.getOrDefault("EventBusName", "default")))
@@ -102,45 +101,16 @@ public class EventBridgeHandler implements HttpHandler {
                       "ResourceNotFoundException",
                       "ErrorMessage",
                       "No enabled rule with targets for event bus " + busName));
+            } else if (EventBridgeCapacityChecker.isExhausted(store, state, busName)) {
+              failedCount++;
+              resultEntries.add(
+                  Map.of(
+                      "ErrorCode",
+                      "ResourceNotFoundException",
+                      "ErrorMessage",
+                      "Target service has no available capacity."));
             } else {
-              // Check capacity of the target services — also check common target services
-              // by ARN, and stepfunctions/sns/sqs as common EventBridge targets
-              boolean targetCapacityExhausted = false;
-              if (state.getCapacityConfig("stepfunctions").isExhausted()
-                  || state.getCapacityConfig("sqs").isExhausted()
-                  || state.getCapacityConfig("sns").isExhausted()
-                  || state.getCapacityConfig("lambda").isExhausted()) {
-                targetCapacityExhausted = true;
-              } else {
-                for (Map<String, Object> rule : store.rules.values()) {
-                  if (!busName.equals(rule.getOrDefault("EventBusName", "default"))) continue;
-                  if (!"ENABLED".equals(rule.getOrDefault("State", "ENABLED"))) continue;
-                  String ruleName = (String) rule.get("Name");
-                  List<Map<String, Object>> targets =
-                      store.ruleTargets.getOrDefault(ruleName, List.of());
-                  for (Map<String, Object> tgt : targets) {
-                    String arn = (String) tgt.getOrDefault("Arn", "");
-                    String targetService = resolveTargetService(arn);
-                    if (targetService != null
-                        && state.getCapacityConfig(targetService).isExhausted()) {
-                      targetCapacityExhausted = true;
-                      break;
-                    }
-                  }
-                  if (targetCapacityExhausted) break;
-                }
-              }
-              if (targetCapacityExhausted) {
-                failedCount++;
-                resultEntries.add(
-                    Map.of(
-                        "ErrorCode",
-                        "ResourceNotFoundException",
-                        "ErrorMessage",
-                        "Target service has no available capacity."));
-              } else {
-                resultEntries.add(Map.of("EventId", UUID.randomUUID().toString()));
-              }
+              resultEntries.add(Map.of("EventId", UUID.randomUUID().toString()));
             }
           }
           if (failedCount > 0 && failedCount == entries.size()) {
@@ -198,7 +168,6 @@ public class EventBridgeHandler implements HttpHandler {
                     "Event bus " + busName + " does not exist."));
             break;
           }
-          // Check if bus has associated rules
           boolean hasRules =
               store.rules.values().stream()
                   .anyMatch(r -> busName.equals(r.getOrDefault("EventBusName", "default")));
@@ -377,7 +346,6 @@ public class EventBridgeHandler implements HttpHandler {
           List<String> ids = (List<String>) body.getOrDefault("Ids", List.of());
           List<Map<String, Object>> targets =
               store.ruleTargets.getOrDefault(ruleName, new ArrayList<>());
-          // Check all targets exist before removing
           List<String> notFound = new ArrayList<>();
           for (String id : ids) {
             boolean found = targets.stream().anyMatch(t -> id.equals(t.get("Id")));
@@ -519,15 +487,6 @@ public class EventBridgeHandler implements HttpHandler {
                   "Not implemented: " + operation));
         }
     }
-  }
-
-  private String resolveTargetService(String arn) {
-    if (arn == null) return null;
-    if (arn.contains(":sqs:")) return "sqs";
-    if (arn.contains(":sns:")) return "sns";
-    if (arn.contains(":states:")) return "stepfunctions";
-    if (arn.contains(":lambda:")) return "lambda";
-    return null;
   }
 
   private void sendJson(HttpExchange exchange, int status, Object body) throws IOException {
