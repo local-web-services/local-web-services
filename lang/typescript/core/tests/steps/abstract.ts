@@ -1296,7 +1296,7 @@ Then(
 );
 
 Then(
-  'the table enters {string} state and all its items are removed',
+  "the table enters {string} state and all its items are removed",
   async function (this: LwsWorld, _state: string) {
     // Verify the delete succeeded and the table no longer exists
     assert.strictEqual(

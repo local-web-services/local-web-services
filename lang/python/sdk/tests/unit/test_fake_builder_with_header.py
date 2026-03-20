@@ -36,7 +36,9 @@ def test_with_header_included_in_respond_payload():
         expected_value = "DynamoDB_20120810.PutItem"
 
         # Act
-        fake_builder.operation("PutItem").with_header(expected_name, expected_value).respond(status=200)
+        fake_builder.operation("PutItem").with_header(
+            expected_name, expected_value
+        ).respond(status=200)
 
     # Assert
     assert len(captured_payloads) == 1

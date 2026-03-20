@@ -65,7 +65,9 @@ def test_respond_delay_ms_param_overrides_chained_delay_ms():
         expected_delay_ms = 300
 
         # Act — both chained and param provided; param wins when non-zero
-        fake_builder.operation("PutItem").delay_ms(100).respond(status=200, delay_ms=expected_delay_ms)
+        fake_builder.operation("PutItem").delay_ms(100).respond(
+            status=200, delay_ms=expected_delay_ms
+        )
 
     # Assert
     actual_delay_ms = captured_payloads[0]["dynamodb"]["rules"][0]["response"]["delay_ms"]

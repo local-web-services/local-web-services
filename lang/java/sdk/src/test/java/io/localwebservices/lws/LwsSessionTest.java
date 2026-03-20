@@ -414,7 +414,10 @@ class LwsSessionTest {
 
     // Act
     LifecycleBuilder builder =
-        session.lifecycle("dynamodb").createDwellMs(expectedCreateDwellMs).deleteDwellMs(expectedDeleteDwellMs);
+        session
+            .lifecycle("dynamodb")
+            .createDwellMs(expectedCreateDwellMs)
+            .deleteDwellMs(expectedDeleteDwellMs);
 
     // Assert
     assertNotNull(builder);

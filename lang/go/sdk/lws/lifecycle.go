@@ -45,9 +45,9 @@ func (b *LifecycleBuilder) Apply() error {
 func (b *LifecycleBuilder) Clear() error {
 	return b.post(map[string]any{
 		b.service: map[string]any{
-			"enabled":          false,
-			"create_dwell_ms":  0,
-			"delete_dwell_ms":  0,
+			"enabled":         false,
+			"create_dwell_ms": 0,
+			"delete_dwell_ms": 0,
 		},
 	})
 }
