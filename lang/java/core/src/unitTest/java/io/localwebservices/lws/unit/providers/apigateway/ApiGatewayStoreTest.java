@@ -38,7 +38,8 @@ public class ApiGatewayStoreTest {
     // Assert
     assertFalse(store.apis.containsKey(expectedApiId), "Expected map to not contain the key");
     assertFalse(store.resources.containsKey(expectedApiId), "Expected map to not contain the key");
-    assertFalse(store.deployments.containsKey(expectedApiId), "Expected map to not contain the key");
+    assertFalse(
+        store.deployments.containsKey(expectedApiId), "Expected map to not contain the key");
     assertFalse(store.stages.containsKey(expectedApiId), "Expected map to not contain the key");
   }
 

@@ -41,9 +41,9 @@ class TestUpdateSecret:
         desc = _post(client, "DescribeSecret", {"SecretId": secret_name})
 
         # Assert
-        assert desc["Description"] == expected_description, (
-            f'Expected {expected_description!r} but got {desc["Description"]!r}'
-        )
+        assert (
+            desc["Description"] == expected_description
+        ), f'Expected {expected_description!r} but got {desc["Description"]!r}'
 
     def test_update_with_new_value(self, client: TestClient) -> None:
         secret_name = "upd2"
@@ -63,6 +63,6 @@ class TestUpdateSecret:
         assert "VersionId" in result, f'Expected {"VersionId"!r} to be in {result!r}'
 
         got = _post(client, "GetSecretValue", {"SecretId": secret_name})
-        assert got["SecretString"] == expected_new_value, (
-            f'Expected {expected_new_value!r} but got {got["SecretString"]!r}'
-        )
+        assert (
+            got["SecretString"] == expected_new_value
+        ), f'Expected {expected_new_value!r} but got {got["SecretString"]!r}'

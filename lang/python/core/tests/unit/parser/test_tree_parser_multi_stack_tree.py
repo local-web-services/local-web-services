@@ -76,14 +76,14 @@ class TestMultiStackTree:
         assert actual_ids == expected_ids, f"Expected {expected_ids!r} but got {actual_ids!r}"
         stack_a = next(n for n in nodes if n.id == "StackA")
         actual_stack_a_category = stack_a.children[0].category
-        assert actual_stack_a_category == expected_stack_a_category, (
-            f"Expected {expected_stack_a_category!r} but got {actual_stack_a_category!r}"
-        )
+        assert (
+            actual_stack_a_category == expected_stack_a_category
+        ), f"Expected {expected_stack_a_category!r} but got {actual_stack_a_category!r}"
         stack_b = next(n for n in nodes if n.id == "StackB")
         actual_stack_b_category = stack_b.children[0].category
-        assert actual_stack_b_category == expected_stack_b_category, (
-            f"Expected {expected_stack_b_category!r} but got {actual_stack_b_category!r}"
-        )
+        assert (
+            actual_stack_b_category == expected_stack_b_category
+        ), f"Expected {expected_stack_b_category!r} but got {actual_stack_b_category!r}"
 
     def test_empty_tree(self, tmp_tree):
         data = {

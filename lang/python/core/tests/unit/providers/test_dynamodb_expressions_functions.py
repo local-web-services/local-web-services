@@ -46,27 +46,27 @@ class TestFunctions:
 
     def test_attribute_exists_true(self) -> None:
         item = {"name": "Alice"}
-        assert evaluate_filter_expression(item, "attribute_exists(name)"), (
-            "Expected value to be truthy"
-        )
+        assert evaluate_filter_expression(
+            item, "attribute_exists(name)"
+        ), "Expected value to be truthy"
 
     def test_attribute_exists_false(self) -> None:
         item = {"name": "Alice"}
-        assert not evaluate_filter_expression(item, "attribute_exists(age)"), (
-            "Expected value to be falsy"
-        )
+        assert not evaluate_filter_expression(
+            item, "attribute_exists(age)"
+        ), "Expected value to be falsy"
 
     def test_attribute_not_exists_true(self) -> None:
         item = {"name": "Alice"}
-        assert evaluate_filter_expression(item, "attribute_not_exists(age)"), (
-            "Expected value to be truthy"
-        )
+        assert evaluate_filter_expression(
+            item, "attribute_not_exists(age)"
+        ), "Expected value to be truthy"
 
     def test_attribute_not_exists_false(self) -> None:
         item = {"name": "Alice"}
-        assert not evaluate_filter_expression(item, "attribute_not_exists(name)"), (
-            "Expected value to be falsy"
-        )
+        assert not evaluate_filter_expression(
+            item, "attribute_not_exists(name)"
+        ), "Expected value to be falsy"
 
     def test_attribute_exists_with_name_ref(self) -> None:
         item = {"status": "active"}

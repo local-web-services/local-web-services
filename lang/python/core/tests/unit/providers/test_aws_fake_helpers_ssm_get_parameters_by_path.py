@@ -25,12 +25,12 @@ class TestSSMGetParametersByPath:
         actual_body = json.loads(actual_response.body)
         actual_params = actual_body["Parameters"]
         assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
-        assert len(actual_params) == expected_count, (
-            f"Expected {expected_count!r} but got {len(actual_params)!r}"
-        )
-        assert actual_params[0]["Name"] == expected_first_name, (
-            f'Expected {expected_first_name!r} but got {actual_params[0]["Name"]!r}'
-        )
-        assert actual_params[1]["Value"] == expected_second_value, (
-            f'Expected {expected_second_value!r} but got {actual_params[1]["Value"]!r}'
-        )
+        assert (
+            len(actual_params) == expected_count
+        ), f"Expected {expected_count!r} but got {len(actual_params)!r}"
+        assert (
+            actual_params[0]["Name"] == expected_first_name
+        ), f'Expected {expected_first_name!r} but got {actual_params[0]["Name"]!r}'
+        assert (
+            actual_params[1]["Value"] == expected_second_value
+        ), f'Expected {expected_second_value!r} but got {actual_params[1]["Value"]!r}'

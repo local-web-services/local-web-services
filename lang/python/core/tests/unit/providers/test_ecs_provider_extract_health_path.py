@@ -118,24 +118,24 @@ def _fake_process() -> AsyncMock:
 class TestExtractHealthPath:
     def test_cmd_shell_curl(self) -> None:
         cmd = ["CMD-SHELL", "curl -f http://localhost:8080/health"]
-        assert _extract_health_path(cmd) == "/health", (
-            f'Expected {"/health"!r} but got {_extract_health_path(cmd)!r}'
-        )
+        assert (
+            _extract_health_path(cmd) == "/health"
+        ), f'Expected {"/health"!r} but got {_extract_health_path(cmd)!r}'
 
     def test_cmd_style(self) -> None:
         cmd = ["CMD", "curl", "-f", "http://localhost:3000/ping"]
-        assert _extract_health_path(cmd) == "/ping", (
-            f'Expected {"/ping"!r} but got {_extract_health_path(cmd)!r}'
-        )
+        assert (
+            _extract_health_path(cmd) == "/ping"
+        ), f'Expected {"/ping"!r} but got {_extract_health_path(cmd)!r}'
 
     def test_no_url_returns_none(self) -> None:
         cmd = ["CMD-SHELL", "exit 0"]
-        assert _extract_health_path(cmd) is None, (
-            f"Expected None but got {_extract_health_path(cmd)!r}"
-        )
+        assert (
+            _extract_health_path(cmd) is None
+        ), f"Expected None but got {_extract_health_path(cmd)!r}"
 
     def test_https_url(self) -> None:
         cmd = ["CMD-SHELL", "curl -f https://localhost:443/status"]
-        assert _extract_health_path(cmd) == "/status", (
-            f'Expected {"/status"!r} but got {_extract_health_path(cmd)!r}'
-        )
+        assert (
+            _extract_health_path(cmd) == "/status"
+        ), f'Expected {"/status"!r} but got {_extract_health_path(cmd)!r}'

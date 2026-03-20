@@ -42,7 +42,8 @@ public class DynamoDbStoreQueryTest {
             null);
 
     // Assert
-    assertEquals(expectedSize, actualItems.size(), "Expected actualItems.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualItems.size(), "Expected actualItems.size() to match expectedSize");
   }
 
   @Test

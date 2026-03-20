@@ -26,7 +26,10 @@ public class SecretsManagerStorePutRotateTest {
 
     // Assert
     String actualVersionId = (String) secret.get("VersionId");
-    assertNotEquals(originalVersionId, actualVersionId, "Expected originalVersionId and actualVersionId to differ");
+    assertNotEquals(
+        originalVersionId,
+        actualVersionId,
+        "Expected originalVersionId and actualVersionId to differ");
   }
 
   @Test
@@ -41,7 +44,8 @@ public class SecretsManagerStorePutRotateTest {
     store.updateSecret(secret, expectedSecretString, null, "newVer");
 
     // Assert
-    assertEquals(expectedSecretString, secret.get("SecretString"), "Expected secretString to match");
+    assertEquals(
+        expectedSecretString, secret.get("SecretString"), "Expected secretString to match");
   }
 
   @Test
@@ -100,6 +104,8 @@ public class SecretsManagerStorePutRotateTest {
     List<Map<String, Object>> actualSecrets = store.listSecrets();
 
     // Assert
-    assertTrue(actualSecrets.get(0).containsKey("DeletedDate"), "Expected map to contain the expected key");
+    assertTrue(
+        actualSecrets.get(0).containsKey("DeletedDate"),
+        "Expected map to contain the expected key");
   }
 }

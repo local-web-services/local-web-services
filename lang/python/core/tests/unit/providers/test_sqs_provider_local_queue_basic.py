@@ -173,9 +173,9 @@ class TestLocalQueueBasic:
         # Assert
         actual_message_count = len(messages)
         actual_body = messages[0].body
-        assert actual_message_count == expected_message_count, (
-            f"Expected {expected_message_count!r} but got {actual_message_count!r}"
-        )
+        assert (
+            actual_message_count == expected_message_count
+        ), f"Expected {expected_message_count!r} but got {actual_message_count!r}"
         assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
         assert messages[0].receipt_handle is not None, "Expected value to be set but was None"
 
@@ -214,9 +214,9 @@ class TestLocalQueueBasic:
 
         # Assert
         actual_message_count = len(messages)
-        assert actual_message_count == expected_message_count, (
-            f"Expected {expected_message_count!r} but got {actual_message_count!r}"
-        )
+        assert (
+            actual_message_count == expected_message_count
+        ), f"Expected {expected_message_count!r} but got {actual_message_count!r}"
 
     async def test_receive_increments_receive_count(self, queue: LocalQueue) -> None:
         # Arrange
@@ -230,21 +230,21 @@ class TestLocalQueueBasic:
         # Assert
         actual_receive_count = msgs[0].receive_count
         actual_approx_receive_count = msgs[0].attributes["ApproximateReceiveCount"]
-        assert actual_receive_count == expected_receive_count, (
-            f"Expected {expected_receive_count!r} but got {actual_receive_count!r}"
-        )
-        assert actual_approx_receive_count == expected_approx_receive_count, (
-            f"Expected {expected_approx_receive_count!r} but got {actual_approx_receive_count!r}"
-        )
+        assert (
+            actual_receive_count == expected_receive_count
+        ), f"Expected {expected_receive_count!r} but got {actual_receive_count!r}"
+        assert (
+            actual_approx_receive_count == expected_approx_receive_count
+        ), f"Expected {expected_approx_receive_count!r} but got {actual_approx_receive_count!r}"
 
     async def test_sent_timestamp_set(self, queue: LocalQueue) -> None:
         before = time.time()
         await queue.send_message("timestamped")
         after = time.time()
         messages = await queue.receive_messages()
-        assert before <= messages[0].sent_timestamp <= after, (
-            f"Expected {before!r} <= {messages[0].sent_timestamp <= after!r}"
-        )
+        assert (
+            before <= messages[0].sent_timestamp <= after
+        ), f"Expected {before!r} <= {messages[0].sent_timestamp <= after!r}"
 
     async def test_message_attributes_preserved(self, queue: LocalQueue) -> None:
         # Arrange
@@ -256,9 +256,9 @@ class TestLocalQueueBasic:
 
         # Assert
         actual_attributes = messages[0].message_attributes
-        assert actual_attributes == expected_attributes, (
-            f"Expected {expected_attributes!r} but got {actual_attributes!r}"
-        )
+        assert (
+            actual_attributes == expected_attributes
+        ), f"Expected {expected_attributes!r} but got {actual_attributes!r}"
 
     async def test_md5_of_body(self) -> None:
         # Arrange

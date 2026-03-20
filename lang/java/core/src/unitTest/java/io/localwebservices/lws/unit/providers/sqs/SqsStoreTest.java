@@ -111,7 +111,8 @@ public class SqsStoreTest {
     List<LocalQueue> actualQueues = store.listQueues(null);
 
     // Assert
-    assertEquals(expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
   }
 
   @Test
@@ -127,7 +128,8 @@ public class SqsStoreTest {
     List<LocalQueue> actualQueues = store.listQueues("prefix");
 
     // Assert
-    assertEquals(expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
   }
 
   @Test
@@ -154,7 +156,8 @@ public class SqsStoreTest {
     store.reset();
 
     // Assert
-    assertEquals(0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
+    assertEquals(
+        0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
   }
 
   @Test
@@ -199,7 +202,9 @@ public class SqsStoreTest {
     queue.deleteMessage(expectedReceiptHandle);
 
     // Assert
-    assertFalse(queue.hasMessage(expectedReceiptHandle), "Expected condition to be false: queue.hasMessage(expectedReceiptHandle)");
+    assertFalse(
+        queue.hasMessage(expectedReceiptHandle),
+        "Expected condition to be false: queue.hasMessage(expectedReceiptHandle)");
   }
 
   @Test
@@ -244,7 +249,10 @@ public class SqsStoreTest {
     queue.purge();
 
     // Assert
-    assertEquals(expectedCount, queue.approximateMessageCount(), "Expected queue.approximateMessageCount() to match expectedCount");
+    assertEquals(
+        expectedCount,
+        queue.approximateMessageCount(),
+        "Expected queue.approximateMessageCount() to match expectedCount");
   }
 
   @Test
@@ -260,7 +268,8 @@ public class SqsStoreTest {
     queue.changeVisibility(receiptHandle, 30);
 
     // Assert — message should now be invisible (0 visible messages)
-    assertEquals(0, queue.approximateMessageCount(), "Expected queue.approximateMessageCount() to match 0");
+    assertEquals(
+        0, queue.approximateMessageCount(), "Expected queue.approximateMessageCount() to match 0");
   }
 
   @Test
@@ -277,7 +286,10 @@ public class SqsStoreTest {
     Map<String, String> actualTags = store.getQueueTags(queueName);
 
     // Assert
-    assertEquals(expectedValue, actualTags.get(expectedKey), "Expected actualTags.get(expectedKey) to equal expectedValue");
+    assertEquals(
+        expectedValue,
+        actualTags.get(expectedKey),
+        "Expected actualTags.get(expectedKey) to equal expectedValue");
   }
 
   @Test
@@ -307,7 +319,8 @@ public class SqsStoreTest {
     Map<String, String> actualTags = store.getQueueTags("nonexistent");
 
     // Assert
-    assertEquals(expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
   }
 
   @Test
@@ -334,7 +347,10 @@ public class SqsStoreTest {
             "timeout-queue", Map.of("VisibilityTimeout", String.valueOf(expectedTimeout)));
 
     // Assert
-    assertEquals(expectedTimeout, actualQueue.visibilityTimeout, "Expected actualQueue.visibilityTimeout to equal expectedTimeout");
+    assertEquals(
+        expectedTimeout,
+        actualQueue.visibilityTimeout,
+        "Expected actualQueue.visibilityTimeout to equal expectedTimeout");
   }
 
   @Test
@@ -376,7 +392,8 @@ public class SqsStoreTest {
     List<SqsStore.LocalQueue> actualQueues = store.listQueues("");
 
     // Assert
-    assertEquals(expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualQueues.size(), "Expected actualQueues.size() to match expectedCount");
   }
 
   @Test
@@ -388,7 +405,8 @@ public class SqsStoreTest {
     store.deleteQueue("ghost-queue");
 
     // Assert
-    assertEquals(0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
+    assertEquals(
+        0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
   }
 
   @Test
@@ -400,7 +418,8 @@ public class SqsStoreTest {
     store.setQueueTags("nonexistent", Map.of("key", "value"));
 
     // Assert — no exception, store unchanged
-    assertEquals(0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
+    assertEquals(
+        0, store.listQueues(null).size(), "Expected store.listQueues(null).size() to match 0");
   }
 
   @Test

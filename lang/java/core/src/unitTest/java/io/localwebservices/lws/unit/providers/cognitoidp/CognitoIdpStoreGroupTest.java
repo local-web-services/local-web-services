@@ -48,7 +48,8 @@ public class CognitoIdpStoreGroupTest {
 
     // Assert
     Set<String> actualMembers = store.groupMembers.get(expectedPoolId).get(expectedGroupName);
-    assertTrue(actualMembers.contains(expectedUsername), "Expected value to contain expected substring");
+    assertTrue(
+        actualMembers.contains(expectedUsername), "Expected value to contain expected substring");
   }
 
   @Test

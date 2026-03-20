@@ -37,6 +37,6 @@ class TestListQueues:
         actual_queues = await provider.list_queues()
 
         # Assert
-        assert actual_queues == expected_queues, (
-            f"Expected {expected_queues!r} but got {actual_queues!r}"
-        )
+        assert (
+            actual_queues == expected_queues
+        ), f"Expected {expected_queues!r} but got {actual_queues!r}"

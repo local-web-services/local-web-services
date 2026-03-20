@@ -81,12 +81,12 @@ class TestIamAuthS3Enforce:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
-        assert expected_code in response.text, (
-            f"Expected {expected_code!r} to be in {response.text!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
+        assert (
+            expected_code in response.text
+        ), f"Expected {expected_code!r} to be in {response.text!r}"
 
     async def test_allows_get_object(self, client: httpx.AsyncClient):
         """GetObject should be allowed through."""
@@ -98,6 +98,6 @@ class TestIamAuthS3Enforce:
 
         # Assert
         actual_not_denied = response.status_code != 403
-        assert actual_not_denied == expected_status_not_denied, (
-            f"Expected {expected_status_not_denied!r} but got {actual_not_denied!r}"
-        )
+        assert (
+            actual_not_denied == expected_status_not_denied
+        ), f"Expected {expected_status_not_denied!r} but got {actual_not_denied!r}"

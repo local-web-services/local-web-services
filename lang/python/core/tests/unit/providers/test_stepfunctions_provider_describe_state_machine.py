@@ -31,16 +31,16 @@ class TestDescribeStateMachine:
         attrs = provider.describe_state_machine(expected_name)
 
         # Assert
-        assert attrs["name"] == expected_name, (
-            f'Expected {expected_name!r} but got {attrs["name"]!r}'
-        )
+        assert (
+            attrs["name"] == expected_name
+        ), f'Expected {expected_name!r} but got {attrs["name"]!r}'
         assert "stateMachineArn" in attrs, f'Expected {"stateMachineArn"!r} to be in {attrs!r}'
-        assert attrs["roleArn"] == expected_role_arn, (
-            f'Expected {expected_role_arn!r} but got {attrs["roleArn"]!r}'
-        )
-        assert attrs["status"] == expected_status, (
-            f'Expected {expected_status!r} but got {attrs["status"]!r}'
-        )
+        assert (
+            attrs["roleArn"] == expected_role_arn
+        ), f'Expected {expected_role_arn!r} but got {attrs["roleArn"]!r}'
+        assert (
+            attrs["status"] == expected_status
+        ), f'Expected {expected_status!r} but got {attrs["status"]!r}'
 
     async def test_describe_nonexistent_raises(self, provider: StepFunctionsProvider) -> None:
         with pytest.raises(KeyError, match="State machine not found"):

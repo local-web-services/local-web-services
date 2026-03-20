@@ -112,13 +112,13 @@ class TestProviderAuth:
         auth_result = result["AuthenticationResult"]
         assert "IdToken" in auth_result, f'Expected {"IdToken"!r} to be in {auth_result!r}'
         assert "AccessToken" in auth_result, f'Expected {"AccessToken"!r} to be in {auth_result!r}'
-        assert "RefreshToken" in auth_result, (
-            f'Expected {"RefreshToken"!r} to be in {auth_result!r}'
-        )
+        assert (
+            "RefreshToken" in auth_result
+        ), f'Expected {"RefreshToken"!r} to be in {auth_result!r}'
         actual_token_type = auth_result["TokenType"]
-        assert actual_token_type == expected_token_type, (
-            f"Expected {expected_token_type!r} but got {actual_token_type!r}"
-        )
+        assert (
+            actual_token_type == expected_token_type
+        ), f"Expected {expected_token_type!r} but got {actual_token_type!r}"
 
     async def test_unsupported_auth_flow(self, provider: CognitoProvider) -> None:
         from lws.providers.cognito.user_store import CognitoError
@@ -145,12 +145,12 @@ class TestProviderAuth:
         new_result = await provider.refresh_tokens(refresh_token)
 
         # Assert
-        assert "AuthenticationResult" in new_result, (
-            f'Expected {"AuthenticationResult"!r} to be in {new_result!r}'
-        )
-        assert "IdToken" in new_result["AuthenticationResult"], (
-            f'Expected {"IdToken"!r} to be in {new_result["AuthenticationResult"]!r}'
-        )
+        assert (
+            "AuthenticationResult" in new_result
+        ), f'Expected {"AuthenticationResult"!r} to be in {new_result!r}'
+        assert (
+            "IdToken" in new_result["AuthenticationResult"]
+        ), f'Expected {"IdToken"!r} to be in {new_result["AuthenticationResult"]!r}'
 
     async def test_invalid_refresh_token(self, provider: CognitoProvider) -> None:
         with pytest.raises(NotAuthorizedException, match="Invalid refresh token"):

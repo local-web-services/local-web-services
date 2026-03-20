@@ -128,9 +128,12 @@ class TestResolveCommand:
         )
         svc = _make_service(containers=[container], local_command=None)
         cmd = _resolve_command(svc)
-        assert cmd == ["python", "-m", "flask", "run"], (
-            f'Expected {["python", "-m", "flask", "run"]!r} but got {cmd!r}'
-        )
+        assert cmd == [
+            "python",
+            "-m",
+            "flask",
+            "run",
+        ], f'Expected {["python", "-m", "flask", "run"]!r} but got {cmd!r}'
 
     def test_command_only(self) -> None:
         container = _make_container(entry_point=[], command=["node", "index.js"])

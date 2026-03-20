@@ -31,10 +31,10 @@ class TestParseOperationFileSimple:
         actual_operation = rules[0].operation
         actual_status = rules[0].response.status
         actual_body = rules[0].response.body
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
         assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"

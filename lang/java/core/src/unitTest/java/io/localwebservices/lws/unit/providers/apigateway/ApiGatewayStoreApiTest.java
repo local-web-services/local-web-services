@@ -51,7 +51,8 @@ public class ApiGatewayStoreApiTest {
     // Assert
     assertNotNull(actualId, "Expected actualId to not be null");
     int expectedLength = 10;
-    assertEquals(expectedLength, actualId.length(), "Expected actualId.length() to match expectedLength");
+    assertEquals(
+        expectedLength, actualId.length(), "Expected actualId.length() to match expectedLength");
   }
 
   @Test
@@ -63,7 +64,8 @@ public class ApiGatewayStoreApiTest {
     String actualSecondId = ApiGatewayStore.shortId();
 
     // Assert
-    assertNotEquals(actualFirstId, actualSecondId, "Expected actualFirstId and actualSecondId to differ");
+    assertNotEquals(
+        actualFirstId, actualSecondId, "Expected actualFirstId and actualSecondId to differ");
   }
 
   @Test

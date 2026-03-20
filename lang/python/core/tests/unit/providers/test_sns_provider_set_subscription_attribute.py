@@ -55,6 +55,6 @@ class TestProviderSetSubscriptionAttribute:
         actual_attrs = await provider.get_subscription_attributes(sub_arn)
 
         # Assert
-        assert actual_attrs[attribute_name] == expected_value, (
-            f"Expected {expected_value!r} but got {actual_attrs[attribute_name]!r}"
-        )
+        assert (
+            actual_attrs[attribute_name] == expected_value
+        ), f"Expected {expected_value!r} but got {actual_attrs[attribute_name]!r}"

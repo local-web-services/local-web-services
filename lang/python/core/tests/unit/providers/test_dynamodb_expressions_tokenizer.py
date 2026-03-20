@@ -56,9 +56,9 @@ class TestTokenizer:
         assert "IDENT" in types, f'Expected {"IDENT"!r} to be in {types!r}'
         assert "OP" in types, f'Expected {"OP"!r} to be in {types!r}'
         assert "VALUE_REF" in types, f'Expected {"VALUE_REF"!r} to be in {types!r}'
-        assert types[-1] == expected_last_type, (
-            f"Expected {expected_last_type!r} but got {types[-1]!r}"
-        )
+        assert (
+            types[-1] == expected_last_type
+        ), f"Expected {expected_last_type!r} but got {types[-1]!r}"
 
     def test_name_ref(self) -> None:
         # Arrange
@@ -72,9 +72,9 @@ class TestTokenizer:
         actual_type = tokens[0].type
         actual_value = tokens[0].value
         assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_logical_keywords(self) -> None:
         # Act
@@ -118,12 +118,12 @@ class TestTokenizer:
         actual_first_type = tokens[0].type
         actual_first_value = tokens[0].value
         actual_second_type = tokens[1].type
-        assert actual_first_type == expected_first_type, (
-            f"Expected {expected_first_type!r} but got {actual_first_type!r}"
-        )
-        assert actual_first_value == expected_first_value, (
-            f"Expected {expected_first_value!r} but got {actual_first_value!r}"
-        )
-        assert actual_second_type == expected_second_type, (
-            f"Expected {expected_second_type!r} but got {actual_second_type!r}"
-        )
+        assert (
+            actual_first_type == expected_first_type
+        ), f"Expected {expected_first_type!r} but got {actual_first_type!r}"
+        assert (
+            actual_first_value == expected_first_value
+        ), f"Expected {expected_first_value!r} but got {actual_first_value!r}"
+        assert (
+            actual_second_type == expected_second_type
+        ), f"Expected {expected_second_type!r} but got {actual_second_type!r}"

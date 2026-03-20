@@ -92,9 +92,9 @@ class TestMultiValueHeaders:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_values = event["multiValueHeaders"][expected_key]
-        assert actual_values == [expected_value], (
-            f"Expected {[expected_value]!r} but got {actual_values!r}"
-        )
+        assert actual_values == [
+            expected_value
+        ], f"Expected {[expected_value]!r} but got {actual_values!r}"
 
     @pytest.mark.asyncio
     async def test_single_query_param_in_multi_value(self) -> None:
@@ -112,9 +112,9 @@ class TestMultiValueHeaders:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_values = event["multiValueQueryStringParameters"][expected_key]
-        assert actual_values == [expected_value], (
-            f"Expected {[expected_value]!r} but got {actual_values!r}"
-        )
+        assert actual_values == [
+            expected_value
+        ], f"Expected {[expected_value]!r} but got {actual_values!r}"
 
     @pytest.mark.asyncio
     async def test_repeated_query_param_in_multi_value(self) -> None:
@@ -132,9 +132,9 @@ class TestMultiValueHeaders:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_values = event["multiValueQueryStringParameters"][expected_key]
-        assert actual_values == expected_values, (
-            f"Expected {expected_values!r} but got {actual_values!r}"
-        )
+        assert (
+            actual_values == expected_values
+        ), f"Expected {expected_values!r} but got {actual_values!r}"
 
     @pytest.mark.asyncio
     async def test_no_query_params_multi_value_is_none(self) -> None:
@@ -149,9 +149,9 @@ class TestMultiValueHeaders:
 
         # Assert
         event = compute.invoke.call_args[0][0]
-        assert event["multiValueQueryStringParameters"] is None, (
-            f'Expected None but got {event["multiValueQueryStringParameters"]!r}'
-        )
+        assert (
+            event["multiValueQueryStringParameters"] is None
+        ), f'Expected None but got {event["multiValueQueryStringParameters"]!r}'
 
     def test_multi_value_response_headers(self) -> None:
         # Arrange
@@ -169,12 +169,12 @@ class TestMultiValueHeaders:
 
         # Assert
         actual_values = resp.headers.getlist(expected_key)
-        assert expected_values[0] in actual_values, (
-            f"Expected {expected_values[0]!r} to be in {actual_values!r}"
-        )
-        assert expected_values[1] in actual_values, (
-            f"Expected {expected_values[1]!r} to be in {actual_values!r}"
-        )
+        assert (
+            expected_values[0] in actual_values
+        ), f"Expected {expected_values[0]!r} to be in {actual_values!r}"
+        assert (
+            expected_values[1] in actual_values
+        ), f"Expected {expected_values[1]!r} to be in {actual_values!r}"
 
     def test_empty_multi_value_headers_in_response(self) -> None:
         # Arrange
@@ -190,6 +190,6 @@ class TestMultiValueHeaders:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"

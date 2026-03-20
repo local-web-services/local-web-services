@@ -122,11 +122,11 @@ class TestErrorResponse:
 
         # Assert
         expected_status = 500
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         actual_error = body["error"]
-        assert actual_error == expected_error, (
-            f"Expected {expected_error!r} but got {actual_error!r}"
-        )
+        assert (
+            actual_error == expected_error
+        ), f"Expected {expected_error!r} but got {actual_error!r}"

@@ -165,7 +165,8 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -193,7 +194,8 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -221,6 +223,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 }

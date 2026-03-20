@@ -114,24 +114,24 @@ class TestParseAssemblySingleStack:
         # Assert
         assert len(model.functions) == 1, f"Expected {1!r} but got {len(model.functions)!r}"
         actual_fn = model.functions[0]
-        assert actual_fn.name == expected_name, (
-            f"Expected {expected_name!r} but got {actual_fn.name!r}"
-        )
-        assert actual_fn.handler == expected_handler, (
-            f"Expected {expected_handler!r} but got {actual_fn.handler!r}"
-        )
-        assert actual_fn.runtime == expected_runtime, (
-            f"Expected {expected_runtime!r} but got {actual_fn.runtime!r}"
-        )
-        assert actual_fn.timeout == expected_timeout, (
-            f"Expected {expected_timeout!r} but got {actual_fn.timeout!r}"
-        )
-        assert actual_fn.memory == expected_memory, (
-            f"Expected {expected_memory!r} but got {actual_fn.memory!r}"
-        )
-        assert actual_fn.environment["TABLE_NAME"] == expected_table_env, (
-            f'Expected {expected_table_env!r} but got {actual_fn.environment["TABLE_NAME"]!r}'
-        )
+        assert (
+            actual_fn.name == expected_name
+        ), f"Expected {expected_name!r} but got {actual_fn.name!r}"
+        assert (
+            actual_fn.handler == expected_handler
+        ), f"Expected {expected_handler!r} but got {actual_fn.handler!r}"
+        assert (
+            actual_fn.runtime == expected_runtime
+        ), f"Expected {expected_runtime!r} but got {actual_fn.runtime!r}"
+        assert (
+            actual_fn.timeout == expected_timeout
+        ), f"Expected {expected_timeout!r} but got {actual_fn.timeout!r}"
+        assert (
+            actual_fn.memory == expected_memory
+        ), f"Expected {expected_memory!r} but got {actual_fn.memory!r}"
+        assert (
+            actual_fn.environment["TABLE_NAME"] == expected_table_env
+        ), f'Expected {expected_table_env!r} but got {actual_fn.environment["TABLE_NAME"]!r}'
 
     def test_extracts_table(self, tmp_path: Path):
         # Arrange
@@ -147,12 +147,12 @@ class TestParseAssemblySingleStack:
         # Assert
         assert len(model.tables) == 1, f"Expected {1!r} but got {len(model.tables)!r}"
         actual_tbl = model.tables[0]
-        assert actual_tbl.name == expected_name, (
-            f"Expected {expected_name!r} but got {actual_tbl.name!r}"
-        )
-        assert len(actual_tbl.key_schema) == expected_key_schema_count, (
-            f"Expected {expected_key_schema_count!r} but got {len(actual_tbl.key_schema)!r}"
-        )
+        assert (
+            actual_tbl.name == expected_name
+        ), f"Expected {expected_name!r} but got {actual_tbl.name!r}"
+        assert (
+            len(actual_tbl.key_schema) == expected_key_schema_count
+        ), f"Expected {expected_key_schema_count!r} but got {len(actual_tbl.key_schema)!r}"
 
     def test_resolves_asset_path(self, tmp_path: Path):
         # Arrange

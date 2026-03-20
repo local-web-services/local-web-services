@@ -64,9 +64,9 @@ class TestFnSelect:
 
         # Assert
         actual_first = result["FIRST"]
-        assert actual_first == expected_first, (
-            f"Expected {expected_first!r} but got {actual_first!r}"
-        )
+        assert (
+            actual_first == expected_first
+        ), f"Expected {expected_first!r} but got {actual_first!r}"
 
     def test_select_with_nested_ref(self) -> None:
         # Arrange
@@ -79,6 +79,6 @@ class TestFnSelect:
 
         # Assert
         actual_choice = result["CHOICE"]
-        assert actual_choice == expected_choice, (
-            f"Expected {expected_choice!r} but got {actual_choice!r}"
-        )
+        assert (
+            actual_choice == expected_choice
+        ), f"Expected {expected_choice!r} but got {actual_choice!r}"

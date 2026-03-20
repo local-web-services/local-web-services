@@ -84,9 +84,9 @@ class TestSetAssignment:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_set_new_attribute(self) -> None:
         # Arrange
@@ -102,9 +102,9 @@ class TestSetAssignment:
 
         # Assert
         actual_color = result["color"]
-        assert actual_color == expected_color, (
-            f"Expected {expected_color!r} but got {actual_color!r}"
-        )
+        assert (
+            actual_color == expected_color
+        ), f"Expected {expected_color!r} but got {actual_color!r}"
 
     def test_set_multiple_attributes(self) -> None:
         # Arrange
@@ -140,6 +140,6 @@ class TestSetAssignment:
 
         # Assert
         actual_reserved = result["reserved"]
-        assert actual_reserved == expected_reserved, (
-            f"Expected {expected_reserved!r} but got {actual_reserved!r}"
-        )
+        assert (
+            actual_reserved == expected_reserved
+        ), f"Expected {expected_reserved!r} but got {actual_reserved!r}"

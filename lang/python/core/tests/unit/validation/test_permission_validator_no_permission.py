@@ -80,12 +80,12 @@ class TestNoPermission:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        )
-        assert expected_message_fragment in issues[0].message, (
-            f"Expected {expected_message_fragment!r} to be in {issues[0].message!r}"
-        )
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            expected_message_fragment in issues[0].message
+        ), f"Expected {expected_message_fragment!r} to be in {issues[0].message!r}"
 
     def test_no_graph_returns_empty(self) -> None:
         # Arrange
@@ -107,9 +107,9 @@ class TestNoPermission:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        )
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
 
     def test_wrong_resource_id_no_match(self) -> None:
         # Arrange
@@ -121,6 +121,6 @@ class TestNoPermission:
         issues = PermissionValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        )
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"

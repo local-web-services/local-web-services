@@ -60,16 +60,16 @@ class TestS3ChaosXmlFormat:
         response = await client.get("/test-bucket/some-key")
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.text
-        assert f"<Code>{expected_code}</Code>" in body, (
-            "Expected {!r} to be in {!r}".format(f"<Code>{expected_code}</Code>", body)
+        assert f"<Code>{expected_code}</Code>" in body, "Expected {!r} to be in {!r}".format(
+            f"<Code>{expected_code}</Code>", body
         )
-        assert "<Message>The specified key does not exist.</Message>" in body, (
-            f'Expected {"<Message>The specified key does not exist.</Message>"!r} to be in {body!r}'
-        )
+        assert (
+            "<Message>The specified key does not exist.</Message>" in body
+        ), f'Expected {"<Message>The specified key does not exist.</Message>"!r} to be in {body!r}'
 
     async def test_chaos_disabled_passes_through(self, provider, chaos_config, tmp_path):
         """Verify S3 requests pass through when chaos is disabled."""
@@ -88,6 +88,6 @@ class TestS3ChaosXmlFormat:
             )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"

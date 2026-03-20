@@ -45,15 +45,15 @@ class TestConfirmSubscription:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
-        assert "ConfirmSubscriptionResponse" in resp.text, (
-            f'Expected {"ConfirmSubscriptionResponse"!r} to be in {resp.text!r}'
-        )
-        assert "<SubscriptionArn>" in resp.text, (
-            f'Expected {"<SubscriptionArn>"!r} to be in {resp.text!r}'
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "ConfirmSubscriptionResponse" in resp.text
+        ), f'Expected {"ConfirmSubscriptionResponse"!r} to be in {resp.text!r}'
+        assert (
+            "<SubscriptionArn>" in resp.text
+        ), f'Expected {"<SubscriptionArn>"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_confirm_subscription_returns_subscription_arn(
@@ -72,7 +72,7 @@ class TestConfirmSubscription:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert TOPIC_ARN in resp.text, f"Expected {TOPIC_ARN!r} to be in {resp.text!r}"

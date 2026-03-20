@@ -10,9 +10,9 @@ class TestGetLogger:
 
     def test_returns_ldk_logger(self):
         log = get_logger("test.module")
-        assert isinstance(log, LdkLogger), (
-            f"Expected instance of {LdkLogger!r} but got {type(log)!r}"
-        )
+        assert isinstance(
+            log, LdkLogger
+        ), f"Expected instance of {LdkLogger!r} but got {type(log)!r}"
 
     def test_different_names_different_loggers(self):
         log1 = get_logger("a")

@@ -162,9 +162,9 @@ class TestSqsProviderDlq:
         assert main_q.dead_letter_queue is not None, "Expected value to be set but was None"
         actual_dlq_name = main_q.dead_letter_queue.queue_name
         actual_max_receive_count = main_q.max_receive_count
-        assert actual_dlq_name == expected_dlq_name, (
-            f"Expected {expected_dlq_name!r} but got {actual_dlq_name!r}"
-        )
-        assert actual_max_receive_count == expected_max_receive_count, (
-            f"Expected {expected_max_receive_count!r} but got {actual_max_receive_count!r}"
-        )
+        assert (
+            actual_dlq_name == expected_dlq_name
+        ), f"Expected {expected_dlq_name!r} but got {actual_dlq_name!r}"
+        assert (
+            actual_max_receive_count == expected_max_receive_count
+        ), f"Expected {expected_max_receive_count!r} but got {actual_max_receive_count!r}"

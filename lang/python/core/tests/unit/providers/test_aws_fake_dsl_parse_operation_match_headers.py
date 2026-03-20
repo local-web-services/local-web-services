@@ -35,16 +35,16 @@ class TestParseOperationFileMatchHeaders:
         actual_operation = rules[0].operation
         actual_match_headers = rules[0].match_headers
         actual_status = rules[0].response.status
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
-        assert expected_header_key in actual_match_headers, (
-            f"Expected {expected_header_key!r} to be in {actual_match_headers!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
+        assert (
+            expected_header_key in actual_match_headers
+        ), f"Expected {expected_header_key!r} to be in {actual_match_headers!r}"
         actual_header_value = actual_match_headers[expected_header_key]
-        assert actual_header_value == expected_header_value, (
-            f"Expected {expected_header_value!r} but got {actual_header_value!r}"
-        )
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_header_value == expected_header_value
+        ), f"Expected {expected_header_value!r} but got {actual_header_value!r}"
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"

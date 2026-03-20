@@ -137,9 +137,9 @@ class TestEcsProviderLifecycle:
         provider = EcsProvider(services=[svc])
 
         await provider.start()
-        assert provider._status == ProviderStatus.RUNNING, (
-            f"Expected {ProviderStatus.RUNNING!r} but got {provider._status!r}"
-        )
+        assert (
+            provider._status == ProviderStatus.RUNNING
+        ), f"Expected {ProviderStatus.RUNNING!r} but got {provider._status!r}"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_stop_sets_stopped(self, fake_exec: AsyncMock) -> None:
@@ -149,9 +149,9 @@ class TestEcsProviderLifecycle:
 
         await provider.start()
         await provider.stop()
-        assert provider._status == ProviderStatus.STOPPED, (
-            f"Expected {ProviderStatus.STOPPED!r} but got {provider._status!r}"
-        )
+        assert (
+            provider._status == ProviderStatus.STOPPED
+        ), f"Expected {ProviderStatus.STOPPED!r} but got {provider._status!r}"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_start_registers_service(self, fake_exec: AsyncMock) -> None:
@@ -175,9 +175,9 @@ class TestEcsProviderLifecycle:
 
         await provider.start()
         await provider.stop()
-        assert registry.lookup("web-api") is None, (
-            f'Expected None but got {registry.lookup("web-api")!r}'
-        )
+        assert (
+            registry.lookup("web-api") is None
+        ), f'Expected None but got {registry.lookup("web-api")!r}'
 
     @patch("asyncio.create_subprocess_exec", side_effect=OSError("spawn failed"))
     async def test_start_error_sets_error_status(self, fake_exec: AsyncMock) -> None:
@@ -186,6 +186,6 @@ class TestEcsProviderLifecycle:
 
         with pytest.raises(ProviderStartError, match="Failed to start"):
             await provider.start()
-        assert provider._status == ProviderStatus.ERROR, (
-            f"Expected {ProviderStatus.ERROR!r} but got {provider._status!r}"
-        )
+        assert (
+            provider._status == ProviderStatus.ERROR
+        ), f"Expected {ProviderStatus.ERROR!r} but got {provider._status!r}"

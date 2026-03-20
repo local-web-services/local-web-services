@@ -63,10 +63,10 @@ class TestUpdateUserPool:
         # Assert
         expected_status = 400
         expected_error_type = "ResourceNotFoundException"
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

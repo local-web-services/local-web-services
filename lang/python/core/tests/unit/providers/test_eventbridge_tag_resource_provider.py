@@ -51,12 +51,12 @@ class TestTagResourceProvider:
 
         # Assert
         assert len(tags) == 1, f"Expected {1!r} but got {len(tags)!r}"
-        assert tags[0]["Key"] == expected_key, (
-            f'Expected {expected_key!r} but got {tags[0]["Key"]!r}'
-        )
-        assert tags[0]["Value"] == expected_value, (
-            f'Expected {expected_value!r} but got {tags[0]["Value"]!r}'
-        )
+        assert (
+            tags[0]["Key"] == expected_key
+        ), f'Expected {expected_key!r} but got {tags[0]["Key"]!r}'
+        assert (
+            tags[0]["Value"] == expected_value
+        ), f'Expected {expected_value!r} but got {tags[0]["Value"]!r}'
 
     async def test_tag_overwrite(self, provider: EventBridgeProvider) -> None:
         # Arrange
@@ -70,9 +70,9 @@ class TestTagResourceProvider:
 
         # Assert
         assert len(tags) == 1, f"Expected {1!r} but got {len(tags)!r}"
-        assert tags[0]["Value"] == expected_value, (
-            f'Expected {expected_value!r} but got {tags[0]["Value"]!r}'
-        )
+        assert (
+            tags[0]["Value"] == expected_value
+        ), f'Expected {expected_value!r} but got {tags[0]["Value"]!r}'
 
     async def test_untag(self, provider: EventBridgeProvider) -> None:
         arn = "arn:aws:events:us-east-1:000000000000:rule/my-rule"

@@ -154,6 +154,6 @@ class TestEdgeCases:
 
         # Assert
         assert len(model.functions) == 1, f"Expected {1!r} but got {len(model.functions)!r}"
-        assert model.functions[0].code_path is None, (
-            f"Expected None but got {model.functions[0].code_path!r}"
-        )
+        assert (
+            model.functions[0].code_path is None
+        ), f"Expected None but got {model.functions[0].code_path!r}"

@@ -66,24 +66,24 @@ class TestPresignedUrls:
 
     def test_validate_wrong_key_fails(self) -> None:
         url = generate_presigned_url("mybucket", "mykey", signing_key="correct-key")
-        assert validate_presigned_url(url, signing_key="wrong-key") is False, (
-            "Expected value to be truthy"
-        )
+        assert (
+            validate_presigned_url(url, signing_key="wrong-key") is False
+        ), "Expected value to be truthy"
 
     def test_validate_expired_url(self) -> None:
         url = generate_presigned_url("mybucket", "mykey", expires_in=-1, signing_key="key")
-        assert validate_presigned_url(url, signing_key="key") is False, (
-            "Expected value to be truthy"
-        )
+        assert (
+            validate_presigned_url(url, signing_key="key") is False
+        ), "Expected value to be truthy"
 
     def test_validate_tampered_url(self) -> None:
         key = "signing-key"
         url = generate_presigned_url("mybucket", "mykey", signing_key=key)
         # Tamper with the signature
         tampered = url.replace("X-Amz-Signature=", "X-Amz-Signature=bad")
-        assert validate_presigned_url(tampered, signing_key=key) is False, (
-            "Expected value to be truthy"
-        )
+        assert (
+            validate_presigned_url(tampered, signing_key=key) is False
+        ), "Expected value to be truthy"
 
     def test_default_signing_key(self) -> None:
         """Using default key for both generate and validate should work."""

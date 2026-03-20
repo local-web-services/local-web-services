@@ -42,12 +42,12 @@ class TestListQueuesJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
         assert "QueueUrls" in data, f'Expected {"QueueUrls"!r} to be in {data!r}'
         actual_queue_count = len(data["QueueUrls"])
-        assert actual_queue_count == expected_queue_count, (
-            f"Expected {expected_queue_count!r} but got {actual_queue_count!r}"
-        )
+        assert (
+            actual_queue_count == expected_queue_count
+        ), f"Expected {expected_queue_count!r} but got {actual_queue_count!r}"

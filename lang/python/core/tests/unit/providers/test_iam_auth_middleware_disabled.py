@@ -60,6 +60,6 @@ class TestIamAuthMiddlewareDisabled:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"

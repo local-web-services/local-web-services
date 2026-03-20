@@ -110,9 +110,9 @@ class TestUserStoreAuthentication:
         # Assert
         actual_username = user_info["username"]
         expected_username = username
-        assert actual_username == expected_username, (
-            f"Expected {expected_username!r} but got {actual_username!r}"
-        )
+        assert (
+            actual_username == expected_username
+        ), f"Expected {expected_username!r} but got {actual_username!r}"
         assert "sub" in user_info, f'Expected {"sub"!r} to be in {user_info!r}'
 
     async def test_wrong_password(self, store: UserStore) -> None:

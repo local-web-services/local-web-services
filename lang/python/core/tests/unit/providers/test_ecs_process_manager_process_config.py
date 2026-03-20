@@ -73,9 +73,10 @@ class TestProcessConfig:
     def test_custom_values(self) -> None:
         cfg = _make_config()
         assert cfg.service_name == "web-api", f'Expected {"web-api"!r} but got {cfg.service_name!r}'
-        assert cfg.command == ["python", "app.py"], (
-            f'Expected {["python", "app.py"]!r} but got {cfg.command!r}'
-        )
-        assert cfg.environment == {"PORT": "8080"}, (
-            "Expected {!r} but got {!r}".format({"PORT": "8080"}, cfg.environment)
+        assert cfg.command == [
+            "python",
+            "app.py",
+        ], f'Expected {["python", "app.py"]!r} but got {cfg.command!r}'
+        assert cfg.environment == {"PORT": "8080"}, "Expected {!r} but got {!r}".format(
+            {"PORT": "8080"}, cfg.environment
         )

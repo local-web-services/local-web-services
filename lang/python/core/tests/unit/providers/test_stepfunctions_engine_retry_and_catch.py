@@ -111,11 +111,11 @@ class TestRetryAndCatch:
             },
             compute=compute,
         )
-        assert history.status == ExecutionStatus.SUCCEEDED, (
-            f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
-        )
-        assert history.output_data == {"ok": True}, (
-            "Expected {!r} but got {!r}".format({"ok": True}, history.output_data)
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert history.output_data == {"ok": True}, "Expected {!r} but got {!r}".format(
+            {"ok": True}, history.output_data
         )
 
     async def test_retry_exhausted_falls_through(self) -> None:
@@ -142,9 +142,9 @@ class TestRetryAndCatch:
             },
             compute=compute,
         )
-        assert history.status == ExecutionStatus.FAILED, (
-            f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
-        )
+        assert (
+            history.status == ExecutionStatus.FAILED
+        ), f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
 
     async def test_catch_transitions_to_fallback(self) -> None:
         compute = FakeCompute({"fn": {"ok": True}})
@@ -175,11 +175,11 @@ class TestRetryAndCatch:
             },
             compute=compute,
         )
-        assert history.status == ExecutionStatus.SUCCEEDED, (
-            f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
-        )
-        assert history.output_data == {"recovered": True}, (
-            "Expected {!r} but got {!r}".format({"recovered": True}, history.output_data)
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert history.output_data == {"recovered": True}, "Expected {!r} but got {!r}".format(
+            {"recovered": True}, history.output_data
         )
 
     async def test_catch_error_info_in_result_path(self) -> None:
@@ -214,15 +214,15 @@ class TestRetryAndCatch:
 
         # Assert
         actual_error_name = history.output_data["errorInfo"]["Error"]
-        assert history.status == ExecutionStatus.SUCCEEDED, (
-            f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
-        )
-        assert "errorInfo" in history.output_data, (
-            f'Expected {"errorInfo"!r} to be in {history.output_data!r}'
-        )
-        assert actual_error_name == expected_error_name, (
-            f"Expected {expected_error_name!r} but got {actual_error_name!r}"
-        )
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert (
+            "errorInfo" in history.output_data
+        ), f'Expected {"errorInfo"!r} to be in {history.output_data!r}'
+        assert (
+            actual_error_name == expected_error_name
+        ), f"Expected {expected_error_name!r} but got {actual_error_name!r}"
 
     async def test_retry_then_catch(self) -> None:
         compute = FakeCompute({"fn": {"ok": True}})
@@ -259,11 +259,11 @@ class TestRetryAndCatch:
             },
             compute=compute,
         )
-        assert history.status == ExecutionStatus.SUCCEEDED, (
-            f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
-        )
-        assert history.output_data == {"caught": True}, (
-            "Expected {!r} but got {!r}".format({"caught": True}, history.output_data)
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert history.output_data == {"caught": True}, "Expected {!r} but got {!r}".format(
+            {"caught": True}, history.output_data
         )
 
     async def test_catch_specific_error(self) -> None:
@@ -304,6 +304,6 @@ class TestRetryAndCatch:
             },
             compute=compute,
         )
-        assert history.output_data == {"right": True}, (
-            "Expected {!r} but got {!r}".format({"right": True}, history.output_data)
+        assert history.output_data == {"right": True}, "Expected {!r} but got {!r}".format(
+            {"right": True}, history.output_data
         )

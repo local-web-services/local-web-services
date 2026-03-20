@@ -79,9 +79,9 @@ class TestValidatorOverrides:
         # Act / Assert
         with pytest.raises(ValidationError) as exc_info:
             engine.validate(_make_context())
-        assert len(exc_info.value.issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(exc_info.value.issues)!r}"
-        )
+        assert (
+            len(exc_info.value.issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(exc_info.value.issues)!r}"
 
     def test_override_warn_for_single_validator(self) -> None:
         """Global strict, but override one validator to warn."""
@@ -97,6 +97,6 @@ class TestValidatorOverrides:
         issues = engine.validate(_make_context())
 
         # Assert
-        assert len(issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        )
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"

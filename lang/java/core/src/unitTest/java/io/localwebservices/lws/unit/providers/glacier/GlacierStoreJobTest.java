@@ -70,7 +70,10 @@ public class GlacierStoreJobTest {
     List<Map<String, Object>> actualJobs = store.listJobs(vaultName);
 
     // Assert
-    assertEquals(expectedJobCount, actualJobs.size(), "Expected actualJobs.size() to match expectedJobCount");
+    assertEquals(
+        expectedJobCount,
+        actualJobs.size(),
+        "Expected actualJobs.size() to match expectedJobCount");
   }
 
   @Test
@@ -85,6 +88,9 @@ public class GlacierStoreJobTest {
 
     // Assert
     assertNotNull(actualJobs, "Expected actualJobs to not be null");
-    assertEquals(expectedJobCount, actualJobs.size(), "Expected actualJobs.size() to match expectedJobCount");
+    assertEquals(
+        expectedJobCount,
+        actualJobs.size(),
+        "Expected actualJobs.size() to match expectedJobCount");
   }
 }

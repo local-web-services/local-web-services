@@ -22,15 +22,15 @@ class TestStepFunctionsStartSyncExecution:
         # Assert
         actual_body = json.loads(actual_response.body)
         assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
-        assert actual_response.content_type == expected_content_type, (
-            f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
-        )
-        assert actual_body["output"] == expected_output, (
-            f'Expected {expected_output!r} but got {actual_body["output"]!r}'
-        )
-        assert actual_body["status"] == expected_status, (
-            f'Expected {expected_status!r} but got {actual_body["status"]!r}'
-        )
-        assert "executionArn" in actual_body, (
-            f'Expected {"executionArn"!r} to be in {actual_body!r}'
-        )
+        assert (
+            actual_response.content_type == expected_content_type
+        ), f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert (
+            actual_body["output"] == expected_output
+        ), f'Expected {expected_output!r} but got {actual_body["output"]!r}'
+        assert (
+            actual_body["status"] == expected_status
+        ), f'Expected {expected_status!r} but got {actual_body["status"]!r}'
+        assert (
+            "executionArn" in actual_body
+        ), f'Expected {"executionArn"!r} to be in {actual_body!r}'

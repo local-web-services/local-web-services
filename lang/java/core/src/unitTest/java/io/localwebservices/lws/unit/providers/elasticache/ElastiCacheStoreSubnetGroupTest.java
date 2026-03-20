@@ -25,7 +25,8 @@ public class ElastiCacheStoreSubnetGroupTest {
 
     // Assert
     assertNotNull(actualGroup, "Expected actualGroup to not be null");
-    assertEquals(expectedGroupName, actualGroup.get("CacheSubnetGroupName"), "Expected groupName to match");
+    assertEquals(
+        expectedGroupName, actualGroup.get("CacheSubnetGroupName"), "Expected groupName to match");
   }
 
   @Test
@@ -62,8 +63,10 @@ public class ElastiCacheStoreSubnetGroupTest {
     List<Map<String, Object>> actualGroups = store.describeCacheSubnetGroups("sg-one");
 
     // Assert
-    assertEquals(expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
-    assertEquals("sg-one", actualGroups.get(0).get("CacheSubnetGroupName"), "Expected values to match");
+    assertEquals(
+        expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
+    assertEquals(
+        "sg-one", actualGroups.get(0).get("CacheSubnetGroupName"), "Expected values to match");
   }
 
   @Test
@@ -84,7 +87,8 @@ public class ElastiCacheStoreSubnetGroupTest {
     List<Map<String, Object>> actualGroups = store.describeCacheSubnetGroups(null);
 
     // Assert
-    assertEquals(expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
   }
 
   @Test
@@ -102,6 +106,7 @@ public class ElastiCacheStoreSubnetGroupTest {
 
     // Assert
     List<Map<String, Object>> actualGroups = store.describeCacheSubnetGroups(null);
-    assertEquals(expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualGroups.size(), "Expected actualGroups.size() to match expectedCount");
   }
 }

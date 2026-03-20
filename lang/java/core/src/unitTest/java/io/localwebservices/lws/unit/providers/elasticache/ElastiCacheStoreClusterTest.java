@@ -25,7 +25,8 @@ public class ElastiCacheStoreClusterTest {
 
     // Assert
     assertNotNull(actualCluster, "Expected actualCluster to not be null");
-    assertEquals(expectedClusterId, actualCluster.get("CacheClusterId"), "Expected clusterId to match");
+    assertEquals(
+        expectedClusterId, actualCluster.get("CacheClusterId"), "Expected clusterId to match");
   }
 
   @Test
@@ -55,7 +56,8 @@ public class ElastiCacheStoreClusterTest {
     Map<String, Object> actualCluster = store.createCacheCluster(params);
 
     // Assert
-    assertEquals(expectedStatus, actualCluster.get("CacheClusterStatus"), "Expected status to match");
+    assertEquals(
+        expectedStatus, actualCluster.get("CacheClusterStatus"), "Expected status to match");
   }
 
   @Test
@@ -74,8 +76,12 @@ public class ElastiCacheStoreClusterTest {
     List<Map<String, Object>> actualClusters = store.describeCacheClusters("cluster-a");
 
     // Assert
-    assertEquals(expectedCount, actualClusters.size(), "Expected actualClusters.size() to match expectedCount");
-    assertEquals("cluster-a", actualClusters.get(0).get("CacheClusterId"), "Expected values to match");
+    assertEquals(
+        expectedCount,
+        actualClusters.size(),
+        "Expected actualClusters.size() to match expectedCount");
+    assertEquals(
+        "cluster-a", actualClusters.get(0).get("CacheClusterId"), "Expected values to match");
   }
 
   @Test
@@ -94,7 +100,10 @@ public class ElastiCacheStoreClusterTest {
     List<Map<String, Object>> actualClusters = store.describeCacheClusters(null);
 
     // Assert
-    assertEquals(expectedCount, actualClusters.size(), "Expected actualClusters.size() to match expectedCount");
+    assertEquals(
+        expectedCount,
+        actualClusters.size(),
+        "Expected actualClusters.size() to match expectedCount");
   }
 
   @Test
@@ -113,7 +122,10 @@ public class ElastiCacheStoreClusterTest {
     assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
     assertEquals("delete-cluster", actualDeleted.get("CacheClusterId"), "Expected values to match");
     List<Map<String, Object>> actualRemaining = store.describeCacheClusters(null);
-    assertEquals(expectedCount, actualRemaining.size(), "Expected actualRemaining.size() to match expectedCount");
+    assertEquals(
+        expectedCount,
+        actualRemaining.size(),
+        "Expected actualRemaining.size() to match expectedCount");
   }
 
   @Test
@@ -143,6 +155,9 @@ public class ElastiCacheStoreClusterTest {
 
     // Assert
     List<Map<String, Object>> actualClusters = store.describeCacheClusters(null);
-    assertEquals(expectedCount, actualClusters.size(), "Expected actualClusters.size() to match expectedCount");
+    assertEquals(
+        expectedCount,
+        actualClusters.size(),
+        "Expected actualClusters.size() to match expectedCount");
   }
 }

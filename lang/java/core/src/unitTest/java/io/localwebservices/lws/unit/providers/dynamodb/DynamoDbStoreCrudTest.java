@@ -24,7 +24,9 @@ public class DynamoDbStoreCrudTest {
     store.createTable(expectedName, "pk", "S", null, null, List.of());
 
     // Assert
-    assertTrue(store.tableExists(expectedName), "Expected condition to be true: store.tableExists(expectedName)");
+    assertTrue(
+        store.tableExists(expectedName),
+        "Expected condition to be true: store.tableExists(expectedName)");
   }
 
   @Test
@@ -59,7 +61,9 @@ public class DynamoDbStoreCrudTest {
     store.deleteTable(tableName);
 
     // Assert
-    assertFalse(store.tableExists(tableName), "Expected condition to be false: store.tableExists(tableName)");
+    assertFalse(
+        store.tableExists(tableName),
+        "Expected condition to be false: store.tableExists(tableName)");
   }
 
   @Test
@@ -83,7 +87,8 @@ public class DynamoDbStoreCrudTest {
     List<String> actualNames = store.listTables();
 
     // Assert
-    assertEquals(expectedCount, actualNames.size(), "Expected actualNames.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualNames.size(), "Expected actualNames.size() to match expectedCount");
     assertTrue(actualNames.contains("table-a"), "Expected value to contain expected substring");
     assertTrue(actualNames.contains("table-b"), "Expected value to contain expected substring");
   }
@@ -146,7 +151,9 @@ public class DynamoDbStoreCrudTest {
     store.deleteItem(tableName, Map.of("pk", Map.of("S", "to-delete")));
 
     // Assert
-    assertNull(store.getItem(tableName, Map.of("pk", Map.of("S", "to-delete"))), "Expected values to match");
+    assertNull(
+        store.getItem(tableName, Map.of("pk", Map.of("S", "to-delete"))),
+        "Expected values to match");
   }
 
   @Test

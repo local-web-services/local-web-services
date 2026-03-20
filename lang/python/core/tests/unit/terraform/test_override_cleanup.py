@@ -35,9 +35,9 @@ class TestCleanupOverride:
         # Assert
         assert override_path.exists(), "Expected value to be truthy"
         actual_content = override_path.read_text()
-        assert actual_content == expected_content, (
-            f"Expected {expected_content!r} but got {actual_content!r}"
-        )
+        assert (
+            actual_content == expected_content
+        ), f"Expected {expected_content!r} but got {actual_content!r}"
 
     def test_handles_missing_file(self, tmp_path: Path) -> None:
         """Handle missing override file without error."""

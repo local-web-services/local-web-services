@@ -29,7 +29,8 @@ public class CognitoIdpStoreTest {
     assertFalse(store.pools.containsKey(expectedPoolId), "Expected map to not contain the key");
     assertFalse(store.users.containsKey(expectedPoolId), "Expected map to not contain the key");
     assertFalse(store.groups.containsKey(expectedPoolId), "Expected map to not contain the key");
-    assertFalse(store.groupMembers.containsKey(expectedPoolId), "Expected map to not contain the key");
+    assertFalse(
+        store.groupMembers.containsKey(expectedPoolId), "Expected map to not contain the key");
     assertFalse(store.clients.containsKey("client-1"), "Expected map to not contain the key");
     assertFalse(store.authSessions.containsKey("session-1"), "Expected map to not contain the key");
   }
@@ -57,6 +58,7 @@ public class CognitoIdpStoreTest {
     store.clients.put(expectedClientId, Map.of("ClientId", expectedClientId));
 
     // Assert
-    assertTrue(store.clients.containsKey(expectedClientId), "Expected map to contain the expected key");
+    assertTrue(
+        store.clients.containsKey(expectedClientId), "Expected map to contain the expected key");
   }
 }

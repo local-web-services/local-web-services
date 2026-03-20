@@ -17,9 +17,9 @@ class TestFnSub:
         )
 
         # Assert
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_sub_with_variables(self):
         # Arrange
@@ -30,9 +30,9 @@ class TestFnSub:
         actual_value = r.resolve({"Fn::Sub": ["Hello ${Name}", {"Name": "World"}]})
 
         # Assert
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_sub_with_nested_ref(self):
         # Arrange
@@ -45,9 +45,9 @@ class TestFnSub:
         )
 
         # Assert
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_sub_unresolvable_generates_arn(self):
         # Act

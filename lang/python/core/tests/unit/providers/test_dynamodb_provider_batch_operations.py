@@ -131,9 +131,9 @@ class TestBatchOperations:
         )
 
         # Assert
-        assert len(results) == expected_count, (
-            f"Expected {expected_count!r} but got {len(results)!r}"
-        )
+        assert (
+            len(results) == expected_count
+        ), f"Expected {expected_count!r} but got {len(results)!r}"
 
     async def test_batch_write_items(self, provider: SqliteDynamoProvider) -> None:
         await provider.put_item("orders", {"orderId": "o1", "itemId": "i1", "v": 1})
@@ -147,12 +147,12 @@ class TestBatchOperations:
             delete_keys=[{"orderId": "o1", "itemId": "i1"}],
         )
 
-        assert await provider.get_item("orders", {"orderId": "o1", "itemId": "i1"}) is None, (
-            "Expected None"
-        )
-        assert await provider.get_item("orders", {"orderId": "o2", "itemId": "i2"}) is not None, (
-            "Expected value to be set but was None"
-        )
-        assert await provider.get_item("orders", {"orderId": "o3", "itemId": "i3"}) is not None, (
-            "Expected value to be set but was None"
-        )
+        assert (
+            await provider.get_item("orders", {"orderId": "o1", "itemId": "i1"}) is None
+        ), "Expected None"
+        assert (
+            await provider.get_item("orders", {"orderId": "o2", "itemId": "i2"}) is not None
+        ), "Expected value to be set but was None"
+        assert (
+            await provider.get_item("orders", {"orderId": "o3", "itemId": "i3"}) is not None
+        ), "Expected value to be set but was None"

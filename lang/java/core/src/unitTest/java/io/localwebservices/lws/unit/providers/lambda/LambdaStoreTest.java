@@ -24,7 +24,8 @@ public class LambdaStoreTest {
     // Assert
     assertFalse(store.functions.containsKey(functionName), "Expected map to not contain the key");
     assertFalse(store.permissions.containsKey(functionName), "Expected map to not contain the key");
-    assertFalse(store.eventSourceMappings.containsKey("uuid-1"), "Expected map to not contain the key");
+    assertFalse(
+        store.eventSourceMappings.containsKey("uuid-1"), "Expected map to not contain the key");
   }
 
   @Test
@@ -37,7 +38,8 @@ public class LambdaStoreTest {
     store.functions.put(expectedName, Map.of("FunctionName", expectedName));
 
     // Assert
-    assertTrue(store.functions.containsKey(expectedName), "Expected map to contain the expected key");
+    assertTrue(
+        store.functions.containsKey(expectedName), "Expected map to contain the expected key");
   }
 
   @Test
@@ -50,6 +52,8 @@ public class LambdaStoreTest {
     store.eventSourceMappings.put(expectedUuid, Map.of("UUID", expectedUuid));
 
     // Assert
-    assertTrue(store.eventSourceMappings.containsKey(expectedUuid), "Expected map to contain the expected key");
+    assertTrue(
+        store.eventSourceMappings.containsKey(expectedUuid),
+        "Expected map to contain the expected key");
   }
 }

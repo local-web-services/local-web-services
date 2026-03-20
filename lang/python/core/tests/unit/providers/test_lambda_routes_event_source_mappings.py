@@ -38,9 +38,9 @@ class TestEventSourceMappings:
         }
         create_resp = await client.post("/2015-03-31/event-source-mappings", json=create_body)
         expected_status = 202
-        assert create_resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {create_resp.status_code!r}"
-        )
+        assert (
+            create_resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {create_resp.status_code!r}"
         esm_uuid = create_resp.json()["UUID"]
 
         # Act
@@ -48,15 +48,15 @@ class TestEventSourceMappings:
 
         # Assert
         expected_list_status = 200
-        assert list_resp.status_code == expected_list_status, (
-            f"Expected {expected_list_status!r} but got {list_resp.status_code!r}"
-        )
+        assert (
+            list_resp.status_code == expected_list_status
+        ), f"Expected {expected_list_status!r} but got {list_resp.status_code!r}"
         mappings = list_resp.json()["EventSourceMappings"]
         expected_count = 1
         actual_count = len(mappings)
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
         actual_uuid = mappings[0]["UUID"]
         assert actual_uuid == esm_uuid, f"Expected {esm_uuid!r} but got {actual_uuid!r}"
 
@@ -74,9 +74,9 @@ class TestEventSourceMappings:
 
         # Assert
         expected_status = 200
-        assert get_resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {get_resp.status_code!r}"
-        )
+        assert (
+            get_resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {get_resp.status_code!r}"
         actual_uuid = get_resp.json()["UUID"]
         assert actual_uuid == esm_uuid, f"Expected {esm_uuid!r} but got {actual_uuid!r}"
 
@@ -94,14 +94,14 @@ class TestEventSourceMappings:
 
         # Assert
         expected_delete_status = 202
-        assert delete_resp.status_code == expected_delete_status, (
-            f"Expected {expected_delete_status!r} but got {delete_resp.status_code!r}"
-        )
+        assert (
+            delete_resp.status_code == expected_delete_status
+        ), f"Expected {expected_delete_status!r} but got {delete_resp.status_code!r}"
         get_resp = await client.get(f"/2015-03-31/event-source-mappings/{esm_uuid}")
         expected_not_found = 404
-        assert get_resp.status_code == expected_not_found, (
-            f"Expected {expected_not_found!r} but got {get_resp.status_code!r}"
-        )
+        assert (
+            get_resp.status_code == expected_not_found
+        ), f"Expected {expected_not_found!r} but got {get_resp.status_code!r}"
 
     async def test_get_nonexistent_returns_404(self, client: AsyncClient) -> None:
         # Act
@@ -109,6 +109,6 @@ class TestEventSourceMappings:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"

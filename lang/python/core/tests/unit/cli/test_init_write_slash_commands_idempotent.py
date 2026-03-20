@@ -17,6 +17,6 @@ class TestWriteSlashCommandsIdempotent:
 
         # Assert
         actual_content = (cmd_dir / "fake.md").read_text()
-        assert "old content" not in actual_content, (
-            f'Expected {"old content"!r} to not be in {actual_content!r}'
-        )
+        assert (
+            "old content" not in actual_content
+        ), f'Expected {"old content"!r} to not be in {actual_content!r}'

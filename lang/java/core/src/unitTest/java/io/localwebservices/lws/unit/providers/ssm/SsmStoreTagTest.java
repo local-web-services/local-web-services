@@ -26,7 +26,10 @@ public class SsmStoreTagTest {
         List.of(Map.of("Key", "env", "Value", "prod"), Map.of("Key", "team", "Value", "ops")));
 
     // Assert
-    assertEquals(expectedSize, store.listTags(resourceId).size(), "Expected store.listTags(resourceId).size() to match expectedSize");
+    assertEquals(
+        expectedSize,
+        store.listTags(resourceId).size(),
+        "Expected store.listTags(resourceId).size() to match expectedSize");
   }
 
   @Test
@@ -44,7 +47,10 @@ public class SsmStoreTagTest {
     store.removeTags(resourceId, List.of("env"));
 
     // Assert
-    assertEquals(expectedSize, store.listTags(resourceId).size(), "Expected store.listTags(resourceId).size() to match expectedSize");
+    assertEquals(
+        expectedSize,
+        store.listTags(resourceId).size(),
+        "Expected store.listTags(resourceId).size() to match expectedSize");
   }
 
   @Test

@@ -21,7 +21,9 @@ public class S3StoreMultipartTest {
     store.multipartUploads.put(expectedUploadId, Map.of("UploadId", expectedUploadId));
 
     // Assert
-    assertNotNull(store.multipartUploads.get(expectedUploadId), "Expected store.multipartUploads.get(expectedUploadId) to not be null");
+    assertNotNull(
+        store.multipartUploads.get(expectedUploadId),
+        "Expected store.multipartUploads.get(expectedUploadId) to not be null");
   }
 
   @Test

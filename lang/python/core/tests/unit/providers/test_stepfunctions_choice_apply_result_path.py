@@ -59,8 +59,8 @@ class TestApplyResultPath:
 
     def test_nested_path_sets_value(self) -> None:
         result = apply_result_path({"x": 1}, "hello", "$.greeting")
-        assert result == {"x": 1, "greeting": "hello"}, (
-            "Expected {!r} but got {!r}".format({"x": 1, "greeting": "hello"}, result)
+        assert result == {"x": 1, "greeting": "hello"}, "Expected {!r} but got {!r}".format(
+            {"x": 1, "greeting": "hello"}, result
         )
 
     def test_deep_nested_path(self) -> None:

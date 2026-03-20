@@ -15,14 +15,14 @@ class TestS3HeadObject:
         actual_response = expand_helpers("s3", "head-object", helpers)
 
         # Assert
-        assert actual_response.status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_response.status!r}"
-        )
+        assert (
+            actual_response.status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_response.status!r}"
         actual_content_type_header = actual_response.headers["Content-Type"]
         actual_content_length_header = actual_response.headers["Content-Length"]
-        assert actual_content_type_header == expected_content_type_header, (
-            f"Expected {expected_content_type_header!r} but got {actual_content_type_header!r}"
-        )
-        assert actual_content_length_header == expected_content_length_header, (
-            f"Expected {expected_content_length_header!r} but got {actual_content_length_header!r}"
-        )
+        assert (
+            actual_content_type_header == expected_content_type_header
+        ), f"Expected {expected_content_type_header!r} but got {actual_content_type_header!r}"
+        assert (
+            actual_content_length_header == expected_content_length_header
+        ), f"Expected {expected_content_length_header!r} but got {actual_content_length_header!r}"

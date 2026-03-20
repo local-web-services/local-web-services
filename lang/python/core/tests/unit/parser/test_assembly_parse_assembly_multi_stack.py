@@ -153,11 +153,11 @@ class TestParseAssemblyMultiStack:
         # Assert
         assert len(model.functions) == 1, f"Expected {1!r} but got {len(model.functions)!r}"
         actual_function_name = model.functions[0].name
-        assert actual_function_name == expected_function_name, (
-            f"Expected {expected_function_name!r} but got {actual_function_name!r}"
-        )
+        assert (
+            actual_function_name == expected_function_name
+        ), f"Expected {expected_function_name!r} but got {actual_function_name!r}"
         assert len(model.tables) == 1, f"Expected {1!r} but got {len(model.tables)!r}"
         actual_table_name = model.tables[0].name
-        assert actual_table_name == expected_table_name, (
-            f"Expected {expected_table_name!r} but got {actual_table_name!r}"
-        )
+        assert (
+            actual_table_name == expected_table_name
+        ), f"Expected {expected_table_name!r} but got {actual_table_name!r}"

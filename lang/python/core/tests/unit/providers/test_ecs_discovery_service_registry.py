@@ -32,9 +32,9 @@ class TestServiceRegistry:
 
     def test_lookup_missing_returns_none(self) -> None:
         registry = ServiceRegistry()
-        assert registry.lookup("nonexistent") is None, (
-            f'Expected None but got {registry.lookup("nonexistent")!r}'
-        )
+        assert (
+            registry.lookup("nonexistent") is None
+        ), f'Expected None but got {registry.lookup("nonexistent")!r}'
 
     def test_deregister_removes_service(self) -> None:
         registry = ServiceRegistry()
@@ -101,12 +101,12 @@ class TestServiceRegistry:
         expected_worker_url = "http://localhost:4000"
         actual_web_api_url = env["LDK_ECS_WEB_API"]
         actual_worker_url = env["LDK_ECS_WORKER"]
-        assert actual_web_api_url == expected_web_api_url, (
-            f"Expected {expected_web_api_url!r} but got {actual_web_api_url!r}"
-        )
-        assert actual_worker_url == expected_worker_url, (
-            f"Expected {expected_worker_url!r} but got {actual_worker_url!r}"
-        )
+        assert (
+            actual_web_api_url == expected_web_api_url
+        ), f"Expected {expected_web_api_url!r} but got {actual_web_api_url!r}"
+        assert (
+            actual_worker_url == expected_worker_url
+        ), f"Expected {expected_worker_url!r} but got {actual_worker_url!r}"
 
     def test_build_env_vars_custom_prefix(self) -> None:
         # Arrange

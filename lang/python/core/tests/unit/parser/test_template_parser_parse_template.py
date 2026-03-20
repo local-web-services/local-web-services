@@ -69,27 +69,27 @@ class TestParseTemplate:
         resources = parse_template(tmp_template(tpl))
 
         # Assert
-        assert len(resources) == expected_count, (
-            f"Expected {expected_count!r} but got {len(resources)!r}"
-        )
-        assert resources[0].logical_id == expected_first_id, (
-            f"Expected {expected_first_id!r} but got {resources[0].logical_id!r}"
-        )
-        assert resources[0].resource_type == expected_first_type, (
-            f"Expected {expected_first_type!r} but got {resources[0].resource_type!r}"
-        )
-        assert resources[1].logical_id == expected_second_id, (
-            f"Expected {expected_second_id!r} but got {resources[1].logical_id!r}"
-        )
+        assert (
+            len(resources) == expected_count
+        ), f"Expected {expected_count!r} but got {len(resources)!r}"
+        assert (
+            resources[0].logical_id == expected_first_id
+        ), f"Expected {expected_first_id!r} but got {resources[0].logical_id!r}"
+        assert (
+            resources[0].resource_type == expected_first_type
+        ), f"Expected {expected_first_type!r} but got {resources[0].resource_type!r}"
+        assert (
+            resources[1].logical_id == expected_second_id
+        ), f"Expected {expected_second_id!r} but got {resources[1].logical_id!r}"
 
     def test_empty_resources(self, tmp_template):
         tpl = {"Resources": {}}
-        assert parse_template(tmp_template(tpl)) == [], (
-            f"Expected {[]!r} but got {parse_template(tmp_template(tpl))!r}"
-        )
+        assert (
+            parse_template(tmp_template(tpl)) == []
+        ), f"Expected {[]!r} but got {parse_template(tmp_template(tpl))!r}"
 
     def test_missing_resources_key(self, tmp_template):
         tpl = {"AWSTemplateFormatVersion": "2010-09-09"}
-        assert parse_template(tmp_template(tpl)) == [], (
-            f"Expected {[]!r} but got {parse_template(tmp_template(tpl))!r}"
-        )
+        assert (
+            parse_template(tmp_template(tpl)) == []
+        ), f"Expected {[]!r} but got {parse_template(tmp_template(tpl))!r}"

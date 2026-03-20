@@ -55,9 +55,9 @@ class TestBuildAlbApp:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     @patch("httpx.AsyncClient.request")
     async def test_catch_all_proxies_matching_rule(self, fake_req: AsyncMock) -> None:
@@ -81,9 +81,9 @@ class TestBuildAlbApp:
             resp = await client.get("/api/users")
 
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     def test_health_check_route_registered(self) -> None:
         rules = [

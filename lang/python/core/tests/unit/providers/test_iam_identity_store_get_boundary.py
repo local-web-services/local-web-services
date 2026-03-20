@@ -32,9 +32,9 @@ class TestIdentityStoreGetBoundary:
         # Assert
         assert actual is not None, "Expected value to be set but was None"
         expected_action = "s3:Get*"
-        assert actual["Statement"][0]["Action"] == expected_action, (
-            f'Expected {expected_action!r} but got {actual["Statement"][0]["Action"]!r}'
-        )
+        assert (
+            actual["Statement"][0]["Action"] == expected_action
+        ), f'Expected {expected_action!r} but got {actual["Statement"][0]["Action"]!r}'
 
     def test_no_boundary_returns_none(self, tmp_path):
         # Arrange

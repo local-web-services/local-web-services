@@ -19,6 +19,6 @@ class TestAwsFakeConfigDefaults:
         # Assert
         assert actual_enabled is True, "Expected value to be truthy"
         assert actual_rules == [], f"Expected {[]!r} but got {actual_rules!r}"
-        assert actual_service == expected_service, (
-            f"Expected {expected_service!r} but got {actual_service!r}"
-        )
+        assert (
+            actual_service == expected_service
+        ), f"Expected {expected_service!r} but got {actual_service!r}"

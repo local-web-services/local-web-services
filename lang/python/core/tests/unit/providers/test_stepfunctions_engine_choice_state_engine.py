@@ -114,8 +114,8 @@ class TestChoiceStateEngine:
             },
             input_data={"value": 20},
         )
-        assert history.output_data == {"size": "big"}, (
-            "Expected {!r} but got {!r}".format({"size": "big"}, history.output_data)
+        assert history.output_data == {"size": "big"}, "Expected {!r} but got {!r}".format(
+            {"size": "big"}, history.output_data
         )
 
     async def test_choice_default_branch(self) -> None:
@@ -148,8 +148,8 @@ class TestChoiceStateEngine:
             },
             input_data={"value": 5},
         )
-        assert history.output_data == {"size": "small"}, (
-            "Expected {!r} but got {!r}".format({"size": "small"}, history.output_data)
+        assert history.output_data == {"size": "small"}, "Expected {!r} but got {!r}".format(
+            {"size": "small"}, history.output_data
         )
 
     async def test_choice_no_match_no_default_fails(self) -> None:
@@ -172,9 +172,9 @@ class TestChoiceStateEngine:
             },
             input_data={"value": "different"},
         )
-        assert history.status == ExecutionStatus.FAILED, (
-            f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
-        )
+        assert (
+            history.status == ExecutionStatus.FAILED
+        ), f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
 
     async def test_choice_string_equals(self) -> None:
         history = await run_engine(
@@ -304,6 +304,6 @@ class TestChoiceStateEngine:
             },
             input_data={"x": 5},
         )
-        assert history.output_data == "nonzero", (
-            f'Expected {"nonzero"!r} but got {history.output_data!r}'
-        )
+        assert (
+            history.output_data == "nonzero"
+        ), f'Expected {"nonzero"!r} but got {history.output_data!r}'

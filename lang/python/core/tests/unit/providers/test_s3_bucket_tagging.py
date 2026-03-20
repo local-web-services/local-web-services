@@ -56,25 +56,25 @@ class TestBucketTagging:
         get_resp = await client.get(f"/{bucket_name}?tagging")
 
         # Assert
-        assert put_resp.status_code == expected_put_status, (
-            f"Expected {expected_put_status!r} but got {put_resp.status_code!r}"
-        )
-        assert get_resp.status_code == expected_get_status, (
-            f"Expected {expected_get_status!r} but got {get_resp.status_code!r}"
-        )
+        assert (
+            put_resp.status_code == expected_put_status
+        ), f"Expected {expected_put_status!r} but got {put_resp.status_code!r}"
+        assert (
+            get_resp.status_code == expected_get_status
+        ), f"Expected {expected_get_status!r} but got {get_resp.status_code!r}"
         assert "<Tagging>" in get_resp.text, f'Expected {"<Tagging>"!r} to be in {get_resp.text!r}'
-        assert "<Key>env</Key>" in get_resp.text, (
-            f'Expected {"<Key>env</Key>"!r} to be in {get_resp.text!r}'
-        )
-        assert "<Value>production</Value>" in get_resp.text, (
-            f'Expected {"<Value>production</Value>"!r} to be in {get_resp.text!r}'
-        )
-        assert "<Key>team</Key>" in get_resp.text, (
-            f'Expected {"<Key>team</Key>"!r} to be in {get_resp.text!r}'
-        )
-        assert "<Value>platform</Value>" in get_resp.text, (
-            f'Expected {"<Value>platform</Value>"!r} to be in {get_resp.text!r}'
-        )
+        assert (
+            "<Key>env</Key>" in get_resp.text
+        ), f'Expected {"<Key>env</Key>"!r} to be in {get_resp.text!r}'
+        assert (
+            "<Value>production</Value>" in get_resp.text
+        ), f'Expected {"<Value>production</Value>"!r} to be in {get_resp.text!r}'
+        assert (
+            "<Key>team</Key>" in get_resp.text
+        ), f'Expected {"<Key>team</Key>"!r} to be in {get_resp.text!r}'
+        assert (
+            "<Value>platform</Value>" in get_resp.text
+        ), f'Expected {"<Value>platform</Value>"!r} to be in {get_resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_get_bucket_tagging_empty(
@@ -88,9 +88,9 @@ class TestBucketTagging:
         resp = await client.get("/my-bucket?tagging")
 
         # Assert
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "<Tagging>" in resp.text, f'Expected {"<Tagging>"!r} to be in {resp.text!r}'
         assert "<TagSet>" in resp.text, f'Expected {"<TagSet>"!r} to be in {resp.text!r}'
 
@@ -117,13 +117,13 @@ class TestBucketTagging:
         delete_resp = await client.delete(f"/{bucket_name}?tagging")
 
         # Assert
-        assert delete_resp.status_code == expected_delete_status, (
-            f"Expected {expected_delete_status!r} but got {delete_resp.status_code!r}"
-        )
+        assert (
+            delete_resp.status_code == expected_delete_status
+        ), f"Expected {expected_delete_status!r} but got {delete_resp.status_code!r}"
         get_resp = await client.get(f"/{bucket_name}?tagging")
-        assert get_resp.status_code == expected_get_status, (
-            f"Expected {expected_get_status!r} but got {get_resp.status_code!r}"
-        )
+        assert (
+            get_resp.status_code == expected_get_status
+        ), f"Expected {expected_get_status!r} but got {get_resp.status_code!r}"
         assert "<Tag>" not in get_resp.text, f'Expected {"<Tag>"!r} to not be in {get_resp.text!r}'
 
     @pytest.mark.asyncio
@@ -140,9 +140,9 @@ class TestBucketTagging:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "NoSuchBucket" in resp.text, f'Expected {"NoSuchBucket"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
@@ -152,9 +152,9 @@ class TestBucketTagging:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "NoSuchBucket" in resp.text, f'Expected {"NoSuchBucket"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
@@ -173,7 +173,7 @@ class TestBucketTagging:
 
         # Assert
         expected_status = 400
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "MalformedXML" in resp.text, f'Expected {"MalformedXML"!r} to be in {resp.text!r}'

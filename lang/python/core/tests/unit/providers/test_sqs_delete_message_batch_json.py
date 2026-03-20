@@ -71,18 +71,18 @@ class TestDeleteMessageBatchJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
         actual_successful_count = len(data["Successful"])
         actual_failed_count = len(data["Failed"])
-        assert actual_successful_count == expected_successful_count, (
-            f"Expected {expected_successful_count!r} but got {actual_successful_count!r}"
-        )
-        assert actual_failed_count == expected_failed_count, (
-            f"Expected {expected_failed_count!r} but got {actual_failed_count!r}"
-        )
+        assert (
+            actual_successful_count == expected_successful_count
+        ), f"Expected {expected_successful_count!r} but got {actual_successful_count!r}"
+        assert (
+            actual_failed_count == expected_failed_count
+        ), f"Expected {expected_failed_count!r} but got {actual_failed_count!r}"
 
     @pytest.mark.asyncio
     async def test_delete_message_batch_empty_entries(
@@ -103,9 +103,9 @@ class TestDeleteMessageBatchJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
         assert data["Successful"] == [], f'Expected {[]!r} but got {data["Successful"]!r}'
         assert data["Failed"] == [], f'Expected {[]!r} but got {data["Failed"]!r}'

@@ -47,14 +47,14 @@ class TestCreateStateMachineRoute:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
         assert "stateMachineArn" in data, f'Expected {"stateMachineArn"!r} to be in {data!r}'
-        assert sm_name in data["stateMachineArn"], (
-            f'Expected {sm_name!r} to be in {data["stateMachineArn"]!r}'
-        )
+        assert (
+            sm_name in data["stateMachineArn"]
+        ), f'Expected {sm_name!r} to be in {data["stateMachineArn"]!r}'
 
     async def test_create_missing_name_returns_error(self, client: httpx.AsyncClient) -> None:
         # Arrange
@@ -64,6 +64,6 @@ class TestCreateStateMachineRoute:
         resp = await _request(client, "CreateStateMachine", {"definition": "{}"})
 
         # Assert
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"

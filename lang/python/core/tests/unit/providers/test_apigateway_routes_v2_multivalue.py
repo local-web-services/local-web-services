@@ -83,9 +83,9 @@ class TestV2MultiValue:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_value = event["headers"][expected_key]
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     @pytest.mark.asyncio
     async def test_single_query_param(self, client, registry) -> None:
@@ -100,9 +100,9 @@ class TestV2MultiValue:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_value = event["queryStringParameters"][expected_key]
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     @pytest.mark.asyncio
     async def test_repeated_query_param_comma_joined(self, client, registry) -> None:
@@ -117,9 +117,9 @@ class TestV2MultiValue:
         # Assert
         event = compute.invoke.call_args[0][0]
         actual_value = event["queryStringParameters"][expected_key]
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     @pytest.mark.asyncio
     async def test_cookies_become_set_cookie_headers(self, client, registry) -> None:
@@ -156,6 +156,6 @@ class TestV2MultiValue:
 
         # Assert
         actual_cookies = resp.headers.get_list("set-cookie")
-        assert expected_cookie in actual_cookies, (
-            f"Expected {expected_cookie!r} to be in {actual_cookies!r}"
-        )
+        assert (
+            expected_cookie in actual_cookies
+        ), f"Expected {expected_cookie!r} to be in {actual_cookies!r}"

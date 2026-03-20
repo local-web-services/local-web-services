@@ -31,15 +31,15 @@ class TestExtractLambdaUrls:
         # Assert
         assert len(result) == 1, f"Expected {1!r} but got {len(result)!r}"
         actual_url = result[0]
-        assert actual_url.auth_type == expected_auth_type, (
-            f"Expected {expected_auth_type!r} but got {actual_url.auth_type!r}"
-        )
-        assert actual_url.invoke_mode == expected_invoke_mode, (
-            f"Expected {expected_invoke_mode!r} but got {actual_url.invoke_mode!r}"
-        )
-        assert actual_url.target_function_arn == {"Fn::GetAtt": ["MyFunction", "Arn"]}, (
-            f"Expected {actual_url.target_function_arn!r}"
-        )
+        assert (
+            actual_url.auth_type == expected_auth_type
+        ), f"Expected {expected_auth_type!r} but got {actual_url.auth_type!r}"
+        assert (
+            actual_url.invoke_mode == expected_invoke_mode
+        ), f"Expected {expected_invoke_mode!r} but got {actual_url.invoke_mode!r}"
+        assert actual_url.target_function_arn == {
+            "Fn::GetAtt": ["MyFunction", "Arn"]
+        }, f"Expected {actual_url.target_function_arn!r}"
 
     def test_lambda_url_with_cors(self):
         # Arrange
@@ -86,9 +86,9 @@ class TestExtractLambdaUrls:
 
         # Assert
         actual_auth_type = result[0].auth_type
-        assert actual_auth_type == expected_auth_type, (
-            f"Expected {expected_auth_type!r} but got {actual_auth_type!r}"
-        )
+        assert (
+            actual_auth_type == expected_auth_type
+        ), f"Expected {expected_auth_type!r} but got {actual_auth_type!r}"
 
     def test_lambda_url_defaults(self):
         # Arrange
@@ -109,12 +109,12 @@ class TestExtractLambdaUrls:
 
         # Assert
         actual_url = result[0]
-        assert actual_url.auth_type == expected_auth_type, (
-            f"Expected {expected_auth_type!r} but got {actual_url.auth_type!r}"
-        )
-        assert actual_url.invoke_mode == expected_invoke_mode, (
-            f"Expected {expected_invoke_mode!r} but got {actual_url.invoke_mode!r}"
-        )
+        assert (
+            actual_url.auth_type == expected_auth_type
+        ), f"Expected {expected_auth_type!r} but got {actual_url.auth_type!r}"
+        assert (
+            actual_url.invoke_mode == expected_invoke_mode
+        ), f"Expected {expected_invoke_mode!r} but got {actual_url.invoke_mode!r}"
         assert actual_url.cors is None, f"Expected None but got {actual_url.cors!r}"
 
     def test_skips_non_lambda_url(self):
@@ -149,6 +149,6 @@ class TestExtractLambdaUrls:
 
         # Assert
         actual_invoke_mode = result[0].invoke_mode
-        assert actual_invoke_mode == expected_invoke_mode, (
-            f"Expected {expected_invoke_mode!r} but got {actual_invoke_mode!r}"
-        )
+        assert (
+            actual_invoke_mode == expected_invoke_mode
+        ), f"Expected {expected_invoke_mode!r} but got {actual_invoke_mode!r}"

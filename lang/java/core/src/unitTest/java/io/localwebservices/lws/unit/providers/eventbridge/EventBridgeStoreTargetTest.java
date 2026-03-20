@@ -23,7 +23,10 @@ public class EventBridgeStoreTargetTest {
 
     // Assert
     int actualTargetCount = store.ruleTargets.get(expectedRuleName).size();
-    assertEquals(expectedTargetCount, actualTargetCount, "Expected actualTargetCount to match expectedTargetCount");
+    assertEquals(
+        expectedTargetCount,
+        actualTargetCount,
+        "Expected actualTargetCount to match expectedTargetCount");
   }
 
   @Test
@@ -37,7 +40,9 @@ public class EventBridgeStoreTargetTest {
     store.ruleTargets.remove(expectedRuleName);
 
     // Assert
-    assertNull(store.ruleTargets.get(expectedRuleName), "Expected store.ruleTargets.get(expectedRuleName) to be null");
+    assertNull(
+        store.ruleTargets.get(expectedRuleName),
+        "Expected store.ruleTargets.get(expectedRuleName) to be null");
   }
 
   @Test

@@ -24,7 +24,9 @@ public class StepFunctionsStoreStateMachineTest {
     store.createStateMachine(machineName, Map.of("name", machineName));
 
     // Assert
-    assertTrue(store.stateMachineExists(expectedArn), "Expected condition to be true: store.stateMachineExists(expectedArn)");
+    assertTrue(
+        store.stateMachineExists(expectedArn),
+        "Expected condition to be true: store.stateMachineExists(expectedArn)");
   }
 
   @Test
@@ -96,7 +98,9 @@ public class StepFunctionsStoreStateMachineTest {
     store.deleteStateMachine(arn);
 
     // Assert
-    assertFalse(store.stateMachineExists(arn), "Expected condition to be false: store.stateMachineExists(arn)");
+    assertFalse(
+        store.stateMachineExists(arn),
+        "Expected condition to be false: store.stateMachineExists(arn)");
   }
 
   @Test
@@ -113,7 +117,8 @@ public class StepFunctionsStoreStateMachineTest {
 
     // Assert
     Map<String, Object> actualMachine = store.getStateMachine(arn);
-    assertEquals(expectedDefinition, actualMachine.get("definition"), "Expected definition to match");
+    assertEquals(
+        expectedDefinition, actualMachine.get("definition"), "Expected definition to match");
   }
 
   @Test
@@ -128,7 +133,8 @@ public class StepFunctionsStoreStateMachineTest {
     List<Map<String, Object>> actualList = store.listStateMachines();
 
     // Assert
-    assertEquals(expectedSize, actualList.size(), "Expected actualList.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualList.size(), "Expected actualList.size() to match expectedSize");
   }
 
   @Test
@@ -143,6 +149,8 @@ public class StepFunctionsStoreStateMachineTest {
     store.reset();
 
     // Assert
-    assertFalse(store.stateMachineExists(arn), "Expected condition to be false: store.stateMachineExists(arn)");
+    assertFalse(
+        store.stateMachineExists(arn),
+        "Expected condition to be false: store.stateMachineExists(arn)");
   }
 }

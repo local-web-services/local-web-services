@@ -15,31 +15,32 @@ class TestLambdaRegistryTagMethods:
     def test_tag_resource(self) -> None:
         registry = LambdaRegistry()
         registry.tag_resource("arn:test", {"env": "prod"})
-        assert registry.get_tags("arn:test") == {"env": "prod"}, (
-            "Expected {!r} but got {!r}".format({"env": "prod"}, registry.get_tags("arn:test"))
-        )
+        assert registry.get_tags("arn:test") == {
+            "env": "prod"
+        }, "Expected {!r} but got {!r}".format({"env": "prod"}, registry.get_tags("arn:test"))
 
     def test_tag_resource_merges(self) -> None:
         registry = LambdaRegistry()
         registry.tag_resource("arn:test", {"env": "prod"})
         registry.tag_resource("arn:test", {"team": "backend"})
-        assert registry.get_tags("arn:test") == {"env": "prod", "team": "backend"}, (
-            f"Expected {registry.get_tags('arn:test')!r}"
-        )
+        assert registry.get_tags("arn:test") == {
+            "env": "prod",
+            "team": "backend",
+        }, f"Expected {registry.get_tags('arn:test')!r}"
 
     def test_untag_resource(self) -> None:
         registry = LambdaRegistry()
         registry.tag_resource("arn:test", {"env": "prod", "team": "backend"})
         registry.untag_resource("arn:test", ["env"])
-        assert registry.get_tags("arn:test") == {"team": "backend"}, (
-            f"Expected {registry.get_tags('arn:test')!r}"
-        )
+        assert registry.get_tags("arn:test") == {
+            "team": "backend"
+        }, f"Expected {registry.get_tags('arn:test')!r}"
 
     def test_untag_nonexistent_arn_is_noop(self) -> None:
         registry = LambdaRegistry()
         registry.untag_resource("arn:nonexistent", ["env"])
-        assert registry.get_tags("arn:nonexistent") == {}, (
-            "Expected {!r} but got {!r}".format({}, registry.get_tags("arn:nonexistent"))
+        assert registry.get_tags("arn:nonexistent") == {}, "Expected {!r} but got {!r}".format(
+            {}, registry.get_tags("arn:nonexistent")
         )
 
     def test_get_tags_returns_copy(self) -> None:
@@ -47,9 +48,9 @@ class TestLambdaRegistryTagMethods:
         registry.tag_resource("arn:test", {"env": "prod"})
         tags = registry.get_tags("arn:test")
         tags["extra"] = "should_not_persist"
-        assert "extra" not in registry.get_tags("arn:test"), (
-            f'Expected {"extra"!r} to not be in {registry.get_tags("arn:test")!r}'
-        )
+        assert "extra" not in registry.get_tags(
+            "arn:test"
+        ), f'Expected {"extra"!r} to not be in {registry.get_tags("arn:test")!r}'
 
     def test_update_config(self) -> None:
         registry = LambdaRegistry()

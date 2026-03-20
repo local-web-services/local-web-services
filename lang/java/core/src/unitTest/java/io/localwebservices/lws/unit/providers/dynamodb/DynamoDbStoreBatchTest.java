@@ -52,7 +52,8 @@ public class DynamoDbStoreBatchTest {
     List<Map<String, Object>> actualItems = store.batchGetItems("T", keys);
 
     // Assert
-    assertEquals(expectedSize, actualItems.size(), "Expected actualItems.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualItems.size(), "Expected actualItems.size() to match expectedSize");
   }
 
   @Test

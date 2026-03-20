@@ -85,48 +85,48 @@ class TestLwsStatusIntegration:
 
             assert output["running"] is True, "Expected value to be truthy"
             actual_provider_count = len(output["providers"])
-            assert actual_provider_count == expected_provider_count, (
-                f"Expected {expected_provider_count!r} but got {actual_provider_count!r}"
-            )
+            assert (
+                actual_provider_count == expected_provider_count
+            ), f"Expected {expected_provider_count!r} but got {actual_provider_count!r}"
             actual_provider_name = output["providers"][0]["name"]
-            assert actual_provider_name == expected_provider_name, (
-                f"Expected {expected_provider_name!r} but got {actual_provider_name!r}"
-            )
+            assert (
+                actual_provider_name == expected_provider_name
+            ), f"Expected {expected_provider_name!r} but got {actual_provider_name!r}"
             assert output["providers"][0]["healthy"] is True, "Expected value to be truthy"
             actual_service_count = len(output["services"])
-            assert actual_service_count == expected_service_count, (
-                f"Expected {expected_service_count!r} but got {actual_service_count!r}"
-            )
+            assert (
+                actual_service_count == expected_service_count
+            ), f"Expected {expected_service_count!r} but got {actual_service_count!r}"
             actual_service_name = output["services"][0]["name"]
-            assert actual_service_name == expected_provider_name, (
-                f"Expected {expected_provider_name!r} but got {actual_service_name!r}"
-            )
+            assert (
+                actual_service_name == expected_provider_name
+            ), f"Expected {expected_provider_name!r} but got {actual_service_name!r}"
             actual_service_port = output["services"][0]["port"]
-            assert actual_service_port == expected_service_port, (
-                f"Expected {expected_service_port!r} but got {actual_service_port!r}"
-            )
+            assert (
+                actual_service_port == expected_service_port
+            ), f"Expected {expected_service_port!r} but got {actual_service_port!r}"
             actual_resource_count = output["services"][0]["resources"]
-            assert actual_resource_count == expected_resource_count, (
-                f"Expected {expected_resource_count!r} but got {actual_resource_count!r}"
-            )
+            assert (
+                actual_resource_count == expected_resource_count
+            ), f"Expected {expected_resource_count!r} but got {actual_resource_count!r}"
 
             # Act - default table output mode
             await _run_status(port)
 
             # Assert - table output mode
             table_output = capsys.readouterr().out
-            assert expected_running_message in table_output, (
-                f"Expected {expected_running_message!r} to be in {table_output!r}"
-            )
-            assert expected_provider_name in table_output, (
-                f"Expected {expected_provider_name!r} to be in {table_output!r}"
-            )
-            assert expected_health_status in table_output, (
-                f"Expected {expected_health_status!r} to be in {table_output!r}"
-            )
-            assert str(expected_service_port) in table_output, (
-                f"Expected {str(expected_service_port)!r} to be in {table_output!r}"
-            )
+            assert (
+                expected_running_message in table_output
+            ), f"Expected {expected_running_message!r} to be in {table_output!r}"
+            assert (
+                expected_provider_name in table_output
+            ), f"Expected {expected_provider_name!r} to be in {table_output!r}"
+            assert (
+                expected_health_status in table_output
+            ), f"Expected {expected_health_status!r} to be in {table_output!r}"
+            assert (
+                str(expected_service_port) in table_output
+            ), f"Expected {str(expected_service_port)!r} to be in {table_output!r}"
         finally:
             server.should_exit = True
             await serve_task

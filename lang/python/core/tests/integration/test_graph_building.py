@@ -31,9 +31,9 @@ class TestGraphBuilding:
 
         assert len(order) > 0, f"Expected {len(order)!r} > {0!r}"
         # All nodes should be in the sort result (no cycles)
-        assert len(order) == len(graph.nodes), (
-            f"Expected {len(graph.nodes)!r} but got {len(order)!r}"
-        )
+        assert len(order) == len(
+            graph.nodes
+        ), f"Expected {len(graph.nodes)!r} but got {len(order)!r}"
 
     def test_no_cycles(self):
         # Arrange
@@ -46,6 +46,6 @@ class TestGraphBuilding:
 
         # Assert
         actual_cycle_count = len(cycles)
-        assert actual_cycle_count == expected_cycle_count, (
-            f"Expected {expected_cycle_count!r} but got {actual_cycle_count!r}"
-        )
+        assert (
+            actual_cycle_count == expected_cycle_count
+        ), f"Expected {expected_cycle_count!r} but got {actual_cycle_count!r}"

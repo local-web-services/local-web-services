@@ -25,7 +25,9 @@ public class ApiGatewayStoreResourceTest {
         .put(expectedResourceId, Map.of("id", expectedResourceId));
 
     // Assert
-    assertNotNull(store.resources.get(apiId).get(expectedResourceId), "Expected store.resources.get(apiId).get(expectedResourceId) to not be null");
+    assertNotNull(
+        store.resources.get(apiId).get(expectedResourceId),
+        "Expected store.resources.get(apiId).get(expectedResourceId) to not be null");
   }
 
   @Test
@@ -43,7 +45,9 @@ public class ApiGatewayStoreResourceTest {
     store.resources.get(apiId).remove(resourceId);
 
     // Assert
-    assertNull(store.resources.get(apiId).get(resourceId), "Expected store.resources.get(apiId).get(resourceId) to be null");
+    assertNull(
+        store.resources.get(apiId).get(resourceId),
+        "Expected store.resources.get(apiId).get(resourceId) to be null");
   }
 
   @Test

@@ -41,9 +41,9 @@ class TestDescribeDBClusters:
         result = _post(client, "DescribeDBClusters", {})
 
         # Assert
-        assert len(result["DBClusters"]) == expected_count, (
-            f'Expected {expected_count!r} but got {len(result["DBClusters"])!r}'
-        )
+        assert (
+            len(result["DBClusters"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(result["DBClusters"])!r}'
         ids = [c["DBClusterIdentifier"] for c in result["DBClusters"]]
         assert cluster_id_a in ids, f"Expected {cluster_id_a!r} to be in {ids!r}"
         assert cluster_id_b in ids, f"Expected {cluster_id_b!r} to be in {ids!r}"
@@ -63,13 +63,13 @@ class TestDescribeDBClusters:
 
         # Assert
         expected_count = 1
-        assert len(result["DBClusters"]) == expected_count, (
-            f'Expected {expected_count!r} but got {len(result["DBClusters"])!r}'
-        )
+        assert (
+            len(result["DBClusters"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(result["DBClusters"])!r}'
         actual_cluster_id = result["DBClusters"][0]["DBClusterIdentifier"]
-        assert actual_cluster_id == expected_cluster_id, (
-            f"Expected {expected_cluster_id!r} but got {actual_cluster_id!r}"
-        )
+        assert (
+            actual_cluster_id == expected_cluster_id
+        ), f"Expected {expected_cluster_id!r} but got {actual_cluster_id!r}"
 
     def test_describe_not_found_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -84,6 +84,6 @@ class TestDescribeDBClusters:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

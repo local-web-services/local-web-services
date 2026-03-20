@@ -39,7 +39,8 @@ public class SecretsManagerStoreCreateTest {
 
     // Assert
     assertTrue(actualArn.contains(secretName), "Expected value to contain expected substring");
-    assertTrue(actualArn.contains(expectedArnPrefix), "Expected value to contain expected substring");
+    assertTrue(
+        actualArn.contains(expectedArnPrefix), "Expected value to contain expected substring");
   }
 
   @Test
@@ -121,6 +122,7 @@ public class SecretsManagerStoreCreateTest {
     List<Map<String, Object>> actualSecrets = store.listSecrets();
 
     // Assert
-    assertEquals(expectedSize, actualSecrets.size(), "Expected actualSecrets.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualSecrets.size(), "Expected actualSecrets.size() to match expectedSize");
   }
 }

@@ -51,9 +51,9 @@ class TestGetRemainingTimeInMillis:
         actual_remaining = ctx.get_remaining_time_in_millis()
 
         # Assert -- should be very close to 30000ms (within a small tolerance)
-        assert expected_lower_bound <= actual_remaining <= expected_upper_bound, (
-            f"Expected {expected_lower_bound!r} <= {actual_remaining <= expected_upper_bound!r}"
-        )
+        assert (
+            expected_lower_bound <= actual_remaining <= expected_upper_bound
+        ), f"Expected {expected_lower_bound!r} <= {actual_remaining <= expected_upper_bound!r}"
 
     def test_remaining_time_decreases_over_time(self) -> None:
         # Act
@@ -76,9 +76,9 @@ class TestGetRemainingTimeInMillis:
         actual_remaining = ctx.get_remaining_time_in_millis()
 
         # Assert
-        assert actual_remaining == expected_remaining, (
-            f"Expected {expected_remaining!r} but got {actual_remaining!r}"
-        )
+        assert (
+            actual_remaining == expected_remaining
+        ), f"Expected {expected_remaining!r} but got {actual_remaining!r}"
 
     @patch("time.monotonic")
     def test_countdown_with_faked_time(self, fake_monotonic) -> None:
@@ -95,6 +95,6 @@ class TestGetRemainingTimeInMillis:
         actual_remaining = ctx.get_remaining_time_in_millis()
 
         # Assert
-        assert actual_remaining == expected_remaining, (
-            f"Expected {expected_remaining!r} but got {actual_remaining!r}"
-        )
+        assert (
+            actual_remaining == expected_remaining
+        ), f"Expected {expected_remaining!r} but got {actual_remaining!r}"

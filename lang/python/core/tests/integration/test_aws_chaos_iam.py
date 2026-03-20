@@ -52,17 +52,17 @@ class TestIamChaosXmlFormat:
         )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.text
         assert "<ErrorResponse>" in body, f'Expected {"<ErrorResponse>"!r} to be in {body!r}'
-        assert f"<Code>{expected_code}</Code>" in body, (
-            "Expected {!r} to be in {!r}".format(f"<Code>{expected_code}</Code>", body)
+        assert f"<Code>{expected_code}</Code>" in body, "Expected {!r} to be in {!r}".format(
+            f"<Code>{expected_code}</Code>", body
         )
-        assert "<Message>Entity does not exist.</Message>" in body, (
-            f'Expected {"<Message>Entity does not exist.</Message>"!r} to be in {body!r}'
-        )
+        assert (
+            "<Message>Entity does not exist.</Message>" in body
+        ), f'Expected {"<Message>Entity does not exist.</Message>"!r} to be in {body!r}'
 
     async def test_chaos_disabled_passes_through(self, chaos_config):
         """Verify IAM requests pass through when chaos is disabled."""
@@ -80,6 +80,6 @@ class TestIamChaosXmlFormat:
             )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"

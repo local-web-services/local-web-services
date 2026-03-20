@@ -54,6 +54,6 @@ class TestTags:
 
         # Assert - tag is removed
         desc2 = _post(client, "DescribeSecret", {"SecretId": secret_name})
-        assert "Tags" not in desc2 or len(desc2.get("Tags", [])) == 0, (
-            f'Expected {"Tags"!r} to not be in {desc2 or len(desc2.get("Tags", [])) == 0!r}'
-        )
+        assert (
+            "Tags" not in desc2 or len(desc2.get("Tags", [])) == 0
+        ), f'Expected {"Tags"!r} to not be in {desc2 or len(desc2.get("Tags", [])) == 0!r}'

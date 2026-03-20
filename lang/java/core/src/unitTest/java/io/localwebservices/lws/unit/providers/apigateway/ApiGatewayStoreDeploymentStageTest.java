@@ -24,7 +24,9 @@ public class ApiGatewayStoreDeploymentStageTest {
         .put(expectedDeploymentId, Map.of("id", expectedDeploymentId));
 
     // Assert
-    assertNotNull(store.deployments.get(apiId).get(expectedDeploymentId), "Expected store.deployments.get(apiId).get(expectedDeploymentId) to not be null");
+    assertNotNull(
+        store.deployments.get(apiId).get(expectedDeploymentId),
+        "Expected store.deployments.get(apiId).get(expectedDeploymentId) to not be null");
   }
 
   @Test
@@ -41,7 +43,9 @@ public class ApiGatewayStoreDeploymentStageTest {
         .put(expectedStageName, Map.of("stageName", expectedStageName));
 
     // Assert
-    assertNotNull(store.stages.get(apiId).get(expectedStageName), "Expected store.stages.get(apiId).get(expectedStageName) to not be null");
+    assertNotNull(
+        store.stages.get(apiId).get(expectedStageName),
+        "Expected store.stages.get(apiId).get(expectedStageName) to not be null");
   }
 
   @Test

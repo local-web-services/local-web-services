@@ -84,8 +84,14 @@ public class SsmStorePutGetTest {
     List<String> actualInvalid = store.getInvalidParameters(List.of("a", "b", "c"));
 
     // Assert
-    assertEquals(expectedFoundSize, actualFound.size(), "Expected actualFound.size() to match expectedFoundSize");
-    assertEquals(expectedInvalidSize, actualInvalid.size(), "Expected actualInvalid.size() to match expectedInvalidSize");
+    assertEquals(
+        expectedFoundSize,
+        actualFound.size(),
+        "Expected actualFound.size() to match expectedFoundSize");
+    assertEquals(
+        expectedInvalidSize,
+        actualInvalid.size(),
+        "Expected actualInvalid.size() to match expectedInvalidSize");
   }
 
   @Test
@@ -125,6 +131,8 @@ public class SsmStorePutGetTest {
     store.reset();
 
     // Assert
-    assertFalse(store.containsParameter(paramName), "Expected condition to be false: store.containsParameter(paramName)");
+    assertFalse(
+        store.containsParameter(paramName),
+        "Expected condition to be false: store.containsParameter(paramName)");
   }
 }

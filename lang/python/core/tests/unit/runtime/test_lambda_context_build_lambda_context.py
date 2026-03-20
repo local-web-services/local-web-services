@@ -47,9 +47,9 @@ class TestBuildLambdaContext:
         ctx = build_lambda_context(_make_config(function_name=expected_name))
 
         # Assert
-        assert ctx.function_name == expected_name, (
-            f"Expected {expected_name!r} but got {ctx.function_name!r}"
-        )
+        assert (
+            ctx.function_name == expected_name
+        ), f"Expected {expected_name!r} but got {ctx.function_name!r}"
 
     def test_memory_limit_matches_config(self) -> None:
         # Arrange
@@ -59,9 +59,9 @@ class TestBuildLambdaContext:
         ctx = build_lambda_context(_make_config(memory_size=expected_memory))
 
         # Assert
-        assert ctx.memory_limit_in_mb == expected_memory, (
-            f"Expected {expected_memory!r} but got {ctx.memory_limit_in_mb!r}"
-        )
+        assert (
+            ctx.memory_limit_in_mb == expected_memory
+        ), f"Expected {expected_memory!r} but got {ctx.memory_limit_in_mb!r}"
 
     def test_timeout_matches_config(self) -> None:
         # Arrange
@@ -71,9 +71,9 @@ class TestBuildLambdaContext:
         ctx = build_lambda_context(_make_config(timeout=expected_timeout))
 
         # Assert
-        assert ctx.timeout_seconds == expected_timeout, (
-            f"Expected {expected_timeout!r} but got {ctx.timeout_seconds!r}"
-        )
+        assert (
+            ctx.timeout_seconds == expected_timeout
+        ), f"Expected {expected_timeout!r} but got {ctx.timeout_seconds!r}"
 
     def test_aws_request_id_is_uuid(self) -> None:
         # Arrange
@@ -85,12 +85,12 @@ class TestBuildLambdaContext:
 
         # Assert -- UUIDs have the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
         parts = ctx.aws_request_id.split("-")
-        assert len(parts) == expected_part_count, (
-            f"Expected {expected_part_count!r} but got {len(parts)!r}"
-        )
-        assert len(parts[0]) == expected_first_part_length, (
-            f"Expected {expected_first_part_length!r} but got {len(parts[0])!r}"
-        )
+        assert (
+            len(parts) == expected_part_count
+        ), f"Expected {expected_part_count!r} but got {len(parts)!r}"
+        assert (
+            len(parts[0]) == expected_first_part_length
+        ), f"Expected {expected_first_part_length!r} but got {len(parts[0])!r}"
 
     def test_each_call_generates_unique_request_id(self) -> None:
         # Arrange
@@ -101,9 +101,9 @@ class TestBuildLambdaContext:
         ctx2 = build_lambda_context(config)
 
         # Assert
-        assert ctx1.aws_request_id != ctx2.aws_request_id, (
-            f"Expected values to differ but both were {ctx1.aws_request_id!r}"
-        )
+        assert (
+            ctx1.aws_request_id != ctx2.aws_request_id
+        ), f"Expected values to differ but both were {ctx1.aws_request_id!r}"
 
     def test_invoked_function_arn_format(self) -> None:
         # Arrange
@@ -113,6 +113,6 @@ class TestBuildLambdaContext:
         ctx = build_lambda_context(_make_config(function_name="MyFunc"))
 
         # Assert
-        assert ctx.invoked_function_arn == expected_arn, (
-            f"Expected {expected_arn!r} but got {ctx.invoked_function_arn!r}"
-        )
+        assert (
+            ctx.invoked_function_arn == expected_arn
+        ), f"Expected {expected_arn!r} but got {ctx.invoked_function_arn!r}"

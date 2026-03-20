@@ -15,9 +15,9 @@ class TestFormatError:
 
         # Assert
         expected_media_type = "application/x-amz-json-1.0"
-        assert response.media_type == expected_media_type, (
-            f"Expected {expected_media_type!r} but got {response.media_type!r}"
-        )
+        assert (
+            response.media_type == expected_media_type
+        ), f"Expected {expected_media_type!r} but got {response.media_type!r}"
 
     def test_s3_xml_format(self):
         # Arrange
@@ -28,9 +28,9 @@ class TestFormatError:
 
         # Assert
         expected_media_type = "application/xml"
-        assert response.media_type == expected_media_type, (
-            f"Expected {expected_media_type!r} but got {response.media_type!r}"
-        )
+        assert (
+            response.media_type == expected_media_type
+        ), f"Expected {expected_media_type!r} but got {response.media_type!r}"
 
     def test_iam_xml_format(self):
         # Arrange
@@ -41,6 +41,6 @@ class TestFormatError:
 
         # Assert
         expected_media_type = "text/xml"
-        assert response.media_type == expected_media_type, (
-            f"Expected {expected_media_type!r} but got {response.media_type!r}"
-        )
+        assert (
+            response.media_type == expected_media_type
+        ), f"Expected {expected_media_type!r} but got {response.media_type!r}"

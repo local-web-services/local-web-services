@@ -45,8 +45,14 @@ public class S3StoreObjectMetadataTest {
     // Assert
     String actualContentType = store.objectMetadata.get(expectedMetadataKey).get("Content-Type");
     String actualCacheControl = store.objectMetadata.get(expectedMetadataKey).get("Cache-Control");
-    assertEquals(expectedContentType, actualContentType, "Expected actualContentType to equal expectedContentType");
-    assertEquals(expectedCacheControl, actualCacheControl, "Expected actualCacheControl to equal expectedCacheControl");
+    assertEquals(
+        expectedContentType,
+        actualContentType,
+        "Expected actualContentType to equal expectedContentType");
+    assertEquals(
+        expectedCacheControl,
+        actualCacheControl,
+        "Expected actualCacheControl to equal expectedCacheControl");
   }
 
   @Test

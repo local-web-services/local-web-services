@@ -60,6 +60,6 @@ class TestFindMatchingRule:
         assert result is None, f"Expected None but got {result!r}"
 
     def test_empty_rules_returns_none(self) -> None:
-        assert _find_matching_rule([], "/path") is None, (
-            f'Expected None but got {_find_matching_rule([], "/path")!r}'
-        )
+        assert (
+            _find_matching_rule([], "/path") is None
+        ), f'Expected None but got {_find_matching_rule([], "/path")!r}'

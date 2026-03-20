@@ -32,6 +32,6 @@ class TestExtraRoutes:
 
         # Assert
         assert len(issues) > 0, f"Expected {len(issues)!r} > {0!r}"
-        assert "not in spec" in issues[0].message, (
-            f'Expected {"not in spec"!r} to be in {issues[0].message!r}'
-        )
+        assert (
+            "not in spec" in issues[0].message
+        ), f'Expected {"not in spec"!r} to be in {issues[0].message!r}'

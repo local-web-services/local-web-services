@@ -30,9 +30,9 @@ class TestPutBucketWebsite:
 
         # Assert
         actual_config = provider.get_bucket_website(bucket_name)
-        assert actual_config == expected_config, (
-            f"Expected {expected_config!r} but got {actual_config!r}"
-        )
+        assert (
+            actual_config == expected_config
+        ), f"Expected {expected_config!r} but got {actual_config!r}"
 
     @pytest.mark.asyncio
     async def test_put_bucket_website_index_only(self, provider: S3Provider) -> None:
@@ -45,9 +45,9 @@ class TestPutBucketWebsite:
 
         # Assert
         actual_config = provider.get_bucket_website(bucket_name)
-        assert actual_config == expected_config, (
-            f"Expected {expected_config!r} but got {actual_config!r}"
-        )
+        assert (
+            actual_config == expected_config
+        ), f"Expected {expected_config!r} but got {actual_config!r}"
 
     @pytest.mark.asyncio
     async def test_put_bucket_website_replaces_existing(self, provider: S3Provider) -> None:
@@ -61,9 +61,9 @@ class TestPutBucketWebsite:
 
         # Assert
         actual_config = provider.get_bucket_website(bucket_name)
-        assert actual_config == expected_config, (
-            f"Expected {expected_config!r} but got {actual_config!r}"
-        )
+        assert (
+            actual_config == expected_config
+        ), f"Expected {expected_config!r} but got {actual_config!r}"
 
     @pytest.mark.asyncio
     async def test_put_bucket_website_nonexistent_bucket_raises(self, provider: S3Provider) -> None:

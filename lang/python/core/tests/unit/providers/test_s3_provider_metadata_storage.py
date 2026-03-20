@@ -68,15 +68,15 @@ class TestMetadataStorage:
 
         # Assert
         assert actual_meta is not None, "Expected value to be set but was None"
-        assert actual_meta["size"] == expected_size, (
-            f'Expected {expected_size!r} but got {actual_meta["size"]!r}'
-        )
-        assert actual_meta["etag"] == expected_etag, (
-            f'Expected {expected_etag!r} but got {actual_meta["etag"]!r}'
-        )
-        assert actual_meta["content_type"] == expected_content_type, (
-            f'Expected {expected_content_type!r} but got {actual_meta["content_type"]!r}'
-        )
-        assert actual_meta["last_modified"] != "", (
-            f'Expected values to differ but both were {actual_meta["last_modified"]!r}'
-        )
+        assert (
+            actual_meta["size"] == expected_size
+        ), f'Expected {expected_size!r} but got {actual_meta["size"]!r}'
+        assert (
+            actual_meta["etag"] == expected_etag
+        ), f'Expected {expected_etag!r} but got {actual_meta["etag"]!r}'
+        assert (
+            actual_meta["content_type"] == expected_content_type
+        ), f'Expected {expected_content_type!r} but got {actual_meta["content_type"]!r}'
+        assert (
+            actual_meta["last_modified"] != ""
+        ), f'Expected values to differ but both were {actual_meta["last_modified"]!r}'

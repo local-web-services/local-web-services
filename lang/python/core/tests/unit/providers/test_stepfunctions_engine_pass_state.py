@@ -92,11 +92,11 @@ class TestPassState:
             },
             input_data={"x": 1},
         )
-        assert history.status == ExecutionStatus.SUCCEEDED, (
-            f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
-        )
-        assert history.output_data == {"done": True}, (
-            "Expected {!r} but got {!r}".format({"done": True}, history.output_data)
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert history.output_data == {"done": True}, "Expected {!r} but got {!r}".format(
+            {"done": True}, history.output_data
         )
 
     async def test_pass_without_result(self) -> None:
@@ -107,8 +107,8 @@ class TestPassState:
             },
             input_data={"forwarded": True},
         )
-        assert history.output_data == {"forwarded": True}, (
-            "Expected {!r} but got {!r}".format({"forwarded": True}, history.output_data)
+        assert history.output_data == {"forwarded": True}, "Expected {!r} but got {!r}".format(
+            {"forwarded": True}, history.output_data
         )
 
     async def test_pass_chain(self) -> None:
@@ -121,8 +121,8 @@ class TestPassState:
                 },
             },
         )
-        assert history.output_data == {"step": "b"}, (
-            "Expected {!r} but got {!r}".format({"step": "b"}, history.output_data)
+        assert history.output_data == {"step": "b"}, "Expected {!r} but got {!r}".format(
+            {"step": "b"}, history.output_data
         )
 
     async def test_pass_with_result_path(self) -> None:
@@ -140,12 +140,12 @@ class TestPassState:
             },
             input_data={"name": "world"},
         )
-        assert history.output_data["greeting"] == "hello", (
-            f'Expected {"hello"!r} but got {history.output_data["greeting"]!r}'
-        )
-        assert history.output_data["name"] == "world", (
-            f'Expected {"world"!r} but got {history.output_data["name"]!r}'
-        )
+        assert (
+            history.output_data["greeting"] == "hello"
+        ), f'Expected {"hello"!r} but got {history.output_data["greeting"]!r}'
+        assert (
+            history.output_data["name"] == "world"
+        ), f'Expected {"world"!r} but got {history.output_data["name"]!r}'
 
     async def test_pass_with_input_path(self) -> None:
         history = await run_engine(
@@ -155,8 +155,8 @@ class TestPassState:
             },
             input_data={"nested": {"val": 42}},
         )
-        assert history.output_data == {"val": 42}, (
-            "Expected {!r} but got {!r}".format({"val": 42}, history.output_data)
+        assert history.output_data == {"val": 42}, "Expected {!r} but got {!r}".format(
+            {"val": 42}, history.output_data
         )
 
     async def test_pass_with_output_path(self) -> None:
@@ -189,9 +189,10 @@ class TestPassState:
             },
             input_data={"user": "Alice"},
         )
-        assert history.output_data == {"greeting": "hello", "name": "Alice"}, (
-            f"Expected {history.output_data!r}"
-        )
+        assert history.output_data == {
+            "greeting": "hello",
+            "name": "Alice",
+        }, f"Expected {history.output_data!r}"
 
     async def test_null_input_path_discards_input(self) -> None:
         history = await run_engine(
@@ -208,8 +209,8 @@ class TestPassState:
             },
             input_data={"ignored": True},
         )
-        assert history.output_data == {"result": "ok"}, (
-            "Expected {!r} but got {!r}".format({"result": "ok"}, history.output_data)
+        assert history.output_data == {"result": "ok"}, "Expected {!r} but got {!r}".format(
+            {"result": "ok"}, history.output_data
         )
 
     async def test_null_result_path_discards_result(self) -> None:
@@ -227,6 +228,6 @@ class TestPassState:
             },
             input_data={"kept": True},
         )
-        assert history.output_data == {"kept": True}, (
-            "Expected {!r} but got {!r}".format({"kept": True}, history.output_data)
+        assert history.output_data == {"kept": True}, "Expected {!r} but got {!r}".format(
+            {"kept": True}, history.output_data
         )

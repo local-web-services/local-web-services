@@ -22,7 +22,8 @@ public class EventBridgeStoreTagTest {
 
     // Assert
     int actualTagCount = store.resourceTags.get(expectedArn).size();
-    assertEquals(expectedTagCount, actualTagCount, "Expected actualTagCount to match expectedTagCount");
+    assertEquals(
+        expectedTagCount, actualTagCount, "Expected actualTagCount to match expectedTagCount");
   }
 
   @Test

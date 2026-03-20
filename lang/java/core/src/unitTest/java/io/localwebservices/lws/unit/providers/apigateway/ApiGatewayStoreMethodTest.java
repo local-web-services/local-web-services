@@ -37,7 +37,10 @@ public class ApiGatewayStoreMethodTest {
         (Map<String, Object>) store.resources.get(apiId).get(resourceId).get("methods");
     String actualHttpMethod =
         (String) ((Map<String, Object>) actualMethods.get(expectedHttpMethod)).get("httpMethod");
-    assertEquals(expectedHttpMethod, actualHttpMethod, "Expected actualHttpMethod to equal expectedHttpMethod");
+    assertEquals(
+        expectedHttpMethod,
+        actualHttpMethod,
+        "Expected actualHttpMethod to equal expectedHttpMethod");
   }
 
   @Test

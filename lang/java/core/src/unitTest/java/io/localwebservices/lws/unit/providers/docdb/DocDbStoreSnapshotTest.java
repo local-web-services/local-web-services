@@ -26,7 +26,10 @@ public class DocDbStoreSnapshotTest {
 
     // Assert
     assertNotNull(actualSnapshot, "Expected actualSnapshot to not be null");
-    assertEquals(expectedSnapshotId, actualSnapshot.get("DBClusterSnapshotIdentifier"), "Expected snapshotId to match");
+    assertEquals(
+        expectedSnapshotId,
+        actualSnapshot.get("DBClusterSnapshotIdentifier"),
+        "Expected snapshotId to match");
   }
 
   @Test
@@ -48,8 +51,14 @@ public class DocDbStoreSnapshotTest {
     List<Map<String, Object>> actualSnapshots = store.describeSnapshots("snap-a");
 
     // Assert
-    assertEquals(expectedSize, actualSnapshots.size(), "Expected actualSnapshots.size() to match expectedSize");
-    assertEquals(expectedId, actualSnapshots.get(0).get("DBClusterSnapshotIdentifier"), "Expected id to match");
+    assertEquals(
+        expectedSize,
+        actualSnapshots.size(),
+        "Expected actualSnapshots.size() to match expectedSize");
+    assertEquals(
+        expectedId,
+        actualSnapshots.get(0).get("DBClusterSnapshotIdentifier"),
+        "Expected id to match");
   }
 
   @Test
@@ -70,7 +79,10 @@ public class DocDbStoreSnapshotTest {
     List<Map<String, Object>> actualSnapshots = store.describeSnapshots(null);
 
     // Assert
-    assertEquals(expectedSize, actualSnapshots.size(), "Expected actualSnapshots.size() to match expectedSize");
+    assertEquals(
+        expectedSize,
+        actualSnapshots.size(),
+        "Expected actualSnapshots.size() to match expectedSize");
   }
 
   @Test
@@ -89,8 +101,12 @@ public class DocDbStoreSnapshotTest {
 
     // Assert
     assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
-    assertEquals(expectedId, actualDeleted.get("DBClusterSnapshotIdentifier"), "Expected id to match");
-    assertEquals(expectedRemainingSize, store.describeSnapshots(null).size(), "Expected store.describeSnapshots(null).size() to match expectedRemainingSize");
+    assertEquals(
+        expectedId, actualDeleted.get("DBClusterSnapshotIdentifier"), "Expected id to match");
+    assertEquals(
+        expectedRemainingSize,
+        store.describeSnapshots(null).size(),
+        "Expected store.describeSnapshots(null).size() to match expectedRemainingSize");
   }
 
   @Test

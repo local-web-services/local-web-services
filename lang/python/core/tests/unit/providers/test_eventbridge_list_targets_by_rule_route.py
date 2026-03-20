@@ -59,9 +59,9 @@ class TestListTargetsByRuleRoute:
         assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
         assert len(data["Targets"]) == 1, f'Expected {1!r} but got {len(data["Targets"])!r}'
-        assert data["Targets"][0]["Id"] == "t1", (
-            f'Expected {"t1"!r} but got {data["Targets"][0]["Id"]!r}'
-        )
+        assert (
+            data["Targets"][0]["Id"] == "t1"
+        ), f'Expected {"t1"!r} but got {data["Targets"][0]["Id"]!r}'
 
     async def test_list_targets_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
         resp = await _request(client, "ListTargetsByRule", {"Rule": "nope"})

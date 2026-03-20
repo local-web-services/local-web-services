@@ -67,9 +67,9 @@ class TestChangeMessageVisibilityJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
 
     @pytest.mark.asyncio
     async def test_change_message_visibility_nonexistent_queue(
@@ -92,13 +92,13 @@ class TestChangeMessageVisibilityJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
-        assert "NonExistentQueue" in data["__type"], (
-            f'Expected {"NonExistentQueue"!r} to be in {data["__type"]!r}'
-        )
+        assert (
+            "NonExistentQueue" in data["__type"]
+        ), f'Expected {"NonExistentQueue"!r} to be in {data["__type"]!r}'
 
     @pytest.mark.asyncio
     async def test_change_visibility_makes_message_visible(
@@ -127,9 +127,9 @@ class TestChangeMessageVisibilityJson:
             json={"QueueUrl": _QUEUE_URL, "MaxNumberOfMessages": 1},
             headers=_headers("ReceiveMessage"),
         )
-        assert recv_resp2.json()["Messages"] == [], (
-            f'Expected {[]!r} but got {recv_resp2.json()["Messages"]!r}'
-        )
+        assert (
+            recv_resp2.json()["Messages"] == []
+        ), f'Expected {[]!r} but got {recv_resp2.json()["Messages"]!r}'
 
         # Act - set visibility timeout to 0 to make the message visible immediately
         await client.post(
@@ -149,6 +149,6 @@ class TestChangeMessageVisibilityJson:
             headers=_headers("ReceiveMessage"),
         )
         actual_message_count = len(recv_resp3.json()["Messages"])
-        assert actual_message_count == expected_message_count_after_visibility_reset, (
-            f"Expected {expected_message_count_after_visibility_reset!r}"
-        )
+        assert (
+            actual_message_count == expected_message_count_after_visibility_reset
+        ), f"Expected {expected_message_count_after_visibility_reset!r}"

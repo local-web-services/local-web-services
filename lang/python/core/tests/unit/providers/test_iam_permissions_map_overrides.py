@@ -28,12 +28,12 @@ class TestPermissionsMapOverrides:
         actual_default = pmap.get_required_actions("dynamodb", "get-item")
 
         # Assert
-        assert actual_custom == ["dynamodb:CustomAction"], (
-            f'Expected {["dynamodb:CustomAction"]!r} but got {actual_custom!r}'
-        )
-        assert actual_default == ["dynamodb:GetItem"], (
-            f'Expected {["dynamodb:GetItem"]!r} but got {actual_default!r}'
-        )
+        assert actual_custom == [
+            "dynamodb:CustomAction"
+        ], f'Expected {["dynamodb:CustomAction"]!r} but got {actual_custom!r}'
+        assert actual_default == [
+            "dynamodb:GetItem"
+        ], f'Expected {["dynamodb:GetItem"]!r} but got {actual_default!r}'
 
     def test_missing_override_file_uses_defaults(self):
         # Arrange

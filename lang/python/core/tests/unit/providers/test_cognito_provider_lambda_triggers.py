@@ -123,14 +123,14 @@ class TestLambdaTriggers:
             # Assert
             expected_call_count = 1
             actual_call_count = len(called_with)
-            assert actual_call_count == expected_call_count, (
-                f"Expected {expected_call_count!r} but got {actual_call_count!r}"
-            )
+            assert (
+                actual_call_count == expected_call_count
+            ), f"Expected {expected_call_count!r} but got {actual_call_count!r}"
             actual_trigger_source = called_with[0]["triggerSource"]
             actual_username = called_with[0]["userName"]
-            assert actual_trigger_source == expected_trigger_source, (
-                f"Expected {expected_trigger_source!r} but got {actual_trigger_source!r}"
-            )
+            assert (
+                actual_trigger_source == expected_trigger_source
+            ), f"Expected {expected_trigger_source!r} but got {actual_trigger_source!r}"
             assert actual_username == username, f"Expected {username!r} but got {actual_username!r}"
         finally:
             await p.stop()
@@ -164,14 +164,14 @@ class TestLambdaTriggers:
             # Assert
             expected_call_count = 1
             actual_call_count = len(called_with)
-            assert actual_call_count == expected_call_count, (
-                f"Expected {expected_call_count!r} but got {actual_call_count!r}"
-            )
+            assert (
+                actual_call_count == expected_call_count
+            ), f"Expected {expected_call_count!r} but got {actual_call_count!r}"
             actual_trigger_source = called_with[0]["triggerSource"]
             actual_username = called_with[0]["userName"]
-            assert actual_trigger_source == expected_trigger_source, (
-                f"Expected {expected_trigger_source!r} but got {actual_trigger_source!r}"
-            )
+            assert (
+                actual_trigger_source == expected_trigger_source
+            ), f"Expected {expected_trigger_source!r} but got {actual_trigger_source!r}"
             assert actual_username == username, f"Expected {username!r} but got {actual_username!r}"
         finally:
             await p.stop()
@@ -202,9 +202,9 @@ class TestLambdaTriggers:
             # Post-confirmation called during sign-up when auto_confirm=True
             expected_call_count = 1
             actual_call_count = len(called_with)
-            assert actual_call_count == expected_call_count, (
-                f"Expected {expected_call_count!r} but got {actual_call_count!r}"
-            )
+            assert (
+                actual_call_count == expected_call_count
+            ), f"Expected {expected_call_count!r} but got {actual_call_count!r}"
         finally:
             await p.stop()
 
@@ -212,6 +212,6 @@ class TestLambdaTriggers:
         """No trigger configured - should not raise."""
         await provider.sign_up("alice", "Password1A")
         result = await provider.initiate_auth("USER_PASSWORD_AUTH", "alice", "Password1A")
-        assert "AuthenticationResult" in result, (
-            f'Expected {"AuthenticationResult"!r} to be in {result!r}'
-        )
+        assert (
+            "AuthenticationResult" in result
+        ), f'Expected {"AuthenticationResult"!r} to be in {result!r}'

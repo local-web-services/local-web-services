@@ -51,29 +51,29 @@ class TestResolvePath:
     """JSONPath-like path resolution."""
 
     def test_root_path(self) -> None:
-        assert resolve_path({"a": 1}, "$") == {"a": 1}, (
-            "Expected {!r} but got {!r}".format({"a": 1}, resolve_path({"a": 1}, "$"))
+        assert resolve_path({"a": 1}, "$") == {"a": 1}, "Expected {!r} but got {!r}".format(
+            {"a": 1}, resolve_path({"a": 1}, "$")
         )
 
     def test_simple_key(self) -> None:
-        assert resolve_path({"a": 1, "b": 2}, "$.a") == 1, (
-            "Expected {!r} but got {!r}".format(1, resolve_path({"a": 1, "b": 2}, "$.a"))
+        assert resolve_path({"a": 1, "b": 2}, "$.a") == 1, "Expected {!r} but got {!r}".format(
+            1, resolve_path({"a": 1, "b": 2}, "$.a")
         )
 
     def test_nested_key(self) -> None:
         data = {"a": {"b": {"c": 3}}}
-        assert resolve_path(data, "$.a.b.c") == 3, (
-            f'Expected {3!r} but got {resolve_path(data, "$.a.b.c")!r}'
-        )
+        assert (
+            resolve_path(data, "$.a.b.c") == 3
+        ), f'Expected {3!r} but got {resolve_path(data, "$.a.b.c")!r}'
 
     def test_array_index(self) -> None:
         data = {"items": [10, 20, 30]}
-        assert resolve_path(data, "$.items[0]") == 10, (
-            f'Expected {10!r} but got {resolve_path(data, "$.items[0]")!r}'
-        )
-        assert resolve_path(data, "$.items[2]") == 30, (
-            f'Expected {30!r} but got {resolve_path(data, "$.items[2]")!r}'
-        )
+        assert (
+            resolve_path(data, "$.items[0]") == 10
+        ), f'Expected {10!r} but got {resolve_path(data, "$.items[0]")!r}'
+        assert (
+            resolve_path(data, "$.items[2]") == 30
+        ), f'Expected {30!r} but got {resolve_path(data, "$.items[2]")!r}'
 
     def test_missing_key_raises(self) -> None:
         with pytest.raises(KeyError):

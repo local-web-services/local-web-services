@@ -123,39 +123,39 @@ class TestRateExpression:
 
     def test_rate_1_minute(self) -> None:
         expected_seconds = 60.0
-        assert parse_rate_expression("rate(1 minute)") == expected_seconds, (
-            f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(1 minute)")!r}'
-        )
+        assert (
+            parse_rate_expression("rate(1 minute)") == expected_seconds
+        ), f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(1 minute)")!r}'
 
     def test_rate_5_minutes(self) -> None:
         expected_seconds = 300.0
-        assert parse_rate_expression("rate(5 minutes)") == expected_seconds, (
-            f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(5 minutes)")!r}'
-        )
+        assert (
+            parse_rate_expression("rate(5 minutes)") == expected_seconds
+        ), f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(5 minutes)")!r}'
 
     def test_rate_1_hour(self) -> None:
         expected_seconds = 3600.0
-        assert parse_rate_expression("rate(1 hour)") == expected_seconds, (
-            f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(1 hour)")!r}'
-        )
+        assert (
+            parse_rate_expression("rate(1 hour)") == expected_seconds
+        ), f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(1 hour)")!r}'
 
     def test_rate_12_hours(self) -> None:
         expected_seconds = 43200.0
-        assert parse_rate_expression("rate(12 hours)") == expected_seconds, (
-            f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(12 hours)")!r}'
-        )
+        assert (
+            parse_rate_expression("rate(12 hours)") == expected_seconds
+        ), f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(12 hours)")!r}'
 
     def test_rate_1_day(self) -> None:
         expected_seconds = 86400.0
-        assert parse_rate_expression("rate(1 day)") == expected_seconds, (
-            f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(1 day)")!r}'
-        )
+        assert (
+            parse_rate_expression("rate(1 day)") == expected_seconds
+        ), f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(1 day)")!r}'
 
     def test_rate_7_days(self) -> None:
         expected_seconds = 604800.0
-        assert parse_rate_expression("rate(7 days)") == expected_seconds, (
-            f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(7 days)")!r}'
-        )
+        assert (
+            parse_rate_expression("rate(7 days)") == expected_seconds
+        ), f'Expected {expected_seconds!r} but got {parse_rate_expression("rate(7 days)")!r}'
 
     def test_rate_invalid_format(self) -> None:
         with pytest.raises(ValueError):

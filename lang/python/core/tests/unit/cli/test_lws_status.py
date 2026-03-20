@@ -85,27 +85,27 @@ class TestLwsStatus:
         actual_first_service_resources = output["services"][0]["resources"]
         actual_second_service_resources = output["services"][1]["resources"]
 
-        assert actual_provider_count == expected_provider_count, (
-            f"Expected {expected_provider_count!r} but got {actual_provider_count!r}"
-        )
-        assert actual_first_provider_name == expected_first_provider_name, (
-            f"Expected {expected_first_provider_name!r} but got {actual_first_provider_name!r}"
-        )
-        assert actual_service_count == expected_service_count, (
-            f"Expected {expected_service_count!r} but got {actual_service_count!r}"
-        )
-        assert actual_first_service_name == expected_first_service_name, (
-            f"Expected {expected_first_service_name!r} but got {actual_first_service_name!r}"
-        )
-        assert actual_first_service_port == expected_first_service_port, (
-            f"Expected {expected_first_service_port!r} but got {actual_first_service_port!r}"
-        )
-        assert actual_first_service_resources == expected_first_service_resources, (
-            f"Expected {expected_first_service_resources!r}"
-        )
-        assert actual_second_service_resources == expected_second_service_resources, (
-            f"Expected {expected_second_service_resources!r}"
-        )
+        assert (
+            actual_provider_count == expected_provider_count
+        ), f"Expected {expected_provider_count!r} but got {actual_provider_count!r}"
+        assert (
+            actual_first_provider_name == expected_first_provider_name
+        ), f"Expected {expected_first_provider_name!r} but got {actual_first_provider_name!r}"
+        assert (
+            actual_service_count == expected_service_count
+        ), f"Expected {expected_service_count!r} but got {actual_service_count!r}"
+        assert (
+            actual_first_service_name == expected_first_service_name
+        ), f"Expected {expected_first_service_name!r} but got {actual_first_service_name!r}"
+        assert (
+            actual_first_service_port == expected_first_service_port
+        ), f"Expected {expected_first_service_port!r} but got {actual_first_service_port!r}"
+        assert (
+            actual_first_service_resources == expected_first_service_resources
+        ), f"Expected {expected_first_service_resources!r}"
+        assert (
+            actual_second_service_resources == expected_second_service_resources
+        ), f"Expected {expected_second_service_resources!r}"
 
     @pytest.mark.asyncio
     async def test_default_outputs_table(self, capsys):

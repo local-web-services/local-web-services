@@ -24,7 +24,8 @@ public class SsmStorePathTest {
     List<Map<String, Object>> actualParams = store.getParametersByPath("/app");
 
     // Assert
-    assertEquals(expectedSize, actualParams.size(), "Expected actualParams.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualParams.size(), "Expected actualParams.size() to match expectedSize");
   }
 
   @Test
@@ -52,7 +53,9 @@ public class SsmStorePathTest {
 
     // Assert
     assertTrue(actualDeleteResult, "Expected condition to be true: actualDeleteResult");
-    assertFalse(store.containsParameter(paramName), "Expected condition to be false: store.containsParameter(paramName)");
+    assertFalse(
+        store.containsParameter(paramName),
+        "Expected condition to be false: store.containsParameter(paramName)");
   }
 
   @Test

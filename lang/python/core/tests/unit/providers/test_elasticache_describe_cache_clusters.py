@@ -38,9 +38,9 @@ class TestDescribeCacheClusters:
 
         # Assert
         actual_count = len(result["CacheClusters"])
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_describe_all(self, client: TestClient) -> None:
         # Arrange
@@ -55,9 +55,9 @@ class TestDescribeCacheClusters:
 
         # Assert
         actual_count = len(result["CacheClusters"])
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
         actual_ids = [c["CacheClusterId"] for c in result["CacheClusters"]]
         assert cluster_id_a in actual_ids, f"Expected {cluster_id_a!r} to be in {actual_ids!r}"
         assert cluster_id_b in actual_ids, f"Expected {cluster_id_b!r} to be in {actual_ids!r}"
@@ -71,9 +71,9 @@ class TestDescribeCacheClusters:
         result = _post(client, "DescribeCacheClusters", {"CacheClusterId": cluster_id})
 
         # Assert
-        assert len(result["CacheClusters"]) == 1, (
-            f'Expected {1!r} but got {len(result["CacheClusters"])!r}'
-        )
+        assert (
+            len(result["CacheClusters"]) == 1
+        ), f'Expected {1!r} but got {len(result["CacheClusters"])!r}'
         actual_id = result["CacheClusters"][0]["CacheClusterId"]
         assert actual_id == cluster_id, f"Expected {cluster_id!r} but got {actual_id!r}"
 
@@ -86,6 +86,6 @@ class TestDescribeCacheClusters:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

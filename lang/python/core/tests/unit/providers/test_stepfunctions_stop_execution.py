@@ -105,9 +105,9 @@ class TestStopExecution:
         )
 
         # Assert
-        assert stop_resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {stop_resp.status_code!r}"
-        )
+        assert (
+            stop_resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {stop_resp.status_code!r}"
         data = stop_resp.json()
         assert "stopDate" in data, f'Expected {"stopDate"!r} to be in {data!r}'
 
@@ -116,13 +116,13 @@ class TestStopExecution:
             "DescribeExecution",
             {"executionArn": arn},
         )
-        assert desc_resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {desc_resp.status_code!r}"
-        )
+        assert (
+            desc_resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {desc_resp.status_code!r}"
         actual_status = desc_resp.json()["status"]
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_stop_execution_with_error_and_cause(self, client: httpx.AsyncClient) -> None:
         """StopExecution should store error and cause when provided."""
@@ -154,9 +154,9 @@ class TestStopExecution:
         )
 
         # Assert
-        assert stop_resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {stop_resp.status_code!r}"
-        )
+        assert (
+            stop_resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {stop_resp.status_code!r}"
 
         desc_resp = await _request(
             client,
@@ -164,15 +164,15 @@ class TestStopExecution:
             {"executionArn": arn},
         )
         data = desc_resp.json()
-        assert data["status"] == expected_status, (
-            f'Expected {expected_status!r} but got {data["status"]!r}'
-        )
-        assert data["error"] == expected_error, (
-            f'Expected {expected_error!r} but got {data["error"]!r}'
-        )
-        assert data["cause"] == expected_cause, (
-            f'Expected {expected_cause!r} but got {data["cause"]!r}'
-        )
+        assert (
+            data["status"] == expected_status
+        ), f'Expected {expected_status!r} but got {data["status"]!r}'
+        assert (
+            data["error"] == expected_error
+        ), f'Expected {expected_error!r} but got {data["error"]!r}'
+        assert (
+            data["cause"] == expected_cause
+        ), f'Expected {expected_cause!r} but got {data["cause"]!r}'
 
     async def test_stop_nonexistent_execution_returns_error(
         self, client: httpx.AsyncClient
@@ -190,11 +190,11 @@ class TestStopExecution:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

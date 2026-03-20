@@ -41,7 +41,8 @@ class SnsStorePublishTest {
     String actualSecondArn = store.topicArn(secondName);
 
     // Assert
-    assertNotEquals(actualFirstArn, actualSecondArn, "Expected actualFirstArn and actualSecondArn to differ");
+    assertNotEquals(
+        actualFirstArn, actualSecondArn, "Expected actualFirstArn and actualSecondArn to differ");
   }
 
   @Test

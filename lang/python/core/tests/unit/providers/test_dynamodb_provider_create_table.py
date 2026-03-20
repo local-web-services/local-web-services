@@ -66,17 +66,17 @@ class TestCreateTable:
         # Assert
         actual_table_name = result["TableName"]
         actual_status = result["TableStatus"]
-        assert actual_table_name == expected_table_name, (
-            f"Expected {expected_table_name!r} but got {actual_table_name!r}"
-        )
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_table_name == expected_table_name
+        ), f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
         tables = await provider.list_tables()
-        assert expected_table_name in tables, (
-            f"Expected {expected_table_name!r} to be in {tables!r}"
-        )
+        assert (
+            expected_table_name in tables
+        ), f"Expected {expected_table_name!r} to be in {tables!r}"
 
     @pytest.mark.asyncio
     async def test_create_table_can_put_and_get(self, provider: SqliteDynamoProvider) -> None:
@@ -116,12 +116,12 @@ class TestCreateTable:
         # Assert
         actual_table_name = result["TableName"]
         actual_index_name = result["GlobalSecondaryIndexes"][0]["IndexName"]
-        assert actual_table_name == expected_table_name, (
-            f"Expected {expected_table_name!r} but got {actual_table_name!r}"
-        )
-        assert "GlobalSecondaryIndexes" in result, (
-            f'Expected {"GlobalSecondaryIndexes"!r} to be in {result!r}'
-        )
-        assert actual_index_name == expected_index_name, (
-            f"Expected {expected_index_name!r} but got {actual_index_name!r}"
-        )
+        assert (
+            actual_table_name == expected_table_name
+        ), f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert (
+            "GlobalSecondaryIndexes" in result
+        ), f'Expected {"GlobalSecondaryIndexes"!r} to be in {result!r}'
+        assert (
+            actual_index_name == expected_index_name
+        ), f"Expected {expected_index_name!r} but got {actual_index_name!r}"

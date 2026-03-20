@@ -16,9 +16,9 @@ class TestGenerateConfigYaml:
 
         # Assert
         assert expected_name_line in actual, f"Expected {expected_name_line!r} to be in {actual!r}"
-        assert expected_protocol_line in actual, (
-            f"Expected {expected_protocol_line!r} to be in {actual!r}"
-        )
+        assert (
+            expected_protocol_line in actual
+        ), f"Expected {expected_protocol_line!r} to be in {actual!r}"
 
     def test_with_port(self):
         # Arrange

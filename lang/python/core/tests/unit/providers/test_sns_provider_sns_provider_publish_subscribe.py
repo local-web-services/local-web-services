@@ -143,9 +143,9 @@ class TestSnsProviderPublishSubscribe:
         # Assert
         assert actual_message_id, "Expected value to be truthy"
         actual_parts = actual_message_id.split("-")
-        assert len(actual_parts) == expected_uuid_parts, (
-            f"Expected {expected_uuid_parts!r} but got {len(actual_parts)!r}"
-        )
+        assert (
+            len(actual_parts) == expected_uuid_parts
+        ), f"Expected {expected_uuid_parts!r} but got {len(actual_parts)!r}"
 
     @pytest.mark.asyncio
     async def test_publish_nonexistent_topic_raises(self) -> None:

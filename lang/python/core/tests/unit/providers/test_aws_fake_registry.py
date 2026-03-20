@@ -46,24 +46,24 @@ class TestLoadAll:
         actual_configs = registry.load_all()
 
         # Assert
-        assert expected_service in actual_configs, (
-            f"Expected {expected_service!r} to be in {actual_configs!r}"
-        )
+        assert (
+            expected_service in actual_configs
+        ), f"Expected {expected_service!r} to be in {actual_configs!r}"
         actual_config = actual_configs[expected_service]
         actual_service = actual_config.service
-        assert actual_service == expected_service, (
-            f"Expected {expected_service!r} but got {actual_service!r}"
-        )
+        assert (
+            actual_service == expected_service
+        ), f"Expected {expected_service!r} but got {actual_service!r}"
         assert len(actual_config.rules) == 1, f"Expected {1!r} but got {len(actual_config.rules)!r}"
         actual_operation = actual_config.rules[0].operation
         actual_status = actual_config.rules[0].response.status
         actual_body = actual_config.rules[0].response.body
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
         assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
     def test_merges_rules_from_multiple_directories_same_service(self, tmp_path: Path):
@@ -107,18 +107,18 @@ class TestLoadAll:
         actual_configs = registry.load_all()
 
         # Assert
-        assert expected_service in actual_configs, (
-            f"Expected {expected_service!r} to be in {actual_configs!r}"
-        )
+        assert (
+            expected_service in actual_configs
+        ), f"Expected {expected_service!r} to be in {actual_configs!r}"
         actual_rules = actual_configs[expected_service].rules
         actual_rule_count = len(actual_rules)
-        assert actual_rule_count == expected_rule_count, (
-            f"Expected {expected_rule_count!r} but got {actual_rule_count!r}"
-        )
+        assert (
+            actual_rule_count == expected_rule_count
+        ), f"Expected {expected_rule_count!r} but got {actual_rule_count!r}"
         actual_operations = [r.operation for r in actual_rules]
-        assert expected_first_operation in actual_operations, (
-            f"Expected {expected_first_operation!r} to be in {actual_operations!r}"
-        )
-        assert expected_second_operation in actual_operations, (
-            f"Expected {expected_second_operation!r} to be in {actual_operations!r}"
-        )
+        assert (
+            expected_first_operation in actual_operations
+        ), f"Expected {expected_first_operation!r} to be in {actual_operations!r}"
+        assert (
+            expected_second_operation in actual_operations
+        ), f"Expected {expected_second_operation!r} to be in {actual_operations!r}"

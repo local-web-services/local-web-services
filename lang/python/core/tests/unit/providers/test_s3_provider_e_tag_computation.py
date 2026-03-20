@@ -65,13 +65,13 @@ class TestETagComputation:
         actual_obj = await storage.get_object(bucket, key)
 
         # Assert
-        assert result["ETag"] == f'"{expected_etag}"', (
-            "Expected {!r} but got {!r}".format(f'"{expected_etag}"', result["ETag"])
+        assert result["ETag"] == f'"{expected_etag}"', "Expected {!r} but got {!r}".format(
+            f'"{expected_etag}"', result["ETag"]
         )
         assert actual_obj is not None, "Expected value to be set but was None"
-        assert actual_obj["etag"] == expected_etag, (
-            f'Expected {expected_etag!r} but got {actual_obj["etag"]!r}'
-        )
+        assert (
+            actual_obj["etag"] == expected_etag
+        ), f'Expected {expected_etag!r} but got {actual_obj["etag"]!r}'
 
     async def test_different_content_different_etag(self, storage: LocalBucketStorage) -> None:
         r1 = await storage.put_object("mybucket", "k1", b"aaa")

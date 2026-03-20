@@ -108,9 +108,9 @@ class TestValidateOperation:
 
         # Assert
         actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(actual_error_issues) >= expected_min_error_issues, (
-            f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"
-        )
+        assert (
+            len(actual_error_issues) >= expected_min_error_issues
+        ), f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"
 
     def test_strict_mode_raises(self) -> None:
         # Arrange

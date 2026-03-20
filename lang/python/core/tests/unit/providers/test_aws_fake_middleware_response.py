@@ -64,13 +64,13 @@ class TestFakeMiddlewareResponse:
             )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         actual_content_type = response.headers["content-type"]
-        assert expected_content_type in actual_content_type, (
-            f"Expected {expected_content_type!r} to be in {actual_content_type!r}"
-        )
+        assert (
+            expected_content_type in actual_content_type
+        ), f"Expected {expected_content_type!r} to be in {actual_content_type!r}"
         actual_body = response.text
         assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
@@ -99,9 +99,9 @@ class TestFakeMiddlewareResponse:
 
         # Assert
         actual_header_value = response.headers[expected_header_key]
-        assert actual_header_value == expected_header_value, (
-            f"Expected {expected_header_value!r} but got {actual_header_value!r}"
-        )
+        assert (
+            actual_header_value == expected_header_value
+        ), f"Expected {expected_header_value!r} but got {actual_header_value!r}"
 
     async def test_dict_body_serialized_as_json(self, app_with_rule):
         # Arrange
@@ -128,9 +128,9 @@ class TestFakeMiddlewareResponse:
         # Assert
         body = response.json()
         actual_value = body[expected_key]
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     async def test_string_body_returned_as_is(self, app_with_rule):
         # Arrange

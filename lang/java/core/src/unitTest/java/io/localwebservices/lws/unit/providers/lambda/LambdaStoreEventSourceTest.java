@@ -22,7 +22,9 @@ public class LambdaStoreEventSourceTest {
         expectedUuid, Map.of("UUID", expectedUuid, "FunctionArn", expectedArn));
 
     // Assert
-    assertNotNull(store.eventSourceMappings.get(expectedUuid), "Expected store.eventSourceMappings.get(expectedUuid) to not be null");
+    assertNotNull(
+        store.eventSourceMappings.get(expectedUuid),
+        "Expected store.eventSourceMappings.get(expectedUuid) to not be null");
   }
 
   @Test
@@ -36,7 +38,9 @@ public class LambdaStoreEventSourceTest {
     store.eventSourceMappings.remove(uuid);
 
     // Assert
-    assertNull(store.eventSourceMappings.get(uuid), "Expected store.eventSourceMappings.get(uuid) to be null");
+    assertNull(
+        store.eventSourceMappings.get(uuid),
+        "Expected store.eventSourceMappings.get(uuid) to be null");
   }
 
   @Test
@@ -49,6 +53,7 @@ public class LambdaStoreEventSourceTest {
     store.reset();
 
     // Assert
-    assertTrue(store.eventSourceMappings.isEmpty(), "Expected store.eventSourceMappings to be empty");
+    assertTrue(
+        store.eventSourceMappings.isEmpty(), "Expected store.eventSourceMappings to be empty");
   }
 }

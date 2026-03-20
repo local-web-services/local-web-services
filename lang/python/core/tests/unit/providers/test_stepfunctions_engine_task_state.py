@@ -103,12 +103,12 @@ class TestTaskState:
 
         # Assert
         actual_output = history.output_data
-        assert history.status == ExecutionStatus.SUCCEEDED, (
-            f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
-        )
-        assert actual_output == expected_output, (
-            f"Expected {expected_output!r} but got {actual_output!r}"
-        )
+        assert (
+            history.status == ExecutionStatus.SUCCEEDED
+        ), f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert (
+            actual_output == expected_output
+        ), f"Expected {expected_output!r} but got {actual_output!r}"
 
     async def test_task_passes_input_to_compute(self) -> None:
         received = {}
@@ -176,12 +176,12 @@ class TestTaskState:
             input_data={"name": "Alice"},
             compute=compute,
         )
-        assert captured.get("key") == "Alice", (
-            f'Expected {"Alice"!r} but got {captured.get("key")!r}'
-        )
-        assert captured.get("static") == "val", (
-            f'Expected {"val"!r} but got {captured.get("static")!r}'
-        )
+        assert (
+            captured.get("key") == "Alice"
+        ), f'Expected {"Alice"!r} but got {captured.get("key")!r}'
+        assert (
+            captured.get("static") == "val"
+        ), f'Expected {"val"!r} but got {captured.get("static")!r}'
 
     async def test_task_with_result_path(self) -> None:
         # Arrange
@@ -208,9 +208,9 @@ class TestTaskState:
         # Assert
         actual_task_result = history.output_data["taskResult"]
         assert history.output_data["original"] is True, "Expected value to be truthy"
-        assert actual_task_result == expected_task_result, (
-            f"Expected {expected_task_result!r} but got {actual_task_result!r}"
-        )
+        assert (
+            actual_task_result == expected_task_result
+        ), f"Expected {expected_task_result!r} but got {actual_task_result!r}"
 
     async def test_task_no_compute_raises(self) -> None:
         history = await run_engine(
@@ -219,9 +219,9 @@ class TestTaskState:
                 "States": {"T": {"Type": "Task", "Resource": "fn", "End": True}},
             },
         )
-        assert history.status == ExecutionStatus.FAILED, (
-            f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
-        )
+        assert (
+            history.status == ExecutionStatus.FAILED
+        ), f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
 
     async def test_task_timeout(self) -> None:
         # Arrange
@@ -246,9 +246,9 @@ class TestTaskState:
 
         # Assert
         actual_error = history.error
-        assert history.status == ExecutionStatus.FAILED, (
-            f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
-        )
-        assert actual_error == expected_error, (
-            f"Expected {expected_error!r} but got {actual_error!r}"
-        )
+        assert (
+            history.status == ExecutionStatus.FAILED
+        ), f"Expected {ExecutionStatus.FAILED!r} but got {history.status!r}"
+        assert (
+            actual_error == expected_error
+        ), f"Expected {expected_error!r} but got {actual_error!r}"

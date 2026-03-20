@@ -24,7 +24,9 @@ public class DynamoDbStoreCreateTableTest {
     store.createTable(expectedTableName, "id", "S", null, null, List.of());
 
     // Assert
-    assertTrue(store.tableExists(expectedTableName), "Expected condition to be true: store.tableExists(expectedTableName)");
+    assertTrue(
+        store.tableExists(expectedTableName),
+        "Expected condition to be true: store.tableExists(expectedTableName)");
   }
 
   @Test
@@ -37,7 +39,9 @@ public class DynamoDbStoreCreateTableTest {
     store.createTable(expectedTableName, "pk", "S", "sk", "S", List.of());
 
     // Assert
-    assertTrue(store.tableExists(expectedTableName), "Expected condition to be true: store.tableExists(expectedTableName)");
+    assertTrue(
+        store.tableExists(expectedTableName),
+        "Expected condition to be true: store.tableExists(expectedTableName)");
   }
 
   @Test
@@ -87,7 +91,9 @@ public class DynamoDbStoreCreateTableTest {
     store.deleteTable(tableName);
 
     // Assert
-    assertFalse(store.tableExists(tableName), "Expected condition to be false: store.tableExists(tableName)");
+    assertFalse(
+        store.tableExists(tableName),
+        "Expected condition to be false: store.tableExists(tableName)");
   }
 
   @Test
@@ -111,7 +117,8 @@ public class DynamoDbStoreCreateTableTest {
     List<String> actualNames = store.listTables();
 
     // Assert
-    assertEquals(expectedCount, actualNames.size(), "Expected actualNames.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualNames.size(), "Expected actualNames.size() to match expectedCount");
     assertTrue(actualNames.contains("Alpha"), "Expected value to contain expected substring");
     assertTrue(actualNames.contains("Beta"), "Expected value to contain expected substring");
   }
@@ -141,6 +148,8 @@ public class DynamoDbStoreCreateTableTest {
     store.reset();
 
     // Assert
-    assertFalse(store.tableExists(tableName), "Expected condition to be false: store.tableExists(tableName)");
+    assertFalse(
+        store.tableExists(tableName),
+        "Expected condition to be false: store.tableExists(tableName)");
   }
 }

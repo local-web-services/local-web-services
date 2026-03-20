@@ -45,6 +45,6 @@ class TestListSecretVersionIds:
 
         # Assert
         expected_version_count = 2
-        assert len(result["Versions"]) == expected_version_count, (
-            f'Expected {expected_version_count!r} but got {len(result["Versions"])!r}'
-        )
+        assert (
+            len(result["Versions"]) == expected_version_count
+        ), f'Expected {expected_version_count!r} but got {len(result["Versions"])!r}'

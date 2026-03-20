@@ -24,9 +24,9 @@ class TestListRoutes:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert resp.json()["items"] == [], f'Expected {[]!r} but got {resp.json()["items"]!r}'
 
     def test_list_after_create(self) -> None:
@@ -42,6 +42,6 @@ class TestListRoutes:
 
         # Assert
         expected_count = 1
-        assert len(resp.json()["items"]) == expected_count, (
-            f'Expected {expected_count!r} but got {len(resp.json()["items"])!r}'
-        )
+        assert (
+            len(resp.json()["items"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(resp.json()["items"])!r}'

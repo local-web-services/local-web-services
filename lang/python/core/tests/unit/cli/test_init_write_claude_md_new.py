@@ -15,9 +15,9 @@ class TestWriteClaudeMdNewFile:
 
         # Assert
         actual_content = result.read_text()
-        assert expected_marker in actual_content, (
-            f"Expected {expected_marker!r} to be in {actual_content!r}"
-        )
+        assert (
+            expected_marker in actual_content
+        ), f"Expected {expected_marker!r} to be in {actual_content!r}"
 
     def test_contains_lws_section(self, tmp_path):
         # Arrange
@@ -28,6 +28,6 @@ class TestWriteClaudeMdNewFile:
 
         # Assert
         actual_content = (tmp_path / "CLAUDE.md").read_text()
-        assert expected_heading in actual_content, (
-            f"Expected {expected_heading!r} to be in {actual_content!r}"
-        )
+        assert (
+            expected_heading in actual_content
+        ), f"Expected {expected_heading!r} to be in {actual_content!r}"

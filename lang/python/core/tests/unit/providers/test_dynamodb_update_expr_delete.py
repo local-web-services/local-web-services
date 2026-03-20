@@ -84,9 +84,9 @@ class TestDelete:
 
         # Assert
         actual_numbers = result["numbers"]
-        assert actual_numbers == expected_numbers, (
-            f"Expected {expected_numbers!r} but got {actual_numbers!r}"
-        )
+        assert (
+            actual_numbers == expected_numbers
+        ), f"Expected {expected_numbers!r} but got {actual_numbers!r}"
 
     def test_delete_nonexistent_elements(self) -> None:
         # Arrange

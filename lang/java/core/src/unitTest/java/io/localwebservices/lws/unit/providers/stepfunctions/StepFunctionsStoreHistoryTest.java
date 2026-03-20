@@ -24,7 +24,8 @@ public class StepFunctionsStoreHistoryTest {
     List<Map<String, String>> actualTags = store.listTags(smArn);
 
     // Assert
-    assertEquals(expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
   }
 
   @Test
@@ -43,7 +44,8 @@ public class StepFunctionsStoreHistoryTest {
 
     // Assert
     List<Map<String, String>> actualTags = store.listTags(smArn);
-    assertEquals(expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
   }
 
   @Test
@@ -64,8 +66,10 @@ public class StepFunctionsStoreHistoryTest {
 
     // Assert
     List<Map<String, String>> actualTags = store.listTags(smArn);
-    assertEquals(expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
-    assertEquals(expectedRemainingKey, actualTags.get(0).get("key"), "Expected remainingKey to match");
+    assertEquals(
+        expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
+    assertEquals(
+        expectedRemainingKey, actualTags.get(0).get("key"), "Expected remainingKey to match");
   }
 
   @Test

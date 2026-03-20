@@ -63,15 +63,15 @@ class TestOrchestratorStartStop:
         )
 
         # Assert
-        assert p1.start_order == expected_p1_order, (
-            f"Expected {expected_p1_order!r} but got {p1.start_order!r}"
-        )
-        assert p2.start_order == expected_p2_order, (
-            f"Expected {expected_p2_order!r} but got {p2.start_order!r}"
-        )
-        assert p3.start_order == expected_p3_order, (
-            f"Expected {expected_p3_order!r} but got {p3.start_order!r}"
-        )
+        assert (
+            p1.start_order == expected_p1_order
+        ), f"Expected {expected_p1_order!r} but got {p1.start_order!r}"
+        assert (
+            p2.start_order == expected_p2_order
+        ), f"Expected {expected_p2_order!r} but got {p2.start_order!r}"
+        assert (
+            p3.start_order == expected_p3_order
+        ), f"Expected {expected_p3_order!r} but got {p3.start_order!r}"
 
     async def test_stop_reverses_start_order(self, orchestrator):
         # Arrange
@@ -102,12 +102,12 @@ class TestOrchestratorStartStop:
         await orchestrator.stop()
 
         # Assert -- p2 should stop first (reverse order)
-        assert p2.stop_order == expected_p2_stop_order, (
-            f"Expected {expected_p2_stop_order!r} but got {p2.stop_order!r}"
-        )
-        assert p1.stop_order == expected_p1_stop_order, (
-            f"Expected {expected_p1_stop_order!r} but got {p1.stop_order!r}"
-        )
+        assert (
+            p2.stop_order == expected_p2_stop_order
+        ), f"Expected {expected_p2_stop_order!r} but got {p2.stop_order!r}"
+        assert (
+            p1.stop_order == expected_p1_stop_order
+        ), f"Expected {expected_p1_stop_order!r} but got {p1.stop_order!r}"
         assert not orchestrator.running, "Expected value to be falsy"
 
     async def test_stop_all_providers(self, orchestrator):

@@ -118,9 +118,9 @@ class TestIamAuthMiddlewareEnforce:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_allows_authorized_operation(self, allowed_bundle):
         # Arrange
@@ -138,6 +138,6 @@ class TestIamAuthMiddlewareEnforce:
 
         # Assert
         actual_status = response.status_code
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"

@@ -62,16 +62,16 @@ class TestBuildFunctionUrlEvent:
         actual_route_key = event["routeKey"]
         actual_path = event["rawPath"]
         actual_method = event["requestContext"]["http"]["method"]
-        assert actual_version == expected_version, (
-            f"Expected {expected_version!r} but got {actual_version!r}"
-        )
-        assert actual_route_key == expected_route_key, (
-            f"Expected {expected_route_key!r} but got {actual_route_key!r}"
-        )
+        assert (
+            actual_version == expected_version
+        ), f"Expected {expected_version!r} but got {actual_version!r}"
+        assert (
+            actual_route_key == expected_route_key
+        ), f"Expected {expected_route_key!r} but got {actual_route_key!r}"
         assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
-        assert actual_method == expected_method, (
-            f"Expected {expected_method!r} but got {actual_method!r}"
-        )
+        assert (
+            actual_method == expected_method
+        ), f"Expected {expected_method!r} but got {actual_method!r}"
         assert event["isBase64Encoded"] is False, "Expected value to be truthy"
 
     def test_post_with_body(self):
@@ -121,9 +121,9 @@ class TestBuildFunctionUrlEvent:
 
         # Assert
         actual_content_type = event["headers"]["content-type"]
-        assert actual_content_type == expected_content_type, (
-            f"Expected {expected_content_type!r} but got {actual_content_type!r}"
-        )
+        assert (
+            actual_content_type == expected_content_type
+        ), f"Expected {expected_content_type!r} but got {actual_content_type!r}"
 
     def test_request_context_fields(self):
         # Arrange
@@ -145,15 +145,15 @@ class TestBuildFunctionUrlEvent:
         actual_account_id = ctx["accountId"]
         actual_source_ip = ctx["http"]["sourceIp"]
         actual_user_agent = ctx["http"]["userAgent"]
-        assert actual_account_id == expected_account_id, (
-            f"Expected {expected_account_id!r} but got {actual_account_id!r}"
-        )
-        assert actual_source_ip == expected_source_ip, (
-            f"Expected {expected_source_ip!r} but got {actual_source_ip!r}"
-        )
-        assert actual_user_agent == expected_user_agent, (
-            f"Expected {expected_user_agent!r} but got {actual_user_agent!r}"
-        )
+        assert (
+            actual_account_id == expected_account_id
+        ), f"Expected {expected_account_id!r} but got {actual_account_id!r}"
+        assert (
+            actual_source_ip == expected_source_ip
+        ), f"Expected {expected_source_ip!r} but got {actual_source_ip!r}"
+        assert (
+            actual_user_agent == expected_user_agent
+        ), f"Expected {expected_user_agent!r} but got {actual_user_agent!r}"
         assert "requestId" in ctx, f'Expected {"requestId"!r} to be in {ctx!r}'
         assert "timeEpoch" in ctx, f'Expected {"timeEpoch"!r} to be in {ctx!r}'
 
@@ -175,6 +175,6 @@ class TestBuildFunctionUrlEvent:
         event = build_function_url_event(request, b"")
 
         # Assert
-        assert "queryStringParameters" not in event, (
-            f'Expected {"queryStringParameters"!r} to not be in {event!r}'
-        )
+        assert (
+            "queryStringParameters" not in event
+        ), f'Expected {"queryStringParameters"!r} to not be in {event!r}'

@@ -21,7 +21,10 @@ public class S3StoreBucketConfigTest {
 
     // Assert
     String actualIndexDocument = store.bucketWebsites.get(expectedBucketName).get("IndexDocument");
-    assertEquals(expectedIndexDocument, actualIndexDocument, "Expected actualIndexDocument to equal expectedIndexDocument");
+    assertEquals(
+        expectedIndexDocument,
+        actualIndexDocument,
+        "Expected actualIndexDocument to equal expectedIndexDocument");
   }
 
   @Test

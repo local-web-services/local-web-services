@@ -68,9 +68,9 @@ class TestSetIfNotExists:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_if_not_exists_attribute_present(self) -> None:
         # Arrange
@@ -86,9 +86,9 @@ class TestSetIfNotExists:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_if_not_exists_with_arithmetic(self) -> None:
         # Arrange
@@ -104,6 +104,6 @@ class TestSetIfNotExists:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"

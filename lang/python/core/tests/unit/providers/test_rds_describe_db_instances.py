@@ -41,9 +41,9 @@ class TestDescribeDBInstances:
         result = _post(client, "DescribeDBInstances", {})
 
         # Assert
-        assert len(result["DBInstances"]) == expected_count, (
-            f'Expected {expected_count!r} but got {len(result["DBInstances"])!r}'
-        )
+        assert (
+            len(result["DBInstances"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(result["DBInstances"])!r}'
         ids = [i["DBInstanceIdentifier"] for i in result["DBInstances"]]
         assert db_id_a in ids, f"Expected {db_id_a!r} to be in {ids!r}"
         assert db_id_b in ids, f"Expected {db_id_b!r} to be in {ids!r}"
@@ -63,13 +63,13 @@ class TestDescribeDBInstances:
 
         # Assert
         expected_count = 1
-        assert len(result["DBInstances"]) == expected_count, (
-            f'Expected {expected_count!r} but got {len(result["DBInstances"])!r}'
-        )
+        assert (
+            len(result["DBInstances"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(result["DBInstances"])!r}'
         actual_db_id = result["DBInstances"][0]["DBInstanceIdentifier"]
-        assert actual_db_id == expected_db_id, (
-            f"Expected {expected_db_id!r} but got {actual_db_id!r}"
-        )
+        assert (
+            actual_db_id == expected_db_id
+        ), f"Expected {expected_db_id!r} but got {actual_db_id!r}"
 
     def test_describe_not_found_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -84,9 +84,9 @@ class TestDescribeDBInstances:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"
 
     def test_describe_empty_returns_empty_list(self, client: TestClient) -> None:
         # Arrange
@@ -96,6 +96,6 @@ class TestDescribeDBInstances:
         result = _post(client, "DescribeDBInstances", {})
 
         # Assert
-        assert len(result["DBInstances"]) == expected_count, (
-            f'Expected {expected_count!r} but got {len(result["DBInstances"])!r}'
-        )
+        assert (
+            len(result["DBInstances"]) == expected_count
+        ), f'Expected {expected_count!r} but got {len(result["DBInstances"])!r}'

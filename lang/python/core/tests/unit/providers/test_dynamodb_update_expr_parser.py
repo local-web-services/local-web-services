@@ -63,9 +63,9 @@ class TestParser:
         actions = parse_update_expression("SET name = :v")
 
         # Assert
-        assert len(actions.set_actions) == expected_set_count, (
-            f"Expected {expected_set_count!r} but got {len(actions.set_actions)!r}"
-        )
+        assert (
+            len(actions.set_actions) == expected_set_count
+        ), f"Expected {expected_set_count!r} but got {len(actions.set_actions)!r}"
         actual_path = actions.set_actions[0].path
         assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
 
@@ -77,9 +77,9 @@ class TestParser:
         actions = parse_update_expression("SET a = :a, b = :b")
 
         # Assert
-        assert len(actions.set_actions) == expected_set_count, (
-            f"Expected {expected_set_count!r} but got {len(actions.set_actions)!r}"
-        )
+        assert (
+            len(actions.set_actions) == expected_set_count
+        ), f"Expected {expected_set_count!r} but got {len(actions.set_actions)!r}"
 
     def test_parse_remove(self) -> None:
         # Arrange
@@ -89,9 +89,9 @@ class TestParser:
         actions = parse_update_expression("REMOVE a, b")
 
         # Assert
-        assert len(actions.remove_actions) == expected_remove_count, (
-            f"Expected {expected_remove_count!r} but got {len(actions.remove_actions)!r}"
-        )
+        assert (
+            len(actions.remove_actions) == expected_remove_count
+        ), f"Expected {expected_remove_count!r} but got {len(actions.remove_actions)!r}"
 
     def test_parse_add(self) -> None:
         # Arrange
@@ -101,9 +101,9 @@ class TestParser:
         actions = parse_update_expression("ADD count :v")
 
         # Assert
-        assert len(actions.add_actions) == expected_add_count, (
-            f"Expected {expected_add_count!r} but got {len(actions.add_actions)!r}"
-        )
+        assert (
+            len(actions.add_actions) == expected_add_count
+        ), f"Expected {expected_add_count!r} but got {len(actions.add_actions)!r}"
 
     def test_parse_delete(self) -> None:
         # Arrange
@@ -113,9 +113,9 @@ class TestParser:
         actions = parse_update_expression("DELETE tags :v")
 
         # Assert
-        assert len(actions.delete_actions) == expected_delete_count, (
-            f"Expected {expected_delete_count!r} but got {len(actions.delete_actions)!r}"
-        )
+        assert (
+            len(actions.delete_actions) == expected_delete_count
+        ), f"Expected {expected_delete_count!r} but got {len(actions.delete_actions)!r}"
 
     def test_parse_combined(self) -> None:
         # Arrange
@@ -128,15 +128,15 @@ class TestParser:
         actions = parse_update_expression("SET a = :a REMOVE b ADD c :c DELETE d :d")
 
         # Assert
-        assert len(actions.set_actions) == expected_set_count, (
-            f"Expected {expected_set_count!r} but got {len(actions.set_actions)!r}"
-        )
-        assert len(actions.remove_actions) == expected_remove_count, (
-            f"Expected {expected_remove_count!r} but got {len(actions.remove_actions)!r}"
-        )
-        assert len(actions.add_actions) == expected_add_count, (
-            f"Expected {expected_add_count!r} but got {len(actions.add_actions)!r}"
-        )
-        assert len(actions.delete_actions) == expected_delete_count, (
-            f"Expected {expected_delete_count!r} but got {len(actions.delete_actions)!r}"
-        )
+        assert (
+            len(actions.set_actions) == expected_set_count
+        ), f"Expected {expected_set_count!r} but got {len(actions.set_actions)!r}"
+        assert (
+            len(actions.remove_actions) == expected_remove_count
+        ), f"Expected {expected_remove_count!r} but got {len(actions.remove_actions)!r}"
+        assert (
+            len(actions.add_actions) == expected_add_count
+        ), f"Expected {expected_add_count!r} but got {len(actions.add_actions)!r}"
+        assert (
+            len(actions.delete_actions) == expected_delete_count
+        ), f"Expected {expected_delete_count!r} but got {len(actions.delete_actions)!r}"

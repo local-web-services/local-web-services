@@ -26,7 +26,8 @@ public class LambdaStorePermissionsTest {
     // Assert
     int actualSize = store.permissions.get(functionName).size();
     int expectedSize = 1;
-    assertTrue(actualSize == expectedSize, "Expected condition to be true: actualSize == expectedSize");
+    assertTrue(
+        actualSize == expectedSize, "Expected condition to be true: actualSize == expectedSize");
   }
 
   @Test
@@ -43,7 +44,9 @@ public class LambdaStorePermissionsTest {
     store.permissions.remove(functionName);
 
     // Assert
-    assertNull(store.permissions.get(functionName), "Expected store.permissions.get(functionName) to be null");
+    assertNull(
+        store.permissions.get(functionName),
+        "Expected store.permissions.get(functionName) to be null");
   }
 
   @Test

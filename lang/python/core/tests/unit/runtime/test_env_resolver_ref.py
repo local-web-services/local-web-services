@@ -53,9 +53,9 @@ class TestRef:
 
         # Assert
         actual_table_name = result["TABLE_NAME"]
-        assert actual_table_name == expected_table_name, (
-            f"Expected {expected_table_name!r} but got {actual_table_name!r}"
-        )
+        assert (
+            actual_table_name == expected_table_name
+        ), f"Expected {expected_table_name!r} but got {actual_table_name!r}"
 
     def test_ref_unresolvable_uses_logical_id(self) -> None:
         # Arrange
@@ -67,6 +67,6 @@ class TestRef:
 
         # Assert
         actual_table_name = result["TABLE_NAME"]
-        assert actual_table_name == expected_table_name, (
-            f"Expected {expected_table_name!r} but got {actual_table_name!r}"
-        )
+        assert (
+            actual_table_name == expected_table_name
+        ), f"Expected {expected_table_name!r} but got {actual_table_name!r}"

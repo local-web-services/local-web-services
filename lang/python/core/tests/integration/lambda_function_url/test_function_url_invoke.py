@@ -19,9 +19,9 @@ class TestFunctionUrlInvoke:
 
         # Assert
         actual_status = resp.status_code
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = resp.text
         assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
@@ -55,16 +55,16 @@ class TestFunctionUrlInvoke:
         actual_version = event["version"]
         actual_route_key = event["routeKey"]
         actual_path = event["rawPath"]
-        assert actual_version == expected_version, (
-            f"Expected {expected_version!r} but got {actual_version!r}"
-        )
-        assert actual_route_key == expected_route_key, (
-            f"Expected {expected_route_key!r} but got {actual_route_key!r}"
-        )
+        assert (
+            actual_version == expected_version
+        ), f"Expected {expected_version!r} but got {actual_version!r}"
+        assert (
+            actual_route_key == expected_route_key
+        ), f"Expected {expected_route_key!r} but got {actual_route_key!r}"
         assert actual_path == expected_path, f"Expected {expected_path!r} but got {actual_path!r}"
-        assert "key" in event.get("queryStringParameters", {}), (
-            "Expected {!r} to be in {!r}".format("key", event.get("queryStringParameters", {}))
-        )
+        assert "key" in event.get(
+            "queryStringParameters", {}
+        ), "Expected {!r} to be in {!r}".format("key", event.get("queryStringParameters", {}))
 
     async def test_lambda_error_returns_502(self, client: httpx.AsyncClient, fake_compute):
         # Arrange
@@ -77,9 +77,9 @@ class TestFunctionUrlInvoke:
         # Assert
         expected_status = 502
         actual_status = resp.status_code
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_lambda_response_with_headers(self, client: httpx.AsyncClient, fake_compute):
         # Arrange
@@ -95,9 +95,9 @@ class TestFunctionUrlInvoke:
 
         # Assert
         actual_header = resp.headers.get("x-custom")
-        assert actual_header == expected_header_value, (
-            f"Expected {expected_header_value!r} but got {actual_header!r}"
-        )
+        assert (
+            actual_header == expected_header_value
+        ), f"Expected {expected_header_value!r} but got {actual_header!r}"
 
     async def test_lambda_response_with_cookies(self, client: httpx.AsyncClient, fake_compute):
         # Arrange
@@ -113,9 +113,9 @@ class TestFunctionUrlInvoke:
 
         # Assert
         actual_cookies = resp.headers.get_list("set-cookie")
-        assert expected_cookie in actual_cookies, (
-            f"Expected {expected_cookie!r} to be in {actual_cookies!r}"
-        )
+        assert (
+            expected_cookie in actual_cookies
+        ), f"Expected {expected_cookie!r} to be in {actual_cookies!r}"
 
     async def test_root_path(self, client: httpx.AsyncClient, fake_compute):
         # Arrange
@@ -127,9 +127,9 @@ class TestFunctionUrlInvoke:
         # Assert
         expected_status = 200
         actual_status = resp.status_code
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_multiple_methods_supported(self, client: httpx.AsyncClient, fake_compute):
         # Arrange
@@ -143,6 +143,6 @@ class TestFunctionUrlInvoke:
             # Assert
             expected_method = method
             actual_method = fake_compute.last_event["requestContext"]["http"]["method"]
-            assert actual_method == expected_method, (
-                f"Expected {expected_method!r} but got {actual_method!r}"
-            )
+            assert (
+                actual_method == expected_method
+            ), f"Expected {expected_method!r} but got {actual_method!r}"

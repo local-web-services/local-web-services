@@ -86,12 +86,12 @@ class TestCfnRefMarkers:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        )
-        assert expected_resource_name in issues[0].message, (
-            f"Expected {expected_resource_name!r} to be in {issues[0].message!r}"
-        )
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            expected_resource_name in issues[0].message
+        ), f"Expected {expected_resource_name!r} to be in {issues[0].message!r}"
 
     def test_bang_ref_unknown_resource(self) -> None:
         # Arrange
@@ -105,9 +105,9 @@ class TestCfnRefMarkers:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        )
-        assert expected_resource_name in issues[0].message, (
-            f"Expected {expected_resource_name!r} to be in {issues[0].message!r}"
-        )
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            expected_resource_name in issues[0].message
+        ), f"Expected {expected_resource_name!r} to be in {issues[0].message!r}"

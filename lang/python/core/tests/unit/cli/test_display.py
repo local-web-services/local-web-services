@@ -162,18 +162,18 @@ def test_print_resource_summary_with_local_details() -> None:
         )
         output = buf.getvalue()
 
-        assert "lws apigateway test-invoke-method --resource /orders --http-method GET" in output, (
-            f"Expected to be in {output!r}"
-        )
-        assert "lws dynamodb scan --table-name OrdersTable" in output, (
-            f'Expected {"lws dynamodb scan --table-name OrdersTable"!r} to be in {output!r}'
-        )
-        assert "ldk invoke processOrder" in output, (
-            f'Expected {"ldk invoke processOrder"!r} to be in {output!r}'
-        )
-        assert "lws sqs receive-message --queue-name MyQueue" in output, (
-            f'Expected {"lws sqs receive-message --queue-name MyQueue"!r} to be in {output!r}'
-        )
+        assert (
+            "lws apigateway test-invoke-method --resource /orders --http-method GET" in output
+        ), f"Expected to be in {output!r}"
+        assert (
+            "lws dynamodb scan --table-name OrdersTable" in output
+        ), f'Expected {"lws dynamodb scan --table-name OrdersTable"!r} to be in {output!r}'
+        assert (
+            "ldk invoke processOrder" in output
+        ), f'Expected {"ldk invoke processOrder"!r} to be in {output!r}'
+        assert (
+            "lws sqs receive-message --queue-name MyQueue" in output
+        ), f'Expected {"lws sqs receive-message --queue-name MyQueue"!r} to be in {output!r}'
     finally:
         display.console = original
 
@@ -187,9 +187,9 @@ def test_print_error_without_detail() -> None:
         print_error("Something went wrong")
         output = buf.getvalue()
         assert "Error:" in output, f'Expected {"Error:"!r} to be in {output!r}'
-        assert "Something went wrong" in output, (
-            f'Expected {"Something went wrong"!r} to be in {output!r}'
-        )
+        assert (
+            "Something went wrong" in output
+        ), f'Expected {"Something went wrong"!r} to be in {output!r}'
     finally:
         display.console = original
 
@@ -203,9 +203,9 @@ def test_print_error_with_detail() -> None:
         print_error("Connection failed", detail="Retried 3 times")
         output = buf.getvalue()
         assert "Error:" in output, f'Expected {"Error:"!r} to be in {output!r}'
-        assert "Connection failed" in output, (
-            f'Expected {"Connection failed"!r} to be in {output!r}'
-        )
+        assert (
+            "Connection failed" in output
+        ), f'Expected {"Connection failed"!r} to be in {output!r}'
         assert "Retried 3 times" in output, f'Expected {"Retried 3 times"!r} to be in {output!r}'
     finally:
         display.console = original

@@ -62,12 +62,12 @@ def _make_context(
 class TestStrictnessMode:
     def test_warn_value(self) -> None:
         expected_value = "warn"
-        assert StrictnessMode.WARN.value == expected_value, (
-            f"Expected {expected_value!r} but got {StrictnessMode.WARN.value!r}"
-        )
+        assert (
+            StrictnessMode.WARN.value == expected_value
+        ), f"Expected {expected_value!r} but got {StrictnessMode.WARN.value!r}"
 
     def test_strict_value(self) -> None:
         expected_value = "strict"
-        assert StrictnessMode.STRICT.value == expected_value, (
-            f"Expected {expected_value!r} but got {StrictnessMode.STRICT.value!r}"
-        )
+        assert (
+            StrictnessMode.STRICT.value == expected_value
+        ), f"Expected {expected_value!r} but got {StrictnessMode.STRICT.value!r}"

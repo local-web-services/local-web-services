@@ -192,9 +192,9 @@ class TestStandardExecution:
         # Assert
         actual_output = history.output_data
         assert history is not None, "Expected value to be set but was None"
-        assert actual_output == expected_output, (
-            f"Expected {expected_output!r} but got {actual_output!r}"
-        )
+        assert (
+            actual_output == expected_output
+        ), f"Expected {expected_output!r} but got {actual_output!r}"
 
     async def test_two_step_execution(self, provider: StepFunctionsProvider) -> None:
         result = await provider.start_execution("two-step", input_data={})
@@ -202,8 +202,8 @@ class TestStandardExecution:
 
         history = provider.get_execution(result["executionArn"])
         assert history is not None, "Expected value to be set but was None"
-        assert history.output_data == {"step": 2}, (
-            "Expected {!r} but got {!r}".format({"step": 2}, history.output_data)
+        assert history.output_data == {"step": 2}, "Expected {!r} but got {!r}".format(
+            {"step": 2}, history.output_data
         )
 
     async def test_succeed_execution(self, provider: StepFunctionsProvider) -> None:
@@ -218,9 +218,9 @@ class TestStandardExecution:
         # Assert
         actual_status = history.status.value
         assert history is not None, "Expected value to be set but was None"
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_fail_execution(self, provider: StepFunctionsProvider) -> None:
         # Arrange
@@ -236,12 +236,12 @@ class TestStandardExecution:
         actual_status = history.status.value
         actual_error = history.error
         assert history is not None, "Expected value to be set but was None"
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
-        assert actual_error == expected_error, (
-            f"Expected {expected_error!r} but got {actual_error!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
+        assert (
+            actual_error == expected_error
+        ), f"Expected {expected_error!r} but got {actual_error!r}"
 
     async def test_unknown_state_machine_raises(self, provider: StepFunctionsProvider) -> None:
         with pytest.raises(KeyError, match="State machine not found"):
@@ -255,6 +255,6 @@ class TestStandardExecution:
 
     async def test_execution_name(self, provider: StepFunctionsProvider) -> None:
         result = await provider.start_execution("simple-pass", execution_name="custom-name")
-        assert "custom-name" in result["executionArn"], (
-            f'Expected {"custom-name"!r} to be in {result["executionArn"]!r}'
-        )
+        assert (
+            "custom-name" in result["executionArn"]
+        ), f'Expected {"custom-name"!r} to be in {result["executionArn"]!r}'

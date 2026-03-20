@@ -38,6 +38,6 @@ class TestExtractorFormActionBody:
         actual_operation = extractor(request, body)
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"

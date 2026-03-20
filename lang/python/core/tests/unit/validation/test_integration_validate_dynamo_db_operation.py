@@ -110,9 +110,9 @@ class TestValidateDynamoDBOperation:
 
         # Assert
         actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(actual_error_issues) >= expected_min_error_issues, (
-            f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"
-        )
+        assert (
+            len(actual_error_issues) >= expected_min_error_issues
+        ), f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"
         assert any("sk" in i.message for i in actual_error_issues), "Expected value to be truthy"
 
     def test_no_item_provided(self) -> None:
@@ -136,6 +136,6 @@ class TestValidateDynamoDBOperation:
         # Assert
         # Missing pk and sk
         actual_error_issues = [i for i in issues if i.level == ValidationLevel.ERROR]
-        assert len(actual_error_issues) >= expected_min_error_issues, (
-            f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"
-        )
+        assert (
+            len(actual_error_issues) >= expected_min_error_issues
+        ), f"Expected {len(actual_error_issues)!r} >= {expected_min_error_issues!r}"

@@ -54,9 +54,9 @@ class TestS3ProviderLifecycle:
 
     async def test_name(self, provider: S3Provider) -> None:
         expected_name = "s3"
-        assert provider.name == expected_name, (
-            f"Expected {expected_name!r} but got {provider.name!r}"
-        )
+        assert (
+            provider.name == expected_name
+        ), f"Expected {expected_name!r} but got {provider.name!r}"
 
     async def test_health_check_running(self, provider: S3Provider) -> None:
         assert await provider.health_check() is True, "Expected value to be truthy"

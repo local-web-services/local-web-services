@@ -36,10 +36,10 @@ class TestEvaluateBoundary:
         actual_decision, actual_reason = evaluate(context)
 
         # Assert
-        assert actual_decision == Decision.DENY, (
-            f"Expected {Decision.DENY!r} but got {actual_decision!r}"
-        )
+        assert (
+            actual_decision == Decision.DENY
+        ), f"Expected {Decision.DENY!r} but got {actual_decision!r}"
         expected_reason = "Not allowed by permissions boundary"
-        assert actual_reason == expected_reason, (
-            f"Expected {expected_reason!r} but got {actual_reason!r}"
-        )
+        assert (
+            actual_reason == expected_reason
+        ), f"Expected {expected_reason!r} but got {actual_reason!r}"

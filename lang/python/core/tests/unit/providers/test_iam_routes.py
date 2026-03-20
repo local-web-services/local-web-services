@@ -31,15 +31,15 @@ class TestIamRoutes:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
-        assert "<CreateRoleResponse>" in resp.text, (
-            f'Expected {"<CreateRoleResponse>"!r} to be in {resp.text!r}'
-        )
-        assert f"<RoleName>{role_name}</RoleName>" in resp.text, (
-            "Expected {!r} to be in {!r}".format(f"<RoleName>{role_name}</RoleName>", resp.text)
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "<CreateRoleResponse>" in resp.text
+        ), f'Expected {"<CreateRoleResponse>"!r} to be in {resp.text!r}'
+        assert (
+            f"<RoleName>{role_name}</RoleName>" in resp.text
+        ), "Expected {!r} to be in {!r}".format(f"<RoleName>{role_name}</RoleName>", resp.text)
         assert "<Arn>" in resp.text, f'Expected {"<Arn>"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
@@ -57,15 +57,15 @@ class TestIamRoutes:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
-        assert "<GetRoleResponse>" in resp.text, (
-            f'Expected {"<GetRoleResponse>"!r} to be in {resp.text!r}'
-        )
-        assert f"<RoleName>{role_name}</RoleName>" in resp.text, (
-            "Expected {!r} to be in {!r}".format(f"<RoleName>{role_name}</RoleName>", resp.text)
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "<GetRoleResponse>" in resp.text
+        ), f'Expected {"<GetRoleResponse>"!r} to be in {resp.text!r}'
+        assert (
+            f"<RoleName>{role_name}</RoleName>" in resp.text
+        ), "Expected {!r} to be in {!r}".format(f"<RoleName>{role_name}</RoleName>", resp.text)
 
     @pytest.mark.asyncio
     async def test_get_role_not_found(self, client) -> None:
@@ -76,9 +76,9 @@ class TestIamRoutes:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "NoSuchEntity" in resp.text, f'Expected {"NoSuchEntity"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
@@ -96,12 +96,12 @@ class TestIamRoutes:
 
         # Assert
         expected_delete_status = 200
-        assert resp.status_code == expected_delete_status, (
-            f"Expected {expected_delete_status!r} but got {resp.status_code!r}"
-        )
-        assert "<DeleteRoleResponse>" in resp.text, (
-            f'Expected {"<DeleteRoleResponse>"!r} to be in {resp.text!r}'
-        )
+        assert (
+            resp.status_code == expected_delete_status
+        ), f"Expected {expected_delete_status!r} but got {resp.status_code!r}"
+        assert (
+            "<DeleteRoleResponse>" in resp.text
+        ), f'Expected {"<DeleteRoleResponse>"!r} to be in {resp.text!r}'
 
         # Verify deleted
         get_resp = await client.post(
@@ -109,9 +109,9 @@ class TestIamRoutes:
             data={"Action": "GetRole", "RoleName": role_name},
         )
         expected_not_found_status = 404
-        assert get_resp.status_code == expected_not_found_status, (
-            f"Expected {expected_not_found_status!r} but got {get_resp.status_code!r}"
-        )
+        assert (
+            get_resp.status_code == expected_not_found_status
+        ), f"Expected {expected_not_found_status!r} but got {get_resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_put_and_list_role_policies(self, client) -> None:
@@ -139,9 +139,9 @@ class TestIamRoutes:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert policy_name in resp.text, f"Expected {policy_name!r} to be in {resp.text!r}"
 
     @pytest.mark.asyncio
@@ -154,15 +154,15 @@ class TestIamRoutes:
 
         # Assert
         expected_status = 400
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
-        assert "<ErrorResponse>" in resp.text, (
-            f'Expected {"<ErrorResponse>"!r} to be in {resp.text!r}'
-        )
-        assert "<Code>InvalidAction</Code>" in resp.text, (
-            f'Expected {"<Code>InvalidAction</Code>"!r} to be in {resp.text!r}'
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "<ErrorResponse>" in resp.text
+        ), f'Expected {"<ErrorResponse>"!r} to be in {resp.text!r}'
+        assert (
+            "<Code>InvalidAction</Code>" in resp.text
+        ), f'Expected {"<Code>InvalidAction</Code>"!r} to be in {resp.text!r}'
         assert "lws" in resp.text, f'Expected {"lws"!r} to be in {resp.text!r}'
         assert "IAM" in resp.text, f'Expected {"IAM"!r} to be in {resp.text!r}'
         assert action_name in resp.text, f"Expected {action_name!r} to be in {resp.text!r}"

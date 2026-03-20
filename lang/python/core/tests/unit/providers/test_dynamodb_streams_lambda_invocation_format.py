@@ -67,35 +67,35 @@ class TestLambdaInvocationFormat:
             actual_event_source = record["eventSource"]
             actual_region = record["awsRegion"]
             assert "eventID" in record, f'Expected {"eventID"!r} to be in {record!r}'
-            assert actual_event_name == expected_event_name, (
-                f"Expected {expected_event_name!r} but got {actual_event_name!r}"
-            )
-            assert actual_event_version == expected_event_version, (
-                f"Expected {expected_event_version!r} but got {actual_event_version!r}"
-            )
-            assert actual_event_source == expected_event_source, (
-                f"Expected {expected_event_source!r} but got {actual_event_source!r}"
-            )
-            assert actual_region == expected_region, (
-                f"Expected {expected_region!r} but got {actual_region!r}"
-            )
+            assert (
+                actual_event_name == expected_event_name
+            ), f"Expected {expected_event_name!r} but got {actual_event_name!r}"
+            assert (
+                actual_event_version == expected_event_version
+            ), f"Expected {expected_event_version!r} but got {actual_event_version!r}"
+            assert (
+                actual_event_source == expected_event_source
+            ), f"Expected {expected_event_source!r} but got {actual_event_source!r}"
+            assert (
+                actual_region == expected_region
+            ), f"Expected {expected_region!r} but got {actual_region!r}"
             assert "eventSourceARN" in record, f'Expected {"eventSourceARN"!r} to be in {record!r}'
-            assert "orders" in record["eventSourceARN"], (
-                f'Expected {"orders"!r} to be in {record["eventSourceARN"]!r}'
-            )
+            assert (
+                "orders" in record["eventSourceARN"]
+            ), f'Expected {"orders"!r} to be in {record["eventSourceARN"]!r}'
 
             # Verify dynamodb sub-object
             dynamodb = record["dynamodb"]
             assert "Keys" in dynamodb, f'Expected {"Keys"!r} to be in {dynamodb!r}'
-            assert "SequenceNumber" in dynamodb, (
-                f'Expected {"SequenceNumber"!r} to be in {dynamodb!r}'
-            )
-            assert "StreamViewType" in dynamodb, (
-                f'Expected {"StreamViewType"!r} to be in {dynamodb!r}'
-            )
-            assert "ApproximateCreationDateTime" in dynamodb, (
-                f'Expected {"ApproximateCreationDateTime"!r} to be in {dynamodb!r}'
-            )
+            assert (
+                "SequenceNumber" in dynamodb
+            ), f'Expected {"SequenceNumber"!r} to be in {dynamodb!r}'
+            assert (
+                "StreamViewType" in dynamodb
+            ), f'Expected {"StreamViewType"!r} to be in {dynamodb!r}'
+            assert (
+                "ApproximateCreationDateTime" in dynamodb
+            ), f'Expected {"ApproximateCreationDateTime"!r} to be in {dynamodb!r}'
         finally:
             await dispatcher.stop()
 

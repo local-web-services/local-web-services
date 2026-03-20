@@ -40,12 +40,12 @@ class TestGetTopicAttributes:
         resp = await client.post("/", data={"Action": "GetTopicAttributes", "TopicArn": topic_arn})
 
         # Assert
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
-        assert "GetTopicAttributesResponse" in resp.text, (
-            f'Expected {"GetTopicAttributesResponse"!r} to be in {resp.text!r}'
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "GetTopicAttributesResponse" in resp.text
+        ), f'Expected {"GetTopicAttributesResponse"!r} to be in {resp.text!r}'
         assert "TopicArn" in resp.text, f'Expected {"TopicArn"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
@@ -58,7 +58,7 @@ class TestGetTopicAttributes:
         resp = await client.post("/", data={"Action": "GetTopicAttributes", "TopicArn": topic_arn})
 
         # Assert
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "NotFound" in resp.text, f'Expected {"NotFound"!r} to be in {resp.text!r}'

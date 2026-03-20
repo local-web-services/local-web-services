@@ -64,9 +64,9 @@ class TestListTargetsByRuleProvider:
         assert len(targets) == 2, f"Expected {2!r} but got {len(targets)!r}"
         assert targets[0]["Id"] == "t1", f'Expected {"t1"!r} but got {targets[0]["Id"]!r}'
         assert targets[1]["Id"] == "t2", f'Expected {"t2"!r} but got {targets[1]["Id"]!r}'
-        assert targets[1]["InputPath"] == "$.detail", (
-            f'Expected {"$.detail"!r} but got {targets[1]["InputPath"]!r}'
-        )
+        assert (
+            targets[1]["InputPath"] == "$.detail"
+        ), f'Expected {"$.detail"!r} but got {targets[1]["InputPath"]!r}'
 
     async def test_list_targets_nonexistent_rule_raises(
         self, provider: EventBridgeProvider

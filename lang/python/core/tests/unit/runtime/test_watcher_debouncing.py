@@ -91,14 +91,14 @@ class TestDebouncing:
 
             # Assert
             reported_names = {p.name for p in changed}
-            assert expected_file_a in reported_names, (
-                f"Expected {expected_file_a!r} to be in {reported_names!r}"
-            )
-            assert expected_file_b in reported_names, (
-                f"Expected {expected_file_b!r} to be in {reported_names!r}"
-            )
-            assert expected_file_c in reported_names, (
-                f"Expected {expected_file_c!r} to be in {reported_names!r}"
-            )
+            assert (
+                expected_file_a in reported_names
+            ), f"Expected {expected_file_a!r} to be in {reported_names!r}"
+            assert (
+                expected_file_b in reported_names
+            ), f"Expected {expected_file_b!r} to be in {reported_names!r}"
+            assert (
+                expected_file_c in reported_names
+            ), f"Expected {expected_file_c!r} to be in {reported_names!r}"
         finally:
             watcher.stop()

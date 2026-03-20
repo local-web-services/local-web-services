@@ -20,12 +20,12 @@ class TestParseLifecycleConfigCustomValues:
         actual_enabled = config.enabled
         actual_create_dwell_ms = config.create_dwell_ms
         actual_delete_dwell_ms = config.delete_dwell_ms
-        assert actual_enabled == expected_enabled, (
-            f"Expected {expected_enabled!r} but got {actual_enabled!r}"
-        )
-        assert actual_create_dwell_ms == expected_create_dwell_ms, (
-            f"Expected {expected_create_dwell_ms!r} but got {actual_create_dwell_ms!r}"
-        )
-        assert actual_delete_dwell_ms == expected_delete_dwell_ms, (
-            f"Expected {expected_delete_dwell_ms!r} but got {actual_delete_dwell_ms!r}"
-        )
+        assert (
+            actual_enabled == expected_enabled
+        ), f"Expected {expected_enabled!r} but got {actual_enabled!r}"
+        assert (
+            actual_create_dwell_ms == expected_create_dwell_ms
+        ), f"Expected {expected_create_dwell_ms!r} but got {actual_create_dwell_ms!r}"
+        assert (
+            actual_delete_dwell_ms == expected_delete_dwell_ms
+        ), f"Expected {expected_delete_dwell_ms!r} but got {actual_delete_dwell_ms!r}"

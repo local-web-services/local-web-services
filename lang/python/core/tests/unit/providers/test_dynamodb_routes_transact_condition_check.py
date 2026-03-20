@@ -71,9 +71,9 @@ class TestTransactConditionCheck:
         resp = await client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         item = await provider.get_item(table_name, {"pk": {"S": "new-item"}})
         actual_data = item["data"]
         assert actual_data == expected_data, f"Expected {expected_data!r} but got {actual_data!r}"
@@ -108,22 +108,22 @@ class TestTransactConditionCheck:
         resp = await client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
-        assert len(body["CancellationReasons"]) == 2, (
-            f'Expected {2!r} but got {len(body["CancellationReasons"])!r}'
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert (
+            len(body["CancellationReasons"]) == 2
+        ), f'Expected {2!r} but got {len(body["CancellationReasons"])!r}'
         actual_reason_code = body["CancellationReasons"][0]["Code"]
         expected_reason_code = "ConditionalCheckFailed"
-        assert actual_reason_code == expected_reason_code, (
-            f"Expected {expected_reason_code!r} but got {actual_reason_code!r}"
-        )
+        assert (
+            actual_reason_code == expected_reason_code
+        ), f"Expected {expected_reason_code!r} but got {actual_reason_code!r}"
         item = await provider.get_item(table_name, {"pk": {"S": "should-not-exist"}})
         assert item is None, f"Expected None but got {item!r}"
 
@@ -151,15 +151,15 @@ class TestTransactConditionCheck:
         resp = await client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         body = resp.json()
         actual_reason_code = body["CancellationReasons"][0]["Code"]
         expected_reason_code = "ConditionalCheckFailed"
-        assert actual_reason_code == expected_reason_code, (
-            f"Expected {expected_reason_code!r} but got {actual_reason_code!r}"
-        )
+        assert (
+            actual_reason_code == expected_reason_code
+        ), f"Expected {expected_reason_code!r} but got {actual_reason_code!r}"
 
     @pytest.mark.asyncio
     async def test_multiple_condition_checks_one_fails_all_cancelled(
@@ -198,22 +198,22 @@ class TestTransactConditionCheck:
         resp = await client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         body = resp.json()
         reasons = body["CancellationReasons"]
         assert len(reasons) == 3, f"Expected {3!r} but got {len(reasons)!r}"
         actual_first = reasons[0]["Code"]
         expected_first = "None"
-        assert actual_first == expected_first, (
-            f"Expected {expected_first!r} but got {actual_first!r}"
-        )
+        assert (
+            actual_first == expected_first
+        ), f"Expected {expected_first!r} but got {actual_first!r}"
         actual_second = reasons[1]["Code"]
         expected_second = "ConditionalCheckFailed"
-        assert actual_second == expected_second, (
-            f"Expected {expected_second!r} but got {actual_second!r}"
-        )
+        assert (
+            actual_second == expected_second
+        ), f"Expected {expected_second!r} but got {actual_second!r}"
         item = await provider.get_item(table_name, {"pk": {"S": "new"}})
         assert item is None, f"Expected None but got {item!r}"
 
@@ -249,8 +249,8 @@ class TestTransactConditionCheck:
         resp = await client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         item = await provider.get_item(table_name, {"pk": {"S": "item2"}})
         assert item is not None, "Expected value to be set but was None"

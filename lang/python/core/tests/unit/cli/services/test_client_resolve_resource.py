@@ -37,9 +37,9 @@ class TestResolveResource:
         actual_queue_url = resource["queue_url"]
 
         # Assert
-        assert actual_queue_url == expected_queue_url, (
-            f"Expected {expected_queue_url!r} but got {actual_queue_url!r}"
-        )
+        assert (
+            actual_queue_url == expected_queue_url
+        ), f"Expected {expected_queue_url!r} but got {actual_queue_url!r}"
 
     @pytest.mark.asyncio
     async def test_raises_for_missing_resource(self):

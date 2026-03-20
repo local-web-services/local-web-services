@@ -24,18 +24,18 @@ class TestParseFakeRule:
 
         # Assert
         expected_operation = "get-item"
-        assert rule.operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {rule.operation!r}"
-        )
+        assert (
+            rule.operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {rule.operation!r}"
         expected_header_value = "DynamoDB_20120810.GetItem"
-        assert rule.match_headers["x-amz-target"] == expected_header_value, (
-            f'Expected {expected_header_value!r} but got {rule.match_headers["x-amz-target"]!r}'
-        )
+        assert (
+            rule.match_headers["x-amz-target"] == expected_header_value
+        ), f'Expected {expected_header_value!r} but got {rule.match_headers["x-amz-target"]!r}'
         expected_status = 200
-        assert rule.response.status == expected_status, (
-            f"Expected {expected_status!r} but got {rule.response.status!r}"
-        )
+        assert (
+            rule.response.status == expected_status
+        ), f"Expected {expected_status!r} but got {rule.response.status!r}"
         expected_body = {"Item": {}}
-        assert rule.response.body == expected_body, (
-            f"Expected {expected_body!r} but got {rule.response.body!r}"
-        )
+        assert (
+            rule.response.body == expected_body
+        ), f"Expected {expected_body!r} but got {rule.response.body!r}"

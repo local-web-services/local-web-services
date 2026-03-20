@@ -46,6 +46,6 @@ class TestPathParams:
         actual_org = path_params["org"]
         actual_user_id = path_params["user_id"]
         assert actual_org == expected_org, f"Expected {expected_org!r} but got {actual_org!r}"
-        assert actual_user_id == expected_user_id, (
-            f"Expected {expected_user_id!r} but got {actual_user_id!r}"
-        )
+        assert (
+            actual_user_id == expected_user_id
+        ), f"Expected {expected_user_id!r} but got {actual_user_id!r}"

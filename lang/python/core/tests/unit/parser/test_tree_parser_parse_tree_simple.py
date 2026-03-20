@@ -67,16 +67,16 @@ class TestParseTreeSimple:
         assert len(nodes) == 1, f"Expected {1!r} but got {len(nodes)!r}"
         stack = nodes[0]
         assert stack.id == expected_stack_id, f"Expected {expected_stack_id!r} but got {stack.id!r}"
-        assert stack.path == expected_stack_path, (
-            f"Expected {expected_stack_path!r} but got {stack.path!r}"
-        )
+        assert (
+            stack.path == expected_stack_path
+        ), f"Expected {expected_stack_path!r} but got {stack.path!r}"
         assert len(stack.children) == 1, f"Expected {1!r} but got {len(stack.children)!r}"
         func = stack.children[0]
         assert func.id == expected_func_id, f"Expected {expected_func_id!r} but got {func.id!r}"
         assert func.fqn == expected_fqn, f"Expected {expected_fqn!r} but got {func.fqn!r}"
-        assert func.category == expected_category, (
-            f"Expected {expected_category!r} but got {func.category!r}"
-        )
+        assert (
+            func.category == expected_category
+        ), f"Expected {expected_category!r} but got {func.category!r}"
 
     def test_node_without_construct_info(self, tmp_tree):
         data = {

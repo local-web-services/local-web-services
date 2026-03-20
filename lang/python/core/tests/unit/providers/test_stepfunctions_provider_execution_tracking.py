@@ -187,15 +187,15 @@ class TestExecutionTracking:
 
         # Assert
         assert history is not None, "Expected value to be set but was None"
-        assert len(history.transitions) == expected_transition_count, (
-            f"Expected {expected_transition_count!r} but got {len(history.transitions)!r}"
-        )
-        assert history.transitions[0].state_name == expected_first_state, (
-            f"Expected {expected_first_state!r} but got {history.transitions[0].state_name!r}"
-        )
-        assert history.transitions[1].state_name == expected_second_state, (
-            f"Expected {expected_second_state!r} but got {history.transitions[1].state_name!r}"
-        )
+        assert (
+            len(history.transitions) == expected_transition_count
+        ), f"Expected {expected_transition_count!r} but got {len(history.transitions)!r}"
+        assert (
+            history.transitions[0].state_name == expected_first_state
+        ), f"Expected {expected_first_state!r} but got {history.transitions[0].state_name!r}"
+        assert (
+            history.transitions[1].state_name == expected_second_state
+        ), f"Expected {expected_second_state!r} but got {history.transitions[1].state_name!r}"
 
     async def test_execution_timing(self, provider: StepFunctionsProvider) -> None:
         result = await provider.start_execution("simple-pass")
@@ -205,6 +205,6 @@ class TestExecutionTracking:
         assert history is not None, "Expected value to be set but was None"
         assert history.start_time > 0, f"Expected {history.start_time!r} > {0!r}"
         assert history.end_time is not None, "Expected value to be set but was None"
-        assert history.end_time >= history.start_time, (
-            f"Expected {history.end_time!r} >= {history.start_time!r}"
-        )
+        assert (
+            history.end_time >= history.start_time
+        ), f"Expected {history.end_time!r} >= {history.start_time!r}"

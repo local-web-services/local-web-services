@@ -35,9 +35,9 @@ class TestExtractorS3Rest:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     def test_put_bucket_returns_create_bucket(self):
         # Arrange
@@ -49,9 +49,9 @@ class TestExtractorS3Rest:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     def test_get_bucket_returns_list_objects_v2(self):
         # Arrange
@@ -63,9 +63,9 @@ class TestExtractorS3Rest:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     def test_get_object_returns_get_object(self):
         # Arrange
@@ -77,9 +77,9 @@ class TestExtractorS3Rest:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     def test_put_object_returns_put_object(self):
         # Arrange
@@ -91,9 +91,9 @@ class TestExtractorS3Rest:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     def test_delete_object_returns_delete_object(self):
         # Arrange
@@ -105,9 +105,9 @@ class TestExtractorS3Rest:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     def test_head_object_returns_head_object(self):
         # Arrange
@@ -119,6 +119,6 @@ class TestExtractorS3Rest:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"

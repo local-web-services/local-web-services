@@ -40,9 +40,9 @@ class TestDocDBDataPlaneEndpoint:
 
         # Assert
         actual_endpoint = result["DBCluster"]["Endpoint"]
-        assert actual_endpoint == expected_endpoint, (
-            f"Expected {expected_endpoint!r} but got {actual_endpoint!r}"
-        )
+        assert (
+            actual_endpoint == expected_endpoint
+        ), f"Expected {expected_endpoint!r} but got {actual_endpoint!r}"
         fake_cm.start_container.assert_called_once_with("test-cluster")
 
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
@@ -60,9 +60,9 @@ class TestDocDBDataPlaneEndpoint:
 
         # Assert
         actual_endpoint = result["DBCluster"]["Endpoint"]
-        assert expected_suffix in actual_endpoint, (
-            f"Expected {expected_suffix!r} to be in {actual_endpoint!r}"
-        )
+        assert (
+            expected_suffix in actual_endpoint
+        ), f"Expected {expected_suffix!r} to be in {actual_endpoint!r}"
 
     def test_delete_cluster_stops_container(self) -> None:
         # Arrange

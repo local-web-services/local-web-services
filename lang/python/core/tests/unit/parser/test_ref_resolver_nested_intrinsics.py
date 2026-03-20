@@ -25,9 +25,9 @@ class TestNestedIntrinsics:
         )
 
         # Assert
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_deeply_nested(self):
         # Arrange
@@ -46,6 +46,6 @@ class TestNestedIntrinsics:
         )
 
         # Assert
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"

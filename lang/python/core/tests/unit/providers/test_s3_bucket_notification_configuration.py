@@ -55,15 +55,15 @@ class TestBucketNotificationConfiguration:
         get_resp = await client.get(f"/{bucket_name}?notification")
 
         # Assert
-        assert put_resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {put_resp.status_code!r}"
-        )
-        assert get_resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {get_resp.status_code!r}"
-        )
-        assert "<NotificationConfiguration>" in get_resp.text, (
-            f'Expected {"<NotificationConfiguration>"!r} to be in {get_resp.text!r}'
-        )
+        assert (
+            put_resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {put_resp.status_code!r}"
+        assert (
+            get_resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {get_resp.status_code!r}"
+        assert (
+            "<NotificationConfiguration>" in get_resp.text
+        ), f'Expected {"<NotificationConfiguration>"!r} to be in {get_resp.text!r}'
         assert "my-topic" in get_resp.text, f'Expected {"my-topic"!r} to be in {get_resp.text!r}'
 
     @pytest.mark.asyncio
@@ -78,12 +78,12 @@ class TestBucketNotificationConfiguration:
         resp = await client.get("/my-bucket?notification")
 
         # Assert
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
-        assert "<NotificationConfiguration/>" in resp.text, (
-            f'Expected {"<NotificationConfiguration/>"!r} to be in {resp.text!r}'
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "<NotificationConfiguration/>" in resp.text
+        ), f'Expected {"<NotificationConfiguration/>"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_put_notification_configuration_no_such_bucket(
@@ -101,9 +101,9 @@ class TestBucketNotificationConfiguration:
         )
 
         # Assert
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "NoSuchBucket" in resp.text, f'Expected {"NoSuchBucket"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
@@ -115,7 +115,7 @@ class TestBucketNotificationConfiguration:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "NoSuchBucket" in resp.text, f'Expected {"NoSuchBucket"!r} to be in {resp.text!r}'

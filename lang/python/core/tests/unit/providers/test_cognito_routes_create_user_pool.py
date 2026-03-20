@@ -47,12 +47,12 @@ class TestCreateUserPool:
         # Assert
         expected_status = 200
         expected_pool_id = "us-east-1_testpool"
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
         assert "UserPool" in data, f'Expected {"UserPool"!r} to be in {data!r}'
         actual_pool_id = data["UserPool"]["Id"]
-        assert actual_pool_id == expected_pool_id, (
-            f"Expected {expected_pool_id!r} but got {actual_pool_id!r}"
-        )
+        assert (
+            actual_pool_id == expected_pool_id
+        ), f"Expected {expected_pool_id!r} but got {actual_pool_id!r}"

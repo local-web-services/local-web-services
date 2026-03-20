@@ -41,16 +41,16 @@ class TestDeleteTopic:
         resp = await client.post("/", data={"Action": "DeleteTopic", "TopicArn": topic_arn})
 
         # Assert
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
-        assert "DeleteTopicResponse" in resp.text, (
-            f'Expected {"DeleteTopicResponse"!r} to be in {resp.text!r}'
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "DeleteTopicResponse" in resp.text
+        ), f'Expected {"DeleteTopicResponse"!r} to be in {resp.text!r}'
         actual_topics = provider.list_topics()
-        assert len(actual_topics) == expected_topic_count, (
-            f"Expected {expected_topic_count!r} but got {len(actual_topics)!r}"
-        )
+        assert (
+            len(actual_topics) == expected_topic_count
+        ), f"Expected {expected_topic_count!r} but got {len(actual_topics)!r}"
 
     @pytest.mark.asyncio
     async def test_delete_topic_not_found(self, client: httpx.AsyncClient) -> None:
@@ -62,7 +62,7 @@ class TestDeleteTopic:
         resp = await client.post("/", data={"Action": "DeleteTopic", "TopicArn": topic_arn})
 
         # Assert
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "NotFound" in resp.text, f'Expected {"NotFound"!r} to be in {resp.text!r}'

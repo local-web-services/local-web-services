@@ -105,6 +105,8 @@ public class ServerStateTest {
     int actualSize = state.logBuffer.size();
 
     // Assert
-    assertTrue(actualSize <= expectedMaxSize, "Expected condition to be true: actualSize <= expectedMaxSize");
+    assertTrue(
+        actualSize <= expectedMaxSize,
+        "Expected condition to be true: actualSize <= expectedMaxSize");
   }
 }

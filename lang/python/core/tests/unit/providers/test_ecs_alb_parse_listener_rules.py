@@ -53,9 +53,9 @@ class TestParseListenerRules:
         rules = parse_listener_rules(resources)
         assert len(rules) == 1, f"Expected {1!r} but got {len(rules)!r}"
         assert rules[0].priority == 10, f"Expected {10!r} but got {rules[0].priority!r}"
-        assert rules[0].path_pattern == "/api/*", (
-            f'Expected {"/api/*"!r} but got {rules[0].path_pattern!r}'
-        )
+        assert (
+            rules[0].path_pattern == "/api/*"
+        ), f'Expected {"/api/*"!r} but got {rules[0].path_pattern!r}'
 
     def test_parse_path_pattern_config(self) -> None:
         resources = {
@@ -72,9 +72,9 @@ class TestParseListenerRules:
         }
         rules = parse_listener_rules(resources)
         assert len(rules) == 1, f"Expected {1!r} but got {len(rules)!r}"
-        assert rules[0].path_pattern == "/web/*", (
-            f'Expected {"/web/*"!r} but got {rules[0].path_pattern!r}'
-        )
+        assert (
+            rules[0].path_pattern == "/web/*"
+        ), f'Expected {"/web/*"!r} but got {rules[0].path_pattern!r}'
 
     def test_skip_non_listener_rules(self) -> None:
         resources = {

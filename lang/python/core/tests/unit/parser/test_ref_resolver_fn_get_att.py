@@ -15,9 +15,9 @@ class TestFnGetAtt:
         actual_value = r.resolve({"Fn::GetAtt": ["MyTable", "Arn"]})
 
         # Assert
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_get_att_string_form(self):
         # Arrange
@@ -28,9 +28,9 @@ class TestFnGetAtt:
         actual_value = r.resolve({"Fn::GetAtt": "MyTable.StreamArn"})
 
         # Assert
-        assert actual_value == expected_value, (
-            f"Expected {expected_value!r} but got {actual_value!r}"
-        )
+        assert (
+            actual_value == expected_value
+        ), f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_get_att_generates_arn(self):
         # Arrange

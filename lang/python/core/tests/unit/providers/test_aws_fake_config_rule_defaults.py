@@ -20,14 +20,14 @@ class TestAwsFakeRuleDefaults:
         actual_response = rule.response
 
         # Assert
-        assert actual_operation == expected_operation, (
-            f"Expected {expected_operation!r} but got {actual_operation!r}"
-        )
+        assert (
+            actual_operation == expected_operation
+        ), f"Expected {expected_operation!r} but got {actual_operation!r}"
         assert actual_match_headers == {}, f"Expected {({})!r} but got {actual_match_headers!r}"
-        assert isinstance(actual_response, AwsFakeResponse), (
-            f"Expected instance of {AwsFakeResponse!r} but got {type(actual_response)!r}"
-        )
+        assert isinstance(
+            actual_response, AwsFakeResponse
+        ), f"Expected instance of {AwsFakeResponse!r} but got {type(actual_response)!r}"
         expected_status = 200
-        assert actual_response.status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_response.status!r}"
-        )
+        assert (
+            actual_response.status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_response.status!r}"

@@ -56,16 +56,16 @@ class TestSetSubscriptionAttributes:
         )
 
         # Assert
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
-        assert "SetSubscriptionAttributesResponse" in resp.text, (
-            f'Expected {"SetSubscriptionAttributesResponse"!r} to be in {resp.text!r}'
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert (
+            "SetSubscriptionAttributesResponse" in resp.text
+        ), f'Expected {"SetSubscriptionAttributesResponse"!r} to be in {resp.text!r}'
         actual_attrs = await provider.get_subscription_attributes(sub_arn)
-        assert actual_attrs[attribute_name] == expected_value, (
-            f"Expected {expected_value!r} but got {actual_attrs[attribute_name]!r}"
-        )
+        assert (
+            actual_attrs[attribute_name] == expected_value
+        ), f"Expected {expected_value!r} but got {actual_attrs[attribute_name]!r}"
 
     @pytest.mark.asyncio
     async def test_set_subscription_attributes_not_found(
@@ -85,7 +85,7 @@ class TestSetSubscriptionAttributes:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         assert "NotFound" in resp.text, f'Expected {"NotFound"!r} to be in {resp.text!r}'

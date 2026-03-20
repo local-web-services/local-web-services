@@ -24,12 +24,12 @@ class TestWebSocketLogHandler:
         # Assert
         actual_backlog_size = len(handler.backlog())
         actual_message = handler.backlog()[0]["message"]
-        assert actual_backlog_size == expected_backlog_size, (
-            f"Expected {expected_backlog_size!r} but got {actual_backlog_size!r}"
-        )
-        assert actual_message == expected_message, (
-            f"Expected {expected_message!r} but got {actual_message!r}"
-        )
+        assert (
+            actual_backlog_size == expected_backlog_size
+        ), f"Expected {expected_backlog_size!r} but got {actual_backlog_size!r}"
+        assert (
+            actual_message == expected_message
+        ), f"Expected {expected_message!r} but got {actual_message!r}"
 
     def test_buffer_respects_max_size(self):
         # Arrange
@@ -45,12 +45,12 @@ class TestWebSocketLogHandler:
         backlog = handler.backlog()
         actual_backlog_size = len(backlog)
         actual_messages = [e["message"] for e in backlog]
-        assert actual_backlog_size == expected_backlog_size, (
-            f"Expected {expected_backlog_size!r} but got {actual_backlog_size!r}"
-        )
-        assert actual_messages == expected_messages, (
-            f"Expected {expected_messages!r} but got {actual_messages!r}"
-        )
+        assert (
+            actual_backlog_size == expected_backlog_size
+        ), f"Expected {expected_backlog_size!r} but got {actual_backlog_size!r}"
+        assert (
+            actual_messages == expected_messages
+        ), f"Expected {expected_messages!r} but got {actual_messages!r}"
 
     def test_backlog_returns_copy(self):
         # Arrange
@@ -64,9 +64,9 @@ class TestWebSocketLogHandler:
 
         # Assert
         actual_backlog_size = len(handler.backlog())
-        assert actual_backlog_size == expected_backlog_size, (
-            f"Expected {expected_backlog_size!r} but got {actual_backlog_size!r}"
-        )
+        assert (
+            actual_backlog_size == expected_backlog_size
+        ), f"Expected {expected_backlog_size!r} but got {actual_backlog_size!r}"
 
     @pytest.mark.asyncio
     async def test_subscribe_receives_new_entries(self):
@@ -81,9 +81,9 @@ class TestWebSocketLogHandler:
 
         # Assert
         actual_message = entry["message"]
-        assert actual_message == expected_message, (
-            f"Expected {expected_message!r} but got {actual_message!r}"
-        )
+        assert (
+            actual_message == expected_message
+        ), f"Expected {expected_message!r} but got {actual_message!r}"
 
     @pytest.mark.asyncio
     async def test_multiple_subscribers_receive_same_entry(self):
@@ -99,12 +99,12 @@ class TestWebSocketLogHandler:
         # Assert
         actual_message_q1 = q1.get_nowait()["message"]
         actual_message_q2 = q2.get_nowait()["message"]
-        assert actual_message_q1 == expected_message, (
-            f"Expected {expected_message!r} but got {actual_message_q1!r}"
-        )
-        assert actual_message_q2 == expected_message, (
-            f"Expected {expected_message!r} but got {actual_message_q2!r}"
-        )
+        assert (
+            actual_message_q1 == expected_message
+        ), f"Expected {expected_message!r} but got {actual_message_q1!r}"
+        assert (
+            actual_message_q2 == expected_message
+        ), f"Expected {expected_message!r} but got {actual_message_q2!r}"
 
     @pytest.mark.asyncio
     async def test_unsubscribe_stops_delivery(self):
@@ -130,9 +130,9 @@ class TestWebSocketLogHandler:
 
         # Assert
         actual_backlog_size = len(handler.backlog())
-        assert actual_backlog_size == expected_backlog_size, (
-            f"Expected {expected_backlog_size!r} but got {actual_backlog_size!r}"
-        )
+        assert (
+            actual_backlog_size == expected_backlog_size
+        ), f"Expected {expected_backlog_size!r} but got {actual_backlog_size!r}"
 
     @pytest.mark.asyncio
     async def test_emit_drops_when_queue_full(self):
@@ -148,6 +148,6 @@ class TestWebSocketLogHandler:
 
         # Assert
         actual_queue_size = q.qsize()
-        assert actual_queue_size == expected_queue_size, (
-            f"Expected {expected_queue_size!r} but got {actual_queue_size!r}"
-        )
+        assert (
+            actual_queue_size == expected_queue_size
+        ), f"Expected {expected_queue_size!r} but got {actual_queue_size!r}"

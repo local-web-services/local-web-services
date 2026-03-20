@@ -166,13 +166,13 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         assert "<MessageId>" in resp.text, f'Expected {"<MessageId>"!r} to be in {resp.text!r}'
-        assert "<MD5OfMessageBody>" in resp.text, (
-            f'Expected {"<MD5OfMessageBody>"!r} to be in {resp.text!r}'
-        )
+        assert (
+            "<MD5OfMessageBody>" in resp.text
+        ), f'Expected {"<MD5OfMessageBody>"!r} to be in {resp.text!r}'
 
     async def test_receive_message(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -201,11 +201,11 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
-        assert f"<Body>{expected_body}</Body>" in resp.text, (
-            "Expected {!r} to be in {!r}".format(f"<Body>{expected_body}</Body>", resp.text)
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert f"<Body>{expected_body}</Body>" in resp.text, "Expected {!r} to be in {!r}".format(
+            f"<Body>{expected_body}</Body>", resp.text
         )
 
     async def test_delete_message(self, sqs_client: httpx.AsyncClient) -> None:
@@ -246,12 +246,12 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
-        assert "<DeleteMessageResponse>" in resp.text, (
-            f'Expected {"<DeleteMessageResponse>"!r} to be in {resp.text!r}'
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert (
+            "<DeleteMessageResponse>" in resp.text
+        ), f'Expected {"<DeleteMessageResponse>"!r} to be in {resp.text!r}'
 
     async def test_create_queue(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -269,9 +269,9 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         assert "<QueueUrl>" in resp.text, f'Expected {"<QueueUrl>"!r} to be in {resp.text!r}'
         assert queue_name in resp.text, f"Expected {queue_name!r} to be in {resp.text!r}"
 
@@ -290,9 +290,9 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         assert "<QueueUrl>" in resp.text, f'Expected {"<QueueUrl>"!r} to be in {resp.text!r}'
 
     async def test_get_queue_url_not_found(self, sqs_client: httpx.AsyncClient) -> None:
@@ -310,12 +310,12 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
-        assert "NonExistentQueue" in resp.text, (
-            f'Expected {"NonExistentQueue"!r} to be in {resp.text!r}'
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert (
+            "NonExistentQueue" in resp.text
+        ), f'Expected {"NonExistentQueue"!r} to be in {resp.text!r}'
 
     async def test_get_queue_attributes(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -332,12 +332,12 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
-        assert "VisibilityTimeout" in resp.text, (
-            f'Expected {"VisibilityTimeout"!r} to be in {resp.text!r}'
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert (
+            "VisibilityTimeout" in resp.text
+        ), f'Expected {"VisibilityTimeout"!r} to be in {resp.text!r}'
         assert "QueueArn" in resp.text, f'Expected {"QueueArn"!r} to be in {resp.text!r}'
 
     async def test_unknown_action_returns_error(self, sqs_client: httpx.AsyncClient) -> None:
@@ -353,15 +353,15 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
-        assert "<ErrorResponse>" in resp.text, (
-            f'Expected {"<ErrorResponse>"!r} to be in {resp.text!r}'
-        )
-        assert "<Code>InvalidAction</Code>" in resp.text, (
-            f'Expected {"<Code>InvalidAction</Code>"!r} to be in {resp.text!r}'
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert (
+            "<ErrorResponse>" in resp.text
+        ), f'Expected {"<ErrorResponse>"!r} to be in {resp.text!r}'
+        assert (
+            "<Code>InvalidAction</Code>" in resp.text
+        ), f'Expected {"<Code>InvalidAction</Code>"!r} to be in {resp.text!r}'
         assert "lws" in resp.text, f'Expected {"lws"!r} to be in {resp.text!r}'
         assert "SQS" in resp.text, f'Expected {"SQS"!r} to be in {resp.text!r}'
         assert bogus_action in resp.text, f"Expected {bogus_action!r} to be in {resp.text!r}"
@@ -380,7 +380,7 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {actual_status_code!r}"
-        )
+        assert (
+            actual_status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         assert "<MessageId>" in resp.text, f'Expected {"<MessageId>"!r} to be in {resp.text!r}'

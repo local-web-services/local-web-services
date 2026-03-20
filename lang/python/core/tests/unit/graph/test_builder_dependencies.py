@@ -55,9 +55,9 @@ class TestDependencies:
         actual_dependencies = graph.get_dependencies("fn")
 
         # Assert
-        assert actual_dependencies == expected_dependencies, (
-            f"Expected {expected_dependencies!r} but got {actual_dependencies!r}"
-        )
+        assert (
+            actual_dependencies == expected_dependencies
+        ), f"Expected {expected_dependencies!r} but got {actual_dependencies!r}"
 
     def test_get_dependencies_ignores_trigger_edges(self) -> None:
         # Arrange
@@ -79,9 +79,9 @@ class TestDependencies:
         actual_dependents = graph.get_dependents("table")
 
         # Assert
-        assert actual_dependents == expected_dependents, (
-            f"Expected {expected_dependents!r} but got {actual_dependents!r}"
-        )
+        assert (
+            actual_dependents == expected_dependents
+        ), f"Expected {expected_dependents!r} but got {actual_dependents!r}"
 
     def test_get_dependents_empty_for_leaf(self) -> None:
         # Arrange

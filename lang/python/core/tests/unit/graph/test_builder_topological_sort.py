@@ -51,16 +51,16 @@ class TestTopologicalSort:
         actual_order = graph.topological_sort()
 
         # Assert
-        assert len(actual_order) == expected_count, (
-            f"Expected {expected_count!r} but got {len(actual_order)!r}"
-        )
+        assert (
+            len(actual_order) == expected_count
+        ), f"Expected {expected_count!r} but got {len(actual_order)!r}"
         # table must come before fn, fn must come before api
-        assert actual_order.index("table") < actual_order.index("fn"), (
-            f'Expected {actual_order.index("table")!r} < {actual_order.index("fn")!r}'
-        )
-        assert actual_order.index("fn") < actual_order.index("api"), (
-            f'Expected {actual_order.index("fn")!r} < {actual_order.index("api")!r}'
-        )
+        assert actual_order.index("table") < actual_order.index(
+            "fn"
+        ), f'Expected {actual_order.index("table")!r} < {actual_order.index("fn")!r}'
+        assert actual_order.index("fn") < actual_order.index(
+            "api"
+        ), f'Expected {actual_order.index("fn")!r} < {actual_order.index("api")!r}'
 
     def test_multiple_independent_routes(self) -> None:
         """Two independent API -> Lambda chains should both appear in full."""
@@ -78,15 +78,15 @@ class TestTopologicalSort:
         actual_order = graph.topological_sort()
 
         # Assert
-        assert len(actual_order) == expected_count, (
-            f"Expected {expected_count!r} but got {len(actual_order)!r}"
-        )
-        assert actual_order.index("fn1") < actual_order.index("api1"), (
-            f'Expected {actual_order.index("fn1")!r} < {actual_order.index("api1")!r}'
-        )
-        assert actual_order.index("fn2") < actual_order.index("api2"), (
-            f'Expected {actual_order.index("fn2")!r} < {actual_order.index("api2")!r}'
-        )
+        assert (
+            len(actual_order) == expected_count
+        ), f"Expected {expected_count!r} but got {len(actual_order)!r}"
+        assert actual_order.index("fn1") < actual_order.index(
+            "api1"
+        ), f'Expected {actual_order.index("fn1")!r} < {actual_order.index("api1")!r}'
+        assert actual_order.index("fn2") < actual_order.index(
+            "api2"
+        ), f'Expected {actual_order.index("fn2")!r} < {actual_order.index("api2")!r}'
 
     def test_empty_graph(self) -> None:
         # Arrange
@@ -109,9 +109,9 @@ class TestTopologicalSort:
         actual_order = graph.topological_sort()
 
         # Assert
-        assert actual_order == expected_order, (
-            f"Expected {expected_order!r} but got {actual_order!r}"
-        )
+        assert (
+            actual_order == expected_order
+        ), f"Expected {expected_order!r} but got {actual_order!r}"
 
     def test_shared_dependency(self) -> None:
         """Two functions sharing a table dependency."""
@@ -140,12 +140,12 @@ class TestTopologicalSort:
         actual_order = graph.topological_sort()
 
         # Assert
-        assert len(actual_order) == expected_count, (
-            f"Expected {expected_count!r} but got {len(actual_order)!r}"
-        )
-        assert actual_order.index("table") < actual_order.index("fn1"), (
-            f'Expected {actual_order.index("table")!r} < {actual_order.index("fn1")!r}'
-        )
-        assert actual_order.index("table") < actual_order.index("fn2"), (
-            f'Expected {actual_order.index("table")!r} < {actual_order.index("fn2")!r}'
-        )
+        assert (
+            len(actual_order) == expected_count
+        ), f"Expected {expected_count!r} but got {len(actual_order)!r}"
+        assert actual_order.index("table") < actual_order.index(
+            "fn1"
+        ), f'Expected {actual_order.index("table")!r} < {actual_order.index("fn1")!r}'
+        assert actual_order.index("table") < actual_order.index(
+            "fn2"
+        ), f'Expected {actual_order.index("table")!r} < {actual_order.index("fn2")!r}'

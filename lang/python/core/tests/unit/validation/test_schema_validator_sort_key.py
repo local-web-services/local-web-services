@@ -107,12 +107,12 @@ class TestSortKey:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        )
-        assert expected_message in issues[0].message, (
-            f"Expected {expected_message!r} to be in {issues[0].message!r}"
-        )
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            expected_message in issues[0].message
+        ), f"Expected {expected_message!r} to be in {issues[0].message!r}"
 
     def test_sk_type_mismatch(self) -> None:
         # Arrange
@@ -126,9 +126,9 @@ class TestSortKey:
         issues = validator.validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count, (
-            f"Expected {expected_issue_count!r} but got {len(issues)!r}"
-        )
-        assert expected_message_fragment in issues[0].message, (
-            f"Expected {expected_message_fragment!r} to be in {issues[0].message!r}"
-        )
+        assert (
+            len(issues) == expected_issue_count
+        ), f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert (
+            expected_message_fragment in issues[0].message
+        ), f"Expected {expected_message_fragment!r} to be in {issues[0].message!r}"

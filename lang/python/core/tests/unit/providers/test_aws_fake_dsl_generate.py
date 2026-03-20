@@ -15,12 +15,12 @@ class TestGenerateAwsFakeConfigYaml:
         actual_yaml = generate_aws_fake_config_yaml("my-fake", "s3")
 
         # Assert
-        assert expected_name_fragment in actual_yaml, (
-            f"Expected {expected_name_fragment!r} to be in {actual_yaml!r}"
-        )
-        assert expected_service_fragment in actual_yaml, (
-            f"Expected {expected_service_fragment!r} to be in {actual_yaml!r}"
-        )
+        assert (
+            expected_name_fragment in actual_yaml
+        ), f"Expected {expected_name_fragment!r} to be in {actual_yaml!r}"
+        assert (
+            expected_service_fragment in actual_yaml
+        ), f"Expected {expected_service_fragment!r} to be in {actual_yaml!r}"
 
     def test_contains_enabled_true(self):
         # Arrange
@@ -30,6 +30,6 @@ class TestGenerateAwsFakeConfigYaml:
         actual_yaml = generate_aws_fake_config_yaml("my-fake", "dynamodb")
 
         # Assert
-        assert expected_enabled_fragment in actual_yaml, (
-            f"Expected {expected_enabled_fragment!r} to be in {actual_yaml!r}"
-        )
+        assert (
+            expected_enabled_fragment in actual_yaml
+        ), f"Expected {expected_enabled_fragment!r} to be in {actual_yaml!r}"

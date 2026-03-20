@@ -46,12 +46,12 @@ class TestProviderFindSubscription:
         # Assert
         assert actual_sub is not None, "Expected value to be set but was None"
         assert actual_topic is not None, "Expected value to be set but was None"
-        assert actual_sub.subscription_arn == sub_arn, (
-            f"Expected {sub_arn!r} but got {actual_sub.subscription_arn!r}"
-        )
-        assert actual_topic.topic_name == topic_name, (
-            f"Expected {topic_name!r} but got {actual_topic.topic_name!r}"
-        )
+        assert (
+            actual_sub.subscription_arn == sub_arn
+        ), f"Expected {sub_arn!r} but got {actual_sub.subscription_arn!r}"
+        assert (
+            actual_topic.topic_name == topic_name
+        ), f"Expected {topic_name!r} but got {actual_topic.topic_name!r}"
 
     @pytest.mark.asyncio
     async def test_find_subscription_returns_none_when_not_found(

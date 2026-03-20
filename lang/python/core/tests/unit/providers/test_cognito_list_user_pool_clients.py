@@ -77,18 +77,18 @@ class TestListUserPoolClients:
         # Assert
         expected_status = 200
         expected_count = 2
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_count = len(data["UserPoolClients"])
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
         actual_names = {c["ClientName"] for c in data["UserPoolClients"]}
-        assert actual_names == expected_names, (
-            f"Expected {expected_names!r} but got {actual_names!r}"
-        )
+        assert (
+            actual_names == expected_names
+        ), f"Expected {expected_names!r} but got {actual_names!r}"
 
     async def test_list_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
         # Act
@@ -101,10 +101,10 @@ class TestListUserPoolClients:
         # Assert
         expected_status = 400
         expected_error_type = "ResourceNotFoundException"
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

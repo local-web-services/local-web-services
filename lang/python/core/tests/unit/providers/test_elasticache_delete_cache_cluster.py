@@ -40,9 +40,9 @@ class TestDeleteCacheCluster:
 
         # Assert
         actual_status = result["CacheCluster"]["CacheClusterStatus"]
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_delete_removes_from_describe(self, client: TestClient) -> None:
         # Arrange
@@ -66,6 +66,6 @@ class TestDeleteCacheCluster:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

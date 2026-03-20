@@ -28,9 +28,9 @@ class TestBasicRouteMatching:
         # Assert
         assert result is not None, "Expected value to be set but was None"
         actual_status = result[0].status
-        assert actual_status == expected_status, (
-            f"Expected {expected_status!r} but got {actual_status!r}"
-        )
+        assert (
+            actual_status == expected_status
+        ), f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_no_match_wrong_path(self):
         # Arrange

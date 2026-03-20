@@ -68,19 +68,19 @@ class TestIdentityStoreLoad:
         expected_admin_name = "admin"
         expected_admin_type = "user"
         expected_reader_type = "role"
-        assert actual_admin.name == expected_admin_name, (
-            f"Expected {expected_admin_name!r} but got {actual_admin.name!r}"
-        )
-        assert actual_admin.type == expected_admin_type, (
-            f"Expected {expected_admin_type!r} but got {actual_admin.type!r}"
-        )
-        assert len(actual_admin.inline_policies) == 1, (
-            f"Expected {1!r} but got {len(actual_admin.inline_policies)!r}"
-        )
+        assert (
+            actual_admin.name == expected_admin_name
+        ), f"Expected {expected_admin_name!r} but got {actual_admin.name!r}"
+        assert (
+            actual_admin.type == expected_admin_type
+        ), f"Expected {expected_admin_type!r} but got {actual_admin.type!r}"
+        assert (
+            len(actual_admin.inline_policies) == 1
+        ), f"Expected {1!r} but got {len(actual_admin.inline_policies)!r}"
         assert actual_reader is not None, "Expected value to be set but was None"
-        assert actual_reader.type == expected_reader_type, (
-            f"Expected {expected_reader_type!r} but got {actual_reader.type!r}"
-        )
+        assert (
+            actual_reader.type == expected_reader_type
+        ), f"Expected {expected_reader_type!r} but got {actual_reader.type!r}"
         assert actual_reader.boundary_policy is not None, "Expected value to be set but was None"
 
     def test_missing_file_returns_empty(self):

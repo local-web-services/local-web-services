@@ -44,9 +44,9 @@ class TestCreateQueue:
         assert url1 == url2, f"Expected {url2!r} but got {url1!r}"
         queues = await provider.list_queues()
         actual_count = queues.count(queue_name)
-        assert actual_count == expected_count, (
-            f"Expected {expected_count!r} but got {actual_count!r}"
-        )
+        assert (
+            actual_count == expected_count
+        ), f"Expected {expected_count!r} but got {actual_count!r}"
 
     @pytest.mark.asyncio
     async def test_create_fifo_queue(self, provider: SqsProvider) -> None:
@@ -61,6 +61,6 @@ class TestCreateQueue:
         assert queue_name in url, f"Expected {queue_name!r} to be in {url!r}"
         attrs = await provider.get_queue_attributes(queue_name)
         actual_fifo_attr = attrs["FifoQueue"]
-        assert actual_fifo_attr == expected_fifo_attr, (
-            f"Expected {expected_fifo_attr!r} but got {actual_fifo_attr!r}"
-        )
+        assert (
+            actual_fifo_attr == expected_fifo_attr
+        ), f"Expected {expected_fifo_attr!r} but got {actual_fifo_attr!r}"

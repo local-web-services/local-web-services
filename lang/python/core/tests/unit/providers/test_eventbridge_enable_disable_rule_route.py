@@ -53,36 +53,36 @@ class TestEnableDisableRuleRoute:
 
         # Act & Assert - disable
         resp = await _request(client, "DisableRule", {"Name": rule_name})
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
         resp = await _request(client, "DescribeRule", {"Name": rule_name})
-        assert resp.json()["State"] == expected_disabled_state, (
-            f'Expected {expected_disabled_state!r} but got {resp.json()["State"]!r}'
-        )
+        assert (
+            resp.json()["State"] == expected_disabled_state
+        ), f'Expected {expected_disabled_state!r} but got {resp.json()["State"]!r}'
 
         # Act & Assert - enable
         resp = await _request(client, "EnableRule", {"Name": rule_name})
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
         resp = await _request(client, "DescribeRule", {"Name": rule_name})
-        assert resp.json()["State"] == expected_enabled_state, (
-            f'Expected {expected_enabled_state!r} but got {resp.json()["State"]!r}'
-        )
+        assert (
+            resp.json()["State"] == expected_enabled_state
+        ), f'Expected {expected_enabled_state!r} but got {resp.json()["State"]!r}'
 
     async def test_disable_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
         expected_status_code = 400
         resp = await _request(client, "DisableRule", {"Name": "nope"})
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
     async def test_enable_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
         expected_status_code = 400
         resp = await _request(client, "EnableRule", {"Name": "nope"})
-        assert resp.status_code == expected_status_code, (
-            f"Expected {expected_status_code!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status_code
+        ), f"Expected {expected_status_code!r} but got {resp.status_code!r}"

@@ -102,12 +102,12 @@ class TestExecutionTracking:
 
         # Assert
         actual_state_names = [t.state_name for t in history.transitions]
-        assert len(history.transitions) == expected_transition_count, (
-            f"Expected {expected_transition_count!r} but got {len(history.transitions)!r}"
-        )
-        assert actual_state_names == expected_state_names, (
-            f"Expected {expected_state_names!r} but got {actual_state_names!r}"
-        )
+        assert (
+            len(history.transitions) == expected_transition_count
+        ), f"Expected {expected_transition_count!r} but got {len(history.transitions)!r}"
+        assert (
+            actual_state_names == expected_state_names
+        ), f"Expected {expected_state_names!r} but got {actual_state_names!r}"
 
     async def test_transition_has_input_output(self) -> None:
         # Arrange
@@ -125,20 +125,20 @@ class TestExecutionTracking:
 
         # Assert
         actual_transition = history.transitions[0]
-        assert actual_transition.input_data == expected_input, (
-            f"Expected {expected_input!r} but got {actual_transition.input_data!r}"
-        )
-        assert actual_transition.output_data == expected_output, (
-            f"Expected {expected_output!r} but got {actual_transition.output_data!r}"
-        )
+        assert (
+            actual_transition.input_data == expected_input
+        ), f"Expected {expected_input!r} but got {actual_transition.input_data!r}"
+        assert (
+            actual_transition.output_data == expected_output
+        ), f"Expected {expected_output!r} but got {actual_transition.output_data!r}"
 
     async def test_execution_arn_set(self) -> None:
         history = await run_engine(
             {"StartAt": "S", "States": {"S": {"Type": "Succeed"}}},
         )
-        assert "arn:aws:states" in history.execution_arn, (
-            f'Expected {"arn:aws:states"!r} to be in {history.execution_arn!r}'
-        )
+        assert (
+            "arn:aws:states" in history.execution_arn
+        ), f'Expected {"arn:aws:states"!r} to be in {history.execution_arn!r}'
 
     async def test_timing_recorded(self) -> None:
         history = await run_engine(
@@ -146,6 +146,6 @@ class TestExecutionTracking:
         )
         assert history.start_time > 0, f"Expected {history.start_time!r} > {0!r}"
         assert history.end_time is not None, "Expected value to be set but was None"
-        assert history.end_time >= history.start_time, (
-            f"Expected {history.end_time!r} >= {history.start_time!r}"
-        )
+        assert (
+            history.end_time >= history.start_time
+        ), f"Expected {history.end_time!r} >= {history.start_time!r}"

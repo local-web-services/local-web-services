@@ -46,7 +46,8 @@ class DynamoDbStoreQueryAdvancedTest {
         store.query("colors", null, null, exprValues, null, "color = :c", true, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -78,8 +79,14 @@ class DynamoDbStoreQueryAdvancedTest {
 
     // Assert
     assertEquals(3, actualItems.size(), "Expected actualItems.size() to match 3");
-    assertEquals(expectedFirstSk, ((Map<?, ?>) actualItems.get(0).get("sk")).get("S"), "Expected firstSk to match");
-    assertEquals(expectedLastSk, ((Map<?, ?>) actualItems.get(2).get("sk")).get("S"), "Expected lastSk to match");
+    assertEquals(
+        expectedFirstSk,
+        ((Map<?, ?>) actualItems.get(0).get("sk")).get("S"),
+        "Expected firstSk to match");
+    assertEquals(
+        expectedLastSk,
+        ((Map<?, ?>) actualItems.get(2).get("sk")).get("S"),
+        "Expected lastSk to match");
   }
 
   @Test
@@ -115,8 +122,10 @@ class DynamoDbStoreQueryAdvancedTest {
             "paged", "pk = :pk", null, exprValues, null, null, true, null, exclusiveStartKey);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
-    assertEquals(expectedSk, ((Map<?, ?>) actualItems.get(0).get("sk")).get("S"), "Expected sk to match");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedSk, ((Map<?, ?>) actualItems.get(0).get("sk")).get("S"), "Expected sk to match");
   }
 
   @Test
@@ -147,7 +156,8 @@ class DynamoDbStoreQueryAdvancedTest {
             "paged2", "pk = :pk", null, exprValues, null, null, true, null, exclusiveStartKey);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -171,7 +181,8 @@ class DynamoDbStoreQueryAdvancedTest {
         store.query("limited", "pk = :pk", null, exprValues, null, null, true, 2, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -199,8 +210,10 @@ class DynamoDbStoreQueryAdvancedTest {
         store.scan("scanpaged", null, null, null, null, exclusiveStartKey);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
-    assertEquals(expectedPk, ((Map<?, ?>) actualItems.get(0).get("pk")).get("S"), "Expected pk to match");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedPk, ((Map<?, ?>) actualItems.get(0).get("pk")).get("S"), "Expected pk to match");
   }
 
   @Test
@@ -224,7 +237,8 @@ class DynamoDbStoreQueryAdvancedTest {
         store.scan("scanpaged2", null, null, null, null, exclusiveStartKey);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
+    assertEquals(
+        expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -245,6 +259,7 @@ class DynamoDbStoreQueryAdvancedTest {
 
     // Assert
     assertNotNull(actualItem, "Expected actualItem to not be null");
-    assertEquals(expectedName, ((Map<?, ?>) actualItem.get("name")).get("S"), "Expected name to match");
+    assertEquals(
+        expectedName, ((Map<?, ?>) actualItem.get("name")).get("S"), "Expected name to match");
   }
 }

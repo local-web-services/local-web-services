@@ -26,7 +26,9 @@ public class StepFunctionsStoreExecutionTest {
 
     // Assert
     assertNotNull(actualExec, "Expected actualExec to not be null");
-    assertTrue(store.executionExists(actualExecArn), "Expected condition to be true: store.executionExists(actualExecArn)");
+    assertTrue(
+        store.executionExists(actualExecArn),
+        "Expected condition to be true: store.executionExists(actualExecArn)");
   }
 
   @Test
@@ -133,7 +135,9 @@ public class StepFunctionsStoreExecutionTest {
     List<Map<String, Object>> actualExecsB = store.listExecutions(smArnB);
 
     // Assert
-    assertEquals(expectedSizeA, actualExecsA.size(), "Expected actualExecsA.size() to match expectedSizeA");
-    assertEquals(expectedSizeB, actualExecsB.size(), "Expected actualExecsB.size() to match expectedSizeB");
+    assertEquals(
+        expectedSizeA, actualExecsA.size(), "Expected actualExecsA.size() to match expectedSizeA");
+    assertEquals(
+        expectedSizeB, actualExecsB.size(), "Expected actualExecsB.size() to match expectedSizeB");
   }
 }

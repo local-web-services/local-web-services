@@ -61,8 +61,12 @@ public class DocDbStoreClusterTest {
     List<Map<String, Object>> actualClusters = store.describeClusters("cluster-a");
 
     // Assert
-    assertEquals(expectedSize, actualClusters.size(), "Expected actualClusters.size() to match expectedSize");
-    assertEquals(expectedId, actualClusters.get(0).get("DBClusterIdentifier"), "Expected id to match");
+    assertEquals(
+        expectedSize,
+        actualClusters.size(),
+        "Expected actualClusters.size() to match expectedSize");
+    assertEquals(
+        expectedId, actualClusters.get(0).get("DBClusterIdentifier"), "Expected id to match");
   }
 
   @Test
@@ -81,7 +85,10 @@ public class DocDbStoreClusterTest {
     List<Map<String, Object>> actualClusters = store.describeClusters(null);
 
     // Assert
-    assertEquals(expectedSize, actualClusters.size(), "Expected actualClusters.size() to match expectedSize");
+    assertEquals(
+        expectedSize,
+        actualClusters.size(),
+        "Expected actualClusters.size() to match expectedSize");
   }
 
   @Test
@@ -100,8 +107,13 @@ public class DocDbStoreClusterTest {
     // Assert
     assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
     assertEquals(expectedId, actualDeleted.get("DBClusterIdentifier"), "Expected id to match");
-    assertTrue(store.describeClusters(null).isEmpty(), "Expected store.describeClusters(null) to be empty");
-    assertEquals(expectedRemainingSize, store.describeClusters(null).size(), "Expected store.describeClusters(null).size() to match expectedRemainingSize");
+    assertTrue(
+        store.describeClusters(null).isEmpty(),
+        "Expected store.describeClusters(null) to be empty");
+    assertEquals(
+        expectedRemainingSize,
+        store.describeClusters(null).size(),
+        "Expected store.describeClusters(null).size() to match expectedRemainingSize");
   }
 
   @Test
@@ -129,6 +141,9 @@ public class DocDbStoreClusterTest {
     store.reset();
 
     // Assert
-    assertEquals(expectedSize, store.describeClusters(null).size(), "Expected store.describeClusters(null).size() to match expectedSize");
+    assertEquals(
+        expectedSize,
+        store.describeClusters(null).size(),
+        "Expected store.describeClusters(null).size() to match expectedSize");
   }
 }

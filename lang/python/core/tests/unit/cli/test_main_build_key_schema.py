@@ -20,12 +20,12 @@ class TestBuildKeySchema:
         ks = _build_key_schema(raw)
 
         # Assert
-        assert ks.partition_key.name == expected_name, (
-            f"Expected {expected_name!r} but got {ks.partition_key.name!r}"
-        )
-        assert ks.partition_key.type == expected_type, (
-            f"Expected {expected_type!r} but got {ks.partition_key.type!r}"
-        )
+        assert (
+            ks.partition_key.name == expected_name
+        ), f"Expected {expected_name!r} but got {ks.partition_key.name!r}"
+        assert (
+            ks.partition_key.type == expected_type
+        ), f"Expected {expected_type!r} but got {ks.partition_key.type!r}"
         assert ks.sort_key is None, f"Expected None but got {ks.sort_key!r}"
 
     def test_hash_and_range(self):
@@ -41,13 +41,13 @@ class TestBuildKeySchema:
         ks = _build_key_schema(raw)
 
         # Assert
-        assert ks.partition_key.name == expected_partition_key_name, (
-            f"Expected {expected_partition_key_name!r} but got {ks.partition_key.name!r}"
-        )
+        assert (
+            ks.partition_key.name == expected_partition_key_name
+        ), f"Expected {expected_partition_key_name!r} but got {ks.partition_key.name!r}"
         assert ks.sort_key is not None, "Expected value to be set but was None"
-        assert ks.sort_key.name == expected_sort_key_name, (
-            f"Expected {expected_sort_key_name!r} but got {ks.sort_key.name!r}"
-        )
+        assert (
+            ks.sort_key.name == expected_sort_key_name
+        ), f"Expected {expected_sort_key_name!r} but got {ks.sort_key.name!r}"
 
     def test_empty_defaults(self):
         # Arrange
@@ -57,7 +57,7 @@ class TestBuildKeySchema:
         ks = _build_key_schema([])
 
         # Assert
-        assert ks.partition_key.name == expected_default_name, (
-            f"Expected {expected_default_name!r} but got {ks.partition_key.name!r}"
-        )
+        assert (
+            ks.partition_key.name == expected_default_name
+        ), f"Expected {expected_default_name!r} but got {ks.partition_key.name!r}"
         assert ks.sort_key is None, f"Expected None but got {ks.sort_key!r}"

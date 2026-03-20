@@ -132,15 +132,15 @@ class TestSnsRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
-        assert "<MessageId>" in response.text, (
-            f'Expected {"<MessageId>"!r} to be in {response.text!r}'
-        )
-        assert "</PublishResponse>" in response.text, (
-            f'Expected {"</PublishResponse>"!r} to be in {response.text!r}'
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert (
+            "<MessageId>" in response.text
+        ), f'Expected {"<MessageId>"!r} to be in {response.text!r}'
+        assert (
+            "</PublishResponse>" in response.text
+        ), f'Expected {"</PublishResponse>"!r} to be in {response.text!r}'
 
     @pytest.mark.asyncio
     async def test_subscribe_action(self) -> None:
@@ -162,15 +162,15 @@ class TestSnsRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
-        assert "<SubscriptionArn>" in response.text, (
-            f'Expected {"<SubscriptionArn>"!r} to be in {response.text!r}'
-        )
-        assert "</SubscribeResponse>" in response.text, (
-            f'Expected {"</SubscribeResponse>"!r} to be in {response.text!r}'
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert (
+            "<SubscriptionArn>" in response.text
+        ), f'Expected {"<SubscriptionArn>"!r} to be in {response.text!r}'
+        assert (
+            "</SubscribeResponse>" in response.text
+        ), f'Expected {"</SubscribeResponse>"!r} to be in {response.text!r}'
 
     @pytest.mark.asyncio
     async def test_list_topics_action(self) -> None:
@@ -184,16 +184,16 @@ class TestSnsRoutes:
             response = await client.post("/", data={"Action": "ListTopics"})
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
-        assert "<ListTopicsResponse>" in response.text, (
-            f'Expected {"<ListTopicsResponse>"!r} to be in {response.text!r}'
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert (
+            "<ListTopicsResponse>" in response.text
+        ), f'Expected {"<ListTopicsResponse>"!r} to be in {response.text!r}'
         assert "my-topic" in response.text, f'Expected {"my-topic"!r} to be in {response.text!r}'
-        assert "other-topic" in response.text, (
-            f'Expected {"other-topic"!r} to be in {response.text!r}'
-        )
+        assert (
+            "other-topic" in response.text
+        ), f'Expected {"other-topic"!r} to be in {response.text!r}'
 
     @pytest.mark.asyncio
     async def test_list_subscriptions_action(self) -> None:
@@ -212,12 +212,12 @@ class TestSnsRoutes:
             response = await client.post("/", data={"Action": "ListSubscriptions"})
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
-        assert "<ListSubscriptionsResponse>" in response.text, (
-            f'Expected {"<ListSubscriptionsResponse>"!r} to be in {response.text!r}'
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert (
+            "<ListSubscriptionsResponse>" in response.text
+        ), f'Expected {"<ListSubscriptionsResponse>"!r} to be in {response.text!r}'
         assert "func-a" in response.text, f'Expected {"func-a"!r} to be in {response.text!r}'
 
     @pytest.mark.asyncio
@@ -235,12 +235,12 @@ class TestSnsRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
-        assert "<TopicArn>" in response.text, (
-            f'Expected {"<TopicArn>"!r} to be in {response.text!r}'
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert (
+            "<TopicArn>" in response.text
+        ), f'Expected {"<TopicArn>"!r} to be in {response.text!r}'
         assert "new-topic" in response.text, f'Expected {"new-topic"!r} to be in {response.text!r}'
 
     @pytest.mark.asyncio
@@ -258,15 +258,15 @@ class TestSnsRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
-        assert "<ErrorResponse>" in response.text, (
-            f'Expected {"<ErrorResponse>"!r} to be in {response.text!r}'
-        )
-        assert "<Code>InvalidAction</Code>" in response.text, (
-            f'Expected {"<Code>InvalidAction</Code>"!r} to be in {response.text!r}'
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert (
+            "<ErrorResponse>" in response.text
+        ), f'Expected {"<ErrorResponse>"!r} to be in {response.text!r}'
+        assert (
+            "<Code>InvalidAction</Code>" in response.text
+        ), f'Expected {"<Code>InvalidAction</Code>"!r} to be in {response.text!r}'
         assert "lws" in response.text, f'Expected {"lws"!r} to be in {response.text!r}'
         assert "SNS" in response.text, f'Expected {"SNS"!r} to be in {response.text!r}'
         assert "Bogus" in response.text, f'Expected {"Bogus"!r} to be in {response.text!r}'
@@ -293,9 +293,9 @@ class TestSnsRoutes:
             )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
-        assert "<MessageId>" in response.text, (
-            f'Expected {"<MessageId>"!r} to be in {response.text!r}'
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert (
+            "<MessageId>" in response.text
+        ), f'Expected {"<MessageId>"!r} to be in {response.text!r}'

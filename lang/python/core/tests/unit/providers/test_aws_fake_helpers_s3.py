@@ -15,12 +15,12 @@ class TestS3GetObject:
 
         # Assert
         assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
-        assert actual_response.body == expected_body, (
-            f"Expected {expected_body!r} but got {actual_response.body!r}"
-        )
-        assert actual_response.content_type == expected_content_type, (
-            f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
-        )
+        assert (
+            actual_response.body == expected_body
+        ), f"Expected {expected_body!r} but got {actual_response.body!r}"
+        assert (
+            actual_response.content_type == expected_content_type
+        ), f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
 
     def test_get_object_with_body_file(self, tmp_path) -> None:
         # Arrange
@@ -34,6 +34,6 @@ class TestS3GetObject:
 
         # Assert
         assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
-        assert actual_response.body == expected_body, (
-            f"Expected {expected_body!r} but got {actual_response.body!r}"
-        )
+        assert (
+            actual_response.body == expected_body
+        ), f"Expected {expected_body!r} but got {actual_response.body!r}"

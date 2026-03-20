@@ -41,9 +41,9 @@ class TestMultipartUpload:
         assert actual_key == expected_key, f"Expected {expected_key!r} but got {actual_key!r}"
         expected_bucket = bucket
         actual_bucket = result["Bucket"]
-        assert actual_bucket == expected_bucket, (
-            f"Expected {expected_bucket!r} but got {actual_bucket!r}"
-        )
+        assert (
+            actual_bucket == expected_bucket
+        ), f"Expected {expected_bucket!r} but got {actual_bucket!r}"
 
     @pytest.mark.asyncio
     async def test_abort_removes_upload(self, provider: S3Provider) -> None:
@@ -76,9 +76,9 @@ class TestMultipartUpload:
         assert len(parts) == 1, f"Expected {1!r} but got {len(parts)!r}"
         expected_part_number = 1
         actual_part_number = parts[0]["PartNumber"]
-        assert actual_part_number == expected_part_number, (
-            f"Expected {expected_part_number!r} but got {actual_part_number!r}"
-        )
+        assert (
+            actual_part_number == expected_part_number
+        ), f"Expected {expected_part_number!r} but got {actual_part_number!r}"
         expected_size = len(part_data)
         actual_size = parts[0]["Size"]
         assert actual_size == expected_size, f"Expected {expected_size!r} but got {actual_size!r}"

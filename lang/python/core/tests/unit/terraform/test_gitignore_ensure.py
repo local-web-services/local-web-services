@@ -23,9 +23,9 @@ class TestEnsureGitignore:
         # Assert
         assert gitignore_path.exists(), "Expected value to be truthy"
         actual_content = gitignore_path.read_text()
-        assert OVERRIDE_FILENAME in actual_content, (
-            f"Expected {OVERRIDE_FILENAME!r} to be in {actual_content!r}"
-        )
+        assert (
+            OVERRIDE_FILENAME in actual_content
+        ), f"Expected {OVERRIDE_FILENAME!r} to be in {actual_content!r}"
         assert actual_content.endswith("\n"), "Expected value to be truthy"
 
     def test_appends_to_existing_gitignore(self, tmp_path: Path) -> None:
@@ -40,13 +40,13 @@ class TestEnsureGitignore:
 
         # Assert
         actual_content = gitignore_path.read_text()
-        assert "node_modules/" in actual_content, (
-            f'Expected {"node_modules/"!r} to be in {actual_content!r}'
-        )
+        assert (
+            "node_modules/" in actual_content
+        ), f'Expected {"node_modules/"!r} to be in {actual_content!r}'
         assert "*.pyc" in actual_content, f'Expected {"*.pyc"!r} to be in {actual_content!r}'
-        assert OVERRIDE_FILENAME in actual_content, (
-            f"Expected {OVERRIDE_FILENAME!r} to be in {actual_content!r}"
-        )
+        assert (
+            OVERRIDE_FILENAME in actual_content
+        ), f"Expected {OVERRIDE_FILENAME!r} to be in {actual_content!r}"
         assert actual_content.endswith("\n"), "Expected value to be truthy"
 
     def test_skips_when_already_present(self, tmp_path: Path) -> None:
@@ -61,6 +61,6 @@ class TestEnsureGitignore:
 
         # Assert
         actual_content = gitignore_path.read_text()
-        assert actual_content == expected_content, (
-            f"Expected {expected_content!r} but got {actual_content!r}"
-        )
+        assert (
+            actual_content == expected_content
+        ), f"Expected {expected_content!r} but got {actual_content!r}"

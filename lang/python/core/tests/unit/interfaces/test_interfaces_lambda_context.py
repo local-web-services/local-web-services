@@ -50,21 +50,21 @@ class TestLambdaContext:
         ctx = self._make_context()
 
         # Assert
-        assert ctx.function_name == expected_function_name, (
-            f"Expected {expected_function_name!r} but got {ctx.function_name!r}"
-        )
-        assert ctx.memory_limit_in_mb == expected_memory_limit, (
-            f"Expected {expected_memory_limit!r} but got {ctx.memory_limit_in_mb!r}"
-        )
-        assert ctx.timeout_seconds == expected_timeout, (
-            f"Expected {expected_timeout!r} but got {ctx.timeout_seconds!r}"
-        )
-        assert ctx.aws_request_id == expected_request_id, (
-            f"Expected {expected_request_id!r} but got {ctx.aws_request_id!r}"
-        )
-        assert ctx.invoked_function_arn.startswith(expected_arn_prefix), (
-            "Expected value to be truthy"
-        )
+        assert (
+            ctx.function_name == expected_function_name
+        ), f"Expected {expected_function_name!r} but got {ctx.function_name!r}"
+        assert (
+            ctx.memory_limit_in_mb == expected_memory_limit
+        ), f"Expected {expected_memory_limit!r} but got {ctx.memory_limit_in_mb!r}"
+        assert (
+            ctx.timeout_seconds == expected_timeout
+        ), f"Expected {expected_timeout!r} but got {ctx.timeout_seconds!r}"
+        assert (
+            ctx.aws_request_id == expected_request_id
+        ), f"Expected {expected_request_id!r} but got {ctx.aws_request_id!r}"
+        assert ctx.invoked_function_arn.startswith(
+            expected_arn_prefix
+        ), "Expected value to be truthy"
 
     def test_remaining_time_starts_near_timeout(self) -> None:
         # Arrange
@@ -76,9 +76,9 @@ class TestLambdaContext:
         actual_remaining = ctx.get_remaining_time_in_millis()
 
         # Assert — should be close to 10000 ms (allow 500ms tolerance for test overhead)
-        assert expected_min_remaining_ms <= actual_remaining <= expected_max_remaining_ms, (
-            f"Expected {expected_min_remaining_ms!r} to {expected_max_remaining_ms!r}"
-        )
+        assert (
+            expected_min_remaining_ms <= actual_remaining <= expected_max_remaining_ms
+        ), f"Expected {expected_min_remaining_ms!r} to {expected_max_remaining_ms!r}"
 
     def test_remaining_time_decreases(self) -> None:
         # Arrange
@@ -108,6 +108,6 @@ class TestLambdaContext:
         actual_remaining = ctx.get_remaining_time_in_millis()
 
         # Assert
-        assert actual_remaining == expected_remaining, (
-            f"Expected {expected_remaining!r} but got {actual_remaining!r}"
-        )
+        assert (
+            actual_remaining == expected_remaining
+        ), f"Expected {expected_remaining!r} but got {actual_remaining!r}"

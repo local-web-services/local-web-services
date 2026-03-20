@@ -62,18 +62,18 @@ class TestDescribeUserPoolClient:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_client_id = data["UserPoolClient"]["ClientId"]
         actual_client_name = data["UserPoolClient"]["ClientName"]
-        assert actual_client_id == expected_client_id, (
-            f"Expected {expected_client_id!r} but got {actual_client_id!r}"
-        )
-        assert actual_client_name == expected_client_name, (
-            f"Expected {expected_client_name!r} but got {actual_client_name!r}"
-        )
+        assert (
+            actual_client_id == expected_client_id
+        ), f"Expected {expected_client_id!r} but got {actual_client_id!r}"
+        assert (
+            actual_client_name == expected_client_name
+        ), f"Expected {expected_client_name!r} but got {actual_client_name!r}"
 
     async def test_describe_nonexistent_client_returns_error(
         self, client: httpx.AsyncClient
@@ -88,10 +88,10 @@ class TestDescribeUserPoolClient:
         # Assert
         expected_status = 400
         expected_error_type = "ResourceNotFoundException"
-        assert resp.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {resp.status_code!r}"
-        )
+        assert (
+            resp.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type, (
-            f"Expected {expected_error_type!r} but got {actual_error_type!r}"
-        )
+        assert (
+            actual_error_type == expected_error_type
+        ), f"Expected {expected_error_type!r} but got {actual_error_type!r}"

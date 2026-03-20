@@ -66,14 +66,14 @@ class TestFakeMiddlewareFallthrough:
         response = await client.get("/_ldk/health")
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         actual_health_status = body["status"]
-        assert actual_health_status == expected_health_status, (
-            f"Expected {expected_health_status!r} but got {actual_health_status!r}"
-        )
+        assert (
+            actual_health_status == expected_health_status
+        ), f"Expected {expected_health_status!r} but got {actual_health_status!r}"
 
     async def test_unknown_operation_falls_through(self, client):
         # Arrange
@@ -88,9 +88,9 @@ class TestFakeMiddlewareFallthrough:
         )
 
         # Assert
-        assert response.status_code == expected_status, (
-            f"Expected {expected_status!r} but got {response.status_code!r}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         actual_real = body["real"]
         assert actual_real == expected_real, f"Expected {expected_real!r} but got {actual_real!r}"

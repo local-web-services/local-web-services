@@ -49,6 +49,7 @@ public class EventBridgeStoreTest {
     store.rules.put(expectedRuleName, Map.of("Name", expectedRuleName));
 
     // Assert
-    assertTrue(store.rules.containsKey(expectedRuleName), "Expected map to contain the expected key");
+    assertTrue(
+        store.rules.containsKey(expectedRuleName), "Expected map to contain the expected key");
   }
 }

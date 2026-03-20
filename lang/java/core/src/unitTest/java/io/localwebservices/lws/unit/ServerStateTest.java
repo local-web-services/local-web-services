@@ -76,7 +76,10 @@ public class ServerStateTest {
 
     // Assert
     assertEquals(1, state.logBuffer.size(), "Expected state.logBuffer.size() to match 1");
-    assertEquals(expectedEntry, state.logBuffer.get(0), "Expected state.logBuffer.get(0) to equal expectedEntry");
+    assertEquals(
+        expectedEntry,
+        state.logBuffer.get(0),
+        "Expected state.logBuffer.get(0) to equal expectedEntry");
   }
 
   @Test
@@ -93,7 +96,10 @@ public class ServerStateTest {
 
     // Assert
     assertEquals(500, state.logBuffer.size(), "Expected state.logBuffer.size() to match 500");
-    assertEquals(expectedLastEntry, state.logBuffer.get(state.logBuffer.size() - 1), "Expected state.logBuffer.get(state.logBuffer.size() - 1) to match expectedLastEntry");
+    assertEquals(
+        expectedLastEntry,
+        state.logBuffer.get(state.logBuffer.size() - 1),
+        "Expected state.logBuffer.get(state.logBuffer.size() - 1) to match expectedLastEntry");
   }
 
   @Test
@@ -107,8 +113,11 @@ public class ServerStateTest {
     state.chaosRules.put(expectedService, Map.of(expectedOp, Map.of("latency", "200")));
 
     // Assert
-    assertTrue(state.chaosRules.containsKey(expectedService), "Expected map to contain the expected key");
-    assertTrue(state.chaosRules.get(expectedService).containsKey(expectedOp), "Expected map to contain the expected key");
+    assertTrue(
+        state.chaosRules.containsKey(expectedService), "Expected map to contain the expected key");
+    assertTrue(
+        state.chaosRules.get(expectedService).containsKey(expectedOp),
+        "Expected map to contain the expected key");
   }
 
   @Test
@@ -121,7 +130,9 @@ public class ServerStateTest {
     state.iamResourcePolicies.put(expectedArn, Map.of("Version", "2012-10-17"));
 
     // Assert
-    assertTrue(state.iamResourcePolicies.containsKey(expectedArn), "Expected map to contain the expected key");
+    assertTrue(
+        state.iamResourcePolicies.containsKey(expectedArn),
+        "Expected map to contain the expected key");
   }
 
   @Test
@@ -134,6 +145,7 @@ public class ServerStateTest {
     List<Map<String, Object>> actualBuffer = state.logBuffer;
 
     // Assert
-    assertEquals(expectedSize, actualBuffer.size(), "Expected actualBuffer.size() to match expectedSize");
+    assertEquals(
+        expectedSize, actualBuffer.size(), "Expected actualBuffer.size() to match expectedSize");
   }
 }

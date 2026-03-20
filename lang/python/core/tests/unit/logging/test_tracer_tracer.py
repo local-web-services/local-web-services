@@ -53,12 +53,12 @@ class TestTracer:
         # Assert
         actual_child_name = child.name
         actual_child_count = len(root.children)
-        assert actual_child_name == expected_child_name, (
-            f"Expected {expected_child_name!r} but got {actual_child_name!r}"
-        )
-        assert actual_child_count == expected_child_count, (
-            f"Expected {expected_child_count!r} but got {actual_child_count!r}"
-        )
+        assert (
+            actual_child_name == expected_child_name
+        ), f"Expected {expected_child_name!r} but got {actual_child_name!r}"
+        assert (
+            actual_child_count == expected_child_count
+        ), f"Expected {expected_child_count!r} but got {actual_child_count!r}"
         assert root.children[0] is child, "Expected value to be truthy"
         tracer.end_trace()
 
@@ -73,12 +73,12 @@ class TestTracer:
         grandchild = tracer.start_span("grandchild")
 
         # Assert
-        assert len(root.children) == expected_child_count, (
-            f"Expected {expected_child_count!r} but got {len(root.children)!r}"
-        )
-        assert len(child.children) == expected_child_count, (
-            f"Expected {expected_child_count!r} but got {len(child.children)!r}"
-        )
+        assert (
+            len(root.children) == expected_child_count
+        ), f"Expected {expected_child_count!r} but got {len(root.children)!r}"
+        assert (
+            len(child.children) == expected_child_count
+        ), f"Expected {expected_child_count!r} but got {len(child.children)!r}"
         assert child.children[0] is grandchild, "Expected value to be truthy"
 
         tracer.end_trace()
@@ -90,9 +90,9 @@ class TestTracer:
         time.sleep(0.01)
         tracer.end_span(child)
 
-        assert child.end_time > child.start_time, (
-            f"Expected {child.end_time!r} > {child.start_time!r}"
-        )
+        assert (
+            child.end_time > child.start_time
+        ), f"Expected {child.end_time!r} > {child.start_time!r}"
         assert child.duration_ms > 0, f"Expected {child.duration_ms!r} > {0!r}"
         tracer.end_trace()
 
@@ -109,9 +109,9 @@ class TestTracer:
 
         # Assert
         actual_child_count = len(root.children)
-        assert actual_child_count == expected_child_count, (
-            f"Expected {expected_child_count!r} but got {actual_child_count!r}"
-        )
+        assert (
+            actual_child_count == expected_child_count
+        ), f"Expected {expected_child_count!r} but got {actual_child_count!r}"
         assert root.children[1] is sibling, "Expected value to be truthy"
         tracer.end_trace()
 
@@ -125,9 +125,9 @@ class TestTracer:
         assert result.root_span.end_time > 0, f"Expected {result.root_span.end_time!r} > {0!r}"
 
         # Context should be cleared
-        assert tracer.get_current_context() is None, (
-            f"Expected None but got {tracer.get_current_context()!r}"
-        )
+        assert (
+            tracer.get_current_context() is None
+        ), f"Expected None but got {tracer.get_current_context()!r}"
 
     def test_end_trace_returns_none_when_no_trace(self):
         tracer = Tracer()
@@ -170,18 +170,18 @@ class TestTracer:
 
         # Assert
         actual_child_count = len(root.children)
-        assert actual_child_count == expected_child_count, (
-            f"Expected {expected_child_count!r} but got {actual_child_count!r}"
-        )
-        assert root.children[0].name == expected_child1_name, (
-            f"Expected {expected_child1_name!r} but got {root.children[0].name!r}"
-        )
-        assert root.children[1].name == expected_child2_name, (
-            f"Expected {expected_child2_name!r} but got {root.children[1].name!r}"
-        )
-        assert root.children[2].name == expected_child3_name, (
-            f"Expected {expected_child3_name!r} but got {root.children[2].name!r}"
-        )
+        assert (
+            actual_child_count == expected_child_count
+        ), f"Expected {expected_child_count!r} but got {actual_child_count!r}"
+        assert (
+            root.children[0].name == expected_child1_name
+        ), f"Expected {expected_child1_name!r} but got {root.children[0].name!r}"
+        assert (
+            root.children[1].name == expected_child2_name
+        ), f"Expected {expected_child2_name!r} but got {root.children[1].name!r}"
+        assert (
+            root.children[2].name == expected_child3_name
+        ), f"Expected {expected_child3_name!r} but got {root.children[2].name!r}"
 
         tracer.end_trace()
 
@@ -204,12 +204,12 @@ class TestTracer:
         assert ctx is not None, "Expected value to be set but was None"
         assert ctx.root_span is not None, "Expected value to be set but was None"
         actual_child_count = len(ctx.root_span.children)
-        assert actual_child_count == expected_child_count, (
-            f"Expected {expected_child_count!r} but got {actual_child_count!r}"
-        )
+        assert (
+            actual_child_count == expected_child_count
+        ), f"Expected {expected_child_count!r} but got {actual_child_count!r}"
 
         result = tracer.end_trace()
         assert result is not None, "Expected value to be set but was None"
-        assert result.root_span.duration_ms >= 0, (
-            f"Expected {result.root_span.duration_ms!r} >= {0!r}"
-        )
+        assert (
+            result.root_span.duration_ms >= 0
+        ), f"Expected {result.root_span.duration_ms!r} >= {0!r}"
