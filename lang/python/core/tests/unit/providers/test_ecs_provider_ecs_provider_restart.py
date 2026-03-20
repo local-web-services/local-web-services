@@ -125,7 +125,7 @@ class TestEcsProviderRestart:
         await provider.start()
         await provider.restart_service("web-api")
         # Service should still be tracked
-        assert "web-api" in provider._processes
+        assert "web-api" in provider._processes, f'Expected {"web-api"!r} to be in {provider._processes!r}'
         await provider.stop()
 
     @patch("asyncio.create_subprocess_exec")

@@ -117,7 +117,7 @@ def _fake_process() -> AsyncMock:
 class TestServiceDefinition:
     def test_defaults(self) -> None:
         sd = ServiceDefinition(service_name="svc")
-        assert sd.containers == []
-        assert sd.local_command is None
-        assert sd.desired_count == 1
-        assert sd.watch_path is None
+        assert sd.containers == [], f"Expected {[]!r} but got {sd.containers!r}"
+        assert sd.local_command is None, f"Expected None but got {sd.local_command!r}"
+        assert sd.desired_count == 1, f"Expected {1!r} but got {sd.desired_count!r}"
+        assert sd.watch_path is None, f"Expected None but got {sd.watch_path!r}"

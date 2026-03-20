@@ -48,9 +48,9 @@ class TestIndexDocumentResolution:
         response = await client.get("/web-bucket/")
 
         # Assert
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected {200!r} but got {response.status_code!r}"
         actual_body = response.content
-        assert actual_body == expected_body
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
     @pytest.mark.asyncio
     async def test_subdir_trailing_slash_serves_index_document(
@@ -65,9 +65,9 @@ class TestIndexDocumentResolution:
         response = await client.get("/web-bucket/docs/")
 
         # Assert
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected {200!r} but got {response.status_code!r}"
         actual_body = response.content
-        assert actual_body == expected_body
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
     @pytest.mark.asyncio
     async def test_extensionless_path_serves_index_document(
@@ -82,9 +82,9 @@ class TestIndexDocumentResolution:
         response = await client.get("/web-bucket/about")
 
         # Assert
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected {200!r} but got {response.status_code!r}"
         actual_body = response.content
-        assert actual_body == expected_body
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
     @pytest.mark.asyncio
     async def test_no_website_config_returns_nosuchkey(
@@ -97,5 +97,5 @@ class TestIndexDocumentResolution:
         response = await client.get("/web-bucket/missing")
 
         # Assert
-        assert response.status_code == expected_status
-        assert b"NoSuchKey" in response.content
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert b"NoSuchKey" in response.content, f'Expected {b"NoSuchKey"!r} to be in {response.content!r}'

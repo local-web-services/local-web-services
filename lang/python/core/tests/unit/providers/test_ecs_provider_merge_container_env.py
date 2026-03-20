@@ -119,12 +119,12 @@ class TestMergeContainerEnv:
     def test_single_container(self) -> None:
         svc = _make_service()
         env = _merge_container_env(svc)
-        assert env["PORT"] == "8080"
+        assert env["PORT"] == "8080", f'Expected {"8080"!r} but got {env["PORT"]!r}'
 
     def test_multiple_containers_merged(self) -> None:
         c1 = _make_container(name="app", environment={"A": "1"})
         c2 = _make_container(name="sidecar", environment={"B": "2"})
         svc = _make_service(containers=[c1, c2])
         env = _merge_container_env(svc)
-        assert env["A"] == "1"
-        assert env["B"] == "2"
+        assert env["A"] == "1", f'Expected {"1"!r} but got {env["A"]!r}'
+        assert env["B"] == "2", f'Expected {"2"!r} but got {env["B"]!r}'

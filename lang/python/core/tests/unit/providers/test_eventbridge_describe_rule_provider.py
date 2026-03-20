@@ -56,12 +56,12 @@ class TestDescribeRuleProvider:
         result = provider.describe_rule(rule_name)
 
         # Assert
-        assert result["Name"] == rule_name
-        assert result["State"] == expected_state
-        assert result["EventBusName"] == expected_bus_name
-        assert rule_name in result["Arn"]
-        assert json.loads(result["EventPattern"]) == expected_pattern
-        assert result["ScheduleExpression"] == expected_schedule
+        assert result["Name"] == rule_name, f'Expected {rule_name!r} but got {result["Name"]!r}'
+        assert result["State"] == expected_state, f'Expected {expected_state!r} but got {result["State"]!r}'
+        assert result["EventBusName"] == expected_bus_name, f'Expected {expected_bus_name!r} but got {result["EventBusName"]!r}'
+        assert rule_name in result["Arn"], f'Expected {rule_name!r} to be in {result["Arn"]!r}'
+        assert json.loads(result["EventPattern"]) == expected_pattern, f'Expected {expected_pattern!r} but got {json.loads(result["EventPattern"])!r}'
+        assert result["ScheduleExpression"] == expected_schedule, f'Expected {expected_schedule!r} but got {result["ScheduleExpression"]!r}'
 
     async def test_describe_nonexistent_rule_raises(self, provider: EventBridgeProvider) -> None:
         with pytest.raises(KeyError, match="Rule not found"):

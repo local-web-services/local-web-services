@@ -20,7 +20,7 @@ class TestCleanupOverride:
         cleanup_override(tmp_path)
 
         # Assert
-        assert not override_path.exists()
+        assert not override_path.exists(), "Expected value to be falsy"
 
     def test_ignores_user_file(self, tmp_path: Path) -> None:
         """Do not remove user-created override file."""
@@ -33,9 +33,9 @@ class TestCleanupOverride:
         cleanup_override(tmp_path)
 
         # Assert
-        assert override_path.exists()
+        assert override_path.exists(), "Expected value to be truthy"
         actual_content = override_path.read_text()
-        assert actual_content == expected_content
+        assert actual_content == expected_content, f"Expected {expected_content!r} but got {actual_content!r}"
 
     def test_handles_missing_file(self, tmp_path: Path) -> None:
         """Handle missing override file without error."""
@@ -43,4 +43,4 @@ class TestCleanupOverride:
         cleanup_override(tmp_path)
 
         # Assert -- should not raise any exception
-        assert not (tmp_path / OVERRIDE_FILENAME).exists()
+        assert not (tmp_path / OVERRIDE_FILENAME).exists(), "Expected value to be falsy"

@@ -46,11 +46,11 @@ class TestStreamRecord:
         actual_event_name = result["eventName"]
         actual_event_source = result["eventSource"]
         actual_keys = result["dynamodb"]["Keys"]
-        assert actual_event_name == expected_event_name
-        assert actual_event_source == expected_event_source
-        assert actual_keys == expected_keys
-        assert "NewImage" in result["dynamodb"]
-        assert "OldImage" not in result["dynamodb"]
+        assert actual_event_name == expected_event_name, f"Expected {expected_event_name!r} but got {actual_event_name!r}"
+        assert actual_event_source == expected_event_source, f"Expected {expected_event_source!r} but got {actual_event_source!r}"
+        assert actual_keys == expected_keys, f"Expected {expected_keys!r} but got {actual_keys!r}"
+        assert "NewImage" in result["dynamodb"], f'Expected {"NewImage"!r} to be in {result["dynamodb"]!r}'
+        assert "OldImage" not in result["dynamodb"], f'Expected {"OldImage"!r} to not be in {result["dynamodb"]!r}'
 
     def test_to_dynamodb_event_record_modify(self) -> None:
         # Arrange
@@ -71,9 +71,9 @@ class TestStreamRecord:
 
         # Assert
         actual_event_name = result["eventName"]
-        assert actual_event_name == expected_event_name
-        assert "NewImage" in result["dynamodb"]
-        assert "OldImage" in result["dynamodb"]
+        assert actual_event_name == expected_event_name, f"Expected {expected_event_name!r} but got {actual_event_name!r}"
+        assert "NewImage" in result["dynamodb"], f'Expected {"NewImage"!r} to be in {result["dynamodb"]!r}'
+        assert "OldImage" in result["dynamodb"], f'Expected {"OldImage"!r} to be in {result["dynamodb"]!r}'
 
     def test_to_dynamodb_event_record_remove(self) -> None:
         # Arrange
@@ -94,6 +94,6 @@ class TestStreamRecord:
 
         # Assert
         actual_event_name = result["eventName"]
-        assert actual_event_name == expected_event_name
-        assert "NewImage" not in result["dynamodb"]
-        assert "OldImage" in result["dynamodb"]
+        assert actual_event_name == expected_event_name, f"Expected {expected_event_name!r} but got {actual_event_name!r}"
+        assert "NewImage" not in result["dynamodb"], f'Expected {"NewImage"!r} to not be in {result["dynamodb"]!r}'
+        assert "OldImage" in result["dynamodb"], f'Expected {"OldImage"!r} to be in {result["dynamodb"]!r}'

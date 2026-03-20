@@ -78,28 +78,28 @@ class TestNodeJsComputeLifecycle:
 
         expected_name = "lambda:my-func"
         actual_name = provider.name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     @patch("shutil.which", return_value="/usr/local/bin/node")
     async def test_start_sets_running(self, _which: MagicMock) -> None:
         provider = NodeJsCompute(_make_config(), sdk_env={})
         await provider.start()
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     @patch("shutil.which", return_value=None)
     async def test_start_raises_when_node_missing(self, _which: MagicMock) -> None:
         provider = NodeJsCompute(_make_config(), sdk_env={})
         with pytest.raises(ProviderStartError, match="Node.js runtime not found"):
             await provider.start()
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     async def test_stop_sets_stopped(self) -> None:
         provider = NodeJsCompute(_make_config(), sdk_env={})
         # Manually put it into RUNNING first
         provider._status = ProviderStatus.RUNNING
         await provider.stop()
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     async def test_initial_status_is_stopped(self) -> None:
         provider = NodeJsCompute(_make_config(), sdk_env={})
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"

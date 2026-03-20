@@ -17,7 +17,7 @@ class TestRenderSimpleTokens:
         actual = render_template(template)
 
         # Assert
-        assert re.match(uuid_pattern, actual)
+        assert re.match(uuid_pattern, actual), "Expected value to be truthy"
 
     def test_timestamp_token(self):
         # Arrange
@@ -27,8 +27,8 @@ class TestRenderSimpleTokens:
         actual = render_template(template)
 
         # Assert
-        assert "T" in actual
-        assert actual.endswith("+00:00")
+        assert "T" in actual, f'Expected {"T"!r} to be in {actual!r}'
+        assert actual.endswith("+00:00"), "Expected value to be truthy"
 
     def test_timestamp_epoch_token(self):
         # Arrange
@@ -38,7 +38,7 @@ class TestRenderSimpleTokens:
         actual = render_template(template)
 
         # Assert
-        assert actual.isdigit()
+        assert actual.isdigit(), "Expected value to be truthy"
 
     def test_unknown_token_preserved(self):
         # Arrange
@@ -49,4 +49,4 @@ class TestRenderSimpleTokens:
         actual = render_template(template)
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

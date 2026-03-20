@@ -56,4 +56,4 @@ class TestCfnTypeAttribute:
 
         # Assert
         actual_cfn_type = nodes[0].children[0].cfn_type
-        assert actual_cfn_type == expected_cfn_type
+        assert actual_cfn_type == expected_cfn_type, f"Expected {expected_cfn_type!r} but got {actual_cfn_type!r}"

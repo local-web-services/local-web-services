@@ -22,7 +22,7 @@ class TestDeleteStateMachine:
             definition='{"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": true}}}',
         )
         provider.delete_state_machine("to-delete")
-        assert "to-delete" not in provider.list_state_machines()
+        assert "to-delete" not in provider.list_state_machines(), f'Expected {"to-delete"!r} to not be in {provider.list_state_machines()!r}'
 
     async def test_delete_nonexistent_raises(self, provider: StepFunctionsProvider) -> None:
         with pytest.raises(KeyError, match="State machine not found"):

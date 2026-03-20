@@ -18,8 +18,8 @@ class TestEventBridgePutEvents:
 
         # Assert
         actual_body = json.loads(actual_response.body)
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert actual_body["FailedEntryCount"] == expected_failed_count
-        assert len(actual_body["Entries"]) == expected_entry_count
-        assert "EventId" in actual_body["Entries"][0]
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert actual_response.content_type == expected_content_type, f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert actual_body["FailedEntryCount"] == expected_failed_count, f'Expected {expected_failed_count!r} but got {actual_body["FailedEntryCount"]!r}'
+        assert len(actual_body["Entries"]) == expected_entry_count, f'Expected {expected_entry_count!r} but got {len(actual_body["Entries"])!r}'
+        assert "EventId" in actual_body["Entries"][0], f'Expected {"EventId"!r} to be in {actual_body["Entries"][0]!r}'

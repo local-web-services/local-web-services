@@ -96,11 +96,11 @@ class TestDescribeContinuousBackups:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "ContinuousBackupsDescription" in data
+        assert "ContinuousBackupsDescription" in data, f'Expected {"ContinuousBackupsDescription"!r} to be in {data!r}'
         desc = data["ContinuousBackupsDescription"]
         actual_backups_status = desc["ContinuousBackupsStatus"]
         actual_pitr_status = desc["PointInTimeRecoveryDescription"]["PointInTimeRecoveryStatus"]
-        assert actual_backups_status == expected_backups_status
-        assert actual_pitr_status == expected_pitr_status
+        assert actual_backups_status == expected_backups_status, f"Expected {expected_backups_status!r} but got {actual_backups_status!r}"
+        assert actual_pitr_status == expected_pitr_status, f"Expected {expected_pitr_status!r} but got {actual_pitr_status!r}"

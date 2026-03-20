@@ -14,7 +14,7 @@ class TestCamelToKebab:
         actual_result = camel_to_kebab("GetItem")
 
         # Assert
-        assert actual_result == expected_result
+        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
 
     def test_list_objects_v2(self):
         # Arrange
@@ -24,7 +24,7 @@ class TestCamelToKebab:
         actual_result = camel_to_kebab("ListObjectsV2")
 
         # Assert
-        assert actual_result == expected_result
+        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
 
     def test_put_parameter(self):
         # Arrange
@@ -34,7 +34,7 @@ class TestCamelToKebab:
         actual_result = camel_to_kebab("PutParameter")
 
         # Assert
-        assert actual_result == expected_result
+        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
 
     def test_create_secret(self):
         # Arrange
@@ -44,7 +44,7 @@ class TestCamelToKebab:
         actual_result = camel_to_kebab("CreateSecret")
 
         # Assert
-        assert actual_result == expected_result
+        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"
 
     def test_single_word_scan(self):
         # Arrange
@@ -54,4 +54,4 @@ class TestCamelToKebab:
         actual_result = camel_to_kebab("Scan")
 
         # Assert
-        assert actual_result == expected_result
+        assert actual_result == expected_result, f"Expected {expected_result!r} but got {actual_result!r}"

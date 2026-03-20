@@ -54,7 +54,7 @@ class TestProviderGetSubscriptionAttributes:
         actual_attrs = await provider.get_subscription_attributes(sub_arn)
 
         # Assert
-        assert actual_attrs["Protocol"] == expected_protocol
-        assert actual_attrs["Endpoint"] == expected_endpoint
-        assert actual_attrs["TopicArn"] == TOPIC_ARN
-        assert actual_attrs["SubscriptionArn"] == sub_arn
+        assert actual_attrs["Protocol"] == expected_protocol, f'Expected {expected_protocol!r} but got {actual_attrs["Protocol"]!r}'
+        assert actual_attrs["Endpoint"] == expected_endpoint, f'Expected {expected_endpoint!r} but got {actual_attrs["Endpoint"]!r}'
+        assert actual_attrs["TopicArn"] == TOPIC_ARN, f'Expected {TOPIC_ARN!r} but got {actual_attrs["TopicArn"]!r}'
+        assert actual_attrs["SubscriptionArn"] == sub_arn, f'Expected {sub_arn!r} but got {actual_attrs["SubscriptionArn"]!r}'

@@ -18,7 +18,7 @@ class TestLoadOne:
         actual_config = registry.load_one("does-not-exist")
 
         # Assert
-        assert actual_config is None
+        assert actual_config is None, f"Expected None but got {actual_config!r}"
 
     def test_returns_config_for_existing_fake(self, tmp_path: Path):
         # Arrange
@@ -47,9 +47,9 @@ class TestLoadOne:
         actual_config = registry.load_one("my-ddb-fake")
 
         # Assert
-        assert actual_config is not None
+        assert actual_config is not None, "Expected value to be set but was None"
         actual_service = actual_config.service
-        assert actual_service == expected_service
-        assert len(actual_config.rules) == 1
+        assert actual_service == expected_service, f"Expected {expected_service!r} but got {actual_service!r}"
+        assert len(actual_config.rules) == 1, f"Expected {1!r} but got {len(actual_config.rules)!r}"
         actual_operation = actual_config.rules[0].operation
-        assert actual_operation == expected_operation
+        assert actual_operation == expected_operation, f"Expected {expected_operation!r} but got {actual_operation!r}"

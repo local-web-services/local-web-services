@@ -155,9 +155,9 @@ class TestGSI:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert len(results) == expected_count, f"Expected {expected_count!r} but got {len(results)!r}"
         actual_statuses = {r["status"] for r in results}
-        assert actual_statuses == expected_statuses
+        assert actual_statuses == expected_statuses, f"Expected {expected_statuses!r} but got {actual_statuses!r}"
 
     async def test_delete_cleans_gsi(self, gsi_provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -182,4 +182,4 @@ class TestGSI:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert len(results) == expected_count, f"Expected {expected_count!r} but got {len(results)!r}"

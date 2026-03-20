@@ -54,10 +54,10 @@ class TestCreateDBInstance:
         actual_engine = actual_instance["Engine"]
         actual_status = actual_instance["DBInstanceStatus"]
         actual_cluster = actual_instance["DBClusterIdentifier"]
-        assert actual_identifier == instance_id
-        assert actual_engine == expected_engine
-        assert actual_status == expected_status
-        assert actual_cluster == cluster_id
+        assert actual_identifier == instance_id, f"Expected {instance_id!r} but got {actual_identifier!r}"
+        assert actual_engine == expected_engine, f"Expected {expected_engine!r} but got {actual_engine!r}"
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_cluster == cluster_id, f"Expected {cluster_id!r} but got {actual_cluster!r}"
 
     def test_create_duplicate_instance_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -70,4 +70,4 @@ class TestCreateDBInstance:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

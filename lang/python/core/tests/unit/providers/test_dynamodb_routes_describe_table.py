@@ -87,11 +87,11 @@ class TestDescribeTable:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "Table" in data
+        assert "Table" in data, f'Expected {"Table"!r} to be in {data!r}'
         actual_table_name = data["Table"]["TableName"]
-        assert actual_table_name == expected_table_name
+        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
         fake_store.describe_table.assert_awaited_once_with("MyTable")
 
     @pytest.mark.asyncio
@@ -109,7 +109,7 @@ class TestDescribeTable:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_error_type = data["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

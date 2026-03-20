@@ -51,10 +51,10 @@ class TestRefreshToken:
 
     def test_refresh_token_is_string(self, issuer: TokenIssuer) -> None:
         token = issuer.generate_refresh_token()
-        assert isinstance(token, str)
-        assert len(token) > 0
+        assert isinstance(token, str), f"Expected instance of {str!r} but got {type(token)!r}"
+        assert len(token) > 0, f"Expected {len(token)!r} > {0!r}"
 
     def test_refresh_tokens_are_unique(self, issuer: TokenIssuer) -> None:
         t1 = issuer.generate_refresh_token()
         t2 = issuer.generate_refresh_token()
-        assert t1 != t2
+        assert t1 != t2, f"Expected values to differ but both were {t1!r}"

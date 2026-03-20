@@ -67,24 +67,24 @@ class TestBuildGraph:
         graph = build_graph(model)
 
         # Assert -- Nodes
-        assert table_id in graph.nodes
-        assert graph.nodes[table_id].node_type == NodeType.DYNAMODB_TABLE
-        assert function_id in graph.nodes
-        assert graph.nodes[function_id].node_type == NodeType.LAMBDA_FUNCTION
-        assert api_id in graph.nodes
-        assert graph.nodes[api_id].node_type == NodeType.API_GATEWAY
+        assert table_id in graph.nodes, f"Expected {table_id!r} to be in {graph.nodes!r}"
+        assert graph.nodes[table_id].node_type == NodeType.DYNAMODB_TABLE, f"Expected {NodeType.DYNAMODB_TABLE!r} but got {graph.nodes[table_id].node_type!r}"
+        assert function_id in graph.nodes, f"Expected {function_id!r} to be in {graph.nodes!r}"
+        assert graph.nodes[function_id].node_type == NodeType.LAMBDA_FUNCTION, f"Expected {NodeType.LAMBDA_FUNCTION!r} but got {graph.nodes[function_id].node_type!r}"
+        assert api_id in graph.nodes, f"Expected {api_id!r} to be in {graph.nodes!r}"
+        assert graph.nodes[api_id].node_type == NodeType.API_GATEWAY, f"Expected {NodeType.API_GATEWAY!r} but got {graph.nodes[api_id].node_type!r}"
 
         # Assert -- Edges -- data dependency: GetUserFn -> UsersTable
         data_edges = [e for e in graph.edges if e.edge_type == EdgeType.DATA_DEPENDENCY]
-        assert len(data_edges) == expected_edge_count
-        assert data_edges[0].source == function_id
-        assert data_edges[0].target == table_id
+        assert len(data_edges) == expected_edge_count, f"Expected {expected_edge_count!r} but got {len(data_edges)!r}"
+        assert data_edges[0].source == function_id, f"Expected {function_id!r} but got {data_edges[0].source!r}"
+        assert data_edges[0].target == table_id, f"Expected {table_id!r} but got {data_edges[0].target!r}"
 
         # Assert -- Edges -- trigger: MyApi -> GetUserFn
         trigger_edges = [e for e in graph.edges if e.edge_type == EdgeType.TRIGGER]
-        assert len(trigger_edges) == expected_edge_count
-        assert trigger_edges[0].source == api_id
-        assert trigger_edges[0].target == function_id
+        assert len(trigger_edges) == expected_edge_count, f"Expected {expected_edge_count!r} but got {len(trigger_edges)!r}"
+        assert trigger_edges[0].source == api_id, f"Expected {api_id!r} but got {trigger_edges[0].source!r}"
+        assert trigger_edges[0].target == function_id, f"Expected {function_id!r} but got {trigger_edges[0].target!r}"
 
     def test_topological_order_of_built_graph(self) -> None:
         """Startup order should be: table, function, api."""
@@ -117,8 +117,8 @@ class TestBuildGraph:
         actual_order = graph.topological_sort()
 
         # Assert
-        assert actual_order.index(table_id) < actual_order.index(function_id)
-        assert actual_order.index(function_id) < actual_order.index(api_id)
+        assert actual_order.index(table_id) < actual_order.index(function_id), f"Expected {actual_order.index(table_id)!r} < {actual_order.index(function_id)!r}"
+        assert actual_order.index(function_id) < actual_order.index(api_id), f"Expected {actual_order.index(function_id)!r} < {actual_order.index(api_id)!r}"
 
     def test_build_graph_empty_model(self) -> None:
         # Arrange
@@ -130,8 +130,8 @@ class TestBuildGraph:
         graph = build_graph(model)
 
         # Assert
-        assert len(graph.nodes) == expected_node_count
-        assert len(graph.edges) == expected_edge_count
+        assert len(graph.nodes) == expected_node_count, f"Expected {expected_node_count!r} but got {len(graph.nodes)!r}"
+        assert len(graph.edges) == expected_edge_count, f"Expected {expected_edge_count!r} but got {len(graph.edges)!r}"
 
     def test_function_without_table_reference(self) -> None:
         """A function whose env vars do not reference any table should have no data edges."""
@@ -153,7 +153,7 @@ class TestBuildGraph:
 
         # Assert
         data_edges = [e for e in graph.edges if e.edge_type == EdgeType.DATA_DEPENDENCY]
-        assert len(data_edges) == expected_data_edge_count
+        assert len(data_edges) == expected_data_edge_count, f"Expected {expected_data_edge_count!r} but got {len(data_edges)!r}"
 
     def test_multiple_functions_sharing_table(self) -> None:
         # Arrange
@@ -185,10 +185,10 @@ class TestBuildGraph:
 
         # Assert
         data_edges = [e for e in graph.edges if e.edge_type == EdgeType.DATA_DEPENDENCY]
-        assert len(data_edges) == expected_data_edge_count
+        assert len(data_edges) == expected_data_edge_count, f"Expected {expected_data_edge_count!r} but got {len(data_edges)!r}"
         actual_sources = {e.source for e in data_edges}
-        assert actual_sources == expected_sources
-        assert all(e.target == table_id for e in data_edges)
+        assert actual_sources == expected_sources, f"Expected {expected_sources!r} but got {actual_sources!r}"
+        assert all(e.target == table_id for e in data_edges), "Expected value to be truthy"
 
     def test_api_route_no_matching_handler(self) -> None:
         """An API route whose handler_name doesn't match any function creates no trigger edge."""
@@ -211,4 +211,4 @@ class TestBuildGraph:
 
         # Assert
         trigger_edges = [e for e in graph.edges if e.edge_type == EdgeType.TRIGGER]
-        assert len(trigger_edges) == expected_trigger_edge_count
+        assert len(trigger_edges) == expected_trigger_edge_count, f"Expected {expected_trigger_edge_count!r} but got {len(trigger_edges)!r}"

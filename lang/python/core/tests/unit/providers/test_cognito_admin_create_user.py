@@ -60,14 +60,14 @@ class TestAdminCreateUser:
 
         # Assert
         expected_http_status = 200
-        assert resp.status_code == expected_http_status
+        assert resp.status_code == expected_http_status, f"Expected {expected_http_status!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "User" in data
+        assert "User" in data, f'Expected {"User"!r} to be in {data!r}'
         actual_username = data["User"]["Username"]
         actual_status = data["User"]["UserStatus"]
-        assert actual_username == expected_username
-        assert actual_status == expected_status
-        assert data["User"]["Enabled"] is True
+        assert actual_username == expected_username, f"Expected {expected_username!r} but got {actual_username!r}"
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert data["User"]["Enabled"] is True, "Expected value to be truthy"
 
     async def test_create_user_with_attributes(self, client: httpx.AsyncClient) -> None:
         # Arrange
@@ -88,12 +88,12 @@ class TestAdminCreateUser:
 
         # Assert
         expected_http_status = 200
-        assert resp.status_code == expected_http_status
+        assert resp.status_code == expected_http_status, f"Expected {expected_http_status!r} but got {resp.status_code!r}"
         data = resp.json()
         attrs = {a["Name"]: a["Value"] for a in data["User"]["Attributes"]}
         actual_email = attrs["email"]
-        assert actual_email == expected_email
-        assert "sub" in attrs
+        assert actual_email == expected_email, f"Expected {expected_email!r} but got {actual_email!r}"
+        assert "sub" in attrs, f'Expected {"sub"!r} to be in {attrs!r}'
 
     async def test_create_user_with_temporary_password(self, client: httpx.AsyncClient) -> None:
         # Arrange
@@ -112,9 +112,9 @@ class TestAdminCreateUser:
 
         # Assert
         expected_http_status = 200
-        assert resp.status_code == expected_http_status
+        assert resp.status_code == expected_http_status, f"Expected {expected_http_status!r} but got {resp.status_code!r}"
         actual_username = resp.json()["User"]["Username"]
-        assert actual_username == expected_username
+        assert actual_username == expected_username, f"Expected {expected_username!r} but got {actual_username!r}"
 
     async def test_create_duplicate_user_returns_error(self, client: httpx.AsyncClient) -> None:
         # Arrange
@@ -135,9 +135,9 @@ class TestAdminCreateUser:
         # Assert
         expected_http_status = 400
         expected_error_type = "UsernameExistsException"
-        assert resp.status_code == expected_http_status
+        assert resp.status_code == expected_http_status, f"Expected {expected_http_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
 
     async def test_create_user_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
         # Act
@@ -150,6 +150,6 @@ class TestAdminCreateUser:
         # Assert
         expected_http_status = 400
         expected_error_type = "ResourceNotFoundException"
-        assert resp.status_code == expected_http_status
+        assert resp.status_code == expected_http_status, f"Expected {expected_http_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

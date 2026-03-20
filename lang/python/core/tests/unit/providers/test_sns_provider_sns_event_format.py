@@ -133,22 +133,22 @@ class TestSnsEventFormat:
         )
 
         # Assert
-        assert "Records" in actual_event
-        assert len(actual_event["Records"]) == 1
+        assert "Records" in actual_event, f'Expected {"Records"!r} to be in {actual_event!r}'
+        assert len(actual_event["Records"]) == 1, f'Expected {1!r} but got {len(actual_event["Records"])!r}'
 
         actual_record = actual_event["Records"][0]
-        assert actual_record["EventSource"] == expected_event_source
-        assert actual_record["EventVersion"] == expected_event_version
-        assert "EventSubscriptionArn" in actual_record
+        assert actual_record["EventSource"] == expected_event_source, f'Expected {expected_event_source!r} but got {actual_record["EventSource"]!r}'
+        assert actual_record["EventVersion"] == expected_event_version, f'Expected {expected_event_version!r} but got {actual_record["EventVersion"]!r}'
+        assert "EventSubscriptionArn" in actual_record, f'Expected {"EventSubscriptionArn"!r} to be in {actual_record!r}'
 
         actual_sns = actual_record["Sns"]
-        assert actual_sns["Type"] == expected_type
-        assert actual_sns["MessageId"] == expected_message_id
-        assert actual_sns["TopicArn"] == expected_topic_arn
-        assert actual_sns["Subject"] == expected_subject
-        assert actual_sns["Message"] == expected_message
-        assert actual_sns["Timestamp"]
-        assert actual_sns["MessageAttributes"] == {}
+        assert actual_sns["Type"] == expected_type, f'Expected {expected_type!r} but got {actual_sns["Type"]!r}'
+        assert actual_sns["MessageId"] == expected_message_id, f'Expected {expected_message_id!r} but got {actual_sns["MessageId"]!r}'
+        assert actual_sns["TopicArn"] == expected_topic_arn, f'Expected {expected_topic_arn!r} but got {actual_sns["TopicArn"]!r}'
+        assert actual_sns["Subject"] == expected_subject, f'Expected {expected_subject!r} but got {actual_sns["Subject"]!r}'
+        assert actual_sns["Message"] == expected_message, f'Expected {expected_message!r} but got {actual_sns["Message"]!r}'
+        assert actual_sns["Timestamp"], "Expected value to be truthy"
+        assert actual_sns["MessageAttributes"] == {}, "Expected {0!r} but got {1!r}".format({}, actual_sns["MessageAttributes"])
 
     def test_lambda_event_with_message_attributes(self) -> None:
         # Arrange
@@ -167,9 +167,9 @@ class TestSnsEventFormat:
 
         # Assert
         actual_sns = actual_event["Records"][0]["Sns"]
-        assert "color" in actual_sns["MessageAttributes"]
-        assert actual_sns["MessageAttributes"]["color"]["DataType"] == expected_data_type
-        assert actual_sns["MessageAttributes"]["color"]["StringValue"] == expected_color_value
+        assert "color" in actual_sns["MessageAttributes"], f'Expected {"color"!r} to be in {actual_sns["MessageAttributes"]!r}'
+        assert actual_sns["MessageAttributes"]["color"]["DataType"] == expected_data_type, f'Expected {expected_data_type!r} but got {actual_sns["MessageAttributes"]["color"]["DataType"]!r}'
+        assert actual_sns["MessageAttributes"]["color"]["StringValue"] == expected_color_value, f'Expected {expected_color_value!r} but got {actual_sns["MessageAttributes"]["color"]["StringValue"]!r}'
 
     def test_sqs_envelope_structure(self) -> None:
         # Arrange
@@ -189,10 +189,10 @@ class TestSnsEventFormat:
         )
 
         # Assert
-        assert actual_envelope["Type"] == expected_type
-        assert actual_envelope["MessageId"] == expected_message_id
-        assert actual_envelope["TopicArn"] == expected_topic_arn
-        assert actual_envelope["Subject"] == expected_subject
-        assert actual_envelope["Message"] == expected_message
-        assert actual_envelope["Timestamp"]
-        assert actual_envelope["MessageAttributes"] == {}
+        assert actual_envelope["Type"] == expected_type, f'Expected {expected_type!r} but got {actual_envelope["Type"]!r}'
+        assert actual_envelope["MessageId"] == expected_message_id, f'Expected {expected_message_id!r} but got {actual_envelope["MessageId"]!r}'
+        assert actual_envelope["TopicArn"] == expected_topic_arn, f'Expected {expected_topic_arn!r} but got {actual_envelope["TopicArn"]!r}'
+        assert actual_envelope["Subject"] == expected_subject, f'Expected {expected_subject!r} but got {actual_envelope["Subject"]!r}'
+        assert actual_envelope["Message"] == expected_message, f'Expected {expected_message!r} but got {actual_envelope["Message"]!r}'
+        assert actual_envelope["Timestamp"], "Expected value to be truthy"
+        assert actual_envelope["MessageAttributes"] == {}, "Expected {0!r} but got {1!r}".format({}, actual_envelope["MessageAttributes"])

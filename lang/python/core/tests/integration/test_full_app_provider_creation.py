@@ -31,4 +31,4 @@ class TestFullAppProviderCreation:
         actual_provider_names = {p.name for p in providers.values()}
 
         for expected_name in expected_provider_names:
-            assert expected_name in actual_provider_names
+            assert expected_name in actual_provider_names, f"Expected {expected_name!r} to be in {actual_provider_names!r}"

@@ -54,8 +54,8 @@ class TestLocalBucketStorageList:
 
     async def test_list_empty_bucket(self, storage: LocalBucketStorage) -> None:
         result = await storage.list_objects("emptybucket")
-        assert result["contents"] == []
-        assert result["is_truncated"] is False
+        assert result["contents"] == [], f'Expected {[]!r} but got {result["contents"]!r}'
+        assert result["is_truncated"] is False, "Expected value to be truthy"
 
     async def test_list_all_objects(self, storage: LocalBucketStorage) -> None:
         # Arrange
@@ -70,7 +70,7 @@ class TestLocalBucketStorageList:
         actual_keys = sorted([item["key"] for item in result["contents"]])
 
         # Assert
-        assert actual_keys == expected_keys
+        assert actual_keys == expected_keys, f"Expected {expected_keys!r} but got {actual_keys!r}"
 
     async def test_list_with_prefix(self, storage: LocalBucketStorage) -> None:
         # Arrange
@@ -86,8 +86,8 @@ class TestLocalBucketStorageList:
         actual_keys = [item["key"] for item in result["contents"]]
 
         # Assert
-        assert len(actual_keys) == expected_count
-        assert all(k.startswith(prefix) for k in actual_keys)
+        assert len(actual_keys) == expected_count, f"Expected {expected_count!r} but got {len(actual_keys)!r}"
+        assert all(k.startswith(prefix) for k in actual_keys), "Expected value to be truthy"
 
     async def test_list_pagination(self, storage: LocalBucketStorage) -> None:
         # Arrange
@@ -99,24 +99,24 @@ class TestLocalBucketStorageList:
 
         # Act / Assert - First page
         page1 = await storage.list_objects(bucket, max_keys=page_size)
-        assert len(page1["contents"]) == page_size
-        assert page1["is_truncated"] is True
-        assert page1["next_token"] is not None
+        assert len(page1["contents"]) == page_size, f'Expected {page_size!r} but got {len(page1["contents"])!r}'
+        assert page1["is_truncated"] is True, "Expected value to be truthy"
+        assert page1["next_token"] is not None, "Expected value to be set but was None"
 
         # Act / Assert - Second page
         page2 = await storage.list_objects(
             bucket, max_keys=page_size, continuation_token=page1["next_token"]
         )
-        assert len(page2["contents"]) == page_size
-        assert page2["is_truncated"] is True
+        assert len(page2["contents"]) == page_size, f'Expected {page_size!r} but got {len(page2["contents"])!r}'
+        assert page2["is_truncated"] is True, "Expected value to be truthy"
 
         # Act / Assert - Third page
         page3 = await storage.list_objects(
             bucket, max_keys=page_size, continuation_token=page2["next_token"]
         )
-        assert len(page3["contents"]) == 1
-        assert page3["is_truncated"] is False
+        assert len(page3["contents"]) == 1, f'Expected {1!r} but got {len(page3["contents"])!r}'
+        assert page3["is_truncated"] is False, "Expected value to be truthy"
 
         # Assert - All keys collected
         all_keys = [item["key"] for page in [page1, page2, page3] for item in page["contents"]]
-        assert len(all_keys) == expected_total_keys
+        assert len(all_keys) == expected_total_keys, f"Expected {expected_total_keys!r} but got {len(all_keys)!r}"

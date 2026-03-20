@@ -14,7 +14,7 @@ class TestEqOperator:
         actual = evaluate_operator("$eq", "hello", "hello")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_eq_no_match(self):
         # Arrange
@@ -24,4 +24,4 @@ class TestEqOperator:
         actual = evaluate_operator("$eq", "hello", "world")
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

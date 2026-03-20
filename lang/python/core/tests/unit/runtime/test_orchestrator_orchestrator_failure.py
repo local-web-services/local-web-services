@@ -30,7 +30,7 @@ class TestOrchestratorFailure:
             )
 
         # p1 should have been stopped during cleanup
-        assert p1.stopped
+        assert p1.stopped, "Expected value to be truthy"
 
     async def test_skips_missing_providers_in_startup_order(self, orchestrator):
         p1 = FakeProvider("existing")
@@ -39,5 +39,5 @@ class TestOrchestratorFailure:
             {"p1": p1},
             ["nonexistent", "p1"],
         )
-        assert p1.started
-        assert orchestrator.running
+        assert p1.started, "Expected value to be truthy"
+        assert orchestrator.running, "Expected value to be truthy"

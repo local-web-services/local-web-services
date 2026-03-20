@@ -21,9 +21,9 @@ class TestSecretsManagerGetSecretValue:
 
         # Assert
         actual_body = json.loads(actual_response.body)
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert actual_body["SecretString"] == expected_secret_string
-        assert actual_body["Name"] == expected_name
-        assert "ARN" in actual_body
-        assert expected_name in actual_body["ARN"]
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert actual_response.content_type == expected_content_type, f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert actual_body["SecretString"] == expected_secret_string, f'Expected {expected_secret_string!r} but got {actual_body["SecretString"]!r}'
+        assert actual_body["Name"] == expected_name, f'Expected {expected_name!r} but got {actual_body["Name"]!r}'
+        assert "ARN" in actual_body, f'Expected {"ARN"!r} to be in {actual_body!r}'
+        assert expected_name in actual_body["ARN"], f'Expected {expected_name!r} to be in {actual_body["ARN"]!r}'

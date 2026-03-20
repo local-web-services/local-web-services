@@ -45,10 +45,10 @@ class TestDescribeDomains:
         )
 
         # Assert
-        assert len(result["DomainStatusList"]) == expected_count
+        assert len(result["DomainStatusList"]) == expected_count, f'Expected {expected_count!r} but got {len(result["DomainStatusList"])!r}'
         names = [d["DomainName"] for d in result["DomainStatusList"]]
-        assert domain_name_a in names
-        assert domain_name_b in names
+        assert domain_name_a in names, f"Expected {domain_name_a!r} to be in {names!r}"
+        assert domain_name_b in names, f"Expected {domain_name_b!r} to be in {names!r}"
 
     def test_describe_batch_skips_missing(self, client: TestClient) -> None:
         # Arrange
@@ -64,4 +64,4 @@ class TestDescribeDomains:
         )
 
         # Assert
-        assert len(result["DomainStatusList"]) == expected_count
+        assert len(result["DomainStatusList"]) == expected_count, f'Expected {expected_count!r} but got {len(result["DomainStatusList"])!r}'

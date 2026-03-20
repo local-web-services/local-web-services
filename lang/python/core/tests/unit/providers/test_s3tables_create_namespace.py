@@ -34,11 +34,11 @@ class TestCreateNamespace:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         actual_namespace = actual_body["namespace"]
-        assert actual_namespace == [namespace_name]
-        assert "tableBucketARN" in actual_body
+        assert actual_namespace == [namespace_name], f"Expected {[namespace_name]!r} but got {actual_namespace!r}"
+        assert "tableBucketARN" in actual_body, f'Expected {"tableBucketARN"!r} to be in {actual_body!r}'
 
     def test_create_namespace_bucket_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -54,10 +54,10 @@ class TestCreateNamespace:
         # Assert
         expected_status = 404
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         expected_error_type = "NotFoundException"
-        assert actual_body["__type"] == expected_error_type
+        assert actual_body["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'
 
     def test_create_namespace_duplicate_returns_conflict(self, client: TestClient) -> None:
         # Arrange
@@ -78,10 +78,10 @@ class TestCreateNamespace:
         # Assert
         expected_status = 409
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         expected_error_type = "ConflictException"
-        assert actual_body["__type"] == expected_error_type
+        assert actual_body["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'
 
     def test_create_namespace_missing_namespace_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -97,7 +97,7 @@ class TestCreateNamespace:
         # Assert
         expected_status = 400
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         expected_error_type = "BadRequestException"
-        assert actual_body["__type"] == expected_error_type
+        assert actual_body["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'

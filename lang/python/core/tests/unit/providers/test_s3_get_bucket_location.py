@@ -40,8 +40,8 @@ class TestGetBucketLocation:
         resp = await client.get("/my-bucket?location")
 
         # Assert
-        assert resp.status_code == expected_status
-        assert expected_location_xml in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert expected_location_xml in resp.text, f"Expected {expected_location_xml!r} to be in {resp.text!r}"
 
     @pytest.mark.asyncio
     async def test_get_bucket_location_no_such_bucket(self, client: httpx.AsyncClient) -> None:
@@ -50,5 +50,5 @@ class TestGetBucketLocation:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
-        assert "NoSuchBucket" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "NoSuchBucket" in resp.text, f'Expected {"NoSuchBucket"!r} to be in {resp.text!r}'

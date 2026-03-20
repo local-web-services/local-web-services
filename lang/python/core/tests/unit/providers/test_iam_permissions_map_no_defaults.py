@@ -14,4 +14,4 @@ class TestPermissionsMapNoDefaults:
         actual = pmap.get_required_actions("dynamodb", "get-item")
 
         # Assert
-        assert actual is None
+        assert actual is None, f"Expected None but got {actual!r}"

@@ -27,7 +27,7 @@ class SnsStoreTopicTest {
     String actualArn = store.topicArn(topicName);
 
     // Assert
-    assertEquals(expectedArn, actualArn);
+    assertEquals(expectedArn, actualArn, "Expected actualArn to equal expectedArn");
   }
 
   @Test
@@ -40,7 +40,7 @@ class SnsStoreTopicTest {
 
     // Assert
     var actualTopic = store.topics.get(arn);
-    assertNotNull(actualTopic);
+    assertNotNull(actualTopic, "Expected actualTopic to not be null");
   }
 
   @Test
@@ -53,7 +53,7 @@ class SnsStoreTopicTest {
     store.reset();
 
     // Assert
-    assertTrue(store.topics.isEmpty());
+    assertTrue(store.topics.isEmpty(), "Expected store.topics to be empty");
   }
 
   @Test
@@ -66,6 +66,6 @@ class SnsStoreTopicTest {
     store.reset();
 
     // Assert
-    assertTrue(store.subscriptions.isEmpty());
+    assertTrue(store.subscriptions.isEmpty(), "Expected store.subscriptions to be empty");
   }
 }

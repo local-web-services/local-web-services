@@ -27,9 +27,9 @@ class TestConditionalRouting:
         result = engine.match(method="GET", path="/v1/data", headers={"X-Api-Version": "2"})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_version = result[0].body["version"]
-        assert actual_version == expected_version
+        assert actual_version == expected_version, f"Expected {expected_version!r} but got {actual_version!r}"
 
     def test_header_no_match_falls_through(self):
         # Arrange
@@ -51,9 +51,9 @@ class TestConditionalRouting:
         result = engine.match(method="GET", path="/v1/data", headers={"X-Api-Version": "1"})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_version = result[0].body["version"]
-        assert actual_version == expected_version
+        assert actual_version == expected_version, f"Expected {expected_version!r} but got {actual_version!r}"
 
     def test_path_param_regex_match(self):
         # Arrange
@@ -75,9 +75,9 @@ class TestConditionalRouting:
         result = engine.match(method="GET", path="/v1/payments/pay_expired_abc")
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_status = result[0].status
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_query_param_match(self):
         # Arrange
@@ -99,9 +99,9 @@ class TestConditionalRouting:
         result = engine.match(method="GET", path="/v1/items", query_params={"status": "active"})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_filter = result[0].body["filter"]
-        assert actual_filter == expected_filter
+        assert actual_filter == expected_filter, f"Expected {expected_filter!r} but got {actual_filter!r}"
 
     def test_body_matcher(self):
         # Arrange
@@ -123,6 +123,6 @@ class TestConditionalRouting:
         result = engine.match(method="POST", path="/v1/check", body={"amount": 5000})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_tier = result[0].body["tier"]
-        assert actual_tier == expected_tier
+        assert actual_tier == expected_tier, f"Expected {expected_tier!r} but got {actual_tier!r}"

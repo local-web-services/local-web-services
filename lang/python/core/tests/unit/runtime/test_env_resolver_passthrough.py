@@ -50,11 +50,11 @@ class TestPassthrough:
         actual_env = resolve_env_vars(expected_env, resource_registry={})
 
         # Assert
-        assert actual_env == expected_env
+        assert actual_env == expected_env, f"Expected {expected_env!r} but got {actual_env!r}"
 
     def test_empty_env(self) -> None:
         # Act
         actual_env = resolve_env_vars({}, resource_registry={})
 
         # Assert
-        assert actual_env == {}
+        assert actual_env == {}, "Expected {0!r} but got {1!r}".format({}, actual_env)

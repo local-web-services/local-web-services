@@ -39,7 +39,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k1")));
-    assertEquals(strAttr("original"), actualItem.get("val"));
+    assertEquals(strAttr("original"), actualItem.get("val"), "Expected actualItem.get("val") to equal strAttr("original")");
   }
 
   @Test
@@ -58,7 +58,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k2")));
-    assertEquals(strAttr("original"), actualItem.get("val"));
+    assertEquals(strAttr("original"), actualItem.get("val"), "Expected actualItem.get("val") to equal strAttr("original")");
   }
 
   @Test
@@ -78,7 +78,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k3")));
-    assertEquals(expectedValue, actualItem.get("status"));
+    assertEquals(expectedValue, actualItem.get("status"), "Expected actualItem.get("status") to equal expectedValue");
   }
 
   @Test
@@ -95,7 +95,7 @@ public class DynamoDbStoreExtraTest {
     List<Map<String, Object>> actualItems = store.scan(tableName, null, null, null, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -112,7 +112,7 @@ public class DynamoDbStoreExtraTest {
     List<Map<String, Object>> actualItems = store.scan(tableName, null, null, null, null, Map.of());
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -130,7 +130,7 @@ public class DynamoDbStoreExtraTest {
         store.query(tableName, null, null, null, null, null, true, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -148,7 +148,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k4")));
-    assertEquals("5", actualItem.get("count"));
+    assertEquals("5", actualItem.get("count"), "Expected actualItem.get("count") to match "5"");
   }
 
   @Test
@@ -167,7 +167,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k5")));
-    assertNull(actualItem.get("temp"));
+    assertNull(actualItem.get("temp"), "Expected actualItem.get("temp") to be null");
   }
 
   @Test
@@ -186,7 +186,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert — val is unchanged
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k6")));
-    assertEquals(strAttr("unchanged"), actualItem.get("val"));
+    assertEquals(strAttr("unchanged"), actualItem.get("val"), "Expected actualItem.get("val") to equal strAttr("unchanged")");
   }
 
   @Test
@@ -209,7 +209,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert — #attr literally becomes the key
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k7")));
-    assertEquals(strAttr("myValue"), actualItem.get("#attr"));
+    assertEquals(strAttr("myValue"), actualItem.get("#attr"), "Expected actualItem.get("#attr") to equal strAttr("myValue")");
   }
 
   @Test
@@ -227,7 +227,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert — :val literally becomes the value
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k8")));
-    assertEquals(":val", actualItem.get("myAttr"));
+    assertEquals(":val", actualItem.get("myAttr"), "Expected actualItem.get("myAttr") to equal ":val"");
   }
 
   @Test
@@ -245,7 +245,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert — #myAttr is used literally, :delta is the value
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k9")));
-    assertEquals(":delta", actualItem.get("#myAttr"));
+    assertEquals(":delta", actualItem.get("#myAttr"), "Expected actualItem.get("#myAttr") to equal ":delta"");
   }
 
   @Test
@@ -269,7 +269,7 @@ public class DynamoDbStoreExtraTest {
 
     // Assert — value is replaced with the delta
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k10")));
-    assertEquals(strAttr("drinks"), actualItem.get("category"));
+    assertEquals(strAttr("drinks"), actualItem.get("category"), "Expected actualItem.get("category") to equal strAttr("drinks")");
   }
 
   @Test
@@ -288,6 +288,6 @@ public class DynamoDbStoreExtraTest {
 
     // Assert — #extra literally removed
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("k11")));
-    assertNull(actualItem.get("#extra"));
+    assertNull(actualItem.get("#extra"), "Expected actualItem.get("#extra") to be null");
   }
 }

@@ -44,13 +44,13 @@ class TestSqsStubOperations:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type
-        assert "lws" in body["message"]
-        assert "SQS" in body["message"]
-        assert action_name in body["message"]
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
+        assert "SQS" in body["message"], f'Expected {"SQS"!r} to be in {body["message"]!r}'
+        assert action_name in body["message"], f'Expected {action_name!r} to be in {body["message"]!r}'
 
     @pytest.mark.asyncio
     async def test_unknown_xml_operation_returns_error(self, client):
@@ -68,9 +68,9 @@ class TestSqsStubOperations:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "<ErrorResponse>" in resp.text
-        assert "<Code>InvalidAction</Code>" in resp.text
-        assert "lws" in resp.text
-        assert "SQS" in resp.text
-        assert action_name in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "<ErrorResponse>" in resp.text, f'Expected {"<ErrorResponse>"!r} to be in {resp.text!r}'
+        assert "<Code>InvalidAction</Code>" in resp.text, f'Expected {"<Code>InvalidAction</Code>"!r} to be in {resp.text!r}'
+        assert "lws" in resp.text, f'Expected {"lws"!r} to be in {resp.text!r}'
+        assert "SQS" in resp.text, f'Expected {"SQS"!r} to be in {resp.text!r}'
+        assert action_name in resp.text, f"Expected {action_name!r} to be in {resp.text!r}"

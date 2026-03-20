@@ -38,5 +38,5 @@ class TestListSecrets:
 
         # Assert
         names = [s["Name"] for s in result["SecretList"]]
-        assert secret_name_1 in names
-        assert secret_name_2 in names
+        assert secret_name_1 in names, f"Expected {secret_name_1!r} to be in {names!r}"
+        assert secret_name_2 in names, f"Expected {secret_name_2!r} to be in {names!r}"

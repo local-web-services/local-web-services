@@ -27,7 +27,7 @@ class SqsStoreSendReceiveTest {
     String actualMessageId = queue.sendMessage("hello", 0);
 
     // Assert
-    assertNotNull(actualMessageId);
+    assertNotNull(actualMessageId, "Expected actualMessageId to not be null");
   }
 
   @Test
@@ -40,8 +40,8 @@ class SqsStoreSendReceiveTest {
     var actualMessages = queue.receiveMessages(1);
 
     // Assert
-    assertEquals(1, actualMessages.size());
-    assertEquals("hello", actualMessages.get(0).body);
+    assertEquals(1, actualMessages.size(), "Expected actualMessages.size() to match 1");
+    assertEquals("hello", actualMessages.get(0).body, "Expected actualMessages.get(0).body to equal "hello"");
   }
 
   @Test
@@ -53,7 +53,7 @@ class SqsStoreSendReceiveTest {
     var actualMessages = queue.receiveMessages(1);
 
     // Assert
-    assertEquals(0, actualMessages.size());
+    assertEquals(0, actualMessages.size(), "Expected actualMessages.size() to match 0");
   }
 
   @Test
@@ -69,7 +69,7 @@ class SqsStoreSendReceiveTest {
 
     // Assert
     boolean actualHasMessage = queue.hasMessage(receiptHandle);
-    assertFalse(actualHasMessage);
+    assertFalse(actualHasMessage, "Expected condition to be false: actualHasMessage");
   }
 
   @Test
@@ -82,6 +82,6 @@ class SqsStoreSendReceiveTest {
     int actualCount = queue.approximateMessageCount();
 
     // Assert
-    assertEquals(1, actualCount);
+    assertEquals(1, actualCount, "Expected actualCount to match 1");
   }
 }

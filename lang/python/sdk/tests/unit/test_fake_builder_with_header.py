@@ -19,8 +19,8 @@ def test_with_header_stores_value_and_returns_self():
 
     # Assert
     actual_headers = rule_builder._match_headers
-    assert actual_headers[expected_name] == expected_value
-    assert actual_result is rule_builder
+    assert actual_headers[expected_name] == expected_value, f"Expected {expected_value!r} but got {actual_headers[expected_name]!r}"
+    assert actual_result is rule_builder, "Expected value to be truthy"
 
 
 def test_with_header_included_in_respond_payload():
@@ -41,9 +41,9 @@ def test_with_header_included_in_respond_payload():
         )
 
     # Assert
-    assert len(captured_payloads) == 1
+    assert len(captured_payloads) == 1, f"Expected {1!r} but got {len(captured_payloads)!r}"
     actual_headers = captured_payloads[0]["dynamodb"]["rules"][0]["match_headers"]
-    assert actual_headers[expected_name] == expected_value
+    assert actual_headers[expected_name] == expected_value, f"Expected {expected_value!r} but got {actual_headers[expected_name]!r}"
 
 
 def test_with_header_multiple_headers_all_included():
@@ -65,7 +65,7 @@ def test_with_header_multiple_headers_all_included():
 
     # Assert
     actual_headers = captured_payloads[0]["sqs"]["rules"][0]["match_headers"]
-    assert actual_headers == expected_headers
+    assert actual_headers == expected_headers, f"Expected {expected_headers!r} but got {actual_headers!r}"
 
 
 def test_with_header_empty_by_default():
@@ -76,4 +76,4 @@ def test_with_header_empty_by_default():
 
     # Act / Assert
     actual_headers = rule_builder._match_headers
-    assert actual_headers == expected_headers
+    assert actual_headers == expected_headers, f"Expected {expected_headers!r} but got {actual_headers!r}"

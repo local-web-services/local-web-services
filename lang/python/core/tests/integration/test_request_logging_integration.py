@@ -99,23 +99,23 @@ class TestRequestLoggingIntegration:
         )
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert response.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {response.status_code!r}"
 
         backlog = ws_handler.backlog()
-        assert len(backlog) == expected_backlog_count
+        assert len(backlog) == expected_backlog_count, f"Expected {expected_backlog_count!r} but got {len(backlog)!r}"
 
         entry = backlog[0]
         actual_service = entry["service"]
         actual_method = entry["method"]
         actual_status_code = entry["status_code"]
         actual_handler = entry["handler"]
-        assert actual_service == expected_service
-        assert actual_method == expected_method
-        assert actual_status_code == expected_status_code
-        assert actual_handler == expected_handler
-        assert "request_body" in entry
-        assert expected_table_name in entry["request_body"]
-        assert "response_body" in entry
+        assert actual_service == expected_service, f"Expected {expected_service!r} but got {actual_service!r}"
+        assert actual_method == expected_method, f"Expected {expected_method!r} but got {actual_method!r}"
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_handler == expected_handler, f"Expected {expected_handler!r} but got {actual_handler!r}"
+        assert "request_body" in entry, f'Expected {"request_body"!r} to be in {entry!r}'
+        assert expected_table_name in entry["request_body"], f'Expected {expected_table_name!r} to be in {entry["request_body"]!r}'
+        assert "response_body" in entry, f'Expected {"response_body"!r} to be in {entry!r}'
 
     async def test_dynamodb_get_item_logs_request_and_response(
         self, dynamodb_client: httpx.AsyncClient, ws_handler: WebSocketLogHandler
@@ -149,20 +149,20 @@ class TestRequestLoggingIntegration:
         )
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert response.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {response.status_code!r}"
 
         backlog = ws_handler.backlog()
-        assert len(backlog) == expected_backlog_count
+        assert len(backlog) == expected_backlog_count, f"Expected {expected_backlog_count!r} but got {len(backlog)!r}"
 
         entry = backlog[0]
         actual_service = entry["service"]
         actual_handler = entry["handler"]
-        assert actual_service == expected_service
-        assert actual_handler == expected_handler
-        assert "request_body" in entry
-        assert expected_pk in entry["request_body"]
-        assert "response_body" in entry
-        assert "Item" in entry["response_body"]
+        assert actual_service == expected_service, f"Expected {expected_service!r} but got {actual_service!r}"
+        assert actual_handler == expected_handler, f"Expected {expected_handler!r} but got {actual_handler!r}"
+        assert "request_body" in entry, f'Expected {"request_body"!r} to be in {entry!r}'
+        assert expected_pk in entry["request_body"], f'Expected {expected_pk!r} to be in {entry["request_body"]!r}'
+        assert "response_body" in entry, f'Expected {"response_body"!r} to be in {entry!r}'
+        assert "Item" in entry["response_body"], f'Expected {"Item"!r} to be in {entry["response_body"]!r}'
 
     # SQS Tests
 
@@ -211,23 +211,23 @@ class TestRequestLoggingIntegration:
         )
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert response.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {response.status_code!r}"
 
         backlog = ws_handler.backlog()
-        assert len(backlog) == expected_backlog_count
+        assert len(backlog) == expected_backlog_count, f"Expected {expected_backlog_count!r} but got {len(backlog)!r}"
 
         entry = backlog[0]
         actual_service = entry["service"]
         actual_method = entry["method"]
         actual_status_code = entry["status_code"]
         actual_handler = entry["handler"]
-        assert actual_service == expected_service
-        assert actual_method == expected_method
-        assert actual_status_code == expected_status_code
-        assert actual_handler == expected_handler
-        assert "request_body" in entry
-        assert expected_message_body_fragment in entry["request_body"]
-        assert "response_body" in entry
+        assert actual_service == expected_service, f"Expected {expected_service!r} but got {actual_service!r}"
+        assert actual_method == expected_method, f"Expected {expected_method!r} but got {actual_method!r}"
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert actual_handler == expected_handler, f"Expected {expected_handler!r} but got {actual_handler!r}"
+        assert "request_body" in entry, f'Expected {"request_body"!r} to be in {entry!r}'
+        assert expected_message_body_fragment in entry["request_body"], f'Expected {expected_message_body_fragment!r} to be in {entry["request_body"]!r}'
+        assert "response_body" in entry, f'Expected {"response_body"!r} to be in {entry!r}'
 
     # S3 Tests
 
@@ -271,23 +271,23 @@ class TestRequestLoggingIntegration:
         )
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert response.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {response.status_code!r}"
 
         backlog = ws_handler.backlog()
-        assert len(backlog) == expected_backlog_count
+        assert len(backlog) == expected_backlog_count, f"Expected {expected_backlog_count!r} but got {len(backlog)!r}"
 
         entry = backlog[0]
         actual_service = entry["service"]
         actual_method = entry["method"]
         actual_status_code = entry["status_code"]
         actual_response_body = entry["response_body"]
-        assert actual_service == expected_service
-        assert actual_method == expected_method
-        assert actual_status_code == expected_status_code
-        assert "request_body" in entry
-        assert expected_request_body_fragment in entry["request_body"]
-        assert "response_body" in entry
-        assert actual_response_body == expected_response_body
+        assert actual_service == expected_service, f"Expected {expected_service!r} but got {actual_service!r}"
+        assert actual_method == expected_method, f"Expected {expected_method!r} but got {actual_method!r}"
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "request_body" in entry, f'Expected {"request_body"!r} to be in {entry!r}'
+        assert expected_request_body_fragment in entry["request_body"], f'Expected {expected_request_body_fragment!r} to be in {entry["request_body"]!r}'
+        assert "response_body" in entry, f'Expected {"response_body"!r} to be in {entry!r}'
+        assert actual_response_body == expected_response_body, f"Expected {expected_response_body!r} but got {actual_response_body!r}"
 
     # WebSocket Streaming Tests
 
@@ -318,9 +318,9 @@ class TestRequestLoggingIntegration:
         actual_service = entry["service"]
         actual_request_body = entry["request_body"]
         actual_response_body = entry["response_body"]
-        assert actual_service == expected_service
-        assert actual_request_body == expected_request_body
-        assert actual_response_body == expected_response_body
+        assert actual_service == expected_service, f"Expected {expected_service!r} but got {actual_service!r}"
+        assert actual_request_body == expected_request_body, f"Expected {expected_request_body!r} but got {actual_request_body!r}"
+        assert actual_response_body == expected_response_body, f"Expected {expected_response_body!r} but got {actual_response_body!r}"
 
         ws_handler.unsubscribe(queue)
 
@@ -349,9 +349,9 @@ class TestRequestLoggingIntegration:
 
         actual_service_1 = entry1["service"]
         actual_service_2 = entry2["service"]
-        assert actual_service_1 == expected_service
-        assert actual_service_2 == expected_service
-        assert entry1["message"] == entry2["message"]
+        assert actual_service_1 == expected_service, f"Expected {expected_service!r} but got {actual_service_1!r}"
+        assert actual_service_2 == expected_service, f"Expected {expected_service!r} but got {actual_service_2!r}"
+        assert entry1["message"] == entry2["message"], f'Expected {entry2["message"]!r} but got {entry1["message"]!r}'
 
         ws_handler.unsubscribe(q1)
         ws_handler.unsubscribe(q2)

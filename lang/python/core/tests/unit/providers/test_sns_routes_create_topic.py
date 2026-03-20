@@ -40,12 +40,12 @@ class TestCreateTopic:
         resp = await client.post("/", data={"Action": "CreateTopic", "Name": topic_name})
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "CreateTopicResponse" in resp.text
-        assert topic_name in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "CreateTopicResponse" in resp.text, f'Expected {"CreateTopicResponse"!r} to be in {resp.text!r}'
+        assert topic_name in resp.text, f"Expected {topic_name!r} to be in {resp.text!r}"
         actual_topics = provider.list_topics()
-        assert len(actual_topics) == expected_topic_count
-        assert actual_topics[0].topic_name == topic_name
+        assert len(actual_topics) == expected_topic_count, f"Expected {expected_topic_count!r} but got {len(actual_topics)!r}"
+        assert actual_topics[0].topic_name == topic_name, f"Expected {topic_name!r} but got {actual_topics[0].topic_name!r}"
 
     @pytest.mark.asyncio
     async def test_create_topic_duplicate_returns_error(
@@ -61,4 +61,4 @@ class TestCreateTopic:
         resp2 = await client.post("/", data={"Action": "CreateTopic", "Name": topic_name})
 
         # Assert
-        assert resp2.status_code == expected_status
+        assert resp2.status_code == expected_status, f"Expected {expected_status!r} but got {resp2.status_code!r}"

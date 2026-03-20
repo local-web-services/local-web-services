@@ -15,7 +15,7 @@ class TestRef:
         actual_value = r.resolve({"Ref": "AWS::AccountId"})
 
         # Assert
-        assert actual_value == expected_account_id
+        assert actual_value == expected_account_id, f"Expected {expected_account_id!r} but got {actual_value!r}"
 
     def test_pseudo_param_region(self):
         # Arrange
@@ -26,7 +26,7 @@ class TestRef:
         actual_value = r.resolve({"Ref": "AWS::Region"})
 
         # Assert
-        assert actual_value == expected_region
+        assert actual_value == expected_region, f"Expected {expected_region!r} but got {actual_value!r}"
 
     def test_ref_with_resource_map(self):
         # Arrange
@@ -37,7 +37,7 @@ class TestRef:
         actual_value = r.resolve({"Ref": "MyBucket"})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_ref_unknown_generates_arn(self):
         # Arrange
@@ -48,7 +48,7 @@ class TestRef:
         actual_value = r.resolve({"Ref": "MyFunc"})
 
         # Assert
-        assert actual_value == expected_arn
+        assert actual_value == expected_arn, f"Expected {expected_arn!r} but got {actual_value!r}"
 
     def test_ref_unknown_no_type(self):
         # Arrange
@@ -59,4 +59,4 @@ class TestRef:
         actual_value = r.resolve({"Ref": "SomeLogicalId"})
 
         # Assert
-        assert actual_value == expected_arn
+        assert actual_value == expected_arn, f"Expected {expected_arn!r} but got {actual_value!r}"

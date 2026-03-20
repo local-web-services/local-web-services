@@ -101,8 +101,8 @@ class TestManagedProcessStreaming:
         actual_exit_code = await mp.wait()
 
         # Assert
-        assert actual_exit_code == expected_exit_code
-        assert mp.is_running is False
+        assert actual_exit_code == expected_exit_code, f"Expected {expected_exit_code!r} but got {actual_exit_code!r}"
+        assert mp.is_running is False, "Expected value to be truthy"
 
     async def test_wait_without_start_returns_minus_one(self) -> None:
         # Act
@@ -111,4 +111,4 @@ class TestManagedProcessStreaming:
 
         # Assert
         expected_code = -1
-        assert actual_code == expected_code
+        assert actual_code == expected_code, f"Expected {expected_code!r} but got {actual_code!r}"

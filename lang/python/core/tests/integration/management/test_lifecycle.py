@@ -17,10 +17,10 @@ class TestGetLifecycleReturnsAllServices:
         response = await client.get("/_ldk/lifecycle")
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert response.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {response.status_code!r}"
         body = response.json()
         actual_services = set(body.keys())
-        assert actual_services == expected_services
+        assert actual_services == expected_services, f"Expected {expected_services!r} but got {actual_services!r}"
 
 
 class TestPostLifecycleUpdatesServiceConfig:
@@ -42,18 +42,18 @@ class TestPostLifecycleUpdatesServiceConfig:
         response = await client.post("/_ldk/lifecycle", json=payload)
 
         # Assert
-        assert response.status_code == expected_status_code
+        assert response.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {response.status_code!r}"
         body = response.json()
-        assert "updated" in body
+        assert "updated" in body, f'Expected {"updated"!r} to be in {body!r}'
         actual_updated = body["updated"]
-        assert "dynamodb" in actual_updated
+        assert "dynamodb" in actual_updated, f'Expected {"dynamodb"!r} to be in {actual_updated!r}'
         actual_cfg = body["lifecycle"]["dynamodb"]
         actual_enabled = actual_cfg["enabled"]
         actual_create_dwell_ms = actual_cfg["create_dwell_ms"]
         actual_delete_dwell_ms = actual_cfg["delete_dwell_ms"]
-        assert actual_enabled == expected_enabled
-        assert actual_create_dwell_ms == expected_create_dwell_ms
-        assert actual_delete_dwell_ms == expected_delete_dwell_ms
+        assert actual_enabled == expected_enabled, f"Expected {expected_enabled!r} but got {actual_enabled!r}"
+        assert actual_create_dwell_ms == expected_create_dwell_ms, f"Expected {expected_create_dwell_ms!r} but got {actual_create_dwell_ms!r}"
+        assert actual_delete_dwell_ms == expected_delete_dwell_ms, f"Expected {expected_delete_dwell_ms!r} but got {actual_delete_dwell_ms!r}"
 
 
 class TestResetClearsLifecycleConfigs:
@@ -77,10 +77,10 @@ class TestResetClearsLifecycleConfigs:
         reset_response = await client.post("/_ldk/reset")
 
         # Assert
-        assert reset_response.status_code == 200
+        assert reset_response.status_code == 200, f"Expected {200!r} but got {reset_response.status_code!r}"
         actual_enabled = lifecycle_configs["dynamodb"].enabled
         actual_create_dwell_ms = lifecycle_configs["dynamodb"].create_dwell_ms
         actual_delete_dwell_ms = lifecycle_configs["dynamodb"].delete_dwell_ms
-        assert actual_enabled == expected_enabled
-        assert actual_create_dwell_ms == expected_create_dwell_ms
-        assert actual_delete_dwell_ms == expected_delete_dwell_ms
+        assert actual_enabled == expected_enabled, f"Expected {expected_enabled!r} but got {actual_enabled!r}"
+        assert actual_create_dwell_ms == expected_create_dwell_ms, f"Expected {expected_create_dwell_ms!r} but got {actual_create_dwell_ms!r}"
+        assert actual_delete_dwell_ms == expected_delete_dwell_ms, f"Expected {expected_delete_dwell_ms!r} but got {actual_delete_dwell_ms!r}"

@@ -69,17 +69,17 @@ class TestAdminGetUser:
 
         # Assert
         expected_http_status = 200
-        assert resp.status_code == expected_http_status
+        assert resp.status_code == expected_http_status, f"Expected {expected_http_status!r} but got {resp.status_code!r}"
         data = resp.json()
         actual_username = data["Username"]
         actual_user_status = data["UserStatus"]
-        assert actual_username == username
-        assert actual_user_status == expected_status
-        assert data["Enabled"] is True
+        assert actual_username == username, f"Expected {username!r} but got {actual_username!r}"
+        assert actual_user_status == expected_status, f"Expected {expected_status!r} but got {actual_user_status!r}"
+        assert data["Enabled"] is True, "Expected value to be truthy"
         attrs = {a["Name"]: a["Value"] for a in data["UserAttributes"]}
         actual_email = attrs["email"]
-        assert actual_email == expected_email
-        assert "sub" in attrs
+        assert actual_email == expected_email, f"Expected {expected_email!r} but got {actual_email!r}"
+        assert "sub" in attrs, f'Expected {"sub"!r} to be in {attrs!r}'
 
     async def test_get_nonexistent_user_returns_error(self, client: httpx.AsyncClient) -> None:
         # Act
@@ -92,6 +92,6 @@ class TestAdminGetUser:
         # Assert
         expected_status = 400
         expected_error_type = "UserNotFoundException"
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

@@ -103,7 +103,7 @@ class TestUserStoreSignUpNoAutoConfirm:
         try:
             await s.sign_up("bob", "Password1A")
             user = await s.get_user("bob")
-            assert user is not None
-            assert user["confirmed"] is False
+            assert user is not None, "Expected value to be set but was None"
+            assert user["confirmed"] is False, "Expected value to be truthy"
         finally:
             await s.stop()

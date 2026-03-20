@@ -105,8 +105,8 @@ class TestUserStoreConfirmation:
             await s.sign_up("bob", "Password1A")
             await s.confirm_sign_up("bob")
             user = await s.get_user("bob")
-            assert user is not None
-            assert user["confirmed"] is True
+            assert user is not None, "Expected value to be set but was None"
+            assert user["confirmed"] is True, "Expected value to be truthy"
         finally:
             await s.stop()
 

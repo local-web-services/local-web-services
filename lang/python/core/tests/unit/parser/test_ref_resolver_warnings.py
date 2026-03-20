@@ -18,7 +18,7 @@ class TestWarnings:
             r.resolve({"Fn::GetAtt": 42})
 
         # Assert
-        assert expected_warning in caplog.text
+        assert expected_warning in caplog.text, f"Expected {expected_warning!r} to be in {caplog.text!r}"
 
     def test_bad_join_warns(self, caplog):
         # Arrange
@@ -30,4 +30,4 @@ class TestWarnings:
             r.resolve({"Fn::Join": "not-a-list"})
 
         # Assert
-        assert expected_warning in caplog.text
+        assert expected_warning in caplog.text, f"Expected {expected_warning!r} to be in {caplog.text!r}"

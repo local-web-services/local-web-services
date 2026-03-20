@@ -39,6 +39,6 @@ from lws.providers.ecs.alb import (
 class TestListenerRule:
     def test_defaults(self) -> None:
         rule = ListenerRule(priority=1, path_pattern="/api/*")
-        assert rule.target_host == "localhost"
-        assert rule.target_port == 8080
-        assert rule.health_check_path is None
+        assert rule.target_host == "localhost", f'Expected {"localhost"!r} but got {rule.target_host!r}'
+        assert rule.target_port == 8080, f"Expected {8080!r} but got {rule.target_port!r}"
+        assert rule.health_check_path is None, f"Expected None but got {rule.health_check_path!r}"

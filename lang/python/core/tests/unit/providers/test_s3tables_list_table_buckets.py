@@ -25,9 +25,9 @@ class TestListTableBuckets:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
-        assert actual_body["tableBuckets"] == []
+        assert actual_body["tableBuckets"] == [], f'Expected {[]!r} but got {actual_body["tableBuckets"]!r}'
 
     def test_list_table_buckets_returns_created_buckets(self, client: TestClient) -> None:
         # Arrange
@@ -40,10 +40,10 @@ class TestListTableBuckets:
         # Assert
         expected_status = 200
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         actual_names = [b["name"] for b in actual_body["tableBuckets"]]
-        assert bucket_name in actual_names
+        assert bucket_name in actual_names, f"Expected {bucket_name!r} to be in {actual_names!r}"
 
     def test_list_table_buckets_returns_multiple(self, client: TestClient) -> None:
         # Arrange
@@ -59,4 +59,4 @@ class TestListTableBuckets:
         expected_count = 2
         actual_body = response.json()
         actual_count = len(actual_body["tableBuckets"])
-        assert actual_count == expected_count
+        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"

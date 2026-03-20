@@ -59,21 +59,21 @@ class TestDeleteTable:
         expected_table_name = "orders"
         await provider.create_table(_simple_config())
         tables = await provider.list_tables()
-        assert expected_table_name in tables
+        assert expected_table_name in tables, f"Expected {expected_table_name!r} to be in {tables!r}"
 
         # Act
         result = await provider.delete_table("orders")
 
         # Assert
         actual_table_name = result["TableName"]
-        assert actual_table_name == expected_table_name
+        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
 
         tables = await provider.list_tables()
-        assert expected_table_name not in tables
+        assert expected_table_name not in tables, f"Expected {expected_table_name!r} to not be in {tables!r}"
 
         # DB file should be deleted
         db_path = tmp_path / "dynamodb" / "orders.db"
-        assert not db_path.exists()
+        assert not db_path.exists(), "Expected value to be falsy"
 
     @pytest.mark.asyncio
     async def test_delete_table_nonexistent_raises(self, provider: SqliteDynamoProvider) -> None:

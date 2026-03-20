@@ -22,7 +22,7 @@ public class CognitoIdpStoreClientTest {
 
     // Assert
     Map<String, Object> actualClient = store.clients.get(expectedClientId);
-    assertNotNull(actualClient);
+    assertNotNull(actualClient, "Expected actualClient to not be null");
   }
 
   @Test
@@ -38,7 +38,7 @@ public class CognitoIdpStoreClientTest {
 
     // Assert
     Map<String, Object> actualClient = store.clients.get(expectedClientId);
-    assertNull(actualClient);
+    assertNull(actualClient, "Expected actualClient to be null");
   }
 
   @Test
@@ -51,6 +51,6 @@ public class CognitoIdpStoreClientTest {
     store.reset();
 
     // Assert
-    assertTrue(store.clients.isEmpty());
+    assertTrue(store.clients.isEmpty(), "Expected store.clients to be empty");
   }
 }

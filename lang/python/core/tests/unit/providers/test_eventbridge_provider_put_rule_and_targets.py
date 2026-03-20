@@ -125,7 +125,7 @@ class TestPutRuleAndTargets:
             rule_name="new-rule",
             event_pattern={"source": ["test"]},
         )
-        assert "new-rule" in arn
+        assert "new-rule" in arn, f'Expected {"new-rule"!r} to be in {arn!r}'
 
     @pytest.mark.asyncio
     async def test_put_rule_adds_to_list(self) -> None:
@@ -135,8 +135,8 @@ class TestPutRuleAndTargets:
             event_pattern={"source": ["test"]},
         )
         rules = provider.list_rules("default")
-        assert len(rules) == 1
-        assert rules[0].rule_name == "new-rule"
+        assert len(rules) == 1, f"Expected {1!r} but got {len(rules)!r}"
+        assert rules[0].rule_name == "new-rule", f'Expected {"new-rule"!r} but got {rules[0].rule_name!r}'
 
     @pytest.mark.asyncio
     async def test_put_targets_adds_to_rule(self) -> None:
@@ -155,8 +155,8 @@ class TestPutRuleAndTargets:
             ],
         )
         rules = provider.list_rules("default")
-        assert len(rules[0].targets) == 1
-        assert rules[0].targets[0].target_id == "t1"
+        assert len(rules[0].targets) == 1, f"Expected {1!r} but got {len(rules[0].targets)!r}"
+        assert rules[0].targets[0].target_id == "t1", f'Expected {"t1"!r} but got {rules[0].targets[0].target_id!r}'
 
     @pytest.mark.asyncio
     async def test_put_targets_nonexistent_rule_raises(self) -> None:

@@ -78,27 +78,27 @@ class TestPythonComputeLifecycle:
 
         expected_name = "lambda:my-func"
         actual_name = provider.name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     @patch("shutil.which", return_value="/usr/bin/python3")
     async def test_start_sets_running(self, _which: MagicMock) -> None:
         provider = PythonCompute(_make_config(), sdk_env={})
         await provider.start()
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     @patch("shutil.which", return_value=None)
     async def test_start_raises_when_python3_missing(self, _which: MagicMock) -> None:
         provider = PythonCompute(_make_config(), sdk_env={})
         with pytest.raises(ProviderStartError, match="Python 3 runtime not found"):
             await provider.start()
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     async def test_stop_sets_stopped(self) -> None:
         provider = PythonCompute(_make_config(), sdk_env={})
         provider._status = ProviderStatus.RUNNING
         await provider.stop()
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     async def test_initial_status_is_stopped(self) -> None:
         provider = PythonCompute(_make_config(), sdk_env={})
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"

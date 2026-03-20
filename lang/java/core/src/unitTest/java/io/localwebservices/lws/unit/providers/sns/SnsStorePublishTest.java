@@ -27,7 +27,7 @@ class SnsStorePublishTest {
     store.topics.put(arn, topicMap);
 
     // Assert
-    assertTrue(store.topics.containsKey(arn));
+    assertTrue(store.topics.containsKey(arn), "Expected map to contain the expected key");
   }
 
   @Test
@@ -41,7 +41,7 @@ class SnsStorePublishTest {
     String actualSecondArn = store.topicArn(secondName);
 
     // Assert
-    assertNotEquals(actualFirstArn, actualSecondArn);
+    assertNotEquals(actualFirstArn, actualSecondArn, "Expected actualFirstArn and actualSecondArn to differ");
   }
 
   @Test
@@ -54,6 +54,6 @@ class SnsStorePublishTest {
     store.topics.remove(arn);
 
     // Assert
-    assertFalse(store.topics.containsKey(arn));
+    assertFalse(store.topics.containsKey(arn), "Expected map to not contain the key");
   }
 }

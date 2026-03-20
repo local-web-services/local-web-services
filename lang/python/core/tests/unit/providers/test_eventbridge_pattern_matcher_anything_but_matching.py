@@ -50,29 +50,29 @@ class TestAnythingButMatching:
     def test_anything_but_excludes_value(self) -> None:
         pattern = {"source": [{"anything-but": ["aws.ec2"]}]}
         event = {"source": "aws.ec2"}
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"
 
     def test_anything_but_passes_different_value(self) -> None:
         pattern = {"source": [{"anything-but": ["aws.ec2"]}]}
         event = {"source": "aws.s3"}
-        assert match_event(pattern, event) is True
+        assert match_event(pattern, event) is True, "Expected value to be truthy"
 
     def test_anything_but_multiple_exclusions(self) -> None:
         pattern = {"source": [{"anything-but": ["aws.ec2", "aws.s3"]}]}
         event = {"source": "aws.s3"}
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"
 
     def test_anything_but_single_string(self) -> None:
         pattern = {"source": [{"anything-but": "aws.ec2"}]}
         event = {"source": "aws.s3"}
-        assert match_event(pattern, event) is True
+        assert match_event(pattern, event) is True, "Expected value to be truthy"
 
     def test_anything_but_single_string_match(self) -> None:
         pattern = {"source": [{"anything-but": "aws.ec2"}]}
         event = {"source": "aws.ec2"}
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"
 
     def test_anything_but_missing_value(self) -> None:
         pattern = {"source": [{"anything-but": ["aws.ec2"]}]}
         event = {"detail": "something"}
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"

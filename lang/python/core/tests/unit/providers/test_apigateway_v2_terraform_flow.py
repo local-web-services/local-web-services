@@ -79,7 +79,7 @@ class TestApiGatewayV2TerraformFlow:
             json={"name": "orders-http-api", "protocolType": "HTTP"},
         )
         expected_create_status = 201
-        assert api_resp.status_code == expected_create_status
+        assert api_resp.status_code == expected_create_status, f"Expected {expected_create_status!r} but got {api_resp.status_code!r}"
         api_id = api_resp.json()["apiId"]
 
         # 3. Terraform creates the integration with invoke_arn format
@@ -97,7 +97,7 @@ class TestApiGatewayV2TerraformFlow:
                 "payloadFormatVersion": "2.0",
             },
         )
-        assert int_resp.status_code == expected_create_status
+        assert int_resp.status_code == expected_create_status, f"Expected {expected_create_status!r} but got {int_resp.status_code!r}"
         integration_id = int_resp.json()["integrationId"]
 
         # 4. Terraform creates the route
@@ -108,14 +108,14 @@ class TestApiGatewayV2TerraformFlow:
                 "target": f"integrations/{integration_id}",
             },
         )
-        assert route_resp.status_code == expected_create_status
+        assert route_resp.status_code == expected_create_status, f"Expected {expected_create_status!r} but got {route_resp.status_code!r}"
 
         # 5. Terraform creates the stage
         stage_resp = await client.post(
             f"/v2/apis/{api_id}/stages",
             json={"stageName": "$default", "autoDeploy": True},
         )
-        assert stage_resp.status_code == expected_create_status
+        assert stage_resp.status_code == expected_create_status, f"Expected {expected_create_status!r} but got {stage_resp.status_code!r}"
 
         # 6. Now simulate: lws apigateway test-invoke-method --resource /orders --http-method POST
         #    This sends POST /orders to the API Gateway management port.
@@ -127,16 +127,16 @@ class TestApiGatewayV2TerraformFlow:
         expected_route_key = "POST /orders"
         expected_raw_path = "/orders"
         expected_method = "POST"
-        assert resp.status_code == expected_proxy_status
-        assert "order-001" in resp.text
+        assert resp.status_code == expected_proxy_status, f"Expected {expected_proxy_status!r} but got {resp.status_code!r}"
+        assert "order-001" in resp.text, f'Expected {"order-001"!r} to be in {resp.text!r}'
 
         # Verify Lambda was actually invoked
         fake_compute.invoke.assert_called_once()
         event = fake_compute.invoke.call_args[0][0]
-        assert event["version"] == expected_version
-        assert event["routeKey"] == expected_route_key
-        assert event["rawPath"] == expected_raw_path
-        assert event["requestContext"]["http"]["method"] == expected_method
+        assert event["version"] == expected_version, f'Expected {expected_version!r} but got {event["version"]!r}'
+        assert event["routeKey"] == expected_route_key, f'Expected {expected_route_key!r} but got {event["routeKey"]!r}'
+        assert event["rawPath"] == expected_raw_path, f'Expected {expected_raw_path!r} but got {event["rawPath"]!r}'
+        assert event["requestContext"]["http"]["method"] == expected_method, f'Expected {expected_method!r} but got {event["requestContext"]["http"]["method"]!r}'
 
     @pytest.mark.asyncio
     async def test_terraform_creates_get_route_with_path_param(self, client, registry) -> None:
@@ -183,8 +183,8 @@ class TestApiGatewayV2TerraformFlow:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
-        assert "abc-123" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "abc-123" in resp.text, f'Expected {"abc-123"!r} to be in {resp.text!r}'
         fake_compute.invoke.assert_called_once()
 
     @pytest.mark.asyncio
@@ -194,10 +194,10 @@ class TestApiGatewayV2TerraformFlow:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         body = resp.json()
-        assert "lws" in body["message"]
-        assert "API Gateway" in body["message"]
+        assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
+        assert "API Gateway" in body["message"], f'Expected {"API Gateway"!r} to be in {body["message"]!r}'
 
     @pytest.mark.asyncio
     async def test_v2_route_wrong_method_returns_stub(self, client, registry) -> None:
@@ -228,8 +228,8 @@ class TestApiGatewayV2TerraformFlow:
         # Assert - GET should NOT match the POST route
         resp = await client.get("/orders")
         expected_status = 404
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         body = resp.json()
-        assert "lws" in body["message"]
-        assert "API Gateway" in body["message"]
+        assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
+        assert "API Gateway" in body["message"], f'Expected {"API Gateway"!r} to be in {body["message"]!r}'
         fake_compute.invoke.assert_not_called()

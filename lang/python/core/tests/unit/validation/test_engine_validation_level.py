@@ -62,8 +62,8 @@ def _make_context(
 class TestValidationLevel:
     def test_warn_value(self) -> None:
         expected_value = "warn"
-        assert ValidationLevel.WARN.value == expected_value
+        assert ValidationLevel.WARN.value == expected_value, f"Expected {expected_value!r} but got {ValidationLevel.WARN.value!r}"
 
     def test_error_value(self) -> None:
         expected_value = "error"
-        assert ValidationLevel.ERROR.value == expected_value
+        assert ValidationLevel.ERROR.value == expected_value, f"Expected {expected_value!r} but got {ValidationLevel.ERROR.value!r}"

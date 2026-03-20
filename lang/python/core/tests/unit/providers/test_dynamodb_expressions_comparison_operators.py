@@ -46,48 +46,48 @@ class TestComparisonOperators:
 
     def test_equals(self) -> None:
         item = {"age": 30}
-        assert evaluate_filter_expression(item, "age = :v", expression_values={":v": {"N": "30"}})
+        assert evaluate_filter_expression(item, "age = :v", expression_values={":v": {"N": "30"}}), "Expected value to be truthy"
 
     def test_not_equals(self) -> None:
         item = {"age": 30}
-        assert evaluate_filter_expression(item, "age <> :v", expression_values={":v": {"N": "25"}})
+        assert evaluate_filter_expression(item, "age <> :v", expression_values={":v": {"N": "25"}}), "Expected value to be truthy"
 
     def test_less_than(self) -> None:
         item = {"age": 20}
-        assert evaluate_filter_expression(item, "age < :v", expression_values={":v": {"N": "30"}})
+        assert evaluate_filter_expression(item, "age < :v", expression_values={":v": {"N": "30"}}), "Expected value to be truthy"
 
     def test_less_than_false(self) -> None:
         item = {"age": 40}
         assert not evaluate_filter_expression(
             item, "age < :v", expression_values={":v": {"N": "30"}}
-        )
+        ), "Expected value to be falsy"
 
     def test_greater_than(self) -> None:
         item = {"age": 40}
-        assert evaluate_filter_expression(item, "age > :v", expression_values={":v": {"N": "30"}})
+        assert evaluate_filter_expression(item, "age > :v", expression_values={":v": {"N": "30"}}), "Expected value to be truthy"
 
     def test_less_than_or_equal(self) -> None:
         item = {"age": 30}
-        assert evaluate_filter_expression(item, "age <= :v", expression_values={":v": {"N": "30"}})
+        assert evaluate_filter_expression(item, "age <= :v", expression_values={":v": {"N": "30"}}), "Expected value to be truthy"
 
     def test_greater_than_or_equal(self) -> None:
         item = {"age": 30}
-        assert evaluate_filter_expression(item, "age >= :v", expression_values={":v": {"N": "30"}})
+        assert evaluate_filter_expression(item, "age >= :v", expression_values={":v": {"N": "30"}}), "Expected value to be truthy"
 
     def test_string_equals(self) -> None:
         item = {"name": "Alice"}
         assert evaluate_filter_expression(
             item, "name = :v", expression_values={":v": {"S": "Alice"}}
-        )
+        ), "Expected value to be truthy"
 
     def test_string_not_equals(self) -> None:
         item = {"name": "Alice"}
         assert evaluate_filter_expression(
             item, "name <> :v", expression_values={":v": {"S": "Bob"}}
-        )
+        ), "Expected value to be truthy"
 
     def test_missing_attribute_returns_false(self) -> None:
         item = {"name": "Alice"}
         assert not evaluate_filter_expression(
             item, "age = :v", expression_values={":v": {"N": "30"}}
-        )
+        ), "Expected value to be falsy"

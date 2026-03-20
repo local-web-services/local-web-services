@@ -44,7 +44,7 @@ class TestGuiEndpoint:
         resp = client.get("/_ldk/gui")
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
     def test_gui_returns_html_content_type(self, client):
         # Arrange
@@ -55,7 +55,7 @@ class TestGuiEndpoint:
 
         # Assert
         actual_content_type = resp.headers["content-type"]
-        assert expected_content_type in actual_content_type
+        assert expected_content_type in actual_content_type, f"Expected {expected_content_type!r} to be in {actual_content_type!r}"
 
     def test_gui_contains_dashboard_markup(self, client):
         # Arrange
@@ -69,10 +69,10 @@ class TestGuiEndpoint:
 
         # Assert
         actual_body = resp.text
-        assert expected_title in actual_body
-        assert expected_logs_section in actual_body
-        assert expected_resources_section in actual_body
-        assert expected_invoke_section in actual_body
+        assert expected_title in actual_body, f"Expected {expected_title!r} to be in {actual_body!r}"
+        assert expected_logs_section in actual_body, f"Expected {expected_logs_section!r} to be in {actual_body!r}"
+        assert expected_resources_section in actual_body, f"Expected {expected_resources_section!r} to be in {actual_body!r}"
+        assert expected_invoke_section in actual_body, f"Expected {expected_invoke_section!r} to be in {actual_body!r}"
 
     def test_gui_contains_websocket_js(self, client):
         # Arrange
@@ -83,4 +83,4 @@ class TestGuiEndpoint:
 
         # Assert
         actual_body = resp.text
-        assert expected_ws_path in actual_body
+        assert expected_ws_path in actual_body, f"Expected {expected_ws_path!r} to be in {actual_body!r}"

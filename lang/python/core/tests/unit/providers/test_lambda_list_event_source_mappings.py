@@ -29,14 +29,14 @@ class TestListEventSourceMappings:
     @pytest.mark.asyncio
     async def test_list_event_source_mappings_returns_empty(self, client) -> None:
         resp = await client.get("/2015-03-31/event-source-mappings")
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["EventSourceMappings"] == []
+        assert data["EventSourceMappings"] == [], f'Expected {[]!r} but got {data["EventSourceMappings"]!r}'
 
     @pytest.mark.asyncio
     async def test_list_event_source_mappings_response_structure(self, client) -> None:
         resp = await client.get("/2015-03-31/event-source-mappings")
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "EventSourceMappings" in data
-        assert isinstance(data["EventSourceMappings"], list)
+        assert "EventSourceMappings" in data, f'Expected {"EventSourceMappings"!r} to be in {data!r}'
+        assert isinstance(data["EventSourceMappings"], list), f'Expected instance of {list!r} but got {type(data["EventSourceMappings"])!r}'

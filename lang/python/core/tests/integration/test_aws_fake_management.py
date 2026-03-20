@@ -61,12 +61,12 @@ class TestAwsFakeManagementApi:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         actual_services = set(body.keys())
-        assert actual_services == expected_services
-        assert body["dynamodb"]["enabled"] is True
-        assert body["s3"]["enabled"] is False
+        assert actual_services == expected_services, f"Expected {expected_services!r} but got {actual_services!r}"
+        assert body["dynamodb"]["enabled"] is True, "Expected value to be truthy"
+        assert body["s3"]["enabled"] is False, "Expected value to be truthy"
 
     async def test_get_aws_fake_includes_rules(self, client: httpx.AsyncClient):
         """Verify GET /_ldk/aws-fake includes rule details."""
@@ -79,7 +79,7 @@ class TestAwsFakeManagementApi:
         # Assert
         body = response.json()
         actual_operation = body["dynamodb"]["rules"][0]["operation"]
-        assert actual_operation == expected_operation
+        assert actual_operation == expected_operation, f"Expected {expected_operation!r} but got {actual_operation!r}"
 
     async def test_post_aws_fake_disables_service(self, client: httpx.AsyncClient, fake_configs):
         """Verify POST /_ldk/aws-fake can disable a service."""
@@ -94,11 +94,11 @@ class TestAwsFakeManagementApi:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
-        assert "dynamodb" in body["updated"]
+        assert "dynamodb" in body["updated"], f'Expected {"dynamodb"!r} to be in {body["updated"]!r}'
         actual_enabled = fake_configs["dynamodb"].enabled
-        assert actual_enabled == expected_enabled
+        assert actual_enabled == expected_enabled, f"Expected {expected_enabled!r} but got {actual_enabled!r}"
 
     async def test_post_aws_fake_ignores_unknown_service(self, client: httpx.AsyncClient):
         """Verify POST /_ldk/aws-fake ignores unknown services."""
@@ -111,6 +111,6 @@ class TestAwsFakeManagementApi:
 
         # Assert
         expected_status = 200
-        assert response.status_code == expected_status
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
-        assert body["updated"] == []
+        assert body["updated"] == [], f'Expected {[]!r} but got {body["updated"]!r}'

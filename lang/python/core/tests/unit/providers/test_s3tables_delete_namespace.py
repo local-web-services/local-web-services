@@ -35,7 +35,7 @@ class TestDeleteNamespace:
         # Assert
         expected_status = 204
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_delete_namespace_removes_from_list(self, client: TestClient) -> None:
         # Arrange
@@ -54,7 +54,7 @@ class TestDeleteNamespace:
         list_response = client.get(f"/table-buckets/{bucket_name}/namespaces")
         actual_body = list_response.json()
         actual_namespaces = [ns["namespace"] for ns in actual_body["namespaces"]]
-        assert [namespace_name] not in actual_namespaces
+        assert [namespace_name] not in actual_namespaces, f"Expected {[namespace_name]!r} to not be in {actual_namespaces!r}"
 
     def test_delete_namespace_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -68,10 +68,10 @@ class TestDeleteNamespace:
         # Assert
         expected_status = 404
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         expected_error_type = "NotFoundException"
-        assert actual_body["__type"] == expected_error_type
+        assert actual_body["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'
 
     def test_delete_namespace_bucket_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -84,7 +84,7 @@ class TestDeleteNamespace:
         # Assert
         expected_status = 404
         actual_status = response.status_code
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         expected_error_type = "NotFoundException"
-        assert actual_body["__type"] == expected_error_type
+        assert actual_body["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {actual_body["__type"]!r}'

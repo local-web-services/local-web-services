@@ -17,7 +17,7 @@ class TestWriteClaudeMdIdempotent:
         # Assert
         actual_content = (tmp_path / "CLAUDE.md").read_text()
         actual_marker_count = actual_content.count("<!-- LWS:START -->")
-        assert actual_marker_count == expected_marker_count
+        assert actual_marker_count == expected_marker_count, f"Expected {expected_marker_count!r} but got {actual_marker_count!r}"
 
     def test_preserves_content_outside_markers(self, tmp_path):
         # Arrange
@@ -35,5 +35,5 @@ class TestWriteClaudeMdIdempotent:
 
         # Assert
         actual_content = (tmp_path / "CLAUDE.md").read_text()
-        assert expected_before in actual_content
-        assert expected_after in actual_content
+        assert expected_before in actual_content, f"Expected {expected_before!r} to be in {actual_content!r}"
+        assert expected_after in actual_content, f"Expected {expected_after!r} to be in {actual_content!r}"

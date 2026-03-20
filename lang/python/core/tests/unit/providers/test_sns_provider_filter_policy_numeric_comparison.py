@@ -115,24 +115,24 @@ class TestFilterPolicyNumericComparison:
     def test_greater_than_or_equal(self) -> None:
         attrs = {"price": {"DataType": "Number", "StringValue": "150"}}
         policy = {"price": [{"numeric": [">=", 100]}]}
-        assert matches_filter_policy(attrs, policy) is True
+        assert matches_filter_policy(attrs, policy) is True, "Expected value to be truthy"
 
     def test_less_than(self) -> None:
         attrs = {"price": {"DataType": "Number", "StringValue": "50"}}
         policy = {"price": [{"numeric": [">=", 100]}]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"
 
     def test_range(self) -> None:
         attrs = {"price": {"DataType": "Number", "StringValue": "150"}}
         policy = {"price": [{"numeric": [">=", 100, "<", 200]}]}
-        assert matches_filter_policy(attrs, policy) is True
+        assert matches_filter_policy(attrs, policy) is True, "Expected value to be truthy"
 
     def test_range_out_of_bounds(self) -> None:
         attrs = {"price": {"DataType": "Number", "StringValue": "250"}}
         policy = {"price": [{"numeric": [">=", 100, "<", 200]}]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"
 
     def test_numeric_equality(self) -> None:
         attrs = {"count": {"DataType": "Number", "StringValue": "42"}}
         policy = {"count": [{"numeric": ["=", 42]}]}
-        assert matches_filter_policy(attrs, policy) is True
+        assert matches_filter_policy(attrs, policy) is True, "Expected value to be truthy"

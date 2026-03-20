@@ -42,7 +42,7 @@ public class DynamoDbStoreQueryTest {
             null);
 
     // Assert
-    assertEquals(expectedSize, actualItems.size());
+    assertEquals(expectedSize, actualItems.size(), "Expected actualItems.size() to match expectedSize");
   }
 
   @Test
@@ -60,7 +60,7 @@ public class DynamoDbStoreQueryTest {
             "Orders", keyConditionExpr, exprNames, exprValues, null, null, true, null, null);
 
     // Assert
-    assertTrue(actualItems.isEmpty());
+    assertTrue(actualItems.isEmpty(), "Expected actualItems to be empty");
   }
 
   @Test
@@ -77,6 +77,6 @@ public class DynamoDbStoreQueryTest {
             "Orders", keyConditionExpr, exprNames, exprValues, null, null, true, null, null);
 
     // Assert
-    assertTrue(actualItems.isEmpty());
+    assertTrue(actualItems.isEmpty(), "Expected actualItems to be empty");
   }
 }

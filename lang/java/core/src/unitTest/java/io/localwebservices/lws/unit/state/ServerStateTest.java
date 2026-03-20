@@ -21,7 +21,7 @@ public class ServerStateTest {
     state.reset();
 
     // Assert
-    assertTrue(state.chaosRules.isEmpty());
+    assertTrue(state.chaosRules.isEmpty(), "Expected state.chaosRules to be empty");
   }
 
   @Test
@@ -34,7 +34,7 @@ public class ServerStateTest {
     state.reset();
 
     // Assert
-    assertTrue(state.fakeRules.isEmpty());
+    assertTrue(state.fakeRules.isEmpty(), "Expected state.fakeRules to be empty");
   }
 
   @Test
@@ -47,7 +47,7 @@ public class ServerStateTest {
     state.reset();
 
     // Assert
-    assertTrue(state.iamIdentities.isEmpty());
+    assertTrue(state.iamIdentities.isEmpty(), "Expected state.iamIdentities to be empty");
   }
 
   @Test
@@ -60,7 +60,7 @@ public class ServerStateTest {
     state.reset();
 
     // Assert
-    assertFalse(state.iamEnforce);
+    assertFalse(state.iamEnforce, "Expected condition to be false: state.iamEnforce");
   }
 
   @Test
@@ -75,7 +75,7 @@ public class ServerStateTest {
 
     // Assert
     boolean actualCallbackInvoked = expectedCallbackInvoked.get();
-    assertTrue(actualCallbackInvoked);
+    assertTrue(actualCallbackInvoked, "Expected callback to have been invoked");
   }
 
   @Test
@@ -89,7 +89,7 @@ public class ServerStateTest {
 
     // Assert
     int actualSize = state.logBuffer.size();
-    assertEquals(expectedSize, actualSize);
+    assertEquals(expectedSize, actualSize, "Expected actualSize to match expectedSize");
   }
 
   @Test
@@ -105,6 +105,6 @@ public class ServerStateTest {
     int actualSize = state.logBuffer.size();
 
     // Assert
-    assertTrue(actualSize <= expectedMaxSize);
+    assertTrue(actualSize <= expectedMaxSize, "Expected condition to be true: actualSize <= expectedMaxSize");
   }
 }

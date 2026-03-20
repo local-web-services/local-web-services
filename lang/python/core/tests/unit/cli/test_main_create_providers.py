@@ -33,7 +33,7 @@ class TestCreateProviders:
         )
 
         # Should have the dynamo table provider + dynamo HTTP provider
-        assert "__dynamodb_http__" in providers
+        assert "__dynamodb_http__" in providers, f'Expected {"__dynamodb_http__"!r} to be in {providers!r}'
 
     def test_creates_lambda_providers(self, tmp_path):
         app_model = AppModel(
@@ -53,7 +53,7 @@ class TestCreateProviders:
         )
 
         # Should have at least the Lambda provider
-        assert any(p.name.startswith("lambda:") for p in providers.values())
+        assert any(p.name.startswith("lambda:") for p in providers.values()), "Expected value to be truthy"
 
     def test_empty_model_still_has_dynamodb(self, tmp_path):
         app_model = AppModel()
@@ -64,7 +64,7 @@ class TestCreateProviders:
         )
 
         # DynamoDB HTTP is always available (for Terraform/CLI table creation)
-        assert "__dynamodb_http__" in providers
+        assert "__dynamodb_http__" in providers, f'Expected {"__dynamodb_http__"!r} to be in {providers!r}'
 
     def test_empty_model_still_has_sqs(self, tmp_path):
         app_model = AppModel()
@@ -75,7 +75,7 @@ class TestCreateProviders:
         )
 
         # SQS HTTP is always available (for Terraform/CLI queue creation)
-        assert "__sqs_http__" in providers
+        assert "__sqs_http__" in providers, f'Expected {"__sqs_http__"!r} to be in {providers!r}'
 
     def test_empty_model_still_has_s3(self, tmp_path):
         app_model = AppModel()
@@ -86,7 +86,7 @@ class TestCreateProviders:
         )
 
         # S3 HTTP is always available (for Terraform/CLI bucket creation)
-        assert "__s3_http__" in providers
+        assert "__s3_http__" in providers, f'Expected {"__s3_http__"!r} to be in {providers!r}'
 
     def test_empty_model_still_has_sns(self, tmp_path):
         app_model = AppModel()
@@ -97,7 +97,7 @@ class TestCreateProviders:
         )
 
         # SNS HTTP is always available (for Terraform/CLI topic creation)
-        assert "__sns_http__" in providers
+        assert "__sns_http__" in providers, f'Expected {"__sns_http__"!r} to be in {providers!r}'
 
     def test_empty_model_still_has_eventbridge(self, tmp_path):
         app_model = AppModel()
@@ -108,7 +108,7 @@ class TestCreateProviders:
         )
 
         # EventBridge HTTP is always available (for Terraform/CLI event bus creation)
-        assert "__events_http__" in providers
+        assert "__events_http__" in providers, f'Expected {"__events_http__"!r} to be in {providers!r}'
 
     def test_empty_model_still_has_stepfunctions(self, tmp_path):
         app_model = AppModel()
@@ -119,7 +119,7 @@ class TestCreateProviders:
         )
 
         # Step Functions HTTP is always available (for Terraform/CLI state machine creation)
-        assert "__stepfunctions_http__" in providers
+        assert "__stepfunctions_http__" in providers, f'Expected {"__stepfunctions_http__"!r} to be in {providers!r}'
 
     def test_empty_model_still_has_cognito(self, tmp_path):
         app_model = AppModel()
@@ -130,4 +130,4 @@ class TestCreateProviders:
         )
 
         # Cognito HTTP is always available (for Terraform/CLI user pool creation)
-        assert "__cognito-idp_http__" in providers
+        assert "__cognito-idp_http__" in providers, f'Expected {"__cognito-idp_http__"!r} to be in {providers!r}'

@@ -22,8 +22,8 @@ public class SsmStoreDeleteTest {
     boolean actualResult = store.deleteParameter(paramName);
 
     // Assert
-    assertTrue(actualResult);
-    assertFalse(store.containsParameter(paramName));
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
+    assertFalse(store.containsParameter(paramName), "Expected condition to be false: store.containsParameter(paramName)");
   }
 
   @Test
@@ -36,7 +36,7 @@ public class SsmStoreDeleteTest {
     boolean actualResult = store.deleteParameter(paramName);
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -52,10 +52,10 @@ public class SsmStoreDeleteTest {
     List<String> actualDeleted = store.deleteParameters(List.of("/del/a", "/del/b", "/del/c"));
 
     // Assert
-    assertEquals(expectedDeletedCount, actualDeleted.size());
-    assertTrue(actualDeleted.contains("/del/a"));
-    assertTrue(actualDeleted.contains("/del/b"));
-    assertEquals(expectedMissingCount, store.getParameters(List.of("/del/a", "/del/b")).size());
+    assertEquals(expectedDeletedCount, actualDeleted.size(), "Expected actualDeleted.size() to match expectedDeletedCount");
+    assertTrue(actualDeleted.contains("/del/a"), "Expected value to contain expected substring");
+    assertTrue(actualDeleted.contains("/del/b"), "Expected value to contain expected substring");
+    assertEquals(expectedMissingCount, store.getParameters(List.of("/del/a", "/del/b")).size(), "Expected store.getParameters(List.of("/del/a", "/del/b")).size() to match expectedMissingCount");
   }
 
   @Test
@@ -71,9 +71,9 @@ public class SsmStoreDeleteTest {
     List<Map<String, Object>> actualParams = store.describeParameters();
 
     // Assert
-    assertEquals(expectedCount, actualParams.size());
-    assertEquals(expectedName, actualParams.get(0).get("Name"));
-    assertEquals(expectedType, actualParams.get(0).get("Type"));
+    assertEquals(expectedCount, actualParams.size(), "Expected actualParams.size() to match expectedCount");
+    assertEquals(expectedName, actualParams.get(0).get("Name"), "Expected actualParams.get(0).get("Name") to equal expectedName");
+    assertEquals(expectedType, actualParams.get(0).get("Type"), "Expected actualParams.get(0).get("Type") to equal expectedType");
   }
 
   @Test
@@ -86,6 +86,6 @@ public class SsmStoreDeleteTest {
     List<Map<String, Object>> actualParams = store.describeParameters();
 
     // Assert
-    assertEquals(expectedCount, actualParams.size());
+    assertEquals(expectedCount, actualParams.size(), "Expected actualParams.size() to match expectedCount");
   }
 }

@@ -52,7 +52,7 @@ class TestApplyContextParameters:
         params = {"index.$": "$$.Map.Item.Index"}
         context = {"Map": {"Item": {"Index": 0}}}
         result = apply_context_parameters(params, {}, context)
-        assert result == {"index": 0}
+        assert result == {"index": 0}, "Expected {0!r} but got {1!r}".format({"index": 0}, result)
 
     def test_mixed_input_and_context(self) -> None:
         params = {
@@ -61,4 +61,4 @@ class TestApplyContextParameters:
         }
         context = {"Map": {"Item": {"Index": 3}}}
         result = apply_context_parameters(params, {"data": "hello"}, context)
-        assert result == {"val": "hello", "idx": 3}
+        assert result == {"val": "hello", "idx": 3}, "Expected {0!r} but got {1!r}".format({"val": "hello", "idx": 3}, result)

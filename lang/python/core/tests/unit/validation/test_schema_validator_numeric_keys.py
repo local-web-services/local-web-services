@@ -88,18 +88,18 @@ class TestNumericKeys:
         validator = SchemaValidator({"users": config})
         ctx = _make_context(data={"pk": 42})
         issues = validator.validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_numeric_pk_string_representation(self) -> None:
         config = _make_table_config(pk_type="N")
         validator = SchemaValidator({"users": config})
         ctx = _make_context(data={"pk": "42"})
         issues = validator.validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_numeric_pk_dynamo_json(self) -> None:
         config = _make_table_config(pk_type="N")
         validator = SchemaValidator({"users": config})
         ctx = _make_context(data={"pk": {"N": "42"}})
         issues = validator.validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"

@@ -130,7 +130,7 @@ class TestPersistence:
         result = await p2.get_item("orders", {"orderId": "o1", "itemId": "i1"})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_v = result["v"]
-        assert actual_v == expected_v
+        assert actual_v == expected_v, f"Expected {expected_v!r} but got {actual_v!r}"
         await p2.stop()

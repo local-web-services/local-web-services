@@ -20,10 +20,10 @@ class TestSSMGetParameter:
         # Assert
         actual_body = json.loads(actual_response.body)
         actual_param = actual_body["Parameter"]
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert actual_param["Name"] == expected_name
-        assert actual_param["Value"] == expected_value
-        assert actual_param["Type"] == expected_type
-        assert actual_param["Version"] == 1
-        assert "ARN" in actual_param
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert actual_response.content_type == expected_content_type, f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert actual_param["Name"] == expected_name, f'Expected {expected_name!r} but got {actual_param["Name"]!r}'
+        assert actual_param["Value"] == expected_value, f'Expected {expected_value!r} but got {actual_param["Value"]!r}'
+        assert actual_param["Type"] == expected_type, f'Expected {expected_type!r} but got {actual_param["Type"]!r}'
+        assert actual_param["Version"] == 1, f'Expected {1!r} but got {actual_param["Version"]!r}'
+        assert "ARN" in actual_param, f'Expected {"ARN"!r} to be in {actual_param!r}'

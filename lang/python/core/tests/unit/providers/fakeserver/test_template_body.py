@@ -15,7 +15,7 @@ class TestRenderBody:
         actual = render_template(template, body={"user": {"name": expected}})
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_body_dotpath_missing(self):
         # Arrange
@@ -26,4 +26,4 @@ class TestRenderBody:
         actual = render_template(template, body={"other": "val"})
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

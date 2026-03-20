@@ -66,7 +66,7 @@ class TestFakeMiddlewareDisabled:
         )
 
         # Assert
-        assert response.status_code == expected_status
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         actual_real = body["real"]
-        assert actual_real == expected_real
+        assert actual_real == expected_real, f"Expected {expected_real!r} but got {actual_real!r}"

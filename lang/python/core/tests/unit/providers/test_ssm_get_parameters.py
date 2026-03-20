@@ -37,5 +37,5 @@ class TestGetParameters:
         # Assert
         expected_valid_count = 2
         expected_invalid = ["/missing"]
-        assert len(result["Parameters"]) == expected_valid_count
-        assert result["InvalidParameters"] == expected_invalid
+        assert len(result["Parameters"]) == expected_valid_count, f'Expected {expected_valid_count!r} but got {len(result["Parameters"])!r}'
+        assert result["InvalidParameters"] == expected_invalid, f'Expected {expected_invalid!r} but got {result["InvalidParameters"]!r}'

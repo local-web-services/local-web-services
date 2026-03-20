@@ -15,7 +15,7 @@ class TestFnIf:
         actual_value = r.resolve({"Fn::If": ["IsProd", "prod-value", "dev-value"]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_if_false(self):
         # Arrange
@@ -26,7 +26,7 @@ class TestFnIf:
         actual_value = r.resolve({"Fn::If": ["IsProd", "prod-value", "dev-value"]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_if_unknown_condition_defaults_true(self):
         # Arrange
@@ -37,7 +37,7 @@ class TestFnIf:
         actual_value = r.resolve({"Fn::If": ["UnknownCond", "yes", "no"]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_if_with_nested_intrinsics(self):
         # Arrange
@@ -51,4 +51,4 @@ class TestFnIf:
         actual_value = r.resolve({"Fn::If": ["UseCustom", {"Ref": "Custom"}, "default"]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"

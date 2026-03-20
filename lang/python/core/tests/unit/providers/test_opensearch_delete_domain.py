@@ -40,8 +40,8 @@ class TestDeleteDomain:
 
         # Assert
         actual_domain_name = result["DomainStatus"]["DomainName"]
-        assert actual_domain_name == expected_domain_name
-        assert result["DomainStatus"]["Processing"] is True
+        assert actual_domain_name == expected_domain_name, f"Expected {expected_domain_name!r} but got {actual_domain_name!r}"
+        assert result["DomainStatus"]["Processing"] is True, "Expected value to be truthy"
 
     def test_delete_domain_removes_from_list(self, client: TestClient) -> None:
         # Arrange
@@ -54,7 +54,7 @@ class TestDeleteDomain:
 
         # Assert
         names = [d["DomainName"] for d in result["DomainNames"]]
-        assert domain_name not in names
+        assert domain_name not in names, f"Expected {domain_name!r} to not be in {names!r}"
 
     def test_delete_nonexistent_domain_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -65,4 +65,4 @@ class TestDeleteDomain:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

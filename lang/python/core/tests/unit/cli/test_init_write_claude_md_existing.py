@@ -16,7 +16,7 @@ class TestWriteClaudeMdExistingFile:
 
         # Assert
         actual_content = (tmp_path / "CLAUDE.md").read_text()
-        assert expected_existing in actual_content
+        assert expected_existing in actual_content, f"Expected {expected_existing!r} to be in {actual_content!r}"
 
     def test_appends_lws_block(self, tmp_path):
         # Arrange
@@ -28,4 +28,4 @@ class TestWriteClaudeMdExistingFile:
 
         # Assert
         actual_content = (tmp_path / "CLAUDE.md").read_text()
-        assert expected_marker in actual_content
+        assert expected_marker in actual_content, f"Expected {expected_marker!r} to be in {actual_content!r}"

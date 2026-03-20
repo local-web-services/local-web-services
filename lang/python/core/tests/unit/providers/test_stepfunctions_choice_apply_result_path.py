@@ -51,17 +51,17 @@ class TestApplyResultPath:
     def test_null_discards_result(self) -> None:
         original = {"x": 1}
         result = apply_result_path(original, "discarded", None)
-        assert result == {"x": 1}
+        assert result == {"x": 1}, "Expected {0!r} but got {1!r}".format({"x": 1}, result)
 
     def test_root_replaces_input(self) -> None:
         result = apply_result_path({"x": 1}, {"y": 2}, "$")
-        assert result == {"y": 2}
+        assert result == {"y": 2}, "Expected {0!r} but got {1!r}".format({"y": 2}, result)
 
     def test_nested_path_sets_value(self) -> None:
         result = apply_result_path({"x": 1}, "hello", "$.greeting")
-        assert result == {"x": 1, "greeting": "hello"}
+        assert result == {"x": 1, "greeting": "hello"}, "Expected {0!r} but got {1!r}".format({"x": 1, "greeting": "hello"}, result)
 
     def test_deep_nested_path(self) -> None:
         result = apply_result_path({"x": 1}, "val", "$.a.b")
-        assert result["a"]["b"] == "val"
-        assert result["x"] == 1
+        assert result["a"]["b"] == "val", f'Expected {"val"!r} but got {result["a"]["b"]!r}'
+        assert result["x"] == 1, f'Expected {1!r} but got {result["x"]!r}'

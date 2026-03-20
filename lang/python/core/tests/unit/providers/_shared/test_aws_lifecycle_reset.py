@@ -19,4 +19,4 @@ class TestResourceStateTrackerReset:
         actual_states = tracker.all_states()
 
         # Assert
-        assert actual_states == expected_states
+        assert actual_states == expected_states, f"Expected {expected_states!r} but got {actual_states!r}"

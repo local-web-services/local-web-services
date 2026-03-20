@@ -13,4 +13,4 @@ class TestDevCommand:
 
         runner = CliRunner()
         result = runner.invoke(app, ["--help"])
-        assert "dev" in result.output
+        assert "dev" in result.output, f'Expected {"dev"!r} to be in {result.output!r}'

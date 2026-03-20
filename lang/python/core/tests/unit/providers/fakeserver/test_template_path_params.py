@@ -15,7 +15,7 @@ class TestRenderPathParams:
         actual = render_template(template, path_params={"user_id": expected})
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"
 
     def test_missing_path_param(self):
         # Arrange
@@ -26,4 +26,4 @@ class TestRenderPathParams:
         actual = render_template(template, path_params={"other": "val"})
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

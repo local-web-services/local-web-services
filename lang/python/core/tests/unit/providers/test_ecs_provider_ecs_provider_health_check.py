@@ -121,7 +121,7 @@ class TestEcsProviderHealthCheck:
         """Provider with no services (and RUNNING) should be healthy."""
         provider = EcsProvider(services=[])
         provider._status = ProviderStatus.RUNNING
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_health_check_delegates_to_checkers(self, fake_exec: AsyncMock) -> None:
@@ -138,5 +138,5 @@ class TestEcsProviderHealthCheck:
         await provider.start()
 
         # Checker was created
-        assert "web-api" in provider._checkers
+        assert "web-api" in provider._checkers, f'Expected {"web-api"!r} to be in {provider._checkers!r}'
         await provider.stop()

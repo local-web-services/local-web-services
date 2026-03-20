@@ -114,11 +114,11 @@ class TestFilterPolicyNoFilter:
 
     def test_none_filter_matches_all(self) -> None:
         attrs = {"anything": {"DataType": "String", "StringValue": "value"}}
-        assert matches_filter_policy(attrs, None) is True
+        assert matches_filter_policy(attrs, None) is True, "Expected value to be truthy"
 
     def test_empty_filter_matches_all(self) -> None:
         attrs = {"anything": {"DataType": "String", "StringValue": "value"}}
-        assert matches_filter_policy(attrs, {}) is True
+        assert matches_filter_policy(attrs, {}) is True, "Expected value to be truthy"
 
     def test_empty_attrs_with_no_filter(self) -> None:
-        assert matches_filter_policy({}, None) is True
+        assert matches_filter_policy({}, None) is True, "Expected value to be truthy"

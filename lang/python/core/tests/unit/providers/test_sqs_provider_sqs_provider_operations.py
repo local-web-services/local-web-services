@@ -159,15 +159,15 @@ class TestSqsProviderOperations:
         messages = await provider.receive_messages("queue-a", max_messages=1)
 
         # Assert
-        assert isinstance(msg_id, str)
+        assert isinstance(msg_id, str), f"Expected instance of {str!r} but got {type(msg_id)!r}"
         actual_message_count = len(messages)
         actual_body = messages[0]["Body"]
         actual_message_id = messages[0]["MessageId"]
-        assert actual_message_count == expected_message_count
-        assert actual_body == expected_body
-        assert actual_message_id == msg_id
-        assert "MD5OfBody" in messages[0]
-        assert "ReceiptHandle" in messages[0]
+        assert actual_message_count == expected_message_count, f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
+        assert actual_message_id == msg_id, f"Expected {msg_id!r} but got {actual_message_id!r}"
+        assert "MD5OfBody" in messages[0], f'Expected {"MD5OfBody"!r} to be in {messages[0]!r}'
+        assert "ReceiptHandle" in messages[0], f'Expected {"ReceiptHandle"!r} to be in {messages[0]!r}'
 
     async def test_delete(self, provider: SqsProvider) -> None:
         await provider.send_message("queue-a", "delete me")
@@ -190,14 +190,14 @@ class TestSqsProviderOperations:
 
         # Assert
         actual_attributes = messages[0]["MessageAttributes"]
-        assert actual_attributes == expected_attributes
+        assert actual_attributes == expected_attributes, f"Expected {expected_attributes!r} but got {actual_attributes!r}"
 
     async def test_create_queue(self, provider: SqsProvider) -> None:
         provider.create_queue_from_config(QueueConfig(queue_name="dynamic-queue"))
         msg_id = await provider.send_message("dynamic-queue", "works")
-        assert msg_id is not None
+        assert msg_id is not None, "Expected value to be set but was None"
 
     async def test_list_queues(self, provider: SqsProvider) -> None:
         names = await provider.list_queues()
-        assert "queue-a" in names
-        assert "queue-b" in names
+        assert "queue-a" in names, f'Expected {"queue-a"!r} to be in {names!r}'
+        assert "queue-b" in names, f'Expected {"queue-b"!r} to be in {names!r}'

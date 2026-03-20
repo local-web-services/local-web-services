@@ -41,9 +41,9 @@ class TestSnsStubOperations:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "<ErrorResponse>" in resp.text
-        assert "<Code>InvalidAction</Code>" in resp.text
-        assert "lws" in resp.text
-        assert "SNS" in resp.text
-        assert "AddPermission" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "<ErrorResponse>" in resp.text, f'Expected {"<ErrorResponse>"!r} to be in {resp.text!r}'
+        assert "<Code>InvalidAction</Code>" in resp.text, f'Expected {"<Code>InvalidAction</Code>"!r} to be in {resp.text!r}'
+        assert "lws" in resp.text, f'Expected {"lws"!r} to be in {resp.text!r}'
+        assert "SNS" in resp.text, f'Expected {"SNS"!r} to be in {resp.text!r}'
+        assert "AddPermission" in resp.text, f'Expected {"AddPermission"!r} to be in {resp.text!r}'

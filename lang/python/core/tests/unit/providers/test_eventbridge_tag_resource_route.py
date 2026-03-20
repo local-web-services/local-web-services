@@ -52,7 +52,7 @@ class TestTagResourceRoute:
             "TagResource",
             {"ResourceARN": arn, "Tags": [{"Key": expected_key, "Value": expected_value}]},
         )
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
         resp = await _request(
             client,
@@ -61,11 +61,11 @@ class TestTagResourceRoute:
         )
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert len(data["Tags"]) == 1
-        assert data["Tags"][0]["Key"] == expected_key
-        assert data["Tags"][0]["Value"] == expected_value
+        assert len(data["Tags"]) == 1, f'Expected {1!r} but got {len(data["Tags"])!r}'
+        assert data["Tags"][0]["Key"] == expected_key, f'Expected {expected_key!r} but got {data["Tags"][0]["Key"]!r}'
+        assert data["Tags"][0]["Value"] == expected_value, f'Expected {expected_value!r} but got {data["Tags"][0]["Value"]!r}'
 
     async def test_untag(self, client: httpx.AsyncClient) -> None:
         arn = "arn:aws:events:us-east-1:000000000000:rule/test-rule"
@@ -85,7 +85,7 @@ class TestTagResourceRoute:
             "UntagResource",
             {"ResourceARN": arn, "TagKeys": ["env"]},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
 
         resp = await _request(
             client,
@@ -93,8 +93,8 @@ class TestTagResourceRoute:
             {"ResourceARN": arn},
         )
         tags = resp.json()["Tags"]
-        assert len(tags) == 1
-        assert tags[0]["Key"] == "team"
+        assert len(tags) == 1, f"Expected {1!r} but got {len(tags)!r}"
+        assert tags[0]["Key"] == "team", f'Expected {"team"!r} but got {tags[0]["Key"]!r}'
 
     async def test_list_tags_unknown_arn(self, client: httpx.AsyncClient) -> None:
         resp = await _request(
@@ -102,5 +102,5 @@ class TestTagResourceRoute:
             "ListTagsForResource",
             {"ResourceARN": "arn:aws:events:us-east-1:000000000000:rule/unknown"},
         )
-        assert resp.status_code == 200
-        assert resp.json()["Tags"] == []
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
+        assert resp.json()["Tags"] == [], f'Expected {[]!r} but got {resp.json()["Tags"]!r}'

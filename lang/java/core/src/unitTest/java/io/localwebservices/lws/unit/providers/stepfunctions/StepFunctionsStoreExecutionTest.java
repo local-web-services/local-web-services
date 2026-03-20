@@ -25,8 +25,8 @@ public class StepFunctionsStoreExecutionTest {
     String actualExecArn = (String) actualExec.get("executionArn");
 
     // Assert
-    assertNotNull(actualExec);
-    assertTrue(store.executionExists(actualExecArn));
+    assertNotNull(actualExec, "Expected actualExec to not be null");
+    assertTrue(store.executionExists(actualExecArn), "Expected condition to be true: store.executionExists(actualExecArn)");
   }
 
   @Test
@@ -42,7 +42,7 @@ public class StepFunctionsStoreExecutionTest {
     Map<String, Object> actualExec = store.startExecution(smArn, "exec-1", "{}");
 
     // Assert
-    assertEquals(expectedStatus, actualExec.get("status"));
+    assertEquals(expectedStatus, actualExec.get("status"), "Expected actualExec.get("status") to equal expectedStatus");
   }
 
   @Test
@@ -58,8 +58,8 @@ public class StepFunctionsStoreExecutionTest {
     Map<String, Object> actualExec = store.startExecution(smArn, "exec-1", expectedInput);
 
     // Assert
-    assertEquals(expectedInput, actualExec.get("input"));
-    assertEquals(expectedInput, actualExec.get("output"));
+    assertEquals(expectedInput, actualExec.get("input"), "Expected actualExec.get("input") to equal expectedInput");
+    assertEquals(expectedInput, actualExec.get("output"), "Expected actualExec.get("output") to equal expectedInput");
   }
 
   @Test
@@ -72,7 +72,7 @@ public class StepFunctionsStoreExecutionTest {
     boolean actualResult = store.executionExists(unknownExecArn);
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -89,8 +89,8 @@ public class StepFunctionsStoreExecutionTest {
     Map<String, Object> actualExec = store.getExecution(expectedExecArn);
 
     // Assert
-    assertNotNull(actualExec);
-    assertEquals(expectedExecArn, actualExec.get("executionArn"));
+    assertNotNull(actualExec, "Expected actualExec to not be null");
+    assertEquals(expectedExecArn, actualExec.get("executionArn"), "Expected actualExec.get("executionArn") to equal expectedExecArn");
   }
 
   @Test
@@ -109,7 +109,7 @@ public class StepFunctionsStoreExecutionTest {
 
     // Assert
     Map<String, Object> actualExec = store.getExecution(execArn);
-    assertEquals(expectedStatus, actualExec.get("status"));
+    assertEquals(expectedStatus, actualExec.get("status"), "Expected actualExec.get("status") to equal expectedStatus");
   }
 
   @Test
@@ -133,7 +133,7 @@ public class StepFunctionsStoreExecutionTest {
     List<Map<String, Object>> actualExecsB = store.listExecutions(smArnB);
 
     // Assert
-    assertEquals(expectedSizeA, actualExecsA.size());
-    assertEquals(expectedSizeB, actualExecsB.size());
+    assertEquals(expectedSizeA, actualExecsA.size(), "Expected actualExecsA.size() to match expectedSizeA");
+    assertEquals(expectedSizeB, actualExecsB.size(), "Expected actualExecsB.size() to match expectedSizeB");
   }
 }

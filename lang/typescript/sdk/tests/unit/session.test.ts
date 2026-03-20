@@ -25,7 +25,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Assert
-      expect(mockStartServer).toHaveBeenCalledWith(
+      expect(mockStartServer, "Expected startServer to have been called with a basePort option").toHaveBeenCalledWith(
         expect.objectContaining({ basePort: expect.any(Number) }),
       );
 
@@ -37,7 +37,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Assert
-      expect(mockStartServer).toHaveBeenCalledTimes(1);
+      expect(mockStartServer, "Expected startServer to have been called exactly once per session").toHaveBeenCalledTimes(1);
 
       await session.close();
     });
@@ -49,7 +49,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.fromCdk("/some/project");
 
       // Assert
-      expect(mockStartServer).toHaveBeenCalledTimes(1);
+      expect(mockStartServer, "Expected startServer to have been called once when creating a session from CDK").toHaveBeenCalledTimes(1);
 
       await session.close();
     });
@@ -69,7 +69,7 @@ describe("LwsSession", () => {
         const session = await LwsSession.fromHcl(expectedTmpDir);
 
         // Assert
-        expect(mockStartServer).toHaveBeenCalledTimes(1);
+        expect(mockStartServer, "Expected startServer to have been called once when creating a session from HCL").toHaveBeenCalledTimes(1);
 
         await session.close();
       } finally {
@@ -110,9 +110,9 @@ describe("LwsSession", () => {
               "CreateStateMachine",
             ),
         );
-        expect(sfnCall).toBeDefined();
+        expect(sfnCall, "Expected fetch to have been called to create the state machine discovered in HCL").toBeDefined();
         const actualBody = JSON.parse((sfnCall![1] as Record<string, string>).body);
-        expect(actualBody.name).toBe("MySm");
+        expect(actualBody.name, "Expected the CreateStateMachine call to use the state machine name from HCL").toBe("MySm");
 
         await session.close();
       } finally {
@@ -137,7 +137,7 @@ describe("LwsSession", () => {
 
       // Act & Assert
       for (const svc of expectedServices) {
-        expect(typeof session.portFor(svc)).toBe("number");
+        expect(typeof session.portFor(svc), `Expected portFor to return a number for service "${svc}"`).toBe("number");
       }
 
       await session.close();
@@ -152,7 +152,7 @@ describe("LwsSession", () => {
       const s3Port = session.portFor("s3");
 
       // Assert — dynamodb offset is 1, s3 offset is 3, difference should be 2
-      expect(s3Port - dynamoPort).toBe(2);
+      expect(s3Port - dynamoPort, "Expected the port difference between s3 and dynamodb to be 2 based on their offsets").toBe(2);
 
       await session.close();
     });
@@ -162,7 +162,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Act & Assert
-      expect(() => session.portFor("unsupported-service")).toThrow("Unknown service");
+      expect(() => session.portFor("unsupported-service"), "Expected portFor to throw for an unknown service name").toThrow("Unknown service");
 
       await session.close();
     });
@@ -174,7 +174,7 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Act & Assert
-      expect(() => session.client("unsupported-service")).toThrow(
+      expect(() => session.client("unsupported-service"), "Expected client() to throw for a service name that has no SDK client implementation").toThrow(
         '"unsupported-service" is not supported',
       );
 
@@ -191,7 +191,7 @@ describe("LwsSession", () => {
       await session.close();
 
       // Assert
-      expect(mockServerClose).toHaveBeenCalledTimes(1);
+      expect(mockServerClose, "Expected the server close method to have been called once").toHaveBeenCalledTimes(1);
     });
 
     it("is idempotent — a second close does not throw", async () => {
@@ -200,7 +200,7 @@ describe("LwsSession", () => {
       await session.close();
 
       // Act & Assert
-      await expect(session.close()).resolves.toBeUndefined();
+      await expect(session.close(), "Expected a second close call to resolve without throwing").resolves.toBeUndefined();
     });
   });
 
@@ -213,7 +213,7 @@ describe("LwsSession", () => {
       const actual = process.env.AWS_ENDPOINT_URL_DYNAMODB;
 
       // Assert
-      expect(actual).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+      expect(actual, "Expected AWS_ENDPOINT_URL_DYNAMODB to be set to a local URL while the session is active").toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
 
       await session.close();
     });
@@ -227,7 +227,7 @@ describe("LwsSession", () => {
       await session.close();
 
       // Assert
-      expect(process.env.AWS_ENDPOINT_URL_DYNAMODB).toBe(expectedBefore);
+      expect(process.env.AWS_ENDPOINT_URL_DYNAMODB, "Expected AWS_ENDPOINT_URL_DYNAMODB to be restored to its original value after the session closes").toBe(expectedBefore);
     });
 
     it("sets test credentials while the session is active", async () => {
@@ -235,9 +235,9 @@ describe("LwsSession", () => {
       const session = await LwsSession.create({});
 
       // Act & Assert
-      expect(process.env.AWS_ACCESS_KEY_ID).toBe("test");
-      expect(process.env.AWS_SECRET_ACCESS_KEY).toBe("test");
-      expect(process.env.AWS_DEFAULT_REGION).toBe("us-east-1");
+      expect(process.env.AWS_ACCESS_KEY_ID, "Expected AWS_ACCESS_KEY_ID to be set to 'test' while the session is active").toBe("test");
+      expect(process.env.AWS_SECRET_ACCESS_KEY, "Expected AWS_SECRET_ACCESS_KEY to be set to 'test' while the session is active").toBe("test");
+      expect(process.env.AWS_DEFAULT_REGION, "Expected AWS_DEFAULT_REGION to be set to 'us-east-1' while the session is active").toBe("us-east-1");
 
       await session.close();
     });
@@ -253,7 +253,7 @@ describe("LwsSession", () => {
       const actual = session.lifecycle(expectedService);
 
       // Assert
-      expect(actual).toBeDefined();
+      expect(actual, "Expected lifecycle() to return a defined LifecycleBuilder for the given service").toBeDefined();
 
       await session.close();
     });
@@ -273,7 +273,7 @@ describe("LwsSession", () => {
       const actualEntries = await session.recentLogs();
 
       // Assert
-      expect(actualEntries).toEqual(expectedEntries);
+      expect(actualEntries, "Expected recentLogs to return the parsed log entries from the endpoint").toEqual(expectedEntries);
 
       await session.close();
     });
@@ -287,7 +287,7 @@ describe("LwsSession", () => {
       const actualEntries = await session.recentLogs();
 
       // Assert
-      expect(actualEntries).toEqual([]);
+      expect(actualEntries, "Expected recentLogs to return an empty array when the endpoint responds with a non-ok status").toEqual([]);
 
       await session.close();
     });
@@ -302,7 +302,7 @@ describe("LwsSession", () => {
       const actual = parameter(expectedName);
 
       // Assert
-      expect(actual._spec.parameters).toEqual([{ name: expectedName }]);
+      expect(actual._spec.parameters, "Expected parameter() to return a resource with the correct SSM parameter spec shape").toEqual([{ name: expectedName }]);
     });
   });
 
@@ -315,7 +315,7 @@ describe("LwsSession", () => {
       const actual = secret(expectedName);
 
       // Assert
-      expect(actual._spec.secrets).toEqual([{ name: expectedName }]);
+      expect(actual._spec.secrets, "Expected secret() to return a resource with the correct Secrets Manager secret spec shape").toEqual([{ name: expectedName }]);
     });
   });
 
@@ -329,9 +329,9 @@ describe("LwsSession", () => {
       const actual = session.queueUrl(expectedQueueName);
 
       // Assert
-      expect(actual).toContain("127.0.0.1");
-      expect(actual).toContain(expectedQueueName);
-      expect(actual).toContain("000000000000");
+      expect(actual, "Expected queueUrl to contain the local host address").toContain("127.0.0.1");
+      expect(actual, "Expected queueUrl to contain the queue name").toContain(expectedQueueName);
+      expect(actual, "Expected queueUrl to contain the AWS account ID placeholder").toContain("000000000000");
 
       await session.close();
     });

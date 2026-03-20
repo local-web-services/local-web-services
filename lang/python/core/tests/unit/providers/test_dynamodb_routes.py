@@ -68,7 +68,7 @@ async def test_put_item(client: httpx.AsyncClient, fake_store: AsyncMock) -> Non
     resp = await client.post("/", json=payload, headers=_target("PutItem"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     fake_store.put_item.assert_awaited_once_with(
         "Users",
         {"pk": {"S": "user#1"}, "name": {"S": "Alice"}},
@@ -95,11 +95,11 @@ async def test_get_item_found(client: httpx.AsyncClient, fake_store: AsyncMock) 
     resp = await client.post("/", json=payload, headers=_target("GetItem"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     data = resp.json()
-    assert "Item" in data
+    assert "Item" in data, f'Expected {"Item"!r} to be in {data!r}'
     actual_pk = data["Item"]["pk"]
-    assert actual_pk == expected_pk
+    assert actual_pk == expected_pk, f"Expected {expected_pk!r} but got {actual_pk!r}"
     fake_store.get_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
 
 
@@ -114,9 +114,9 @@ async def test_get_item_not_found(client: httpx.AsyncClient, fake_store: AsyncMo
     resp = await client.post("/", json=payload, headers=_target("GetItem"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     data = resp.json()
-    assert "Item" not in data
+    assert "Item" not in data, f'Expected {"Item"!r} to not be in {data!r}'
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +134,7 @@ async def test_delete_item(client: httpx.AsyncClient, fake_store: AsyncMock) -> 
     resp = await client.post("/", json=payload, headers=_target("DeleteItem"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     fake_store.delete_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
 
 
@@ -164,10 +164,10 @@ async def test_update_item(client: httpx.AsyncClient, fake_store: AsyncMock) -> 
     resp = await client.post("/", json=payload, headers=_target("UpdateItem"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     data = resp.json()
     actual_name = data["Attributes"]["name"]
-    assert actual_name == expected_name
+    assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
     fake_store.update_item.assert_awaited_once_with(
         "Users",
         {"pk": {"S": "user#1"}},
@@ -200,11 +200,11 @@ async def test_query(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     resp = await client.post("/", json=payload, headers=_target("Query"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     data = resp.json()
     actual_count = data["Count"]
-    assert actual_count == expected_count
-    assert len(data["Items"]) == expected_count
+    assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
+    assert len(data["Items"]) == expected_count, f'Expected {expected_count!r} but got {len(data["Items"])!r}'
 
 
 # ---------------------------------------------------------------------------
@@ -227,11 +227,11 @@ async def test_scan(client: httpx.AsyncClient, fake_store: AsyncMock) -> None:
     resp = await client.post("/", json=payload, headers=_target("Scan"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     data = resp.json()
     actual_count = data["Count"]
-    assert actual_count == expected_count
-    assert len(data["Items"]) == expected_count
+    assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
+    assert len(data["Items"]) == expected_count, f'Expected {expected_count!r} but got {len(data["Items"])!r}'
 
 
 # ---------------------------------------------------------------------------
@@ -263,10 +263,10 @@ async def test_batch_get_item(client: httpx.AsyncClient, fake_store: AsyncMock) 
     resp = await client.post("/", json=payload, headers=_target("BatchGetItem"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     data = resp.json()
-    assert "Responses" in data
-    assert len(data["Responses"]["Users"]) == expected_response_count
+    assert "Responses" in data, f'Expected {"Responses"!r} to be in {data!r}'
+    assert len(data["Responses"]["Users"]) == expected_response_count, f'Expected {expected_response_count!r} but got {len(data["Responses"]["Users"])!r}'
 
 
 # ---------------------------------------------------------------------------
@@ -291,7 +291,7 @@ async def test_batch_write_item(client: httpx.AsyncClient, fake_store: AsyncMock
     resp = await client.post("/", json=payload, headers=_target("BatchWriteItem"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     fake_store.batch_write_items.assert_awaited_once_with(
         "Users",
         put_items=[{"pk": {"S": "user#1"}, "name": {"S": "A"}}],
@@ -317,13 +317,13 @@ async def test_unknown_operation_returns_error(
     resp = await client.post("/", json=payload, headers=_target("SomeUnknownOp"))
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     body = resp.json()
     actual_error_type = body["__type"]
-    assert actual_error_type == expected_error_type
-    assert "lws" in body["message"]
-    assert "DynamoDB" in body["message"]
-    assert "SomeUnknownOp" in body["message"]
+    assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+    assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
+    assert "DynamoDB" in body["message"], f'Expected {"DynamoDB"!r} to be in {body["message"]!r}'
+    assert "SomeUnknownOp" in body["message"], f'Expected {"SomeUnknownOp"!r} to be in {body["message"]!r}'
 
 
 @pytest.mark.asyncio
@@ -338,7 +338,7 @@ async def test_missing_target_header_returns_400(
     resp = await client.post("/", json={"TableName": "Users"})
 
     # Assert
-    assert resp.status_code == expected_status_code
+    assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
     data = resp.json()
     actual_error_type = data["__type"]
-    assert actual_error_type == expected_error_type
+    assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

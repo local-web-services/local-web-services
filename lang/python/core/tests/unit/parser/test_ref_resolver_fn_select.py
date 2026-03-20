@@ -17,7 +17,7 @@ class TestFnSelect:
         actual_value = r.resolve({"Fn::Select": [1, ["a", "b", "c"]]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_select_zero_index(self):
         # Arrange
@@ -28,7 +28,7 @@ class TestFnSelect:
         actual_value = r.resolve({"Fn::Select": [0, ["first", "second"]]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_select_out_of_range(self, caplog):
         # Arrange
@@ -40,5 +40,5 @@ class TestFnSelect:
             actual_value = r.resolve({"Fn::Select": [5, ["a"]]})
 
         # Assert
-        assert actual_value == expected_value
-        assert "out of range" in caplog.text
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
+        assert "out of range" in caplog.text, f'Expected {"out of range"!r} to be in {caplog.text!r}'

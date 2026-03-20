@@ -39,7 +39,7 @@ public class DynamoDbStoreScanQueryBranchTest {
     List<Map<String, Object>> actualItems = store.scan(tableName, "", null, null, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -56,7 +56,7 @@ public class DynamoDbStoreScanQueryBranchTest {
     List<Map<String, Object>> actualItems = store.scan(tableName, null, null, null, 10, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -74,7 +74,7 @@ public class DynamoDbStoreScanQueryBranchTest {
         store.query(tableName, "", null, null, null, null, true, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -92,7 +92,7 @@ public class DynamoDbStoreScanQueryBranchTest {
         store.query(tableName, null, null, null, null, "", true, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -110,7 +110,7 @@ public class DynamoDbStoreScanQueryBranchTest {
         store.query(tableName, null, null, null, null, null, true, null, new LinkedHashMap<>());
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -128,7 +128,7 @@ public class DynamoDbStoreScanQueryBranchTest {
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", numAttr("42")));
 
     // Assert
-    assertNotNull(actualItem);
+    assertNotNull(actualItem, "Expected actualItem to not be null");
   }
 
   @Test
@@ -150,7 +150,7 @@ public class DynamoDbStoreScanQueryBranchTest {
     Map<String, Object> actualItem = store.getItem(tableName, item);
 
     // Assert
-    assertNotNull(actualItem);
+    assertNotNull(actualItem, "Expected actualItem to not be null");
   }
 
   @Test
@@ -172,7 +172,7 @@ public class DynamoDbStoreScanQueryBranchTest {
     Map<String, Object> actualDescription = store.describeTable(tableName);
 
     // Assert
-    assertTrue(actualDescription.containsKey(expectedKey));
+    assertTrue(actualDescription.containsKey(expectedKey), "Expected map to contain the expected key");
   }
 
   @Test
@@ -196,7 +196,7 @@ public class DynamoDbStoreScanQueryBranchTest {
     // Assert
     Map<String, Object> actualDeletedItem = store.getItem(tableName, Map.of("pk", strAttr("a")));
     Map<String, Object> actualSurvivingItem = store.getItem(tableName, Map.of("pk", strAttr("b")));
-    assertNull(actualDeletedItem);
-    assertNotNull(actualSurvivingItem);
+    assertNull(actualDeletedItem, "Expected actualDeletedItem to be null");
+    assertNotNull(actualSurvivingItem, "Expected actualSurvivingItem to not be null");
   }
 }

@@ -31,7 +31,7 @@ class TestDeleteArchive:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
 
     def test_delete_archive_vault_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -43,10 +43,10 @@ class TestDeleteArchive:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         body = response.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
 
     def test_delete_archive_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -60,7 +60,7 @@ class TestDeleteArchive:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         body = response.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

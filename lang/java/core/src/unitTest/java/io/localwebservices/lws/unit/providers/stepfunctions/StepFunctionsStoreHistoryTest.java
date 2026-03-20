@@ -24,7 +24,7 @@ public class StepFunctionsStoreHistoryTest {
     List<Map<String, String>> actualTags = store.listTags(smArn);
 
     // Assert
-    assertEquals(expectedSize, actualTags.size());
+    assertEquals(expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
   }
 
   @Test
@@ -43,7 +43,7 @@ public class StepFunctionsStoreHistoryTest {
 
     // Assert
     List<Map<String, String>> actualTags = store.listTags(smArn);
-    assertEquals(expectedSize, actualTags.size());
+    assertEquals(expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
   }
 
   @Test
@@ -64,8 +64,8 @@ public class StepFunctionsStoreHistoryTest {
 
     // Assert
     List<Map<String, String>> actualTags = store.listTags(smArn);
-    assertEquals(expectedSize, actualTags.size());
-    assertEquals(expectedRemainingKey, actualTags.get(0).get("key"));
+    assertEquals(expectedSize, actualTags.size(), "Expected actualTags.size() to match expectedSize");
+    assertEquals(expectedRemainingKey, actualTags.get(0).get("key"), "Expected actualTags.get(0).get("key") to equal expectedRemainingKey");
   }
 
   @Test
@@ -83,7 +83,7 @@ public class StepFunctionsStoreHistoryTest {
     boolean actualResult = store.allTagsFound(smArn, List.of("env", "team"));
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -99,6 +99,6 @@ public class StepFunctionsStoreHistoryTest {
     boolean actualResult = store.allTagsFound(smArn, List.of("env", "missing-key"));
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 }

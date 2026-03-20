@@ -15,5 +15,5 @@ class TestIamAuthServiceConfig:
         actual_mode = config.mode
 
         # Assert
-        assert actual_enabled is False
-        assert actual_mode is None
+        assert actual_enabled is False, "Expected value to be truthy"
+        assert actual_mode is None, f"Expected None but got {actual_mode!r}"

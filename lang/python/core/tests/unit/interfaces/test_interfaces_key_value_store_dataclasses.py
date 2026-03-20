@@ -39,15 +39,15 @@ class TestKeyValueStoreDataclasses:
         attr = KeyAttribute(name=expected_name, type=expected_type)
 
         # Assert
-        assert attr.name == expected_name
-        assert attr.type == expected_type
+        assert attr.name == expected_name, f"Expected {expected_name!r} but got {attr.name!r}"
+        assert attr.type == expected_type, f"Expected {expected_type!r} but got {attr.type!r}"
 
     def test_key_schema_partition_only(self) -> None:
         # Arrange / Act
         schema = KeySchema(partition_key=KeyAttribute(name="pk", type="S"))
 
         # Assert
-        assert schema.sort_key is None
+        assert schema.sort_key is None, f"Expected None but got {schema.sort_key!r}"
 
     def test_key_schema_with_sort(self) -> None:
         # Arrange
@@ -60,9 +60,9 @@ class TestKeyValueStoreDataclasses:
         )
 
         # Assert
-        assert schema.sort_key is not None
+        assert schema.sort_key is not None, "Expected value to be set but was None"
         actual_sort_key_name = schema.sort_key.name
-        assert actual_sort_key_name == expected_sort_key_name
+        assert actual_sort_key_name == expected_sort_key_name, f"Expected {expected_sort_key_name!r} but got {actual_sort_key_name!r}"
 
     def test_gsi_definition_defaults(self) -> None:
         # Arrange
@@ -78,7 +78,7 @@ class TestKeyValueStoreDataclasses:
 
         # Assert
         actual_projection_type = gsi.projection_type
-        assert actual_projection_type == expected_projection_type
+        assert actual_projection_type == expected_projection_type, f"Expected {expected_projection_type!r} but got {actual_projection_type!r}"
 
     def test_table_config(self) -> None:
         # Arrange
@@ -94,5 +94,5 @@ class TestKeyValueStoreDataclasses:
 
         # Assert
         actual_table_name = cfg.table_name
-        assert actual_table_name == expected_table_name
-        assert cfg.gsi_definitions == []
+        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert cfg.gsi_definitions == [], f"Expected {[]!r} but got {cfg.gsi_definitions!r}"

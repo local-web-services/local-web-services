@@ -54,8 +54,8 @@ class TestDebouncing:
             time.sleep(1.0)
 
             # We expect the callback to have fired, but not 5 times
-            assert len(changed) >= 1
-            assert len(changed) < 5
+            assert len(changed) >= 1, f"Expected {len(changed)!r} >= {1!r}"
+            assert len(changed) < 5, f"Expected {len(changed)!r} < {5!r}"
         finally:
             watcher.stop()
 
@@ -91,8 +91,8 @@ class TestDebouncing:
 
             # Assert
             reported_names = {p.name for p in changed}
-            assert expected_file_a in reported_names
-            assert expected_file_b in reported_names
-            assert expected_file_c in reported_names
+            assert expected_file_a in reported_names, f"Expected {expected_file_a!r} to be in {reported_names!r}"
+            assert expected_file_b in reported_names, f"Expected {expected_file_b!r} to be in {reported_names!r}"
+            assert expected_file_c in reported_names, f"Expected {expected_file_c!r} to be in {reported_names!r}"
         finally:
             watcher.stop()

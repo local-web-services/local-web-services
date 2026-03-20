@@ -23,7 +23,7 @@ public class DynamoDbStoreDeleteItemTest {
     Map<String, Object> actualItem = store.getItem("T", keyAttr);
 
     // Assert
-    assertNull(actualItem);
+    assertNull(actualItem, "Expected actualItem to be null");
   }
 
   @Test
@@ -37,6 +37,6 @@ public class DynamoDbStoreDeleteItemTest {
     store.deleteItem("T", keyAttr);
 
     // Assert
-    assertNull(store.getItem("T", keyAttr));
+    assertNull(store.getItem("T", keyAttr), "Expected store.getItem("T", keyAttr) to be null");
   }
 }

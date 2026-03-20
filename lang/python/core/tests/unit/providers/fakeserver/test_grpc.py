@@ -22,10 +22,10 @@ class TestMatchGrpcRequest:
         result = match_grpc_request([route], service, method, {})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         expected_id = "pay_1"
         actual_id = result["fields"]["id"]
-        assert actual_id == expected_id
+        assert actual_id == expected_id, f"Expected {expected_id!r} but got {actual_id!r}"
 
     def test_field_match(self):
         # Arrange
@@ -51,10 +51,10 @@ class TestMatchGrpcRequest:
         )
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         expected_code = "NOT_FOUND"
         actual_code = result["status_code"]
-        assert actual_code == expected_code
+        assert actual_code == expected_code, f"Expected {expected_code!r} but got {actual_code!r}"
 
     def test_no_match_wrong_service(self):
         # Arrange
@@ -69,7 +69,7 @@ class TestMatchGrpcRequest:
         result = match_grpc_request([route], "order.OrderService", "GetOrder", {})
 
         # Assert
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     def test_no_match_wrong_method(self):
         # Arrange
@@ -84,7 +84,7 @@ class TestMatchGrpcRequest:
         result = match_grpc_request([route], "payment.PaymentService", "CreatePayment", {})
 
         # Assert
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     def test_template_rendering(self):
         # Arrange
@@ -106,4 +106,4 @@ class TestMatchGrpcRequest:
         # Assert
         expected_id = "pay_abc"
         actual_id = result["fields"]["id"]
-        assert actual_id == expected_id
+        assert actual_id == expected_id, f"Expected {expected_id!r} but got {actual_id!r}"

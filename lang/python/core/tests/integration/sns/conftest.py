@@ -50,7 +50,7 @@ async def client(app):
 
 def _create_topic(client: TestClient, name: str = TEST_TOPIC) -> str:
     r = client.post("/", data={"Action": "CreateTopic", "Name": name})
-    assert r.status_code == 200
+    assert r.status_code == 200, f"Expected {200!r} but got {r.status_code!r}"
     return _extract_xml_tag(r.text, "TopicArn")
 
 
@@ -69,7 +69,7 @@ def _subscribe(
             "Endpoint": endpoint,
         },
     )
-    assert r.status_code == 200
+    assert r.status_code == 200, f"Expected {200!r} but got {r.status_code!r}"
     return _extract_xml_tag(r.text, "SubscriptionArn")
 
 

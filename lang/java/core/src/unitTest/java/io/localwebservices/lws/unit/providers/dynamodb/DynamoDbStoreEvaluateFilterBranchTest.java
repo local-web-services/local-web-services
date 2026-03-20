@@ -28,7 +28,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
     boolean actualResult = store.evaluateFilter(item, "attribute_exists(status)", null, null);
 
     // Assert
-    assertEquals(expectedResult, actualResult);
+    assertEquals(expectedResult, actualResult, "Expected actualResult to equal expectedResult");
   }
 
   @Test
@@ -43,7 +43,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
     boolean actualResult = store.evaluateFilter(item, "attribute_exists(status)", null, null);
 
     // Assert
-    assertEquals(expectedResult, actualResult);
+    assertEquals(expectedResult, actualResult, "Expected actualResult to equal expectedResult");
   }
 
   @Test
@@ -58,7 +58,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
     boolean actualResult = store.evaluateFilter(item, "attribute_not_exists(deleted)", null, null);
 
     // Assert
-    assertEquals(expectedResult, actualResult);
+    assertEquals(expectedResult, actualResult, "Expected actualResult to equal expectedResult");
   }
 
   @Test
@@ -73,7 +73,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
     boolean actualResult = store.evaluateFilter(item, "attribute_not_exists(deleted)", null, null);
 
     // Assert
-    assertEquals(expectedResult, actualResult);
+    assertEquals(expectedResult, actualResult, "Expected actualResult to equal expectedResult");
   }
 
   @Test
@@ -89,7 +89,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
     boolean actualResult = store.evaluateFilter(item, "color = blue AND size = large", null, null);
 
     // Assert
-    assertEquals(expectedResult, actualResult);
+    assertEquals(expectedResult, actualResult, "Expected actualResult to equal expectedResult");
   }
 
   @Test
@@ -105,7 +105,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
     boolean actualResult = store.evaluateFilter(item, "color = blue AND size = large", null, null);
 
     // Assert
-    assertEquals(expectedResult, actualResult);
+    assertEquals(expectedResult, actualResult, "Expected actualResult to equal expectedResult");
   }
 
   @Test
@@ -121,7 +121,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
     boolean actualResult = store.evaluateFilter(item, "color = blue OR size = large", null, null);
 
     // Assert
-    assertEquals(expectedResult, actualResult);
+    assertEquals(expectedResult, actualResult, "Expected actualResult to equal expectedResult");
   }
 
   @Test
@@ -137,7 +137,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
     boolean actualResult = store.evaluateFilter(item, "color = blue OR size = large", null, null);
 
     // Assert
-    assertEquals(expectedResult, actualResult);
+    assertEquals(expectedResult, actualResult, "Expected actualResult to equal expectedResult");
   }
 
   @Test
@@ -165,7 +165,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -193,7 +193,7 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -221,6 +221,6 @@ public class DynamoDbStoreEvaluateFilterBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 }

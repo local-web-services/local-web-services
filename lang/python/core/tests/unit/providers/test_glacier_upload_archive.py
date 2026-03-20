@@ -30,7 +30,7 @@ class TestUploadArchive:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
 
     def test_upload_archive_returns_archive_id_header(self, client: TestClient) -> None:
         # Arrange
@@ -46,8 +46,8 @@ class TestUploadArchive:
 
         # Assert
         actual_archive_id = response.headers.get("x-amz-archive-id")
-        assert actual_archive_id is not None
-        assert len(actual_archive_id) > 0
+        assert actual_archive_id is not None, "Expected value to be set but was None"
+        assert len(actual_archive_id) > 0, f"Expected {len(actual_archive_id)!r} > {0!r}"
 
     def test_upload_archive_returns_sha256_header(self, client: TestClient) -> None:
         # Arrange
@@ -63,8 +63,8 @@ class TestUploadArchive:
 
         # Assert
         actual_hash = response.headers.get("x-amz-sha256-tree-hash")
-        assert actual_hash is not None
-        assert len(actual_hash) > 0
+        assert actual_hash is not None, "Expected value to be set but was None"
+        assert len(actual_hash) > 0, f"Expected {len(actual_hash)!r} > {0!r}"
 
     def test_upload_archive_vault_not_found(self, client: TestClient) -> None:
         # Arrange
@@ -79,7 +79,7 @@ class TestUploadArchive:
 
         # Assert
         actual_status_code = response.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         body = response.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

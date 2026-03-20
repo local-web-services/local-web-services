@@ -22,7 +22,7 @@ class TestListBuckets:
     @pytest.mark.asyncio
     async def test_list_buckets_empty(self, provider: S3Provider) -> None:
         buckets = await provider.list_buckets()
-        assert buckets == []
+        assert buckets == [], f"Expected {[]!r} but got {buckets!r}"
 
     @pytest.mark.asyncio
     async def test_list_buckets_sorted(self, provider: S3Provider) -> None:
@@ -31,4 +31,4 @@ class TestListBuckets:
         await provider.create_bucket("middle")
 
         buckets = await provider.list_buckets()
-        assert buckets == ["alpha", "middle", "zebra"]
+        assert buckets == ["alpha", "middle", "zebra"], f'Expected {["alpha", "middle", "zebra"]!r} but got {buckets!r}'

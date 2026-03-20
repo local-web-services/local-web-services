@@ -126,7 +126,7 @@ class TestSqsEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_missing_records(self) -> None:
         # Arrange
@@ -136,8 +136,8 @@ class TestSqsEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) >= 1
-        assert any("Records" in i.message for i in issues)
+        assert len(issues) >= 1, f"Expected {len(issues)!r} >= {1!r}"
+        assert any("Records" in i.message for i in issues), "Expected value to be truthy"
 
     def test_record_missing_message_id(self) -> None:
         # Arrange
@@ -149,8 +149,8 @@ class TestSqsEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert "messageId" in issues[0].message
+        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert "messageId" in issues[0].message, f'Expected {"messageId"!r} to be in {issues[0].message!r}'
 
     def test_record_wrong_type_body(self) -> None:
         # Arrange
@@ -170,5 +170,5 @@ class TestSqsEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert "body" in issues[0].message
+        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert "body" in issues[0].message, f'Expected {"body"!r} to be in {issues[0].message!r}'

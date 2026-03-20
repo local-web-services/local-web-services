@@ -67,7 +67,7 @@ class TestLogicalCombinators:
                 ),
             ],
         )
-        assert evaluate_rule(rule, {"a": 1, "b": 2}) is True
+        assert evaluate_rule(rule, {"a": 1, "b": 2}) is True, "Expected value to be truthy"
 
     def test_and_one_false(self) -> None:
         rule = ChoiceRule(
@@ -87,7 +87,7 @@ class TestLogicalCombinators:
                 ),
             ],
         )
-        assert evaluate_rule(rule, {"a": 1, "b": -1}) is False
+        assert evaluate_rule(rule, {"a": 1, "b": -1}) is False, "Expected value to be truthy"
 
     def test_or_one_true(self) -> None:
         rule = ChoiceRule(
@@ -107,7 +107,7 @@ class TestLogicalCombinators:
                 ),
             ],
         )
-        assert evaluate_rule(rule, {"a": "no", "b": "yes"}) is True
+        assert evaluate_rule(rule, {"a": "no", "b": "yes"}) is True, "Expected value to be truthy"
 
     def test_or_none_true(self) -> None:
         rule = ChoiceRule(
@@ -127,7 +127,7 @@ class TestLogicalCombinators:
                 ),
             ],
         )
-        assert evaluate_rule(rule, {"a": "no", "b": "no"}) is False
+        assert evaluate_rule(rule, {"a": "no", "b": "no"}) is False, "Expected value to be truthy"
 
     def test_not_inverts(self) -> None:
         rule = ChoiceRule(
@@ -139,5 +139,5 @@ class TestLogicalCombinators:
                 comparison_value=0,
             ),
         )
-        assert evaluate_rule(rule, {"x": 5}) is True
-        assert evaluate_rule(rule, {"x": 0}) is False
+        assert evaluate_rule(rule, {"x": 5}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"x": 0}) is False, "Expected value to be truthy"

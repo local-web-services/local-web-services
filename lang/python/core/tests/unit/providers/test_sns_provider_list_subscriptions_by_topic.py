@@ -56,5 +56,5 @@ class TestProviderListSubscriptionsByTopic:
         actual_subs = provider.list_subscriptions_by_topic(topic_name)
 
         # Assert
-        assert len(actual_subs) == expected_count
-        assert actual_subs[0].endpoint == expected_endpoint
+        assert len(actual_subs) == expected_count, f"Expected {expected_count!r} but got {len(actual_subs)!r}"
+        assert actual_subs[0].endpoint == expected_endpoint, f"Expected {expected_endpoint!r} but got {actual_subs[0].endpoint!r}"

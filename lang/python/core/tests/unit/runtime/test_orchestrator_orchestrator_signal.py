@@ -27,9 +27,9 @@ class TestOrchestratorSignal:
         # Should return without hanging
 
     async def test_running_flag(self, orchestrator):
-        assert not orchestrator.running
+        assert not orchestrator.running, "Expected value to be falsy"
         p = FakeProvider("test")
         await orchestrator.start({"p": p}, ["p"])
-        assert orchestrator.running
+        assert orchestrator.running, "Expected value to be truthy"
         await orchestrator.stop()
-        assert not orchestrator.running
+        assert not orchestrator.running, "Expected value to be falsy"

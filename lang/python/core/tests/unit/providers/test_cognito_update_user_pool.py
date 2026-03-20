@@ -49,8 +49,8 @@ class TestUpdateUserPool:
             "UpdateUserPool",
             {"UserPoolId": POOL_ID},
         )
-        assert resp.status_code == 200
-        assert resp.json() == {}
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
+        assert resp.json() == {}, "Expected {0!r} but got {1!r}".format({}, resp.json())
 
     async def test_update_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
         # Act
@@ -63,6 +63,6 @@ class TestUpdateUserPool:
         # Assert
         expected_status = 400
         expected_error_type = "ResourceNotFoundException"
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

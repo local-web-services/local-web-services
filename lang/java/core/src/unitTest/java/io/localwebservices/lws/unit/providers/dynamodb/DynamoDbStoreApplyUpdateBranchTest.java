@@ -41,7 +41,7 @@ class DynamoDbStoreApplyUpdateBranchTest {
     // Assert
     Map<String, Object> actualItem = store.getItem("tbl", Map.of("pk", strAttr("k")));
     Object actualExtra = actualItem.get("extra");
-    assertNull(actualExtra);
+    assertNull(actualExtra, "Expected actualExtra to be null");
   }
 
   // L191: ADD section — exprNames != null but attrExpr does NOT start with "#"
@@ -63,7 +63,7 @@ class DynamoDbStoreApplyUpdateBranchTest {
     // Assert
     Map<String, Object> actualItem = store.getItem("tbl", Map.of("pk", strAttr("k")));
     Object actualMyAttr = actualItem.get("myAttr");
-    assertEquals(expectedMyAttr, actualMyAttr);
+    assertEquals(expectedMyAttr, actualMyAttr, "Expected actualMyAttr to equal expectedMyAttr");
   }
 
   // L195: ADD section — exprValues != null but valExpr does NOT start with ":"
@@ -85,7 +85,7 @@ class DynamoDbStoreApplyUpdateBranchTest {
     // Assert
     Map<String, Object> actualItem = store.getItem("tbl", Map.of("pk", strAttr("k")));
     Object actualMyAttr = actualItem.get("myAttr");
-    assertEquals(expectedMyAttr, actualMyAttr);
+    assertEquals(expectedMyAttr, actualMyAttr, "Expected actualMyAttr to equal expectedMyAttr");
   }
 
   // L197: existing instanceof Map TRUE, delta instanceof Map FALSE
@@ -106,7 +106,7 @@ class DynamoDbStoreApplyUpdateBranchTest {
     // Assert
     Map<String, Object> actualItem = store.getItem("tbl", Map.of("pk", strAttr("k")));
     Object actualTag = actualItem.get("tag");
-    assertEquals(expectedTag, actualTag);
+    assertEquals(expectedTag, actualTag, "Expected actualTag to equal expectedTag");
   }
 
   // L200-L206: numeric ADD — both existMap and deltaMap have "N" key
@@ -130,7 +130,7 @@ class DynamoDbStoreApplyUpdateBranchTest {
     @SuppressWarnings("unchecked")
     Map<String, Object> actualCount = (Map<String, Object>) actualItem.get("count");
     Object actualN = actualCount.get("N");
-    assertEquals(expectedN, actualN);
+    assertEquals(expectedN, actualN, "Expected actualN to equal expectedN");
   }
 
   // L200 false branch: existMap has "N" but deltaMap does NOT have "N"
@@ -152,6 +152,6 @@ class DynamoDbStoreApplyUpdateBranchTest {
     // Assert
     Map<String, Object> actualItem = store.getItem("tbl", Map.of("pk", strAttr("k")));
     Object actualCount = actualItem.get("count");
-    assertEquals(expectedCount, actualCount);
+    assertEquals(expectedCount, actualCount, "Expected actualCount to match expectedCount");
   }
 }

@@ -121,4 +121,4 @@ class TestValidatorName:
     def test_name_is_event_shape(self) -> None:
         expected_name = "event_shape"
         actual_name = EventShapeValidator().name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"

@@ -35,4 +35,4 @@ class TestExtractorJsonTargetNoMatch:
         actual_operation = extractor(request, b"")
 
         # Assert
-        assert actual_operation is None
+        assert actual_operation is None, f"Expected None but got {actual_operation!r}"

@@ -21,7 +21,7 @@ public class S3StoreMultipartTest {
     store.multipartUploads.put(expectedUploadId, Map.of("UploadId", expectedUploadId));
 
     // Assert
-    assertNotNull(store.multipartUploads.get(expectedUploadId));
+    assertNotNull(store.multipartUploads.get(expectedUploadId), "Expected store.multipartUploads.get(expectedUploadId) to not be null");
   }
 
   @Test
@@ -53,7 +53,7 @@ public class S3StoreMultipartTest {
     store.reset();
 
     // Assert
-    assertTrue(store.multipartUploads.isEmpty());
+    assertTrue(store.multipartUploads.isEmpty(), "Expected store.multipartUploads to be empty");
   }
 
   @Test
@@ -69,6 +69,6 @@ public class S3StoreMultipartTest {
     store.reset();
 
     // Assert
-    assertTrue(store.multipartParts.isEmpty());
+    assertTrue(store.multipartParts.isEmpty(), "Expected store.multipartParts to be empty");
   }
 }

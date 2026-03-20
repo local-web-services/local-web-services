@@ -11,7 +11,7 @@ class TestModeConfiguration:
         config = LdkConfig()
 
         # Assert
-        assert config.mode is None
+        assert config.mode is None, f"Expected None but got {config.mode!r}"
 
     def test_mode_can_be_set_to_cdk(self) -> None:
         # Arrange
@@ -21,7 +21,7 @@ class TestModeConfiguration:
         config = LdkConfig(mode=expected_mode)
 
         # Assert
-        assert config.mode == expected_mode
+        assert config.mode == expected_mode, f"Expected {expected_mode!r} but got {config.mode!r}"
 
     def test_mode_can_be_set_to_terraform(self) -> None:
         # Arrange
@@ -31,4 +31,4 @@ class TestModeConfiguration:
         config = LdkConfig(mode=expected_mode)
 
         # Assert
-        assert config.mode == expected_mode
+        assert config.mode == expected_mode, f"Expected {expected_mode!r} but got {config.mode!r}"

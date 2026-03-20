@@ -58,8 +58,8 @@ class TestUserStoreRevokeTokens:
         # Assert
         actual_token1 = await store.get_refresh_token_username("token1")
         actual_token2 = await store.get_refresh_token_username("token2")
-        assert actual_token1 is None
-        assert actual_token2 is None
+        assert actual_token1 is None, f"Expected None but got {actual_token1!r}"
+        assert actual_token2 is None, f"Expected None but got {actual_token2!r}"
 
     async def test_revoke_does_not_affect_other_users(self, store: UserStore) -> None:
         # Arrange
@@ -72,6 +72,6 @@ class TestUserStoreRevokeTokens:
         # Assert
         actual_alice = await store.get_refresh_token_username("alice-token")
         actual_bob = await store.get_refresh_token_username("bob-token")
-        assert actual_alice is None
+        assert actual_alice is None, f"Expected None but got {actual_alice!r}"
         expected_bob = "bob"
-        assert actual_bob == expected_bob
+        assert actual_bob == expected_bob, f"Expected {expected_bob!r} but got {actual_bob!r}"

@@ -22,7 +22,7 @@ public class LambdaStoreFunctionTest {
     // Assert
     String actualFunctionName =
         (String) store.functions.get(expectedFunctionName).get("FunctionName");
-    assertEquals(expectedFunctionName, actualFunctionName);
+    assertEquals(expectedFunctionName, actualFunctionName, "Expected actualFunctionName to equal expectedFunctionName");
   }
 
   @Test
@@ -36,7 +36,7 @@ public class LambdaStoreFunctionTest {
     store.functions.remove(functionName);
 
     // Assert
-    assertNull(store.functions.get(functionName));
+    assertNull(store.functions.get(functionName), "Expected store.functions.get(functionName) to be null");
   }
 
   @Test
@@ -49,7 +49,7 @@ public class LambdaStoreFunctionTest {
     store.functions.put(functionName, Map.of("FunctionName", functionName));
 
     // Assert
-    assertTrue(store.functions.containsKey(functionName));
+    assertTrue(store.functions.containsKey(functionName), "Expected map to contain the expected key");
   }
 
   @Test
@@ -62,7 +62,7 @@ public class LambdaStoreFunctionTest {
     store.reset();
 
     // Assert
-    assertTrue(store.functions.isEmpty());
+    assertTrue(store.functions.isEmpty(), "Expected store.functions to be empty");
   }
 
   @Test
@@ -77,6 +77,6 @@ public class LambdaStoreFunctionTest {
 
     // Assert
     int expectedSize = 2;
-    assertEquals(expectedSize, actualSize);
+    assertEquals(expectedSize, actualSize, "Expected actualSize to match expectedSize");
   }
 }

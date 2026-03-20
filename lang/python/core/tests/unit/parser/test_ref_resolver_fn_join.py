@@ -15,7 +15,7 @@ class TestFnJoin:
         actual_value = r.resolve({"Fn::Join": ["-", ["a", "b", "c"]]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_join_with_refs(self):
         # Arrange
@@ -26,7 +26,7 @@ class TestFnJoin:
         actual_value = r.resolve({"Fn::Join": ["/", ["prefix", {"Ref": "X"}, "suffix"]]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_join_empty_delimiter(self):
         # Arrange
@@ -37,4 +37,4 @@ class TestFnJoin:
         actual_value = r.resolve({"Fn::Join": ["", ["abc", "def"]]})
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"

@@ -70,4 +70,4 @@ class TestValidatorName:
     def test_name_is_permission(self) -> None:
         expected_name = "permission"
         actual_name = PermissionValidator().name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"

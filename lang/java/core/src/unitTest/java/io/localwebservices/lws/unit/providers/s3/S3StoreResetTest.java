@@ -37,13 +37,13 @@ public class S3StoreResetTest {
     store.reset();
 
     // Assert
-    assertTrue(store.buckets.isEmpty());
-    assertTrue(store.objects.isEmpty());
-    assertTrue(store.objectMetadata.isEmpty());
-    assertTrue(store.bucketTags.isEmpty());
-    assertTrue(store.bucketPolicies.isEmpty());
-    assertTrue(store.bucketWebsites.isEmpty());
-    assertTrue(store.multipartUploads.isEmpty());
-    assertTrue(store.multipartParts.isEmpty());
+    assertTrue(store.buckets.isEmpty(), "Expected store.buckets to be empty");
+    assertTrue(store.objects.isEmpty(), "Expected store.objects to be empty");
+    assertTrue(store.objectMetadata.isEmpty(), "Expected store.objectMetadata to be empty");
+    assertTrue(store.bucketTags.isEmpty(), "Expected store.bucketTags to be empty");
+    assertTrue(store.bucketPolicies.isEmpty(), "Expected store.bucketPolicies to be empty");
+    assertTrue(store.bucketWebsites.isEmpty(), "Expected store.bucketWebsites to be empty");
+    assertTrue(store.multipartUploads.isEmpty(), "Expected store.multipartUploads to be empty");
+    assertTrue(store.multipartParts.isEmpty(), "Expected store.multipartParts to be empty");
   }
 }

@@ -25,7 +25,7 @@ class TestListPolicies:
         xml = _post(client, "ListPolicies")
 
         # Assert
-        assert "ListPoliciesResponse" in xml
+        assert "ListPoliciesResponse" in xml, f'Expected {"ListPoliciesResponse"!r} to be in {xml!r}'
 
     def test_list_after_create(self) -> None:
         client = _client()
@@ -34,4 +34,4 @@ class TestListPolicies:
         xml = _post(client, "ListPolicies")
 
         # Assert
-        assert policy_name in xml
+        assert policy_name in xml, f"Expected {policy_name!r} to be in {xml!r}"

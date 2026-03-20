@@ -158,8 +158,8 @@ class TestLocalQueueBasic:
         msg_id = await queue.send_message("hello")
 
         # Assert
-        assert isinstance(msg_id, str)
-        assert len(msg_id) > 0
+        assert isinstance(msg_id, str), f"Expected instance of {str!r} but got {type(msg_id)!r}"
+        assert len(msg_id) > 0, f"Expected {len(msg_id)!r} > {0!r}"
 
     async def test_receive_returns_sent_message(self, queue: LocalQueue) -> None:
         # Arrange
@@ -173,13 +173,13 @@ class TestLocalQueueBasic:
         # Assert
         actual_message_count = len(messages)
         actual_body = messages[0].body
-        assert actual_message_count == expected_message_count
-        assert actual_body == expected_body
-        assert messages[0].receipt_handle is not None
+        assert actual_message_count == expected_message_count, f"Expected {expected_message_count!r} but got {actual_message_count!r}"
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
+        assert messages[0].receipt_handle is not None, "Expected value to be set but was None"
 
     async def test_receive_empty_queue(self, queue: LocalQueue) -> None:
         messages = await queue.receive_messages(max_messages=1)
-        assert messages == []
+        assert messages == [], f"Expected {[]!r} but got {messages!r}"
 
     async def test_delete_removes_message(self, queue: LocalQueue) -> None:
         # Arrange
@@ -187,7 +187,7 @@ class TestLocalQueueBasic:
         await queue.send_message(deleted_body)
         messages = await queue.receive_messages(max_messages=1)
         receipt = messages[0].receipt_handle
-        assert receipt is not None
+        assert receipt is not None, "Expected value to be set but was None"
 
         # Act
         await queue.delete_message(receipt)
@@ -199,7 +199,7 @@ class TestLocalQueueBasic:
         remaining = await queue.receive_messages(max_messages=10)
         # The message was deleted, so even after visibility expires it won't return
         # (we need to wait for the visibility timeout to test properly)
-        assert all(m.body != deleted_body for m in remaining)
+        assert all(m.body != deleted_body for m in remaining), "Expected value to be truthy"
 
     async def test_receive_max_messages(self, queue: LocalQueue) -> None:
         # Arrange
@@ -212,7 +212,7 @@ class TestLocalQueueBasic:
 
         # Assert
         actual_message_count = len(messages)
-        assert actual_message_count == expected_message_count
+        assert actual_message_count == expected_message_count, f"Expected {expected_message_count!r} but got {actual_message_count!r}"
 
     async def test_receive_increments_receive_count(self, queue: LocalQueue) -> None:
         # Arrange
@@ -226,15 +226,15 @@ class TestLocalQueueBasic:
         # Assert
         actual_receive_count = msgs[0].receive_count
         actual_approx_receive_count = msgs[0].attributes["ApproximateReceiveCount"]
-        assert actual_receive_count == expected_receive_count
-        assert actual_approx_receive_count == expected_approx_receive_count
+        assert actual_receive_count == expected_receive_count, f"Expected {expected_receive_count!r} but got {actual_receive_count!r}"
+        assert actual_approx_receive_count == expected_approx_receive_count, f"Expected {expected_approx_receive_count!r} but got {actual_approx_receive_count!r}"
 
     async def test_sent_timestamp_set(self, queue: LocalQueue) -> None:
         before = time.time()
         await queue.send_message("timestamped")
         after = time.time()
         messages = await queue.receive_messages()
-        assert before <= messages[0].sent_timestamp <= after
+        assert before <= messages[0].sent_timestamp <= after, f"Expected {before!r} <= {messages[0].sent_timestamp <= after!r}"
 
     async def test_message_attributes_preserved(self, queue: LocalQueue) -> None:
         # Arrange
@@ -246,7 +246,7 @@ class TestLocalQueueBasic:
 
         # Assert
         actual_attributes = messages[0].message_attributes
-        assert actual_attributes == expected_attributes
+        assert actual_attributes == expected_attributes, f"Expected {expected_attributes!r} but got {actual_attributes!r}"
 
     async def test_md5_of_body(self) -> None:
         # Arrange
@@ -257,4 +257,4 @@ class TestLocalQueueBasic:
         actual_md5 = LocalQueue.md5_of_body(body)
 
         # Assert
-        assert actual_md5 == expected_md5
+        assert actual_md5 == expected_md5, f"Expected {expected_md5!r} but got {actual_md5!r}"

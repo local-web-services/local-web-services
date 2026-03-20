@@ -48,8 +48,8 @@ class TestEmptyPattern:
     """Test that empty or None patterns match everything."""
 
     def test_empty_pattern_matches_all(self) -> None:
-        assert match_event({}, {"source": "anything"}) is True
+        assert match_event({}, {"source": "anything"}) is True, "Expected value to be truthy"
 
     def test_none_like_empty_pattern(self) -> None:
         # Empty dict treated as match-all
-        assert match_event({}, {}) is True
+        assert match_event({}, {}) is True, "Expected value to be truthy"

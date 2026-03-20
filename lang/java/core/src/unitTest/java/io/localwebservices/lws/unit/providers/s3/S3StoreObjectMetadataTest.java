@@ -24,7 +24,7 @@ public class S3StoreObjectMetadataTest {
 
     // Assert
     String actualAuthor = store.objectMetadata.get(expectedMetadataKey).get("x-amz-meta-author");
-    assertEquals(expectedAuthor, actualAuthor);
+    assertEquals(expectedAuthor, actualAuthor, "Expected actualAuthor to equal expectedAuthor");
   }
 
   @Test
@@ -45,8 +45,8 @@ public class S3StoreObjectMetadataTest {
     // Assert
     String actualContentType = store.objectMetadata.get(expectedMetadataKey).get("Content-Type");
     String actualCacheControl = store.objectMetadata.get(expectedMetadataKey).get("Cache-Control");
-    assertEquals(expectedContentType, actualContentType);
-    assertEquals(expectedCacheControl, actualCacheControl);
+    assertEquals(expectedContentType, actualContentType, "Expected actualContentType to equal expectedContentType");
+    assertEquals(expectedCacheControl, actualCacheControl, "Expected actualCacheControl to equal expectedCacheControl");
   }
 
   @Test
@@ -63,6 +63,6 @@ public class S3StoreObjectMetadataTest {
     store.reset();
 
     // Assert
-    assertTrue(store.objectMetadata.isEmpty());
+    assertTrue(store.objectMetadata.isEmpty(), "Expected store.objectMetadata to be empty");
   }
 }

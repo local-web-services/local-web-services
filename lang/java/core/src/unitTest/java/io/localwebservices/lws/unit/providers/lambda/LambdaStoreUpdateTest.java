@@ -24,7 +24,7 @@ public class LambdaStoreUpdateTest {
 
     // Assert
     String actualCodeSha = (String) store.functions.get(functionName).get("CodeSha256");
-    assertEquals(expectedCodeSha, actualCodeSha);
+    assertEquals(expectedCodeSha, actualCodeSha, "Expected actualCodeSha to equal expectedCodeSha");
   }
 
   @Test
@@ -43,7 +43,7 @@ public class LambdaStoreUpdateTest {
 
     // Assert
     String actualRuntime = (String) store.functions.get(functionName).get("Runtime");
-    assertEquals(expectedRuntime, actualRuntime);
+    assertEquals(expectedRuntime, actualRuntime, "Expected actualRuntime to equal expectedRuntime");
   }
 
   @Test
@@ -60,6 +60,6 @@ public class LambdaStoreUpdateTest {
 
     // Assert
     String actualRuntime = (String) store.functions.get(functionName).get("Runtime");
-    assertEquals(expectedRuntime, actualRuntime);
+    assertEquals(expectedRuntime, actualRuntime, "Expected actualRuntime to equal expectedRuntime");
   }
 }

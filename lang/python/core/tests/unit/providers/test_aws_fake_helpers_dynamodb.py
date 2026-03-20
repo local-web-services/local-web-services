@@ -20,6 +20,6 @@ class TestDynamoDBGetItem:
 
         # Assert
         actual_body = json.loads(actual_response.body)
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert actual_body["Item"] == expected_item
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert actual_response.content_type == expected_content_type, f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert actual_body["Item"] == expected_item, f'Expected {expected_item!r} but got {actual_body["Item"]!r}'

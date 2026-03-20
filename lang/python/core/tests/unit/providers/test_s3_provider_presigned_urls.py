@@ -55,41 +55,41 @@ class TestPresignedUrls:
 
     def test_generate_returns_url(self) -> None:
         url = generate_presigned_url("mybucket", "mykey")
-        assert "mybucket" in url
-        assert "mykey" in url
-        assert "X-Amz-Signature" in url
+        assert "mybucket" in url, f'Expected {"mybucket"!r} to be in {url!r}'
+        assert "mykey" in url, f'Expected {"mykey"!r} to be in {url!r}'
+        assert "X-Amz-Signature" in url, f'Expected {"X-Amz-Signature"!r} to be in {url!r}'
 
     def test_validate_valid_url(self) -> None:
         key = "test-signing-key"
         url = generate_presigned_url("mybucket", "mykey", signing_key=key)
-        assert validate_presigned_url(url, signing_key=key) is True
+        assert validate_presigned_url(url, signing_key=key) is True, "Expected value to be truthy"
 
     def test_validate_wrong_key_fails(self) -> None:
         url = generate_presigned_url("mybucket", "mykey", signing_key="correct-key")
-        assert validate_presigned_url(url, signing_key="wrong-key") is False
+        assert validate_presigned_url(url, signing_key="wrong-key") is False, "Expected value to be truthy"
 
     def test_validate_expired_url(self) -> None:
         url = generate_presigned_url("mybucket", "mykey", expires_in=-1, signing_key="key")
-        assert validate_presigned_url(url, signing_key="key") is False
+        assert validate_presigned_url(url, signing_key="key") is False, "Expected value to be truthy"
 
     def test_validate_tampered_url(self) -> None:
         key = "signing-key"
         url = generate_presigned_url("mybucket", "mykey", signing_key=key)
         # Tamper with the signature
         tampered = url.replace("X-Amz-Signature=", "X-Amz-Signature=bad")
-        assert validate_presigned_url(tampered, signing_key=key) is False
+        assert validate_presigned_url(tampered, signing_key=key) is False, "Expected value to be truthy"
 
     def test_default_signing_key(self) -> None:
         """Using default key for both generate and validate should work."""
         url = generate_presigned_url("mybucket", "mykey")
-        assert validate_presigned_url(url) is True
+        assert validate_presigned_url(url) is True, "Expected value to be truthy"
 
     def test_put_method(self) -> None:
         key = "test-key"
         url = generate_presigned_url("mybucket", "mykey", method="PUT", signing_key=key)
-        assert "X-Amz-Method=PUT" in url
-        assert validate_presigned_url(url, signing_key=key) is True
+        assert "X-Amz-Method=PUT" in url, f'Expected {"X-Amz-Method=PUT"!r} to be in {url!r}'
+        assert validate_presigned_url(url, signing_key=key) is True, "Expected value to be truthy"
 
     def test_custom_base_url(self) -> None:
         url = generate_presigned_url("mybucket", "mykey", base_url="http://localhost:9000")
-        assert url.startswith("http://localhost:9000/")
+        assert url.startswith("http://localhost:9000/"), "Expected value to be truthy"

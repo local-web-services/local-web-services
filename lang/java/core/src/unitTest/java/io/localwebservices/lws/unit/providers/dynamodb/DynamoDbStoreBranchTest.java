@@ -45,8 +45,8 @@ public class DynamoDbStoreBranchTest {
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("id", numAttr("42")));
 
     // Assert
-    assertNotNull(actualItem);
-    assertEquals(strAttr("widget"), actualItem.get("name"));
+    assertNotNull(actualItem, "Expected actualItem to not be null");
+    assertEquals(strAttr("widget"), actualItem.get("name"), "Expected actualItem.get("name") to equal strAttr("widget")");
   }
 
   @Test
@@ -79,7 +79,7 @@ public class DynamoDbStoreBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -103,7 +103,7 @@ public class DynamoDbStoreBranchTest {
         store.scan(tableName, "score = :val", null, Map.of(":val", numAttr("100")), null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -127,7 +127,7 @@ public class DynamoDbStoreBranchTest {
         store.scan(tableName, "active = :val", null, Map.of(":val", boolAttr(true)), null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -150,7 +150,7 @@ public class DynamoDbStoreBranchTest {
 
     // Assert
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", strAttr("r1")));
-    assertEquals(strAttr("new-label"), actualItem.get("label"));
+    assertEquals(strAttr("new-label"), actualItem.get("label"), "Expected actualItem.get("label") to equal strAttr("new-label")");
   }
 
   @Test
@@ -171,7 +171,7 @@ public class DynamoDbStoreBranchTest {
         store.scan(tableName, null, null, null, 1, lastOfFirst);
 
     // Assert
-    assertEquals(1, actualSecondPage.size());
+    assertEquals(1, actualSecondPage.size(), "Expected actualSecondPage.size() to match 1");
   }
 
   @Test
@@ -200,7 +200,7 @@ public class DynamoDbStoreBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -229,7 +229,7 @@ public class DynamoDbStoreBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -247,8 +247,8 @@ public class DynamoDbStoreBranchTest {
     Map<String, Object> actualItem = store.getItem(tableName, Map.of("pk", "plain-key"));
 
     // Assert
-    assertNotNull(actualItem);
-    assertEquals("value", actualItem.get("data"));
+    assertNotNull(actualItem, "Expected actualItem to not be null");
+    assertEquals("value", actualItem.get("data"), "Expected actualItem.get("data") to equal "value"");
   }
 
   @Test
@@ -268,7 +268,7 @@ public class DynamoDbStoreBranchTest {
         store.scan(tableName, "status = active", null, null, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -290,7 +290,7 @@ public class DynamoDbStoreBranchTest {
         store.query(tableName, null, null, null, null, null, true, 1, lastKey);
 
     // Assert
-    assertEquals(1, actualSecondPage.size());
+    assertEquals(1, actualSecondPage.size(), "Expected actualSecondPage.size() to match 1");
   }
 
   @Test
@@ -316,7 +316,7 @@ public class DynamoDbStoreBranchTest {
             null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -337,7 +337,7 @@ public class DynamoDbStoreBranchTest {
             tableName, "status = active", null, Map.of(":notused", strAttr("other")), null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -360,7 +360,7 @@ public class DynamoDbStoreBranchTest {
     List<Map<String, Object>> actualItems = store.scan(tableName, null, null, null, null, null);
 
     // Assert
-    assertEquals(expectedCount, actualItems.size());
+    assertEquals(expectedCount, actualItems.size(), "Expected actualItems.size() to match expectedCount");
   }
 
   @Test
@@ -382,6 +382,6 @@ public class DynamoDbStoreBranchTest {
         store.scan(tableName, null, null, null, null, lastKey);
 
     // Assert — should get the remaining item(s)
-    assertTrue(actualSecondPage.size() >= 1);
+    assertTrue(actualSecondPage.size() >= 1, "Expected condition to be true: actualSecondPage.size() >= 1");
   }
 }

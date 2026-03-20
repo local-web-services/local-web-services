@@ -166,9 +166,9 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "<MessageId>" in resp.text
-        assert "<MD5OfMessageBody>" in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "<MessageId>" in resp.text, f'Expected {"<MessageId>"!r} to be in {resp.text!r}'
+        assert "<MD5OfMessageBody>" in resp.text, f'Expected {"<MD5OfMessageBody>"!r} to be in {resp.text!r}'
 
     async def test_receive_message(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -197,8 +197,8 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert f"<Body>{expected_body}</Body>" in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert f"<Body>{expected_body}</Body>" in resp.text, "Expected {0!r} to be in {1!r}".format(f"<Body>{expected_body}</Body>", resp.text)
 
     async def test_delete_message(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -223,7 +223,7 @@ class TestSqsRoutes:
         import re
 
         match = re.search(r"<ReceiptHandle>(.*?)</ReceiptHandle>", resp.text)
-        assert match is not None
+        assert match is not None, "Expected value to be set but was None"
         receipt = match.group(1)
 
         # Act
@@ -238,8 +238,8 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "<DeleteMessageResponse>" in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "<DeleteMessageResponse>" in resp.text, f'Expected {"<DeleteMessageResponse>"!r} to be in {resp.text!r}'
 
     async def test_create_queue(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -257,9 +257,9 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "<QueueUrl>" in resp.text
-        assert queue_name in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "<QueueUrl>" in resp.text, f'Expected {"<QueueUrl>"!r} to be in {resp.text!r}'
+        assert queue_name in resp.text, f"Expected {queue_name!r} to be in {resp.text!r}"
 
     async def test_get_queue_url(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -276,8 +276,8 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "<QueueUrl>" in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "<QueueUrl>" in resp.text, f'Expected {"<QueueUrl>"!r} to be in {resp.text!r}'
 
     async def test_get_queue_url_not_found(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -294,8 +294,8 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "NonExistentQueue" in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "NonExistentQueue" in resp.text, f'Expected {"NonExistentQueue"!r} to be in {resp.text!r}'
 
     async def test_get_queue_attributes(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -312,9 +312,9 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "VisibilityTimeout" in resp.text
-        assert "QueueArn" in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "VisibilityTimeout" in resp.text, f'Expected {"VisibilityTimeout"!r} to be in {resp.text!r}'
+        assert "QueueArn" in resp.text, f'Expected {"QueueArn"!r} to be in {resp.text!r}'
 
     async def test_unknown_action_returns_error(self, sqs_client: httpx.AsyncClient) -> None:
         # Arrange
@@ -329,12 +329,12 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "<ErrorResponse>" in resp.text
-        assert "<Code>InvalidAction</Code>" in resp.text
-        assert "lws" in resp.text
-        assert "SQS" in resp.text
-        assert bogus_action in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "<ErrorResponse>" in resp.text, f'Expected {"<ErrorResponse>"!r} to be in {resp.text!r}'
+        assert "<Code>InvalidAction</Code>" in resp.text, f'Expected {"<Code>InvalidAction</Code>"!r} to be in {resp.text!r}'
+        assert "lws" in resp.text, f'Expected {"lws"!r} to be in {resp.text!r}'
+        assert "SQS" in resp.text, f'Expected {"SQS"!r} to be in {resp.text!r}'
+        assert bogus_action in resp.text, f"Expected {bogus_action!r} to be in {resp.text!r}"
 
     async def test_send_with_query_params(self, sqs_client: httpx.AsyncClient) -> None:
         """Action can also be passed as query parameter."""
@@ -350,5 +350,5 @@ class TestSqsRoutes:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
-        assert "<MessageId>" in resp.text
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
+        assert "<MessageId>" in resp.text, f'Expected {"<MessageId>"!r} to be in {resp.text!r}'

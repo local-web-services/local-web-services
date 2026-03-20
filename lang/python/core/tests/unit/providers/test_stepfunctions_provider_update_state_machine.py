@@ -84,12 +84,12 @@ class TestProviderUpdateStateMachine:
     async def test_update_definition(self, provider: StepFunctionsProvider) -> None:
         """Provider.update_state_machine should update the definition."""
         update_date = provider.update_state_machine("test-sm", definition=UPDATED_DEFINITION)
-        assert isinstance(update_date, float)
+        assert isinstance(update_date, float), f"Expected instance of {float!r} but got {type(update_date)!r}"
 
         # Verify the definition was updated
         defn = provider.get_definition("test-sm")
-        assert defn is not None
-        assert "NewPass" in defn.states
+        assert defn is not None, "Expected value to be set but was None"
+        assert "NewPass" in defn.states, f'Expected {"NewPass"!r} to be in {defn.states!r}'
 
     async def test_update_role_arn(self, provider: StepFunctionsProvider) -> None:
         """Provider.update_state_machine should update the role ARN."""
@@ -102,7 +102,7 @@ class TestProviderUpdateStateMachine:
         # Assert
         info = provider.describe_state_machine("test-sm")
         actual_role_arn = info["roleArn"]
-        assert actual_role_arn == expected_role_arn
+        assert actual_role_arn == expected_role_arn, f"Expected {expected_role_arn!r} but got {actual_role_arn!r}"
 
     async def test_update_nonexistent_raises(self, provider: StepFunctionsProvider) -> None:
         """Provider.update_state_machine should raise KeyError for unknown name."""

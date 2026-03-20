@@ -21,7 +21,7 @@ public class S3StoreBucketConfigTest {
 
     // Assert
     String actualIndexDocument = store.bucketWebsites.get(expectedBucketName).get("IndexDocument");
-    assertEquals(expectedIndexDocument, actualIndexDocument);
+    assertEquals(expectedIndexDocument, actualIndexDocument, "Expected actualIndexDocument to equal expectedIndexDocument");
   }
 
   @Test
@@ -34,6 +34,6 @@ public class S3StoreBucketConfigTest {
     store.reset();
 
     // Assert
-    assertTrue(store.bucketWebsites.isEmpty());
+    assertTrue(store.bucketWebsites.isEmpty(), "Expected store.bucketWebsites to be empty");
   }
 }

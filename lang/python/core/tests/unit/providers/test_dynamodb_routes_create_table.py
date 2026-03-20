@@ -91,13 +91,13 @@ class TestCreateTable:
         resp = await client.post("/", json=payload, headers=_target("CreateTable"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "TableDescription" in data
+        assert "TableDescription" in data, f'Expected {"TableDescription"!r} to be in {data!r}'
         actual_table_name = data["TableDescription"]["TableName"]
         actual_table_status = data["TableDescription"]["TableStatus"]
-        assert actual_table_name == expected_table_name
-        assert actual_table_status == expected_table_status
+        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert actual_table_status == expected_table_status, f"Expected {expected_table_status!r} but got {actual_table_status!r}"
         fake_store.create_table.assert_awaited_once()
 
     @pytest.mark.asyncio
@@ -117,9 +117,9 @@ class TestCreateTable:
         resp = await client.post("/", json=payload, headers=_target("CreateTable"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "TableDescription" in data
+        assert "TableDescription" in data, f'Expected {"TableDescription"!r} to be in {data!r}'
 
     @pytest.mark.asyncio
     async def test_create_table_with_gsi(
@@ -150,11 +150,11 @@ class TestCreateTable:
         resp = await client.post("/", json=payload, headers=_target("CreateTable"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         call_args = fake_store.create_table.call_args
         config = call_args[0][0]
         actual_table_name = config.table_name
         actual_index_name = config.gsi_definitions[0].index_name
-        assert actual_table_name == expected_table_name
-        assert len(config.gsi_definitions) == expected_gsi_count
-        assert actual_index_name == expected_index_name
+        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert len(config.gsi_definitions) == expected_gsi_count, f"Expected {expected_gsi_count!r} but got {len(config.gsi_definitions)!r}"
+        assert actual_index_name == expected_index_name, f"Expected {expected_index_name!r} but got {actual_index_name!r}"

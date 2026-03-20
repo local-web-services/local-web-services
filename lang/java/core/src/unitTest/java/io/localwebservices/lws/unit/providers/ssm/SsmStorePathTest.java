@@ -24,7 +24,7 @@ public class SsmStorePathTest {
     List<Map<String, Object>> actualParams = store.getParametersByPath("/app");
 
     // Assert
-    assertEquals(expectedSize, actualParams.size());
+    assertEquals(expectedSize, actualParams.size(), "Expected actualParams.size() to match expectedSize");
   }
 
   @Test
@@ -37,7 +37,7 @@ public class SsmStorePathTest {
     List<Map<String, Object>> actualParams = store.getParametersByPath("/z");
 
     // Assert
-    assertTrue(actualParams.isEmpty());
+    assertTrue(actualParams.isEmpty(), "Expected actualParams to be empty");
   }
 
   @Test
@@ -51,8 +51,8 @@ public class SsmStorePathTest {
     boolean actualDeleteResult = store.deleteParameter(paramName);
 
     // Assert
-    assertTrue(actualDeleteResult);
-    assertFalse(store.containsParameter(paramName));
+    assertTrue(actualDeleteResult, "Expected condition to be true: actualDeleteResult");
+    assertFalse(store.containsParameter(paramName), "Expected condition to be false: store.containsParameter(paramName)");
   }
 
   @Test
@@ -64,6 +64,6 @@ public class SsmStorePathTest {
     boolean actualResult = store.deleteParameter("missing");
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 }

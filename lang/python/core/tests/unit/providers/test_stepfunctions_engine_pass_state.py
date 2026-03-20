@@ -92,8 +92,8 @@ class TestPassState:
             },
             input_data={"x": 1},
         )
-        assert history.status == ExecutionStatus.SUCCEEDED
-        assert history.output_data == {"done": True}
+        assert history.status == ExecutionStatus.SUCCEEDED, f"Expected {ExecutionStatus.SUCCEEDED!r} but got {history.status!r}"
+        assert history.output_data == {"done": True}, "Expected {0!r} but got {1!r}".format({"done": True}, history.output_data)
 
     async def test_pass_without_result(self) -> None:
         history = await run_engine(
@@ -103,7 +103,7 @@ class TestPassState:
             },
             input_data={"forwarded": True},
         )
-        assert history.output_data == {"forwarded": True}
+        assert history.output_data == {"forwarded": True}, "Expected {0!r} but got {1!r}".format({"forwarded": True}, history.output_data)
 
     async def test_pass_chain(self) -> None:
         history = await run_engine(
@@ -115,7 +115,7 @@ class TestPassState:
                 },
             },
         )
-        assert history.output_data == {"step": "b"}
+        assert history.output_data == {"step": "b"}, "Expected {0!r} but got {1!r}".format({"step": "b"}, history.output_data)
 
     async def test_pass_with_result_path(self) -> None:
         history = await run_engine(
@@ -132,8 +132,8 @@ class TestPassState:
             },
             input_data={"name": "world"},
         )
-        assert history.output_data["greeting"] == "hello"
-        assert history.output_data["name"] == "world"
+        assert history.output_data["greeting"] == "hello", f'Expected {"hello"!r} but got {history.output_data["greeting"]!r}'
+        assert history.output_data["name"] == "world", f'Expected {"world"!r} but got {history.output_data["name"]!r}'
 
     async def test_pass_with_input_path(self) -> None:
         history = await run_engine(
@@ -143,7 +143,7 @@ class TestPassState:
             },
             input_data={"nested": {"val": 42}},
         )
-        assert history.output_data == {"val": 42}
+        assert history.output_data == {"val": 42}, "Expected {0!r} but got {1!r}".format({"val": 42}, history.output_data)
 
     async def test_pass_with_output_path(self) -> None:
         history = await run_engine(
@@ -159,7 +159,7 @@ class TestPassState:
                 },
             },
         )
-        assert history.output_data == 1
+        assert history.output_data == 1, f"Expected {1!r} but got {history.output_data!r}"
 
     async def test_pass_with_parameters(self) -> None:
         history = await run_engine(
@@ -175,7 +175,7 @@ class TestPassState:
             },
             input_data={"user": "Alice"},
         )
-        assert history.output_data == {"greeting": "hello", "name": "Alice"}
+        assert history.output_data == {"greeting": "hello", "name": "Alice"}, "Expected {0!r} but got {1!r}".format({"greeting": "hello", "name": "Alice"}, history.output_data)
 
     async def test_null_input_path_discards_input(self) -> None:
         history = await run_engine(
@@ -192,7 +192,7 @@ class TestPassState:
             },
             input_data={"ignored": True},
         )
-        assert history.output_data == {"result": "ok"}
+        assert history.output_data == {"result": "ok"}, "Expected {0!r} but got {1!r}".format({"result": "ok"}, history.output_data)
 
     async def test_null_result_path_discards_result(self) -> None:
         history = await run_engine(
@@ -209,4 +209,4 @@ class TestPassState:
             },
             input_data={"kept": True},
         )
-        assert history.output_data == {"kept": True}
+        assert history.output_data == {"kept": True}, "Expected {0!r} but got {1!r}".format({"kept": True}, history.output_data)

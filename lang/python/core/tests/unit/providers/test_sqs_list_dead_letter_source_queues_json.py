@@ -53,9 +53,9 @@ class TestListDeadLetterSourceQueuesJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
-        assert data["QueueUrls"] == []
+        assert data["QueueUrls"] == [], f'Expected {[]!r} but got {data["QueueUrls"]!r}'
 
     @pytest.mark.asyncio
     async def test_list_dead_letter_source_queues_with_sources(
@@ -89,13 +89,13 @@ class TestListDeadLetterSourceQueuesJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
         actual_source_count = len(data["QueueUrls"])
-        assert actual_source_count == expected_source_count
+        assert actual_source_count == expected_source_count, f"Expected {expected_source_count!r} but got {actual_source_count!r}"
         urls = data["QueueUrls"]
-        assert any(source_name_1 in url for url in urls)
-        assert any(source_name_2 in url for url in urls)
+        assert any(source_name_1 in url for url in urls), "Expected value to be truthy"
+        assert any(source_name_2 in url for url in urls), "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_list_dead_letter_source_queues_nonexistent_queue(
@@ -114,6 +114,6 @@ class TestListDeadLetterSourceQueuesJson:
 
         # Assert
         actual_status_code = resp.status_code
-        assert actual_status_code == expected_status_code
+        assert actual_status_code == expected_status_code, f"Expected {expected_status_code!r} but got {actual_status_code!r}"
         data = resp.json()
-        assert "NonExistentQueue" in data["__type"]
+        assert "NonExistentQueue" in data["__type"], f'Expected {"NonExistentQueue"!r} to be in {data["__type"]!r}'

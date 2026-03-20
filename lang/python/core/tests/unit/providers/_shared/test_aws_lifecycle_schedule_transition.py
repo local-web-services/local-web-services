@@ -19,7 +19,7 @@ class TestResourceStateTrackerScheduleTransitionZeroDelay:
         actual_state = tracker.get_state(resource_id)
 
         # Assert
-        assert actual_state == expected_state
+        assert actual_state == expected_state, f"Expected {expected_state!r} but got {actual_state!r}"
 
     def test_schedule_transition_zero_delay_none_target_removes_resource(self):
         # Arrange
@@ -33,4 +33,4 @@ class TestResourceStateTrackerScheduleTransitionZeroDelay:
         actual_state = tracker.get_state(resource_id)
 
         # Assert
-        assert actual_state is None
+        assert actual_state is None, f"Expected None but got {actual_state!r}"

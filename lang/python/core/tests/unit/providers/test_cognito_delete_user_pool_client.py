@@ -58,7 +58,7 @@ class TestDeleteUserPoolClient:
             "DeleteUserPoolClient",
             {"UserPoolId": POOL_ID, "ClientId": client_id},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
 
         # Verify it's gone
         expected_error_status = 400
@@ -68,9 +68,9 @@ class TestDeleteUserPoolClient:
             "DescribeUserPoolClient",
             {"UserPoolId": POOL_ID, "ClientId": client_id},
         )
-        assert resp.status_code == expected_error_status
+        assert resp.status_code == expected_error_status, f"Expected {expected_error_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
 
     async def test_delete_nonexistent_client_returns_error(self, client: httpx.AsyncClient) -> None:
         # Act
@@ -83,6 +83,6 @@ class TestDeleteUserPoolClient:
         # Assert
         expected_status = 400
         expected_error_type = "ResourceNotFoundException"
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

@@ -37,5 +37,5 @@ class TestDeleteParameters:
         # Assert
         expected_deleted = ["/d1", "/d2"]
         expected_invalid = ["/d3"]
-        assert sorted(result["DeletedParameters"]) == expected_deleted
-        assert result["InvalidParameters"] == expected_invalid
+        assert sorted(result["DeletedParameters"]) == expected_deleted, f'Expected {expected_deleted!r} but got {sorted(result["DeletedParameters"])!r}'
+        assert result["InvalidParameters"] == expected_invalid, f'Expected {expected_invalid!r} but got {result["InvalidParameters"]!r}'

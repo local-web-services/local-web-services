@@ -14,7 +14,7 @@ class TestIsExperimentalCommand:
         actual = is_experimental_command("test-service", "some-command")
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
         # Cleanup
         EXPERIMENTAL_SERVICES.discard("test-service")
@@ -27,7 +27,7 @@ class TestIsExperimentalCommand:
         actual = is_experimental_command("chaos", "enable")
 
         # Assert
-        assert actual is False
+        assert actual is False, "Expected value to be truthy"
 
     def test_explicit_experimental_command(self):
         # Arrange
@@ -39,7 +39,7 @@ class TestIsExperimentalCommand:
         actual = is_experimental_command("chaos", "test-cmd")
 
         # Assert
-        assert actual is True
+        assert actual is True, "Expected value to be truthy"
 
         # Cleanup
         EXPERIMENTAL_COMMANDS.discard(("chaos", "test-cmd"))

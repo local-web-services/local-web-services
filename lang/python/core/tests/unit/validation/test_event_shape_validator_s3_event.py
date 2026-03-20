@@ -126,7 +126,7 @@ class TestS3Event:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_missing_s3_key_in_record(self) -> None:
         # Arrange
@@ -146,5 +146,5 @@ class TestS3Event:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert "s3" in issues[0].message
+        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert "s3" in issues[0].message, f'Expected {"s3"!r} to be in {issues[0].message!r}'

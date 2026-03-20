@@ -40,7 +40,7 @@ class TestDeleteDBInstance:
 
         # Assert
         actual_db_id = result["DBInstance"]["DBInstanceIdentifier"]
-        assert actual_db_id == expected_db_id
+        assert actual_db_id == expected_db_id, f"Expected {expected_db_id!r} but got {actual_db_id!r}"
 
     def test_delete_instance_status_is_deleting(self, client: TestClient) -> None:
         # Arrange
@@ -53,7 +53,7 @@ class TestDeleteDBInstance:
 
         # Assert
         actual_status = result["DBInstance"]["DBInstanceStatus"]
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_delete_removes_from_describe(self, client: TestClient) -> None:
         # Arrange
@@ -66,7 +66,7 @@ class TestDeleteDBInstance:
 
         # Assert
         ids = [i["DBInstanceIdentifier"] for i in result["DBInstances"]]
-        assert db_id not in ids
+        assert db_id not in ids, f"Expected {db_id!r} to not be in {ids!r}"
 
     def test_delete_not_found_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -81,4 +81,4 @@ class TestDeleteDBInstance:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

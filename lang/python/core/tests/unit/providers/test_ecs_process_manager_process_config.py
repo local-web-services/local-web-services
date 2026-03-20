@@ -66,12 +66,12 @@ def _fake_process(
 class TestProcessConfig:
     def test_defaults(self) -> None:
         cfg = ProcessConfig(service_name="svc", command=["echo", "hi"])
-        assert cfg.grace_period == 10.0
-        assert cfg.environment == {}
-        assert cfg.working_dir is None
+        assert cfg.grace_period == 10.0, f"Expected {10.0!r} but got {cfg.grace_period!r}"
+        assert cfg.environment == {}, "Expected {0!r} but got {1!r}".format({}, cfg.environment)
+        assert cfg.working_dir is None, f"Expected None but got {cfg.working_dir!r}"
 
     def test_custom_values(self) -> None:
         cfg = _make_config()
-        assert cfg.service_name == "web-api"
-        assert cfg.command == ["python", "app.py"]
-        assert cfg.environment == {"PORT": "8080"}
+        assert cfg.service_name == "web-api", f'Expected {"web-api"!r} but got {cfg.service_name!r}'
+        assert cfg.command == ["python", "app.py"], f'Expected {["python", "app.py"]!r} but got {cfg.command!r}'
+        assert cfg.environment == {"PORT": "8080"}, "Expected {0!r} but got {1!r}".format({"PORT": "8080"}, cfg.environment)

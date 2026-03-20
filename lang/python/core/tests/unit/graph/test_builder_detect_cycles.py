@@ -49,7 +49,7 @@ class TestDetectCycles:
         actual_cycles = graph.detect_cycles()
 
         # Assert
-        assert actual_cycles == []
+        assert actual_cycles == [], f"Expected {[]!r} but got {actual_cycles!r}"
 
     def test_simple_cycle_detected(self) -> None:
         # Arrange
@@ -77,11 +77,11 @@ class TestDetectCycles:
         actual_cycles = graph.detect_cycles()
 
         # Assert
-        assert len(actual_cycles) >= 1
+        assert len(actual_cycles) >= 1, f"Expected {len(actual_cycles)!r} >= {1!r}"
         # The cycle must include both a and b
         flat = [nid for cycle in actual_cycles for nid in cycle]
-        assert node_a in flat
-        assert node_b in flat
+        assert node_a in flat, f"Expected {node_a!r} to be in {flat!r}"
+        assert node_b in flat, f"Expected {node_b!r} to be in {flat!r}"
 
     def test_three_node_cycle(self) -> None:
         # Arrange
@@ -115,7 +115,7 @@ class TestDetectCycles:
         actual_cycles = graph.detect_cycles()
 
         # Assert
-        assert len(actual_cycles) >= 1
+        assert len(actual_cycles) >= 1, f"Expected {len(actual_cycles)!r} >= {1!r}"
 
     def test_empty_graph_no_cycles(self) -> None:
         # Arrange
@@ -125,4 +125,4 @@ class TestDetectCycles:
         actual_cycles = graph.detect_cycles()
 
         # Assert
-        assert actual_cycles == []
+        assert actual_cycles == [], f"Expected {[]!r} but got {actual_cycles!r}"

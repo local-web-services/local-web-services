@@ -87,11 +87,11 @@ class TestPythonComputeInvoke:
         # Assert
         expected_payload = {"statusCode": 200, "body": "ok"}
         expected_request_id = "req-abc-123"
-        assert isinstance(result, InvocationResult)
-        assert result.payload == expected_payload
-        assert result.error is None
-        assert result.request_id == expected_request_id
-        assert result.duration_ms >= 0
+        assert isinstance(result, InvocationResult), f"Expected instance of {InvocationResult!r} but got {type(result)!r}"
+        assert result.payload == expected_payload, f"Expected {expected_payload!r} but got {result.payload!r}"
+        assert result.error is None, f"Expected None but got {result.error!r}"
+        assert result.request_id == expected_request_id, f"Expected {expected_request_id!r} but got {result.request_id!r}"
+        assert result.duration_ms >= 0, f"Expected {result.duration_ms!r} >= {0!r}"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_handler_error(self, fake_exec: AsyncMock) -> None:
@@ -114,9 +114,9 @@ class TestPythonComputeInvoke:
         # Assert
         expected_error = "name 'undefined_var' is not defined"
         expected_request_id = "req-abc-123"
-        assert result.payload is None
-        assert result.error == expected_error
-        assert result.request_id == expected_request_id
+        assert result.payload is None, f"Expected None but got {result.payload!r}"
+        assert result.error == expected_error, f"Expected {expected_error!r} but got {result.error!r}"
+        assert result.request_id == expected_request_id, f"Expected {expected_request_id!r} but got {result.request_id!r}"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_timeout_kills_process(self, fake_exec: AsyncMock) -> None:
@@ -139,9 +139,9 @@ class TestPythonComputeInvoke:
 
         # Assert
         expected_request_id = "req-abc-123"
-        assert result.payload is None
-        assert "timed out" in result.error
-        assert result.request_id == expected_request_id
+        assert result.payload is None, f"Expected None but got {result.payload!r}"
+        assert "timed out" in result.error, f'Expected {"timed out"!r} to be in {result.error!r}'
+        assert result.request_id == expected_request_id, f"Expected {expected_request_id!r} but got {result.request_id!r}"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_bad_json_output(self, fake_exec: AsyncMock) -> None:
@@ -153,8 +153,8 @@ class TestPythonComputeInvoke:
 
         result = await provider.invoke({"key": "value"}, _make_context())
 
-        assert result.payload is None
-        assert "Failed to parse" in result.error
+        assert result.payload is None, f"Expected None but got {result.payload!r}"
+        assert "Failed to parse" in result.error, f'Expected {"Failed to parse"!r} to be in {result.error!r}'
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_null_result(self, fake_exec: AsyncMock) -> None:
@@ -167,8 +167,8 @@ class TestPythonComputeInvoke:
 
         result = await provider.invoke({}, _make_context())
 
-        assert result.payload is None
-        assert result.error is None
+        assert result.payload is None, f"Expected None but got {result.payload!r}"
+        assert result.error is None, f"Expected None but got {result.error!r}"
 
     @patch("asyncio.create_subprocess_exec")
     async def test_invoke_timeout_message_format(self, fake_exec: AsyncMock) -> None:
@@ -190,4 +190,4 @@ class TestPythonComputeInvoke:
         result = await provider.invoke({"key": "value"}, _make_context())
 
         expected_error = "Task timed out after 5.00 seconds"
-        assert result.error == expected_error
+        assert result.error == expected_error, f"Expected {expected_error!r} but got {result.error!r}"

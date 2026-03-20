@@ -20,8 +20,8 @@ class TestTracer:
 
         # Assert
         actual_name = root.name
-        assert actual_name == expected_name
-        assert root.start_time > 0
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
+        assert root.start_time > 0, f"Expected {root.start_time!r} > {0!r}"
 
     def test_start_trace_sets_context(self):
         # Arrange
@@ -33,10 +33,10 @@ class TestTracer:
         ctx = tracer.get_current_context()
 
         # Assert
-        assert ctx is not None
-        assert ctx.root_span is not None
+        assert ctx is not None, "Expected value to be set but was None"
+        assert ctx.root_span is not None, "Expected value to be set but was None"
         actual_name = ctx.root_span.name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
         # Clean up
         tracer.end_trace()
 
@@ -53,9 +53,9 @@ class TestTracer:
         # Assert
         actual_child_name = child.name
         actual_child_count = len(root.children)
-        assert actual_child_name == expected_child_name
-        assert actual_child_count == expected_child_count
-        assert root.children[0] is child
+        assert actual_child_name == expected_child_name, f"Expected {expected_child_name!r} but got {actual_child_name!r}"
+        assert actual_child_count == expected_child_count, f"Expected {expected_child_count!r} but got {actual_child_count!r}"
+        assert root.children[0] is child, "Expected value to be truthy"
         tracer.end_trace()
 
     def test_nested_spans(self):
@@ -69,9 +69,9 @@ class TestTracer:
         grandchild = tracer.start_span("grandchild")
 
         # Assert
-        assert len(root.children) == expected_child_count
-        assert len(child.children) == expected_child_count
-        assert child.children[0] is grandchild
+        assert len(root.children) == expected_child_count, f"Expected {expected_child_count!r} but got {len(root.children)!r}"
+        assert len(child.children) == expected_child_count, f"Expected {expected_child_count!r} but got {len(child.children)!r}"
+        assert child.children[0] is grandchild, "Expected value to be truthy"
 
         tracer.end_trace()
 
@@ -82,8 +82,8 @@ class TestTracer:
         time.sleep(0.01)
         tracer.end_span(child)
 
-        assert child.end_time > child.start_time
-        assert child.duration_ms > 0
+        assert child.end_time > child.start_time, f"Expected {child.end_time!r} > {child.start_time!r}"
+        assert child.duration_ms > 0, f"Expected {child.duration_ms!r} > {0!r}"
         tracer.end_trace()
 
     def test_end_span_returns_to_parent(self):
@@ -99,8 +99,8 @@ class TestTracer:
 
         # Assert
         actual_child_count = len(root.children)
-        assert actual_child_count == expected_child_count
-        assert root.children[1] is sibling
+        assert actual_child_count == expected_child_count, f"Expected {expected_child_count!r} but got {actual_child_count!r}"
+        assert root.children[1] is sibling, "Expected value to be truthy"
         tracer.end_trace()
 
     def test_end_trace_clears_context(self):
@@ -108,16 +108,16 @@ class TestTracer:
         tracer.start_trace("root")
         result = tracer.end_trace()
 
-        assert result is not None
-        assert result.root_span is not None
-        assert result.root_span.end_time > 0
+        assert result is not None, "Expected value to be set but was None"
+        assert result.root_span is not None, "Expected value to be set but was None"
+        assert result.root_span.end_time > 0, f"Expected {result.root_span.end_time!r} > {0!r}"
 
         # Context should be cleared
-        assert tracer.get_current_context() is None
+        assert tracer.get_current_context() is None, f"Expected None but got {tracer.get_current_context()!r}"
 
     def test_end_trace_returns_none_when_no_trace(self):
         tracer = Tracer()
-        assert tracer.end_trace() is None
+        assert tracer.end_trace() is None, f"Expected None but got {tracer.end_trace()!r}"
 
     def test_start_span_without_trace_creates_implicit_trace(self):
         # Arrange
@@ -129,10 +129,10 @@ class TestTracer:
 
         # Assert
         actual_name = span.name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
         ctx = tracer.get_current_context()
-        assert ctx is not None
-        assert ctx.root_span is span
+        assert ctx is not None, "Expected value to be set but was None"
+        assert ctx.root_span is span, "Expected value to be truthy"
         tracer.end_trace()
 
     def test_multiple_children_at_same_level(self):
@@ -156,10 +156,10 @@ class TestTracer:
 
         # Assert
         actual_child_count = len(root.children)
-        assert actual_child_count == expected_child_count
-        assert root.children[0].name == expected_child1_name
-        assert root.children[1].name == expected_child2_name
-        assert root.children[2].name == expected_child3_name
+        assert actual_child_count == expected_child_count, f"Expected {expected_child_count!r} but got {actual_child_count!r}"
+        assert root.children[0].name == expected_child1_name, f"Expected {expected_child1_name!r} but got {root.children[0].name!r}"
+        assert root.children[1].name == expected_child2_name, f"Expected {expected_child2_name!r} but got {root.children[1].name!r}"
+        assert root.children[2].name == expected_child3_name, f"Expected {expected_child3_name!r} but got {root.children[2].name!r}"
 
         tracer.end_trace()
 
@@ -179,11 +179,11 @@ class TestTracer:
 
         # Assert
         ctx = tracer.get_current_context()
-        assert ctx is not None
-        assert ctx.root_span is not None
+        assert ctx is not None, "Expected value to be set but was None"
+        assert ctx.root_span is not None, "Expected value to be set but was None"
         actual_child_count = len(ctx.root_span.children)
-        assert actual_child_count == expected_child_count
+        assert actual_child_count == expected_child_count, f"Expected {expected_child_count!r} but got {actual_child_count!r}"
 
         result = tracer.end_trace()
-        assert result is not None
-        assert result.root_span.duration_ms >= 0
+        assert result is not None, "Expected value to be set but was None"
+        assert result.root_span.duration_ms >= 0, f"Expected {result.root_span.duration_ms!r} >= {0!r}"

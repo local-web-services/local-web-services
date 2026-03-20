@@ -47,12 +47,12 @@ class TestCopyObject:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "<CopyObjectResult>" in resp.text
-        assert "<ETag>" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "<CopyObjectResult>" in resp.text, f'Expected {"<CopyObjectResult>"!r} to be in {resp.text!r}'
+        assert "<ETag>" in resp.text, f'Expected {"<ETag>"!r} to be in {resp.text!r}'
         get_resp = await client.get(f"/{dst_bucket}/copied-key")
-        assert get_resp.status_code == expected_status
-        assert get_resp.content == expected_body
+        assert get_resp.status_code == expected_status, f"Expected {expected_status!r} but got {get_resp.status_code!r}"
+        assert get_resp.content == expected_body, f"Expected {expected_body!r} but got {get_resp.content!r}"
 
     @pytest.mark.asyncio
     async def test_copy_object_same_bucket(
@@ -72,9 +72,9 @@ class TestCopyObject:
         )
 
         # Assert
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         get_resp = await client.get(f"/{bucket_name}/duplicate")
-        assert get_resp.content == expected_body
+        assert get_resp.content == expected_body, f"Expected {expected_body!r} but got {get_resp.content!r}"
 
     @pytest.mark.asyncio
     async def test_copy_object_source_not_found(
@@ -92,8 +92,8 @@ class TestCopyObject:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "NoSuchKey" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "NoSuchKey" in resp.text, f'Expected {"NoSuchKey"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_copy_object_invalid_header(
@@ -110,8 +110,8 @@ class TestCopyObject:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "InvalidArgument" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "InvalidArgument" in resp.text, f'Expected {"InvalidArgument"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_copy_object_without_header_is_regular_put(
@@ -127,6 +127,6 @@ class TestCopyObject:
         resp = await client.put(f"/{bucket_name}/regular-key", content=expected_body)
 
         # Assert
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         get_resp = await client.get(f"/{bucket_name}/regular-key")
-        assert get_resp.content == expected_body
+        assert get_resp.content == expected_body, f"Expected {expected_body!r} but got {get_resp.content!r}"

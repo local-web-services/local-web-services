@@ -86,4 +86,4 @@ class TestValidatorName:
     def test_name_is_schema(self) -> None:
         expected_name = "schema"
         actual_name = _make_validator().name
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"

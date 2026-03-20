@@ -56,15 +56,15 @@ class TestCreateUserPoolClient:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "UserPoolClient" in data
+        assert "UserPoolClient" in data, f'Expected {"UserPoolClient"!r} to be in {data!r}'
         upc = data["UserPoolClient"]
         actual_client_name = upc["ClientName"]
         actual_pool_id = upc["UserPoolId"]
-        assert actual_client_name == expected_client_name
-        assert actual_pool_id == POOL_ID
-        assert "ClientId" in upc
+        assert actual_client_name == expected_client_name, f"Expected {expected_client_name!r} but got {actual_client_name!r}"
+        assert actual_pool_id == POOL_ID, f"Expected {POOL_ID!r} but got {actual_pool_id!r}"
+        assert "ClientId" in upc, f'Expected {"ClientId"!r} to be in {upc!r}'
 
     async def test_create_client_with_explicit_auth_flows(self, client: httpx.AsyncClient) -> None:
         flows = ["ALLOW_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
@@ -77,9 +77,9 @@ class TestCreateUserPoolClient:
                 "ExplicitAuthFlows": flows,
             },
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["UserPoolClient"]["ExplicitAuthFlows"] == flows
+        assert data["UserPoolClient"]["ExplicitAuthFlows"] == flows, f'Expected {flows!r} but got {data["UserPoolClient"]["ExplicitAuthFlows"]!r}'
 
     async def test_create_client_wrong_pool_returns_error(self, client: httpx.AsyncClient) -> None:
         # Act
@@ -92,6 +92,6 @@ class TestCreateUserPoolClient:
         # Assert
         expected_status = 400
         expected_error_type = "ResourceNotFoundException"
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         actual_error_type = resp.json()["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

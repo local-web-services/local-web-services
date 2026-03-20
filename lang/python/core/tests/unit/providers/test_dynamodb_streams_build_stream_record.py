@@ -41,8 +41,8 @@ class TestBuildStreamRecord:
             **args,
             view_type=StreamViewType.NEW_AND_OLD_IMAGES,
         )
-        assert record.new_image is not None
-        assert record.old_image is not None
+        assert record.new_image is not None, "Expected value to be set but was None"
+        assert record.old_image is not None, "Expected value to be set but was None"
 
     def test_new_image_only(self) -> None:
         args = self._base_args()
@@ -51,8 +51,8 @@ class TestBuildStreamRecord:
             **args,
             view_type=StreamViewType.NEW_IMAGE,
         )
-        assert record.new_image is not None
-        assert record.old_image is None
+        assert record.new_image is not None, "Expected value to be set but was None"
+        assert record.old_image is None, f"Expected None but got {record.old_image!r}"
 
     def test_old_image_only(self) -> None:
         args = self._base_args()
@@ -61,8 +61,8 @@ class TestBuildStreamRecord:
             **args,
             view_type=StreamViewType.OLD_IMAGE,
         )
-        assert record.new_image is None
-        assert record.old_image is not None
+        assert record.new_image is None, f"Expected None but got {record.new_image!r}"
+        assert record.old_image is not None, "Expected value to be set but was None"
 
     def test_keys_only(self) -> None:
         args = self._base_args()
@@ -71,8 +71,8 @@ class TestBuildStreamRecord:
             **args,
             view_type=StreamViewType.KEYS_ONLY,
         )
-        assert record.new_image is None
-        assert record.old_image is None
+        assert record.new_image is None, f"Expected None but got {record.new_image!r}"
+        assert record.old_image is None, f"Expected None but got {record.old_image!r}"
 
     def test_event_id_generated(self) -> None:
         args = self._base_args()
@@ -80,5 +80,5 @@ class TestBuildStreamRecord:
             **args,
             view_type=StreamViewType.NEW_AND_OLD_IMAGES,
         )
-        assert record.event_id  # non-empty
-        assert record.sequence_number  # non-empty
+        assert record.event_id  # non-empty, "Expected value to be truthy"
+        assert record.sequence_number  # non-empty, "Expected value to be truthy"

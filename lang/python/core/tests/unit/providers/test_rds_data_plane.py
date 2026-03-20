@@ -47,8 +47,8 @@ class TestRdsDataPlaneEndpoint:
         actual_endpoint = result["DBInstance"]["Endpoint"]
         actual_address = actual_endpoint["Address"]
         actual_port = actual_endpoint["Port"]
-        assert actual_address == expected_address
-        assert actual_port == expected_port
+        assert actual_address == expected_address, f"Expected {expected_address!r} but got {actual_address!r}"
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
         fake_cm.start_container.assert_called_once_with("test-pg")
 
     def test_mysql_with_container_manager_uses_real_endpoint(self) -> None:
@@ -75,8 +75,8 @@ class TestRdsDataPlaneEndpoint:
         actual_endpoint = result["DBInstance"]["Endpoint"]
         actual_address = actual_endpoint["Address"]
         actual_port = actual_endpoint["Port"]
-        assert actual_address == expected_address
-        assert actual_port == expected_port
+        assert actual_address == expected_address, f"Expected {expected_address!r} but got {actual_address!r}"
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
         fake_cm.start_container.assert_called_once_with("test-mysql")
 
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
@@ -101,8 +101,8 @@ class TestRdsDataPlaneEndpoint:
         actual_endpoint = result["DBInstance"]["Endpoint"]
         actual_address = actual_endpoint["Address"]
         actual_port = actual_endpoint["Port"]
-        assert expected_suffix in actual_address
-        assert actual_port == expected_port
+        assert expected_suffix in actual_address, f"Expected {expected_suffix!r} to be in {actual_address!r}"
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
 
     def test_cluster_with_postgres_container_manager_uses_real_endpoint(self) -> None:
         # Arrange
@@ -127,8 +127,8 @@ class TestRdsDataPlaneEndpoint:
         # Assert
         actual_endpoint = result["DBCluster"]["Endpoint"]
         actual_port = result["DBCluster"]["Port"]
-        assert actual_endpoint == expected_host
-        assert actual_port == expected_port
+        assert actual_endpoint == expected_host, f"Expected {expected_host!r} but got {actual_endpoint!r}"
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
         fake_cm.start_container.assert_called_once_with("test-pg-cluster")
 
     def test_delete_standalone_instance_stops_container(self) -> None:

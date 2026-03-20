@@ -50,29 +50,29 @@ class TestExistsMatching:
     def test_exists_true_present(self) -> None:
         pattern = {"detail": {"status": [{"exists": True}]}}
         event = {"detail": {"status": "active"}}
-        assert match_event(pattern, event) is True
+        assert match_event(pattern, event) is True, "Expected value to be truthy"
 
     def test_exists_true_absent(self) -> None:
         pattern = {"detail": {"status": [{"exists": True}]}}
         event = {"detail": {"other": "value"}}
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"
 
     def test_exists_false_absent(self) -> None:
         pattern = {"detail": {"status": [{"exists": False}]}}
         event = {"detail": {"other": "value"}}
-        assert match_event(pattern, event) is True
+        assert match_event(pattern, event) is True, "Expected value to be truthy"
 
     def test_exists_false_present(self) -> None:
         pattern = {"detail": {"status": [{"exists": False}]}}
         event = {"detail": {"status": "active"}}
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"
 
     def test_exists_true_top_level(self) -> None:
         pattern = {"source": [{"exists": True}]}
         event = {"source": "aws.ec2"}
-        assert match_event(pattern, event) is True
+        assert match_event(pattern, event) is True, "Expected value to be truthy"
 
     def test_exists_true_top_level_absent(self) -> None:
         pattern = {"source": [{"exists": True}]}
         event = {"detail-type": "Something"}
-        assert match_event(pattern, event) is False
+        assert match_event(pattern, event) is False, "Expected value to be truthy"

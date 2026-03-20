@@ -24,7 +24,7 @@ public class DynamoDbStoreCreateTableTest {
     store.createTable(expectedTableName, "id", "S", null, null, List.of());
 
     // Assert
-    assertTrue(store.tableExists(expectedTableName));
+    assertTrue(store.tableExists(expectedTableName), "Expected condition to be true: store.tableExists(expectedTableName)");
   }
 
   @Test
@@ -37,7 +37,7 @@ public class DynamoDbStoreCreateTableTest {
     store.createTable(expectedTableName, "pk", "S", "sk", "S", List.of());
 
     // Assert
-    assertTrue(store.tableExists(expectedTableName));
+    assertTrue(store.tableExists(expectedTableName), "Expected condition to be true: store.tableExists(expectedTableName)");
   }
 
   @Test
@@ -50,7 +50,7 @@ public class DynamoDbStoreCreateTableTest {
     boolean actualResult = store.tableExists(tableName);
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -64,7 +64,7 @@ public class DynamoDbStoreCreateTableTest {
     TableDef actualTable = store.getTable(tableName);
 
     // Assert
-    assertNotNull(actualTable);
+    assertNotNull(actualTable, "Expected actualTable to not be null");
   }
 
   @Test
@@ -87,7 +87,7 @@ public class DynamoDbStoreCreateTableTest {
     store.deleteTable(tableName);
 
     // Assert
-    assertFalse(store.tableExists(tableName));
+    assertFalse(store.tableExists(tableName), "Expected condition to be false: store.tableExists(tableName)");
   }
 
   @Test
@@ -111,9 +111,9 @@ public class DynamoDbStoreCreateTableTest {
     List<String> actualNames = store.listTables();
 
     // Assert
-    assertEquals(expectedCount, actualNames.size());
-    assertTrue(actualNames.contains("Alpha"));
-    assertTrue(actualNames.contains("Beta"));
+    assertEquals(expectedCount, actualNames.size(), "Expected actualNames.size() to match expectedCount");
+    assertTrue(actualNames.contains("Alpha"), "Expected value to contain expected substring");
+    assertTrue(actualNames.contains("Beta"), "Expected value to contain expected substring");
   }
 
   @Test
@@ -127,7 +127,7 @@ public class DynamoDbStoreCreateTableTest {
     Map<String, Object> actualDesc = store.describeTable(expectedTableName);
 
     // Assert
-    assertEquals(expectedTableName, actualDesc.get("TableName"));
+    assertEquals(expectedTableName, actualDesc.get("TableName"), "Expected actualDesc.get("TableName") to equal expectedTableName");
   }
 
   @Test
@@ -141,6 +141,6 @@ public class DynamoDbStoreCreateTableTest {
     store.reset();
 
     // Assert
-    assertFalse(store.tableExists(tableName));
+    assertFalse(store.tableExists(tableName), "Expected condition to be false: store.tableExists(tableName)");
   }
 }

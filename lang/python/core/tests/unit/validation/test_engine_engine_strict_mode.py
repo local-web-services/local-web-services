@@ -74,7 +74,7 @@ class TestEngineStrictMode:
         # Act / Assert
         with pytest.raises(ValidationError) as exc_info:
             engine.validate(_make_context())
-        assert len(exc_info.value.issues) == expected_issue_count
+        assert len(exc_info.value.issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(exc_info.value.issues)!r}"
 
     def test_strict_mode_warns_do_not_raise(self) -> None:
         # Arrange
@@ -86,7 +86,7 @@ class TestEngineStrictMode:
         issues = engine.validate(_make_context())
 
         # Assert
-        assert len(issues) == expected_issue_count
+        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
 
     def test_strict_mode_no_issues_ok(self) -> None:
         # Arrange
@@ -97,4 +97,4 @@ class TestEngineStrictMode:
         issues = engine.validate(_make_context())
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"

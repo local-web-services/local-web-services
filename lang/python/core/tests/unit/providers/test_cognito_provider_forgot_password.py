@@ -58,7 +58,7 @@ class TestCognitoProviderForgotPassword:
         # Assert
         expected_medium = "EMAIL"
         actual_medium = result["CodeDeliveryDetails"]["DeliveryMedium"]
-        assert actual_medium == expected_medium
+        assert actual_medium == expected_medium, f"Expected {expected_medium!r} but got {actual_medium!r}"
 
     async def test_forgot_then_confirm_resets_password(self, provider: CognitoProvider) -> None:
         # Arrange
@@ -74,4 +74,4 @@ class TestCognitoProviderForgotPassword:
 
         # Assert
         result = await provider.initiate_auth("USER_PASSWORD_AUTH", username, new_password)
-        assert "AuthenticationResult" in result
+        assert "AuthenticationResult" in result, f'Expected {"AuthenticationResult"!r} to be in {result!r}'

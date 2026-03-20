@@ -18,7 +18,7 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value("hello")
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_plain_int_wrapped(self) -> None:
         # Arrange
@@ -28,7 +28,7 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value(42)
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_plain_bool_wrapped(self) -> None:
         # Arrange
@@ -38,7 +38,7 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value(True)
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_plain_none_wrapped(self) -> None:
         # Arrange
@@ -48,7 +48,7 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value(None)
 
         # Assert
-        assert actual_value == expected_value
+        assert actual_value == expected_value, f"Expected {expected_value!r} but got {actual_value!r}"
 
     def test_typed_string_preserved(self) -> None:
         # Arrange
@@ -58,7 +58,7 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value(typed_value)
 
         # Assert
-        assert actual_value == typed_value
+        assert actual_value == typed_value, f"Expected {typed_value!r} but got {actual_value!r}"
 
     def test_typed_number_preserved(self) -> None:
         # Arrange
@@ -68,7 +68,7 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value(typed_value)
 
         # Assert
-        assert actual_value == typed_value
+        assert actual_value == typed_value, f"Expected {typed_value!r} but got {actual_value!r}"
 
     def test_typed_bool_preserved(self) -> None:
         # Arrange
@@ -78,7 +78,7 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value(typed_value)
 
         # Assert
-        assert actual_value == typed_value
+        assert actual_value == typed_value, f"Expected {typed_value!r} but got {actual_value!r}"
 
     def test_typed_list_preserved(self) -> None:
         # Arrange
@@ -88,7 +88,7 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value(typed_value)
 
         # Assert
-        assert actual_value == typed_value
+        assert actual_value == typed_value, f"Expected {typed_value!r} but got {actual_value!r}"
 
     def test_typed_map_preserved(self) -> None:
         # Arrange
@@ -98,4 +98,4 @@ class TestEnsureDynamoJsonValue:
         actual_value = _ensure_dynamo_json_value(typed_value)
 
         # Assert
-        assert actual_value == typed_value
+        assert actual_value == typed_value, f"Expected {typed_value!r} but got {actual_value!r}"

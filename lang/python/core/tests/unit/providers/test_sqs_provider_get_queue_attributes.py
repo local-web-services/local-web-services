@@ -27,10 +27,10 @@ class TestGetQueueAttributes:
         attrs = await provider.get_queue_attributes(queue_name)
 
         # Assert
-        assert "QueueArn" in attrs
-        assert queue_name in attrs["QueueArn"]
-        assert "ApproximateNumberOfMessages" in attrs
-        assert "VisibilityTimeout" in attrs
+        assert "QueueArn" in attrs, f'Expected {"QueueArn"!r} to be in {attrs!r}'
+        assert queue_name in attrs["QueueArn"], f'Expected {queue_name!r} to be in {attrs["QueueArn"]!r}'
+        assert "ApproximateNumberOfMessages" in attrs, f'Expected {"ApproximateNumberOfMessages"!r} to be in {attrs!r}'
+        assert "VisibilityTimeout" in attrs, f'Expected {"VisibilityTimeout"!r} to be in {attrs!r}'
 
     @pytest.mark.asyncio
     async def test_get_attributes_nonexistent_raises(self, provider: SqsProvider) -> None:

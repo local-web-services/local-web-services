@@ -121,42 +121,42 @@ class TestEventBridgeProviderLifecycle:
     def test_name(self) -> None:
         expected_name = "eventbridge"
         provider = EventBridgeProvider()
-        assert provider.name == expected_name
+        assert provider.name == expected_name, f"Expected {expected_name!r} but got {provider.name!r}"
 
     @pytest.mark.asyncio
     async def test_health_check_before_start(self) -> None:
         provider = EventBridgeProvider()
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_start_sets_running(self) -> None:
         provider = await _started_provider()
-        assert await provider.health_check() is True
+        assert await provider.health_check() is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_stop_clears_state(self) -> None:
         provider = await _started_provider()
         await provider.stop()
-        assert await provider.health_check() is False
+        assert await provider.health_check() is False, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_default_bus_created(self) -> None:
         provider = await _started_provider(buses=[])
         buses = provider.list_buses()
         names = {b.bus_name for b in buses}
-        assert "default" in names
+        assert "default" in names, f'Expected {"default"!r} to be in {names!r}'
 
     @pytest.mark.asyncio
     async def test_custom_bus_created(self) -> None:
         provider = await _started_provider()
         buses = provider.list_buses()
         names = {b.bus_name for b in buses}
-        assert "custom-bus" in names
-        assert "default" in names
+        assert "custom-bus" in names, f'Expected {"custom-bus"!r} to be in {names!r}'
+        assert "default" in names, f'Expected {"default"!r} to be in {names!r}'
 
     @pytest.mark.asyncio
     async def test_rules_loaded_at_start(self) -> None:
         provider = await _started_provider()
         rules = provider.list_rules("default")
-        assert len(rules) == 1
-        assert rules[0].rule_name == "my-rule"
+        assert len(rules) == 1, f"Expected {1!r} but got {len(rules)!r}"
+        assert rules[0].rule_name == "my-rule", f'Expected {"my-rule"!r} but got {rules[0].rule_name!r}'

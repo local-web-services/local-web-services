@@ -50,8 +50,8 @@ class TestTags:
 
         # Assert
         expected_tag_count = 1
-        assert len(result["TagList"]) == expected_tag_count
-        assert result["TagList"][0]["Key"] == expected_tag_key
+        assert len(result["TagList"]) == expected_tag_count, f'Expected {expected_tag_count!r} but got {len(result["TagList"])!r}'
+        assert result["TagList"][0]["Key"] == expected_tag_key, f'Expected {expected_tag_key!r} but got {result["TagList"][0]["Key"]!r}'
 
     def test_remove_tags(self, client: TestClient) -> None:
         resource_id = "/rt"
@@ -77,4 +77,4 @@ class TestTags:
         )
 
         # Assert
-        assert result["TagList"] == []
+        assert result["TagList"] == [], f'Expected {[]!r} but got {result["TagList"]!r}'

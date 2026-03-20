@@ -31,8 +31,8 @@ class TestProviderCreation:
         )
 
         # Assert
-        assert len(providers) >= 1
+        assert len(providers) >= 1, f"Expected {len(providers)!r} >= {1!r}"
 
         actual_provider_names = {p.name for p in providers.values()}
-        assert expected_dynamodb in actual_provider_names
-        assert expected_dynamodb_http in actual_provider_names
+        assert expected_dynamodb in actual_provider_names, f"Expected {expected_dynamodb!r} to be in {actual_provider_names!r}"
+        assert expected_dynamodb_http in actual_provider_names, f"Expected {expected_dynamodb_http!r} to be in {actual_provider_names!r}"

@@ -200,12 +200,12 @@ class TestSqsEventSourcePoller:
         fake_compute.invoke.assert_called()
         call_args = fake_compute.invoke.call_args
         event = call_args[0][0]
-        assert "Records" in event
-        assert len(event["Records"]) >= 1
+        assert "Records" in event, f'Expected {"Records"!r} to be in {event!r}'
+        assert len(event["Records"]) >= 1, f'Expected {len(event["Records"])!r} >= {1!r}'
         actual_body = event["Records"][0]["body"]
         actual_event_source = event["Records"][0]["eventSource"]
-        assert actual_body == expected_body
-        assert actual_event_source == expected_event_source
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
+        assert actual_event_source == expected_event_source, f"Expected {expected_event_source!r} but got {actual_event_source!r}"
 
         await queue_provider.stop()
 
@@ -249,7 +249,7 @@ class TestSqsEventSourcePoller:
         # Assert
         msgs = await queue_provider.receive_messages(queue_name, max_messages=10)
         actual_remaining_count = len(msgs)
-        assert actual_remaining_count == expected_remaining_count
+        assert actual_remaining_count == expected_remaining_count, f"Expected {expected_remaining_count!r} but got {actual_remaining_count!r}"
 
         await queue_provider.stop()
 
@@ -294,7 +294,7 @@ class TestSqsEventSourcePoller:
 
         # Assert
         msgs = await queue_provider.receive_messages(queue_name, max_messages=10)
-        assert len(msgs) >= 1
+        assert len(msgs) >= 1, f"Expected {len(msgs)!r} >= {1!r}"
 
         await queue_provider.stop()
 
@@ -321,15 +321,15 @@ class TestSqsEventSourcePoller:
 
         # Act / Assert - start
         await poller.start()
-        assert poller._running is True
+        assert poller._running is True, "Expected value to be truthy"
         actual_task_count_after_start = len(poller._tasks)
-        assert actual_task_count_after_start == expected_task_count_after_start
+        assert actual_task_count_after_start == expected_task_count_after_start, f"Expected {expected_task_count_after_start!r} but got {actual_task_count_after_start!r}"
 
         # Act / Assert - stop
         await poller.stop()
-        assert poller._running is False
+        assert poller._running is False, "Expected value to be truthy"
         actual_task_count_after_stop = len(poller._tasks)
-        assert actual_task_count_after_stop == expected_task_count_after_stop
+        assert actual_task_count_after_stop == expected_task_count_after_stop, f"Expected {expected_task_count_after_stop!r} but got {actual_task_count_after_stop!r}"
 
     async def test_poller_disabled_mapping_skipped(self) -> None:
         """Disabled mappings should not create polling tasks."""
@@ -356,5 +356,5 @@ class TestSqsEventSourcePoller:
 
         # Assert
         actual_task_count = len(poller._tasks)
-        assert actual_task_count == expected_task_count
+        assert actual_task_count == expected_task_count, f"Expected {expected_task_count!r} but got {actual_task_count!r}"
         await poller.stop()

@@ -30,8 +30,8 @@ class TestDeleteBucket:
 
         # Assert
         actual_buckets = await provider.list_buckets()
-        assert bucket_name not in actual_buckets
-        assert not (tmp_path / "s3" / bucket_name).exists()
+        assert bucket_name not in actual_buckets, f"Expected {bucket_name!r} to not be in {actual_buckets!r}"
+        assert not (tmp_path / "s3" / bucket_name).exists(), "Expected value to be falsy"
 
     @pytest.mark.asyncio
     async def test_delete_nonexistent_raises(self, provider: S3Provider) -> None:

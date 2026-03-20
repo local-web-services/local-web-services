@@ -15,4 +15,4 @@ class TestRenderHeaders:
         actual = render_template(template, headers={"X-Api-Key": expected})
 
         # Assert
-        assert actual == expected
+        assert actual == expected, f"Expected {expected!r} but got {actual!r}"

@@ -31,13 +31,13 @@ class TestExtractEventSourceMappings:
         # Assert
         expected_count = 1
         actual_count = len(result)
-        assert actual_count == expected_count
+        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
         expected_function = "MyFunction"
         actual_function = result[0].function_name
-        assert actual_function == expected_function
+        assert actual_function == expected_function, f"Expected {expected_function!r} but got {actual_function!r}"
         expected_batch = 5
         actual_batch = result[0].batch_size
-        assert actual_batch == expected_batch
+        assert actual_batch == expected_batch, f"Expected {expected_batch!r} but got {actual_batch!r}"
 
     def test_skips_non_mapping_resources(self) -> None:
         # Arrange
@@ -55,7 +55,7 @@ class TestExtractEventSourceMappings:
         # Assert
         expected_count = 0
         actual_count = len(result)
-        assert actual_count == expected_count
+        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_defaults_batch_size_and_enabled(self) -> None:
         # Arrange
@@ -76,5 +76,5 @@ class TestExtractEventSourceMappings:
         # Assert
         expected_batch = 10
         actual_batch = result[0].batch_size
-        assert actual_batch == expected_batch
-        assert result[0].enabled is True
+        assert actual_batch == expected_batch, f"Expected {expected_batch!r} but got {actual_batch!r}"
+        assert result[0].enabled is True, "Expected value to be truthy"

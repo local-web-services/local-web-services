@@ -29,7 +29,7 @@ class SqsStoreVisibilityTest {
     var actualMessages = queue.receiveMessages(1);
 
     // Assert
-    assertEquals(0, actualMessages.size());
+    assertEquals(0, actualMessages.size(), "Expected actualMessages.size() to match 0");
   }
 
   @Test
@@ -46,7 +46,7 @@ class SqsStoreVisibilityTest {
 
     // Assert
     var actualMessages = queue.receiveMessages(1);
-    assertEquals(1, actualMessages.size());
+    assertEquals(1, actualMessages.size(), "Expected actualMessages.size() to match 1");
   }
 
   @Test
@@ -62,7 +62,7 @@ class SqsStoreVisibilityTest {
     boolean actualHasMessage = queue.hasMessage(receiptHandle);
 
     // Assert
-    assertTrue(actualHasMessage);
+    assertTrue(actualHasMessage, "Expected condition to be true: actualHasMessage");
   }
 
   @Test
@@ -75,6 +75,6 @@ class SqsStoreVisibilityTest {
     boolean actualHasMessage = queue.hasMessage("fake-receipt-handle");
 
     // Assert
-    assertFalse(actualHasMessage);
+    assertFalse(actualHasMessage, "Expected condition to be false: actualHasMessage");
   }
 }

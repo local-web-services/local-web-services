@@ -28,7 +28,7 @@ class SqsStoreCreateQueueTest {
 
     // Assert
     var actualQueue = store.getQueue(queueName);
-    assertNotNull(actualQueue);
+    assertNotNull(actualQueue, "Expected actualQueue to not be null");
   }
 
   @Test
@@ -41,8 +41,8 @@ class SqsStoreCreateQueueTest {
 
     // Assert
     var actualQueue = store.getQueue(expectedName);
-    assertNotNull(actualQueue);
-    assertEquals(expectedName, actualQueue.name);
+    assertNotNull(actualQueue, "Expected actualQueue to not be null");
+    assertEquals(expectedName, actualQueue.name, "Expected actualQueue.name to equal expectedName");
   }
 
   @Test
@@ -70,7 +70,7 @@ class SqsStoreCreateQueueTest {
 
     // Assert
     int actualSize = store.listQueues(null).size();
-    assertEquals(1, actualSize);
+    assertEquals(1, actualSize, "Expected actualSize to match 1");
   }
 
   @Test
@@ -84,7 +84,7 @@ class SqsStoreCreateQueueTest {
     var actualQueue = store.getQueue(url);
 
     // Assert
-    assertNotNull(actualQueue);
+    assertNotNull(actualQueue, "Expected actualQueue to not be null");
   }
 
   @Test
@@ -97,7 +97,7 @@ class SqsStoreCreateQueueTest {
     List<?> actualQueues = store.listQueues("abc");
 
     // Assert
-    assertEquals(1, actualQueues.size());
+    assertEquals(1, actualQueues.size(), "Expected actualQueues.size() to match 1");
   }
 
   @Test
@@ -111,7 +111,7 @@ class SqsStoreCreateQueueTest {
 
     // Assert
     var actualQueue = store.getQueue(queueName);
-    assertNull(actualQueue);
+    assertNull(actualQueue, "Expected actualQueue to be null");
   }
 
   @Test
@@ -124,6 +124,6 @@ class SqsStoreCreateQueueTest {
 
     // Assert
     List<?> actualQueues = store.listQueues(null);
-    assertTrue(actualQueues.isEmpty());
+    assertTrue(actualQueues.isEmpty(), "Expected actualQueues to be empty");
   }
 }

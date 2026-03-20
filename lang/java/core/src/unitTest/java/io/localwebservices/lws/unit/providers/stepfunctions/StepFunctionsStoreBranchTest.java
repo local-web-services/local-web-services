@@ -18,7 +18,7 @@ public class StepFunctionsStoreBranchTest {
     store.updateStateMachine(missingArn, Map.of("definition", "{}"));
 
     // Assert — no exception; nothing changed in store
-    assertNotNull(store);
+    assertNotNull(store, "Expected store to not be null");
   }
 
   @Test
@@ -35,6 +35,6 @@ public class StepFunctionsStoreBranchTest {
         store.startExecution(plainName, "exec-1", "{\"key\":\"value\"}");
 
     // Assert
-    assertNotNull(actualExecution);
+    assertNotNull(actualExecution, "Expected actualExecution to not be null");
   }
 }

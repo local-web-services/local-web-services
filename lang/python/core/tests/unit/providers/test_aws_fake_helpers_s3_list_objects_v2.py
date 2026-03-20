@@ -13,8 +13,8 @@ class TestS3ListObjectsV2:
         actual_response = expand_helpers("s3", "list-objects-v2", helpers)
 
         # Assert
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert "<Key>doc/a.pdf</Key>" in actual_response.body
-        assert "<Key>doc/b.pdf</Key>" in actual_response.body
-        assert "<KeyCount>2</KeyCount>" in actual_response.body
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert actual_response.content_type == expected_content_type, f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert "<Key>doc/a.pdf</Key>" in actual_response.body, f'Expected {"<Key>doc/a.pdf</Key>"!r} to be in {actual_response.body!r}'
+        assert "<Key>doc/b.pdf</Key>" in actual_response.body, f'Expected {"<Key>doc/b.pdf</Key>"!r} to be in {actual_response.body!r}'
+        assert "<KeyCount>2</KeyCount>" in actual_response.body, f'Expected {"<KeyCount>2</KeyCount>"!r} to be in {actual_response.body!r}'

@@ -115,14 +115,14 @@ class TestFilterPolicyExactStringMatch:
     def test_exact_match_passes(self) -> None:
         attrs = {"color": {"DataType": "String", "StringValue": "red"}}
         policy = {"color": ["red", "blue"]}
-        assert matches_filter_policy(attrs, policy) is True
+        assert matches_filter_policy(attrs, policy) is True, "Expected value to be truthy"
 
     def test_exact_match_fails(self) -> None:
         attrs = {"color": {"DataType": "String", "StringValue": "green"}}
         policy = {"color": ["red", "blue"]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"
 
     def test_missing_attribute_fails(self) -> None:
         attrs = {"size": {"DataType": "String", "StringValue": "large"}}
         policy = {"color": ["red"]}
-        assert matches_filter_policy(attrs, policy) is False
+        assert matches_filter_policy(attrs, policy) is False, "Expected value to be truthy"

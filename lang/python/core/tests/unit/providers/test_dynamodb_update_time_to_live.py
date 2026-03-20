@@ -99,13 +99,13 @@ class TestUpdateTimeToLive:
         resp = await fake_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "TimeToLiveSpecification" in data
+        assert "TimeToLiveSpecification" in data, f'Expected {"TimeToLiveSpecification"!r} to be in {data!r}'
         spec = data["TimeToLiveSpecification"]
         actual_attribute_name = spec["AttributeName"]
-        assert actual_attribute_name == expected_attribute_name
-        assert spec["Enabled"] is True
+        assert actual_attribute_name == expected_attribute_name, f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        assert spec["Enabled"] is True, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_update_time_to_live_disable(self, fake_client: httpx.AsyncClient) -> None:
@@ -124,12 +124,12 @@ class TestUpdateTimeToLive:
         resp = await fake_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
         spec = data["TimeToLiveSpecification"]
         actual_attribute_name = spec["AttributeName"]
-        assert actual_attribute_name == expected_attribute_name
-        assert spec["Enabled"] is False
+        assert actual_attribute_name == expected_attribute_name, f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        assert spec["Enabled"] is False, "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_update_time_to_live_missing_spec(self, fake_client: httpx.AsyncClient) -> None:
@@ -142,9 +142,9 @@ class TestUpdateTimeToLive:
         resp = await fake_client.post("/", json=payload, headers=_target("UpdateTimeToLive"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
         spec = data["TimeToLiveSpecification"]
         actual_attribute_name = spec["AttributeName"]
-        assert actual_attribute_name == expected_attribute_name
-        assert spec["Enabled"] is False
+        assert actual_attribute_name == expected_attribute_name, f"Expected {expected_attribute_name!r} but got {actual_attribute_name!r}"
+        assert spec["Enabled"] is False, "Expected value to be truthy"

@@ -142,11 +142,11 @@ class TestParseEcsResources:
             }
         }
         services = parse_ecs_resources(template)
-        assert len(services) == 1
+        assert len(services) == 1, f"Expected {1!r} but got {len(services)!r}"
         svc = services[0]
-        assert svc.service_name == "MyService"
-        assert len(svc.containers) == 1
-        assert svc.containers[0].name == "app"
+        assert svc.service_name == "MyService", f'Expected {"MyService"!r} but got {svc.service_name!r}'
+        assert len(svc.containers) == 1, f"Expected {1!r} but got {len(svc.containers)!r}"
+        assert svc.containers[0].name == "app", f'Expected {"app"!r} but got {svc.containers[0].name!r}'
 
     def test_local_command_metadata(self) -> None:
         template = {
@@ -166,13 +166,13 @@ class TestParseEcsResources:
             }
         }
         services = parse_ecs_resources(template)
-        assert len(services) == 1
-        assert services[0].local_command == ["npm", "run", "dev"]
-        assert services[0].watch_path == "/app/src"
+        assert len(services) == 1, f"Expected {1!r} but got {len(services)!r}"
+        assert services[0].local_command == ["npm", "run", "dev"], f'Expected {["npm", "run", "dev"]!r} but got {services[0].local_command!r}'
+        assert services[0].watch_path == "/app/src", f'Expected {"/app/src"!r} but got {services[0].watch_path!r}'
 
     def test_empty_template(self) -> None:
         services = parse_ecs_resources({})
-        assert services == []
+        assert services == [], f"Expected {[]!r} but got {services!r}"
 
     def test_no_ecs_resources(self) -> None:
         template = {
@@ -181,4 +181,4 @@ class TestParseEcsResources:
             }
         }
         services = parse_ecs_resources(template)
-        assert services == []
+        assert services == [], f"Expected {[]!r} but got {services!r}"

@@ -20,7 +20,7 @@ public class DocDbStoreBranchTest {
     List<Map<String, Object>> actualClusters = store.describeClusters("nonexistent-id");
 
     // Assert
-    assertEquals(expectedCount, actualClusters.size());
+    assertEquals(expectedCount, actualClusters.size(), "Expected actualClusters.size() to match expectedCount");
   }
 
   @Test
@@ -38,7 +38,7 @@ public class DocDbStoreBranchTest {
     List<Map<String, Object>> actualInstances = store.describeInstances("nonexistent-id");
 
     // Assert
-    assertEquals(expectedCount, actualInstances.size());
+    assertEquals(expectedCount, actualInstances.size(), "Expected actualInstances.size() to match expectedCount");
   }
 
   @Test
@@ -55,6 +55,6 @@ public class DocDbStoreBranchTest {
     List<Map<String, Object>> actualSnapshots = store.describeSnapshots("nonexistent-id");
 
     // Assert
-    assertEquals(expectedCount, actualSnapshots.size());
+    assertEquals(expectedCount, actualSnapshots.size(), "Expected actualSnapshots.size() to match expectedCount");
   }
 }

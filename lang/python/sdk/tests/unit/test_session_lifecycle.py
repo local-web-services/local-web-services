@@ -22,7 +22,7 @@ def test_dynamodb_client_is_available(session):
     client = session.client("dynamodb")
 
     # Assert
-    assert client is not None
+    assert client is not None, "Expected value to be set but was None"
 
 
 def test_dynamodb_put_and_get_item(session):
@@ -37,8 +37,8 @@ def test_dynamodb_put_and_get_item(session):
 
     # Assert
     actual_item = response["Item"]
-    assert actual_item["id"]["S"] == "order-1"
-    assert actual_item["status"]["S"] == "pending"
+    assert actual_item["id"]["S"] == "order-1", f'Expected {"order-1"!r} but got {actual_item["id"]["S"]!r}'
+    assert actual_item["status"]["S"] == "pending", f'Expected {"pending"!r} but got {actual_item["status"]["S"]!r}'
 
 
 def test_dynamodb_helper_scan(session):
@@ -52,7 +52,7 @@ def test_dynamodb_helper_scan(session):
     items = table.scan()
 
     # Assert
-    assert len(items) == 2
+    assert len(items) == 2, f"Expected {2!r} but got {len(items)!r}"
 
 
 def test_s3_put_and_get(session):
@@ -66,7 +66,7 @@ def test_s3_put_and_get(session):
     actual_content = bucket.get("test/file.txt")
 
     # Assert
-    assert actual_content == expected_content
+    assert actual_content == expected_content, f"Expected {expected_content!r} but got {actual_content!r}"
 
 
 def test_sqs_send_and_receive(session):
@@ -80,8 +80,8 @@ def test_sqs_send_and_receive(session):
     messages = queue.receive(max_messages=1)
 
     # Assert
-    assert len(messages) == 1
-    assert messages[0]["Body"] == expected_body
+    assert len(messages) == 1, f"Expected {1!r} but got {len(messages)!r}"
+    assert messages[0]["Body"] == expected_body, f'Expected {expected_body!r} but got {messages[0]["Body"]!r}'
 
 
 def test_session_reset_clears_state(session):
@@ -94,7 +94,7 @@ def test_session_reset_clears_state(session):
     items = table.scan()
 
     # Assert
-    assert len(items) == 0
+    assert len(items) == 0, f"Expected {0!r} but got {len(items)!r}"
 
 
 def test_all_services_available(session):
@@ -116,7 +116,7 @@ def test_vanilla_boto3_client_is_redirected_to_lws(session):
 
     # Assert — LWS responded (real AWS would also return this key, but if the
     # env var wasn't set the call would fail with NoCredentialsError or timeout)
-    assert "TableNames" in response
+    assert "TableNames" in response, f'Expected {"TableNames"!r} to be in {response!r}'
 
 
 def test_env_vars_are_restored_after_session_closes():
@@ -145,5 +145,5 @@ def test_queue_url_returns_local_url(session):
     actual_url = session.queue_url(expected_queue_name)
 
     # Assert
-    assert "127.0.0.1" in actual_url
-    assert expected_queue_name in actual_url
+    assert "127.0.0.1" in actual_url, f'Expected {"127.0.0.1"!r} to be in {actual_url!r}'
+    assert expected_queue_name in actual_url, f"Expected {expected_queue_name!r} to be in {actual_url!r}"

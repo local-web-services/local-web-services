@@ -28,14 +28,14 @@ class TestParseAwsFakeConfig:
 
         # Assert
         expected_service = "dynamodb"
-        assert config.service == expected_service
-        assert config.enabled is True
+        assert config.service == expected_service, f"Expected {expected_service!r} but got {config.service!r}"
+        assert config.enabled is True, "Expected value to be truthy"
         expected_rule_count = 2
-        assert len(config.rules) == expected_rule_count
+        assert len(config.rules) == expected_rule_count, f"Expected {expected_rule_count!r} but got {len(config.rules)!r}"
         expected_first_operation = "get-item"
-        assert config.rules[0].operation == expected_first_operation
+        assert config.rules[0].operation == expected_first_operation, f"Expected {expected_first_operation!r} but got {config.rules[0].operation!r}"
         expected_second_operation = "put-item"
-        assert config.rules[1].operation == expected_second_operation
+        assert config.rules[1].operation == expected_second_operation, f"Expected {expected_second_operation!r} but got {config.rules[1].operation!r}"
 
     def test_parses_empty_dict(self):
         # Arrange
@@ -46,6 +46,6 @@ class TestParseAwsFakeConfig:
 
         # Assert
         expected_service = ""
-        assert config.service == expected_service
-        assert config.enabled is True
-        assert config.rules == []
+        assert config.service == expected_service, f"Expected {expected_service!r} but got {config.service!r}"
+        assert config.enabled is True, "Expected value to be truthy"
+        assert config.rules == [], f"Expected {[]!r} but got {config.rules!r}"

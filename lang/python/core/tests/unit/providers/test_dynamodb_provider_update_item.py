@@ -130,7 +130,7 @@ class TestUpdateItem:
 
         # Assert
         actual_status = result["status"]
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
 
     async def test_set_new_attribute(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -147,7 +147,7 @@ class TestUpdateItem:
 
         # Assert
         actual_note = result["note"]
-        assert actual_note == expected_note
+        assert actual_note == expected_note, f"Expected {expected_note!r} but got {actual_note!r}"
 
     async def test_remove_attribute(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -161,7 +161,7 @@ class TestUpdateItem:
         )
 
         # Assert
-        assert "temp" not in result
+        assert "temp" not in result, f'Expected {"temp"!r} to not be in {result!r}'
 
     async def test_set_and_remove_combined(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -178,8 +178,8 @@ class TestUpdateItem:
 
         # Assert
         actual_a = result["a"]
-        assert actual_a == expected_a
-        assert "b" not in result
+        assert actual_a == expected_a, f"Expected {expected_a!r} but got {actual_a!r}"
+        assert "b" not in result, f'Expected {"b"!r} to not be in {result!r}'
 
     async def test_update_creates_item_if_missing(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -197,5 +197,5 @@ class TestUpdateItem:
         # Assert
         actual_color = result["color"]
         actual_order_id = result["orderId"]
-        assert actual_color == expected_color
-        assert actual_order_id == expected_order_id
+        assert actual_color == expected_color, f"Expected {expected_color!r} but got {actual_color!r}"
+        assert actual_order_id == expected_order_id, f"Expected {expected_order_id!r} but got {actual_order_id!r}"

@@ -14,9 +14,9 @@ class TestS3GetObject:
         actual_response = expand_helpers("s3", "get-object", helpers)
 
         # Assert
-        assert actual_response.status == 200
-        assert actual_response.body == expected_body
-        assert actual_response.content_type == expected_content_type
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert actual_response.body == expected_body, f"Expected {expected_body!r} but got {actual_response.body!r}"
+        assert actual_response.content_type == expected_content_type, f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
 
     def test_get_object_with_body_file(self, tmp_path) -> None:
         # Arrange
@@ -29,5 +29,5 @@ class TestS3GetObject:
         actual_response = expand_helpers("s3", "get-object", helpers, fake_dir=tmp_path)
 
         # Assert
-        assert actual_response.status == 200
-        assert actual_response.body == expected_body
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert actual_response.body == expected_body, f"Expected {expected_body!r} but got {actual_response.body!r}"

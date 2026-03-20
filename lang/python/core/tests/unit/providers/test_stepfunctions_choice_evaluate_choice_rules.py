@@ -72,7 +72,7 @@ class TestEvaluateChoiceRules:
         actual_next_state = evaluate_choice_rules(rules, {"x": 5})
 
         # Assert
-        assert actual_next_state == expected_next_state
+        assert actual_next_state == expected_next_state, f"Expected {expected_next_state!r} but got {actual_next_state!r}"
 
     def test_no_match_returns_none(self) -> None:
         rules = [
@@ -84,11 +84,11 @@ class TestEvaluateChoiceRules:
             ),
         ]
         result = evaluate_choice_rules(rules, {"x": "different"})
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     def test_empty_rules_returns_none(self) -> None:
         result = evaluate_choice_rules([], {"x": 1})
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     def test_missing_variable_returns_false(self) -> None:
         rule = ChoiceRule(
@@ -97,4 +97,4 @@ class TestEvaluateChoiceRules:
             comparison_operator="NumericEquals",
             comparison_value=1,
         )
-        assert evaluate_rule(rule, {"x": 1}) is False
+        assert evaluate_rule(rule, {"x": 1}) is False, "Expected value to be truthy"

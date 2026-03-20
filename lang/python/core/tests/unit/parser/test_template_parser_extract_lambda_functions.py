@@ -72,13 +72,13 @@ class TestExtractLambdaFunctions:
         result = extract_lambda_functions(resources)
 
         # Assert
-        assert len(result) == 1
+        assert len(result) == 1, f"Expected {1!r} but got {len(result)!r}"
         actual_func = result[0]
-        assert actual_func.handler == expected_handler
-        assert actual_func.runtime == expected_runtime
-        assert actual_func.timeout == expected_timeout
-        assert actual_func.memory_size == expected_memory_size
-        assert actual_func.environment == expected_environment
+        assert actual_func.handler == expected_handler, f"Expected {expected_handler!r} but got {actual_func.handler!r}"
+        assert actual_func.runtime == expected_runtime, f"Expected {expected_runtime!r} but got {actual_func.runtime!r}"
+        assert actual_func.timeout == expected_timeout, f"Expected {expected_timeout!r} but got {actual_func.timeout!r}"
+        assert actual_func.memory_size == expected_memory_size, f"Expected {expected_memory_size!r} but got {actual_func.memory_size!r}"
+        assert actual_func.environment == expected_environment, f"Expected {expected_environment!r} but got {actual_func.environment!r}"
 
     def test_lambda_without_environment(self):
         # Arrange
@@ -96,7 +96,7 @@ class TestExtractLambdaFunctions:
 
         # Assert
         actual_environment = result[0].environment
-        assert actual_environment == expected_environment
+        assert actual_environment == expected_environment, f"Expected {expected_environment!r} but got {actual_environment!r}"
 
     def test_skips_non_lambda(self):
         # Arrange
@@ -105,4 +105,4 @@ class TestExtractLambdaFunctions:
         ]
 
         # Act / Assert
-        assert extract_lambda_functions(resources) == []
+        assert extract_lambda_functions(resources) == [], f"Expected {[]!r} but got {extract_lambda_functions(resources)!r}"

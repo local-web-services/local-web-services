@@ -62,15 +62,15 @@ class TestLocalBucketStorageDelete:
         actual_existed = await storage.delete_object(bucket, key)
 
         # Assert
-        assert actual_existed is True
-        assert await storage.get_object(bucket, key) is None
+        assert actual_existed is True, "Expected value to be truthy"
+        assert await storage.get_object(bucket, key) is None, f"Expected None but got {await storage.get_object(bucket, key)!r}"
 
     async def test_delete_nonexistent(self, storage: LocalBucketStorage) -> None:
         # Act
         actual_existed = await storage.delete_object("mybucket", "nokey")
 
         # Assert
-        assert actual_existed is False
+        assert actual_existed is False, "Expected value to be truthy"
 
     async def test_delete_removes_metadata(self, storage: LocalBucketStorage, tmp_path: Path):
         # Arrange
@@ -78,10 +78,10 @@ class TestLocalBucketStorageDelete:
         key = "key"
         await storage.put_object(bucket, key, b"data")
         meta_path = tmp_path / "s3" / ".metadata" / bucket / "key.json"
-        assert meta_path.exists()
+        assert meta_path.exists(), "Expected value to be truthy"
 
         # Act
         await storage.delete_object(bucket, key)
 
         # Assert
-        assert not meta_path.exists()
+        assert not meta_path.exists(), "Expected value to be falsy"

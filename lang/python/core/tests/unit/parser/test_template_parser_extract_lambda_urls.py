@@ -29,11 +29,11 @@ class TestExtractLambdaUrls:
         result = extract_lambda_urls(resources)
 
         # Assert
-        assert len(result) == 1
+        assert len(result) == 1, f"Expected {1!r} but got {len(result)!r}"
         actual_url = result[0]
-        assert actual_url.auth_type == expected_auth_type
-        assert actual_url.invoke_mode == expected_invoke_mode
-        assert actual_url.target_function_arn == {"Fn::GetAtt": ["MyFunction", "Arn"]}
+        assert actual_url.auth_type == expected_auth_type, f"Expected {expected_auth_type!r} but got {actual_url.auth_type!r}"
+        assert actual_url.invoke_mode == expected_invoke_mode, f"Expected {expected_invoke_mode!r} but got {actual_url.invoke_mode!r}"
+        assert actual_url.target_function_arn == {"Fn::GetAtt": ["MyFunction", "Arn"]}, "Expected {0!r} but got {1!r}".format({"Fn::GetAtt": ["MyFunction", "Arn"]}, actual_url.target_function_arn)
 
     def test_lambda_url_with_cors(self):
         # Arrange
@@ -59,7 +59,7 @@ class TestExtractLambdaUrls:
 
         # Assert
         actual_cors = result[0].cors
-        assert actual_cors == expected_cors
+        assert actual_cors == expected_cors, f"Expected {expected_cors!r} but got {actual_cors!r}"
 
     def test_lambda_url_with_iam_auth(self):
         # Arrange
@@ -80,7 +80,7 @@ class TestExtractLambdaUrls:
 
         # Assert
         actual_auth_type = result[0].auth_type
-        assert actual_auth_type == expected_auth_type
+        assert actual_auth_type == expected_auth_type, f"Expected {expected_auth_type!r} but got {actual_auth_type!r}"
 
     def test_lambda_url_defaults(self):
         # Arrange
@@ -101,9 +101,9 @@ class TestExtractLambdaUrls:
 
         # Assert
         actual_url = result[0]
-        assert actual_url.auth_type == expected_auth_type
-        assert actual_url.invoke_mode == expected_invoke_mode
-        assert actual_url.cors is None
+        assert actual_url.auth_type == expected_auth_type, f"Expected {expected_auth_type!r} but got {actual_url.auth_type!r}"
+        assert actual_url.invoke_mode == expected_invoke_mode, f"Expected {expected_invoke_mode!r} but got {actual_url.invoke_mode!r}"
+        assert actual_url.cors is None, f"Expected None but got {actual_url.cors!r}"
 
     def test_skips_non_lambda_url(self):
         # Arrange
@@ -116,7 +116,7 @@ class TestExtractLambdaUrls:
         result = extract_lambda_urls(resources)
 
         # Assert
-        assert result == []
+        assert result == [], f"Expected {[]!r} but got {result!r}"
 
     def test_response_stream_invoke_mode(self):
         # Arrange
@@ -137,4 +137,4 @@ class TestExtractLambdaUrls:
 
         # Assert
         actual_invoke_mode = result[0].invoke_mode
-        assert actual_invoke_mode == expected_invoke_mode
+        assert actual_invoke_mode == expected_invoke_mode, f"Expected {expected_invoke_mode!r} but got {actual_invoke_mode!r}"

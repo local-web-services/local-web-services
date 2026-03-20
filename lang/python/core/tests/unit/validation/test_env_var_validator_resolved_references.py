@@ -67,18 +67,18 @@ class TestResolvedReferences:
         validator = EnvVarValidator(graph)
         ctx = _make_context(environment={})
         issues = validator.validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_plain_values_are_clean(self) -> None:
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
         ctx = _make_context(environment={"TABLE_NAME": "users", "REGION": "us-east-1"})
         issues = validator.validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_known_ref_resolves(self) -> None:
         graph = _make_graph(["MyTable"])
         validator = EnvVarValidator(graph)
         ctx = _make_context(environment={"TABLE_ARN": "${MyTable}"})
         issues = validator.validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"

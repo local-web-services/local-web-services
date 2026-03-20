@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "lib": ["ES2020", "DOM"],
-    "rootDir": "."
+    "rootDir": ".",
+    "types": ["jest", "node", "jest-expect-message"]
   },
   "include": ["src/**/*", "tests/**/*"]
 }

@@ -21,7 +21,7 @@ describe("SQSHelper", () => {
       const actual = helper.url;
 
       // Assert
-      expect(actual).toBe(EXPECTED_QUEUE_URL);
+      expect(actual, "Expected url to return the correctly formatted queue URL").toBe(EXPECTED_QUEUE_URL);
     });
   });
 
@@ -37,10 +37,10 @@ describe("SQSHelper", () => {
       const actual = await helper.send(expectedBody);
 
       // Assert
-      expect(actual).toBe("msg-1");
+      expect(actual, "Expected send to return the MessageId from the response").toBe("msg-1");
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.QueueUrl).toBe(EXPECTED_QUEUE_URL);
-      expect(actualCommand.input.MessageBody).toBe(expectedBody);
+      expect(actualCommand.input.QueueUrl, "Expected SendMessageCommand to use the correct queue URL").toBe(EXPECTED_QUEUE_URL);
+      expect(actualCommand.input.MessageBody, "Expected SendMessageCommand to use the string body unchanged").toBe(expectedBody);
     });
 
     it("JSON-encodes an object body", async () => {
@@ -55,7 +55,7 @@ describe("SQSHelper", () => {
 
       // Assert
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.MessageBody).toBe(JSON.stringify(expectedPayload));
+      expect(actualCommand.input.MessageBody, "Expected SendMessageCommand to JSON-encode the object body").toBe(JSON.stringify(expectedPayload));
     });
 
     it("includes MessageGroupId when provided", async () => {
@@ -70,7 +70,7 @@ describe("SQSHelper", () => {
 
       // Assert
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.MessageGroupId).toBe(expectedGroupId);
+      expect(actualCommand.input.MessageGroupId, "Expected SendMessageCommand to include the configured MessageGroupId").toBe(expectedGroupId);
     });
   });
 
@@ -86,7 +86,7 @@ describe("SQSHelper", () => {
       const actual = await helper.receive();
 
       // Assert
-      expect(actual).toEqual(expectedMessages);
+      expect(actual, "Expected receive to return the messages from the response").toEqual(expectedMessages);
     });
 
     it("returns empty array when no messages are available", async () => {
@@ -99,7 +99,7 @@ describe("SQSHelper", () => {
       const actual = await helper.receive();
 
       // Assert
-      expect(actual).toEqual([]);
+      expect(actual, "Expected receive to return an empty array when no messages are available").toEqual([]);
     });
 
     it("caps MaxNumberOfMessages at 10", async () => {
@@ -113,7 +113,7 @@ describe("SQSHelper", () => {
 
       // Assert
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.MaxNumberOfMessages).toBe(10);
+      expect(actualCommand.input.MaxNumberOfMessages, "Expected MaxNumberOfMessages to be capped at 10 even when a higher value is requested").toBe(10);
     });
   });
 
@@ -129,7 +129,7 @@ describe("SQSHelper", () => {
 
       // Assert
       const actualCommand = send.mock.calls[0][0];
-      expect(actualCommand.input.QueueUrl).toBe(EXPECTED_QUEUE_URL);
+      expect(actualCommand.input.QueueUrl, "Expected PurgeQueueCommand to use the correct queue URL").toBe(EXPECTED_QUEUE_URL);
     });
   });
 
@@ -144,7 +144,7 @@ describe("SQSHelper", () => {
       const expectedCount = 3;
 
       // Act & Assert
-      await expect(helper.assertMessageCount(expectedCount)).resolves.toBeUndefined();
+      await expect(helper.assertMessageCount(expectedCount), "Expected assertMessageCount to resolve when the count matches").resolves.toBeUndefined();
     });
 
     it("throws when the count does not match", async () => {
@@ -157,7 +157,7 @@ describe("SQSHelper", () => {
       const expectedCount = 2;
 
       // Act & Assert
-      await expect(helper.assertMessageCount(expectedCount)).rejects.toThrow(
+      await expect(helper.assertMessageCount(expectedCount), `Expected assertMessageCount to reject when the count does not match`).rejects.toThrow(
         `Expected 2 message(s) in queue "${EXPECTED_QUEUE_NAME}"`,
       );
     });

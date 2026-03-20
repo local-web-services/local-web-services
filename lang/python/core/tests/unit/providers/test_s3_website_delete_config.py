@@ -30,7 +30,7 @@ class TestDeleteBucketWebsite:
 
         # Assert
         actual_config = provider.get_bucket_website(bucket_name)
-        assert actual_config is None
+        assert actual_config is None, f"Expected None but got {actual_config!r}"
 
     @pytest.mark.asyncio
     async def test_delete_bucket_website_not_configured(self, provider: S3Provider) -> None:
@@ -42,7 +42,7 @@ class TestDeleteBucketWebsite:
 
         # Assert
         actual_config = provider.get_bucket_website(bucket_name)
-        assert actual_config is None
+        assert actual_config is None, f"Expected None but got {actual_config!r}"
 
     @pytest.mark.asyncio
     async def test_delete_bucket_website_nonexistent_bucket_raises(

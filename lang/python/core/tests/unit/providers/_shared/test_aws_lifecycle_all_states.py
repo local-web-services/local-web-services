@@ -18,9 +18,9 @@ class TestResourceStateTrackerAllStates:
         actual_states = tracker.all_states()
 
         # Assert
-        assert actual_states == expected_states
+        assert actual_states == expected_states, f"Expected {expected_states!r} but got {actual_states!r}"
         # Verify it is a copy — mutations do not affect internal state
         actual_states["resource-a"] = "DELETED"
         expected_preserved_state = "ACTIVE"
         actual_preserved_state = tracker.get_state("resource-a")
-        assert actual_preserved_state == expected_preserved_state
+        assert actual_preserved_state == expected_preserved_state, f"Expected {expected_preserved_state!r} but got {actual_preserved_state!r}"

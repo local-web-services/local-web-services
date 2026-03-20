@@ -39,15 +39,15 @@ from lws.providers.ecs.alb import (
 class TestExtractPathPattern:
     def test_field_based(self) -> None:
         conditions = [{"Field": "path-pattern", "Values": ["/api/*"]}]
-        assert _extract_path_pattern(conditions) == "/api/*"
+        assert _extract_path_pattern(conditions) == "/api/*", f'Expected {"/api/*"!r} but got {_extract_path_pattern(conditions)!r}'
 
     def test_config_based(self) -> None:
         conditions = [{"PathPatternConfig": {"Values": ["/web/*"]}}]
-        assert _extract_path_pattern(conditions) == "/web/*"
+        assert _extract_path_pattern(conditions) == "/web/*", f'Expected {"/web/*"!r} but got {_extract_path_pattern(conditions)!r}'
 
     def test_empty_conditions(self) -> None:
-        assert _extract_path_pattern([]) is None
+        assert _extract_path_pattern([]) is None, f"Expected None but got {_extract_path_pattern([])!r}"
 
     def test_no_matching_field(self) -> None:
         conditions = [{"Field": "host-header", "Values": ["example.com"]}]
-        assert _extract_path_pattern(conditions) is None
+        assert _extract_path_pattern(conditions) is None, f"Expected None but got {_extract_path_pattern(conditions)!r}"

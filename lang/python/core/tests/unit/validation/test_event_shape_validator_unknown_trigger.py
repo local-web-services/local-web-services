@@ -121,9 +121,9 @@ class TestUnknownTrigger:
     def test_unknown_type_returns_empty(self) -> None:
         ctx = _make_context("unknown_trigger", {"some": "data"})
         issues = EventShapeValidator().validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_empty_trigger_returns_empty(self) -> None:
         ctx = _make_context("", {"some": "data"})
         issues = EventShapeValidator().validate(ctx)
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"

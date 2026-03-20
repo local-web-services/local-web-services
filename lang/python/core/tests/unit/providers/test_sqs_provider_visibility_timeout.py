@@ -154,7 +154,7 @@ class TestVisibilityTimeout:
         await queue.receive_messages()
         # Immediately try to receive again — should be empty
         messages = await queue.receive_messages()
-        assert messages == []
+        assert messages == [], f"Expected {[]!r} but got {messages!r}"
 
     async def test_message_reappears_after_timeout(self) -> None:
         # Arrange
@@ -164,16 +164,16 @@ class TestVisibilityTimeout:
 
         # Act
         msgs1 = await q.receive_messages()
-        assert len(msgs1) == 1
+        assert len(msgs1) == 1, f"Expected {1!r} but got {len(msgs1)!r}"
         # With 0s timeout, should reappear immediately
         msgs2 = await q.receive_messages()
 
         # Assert
-        assert len(msgs2) == 1
+        assert len(msgs2) == 1, f"Expected {1!r} but got {len(msgs2)!r}"
         actual_receive_count = msgs2[0].receive_count
-        assert actual_receive_count == expected_receive_count
+        assert actual_receive_count == expected_receive_count, f"Expected {expected_receive_count!r} but got {actual_receive_count!r}"
 
     async def test_delay_seconds(self, queue: LocalQueue) -> None:
         await queue.send_message("delayed", delay_seconds=10)
         messages = await queue.receive_messages()
-        assert messages == []  # delayed message not visible yet
+        assert messages == []  # delayed message not visible yet, "Expected assertion to pass"

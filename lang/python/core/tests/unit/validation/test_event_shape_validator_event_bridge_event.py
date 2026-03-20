@@ -126,7 +126,7 @@ class TestEventBridgeEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert issues == []
+        assert issues == [], f"Expected {[]!r} but got {issues!r}"
 
     def test_missing_detail(self) -> None:
         # Arrange
@@ -138,8 +138,8 @@ class TestEventBridgeEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert "detail" in issues[0].message
+        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert "detail" in issues[0].message, f'Expected {"detail"!r} to be in {issues[0].message!r}'
 
     def test_missing_detail_type(self) -> None:
         # Arrange
@@ -151,5 +151,5 @@ class TestEventBridgeEvent:
         issues = EventShapeValidator().validate(ctx)
 
         # Assert
-        assert len(issues) == expected_issue_count
-        assert "detail-type" in issues[0].message
+        assert len(issues) == expected_issue_count, f"Expected {expected_issue_count!r} but got {len(issues)!r}"
+        assert "detail-type" in issues[0].message, f'Expected {"detail-type"!r} to be in {issues[0].message!r}'

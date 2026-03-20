@@ -41,4 +41,4 @@ class TestStatusCodes:
 
         # Assert
         status_issues = [i for i in issues if "Status" in i.message]
-        assert len(status_issues) > 0
+        assert len(status_issues) > 0, f"Expected {len(status_issues)!r} > {0!r}"

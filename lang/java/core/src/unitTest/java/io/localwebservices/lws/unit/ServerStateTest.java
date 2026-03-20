@@ -27,11 +27,11 @@ public class ServerStateTest {
     state.reset();
 
     // Assert
-    assertTrue(state.chaosRules.isEmpty());
-    assertTrue(state.fakeRules.isEmpty());
-    assertFalse(state.iamEnforce);
-    assertNull(state.iamDefaultIdentity);
-    assertTrue(state.iamIdentities.isEmpty());
+    assertTrue(state.chaosRules.isEmpty(), "Expected state.chaosRules to be empty");
+    assertTrue(state.fakeRules.isEmpty(), "Expected state.fakeRules to be empty");
+    assertFalse(state.iamEnforce, "Expected condition to be false: state.iamEnforce");
+    assertNull(state.iamDefaultIdentity, "Expected state.iamDefaultIdentity to be null");
+    assertTrue(state.iamIdentities.isEmpty(), "Expected state.iamIdentities to be empty");
   }
 
   @Test
@@ -45,7 +45,7 @@ public class ServerStateTest {
     state.reset();
 
     // Assert
-    assertTrue(callbackInvoked.get());
+    assertTrue(callbackInvoked.get(), "Expected callback to have been invoked");
   }
 
   @Test
@@ -62,7 +62,7 @@ public class ServerStateTest {
     state.reset();
 
     // Assert
-    assertTrue(state.chaosRules.isEmpty());
+    assertTrue(state.chaosRules.isEmpty(), "Expected state.chaosRules to be empty");
   }
 
   @Test
@@ -75,8 +75,8 @@ public class ServerStateTest {
     state.addLog(expectedEntry);
 
     // Assert
-    assertEquals(1, state.logBuffer.size());
-    assertEquals(expectedEntry, state.logBuffer.get(0));
+    assertEquals(1, state.logBuffer.size(), "Expected state.logBuffer.size() to match 1");
+    assertEquals(expectedEntry, state.logBuffer.get(0), "Expected state.logBuffer.get(0) to equal expectedEntry");
   }
 
   @Test
@@ -92,8 +92,8 @@ public class ServerStateTest {
     state.addLog(expectedLastEntry);
 
     // Assert
-    assertEquals(500, state.logBuffer.size());
-    assertEquals(expectedLastEntry, state.logBuffer.get(state.logBuffer.size() - 1));
+    assertEquals(500, state.logBuffer.size(), "Expected state.logBuffer.size() to match 500");
+    assertEquals(expectedLastEntry, state.logBuffer.get(state.logBuffer.size() - 1), "Expected state.logBuffer.get(state.logBuffer.size() - 1) to match expectedLastEntry");
   }
 
   @Test
@@ -107,8 +107,8 @@ public class ServerStateTest {
     state.chaosRules.put(expectedService, Map.of(expectedOp, Map.of("latency", "200")));
 
     // Assert
-    assertTrue(state.chaosRules.containsKey(expectedService));
-    assertTrue(state.chaosRules.get(expectedService).containsKey(expectedOp));
+    assertTrue(state.chaosRules.containsKey(expectedService), "Expected map to contain the expected key");
+    assertTrue(state.chaosRules.get(expectedService).containsKey(expectedOp), "Expected map to contain the expected key");
   }
 
   @Test
@@ -121,7 +121,7 @@ public class ServerStateTest {
     state.iamResourcePolicies.put(expectedArn, Map.of("Version", "2012-10-17"));
 
     // Assert
-    assertTrue(state.iamResourcePolicies.containsKey(expectedArn));
+    assertTrue(state.iamResourcePolicies.containsKey(expectedArn), "Expected map to contain the expected key");
   }
 
   @Test
@@ -134,6 +134,6 @@ public class ServerStateTest {
     List<Map<String, Object>> actualBuffer = state.logBuffer;
 
     // Assert
-    assertEquals(expectedSize, actualBuffer.size());
+    assertEquals(expectedSize, actualBuffer.size(), "Expected actualBuffer.size() to match expectedSize");
   }
 }

@@ -16,7 +16,7 @@ class TestWarnIfExperimental:
         # Assert
         expected_warning = "Warning: 'test-service' is experimental and may change."
         actual_stderr = capsys.readouterr().err
-        assert expected_warning in actual_stderr
+        assert expected_warning in actual_stderr, f"Expected {expected_warning!r} to be in {actual_stderr!r}"
 
         # Cleanup
         EXPERIMENTAL_SERVICES.discard("test-service")
@@ -30,7 +30,7 @@ class TestWarnIfExperimental:
 
         # Assert
         actual_stderr = capsys.readouterr().err
-        assert actual_stderr == ""
+        assert actual_stderr == "", f'Expected {""!r} but got {actual_stderr!r}'
 
     def test_warns_for_explicit_experimental_command(self, capsys):
         # Arrange
@@ -44,7 +44,7 @@ class TestWarnIfExperimental:
         # Assert
         expected_warning = "Warning: 'chaos test-cmd' is experimental and may change."
         actual_stderr = capsys.readouterr().err
-        assert expected_warning in actual_stderr
+        assert expected_warning in actual_stderr, f"Expected {expected_warning!r} to be in {actual_stderr!r}"
 
         # Cleanup
         EXPERIMENTAL_COMMANDS.discard(("chaos", "test-cmd"))
@@ -61,7 +61,7 @@ class TestWarnIfExperimental:
         # Assert
         expected_warning = "Warning: 'test-service' is experimental and may change."
         actual_stderr = capsys.readouterr().err
-        assert expected_warning in actual_stderr
+        assert expected_warning in actual_stderr, f"Expected {expected_warning!r} to be in {actual_stderr!r}"
 
         # Cleanup
         EXPERIMENTAL_SERVICES.discard("test-service")

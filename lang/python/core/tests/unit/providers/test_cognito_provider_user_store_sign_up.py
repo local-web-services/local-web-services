@@ -99,8 +99,8 @@ class TestUserStoreSignUp:
 
     async def test_sign_up_returns_sub(self, store: UserStore) -> None:
         sub = await store.sign_up("alice", "Password1A")
-        assert sub is not None
-        assert len(sub) > 0
+        assert sub is not None, "Expected value to be set but was None"
+        assert len(sub) > 0, f"Expected {len(sub)!r} > {0!r}"
 
     async def test_sign_up_duplicate_rejected(self, store: UserStore) -> None:
         # Arrange
@@ -122,9 +122,9 @@ class TestUserStoreSignUp:
         user = await store.get_user(username)
 
         # Assert
-        assert user is not None
+        assert user is not None, "Expected value to be set but was None"
         actual_email = user["attributes"]["email"]
-        assert actual_email == expected_email
+        assert actual_email == expected_email, f"Expected {expected_email!r} but got {actual_email!r}"
 
     async def test_sign_up_auto_confirmed(self, store: UserStore) -> None:
         # Arrange
@@ -135,5 +135,5 @@ class TestUserStoreSignUp:
         user = await store.get_user(username)
 
         # Assert
-        assert user is not None
-        assert user["confirmed"] is True
+        assert user is not None, "Expected value to be set but was None"
+        assert user["confirmed"] is True, "Expected value to be truthy"

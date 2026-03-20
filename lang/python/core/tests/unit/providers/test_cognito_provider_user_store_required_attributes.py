@@ -113,6 +113,6 @@ class TestUserStoreRequiredAttributes:
         await s.start()
         try:
             sub = await s.sign_up("alice", "Password1A", {"email": "a@b.com"})
-            assert sub is not None
+            assert sub is not None, "Expected value to be set but was None"
         finally:
             await s.stop()

@@ -67,9 +67,9 @@ class TestS3FakeGetObject:
         response = await client.get("/test-bucket/test-key.txt")
 
         # Assert
-        assert response.status_code == expected_status
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
         actual_body = response.text
-        assert actual_body == expected_body
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
     async def test_unfaked_list_buckets_falls_through(self, client: httpx.AsyncClient):
         """Verify unfaked ListBuckets falls through to real provider."""
@@ -80,5 +80,5 @@ class TestS3FakeGetObject:
         response = await client.get("/")
 
         # Assert
-        assert response.status_code == expected_status
-        assert "test-bucket" in response.text
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert "test-bucket" in response.text, f'Expected {"test-bucket"!r} to be in {response.text!r}'

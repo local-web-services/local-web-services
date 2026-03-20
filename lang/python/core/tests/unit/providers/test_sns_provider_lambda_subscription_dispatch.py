@@ -146,17 +146,17 @@ class TestLambdaSubscriptionDispatch:
         actual_event = call_args[0][0]
         actual_context = call_args[0][1]
 
-        assert "Records" in actual_event
-        assert len(actual_event["Records"]) == expected_record_count
+        assert "Records" in actual_event, f'Expected {"Records"!r} to be in {actual_event!r}'
+        assert len(actual_event["Records"]) == expected_record_count, f'Expected {expected_record_count!r} but got {len(actual_event["Records"])!r}'
         actual_record = actual_event["Records"][0]
-        assert actual_record["EventSource"] == expected_event_source
-        assert actual_record["Sns"]["Message"] == expected_message
-        assert actual_record["Sns"]["Subject"] == expected_subject
-        assert actual_record["Sns"]["TopicArn"] == expected_topic_arn
-        assert actual_record["Sns"]["MessageId"]
+        assert actual_record["EventSource"] == expected_event_source, f'Expected {expected_event_source!r} but got {actual_record["EventSource"]!r}'
+        assert actual_record["Sns"]["Message"] == expected_message, f'Expected {expected_message!r} but got {actual_record["Sns"]["Message"]!r}'
+        assert actual_record["Sns"]["Subject"] == expected_subject, f'Expected {expected_subject!r} but got {actual_record["Sns"]["Subject"]!r}'
+        assert actual_record["Sns"]["TopicArn"] == expected_topic_arn, f'Expected {expected_topic_arn!r} but got {actual_record["Sns"]["TopicArn"]!r}'
+        assert actual_record["Sns"]["MessageId"], "Expected value to be truthy"
 
-        assert isinstance(actual_context, LambdaContext)
-        assert actual_context.function_name == func_name
+        assert isinstance(actual_context, LambdaContext), f"Expected instance of {LambdaContext!r} but got {type(actual_context)!r}"
+        assert actual_context.function_name == func_name, f"Expected {func_name!r} but got {actual_context.function_name!r}"
 
     @pytest.mark.asyncio
     async def test_lambda_dispatch_missing_compute_logs_error(self) -> None:

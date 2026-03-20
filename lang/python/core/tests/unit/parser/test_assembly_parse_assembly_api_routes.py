@@ -147,10 +147,10 @@ class TestParseAssemblyApiRoutes:
         model = parse_assembly(cdk_out)
 
         # Assert
-        assert len(model.apis) == 1
+        assert len(model.apis) == 1, f"Expected {1!r} but got {len(model.apis)!r}"
         api = model.apis[0]
-        assert len(api.routes) == 1
+        assert len(api.routes) == 1, f"Expected {1!r} but got {len(api.routes)!r}"
         actual_route = api.routes[0]
-        assert actual_route.method == expected_method
-        assert actual_route.path == expected_path
-        assert actual_route.handler_name == expected_handler_name
+        assert actual_route.method == expected_method, f"Expected {expected_method!r} but got {actual_route.method!r}"
+        assert actual_route.path == expected_path, f"Expected {expected_path!r} but got {actual_route.path!r}"
+        assert actual_route.handler_name == expected_handler_name, f"Expected {expected_handler_name!r} but got {actual_route.handler_name!r}"

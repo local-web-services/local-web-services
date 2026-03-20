@@ -24,8 +24,8 @@ class TestDynamoDBQuery:
 
         # Assert
         actual_body = json.loads(actual_response.body)
-        assert actual_response.status == 200
-        assert actual_response.content_type == expected_content_type
-        assert actual_body["Items"] == expected_items
-        assert actual_body["Count"] == expected_count
-        assert actual_body["ScannedCount"] == expected_count
+        assert actual_response.status == 200, f"Expected {200!r} but got {actual_response.status!r}"
+        assert actual_response.content_type == expected_content_type, f"Expected {expected_content_type!r} but got {actual_response.content_type!r}"
+        assert actual_body["Items"] == expected_items, f'Expected {expected_items!r} but got {actual_body["Items"]!r}'
+        assert actual_body["Count"] == expected_count, f'Expected {expected_count!r} but got {actual_body["Count"]!r}'
+        assert actual_body["ScannedCount"] == expected_count, f'Expected {expected_count!r} but got {actual_body["ScannedCount"]!r}'

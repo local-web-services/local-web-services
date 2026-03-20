@@ -41,7 +41,7 @@ class TestMissingConstructInfo:
             },
         }
         nodes = parse_tree(tmp_tree(data))
-        assert nodes[0].fqn is None
+        assert nodes[0].fqn is None, f"Expected None but got {nodes[0].fqn!r}"
 
     def test_construct_info_with_unknown_fqn(self, tmp_tree):
         # Arrange
@@ -68,5 +68,5 @@ class TestMissingConstructInfo:
 
         # Assert
         actual_fqn = nodes[0].fqn
-        assert actual_fqn == expected_fqn
-        assert nodes[0].category is None
+        assert actual_fqn == expected_fqn, f"Expected {expected_fqn!r} but got {actual_fqn!r}"
+        assert nodes[0].category is None, f"Expected None but got {nodes[0].category!r}"

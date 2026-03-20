@@ -34,7 +34,7 @@ class TestAddIamAuthMiddleware:
         add_iam_auth_middleware(app, "dynamodb", bundle, ErrorFormat.JSON)
 
         # Assert
-        assert len(app.user_middleware) == 1
+        assert len(app.user_middleware) == 1, f"Expected {1!r} but got {len(app.user_middleware)!r}"
 
     def test_does_not_add_when_none(self):
         # Arrange
@@ -44,7 +44,7 @@ class TestAddIamAuthMiddleware:
         add_iam_auth_middleware(app, "dynamodb", None, ErrorFormat.JSON)
 
         # Assert
-        assert len(app.user_middleware) == 0
+        assert len(app.user_middleware) == 0, f"Expected {0!r} but got {len(app.user_middleware)!r}"
 
     def test_adds_middleware_even_when_service_has_enabled_false(self):
         # Arrange
@@ -68,4 +68,4 @@ class TestAddIamAuthMiddleware:
         # Assert
         expected_middleware_count = 1
         actual_middleware_count = len(app.user_middleware)
-        assert actual_middleware_count == expected_middleware_count
+        assert actual_middleware_count == expected_middleware_count, f"Expected {expected_middleware_count!r} but got {actual_middleware_count!r}"

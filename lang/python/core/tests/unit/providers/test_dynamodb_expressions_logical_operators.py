@@ -50,7 +50,7 @@ class TestLogicalOperators:
             item,
             "age = :age AND name = :name",
             expression_values={":age": {"N": "30"}, ":name": {"S": "Alice"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_and_one_false(self) -> None:
         item = {"age": 30, "name": "Alice"}
@@ -58,7 +58,7 @@ class TestLogicalOperators:
             item,
             "age = :age AND name = :name",
             expression_values={":age": {"N": "30"}, ":name": {"S": "Bob"}},
-        )
+        ), "Expected value to be falsy"
 
     def test_or_one_true(self) -> None:
         item = {"age": 30, "name": "Alice"}
@@ -66,7 +66,7 @@ class TestLogicalOperators:
             item,
             "age = :age OR name = :name",
             expression_values={":age": {"N": "99"}, ":name": {"S": "Alice"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_or_both_false(self) -> None:
         item = {"age": 30, "name": "Alice"}
@@ -74,7 +74,7 @@ class TestLogicalOperators:
             item,
             "age = :age OR name = :name",
             expression_values={":age": {"N": "99"}, ":name": {"S": "Bob"}},
-        )
+        ), "Expected value to be falsy"
 
     def test_not(self) -> None:
         item = {"active": True}
@@ -83,7 +83,7 @@ class TestLogicalOperators:
             item,
             "NOT active = :v",
             expression_values={":v": {"BOOL": False}},
-        )
+        ), "Expected value to be truthy"
 
     def test_not_negation(self) -> None:
         item = {"active": True}
@@ -91,7 +91,7 @@ class TestLogicalOperators:
             item,
             "NOT active = :v",
             expression_values={":v": {"BOOL": True}},
-        )
+        ), "Expected value to be falsy"
 
     def test_precedence_and_before_or(self) -> None:
         """AND binds tighter than OR: a OR (b AND c)."""
@@ -101,7 +101,7 @@ class TestLogicalOperators:
             item,
             "x = :a OR y = :b AND z = :c",
             expression_values={":a": {"N": "99"}, ":b": {"N": "2"}, ":c": {"N": "3"}},
-        )
+        ), "Expected value to be truthy"
 
     def test_precedence_and_before_or_both_false(self) -> None:
         """x=99 false OR (y=2 AND z=99) false => false."""
@@ -110,4 +110,4 @@ class TestLogicalOperators:
             item,
             "x = :a OR y = :b AND z = :c",
             expression_values={":a": {"N": "99"}, ":b": {"N": "2"}, ":c": {"N": "99"}},
-        )
+        ), "Expected value to be falsy"

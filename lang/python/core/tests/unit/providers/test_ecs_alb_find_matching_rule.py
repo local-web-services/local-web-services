@@ -50,14 +50,14 @@ class TestFindMatchingRule:
         result = _find_matching_rule(rules, "/api/users")
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_port = result.target_port
-        assert actual_port == expected_port
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
 
     def test_returns_none_when_no_match(self) -> None:
         rules = [ListenerRule(priority=1, path_pattern="/api/*", target_port=8080)]
         result = _find_matching_rule(rules, "/other")
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     def test_empty_rules_returns_none(self) -> None:
-        assert _find_matching_rule([], "/path") is None
+        assert _find_matching_rule([], "/path") is None, f'Expected None but got {_find_matching_rule([], "/path")!r}'

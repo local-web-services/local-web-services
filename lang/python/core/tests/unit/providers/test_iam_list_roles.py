@@ -25,8 +25,8 @@ class TestListRoles:
         xml = _post(client, "ListRoles")
 
         # Assert
-        assert "ListRolesResponse" in xml
-        assert "<IsTruncated>false</IsTruncated>" in xml
+        assert "ListRolesResponse" in xml, f'Expected {"ListRolesResponse"!r} to be in {xml!r}'
+        assert "<IsTruncated>false</IsTruncated>" in xml, f'Expected {"<IsTruncated>false</IsTruncated>"!r} to be in {xml!r}'
 
     def test_list_after_create(self) -> None:
         client = _client()
@@ -35,4 +35,4 @@ class TestListRoles:
         xml = _post(client, "ListRoles")
 
         # Assert
-        assert role_name in xml
+        assert role_name in xml, f"Expected {role_name!r} to be in {xml!r}"

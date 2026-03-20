@@ -80,10 +80,10 @@ class TestDynamoDbFakeGetItem:
         )
 
         # Assert
-        assert response.status_code == expected_status
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
         actual_name = body["Item"]["name"]["S"]
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     async def test_unfaked_operation_falls_through(self, client: httpx.AsyncClient):
         """Verify unfaked PutItem falls through to real provider."""
@@ -98,6 +98,6 @@ class TestDynamoDbFakeGetItem:
         )
 
         # Assert
-        assert response.status_code == expected_status
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
         body = response.json()
-        assert "TableNames" in body
+        assert "TableNames" in body, f'Expected {"TableNames"!r} to be in {body!r}'

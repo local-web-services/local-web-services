@@ -43,10 +43,10 @@ class TestOrchestratorIntegration:
         await orchestrator.start(dynamo_providers, startup_order)
 
         # Assert - Running
-        assert orchestrator.running
+        assert orchestrator.running, "Expected value to be truthy"
 
         # Act - Stop
         await orchestrator.stop()
 
         # Assert - Stopped
-        assert not orchestrator.running
+        assert not orchestrator.running, "Expected value to be falsy"

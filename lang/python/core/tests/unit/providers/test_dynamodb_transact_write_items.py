@@ -110,9 +110,9 @@ class TestTransactWriteItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
-        assert resp.json() == {}
-        assert fake_store.put_item.await_count == expected_put_count
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.json() == {}, "Expected {0!r} but got {1!r}".format({}, resp.json())
+        assert fake_store.put_item.await_count == expected_put_count, f"Expected {expected_put_count!r} but got {fake_store.put_item.await_count!r}"
         fake_store.put_item.assert_any_await(
             "Users", {"pk": {"S": "user#1"}, "name": {"S": "Alice"}}
         )
@@ -139,7 +139,7 @@ class TestTransactWriteItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         fake_store.delete_item.assert_awaited_once_with("Users", {"pk": {"S": "user#1"}})
 
     @pytest.mark.asyncio
@@ -177,8 +177,8 @@ class TestTransactWriteItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
-        assert resp.json() == {}
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.json() == {}, "Expected {0!r} but got {1!r}".format({}, resp.json())
         fake_store.put_item.assert_awaited_once()
         fake_store.delete_item.assert_awaited_once()
 
@@ -206,7 +206,7 @@ class TestTransactWriteItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         fake_store.update_item.assert_awaited_once_with(
             "Users",
             {"pk": {"S": "user#1"}},
@@ -227,8 +227,8 @@ class TestTransactWriteItems:
         resp = await fake_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
         # Assert
-        assert resp.status_code == expected_status_code
-        assert resp.json() == {}
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
+        assert resp.json() == {}, "Expected {0!r} but got {1!r}".format({}, resp.json())
 
     @pytest.mark.asyncio
     async def test_transact_write_integration(
@@ -268,7 +268,7 @@ class TestTransactWriteItems:
             resp = await real_client.post("/", json=payload, headers=_target("TransactWriteItems"))
 
             # Assert - write succeeded
-            assert resp.status_code == expected_status_code
+            assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
             # Act - verify items were actually written
             get_resp = await real_client.post(
@@ -281,9 +281,9 @@ class TestTransactWriteItems:
             )
 
             # Assert - item exists with expected name
-            assert get_resp.status_code == expected_status_code
+            assert get_resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {get_resp.status_code!r}"
             actual_name = get_resp.json()["Item"]["name"]
-            assert actual_name == expected_name
+            assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
             # Arrange - delete payload
             del_payload = {
@@ -301,7 +301,7 @@ class TestTransactWriteItems:
             resp = await real_client.post(
                 "/", json=del_payload, headers=_target("TransactWriteItems")
             )
-            assert resp.status_code == expected_status_code
+            assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
 
             # Act - verify deletion
             get_resp = await real_client.post(
@@ -314,7 +314,7 @@ class TestTransactWriteItems:
             )
 
             # Assert - item is gone
-            assert get_resp.status_code == expected_status_code
-            assert "Item" not in get_resp.json()
+            assert get_resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {get_resp.status_code!r}"
+            assert "Item" not in get_resp.json(), f'Expected {"Item"!r} to not be in {get_resp.json()!r}'
         finally:
             await real_provider.stop()

@@ -26,13 +26,13 @@ class TestServiceRegistry:
         result = registry.lookup("api")
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_port = result.port
-        assert actual_port == expected_port
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
 
     def test_lookup_missing_returns_none(self) -> None:
         registry = ServiceRegistry()
-        assert registry.lookup("nonexistent") is None
+        assert registry.lookup("nonexistent") is None, f'Expected None but got {registry.lookup("nonexistent")!r}'
 
     def test_deregister_removes_service(self) -> None:
         registry = ServiceRegistry()
@@ -40,7 +40,7 @@ class TestServiceRegistry:
         registry.register(ep)
         registry.deregister("api")
 
-        assert registry.lookup("api") is None
+        assert registry.lookup("api") is None, f'Expected None but got {registry.lookup("api")!r}'
 
     def test_deregister_missing_is_safe(self) -> None:
         registry = ServiceRegistry()
@@ -54,9 +54,9 @@ class TestServiceRegistry:
         registry.register(ep2)
 
         endpoints = registry.all_endpoints()
-        assert len(endpoints) == 2
-        assert "api" in endpoints
-        assert "web" in endpoints
+        assert len(endpoints) == 2, f"Expected {2!r} but got {len(endpoints)!r}"
+        assert "api" in endpoints, f'Expected {"api"!r} to be in {endpoints!r}'
+        assert "web" in endpoints, f'Expected {"web"!r} to be in {endpoints!r}'
 
     def test_all_endpoints_is_copy(self) -> None:
         registry = ServiceRegistry()
@@ -66,7 +66,7 @@ class TestServiceRegistry:
         endpoints = registry.all_endpoints()
         endpoints.clear()  # should not affect internal state
 
-        assert registry.lookup("api") is not None
+        assert registry.lookup("api") is not None, "Expected value to be set but was None"
 
     def test_re_register_updates_endpoint(self) -> None:
         # Arrange
@@ -81,9 +81,9 @@ class TestServiceRegistry:
         result = registry.lookup("api")
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_port = result.port
-        assert actual_port == expected_port
+        assert actual_port == expected_port, f"Expected {expected_port!r} but got {actual_port!r}"
 
     def test_build_env_vars(self) -> None:
         # Arrange
@@ -99,8 +99,8 @@ class TestServiceRegistry:
         expected_worker_url = "http://localhost:4000"
         actual_web_api_url = env["LDK_ECS_WEB_API"]
         actual_worker_url = env["LDK_ECS_WORKER"]
-        assert actual_web_api_url == expected_web_api_url
-        assert actual_worker_url == expected_worker_url
+        assert actual_web_api_url == expected_web_api_url, f"Expected {expected_web_api_url!r} but got {actual_web_api_url!r}"
+        assert actual_worker_url == expected_worker_url, f"Expected {expected_worker_url!r} but got {actual_worker_url!r}"
 
     def test_build_env_vars_custom_prefix(self) -> None:
         # Arrange
@@ -113,9 +113,9 @@ class TestServiceRegistry:
         # Assert
         expected_url = "http://localhost:5000"
         actual_url = env["MY_SVC"]
-        assert actual_url == expected_url
+        assert actual_url == expected_url, f"Expected {expected_url!r} but got {actual_url!r}"
 
     def test_build_env_vars_empty_registry(self) -> None:
         registry = ServiceRegistry()
         env = registry.build_env_vars()
-        assert env == {}
+        assert env == {}, "Expected {0!r} but got {1!r}".format({}, env)

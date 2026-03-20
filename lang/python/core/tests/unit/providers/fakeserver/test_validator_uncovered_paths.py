@@ -35,10 +35,10 @@ class TestUncoveredPaths:
         issues = validate_against_spec(config, spec)
 
         # Assert
-        assert len(issues) > 0
+        assert len(issues) > 0, f"Expected {len(issues)!r} > {0!r}"
         expected_level = "WARN"
         actual_level = issues[0].level
-        assert actual_level == expected_level
+        assert actual_level == expected_level, f"Expected {expected_level!r} but got {actual_level!r}"
 
     def test_all_paths_covered(self, tmp_path):
         # Arrange
@@ -66,4 +66,4 @@ class TestUncoveredPaths:
         issues = validate_against_spec(config, spec)
 
         # Assert
-        assert len(issues) == 0
+        assert len(issues) == 0, f"Expected {0!r} but got {len(issues)!r}"

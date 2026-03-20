@@ -19,13 +19,13 @@ class TestCreateEventBus:
     async def test_create_returns_arn(self, provider: EventBridgeProvider) -> None:
         expected_arn = "arn:aws:events:us-east-1:000000000000:event-bus/my-bus"
         actual_arn = await provider.create_event_bus("my-bus")
-        assert actual_arn == expected_arn
+        assert actual_arn == expected_arn, f"Expected {expected_arn!r} but got {actual_arn!r}"
 
     async def test_created_appears_in_list(self, provider: EventBridgeProvider) -> None:
         await provider.create_event_bus("new-bus")
         buses = provider.list_buses()
         bus_names = [b.bus_name for b in buses]
-        assert "new-bus" in bus_names
+        assert "new-bus" in bus_names, f'Expected {"new-bus"!r} to be in {bus_names!r}'
 
     async def test_create_raises_when_bus_already_exists(
         self, provider: EventBridgeProvider

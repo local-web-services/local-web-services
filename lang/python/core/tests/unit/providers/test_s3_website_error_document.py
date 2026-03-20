@@ -52,9 +52,9 @@ class TestErrorDocumentServing:
         response = await client.get("/web-bucket/nonexistent.txt")
 
         # Assert
-        assert response.status_code == expected_status
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
         actual_body = response.content
-        assert actual_body == expected_body
+        assert actual_body == expected_body, f"Expected {expected_body!r} but got {actual_body!r}"
 
     @pytest.mark.asyncio
     async def test_missing_key_no_error_document_returns_nosuchkey(
@@ -68,8 +68,8 @@ class TestErrorDocumentServing:
         response = await client.get("/web-bucket/nonexistent.txt")
 
         # Assert
-        assert response.status_code == expected_status
-        assert b"NoSuchKey" in response.content
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert b"NoSuchKey" in response.content, f'Expected {b"NoSuchKey"!r} to be in {response.content!r}'
 
     @pytest.mark.asyncio
     async def test_missing_error_document_returns_nosuchkey(
@@ -86,5 +86,5 @@ class TestErrorDocumentServing:
         response = await client.get("/web-bucket/nonexistent.txt")
 
         # Assert
-        assert response.status_code == expected_status
-        assert b"NoSuchKey" in response.content
+        assert response.status_code == expected_status, f"Expected {expected_status!r} but got {response.status_code!r}"
+        assert b"NoSuchKey" in response.content, f'Expected {b"NoSuchKey"!r} to be in {response.content!r}'

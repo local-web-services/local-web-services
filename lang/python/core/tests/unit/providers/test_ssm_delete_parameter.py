@@ -37,11 +37,11 @@ class TestDeleteParameter:
 
         # Assert
         expected_error_type = "ParameterNotFound"
-        assert result["__type"] == expected_error_type
+        assert result["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {result["__type"]!r}'
 
     def test_delete_missing(self, client: TestClient) -> None:
         result = _post(client, "DeleteParameter", {"Name": "/nope"})
 
         # Assert
         expected_error_type = "ParameterNotFound"
-        assert result["__type"] == expected_error_type
+        assert result["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {result["__type"]!r}'

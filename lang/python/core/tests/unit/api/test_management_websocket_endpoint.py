@@ -59,9 +59,9 @@ class TestWebSocketLogEndpoint:
 
                 # Assert
                 actual_message = data["message"]
-                assert actual_message == expected_message
+                assert actual_message == expected_message, f"Expected {expected_message!r} but got {actual_message!r}"
                 actual_level = data["level"]
-                assert actual_level == expected_level
+                assert actual_level == expected_level, f"Expected {expected_level!r} but got {actual_level!r}"
 
     def test_ws_receives_live_entry(self, client, ws_handler):
         # Arrange
@@ -81,9 +81,9 @@ class TestWebSocketLogEndpoint:
 
                 # Assert
                 actual_message = data["message"]
-                assert actual_message == expected_message
+                assert actual_message == expected_message, f"Expected {expected_message!r} but got {actual_message!r}"
                 actual_level = data["level"]
-                assert actual_level == expected_level
+                assert actual_level == expected_level, f"Expected {expected_level!r} but got {actual_level!r}"
 
     def test_ws_closes_when_no_handler(self, client):
         with patch("lws.api.management.get_ws_handler", return_value=None):

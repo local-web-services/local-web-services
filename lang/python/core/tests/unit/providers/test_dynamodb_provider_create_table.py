@@ -66,11 +66,11 @@ class TestCreateTable:
         # Assert
         actual_table_name = result["TableName"]
         actual_status = result["TableStatus"]
-        assert actual_table_name == expected_table_name
-        assert actual_status == expected_status
+        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
 
         tables = await provider.list_tables()
-        assert expected_table_name in tables
+        assert expected_table_name in tables, f"Expected {expected_table_name!r} to be in {tables!r}"
 
     @pytest.mark.asyncio
     async def test_create_table_can_put_and_get(self, provider: SqliteDynamoProvider) -> None:
@@ -84,9 +84,9 @@ class TestCreateTable:
         result = await provider.get_item("orders", {"pk": "p1", "sk": "s1"})
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         actual_data = result["data"]
-        assert actual_data == expected_data
+        assert actual_data == expected_data, f"Expected {expected_data!r} but got {actual_data!r}"
 
     @pytest.mark.asyncio
     async def test_create_table_duplicate_raises(self, provider: SqliteDynamoProvider) -> None:
@@ -110,6 +110,6 @@ class TestCreateTable:
         # Assert
         actual_table_name = result["TableName"]
         actual_index_name = result["GlobalSecondaryIndexes"][0]["IndexName"]
-        assert actual_table_name == expected_table_name
-        assert "GlobalSecondaryIndexes" in result
-        assert actual_index_name == expected_index_name
+        assert actual_table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table_name!r}"
+        assert "GlobalSecondaryIndexes" in result, f'Expected {"GlobalSecondaryIndexes"!r} to be in {result!r}'
+        assert actual_index_name == expected_index_name, f"Expected {expected_index_name!r} but got {actual_index_name!r}"

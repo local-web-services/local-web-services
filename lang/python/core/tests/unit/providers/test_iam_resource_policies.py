@@ -38,9 +38,9 @@ class TestResourcePolicyStoreLoad:
         actual = store.get_policy("s3", "my-bucket")
 
         # Assert
-        assert actual is not None
+        assert actual is not None, "Expected value to be set but was None"
         actual_action = actual["Statement"][0]["Action"]
-        assert actual_action == expected_action
+        assert actual_action == expected_action, f"Expected {expected_action!r} but got {actual_action!r}"
 
     def test_missing_file_returns_none(self):
         # Arrange
@@ -51,7 +51,7 @@ class TestResourcePolicyStoreLoad:
         actual = store.get_policy("s3", "my-bucket")
 
         # Assert
-        assert actual is None
+        assert actual is None, f"Expected None but got {actual!r}"
 
     def test_unknown_service_returns_none(self, tmp_path):
         # Arrange
@@ -63,7 +63,7 @@ class TestResourcePolicyStoreLoad:
         actual = store.get_policy("nonexistent", "resource")
 
         # Assert
-        assert actual is None
+        assert actual is None, f"Expected None but got {actual!r}"
 
     def test_unknown_resource_returns_none(self, tmp_path):
         # Arrange
@@ -75,4 +75,4 @@ class TestResourcePolicyStoreLoad:
         actual = store.get_policy("s3", "nonexistent")
 
         # Assert
-        assert actual is None
+        assert actual is None, f"Expected None but got {actual!r}"

@@ -96,5 +96,5 @@ class TestSnsSqsFanout:
         )
 
         # Assert
-        assert recv_resp.status_code == expected_status_code
-        assert expected_message in recv_resp.text
+        assert recv_resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {recv_resp.status_code!r}"
+        assert expected_message in recv_resp.text, f"Expected {expected_message!r} to be in {recv_resp.text!r}"

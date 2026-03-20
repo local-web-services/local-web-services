@@ -38,19 +38,19 @@ from lws.providers.ecs.alb import (
 
 class TestPathMatches:
     def test_wildcard_matches_everything(self) -> None:
-        assert _path_matches("*", "/anything") is True
+        assert _path_matches("*", "/anything") is True, "Expected value to be truthy"
 
     def test_slash_wildcard_matches_everything(self) -> None:
-        assert _path_matches("/*", "/anything") is True
+        assert _path_matches("/*", "/anything") is True, "Expected value to be truthy"
 
     def test_prefix_wildcard(self) -> None:
-        assert _path_matches("/api/*", "/api/users") is True
-        assert _path_matches("/api/*", "/other/path") is False
+        assert _path_matches("/api/*", "/api/users") is True, "Expected value to be truthy"
+        assert _path_matches("/api/*", "/other/path") is False, "Expected value to be truthy"
 
     def test_suffix_wildcard(self) -> None:
-        assert _path_matches("*.html", "/page.html") is True
-        assert _path_matches("*.html", "/page.json") is False
+        assert _path_matches("*.html", "/page.html") is True, "Expected value to be truthy"
+        assert _path_matches("*.html", "/page.json") is False, "Expected value to be truthy"
 
     def test_exact_match(self) -> None:
-        assert _path_matches("/health", "/health") is True
-        assert _path_matches("/health", "/healthz") is False
+        assert _path_matches("/health", "/health") is True, "Expected value to be truthy"
+        assert _path_matches("/health", "/healthz") is False, "Expected value to be truthy"

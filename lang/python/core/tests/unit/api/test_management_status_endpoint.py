@@ -51,9 +51,9 @@ class TestStatusEndpoint:
         resp = client.get("/_ldk/status")
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["running"] is True
+        assert data["running"] is True, "Expected value to be truthy"
 
     def test_status_lists_providers(self, client):
         # Arrange
@@ -64,17 +64,17 @@ class TestStatusEndpoint:
 
         # Assert
         data = resp.json()
-        assert "providers" in data
+        assert "providers" in data, f'Expected {"providers"!r} to be in {data!r}'
         actual_provider_count = len(data["providers"])
-        assert actual_provider_count == expected_provider_count
+        assert actual_provider_count == expected_provider_count, f"Expected {expected_provider_count!r} but got {actual_provider_count!r}"
 
     def test_status_provider_health(self, client):
         resp = client.get("/_ldk/status")
         data = resp.json()
         for provider in data["providers"]:
-            assert "name" in provider
-            assert "healthy" in provider
-            assert provider["healthy"] is True
+            assert "name" in provider, f'Expected {"name"!r} to be in {provider!r}'
+            assert "healthy" in provider, f'Expected {"healthy"!r} to be in {provider!r}'
+            assert provider["healthy"] is True, "Expected value to be truthy"
 
     def test_status_provider_ids(self, client):
         # Arrange
@@ -87,5 +87,5 @@ class TestStatusEndpoint:
         # Assert
         data = resp.json()
         actual_ids = {p["id"] for p in data["providers"]}
-        assert expected_lambda_id in actual_ids
-        assert expected_dynamodb_id in actual_ids
+        assert expected_lambda_id in actual_ids, f"Expected {expected_lambda_id!r} to be in {actual_ids!r}"
+        assert expected_dynamodb_id in actual_ids, f"Expected {expected_dynamodb_id!r} to be in {actual_ids!r}"

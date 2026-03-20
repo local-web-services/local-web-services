@@ -37,9 +37,9 @@ class TestIdentityStoreGetPolicies:
         actual_policies = store.get_policies("reader")
 
         # Assert
-        assert len(actual_policies) == 1
+        assert len(actual_policies) == 1, f"Expected {1!r} but got {len(actual_policies)!r}"
         actual_action = actual_policies[0]["Statement"][0]["Action"]
-        assert actual_action == expected_action
+        assert actual_action == expected_action, f"Expected {expected_action!r} but got {actual_action!r}"
 
     def test_unknown_identity_returns_empty(self, tmp_path):
         # Arrange
@@ -51,4 +51,4 @@ class TestIdentityStoreGetPolicies:
         actual = store.get_policies("unknown")
 
         # Assert
-        assert actual == []
+        assert actual == [], f"Expected {[]!r} but got {actual!r}"

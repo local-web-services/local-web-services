@@ -37,12 +37,12 @@ class TestPutAndGetParameter:
         # Assert
         expected_version = 1
         expected_type = "String"
-        assert result["Version"] == expected_version
+        assert result["Version"] == expected_version, f'Expected {expected_version!r} but got {result["Version"]!r}'
 
         result = _post(client, "GetParameter", {"Name": param_name})
-        assert result["Parameter"]["Name"] == param_name
-        assert result["Parameter"]["Value"] == expected_value
-        assert result["Parameter"]["Type"] == expected_type
+        assert result["Parameter"]["Name"] == param_name, f'Expected {param_name!r} but got {result["Parameter"]["Name"]!r}'
+        assert result["Parameter"]["Value"] == expected_value, f'Expected {expected_value!r} but got {result["Parameter"]["Value"]!r}'
+        assert result["Parameter"]["Type"] == expected_type, f'Expected {expected_type!r} but got {result["Parameter"]["Type"]!r}'
 
     def test_put_overwrite_increments_version(self, client: TestClient) -> None:
         param_name = "/v"
@@ -56,10 +56,10 @@ class TestPutAndGetParameter:
 
         # Assert
         expected_version = 2
-        assert result["Version"] == expected_version
+        assert result["Version"] == expected_version, f'Expected {expected_version!r} but got {result["Version"]!r}'
 
         got = _post(client, "GetParameter", {"Name": param_name})
-        assert got["Parameter"]["Value"] == expected_new_value
+        assert got["Parameter"]["Value"] == expected_new_value, f'Expected {expected_new_value!r} but got {got["Parameter"]["Value"]!r}'
 
     def test_put_without_overwrite_returns_error(self, client: TestClient) -> None:
         param_name = "/dup"
@@ -68,14 +68,14 @@ class TestPutAndGetParameter:
 
         # Assert
         expected_error_type = "ParameterAlreadyExists"
-        assert result["__type"] == expected_error_type
+        assert result["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {result["__type"]!r}'
 
     def test_get_missing_parameter(self, client: TestClient) -> None:
         result = _post(client, "GetParameter", {"Name": "/missing"})
 
         # Assert
         expected_error_type = "ParameterNotFound"
-        assert result["__type"] == expected_error_type
+        assert result["__type"] == expected_error_type, f'Expected {expected_error_type!r} but got {result["__type"]!r}'
 
     def test_secure_string_masked_without_decryption(self, client: TestClient) -> None:
         param_name = "/secret"
@@ -89,7 +89,7 @@ class TestPutAndGetParameter:
 
         # Assert - masked without decryption
         expected_masked_value = "***"
-        assert result["Parameter"]["Value"] == expected_masked_value
+        assert result["Parameter"]["Value"] == expected_masked_value, f'Expected {expected_masked_value!r} but got {result["Parameter"]["Value"]!r}'
 
         result = _post(
             client,
@@ -97,4 +97,4 @@ class TestPutAndGetParameter:
             {"Name": param_name, "WithDecryption": True},
         )
         # Assert - decrypted
-        assert result["Parameter"]["Value"] == secret_value
+        assert result["Parameter"]["Value"] == secret_value, f'Expected {secret_value!r} but got {result["Parameter"]["Value"]!r}'

@@ -54,4 +54,4 @@ class TestParseAssetsFromMetadata:
         result = parse_assets(cdk_out)
 
         # Assert
-        assert asset_hash in result
+        assert asset_hash in result, f"Expected {asset_hash!r} to be in {result!r}"

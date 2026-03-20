@@ -27,7 +27,7 @@ class TestCreateStateMachine:
         )
 
         # Assert
-        assert actual_arn == expected_arn
+        assert actual_arn == expected_arn, f"Expected {expected_arn!r} but got {actual_arn!r}"
 
     async def test_created_appears_in_list(self, provider: StepFunctionsProvider) -> None:
         provider.create_state_machine(
@@ -35,7 +35,7 @@ class TestCreateStateMachine:
             definition='{"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": true}}}',
         )
         names = provider.list_state_machines()
-        assert "my-sm" in names
+        assert "my-sm" in names, f'Expected {"my-sm"!r} to be in {names!r}'
 
     async def test_create_raises_when_already_exists(self, provider: StepFunctionsProvider) -> None:
         # Arrange
@@ -63,4 +63,4 @@ class TestCreateStateMachine:
         # Assert
         attrs = provider.describe_state_machine("express-sm")
         actual_type = attrs["type"]
-        assert actual_type == expected_type
+        assert actual_type == expected_type, f"Expected {expected_type!r} but got {actual_type!r}"

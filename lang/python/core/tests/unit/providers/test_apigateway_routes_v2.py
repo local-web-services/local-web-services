@@ -33,11 +33,11 @@ class TestApiGatewayV2Routes:
 
         # Assert
         expected_status = 201
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["name"] == expected_name
-        assert data["protocolType"] == expected_protocol
-        assert "apiId" in data
+        assert data["name"] == expected_name, f'Expected {expected_name!r} but got {data["name"]!r}'
+        assert data["protocolType"] == expected_protocol, f'Expected {expected_protocol!r} but got {data["protocolType"]!r}'
+        assert "apiId" in data, f'Expected {"apiId"!r} to be in {data!r}'
 
     @pytest.mark.asyncio
     async def test_list_apis(self, client) -> None:
@@ -49,8 +49,8 @@ class TestApiGatewayV2Routes:
         # Assert
         expected_status = 200
         expected_count = 2
-        assert resp.status_code == expected_status
-        assert len(resp.json()["items"]) == expected_count
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert len(resp.json()["items"]) == expected_count, f'Expected {expected_count!r} but got {len(resp.json()["items"])!r}'
 
     @pytest.mark.asyncio
     async def test_get_api(self, client) -> None:
@@ -62,8 +62,8 @@ class TestApiGatewayV2Routes:
 
         # Assert
         expected_status = 200
-        assert resp.status_code == expected_status
-        assert resp.json()["name"] == api_name
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.json()["name"] == api_name, f'Expected {api_name!r} but got {resp.json()["name"]!r}'
 
     @pytest.mark.asyncio
     async def test_delete_api(self, client) -> None:
@@ -75,10 +75,10 @@ class TestApiGatewayV2Routes:
         # Assert
         expected_delete_status = 204
         expected_not_found_status = 404
-        assert resp.status_code == expected_delete_status
+        assert resp.status_code == expected_delete_status, f"Expected {expected_delete_status!r} but got {resp.status_code!r}"
 
         get_resp = await client.get(f"/v2/apis/{api_id}")
-        assert get_resp.status_code == expected_not_found_status
+        assert get_resp.status_code == expected_not_found_status, f"Expected {expected_not_found_status!r} but got {get_resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_create_integration(self, client) -> None:
@@ -97,10 +97,10 @@ class TestApiGatewayV2Routes:
 
         # Assert
         expected_status = 201
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert "integrationId" in data
-        assert data["integrationType"] == expected_integration_type
+        assert "integrationId" in data, f'Expected {"integrationId"!r} to be in {data!r}'
+        assert data["integrationType"] == expected_integration_type, f'Expected {expected_integration_type!r} but got {data["integrationType"]!r}'
 
     @pytest.mark.asyncio
     async def test_create_route(self, client) -> None:
@@ -115,9 +115,9 @@ class TestApiGatewayV2Routes:
 
         # Assert
         expected_status = 201
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["routeKey"] == expected_route_key
+        assert data["routeKey"] == expected_route_key, f'Expected {expected_route_key!r} but got {data["routeKey"]!r}'
 
     @pytest.mark.asyncio
     async def test_create_stage(self, client) -> None:
@@ -132,8 +132,8 @@ class TestApiGatewayV2Routes:
 
         # Assert
         expected_status = 201
-        assert resp.status_code == expected_status
-        assert resp.json()["stageName"] == expected_stage_name
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.json()["stageName"] == expected_stage_name, f'Expected {expected_stage_name!r} but got {resp.json()["stageName"]!r}'
 
     @pytest.mark.asyncio
     async def test_v1_routes_still_work(self, client) -> None:
@@ -143,5 +143,5 @@ class TestApiGatewayV2Routes:
 
         # Assert
         expected_status = 201
-        assert resp.status_code == expected_status
-        assert resp.json()["name"] == expected_name
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert resp.json()["name"] == expected_name, f'Expected {expected_name!r} but got {resp.json()["name"]!r}'

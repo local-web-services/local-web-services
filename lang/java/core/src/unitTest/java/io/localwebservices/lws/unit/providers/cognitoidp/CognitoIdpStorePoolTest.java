@@ -22,7 +22,7 @@ public class CognitoIdpStorePoolTest {
 
     // Assert
     String actualName = (String) store.pools.get(expectedPoolId).get("Name");
-    assertEquals(expectedName, actualName);
+    assertEquals(expectedName, actualName, "Expected actualName to equal expectedName");
   }
 
   @Test
@@ -37,7 +37,7 @@ public class CognitoIdpStorePoolTest {
 
     // Assert
     Map<String, Object> actualPool = store.pools.get(expectedPoolId);
-    assertNull(actualPool);
+    assertNull(actualPool, "Expected actualPool to be null");
   }
 
   @Test
@@ -52,7 +52,7 @@ public class CognitoIdpStorePoolTest {
     int actualCount = store.pools.size();
 
     // Assert
-    assertEquals(expectedCount, actualCount);
+    assertEquals(expectedCount, actualCount, "Expected actualCount to match expectedCount");
   }
 
   @Test
@@ -65,6 +65,6 @@ public class CognitoIdpStorePoolTest {
     store.reset();
 
     // Assert
-    assertTrue(store.pools.isEmpty());
+    assertTrue(store.pools.isEmpty(), "Expected store.pools to be empty");
   }
 }

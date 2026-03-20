@@ -61,15 +61,15 @@ class TestRemoveTargetsRoute:
             "RemoveTargets",
             {"Rule": "test-rule", "Ids": ["t1"]},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["FailedEntryCount"] == 0
+        assert data["FailedEntryCount"] == 0, f'Expected {0!r} but got {data["FailedEntryCount"]!r}'
 
         # Verify target was actually removed
         resp = await _request(client, "ListTargetsByRule", {"Rule": "test-rule"})
         targets = resp.json()["Targets"]
-        assert len(targets) == 1
-        assert targets[0]["Id"] == "t2"
+        assert len(targets) == 1, f"Expected {1!r} but got {len(targets)!r}"
+        assert targets[0]["Id"] == "t2", f'Expected {"t2"!r} but got {targets[0]["Id"]!r}'
 
     async def test_remove_targets_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
         resp = await _request(
@@ -77,4 +77,4 @@ class TestRemoveTargetsRoute:
             "RemoveTargets",
             {"Rule": "nope", "Ids": ["t1"]},
         )
-        assert resp.status_code == 400
+        assert resp.status_code == 400, f"Expected {400!r} but got {resp.status_code!r}"

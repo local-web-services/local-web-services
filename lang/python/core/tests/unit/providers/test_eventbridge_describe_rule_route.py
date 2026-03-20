@@ -54,12 +54,12 @@ class TestDescribeRuleRoute:
         resp = await _request(client, "DescribeRule", {"Name": rule_name})
 
         # Assert
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["Name"] == rule_name
-        assert data["State"] == expected_state
+        assert data["Name"] == rule_name, f'Expected {rule_name!r} but got {data["Name"]!r}'
+        assert data["State"] == expected_state, f'Expected {expected_state!r} but got {data["State"]!r}'
 
     async def test_describe_nonexistent_rule(self, client: httpx.AsyncClient) -> None:
         expected_status_code = 400
         resp = await _request(client, "DescribeRule", {"Name": "nope"})
-        assert resp.status_code == expected_status_code
+        assert resp.status_code == expected_status_code, f"Expected {expected_status_code!r} but got {resp.status_code!r}"

@@ -25,8 +25,8 @@ public class SsmStorePutGetTest {
         store.putParameter(expectedName, expectedValue, "String", false);
 
     // Assert
-    assertEquals(expectedName, actualParam.get("Name"));
-    assertEquals(expectedValue, actualParam.get("Value"));
+    assertEquals(expectedName, actualParam.get("Name"), "Expected actualParam.get("Name") to equal expectedName");
+    assertEquals(expectedValue, actualParam.get("Value"), "Expected actualParam.get("Value") to equal expectedValue");
   }
 
   @Test
@@ -40,8 +40,8 @@ public class SsmStorePutGetTest {
     Map<String, Object> actualParam = store.getParameter(expectedName);
 
     // Assert
-    assertNotNull(actualParam);
-    assertEquals(expectedName, actualParam.get("Name"));
+    assertNotNull(actualParam, "Expected actualParam to not be null");
+    assertEquals(expectedName, actualParam.get("Name"), "Expected actualParam.get("Name") to equal expectedName");
   }
 
   @Test
@@ -53,7 +53,7 @@ public class SsmStorePutGetTest {
     Map<String, Object> actualParam = store.getParameter("nonExistent");
 
     // Assert
-    assertNull(actualParam);
+    assertNull(actualParam, "Expected actualParam to be null");
   }
 
   @Test
@@ -67,7 +67,7 @@ public class SsmStorePutGetTest {
     Map<String, Object> actualParam = store.getParameter("myParam");
 
     // Assert
-    assertEquals(expectedType, actualParam.get("Type"));
+    assertEquals(expectedType, actualParam.get("Type"), "Expected actualParam.get("Type") to equal expectedType");
   }
 
   @Test
@@ -84,8 +84,8 @@ public class SsmStorePutGetTest {
     List<String> actualInvalid = store.getInvalidParameters(List.of("a", "b", "c"));
 
     // Assert
-    assertEquals(expectedFoundSize, actualFound.size());
-    assertEquals(expectedInvalidSize, actualInvalid.size());
+    assertEquals(expectedFoundSize, actualFound.size(), "Expected actualFound.size() to match expectedFoundSize");
+    assertEquals(expectedInvalidSize, actualInvalid.size(), "Expected actualInvalid.size() to match expectedInvalidSize");
   }
 
   @Test
@@ -99,7 +99,7 @@ public class SsmStorePutGetTest {
     boolean actualResult = store.containsParameter(paramName);
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -111,7 +111,7 @@ public class SsmStorePutGetTest {
     boolean actualResult = store.containsParameter("myParam");
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -125,6 +125,6 @@ public class SsmStorePutGetTest {
     store.reset();
 
     // Assert
-    assertFalse(store.containsParameter(paramName));
+    assertFalse(store.containsParameter(paramName), "Expected condition to be false: store.containsParameter(paramName)");
   }
 }

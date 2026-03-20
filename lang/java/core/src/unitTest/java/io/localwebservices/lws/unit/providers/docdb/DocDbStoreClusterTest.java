@@ -25,8 +25,8 @@ public class DocDbStoreClusterTest {
     Map<String, Object> actualCluster = store.createCluster(params);
 
     // Assert
-    assertNotNull(actualCluster);
-    assertEquals(expectedId, actualCluster.get("DBClusterIdentifier"));
+    assertNotNull(actualCluster, "Expected actualCluster to not be null");
+    assertEquals(expectedId, actualCluster.get("DBClusterIdentifier"), "Expected actualCluster.get("DBClusterIdentifier") to equal expectedId");
   }
 
   @Test
@@ -41,7 +41,7 @@ public class DocDbStoreClusterTest {
     Map<String, Object> actualCluster = store.createCluster(params);
 
     // Assert
-    assertEquals(expectedEngine, actualCluster.get("Engine"));
+    assertEquals(expectedEngine, actualCluster.get("Engine"), "Expected actualCluster.get("Engine") to equal expectedEngine");
   }
 
   @Test
@@ -61,8 +61,8 @@ public class DocDbStoreClusterTest {
     List<Map<String, Object>> actualClusters = store.describeClusters("cluster-a");
 
     // Assert
-    assertEquals(expectedSize, actualClusters.size());
-    assertEquals(expectedId, actualClusters.get(0).get("DBClusterIdentifier"));
+    assertEquals(expectedSize, actualClusters.size(), "Expected actualClusters.size() to match expectedSize");
+    assertEquals(expectedId, actualClusters.get(0).get("DBClusterIdentifier"), "Expected actualClusters.get(0).get("DBClusterIdentifier") to equal expectedId");
   }
 
   @Test
@@ -81,7 +81,7 @@ public class DocDbStoreClusterTest {
     List<Map<String, Object>> actualClusters = store.describeClusters(null);
 
     // Assert
-    assertEquals(expectedSize, actualClusters.size());
+    assertEquals(expectedSize, actualClusters.size(), "Expected actualClusters.size() to match expectedSize");
   }
 
   @Test
@@ -98,10 +98,10 @@ public class DocDbStoreClusterTest {
     Map<String, Object> actualDeleted = store.deleteCluster("my-cluster");
 
     // Assert
-    assertNotNull(actualDeleted);
-    assertEquals(expectedId, actualDeleted.get("DBClusterIdentifier"));
-    assertTrue(store.describeClusters(null).isEmpty());
-    assertEquals(expectedRemainingSize, store.describeClusters(null).size());
+    assertNotNull(actualDeleted, "Expected actualDeleted to not be null");
+    assertEquals(expectedId, actualDeleted.get("DBClusterIdentifier"), "Expected actualDeleted.get("DBClusterIdentifier") to equal expectedId");
+    assertTrue(store.describeClusters(null).isEmpty(), "Expected store.describeClusters(null) to be empty");
+    assertEquals(expectedRemainingSize, store.describeClusters(null).size(), "Expected store.describeClusters(null).size() to match expectedRemainingSize");
   }
 
   @Test
@@ -113,7 +113,7 @@ public class DocDbStoreClusterTest {
     Map<String, Object> actualDeleted = store.deleteCluster("does-not-exist");
 
     // Assert
-    assertNull(actualDeleted);
+    assertNull(actualDeleted, "Expected actualDeleted to be null");
   }
 
   @Test
@@ -129,6 +129,6 @@ public class DocDbStoreClusterTest {
     store.reset();
 
     // Assert
-    assertEquals(expectedSize, store.describeClusters(null).size());
+    assertEquals(expectedSize, store.describeClusters(null).size(), "Expected store.describeClusters(null).size() to match expectedSize");
   }
 }

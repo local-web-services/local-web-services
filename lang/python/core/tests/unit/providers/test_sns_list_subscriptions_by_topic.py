@@ -48,12 +48,12 @@ class TestListSubscriptionsByTopic:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "ListSubscriptionsByTopicResponse" in resp.text
-        assert "func-a" in resp.text
-        assert "queue-b" in resp.text
-        assert "<Protocol>lambda</Protocol>" in resp.text
-        assert "<Protocol>sqs</Protocol>" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "ListSubscriptionsByTopicResponse" in resp.text, f'Expected {"ListSubscriptionsByTopicResponse"!r} to be in {resp.text!r}'
+        assert "func-a" in resp.text, f'Expected {"func-a"!r} to be in {resp.text!r}'
+        assert "queue-b" in resp.text, f'Expected {"queue-b"!r} to be in {resp.text!r}'
+        assert "<Protocol>lambda</Protocol>" in resp.text, f'Expected {"<Protocol>lambda</Protocol>"!r} to be in {resp.text!r}'
+        assert "<Protocol>sqs</Protocol>" in resp.text, f'Expected {"<Protocol>sqs</Protocol>"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_list_subscriptions_by_topic_empty(
@@ -72,9 +72,9 @@ class TestListSubscriptionsByTopic:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "ListSubscriptionsByTopicResponse" in resp.text
-        assert "<Subscriptions>" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "ListSubscriptionsByTopicResponse" in resp.text, f'Expected {"ListSubscriptionsByTopicResponse"!r} to be in {resp.text!r}'
+        assert "<Subscriptions>" in resp.text, f'Expected {"<Subscriptions>"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_list_subscriptions_by_topic_not_found(
@@ -92,8 +92,8 @@ class TestListSubscriptionsByTopic:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
-        assert "NotFound" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "NotFound" in resp.text, f'Expected {"NotFound"!r} to be in {resp.text!r}'
 
     @pytest.mark.asyncio
     async def test_list_subscriptions_by_topic_isolates_topics(
@@ -116,6 +116,6 @@ class TestListSubscriptionsByTopic:
         )
 
         # Assert
-        assert resp.status_code == expected_status
-        assert "func-a" in resp.text
-        assert "func-b" not in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "func-a" in resp.text, f'Expected {"func-a"!r} to be in {resp.text!r}'
+        assert "func-b" not in resp.text, f'Expected {"func-b"!r} to not be in {resp.text!r}'

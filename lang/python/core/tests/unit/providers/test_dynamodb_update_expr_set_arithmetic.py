@@ -68,7 +68,7 @@ class TestSetArithmetic:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count
+        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_subtract_from_number(self) -> None:
         # Arrange
@@ -84,7 +84,7 @@ class TestSetArithmetic:
 
         # Assert
         actual_count = result["count"]
-        assert actual_count == expected_count
+        assert actual_count == expected_count, f"Expected {expected_count!r} but got {actual_count!r}"
 
     def test_add_with_value_refs(self) -> None:
         # Arrange
@@ -100,4 +100,4 @@ class TestSetArithmetic:
 
         # Assert
         actual_price = result["price"]
-        assert actual_price == expected_price
+        assert actual_price == expected_price, f"Expected {expected_price!r} but got {actual_price!r}"

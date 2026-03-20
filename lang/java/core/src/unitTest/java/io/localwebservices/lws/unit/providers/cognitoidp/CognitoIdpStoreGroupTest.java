@@ -27,7 +27,7 @@ public class CognitoIdpStoreGroupTest {
 
     // Assert
     Map<String, Object> actualGroup = store.groups.get(expectedPoolId).get(expectedGroupName);
-    assertNotNull(actualGroup);
+    assertNotNull(actualGroup, "Expected actualGroup to not be null");
   }
 
   @Test
@@ -48,7 +48,7 @@ public class CognitoIdpStoreGroupTest {
 
     // Assert
     Set<String> actualMembers = store.groupMembers.get(expectedPoolId).get(expectedGroupName);
-    assertTrue(actualMembers.contains(expectedUsername));
+    assertTrue(actualMembers.contains(expectedUsername), "Expected value to contain expected substring");
   }
 
   @Test
@@ -64,7 +64,7 @@ public class CognitoIdpStoreGroupTest {
     store.reset();
 
     // Assert
-    assertTrue(store.groups.isEmpty());
+    assertTrue(store.groups.isEmpty(), "Expected store.groups to be empty");
   }
 
   @Test
@@ -81,6 +81,6 @@ public class CognitoIdpStoreGroupTest {
     store.reset();
 
     // Assert
-    assertTrue(store.groupMembers.isEmpty());
+    assertTrue(store.groupMembers.isEmpty(), "Expected store.groupMembers to be empty");
   }
 }

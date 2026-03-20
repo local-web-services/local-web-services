@@ -38,10 +38,10 @@ class TestCognitoStubOperations:
         # Assert
         expected_status = 400
         expected_error_type = "UnknownOperationException"
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
         body = resp.json()
         actual_error_type = body["__type"]
-        assert actual_error_type == expected_error_type
-        assert "lws" in body["message"]
-        assert "Cognito" in body["message"]
-        assert "TagResource" in body["message"]
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
+        assert "lws" in body["message"], f'Expected {"lws"!r} to be in {body["message"]!r}'
+        assert "Cognito" in body["message"], f'Expected {"Cognito"!r} to be in {body["message"]!r}'
+        assert "TagResource" in body["message"], f'Expected {"TagResource"!r} to be in {body["message"]!r}'

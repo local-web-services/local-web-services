@@ -64,13 +64,13 @@ class TestLocalBucketStorageHead:
         actual_meta = await storage.head_object(bucket, key)
 
         # Assert
-        assert actual_meta is not None
-        assert actual_meta["size"] == expected_size
-        assert "body" not in actual_meta
+        assert actual_meta is not None, "Expected value to be set but was None"
+        assert actual_meta["size"] == expected_size, f'Expected {expected_size!r} but got {actual_meta["size"]!r}'
+        assert "body" not in actual_meta, f'Expected {"body"!r} to not be in {actual_meta!r}'
 
     async def test_head_nonexistent(self, storage: LocalBucketStorage) -> None:
         # Act
         actual_result = await storage.head_object("mybucket", "nokey")
 
         # Assert
-        assert actual_result is None
+        assert actual_result is None, f"Expected None but got {actual_result!r}"

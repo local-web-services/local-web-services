@@ -27,14 +27,14 @@ public class S3StoreTest {
     store.reset();
 
     // Assert
-    assertFalse(store.buckets.containsKey(expectedBucket));
-    assertFalse(store.objects.containsKey(expectedBucket));
-    assertFalse(store.objectMetadata.containsKey(expectedBucket));
-    assertFalse(store.bucketTags.containsKey(expectedBucket));
-    assertFalse(store.bucketPolicies.containsKey(expectedBucket));
-    assertFalse(store.bucketWebsites.containsKey(expectedBucket));
-    assertFalse(store.multipartUploads.containsKey("upload-1"));
-    assertFalse(store.multipartParts.containsKey("upload-1"));
+    assertFalse(store.buckets.containsKey(expectedBucket), "Expected map to not contain the key");
+    assertFalse(store.objects.containsKey(expectedBucket), "Expected map to not contain the key");
+    assertFalse(store.objectMetadata.containsKey(expectedBucket), "Expected map to not contain the key");
+    assertFalse(store.bucketTags.containsKey(expectedBucket), "Expected map to not contain the key");
+    assertFalse(store.bucketPolicies.containsKey(expectedBucket), "Expected map to not contain the key");
+    assertFalse(store.bucketWebsites.containsKey(expectedBucket), "Expected map to not contain the key");
+    assertFalse(store.multipartUploads.containsKey("upload-1"), "Expected map to not contain the key");
+    assertFalse(store.multipartParts.containsKey("upload-1"), "Expected map to not contain the key");
   }
 
   @Test
@@ -47,6 +47,6 @@ public class S3StoreTest {
     store.buckets.put(expectedBucket, Map.of("Name", expectedBucket));
 
     // Assert
-    assertTrue(store.buckets.containsKey(expectedBucket));
+    assertTrue(store.buckets.containsKey(expectedBucket), "Expected map to contain the expected key");
   }
 }

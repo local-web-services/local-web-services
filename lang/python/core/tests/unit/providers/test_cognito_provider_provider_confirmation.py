@@ -100,4 +100,4 @@ class TestProviderConfirmation:
         await no_confirm_provider.sign_up("bob", "Password1A")
         await no_confirm_provider.confirm_sign_up("bob")
         result = await no_confirm_provider.initiate_auth("USER_PASSWORD_AUTH", "bob", "Password1A")
-        assert "AuthenticationResult" in result
+        assert "AuthenticationResult" in result, f'Expected {"AuthenticationResult"!r} to be in {result!r}'

@@ -44,10 +44,10 @@ class TestPutSecretValue:
         )
 
         # Assert
-        assert "VersionId" in result
+        assert "VersionId" in result, f'Expected {"VersionId"!r} to be in {result!r}'
 
         got = _post(client, "GetSecretValue", {"SecretId": secret_name})
-        assert got["SecretString"] == expected_new_value
+        assert got["SecretString"] == expected_new_value, f'Expected {expected_new_value!r} but got {got["SecretString"]!r}'
 
     def test_previous_version_gets_awsprevious(self, client: TestClient) -> None:
         create = _post(
@@ -69,4 +69,4 @@ class TestPutSecretValue:
             {"SecretId": "staged"},
         )
         v1_info = next(v for v in versions["Versions"] if v["VersionId"] == v1_id)
-        assert "AWSPREVIOUS" in v1_info["VersionStages"]
+        assert "AWSPREVIOUS" in v1_info["VersionStages"], f'Expected {"AWSPREVIOUS"!r} to be in {v1_info["VersionStages"]!r}'

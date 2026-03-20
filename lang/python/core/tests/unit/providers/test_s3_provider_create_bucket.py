@@ -29,8 +29,8 @@ class TestCreateBucket:
 
         # Assert
         actual_buckets = await provider.list_buckets()
-        assert bucket_name in actual_buckets
-        assert (tmp_path / "s3" / bucket_name).is_dir()
+        assert bucket_name in actual_buckets, f"Expected {bucket_name!r} to be in {actual_buckets!r}"
+        assert (tmp_path / "s3" / bucket_name).is_dir(), "Expected value to be truthy"
 
     @pytest.mark.asyncio
     async def test_create_bucket_duplicate_raises(self, provider: S3Provider) -> None:

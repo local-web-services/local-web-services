@@ -23,7 +23,7 @@ public class SecretsManagerStoreTagTest {
     store.tagResource(secretName, List.of(Map.of("Key", "env", "Value", "prod")));
 
     // Assert
-    assertEquals(expectedSize, store.listTags(secretName).size());
+    assertEquals(expectedSize, store.listTags(secretName).size(), "Expected store.listTags(secretName).size() to match expectedSize");
   }
 
   @Test
@@ -41,7 +41,7 @@ public class SecretsManagerStoreTagTest {
     store.untagResource(secretName, List.of("env"));
 
     // Assert
-    assertEquals(expectedSize, store.listTags(secretName).size());
+    assertEquals(expectedSize, store.listTags(secretName).size(), "Expected store.listTags(secretName).size() to match expectedSize");
   }
 
   @Test
@@ -55,6 +55,6 @@ public class SecretsManagerStoreTagTest {
     List<Map<String, String>> actualTags = store.listTags(secretName);
 
     // Assert
-    assertTrue(actualTags.isEmpty());
+    assertTrue(actualTags.isEmpty(), "Expected actualTags to be empty");
   }
 }

@@ -132,9 +132,9 @@ class TestPutEvents:
                 },
             ]
         )
-        assert len(results) == 1
-        assert results[0]["EventId"]
-        assert results[0]["ErrorCode"] is None
+        assert len(results) == 1, f"Expected {1!r} but got {len(results)!r}"
+        assert results[0]["EventId"], "Expected value to be truthy"
+        assert results[0]["ErrorCode"] is None, f'Expected None but got {results[0]["ErrorCode"]!r}'
 
     @pytest.mark.asyncio
     async def test_put_events_routes_to_matching_rule(self) -> None:
@@ -169,13 +169,13 @@ class TestPutEvents:
         event = call_args[0][0]
         context = call_args[0][1]
 
-        assert event["source"] == expected_source
-        assert event["detail-type"] == expected_detail_type
-        assert event["detail"]["orderId"] == expected_order_id
-        assert event["version"] == expected_version
-        assert event["account"] == expected_account
-        assert event["region"] == expected_region
-        assert isinstance(context, LambdaContext)
+        assert event["source"] == expected_source, f'Expected {expected_source!r} but got {event["source"]!r}'
+        assert event["detail-type"] == expected_detail_type, f'Expected {expected_detail_type!r} but got {event["detail-type"]!r}'
+        assert event["detail"]["orderId"] == expected_order_id, f'Expected {expected_order_id!r} but got {event["detail"]["orderId"]!r}'
+        assert event["version"] == expected_version, f'Expected {expected_version!r} but got {event["version"]!r}'
+        assert event["account"] == expected_account, f'Expected {expected_account!r} but got {event["account"]!r}'
+        assert event["region"] == expected_region, f'Expected {expected_region!r} but got {event["region"]!r}'
+        assert isinstance(context, LambdaContext), f"Expected instance of {LambdaContext!r} but got {type(context)!r}"
 
     @pytest.mark.asyncio
     async def test_put_events_no_match_no_dispatch(self) -> None:
@@ -213,8 +213,8 @@ class TestPutEvents:
                 },
             ]
         )
-        assert len(results) == 2
-        assert results[0]["EventId"] != results[1]["EventId"]
+        assert len(results) == 2, f"Expected {2!r} but got {len(results)!r}"
+        assert results[0]["EventId"] != results[1]["EventId"], f'Expected values to differ but both were {results[0]["EventId"]!r}'
 
     @pytest.mark.asyncio
     async def test_put_events_missing_compute_logs_error(self) -> None:

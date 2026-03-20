@@ -20,10 +20,10 @@ class TestMatchGraphqlRequest:
         result = match_graphql_request([route], body)
 
         # Assert
-        assert result is not None
+        assert result is not None, "Expected value to be set but was None"
         expected_name = "Test"
         actual_name = result["data"]["user"]["name"]
-        assert actual_name == expected_name
+        assert actual_name == expected_name, f"Expected {expected_name!r} but got {actual_name!r}"
 
     def test_variable_match(self):
         # Arrange
@@ -46,8 +46,8 @@ class TestMatchGraphqlRequest:
         result = match_graphql_request([route_specific, route_default], body)
 
         # Assert
-        assert result is not None
-        assert result["data"]["user"] is None
+        assert result is not None, "Expected value to be set but was None"
+        assert result["data"]["user"] is None, f'Expected None but got {result["data"]["user"]!r}'
 
     def test_no_match(self):
         # Arrange
@@ -62,7 +62,7 @@ class TestMatchGraphqlRequest:
         result = match_graphql_request([route], body)
 
         # Assert
-        assert result is None
+        assert result is None, f"Expected None but got {result!r}"
 
     def test_template_rendering_in_response(self):
         # Arrange
@@ -82,4 +82,4 @@ class TestMatchGraphqlRequest:
         # Assert
         expected_id = "usr_42"
         actual_id = result["data"]["user"]["id"]
-        assert actual_id == expected_id
+        assert actual_id == expected_id, f"Expected {expected_id!r} but got {actual_id!r}"

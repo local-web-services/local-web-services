@@ -53,7 +53,7 @@ class TestFnSub:
 
         # Assert
         actual_arn = result["ARN"]
-        assert actual_arn == expected_arn
+        assert actual_arn == expected_arn, f"Expected {expected_arn!r} but got {actual_arn!r}"
 
     def test_sub_short_form_unresolvable(self) -> None:
         # Arrange
@@ -65,7 +65,7 @@ class TestFnSub:
 
         # Assert -- unresolvable uses logical ID as placeholder
         actual_arn = result["ARN"]
-        assert actual_arn == expected_arn
+        assert actual_arn == expected_arn, f"Expected {expected_arn!r} but got {actual_arn!r}"
 
     def test_sub_long_form_with_local_vars(self) -> None:
         # Arrange
@@ -84,7 +84,7 @@ class TestFnSub:
 
         # Assert
         actual_url = result["URL"]
-        assert actual_url == expected_url
+        assert actual_url == expected_url, f"Expected {expected_url!r} but got {actual_url!r}"
 
     def test_sub_long_form_with_ref_in_vars(self) -> None:
         # Arrange
@@ -104,7 +104,7 @@ class TestFnSub:
 
         # Assert
         actual_url = result["URL"]
-        assert actual_url == expected_url
+        assert actual_url == expected_url, f"Expected {expected_url!r} but got {actual_url!r}"
 
     def test_sub_multiple_vars_in_template(self) -> None:
         # Arrange
@@ -122,4 +122,4 @@ class TestFnSub:
 
         # Assert
         actual_dsn = result["DSN"]
-        assert actual_dsn == expected_dsn
+        assert actual_dsn == expected_dsn, f"Expected {expected_dsn!r} but got {actual_dsn!r}"

@@ -124,7 +124,7 @@ class TestScan:
         results = await provider.scan("orders")
 
         # Assert
-        assert len(results) == expected_count
+        assert len(results) == expected_count, f"Expected {expected_count!r} but got {len(results)!r}"
 
     async def test_scan_with_filter(self, provider: SqliteDynamoProvider) -> None:
         # Arrange
@@ -141,6 +141,6 @@ class TestScan:
         )
 
         # Assert
-        assert len(results) == expected_count
+        assert len(results) == expected_count, f"Expected {expected_count!r} but got {len(results)!r}"
         actual_status = results[0]["status"]
-        assert actual_status == expected_status
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"

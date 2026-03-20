@@ -190,8 +190,8 @@ class TestCloudAssemblyParsing:
         config = parse_cloud_assembly_state_machine(expected_name, props)
 
         # Assert
-        assert config.name == expected_name
-        assert config.workflow_type == WorkflowType.STANDARD
+        assert config.name == expected_name, f"Expected {expected_name!r} but got {config.name!r}"
+        assert config.workflow_type == WorkflowType.STANDARD, f"Expected {WorkflowType.STANDARD!r} but got {config.workflow_type!r}"
 
     def test_parse_express_workflow(self) -> None:
         props = {
@@ -204,7 +204,7 @@ class TestCloudAssemblyParsing:
             "StateMachineType": "EXPRESS",
         }
         config = parse_cloud_assembly_state_machine("MySM", props)
-        assert config.workflow_type == WorkflowType.EXPRESS
+        assert config.workflow_type == WorkflowType.EXPRESS, f"Expected {WorkflowType.EXPRESS!r} but got {config.workflow_type!r}"
 
     def test_definition_substitutions(self) -> None:
         props = {
@@ -225,7 +225,7 @@ class TestCloudAssemblyParsing:
             },
         }
         config = parse_cloud_assembly_state_machine("MySM", props)
-        assert "myFunc" in config.definition
+        assert "myFunc" in config.definition, f'Expected {"myFunc"!r} to be in {config.definition!r}'
 
     def test_resource_arn_remapping(self) -> None:
         props = {
@@ -244,4 +244,4 @@ class TestCloudAssemblyParsing:
         }
         mapping = {"arn:aws:lambda:us-east-1:000:function:prodFunc": "local-handler"}
         config = parse_cloud_assembly_state_machine("MySM", props, mapping)
-        assert "local-handler" in config.definition
+        assert "local-handler" in config.definition, f'Expected {"local-handler"!r} to be in {config.definition!r}'

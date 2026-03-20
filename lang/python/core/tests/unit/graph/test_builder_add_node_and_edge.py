@@ -40,8 +40,8 @@ class TestAddNodeAndEdge:
         graph.add_node(node)
 
         # Assert
-        assert node_id in graph.nodes
-        assert graph.nodes[node_id] is node
+        assert node_id in graph.nodes, f"Expected {node_id!r} to be in {graph.nodes!r}"
+        assert graph.nodes[node_id] is node, "Expected value to be truthy"
 
     def test_add_node_overwrites_duplicate(self) -> None:
         # Arrange
@@ -57,7 +57,7 @@ class TestAddNodeAndEdge:
 
         # Assert
         actual_config = graph.nodes[node_id].config
-        assert actual_config == expected_config
+        assert actual_config == expected_config, f"Expected {expected_config!r} but got {actual_config!r}"
 
     def test_add_edge(self) -> None:
         # Arrange
@@ -71,5 +71,5 @@ class TestAddNodeAndEdge:
         graph.add_edge(edge)
 
         # Assert
-        assert len(graph.edges) == expected_edge_count
-        assert graph.edges[0] is edge
+        assert len(graph.edges) == expected_edge_count, f"Expected {expected_edge_count!r} but got {len(graph.edges)!r}"
+        assert graph.edges[0] is edge, "Expected value to be truthy"

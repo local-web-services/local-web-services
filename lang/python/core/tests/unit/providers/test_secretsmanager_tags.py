@@ -44,7 +44,7 @@ class TestTags:
 
         # Assert - tag is present
         desc = _post(client, "DescribeSecret", {"SecretId": secret_name})
-        assert any(t["Key"] == tag_key for t in desc.get("Tags", []))
+        assert any(t["Key"] == tag_key for t in desc.get("Tags", [])), "Expected value to be truthy"
 
         _post(
             client,
@@ -54,4 +54,4 @@ class TestTags:
 
         # Assert - tag is removed
         desc2 = _post(client, "DescribeSecret", {"SecretId": secret_name})
-        assert "Tags" not in desc2 or len(desc2.get("Tags", [])) == 0
+        assert "Tags" not in desc2 or len(desc2.get("Tags", [])) == 0, f'Expected {"Tags"!r} to not be in {desc2 or len(desc2.get("Tags", [])) == 0!r}'

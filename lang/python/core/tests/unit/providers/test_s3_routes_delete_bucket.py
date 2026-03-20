@@ -41,7 +41,7 @@ class TestDeleteBucket:
 
         # Assert
         expected_status = 204
-        assert resp.status_code == expected_status
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
 
     @pytest.mark.asyncio
     async def test_delete_bucket_not_found(self, client: httpx.AsyncClient) -> None:
@@ -50,5 +50,5 @@ class TestDeleteBucket:
 
         # Assert
         expected_status = 404
-        assert resp.status_code == expected_status
-        assert "NoSuchBucket" in resp.text
+        assert resp.status_code == expected_status, f"Expected {expected_status!r} but got {resp.status_code!r}"
+        assert "NoSuchBucket" in resp.text, f'Expected {"NoSuchBucket"!r} to be in {resp.text!r}'

@@ -56,8 +56,8 @@ class TestBooleanOperator:
             comparison_operator="BooleanEquals",
             comparison_value=True,
         )
-        assert evaluate_rule(rule, {"b": True}) is True
-        assert evaluate_rule(rule, {"b": False}) is False
+        assert evaluate_rule(rule, {"b": True}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"b": False}) is False, "Expected value to be truthy"
 
     def test_boolean_equals_false(self) -> None:
         rule = ChoiceRule(
@@ -66,8 +66,8 @@ class TestBooleanOperator:
             comparison_operator="BooleanEquals",
             comparison_value=False,
         )
-        assert evaluate_rule(rule, {"b": False}) is True
-        assert evaluate_rule(rule, {"b": True}) is False
+        assert evaluate_rule(rule, {"b": False}) is True, "Expected value to be truthy"
+        assert evaluate_rule(rule, {"b": True}) is False, "Expected value to be truthy"
 
     def test_boolean_with_non_bool(self) -> None:
         rule = ChoiceRule(
@@ -76,4 +76,4 @@ class TestBooleanOperator:
             comparison_operator="BooleanEquals",
             comparison_value=True,
         )
-        assert evaluate_rule(rule, {"b": 1}) is False
+        assert evaluate_rule(rule, {"b": 1}) is False, "Expected value to be truthy"

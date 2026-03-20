@@ -26,7 +26,7 @@ public class SsmStoreTagTest {
         List.of(Map.of("Key", "env", "Value", "prod"), Map.of("Key", "team", "Value", "ops")));
 
     // Assert
-    assertEquals(expectedSize, store.listTags(resourceId).size());
+    assertEquals(expectedSize, store.listTags(resourceId).size(), "Expected store.listTags(resourceId).size() to match expectedSize");
   }
 
   @Test
@@ -44,7 +44,7 @@ public class SsmStoreTagTest {
     store.removeTags(resourceId, List.of("env"));
 
     // Assert
-    assertEquals(expectedSize, store.listTags(resourceId).size());
+    assertEquals(expectedSize, store.listTags(resourceId).size(), "Expected store.listTags(resourceId).size() to match expectedSize");
   }
 
   @Test
@@ -59,7 +59,7 @@ public class SsmStoreTagTest {
     boolean actualResult = store.hasTagAssociated(resourceId, List.of("env"));
 
     // Assert
-    assertTrue(actualResult);
+    assertTrue(actualResult, "Expected condition to be true: actualResult");
   }
 
   @Test
@@ -73,7 +73,7 @@ public class SsmStoreTagTest {
     boolean actualResult = store.hasTagAssociated(resourceId, List.of("env"));
 
     // Assert
-    assertFalse(actualResult);
+    assertFalse(actualResult, "Expected condition to be false: actualResult");
   }
 
   @Test
@@ -87,6 +87,6 @@ public class SsmStoreTagTest {
     List<Map<String, String>> actualTags = store.listTags(resourceId);
 
     // Assert
-    assertTrue(actualTags.isEmpty());
+    assertTrue(actualTags.isEmpty(), "Expected actualTags to be empty");
   }
 }

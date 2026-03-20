@@ -15,8 +15,8 @@ class TestGenerateOperationYaml:
         actual_yaml = generate_operation_yaml("get-object", status=200, body="hello")
 
         # Assert
-        assert expected_operation_fragment in actual_yaml
-        assert expected_status_fragment in actual_yaml
+        assert expected_operation_fragment in actual_yaml, f"Expected {expected_operation_fragment!r} to be in {actual_yaml!r}"
+        assert expected_status_fragment in actual_yaml, f"Expected {expected_status_fragment!r} to be in {actual_yaml!r}"
 
     def test_contains_body(self):
         # Arrange
@@ -26,7 +26,7 @@ class TestGenerateOperationYaml:
         actual_yaml = generate_operation_yaml("get-object", status=200, body="hello")
 
         # Assert
-        assert expected_body_fragment in actual_yaml
+        assert expected_body_fragment in actual_yaml, f"Expected {expected_body_fragment!r} to be in {actual_yaml!r}"
 
     def test_without_body(self):
         # Arrange
@@ -37,6 +37,6 @@ class TestGenerateOperationYaml:
         actual_yaml = generate_operation_yaml("delete-object", status=204)
 
         # Assert
-        assert expected_operation_fragment in actual_yaml
-        assert expected_status_fragment in actual_yaml
-        assert "body:" not in actual_yaml
+        assert expected_operation_fragment in actual_yaml, f"Expected {expected_operation_fragment!r} to be in {actual_yaml!r}"
+        assert expected_status_fragment in actual_yaml, f"Expected {expected_status_fragment!r} to be in {actual_yaml!r}"
+        assert "body:" not in actual_yaml, f'Expected {"body:"!r} to not be in {actual_yaml!r}'

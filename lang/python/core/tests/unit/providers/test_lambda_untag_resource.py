@@ -37,13 +37,13 @@ class TestUntagResource:
             f"/2017-03-31/tags/{_FUNC_ARN}",
             params={"tagKeys": "env,team"},
         )
-        assert resp.status_code == 204
+        assert resp.status_code == 204, f"Expected {204!r} but got {resp.status_code!r}"
 
         resp = await client.get(f"/2017-03-31/tags/{_FUNC_ARN}")
         data = resp.json()
-        assert "env" not in data["Tags"]
-        assert "team" not in data["Tags"]
-        assert data["Tags"]["version"] == "1.0"
+        assert "env" not in data["Tags"], f'Expected {"env"!r} to not be in {data["Tags"]!r}'
+        assert "team" not in data["Tags"], f'Expected {"team"!r} to not be in {data["Tags"]!r}'
+        assert data["Tags"]["version"] == "1.0", f'Expected {"1.0"!r} but got {data["Tags"]["version"]!r}'
 
     @pytest.mark.asyncio
     async def test_untag_single_key(self, client) -> None:
@@ -56,12 +56,12 @@ class TestUntagResource:
             f"/2017-03-31/tags/{_FUNC_ARN}",
             params={"tagKeys": "env"},
         )
-        assert resp.status_code == 204
+        assert resp.status_code == 204, f"Expected {204!r} but got {resp.status_code!r}"
 
         resp = await client.get(f"/2017-03-31/tags/{_FUNC_ARN}")
         data = resp.json()
-        assert "env" not in data["Tags"]
-        assert data["Tags"]["team"] == "backend"
+        assert "env" not in data["Tags"], f'Expected {"env"!r} to not be in {data["Tags"]!r}'
+        assert data["Tags"]["team"] == "backend", f'Expected {"backend"!r} but got {data["Tags"]["team"]!r}'
 
     @pytest.mark.asyncio
     async def test_untag_nonexistent_key_is_noop(self, client) -> None:
@@ -74,10 +74,10 @@ class TestUntagResource:
             f"/2017-03-31/tags/{_FUNC_ARN}",
             params={"tagKeys": "nonexistent"},
         )
-        assert resp.status_code == 204
+        assert resp.status_code == 204, f"Expected {204!r} but got {resp.status_code!r}"
 
         resp = await client.get(f"/2017-03-31/tags/{_FUNC_ARN}")
-        assert resp.json()["Tags"]["env"] == "prod"
+        assert resp.json()["Tags"]["env"] == "prod", f'Expected {"prod"!r} but got {resp.json()["Tags"]["env"]!r}'
 
     @pytest.mark.asyncio
     async def test_untag_via_2015_api_version(self, client) -> None:
@@ -90,9 +90,9 @@ class TestUntagResource:
             f"/2015-03-31/tags/{_FUNC_ARN}",
             params={"tagKeys": "env"},
         )
-        assert resp.status_code == 204
+        assert resp.status_code == 204, f"Expected {204!r} but got {resp.status_code!r}"
 
         resp = await client.get(f"/2015-03-31/tags/{_FUNC_ARN}")
         data = resp.json()
-        assert "env" not in data["Tags"]
-        assert data["Tags"]["team"] == "backend"
+        assert "env" not in data["Tags"], f'Expected {"env"!r} to not be in {data["Tags"]!r}'
+        assert data["Tags"]["team"] == "backend", f'Expected {"backend"!r} but got {data["Tags"]["team"]!r}'

@@ -42,8 +42,8 @@ class TestDeleteDBCluster:
         # Assert
         actual_cluster_id = result["DBCluster"]["DBClusterIdentifier"]
         actual_status = result["DBCluster"]["Status"]
-        assert actual_cluster_id == expected_cluster_id
-        assert actual_status == expected_status
+        assert actual_cluster_id == expected_cluster_id, f"Expected {expected_cluster_id!r} but got {actual_cluster_id!r}"
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
 
     def test_delete_cluster_removes_from_describe(self, client: TestClient) -> None:
         # Arrange
@@ -56,7 +56,7 @@ class TestDeleteDBCluster:
 
         # Assert
         ids = [c["DBClusterIdentifier"] for c in result["DBClusters"]]
-        assert cluster_id not in ids
+        assert cluster_id not in ids, f"Expected {cluster_id!r} to not be in {ids!r}"
 
     def test_delete_not_found_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -71,4 +71,4 @@ class TestDeleteDBCluster:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

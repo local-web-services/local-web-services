@@ -79,11 +79,11 @@ class TestExtractDynamoTables:
         result = extract_dynamo_tables(resources)
 
         # Assert
-        assert len(result) == 1
+        assert len(result) == 1, f"Expected {1!r} but got {len(result)!r}"
         actual_table = result[0]
-        assert actual_table.table_name == expected_table_name
-        assert len(actual_table.key_schema) == expected_key_schema_count
-        assert len(actual_table.gsi_definitions) == expected_gsi_count
+        assert actual_table.table_name == expected_table_name, f"Expected {expected_table_name!r} but got {actual_table.table_name!r}"
+        assert len(actual_table.key_schema) == expected_key_schema_count, f"Expected {expected_key_schema_count!r} but got {len(actual_table.key_schema)!r}"
+        assert len(actual_table.gsi_definitions) == expected_gsi_count, f"Expected {expected_gsi_count!r} but got {len(actual_table.gsi_definitions)!r}"
 
     def test_table_without_gsi(self):
         resources = [
@@ -99,4 +99,4 @@ class TestExtractDynamoTables:
             ),
         ]
         result = extract_dynamo_tables(resources)
-        assert result[0].gsi_definitions == []
+        assert result[0].gsi_definitions == [], f"Expected {[]!r} but got {result[0].gsi_definitions!r}"

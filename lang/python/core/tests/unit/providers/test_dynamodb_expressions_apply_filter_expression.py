@@ -46,11 +46,11 @@ class TestApplyFilterExpression:
 
     def test_none_expression_returns_all(self) -> None:
         items = [{"a": 1}, {"a": 2}]
-        assert apply_filter_expression(items, None) == items
+        assert apply_filter_expression(items, None) == items, f"Expected {items!r} but got {apply_filter_expression(items, None)!r}"
 
     def test_empty_expression_returns_all(self) -> None:
         items = [{"a": 1}, {"a": 2}]
-        assert apply_filter_expression(items, "") == items
+        assert apply_filter_expression(items, "") == items, f'Expected {items!r} but got {apply_filter_expression(items, "")!r}'
 
     def test_filters_items(self) -> None:
         # Arrange
@@ -70,9 +70,9 @@ class TestApplyFilterExpression:
         )
 
         # Assert
-        assert len(result) == expected_count
+        assert len(result) == expected_count, f"Expected {expected_count!r} but got {len(result)!r}"
         actual_names = {r["name"] for r in result}
-        assert actual_names == expected_names
+        assert actual_names == expected_names, f"Expected {expected_names!r} but got {actual_names!r}"
 
     def test_complex_filter(self) -> None:
         # Arrange
@@ -92,6 +92,6 @@ class TestApplyFilterExpression:
         )
 
         # Assert
-        assert len(result) == expected_count
+        assert len(result) == expected_count, f"Expected {expected_count!r} but got {len(result)!r}"
         actual_names = {r["name"] for r in result}
-        assert actual_names == expected_names
+        assert actual_names == expected_names, f"Expected {expected_names!r} but got {actual_names!r}"

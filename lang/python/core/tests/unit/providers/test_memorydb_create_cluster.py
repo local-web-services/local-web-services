@@ -42,11 +42,11 @@ class TestCreateCluster:
         actual_name = result["Cluster"]["Name"]
         actual_status = result["Cluster"]["Status"]
         actual_node_type = result["Cluster"]["NodeType"]
-        assert actual_name == cluster_name
-        assert actual_status == expected_status
-        assert actual_node_type == expected_node_type
-        assert "ARN" in result["Cluster"]
-        assert "ClusterEndpoint" in result["Cluster"]
+        assert actual_name == cluster_name, f"Expected {cluster_name!r} but got {actual_name!r}"
+        assert actual_status == expected_status, f"Expected {expected_status!r} but got {actual_status!r}"
+        assert actual_node_type == expected_node_type, f"Expected {expected_node_type!r} but got {actual_node_type!r}"
+        assert "ARN" in result["Cluster"], f'Expected {"ARN"!r} to be in {result["Cluster"]!r}'
+        assert "ClusterEndpoint" in result["Cluster"], f'Expected {"ClusterEndpoint"!r} to be in {result["Cluster"]!r}'
 
     def test_create_cluster_with_custom_fields(self, client: TestClient) -> None:
         # Arrange
@@ -68,8 +68,8 @@ class TestCreateCluster:
         # Assert
         actual_node_type = result["Cluster"]["NodeType"]
         actual_num_shards = result["Cluster"]["NumShards"]
-        assert actual_node_type == expected_node_type
-        assert actual_num_shards == expected_num_shards
+        assert actual_node_type == expected_node_type, f"Expected {expected_node_type!r} but got {actual_node_type!r}"
+        assert actual_num_shards == expected_num_shards, f"Expected {expected_num_shards!r} but got {actual_num_shards!r}"
 
     def test_create_duplicate_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -82,7 +82,7 @@ class TestCreateCluster:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"
 
     def test_create_without_name_returns_error(self, client: TestClient) -> None:
         # Arrange
@@ -93,4 +93,4 @@ class TestCreateCluster:
 
         # Assert
         actual_error_type = result["__type"]
-        assert actual_error_type == expected_error_type
+        assert actual_error_type == expected_error_type, f"Expected {expected_error_type!r} but got {actual_error_type!r}"

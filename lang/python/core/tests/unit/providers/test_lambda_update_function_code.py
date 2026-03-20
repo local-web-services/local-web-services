@@ -45,11 +45,11 @@ class TestUpdateFunctionCode:
             "/2015-03-31/functions/my-func/code",
             json={"ZipFile": "base64data", "S3Bucket": "my-bucket", "S3Key": "code.zip"},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["FunctionName"] == "my-func"
-        assert data["FunctionArn"] == _FUNC_ARN
-        assert data["Runtime"] == "nodejs18.x"
+        assert data["FunctionName"] == "my-func", f'Expected {"my-func"!r} but got {data["FunctionName"]!r}'
+        assert data["FunctionArn"] == _FUNC_ARN, f'Expected {_FUNC_ARN!r} but got {data["FunctionArn"]!r}'
+        assert data["Runtime"] == "nodejs18.x", f'Expected {"nodejs18.x"!r} but got {data["Runtime"]!r}'
 
     @pytest.mark.asyncio
     async def test_update_code_with_empty_body(self, client) -> None:
@@ -59,8 +59,8 @@ class TestUpdateFunctionCode:
             "/2015-03-31/functions/my-func/code",
             json={},
         )
-        assert resp.status_code == 200
-        assert resp.json()["FunctionName"] == "my-func"
+        assert resp.status_code == 200, f"Expected {200!r} but got {resp.status_code!r}"
+        assert resp.json()["FunctionName"] == "my-func", f'Expected {"my-func"!r} but got {resp.json()["FunctionName"]!r}'
 
     @pytest.mark.asyncio
     async def test_update_code_nonexistent_function_returns_404(self, client) -> None:
@@ -68,6 +68,6 @@ class TestUpdateFunctionCode:
             "/2015-03-31/functions/nonexistent/code",
             json={"ZipFile": "base64data"},
         )
-        assert resp.status_code == 404
+        assert resp.status_code == 404, f"Expected {404!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert data["Type"] == "ResourceNotFoundException"
+        assert data["Type"] == "ResourceNotFoundException", f'Expected {"ResourceNotFoundException"!r} but got {data["Type"]!r}'

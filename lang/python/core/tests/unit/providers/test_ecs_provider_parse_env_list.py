@@ -121,7 +121,7 @@ class TestParseEnvList:
             {"Name": "A", "Value": "1"},
             {"Name": "B", "Value": "2"},
         ]
-        assert _parse_env_list(env_list) == {"A": "1", "B": "2"}
+        assert _parse_env_list(env_list) == {"A": "1", "B": "2"}, "Expected {0!r} but got {1!r}".format({"A": "1", "B": "2"}, _parse_env_list(env_list))
 
     def test_skips_malformed(self) -> None:
         env_list = [
@@ -129,4 +129,4 @@ class TestParseEnvList:
             {"Name": "B"},  # missing Value
             {"Value": "3"},  # missing Name
         ]
-        assert _parse_env_list(env_list) == {"A": "1"}
+        assert _parse_env_list(env_list) == {"A": "1"}, "Expected {0!r} but got {1!r}".format({"A": "1"}, _parse_env_list(env_list))
