@@ -129,9 +129,7 @@ def topic_exists_and_is_active(lws_session):
 
 @given('the topic does not exist or is not "ACTIVE"')
 def topic_not_exist_or_not_active():
-    pytest.skip(
-        "lws does not validate SNS topic existence when configuring bucket notification"
-    )
+    pytest.skip("lws does not validate SNS topic existence when configuring bucket notification")
 
 
 @given('the topic is "ACTIVE"')
@@ -334,9 +332,9 @@ def bucket_will_publish_notifications(world):
     expected_error = None
     # Assert
     actual_error = world["error"]
-    assert actual_error is expected_error, (
-        f"Expected put_bucket_notification_configuration to succeed but got: {actual_error}"
-    )
+    assert (
+        actual_error is expected_error
+    ), f"Expected put_bucket_notification_configuration to succeed but got: {actual_error}"
 
 
 @then('the object "EXISTS" but no notification is published')
@@ -352,9 +350,9 @@ def object_exists_but_no_notification(lws_session, world):
     )
     actual_objects = _s3(lws_session).list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
     actual_keys = [obj["Key"] for obj in actual_objects]
-    assert expected_key in actual_keys, (
-        f"Expected object '{expected_key}' to exist but not found in: {actual_keys}"
-    )
+    assert (
+        expected_key in actual_keys
+    ), f"Expected object '{expected_key}' to exist but not found in: {actual_keys}"
 
 
 @then('the object "EXISTS" and a notification is "PUBLISHED" to the topic')
@@ -364,11 +362,9 @@ def object_exists_and_notification_published(lws_session, world):
     expected_key = TEST_KEY
     # Assert
     actual_error = world["error"]
-    assert actual_error is expected_error, (
-        f"Expected put_object to succeed but got: {actual_error}"
-    )
+    assert actual_error is expected_error, f"Expected put_object to succeed but got: {actual_error}"
     actual_objects = _s3(lws_session).list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
     actual_keys = [obj["Key"] for obj in actual_objects]
-    assert expected_key in actual_keys, (
-        f"Expected object '{expected_key}' to exist but not found in: {actual_keys}"
-    )
+    assert (
+        expected_key in actual_keys
+    ), f"Expected object '{expected_key}' to exist but not found in: {actual_keys}"

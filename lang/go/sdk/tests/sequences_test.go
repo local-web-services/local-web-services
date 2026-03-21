@@ -696,15 +696,15 @@ func registerSequenceSteps(sc *godog.ScenarioContext, world *World) {
 // -------------------------------------------------------------------------
 
 const (
-	seqTopicName         = "seq-topic"
-	seqQueueName         = "seq-queue"
-	seqBusName           = "seq-bus"
-	seqRuleName          = "seq-rule"
-	seqBucketName        = "seq-bucket"
-	seqSMName            = "seq-sm"
-	seqTableName         = "seq-table"
-	seqObjectKey         = "seq-object.txt"
-	seqSMDefinitionPass  = `{"Comment":"seq","StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}`
+	seqTopicName        = "seq-topic"
+	seqQueueName        = "seq-queue"
+	seqBusName          = "seq-bus"
+	seqRuleName         = "seq-rule"
+	seqBucketName       = "seq-bucket"
+	seqSMName           = "seq-sm"
+	seqTableName        = "seq-table"
+	seqObjectKey        = "seq-object.txt"
+	seqSMDefinitionPass = `{"Comment":"seq","StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}`
 )
 
 // -------------------------------------------------------------------------

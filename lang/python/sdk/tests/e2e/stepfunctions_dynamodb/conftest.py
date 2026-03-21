@@ -431,9 +431,9 @@ def sm_will_write_item(world):
     expected_error = None
     # Assert
     actual_error = world["error"]
-    assert actual_error is expected_error, (
-        f"Expected state machine update to succeed but got: {actual_error}"
-    )
+    assert (
+        actual_error is expected_error
+    ), f"Expected state machine update to succeed but got: {actual_error}"
 
 
 @then('the execution is "RUNNING"')
@@ -449,9 +449,9 @@ def item_exists_and_execution_succeeded(lws_session, world):
     expected_item_key = TEST_ITEM_KEY
     # Assert
     actual_error = world["error"]
-    assert actual_error is expected_error, (
-        f"Expected start_execution to succeed but got: {actual_error}"
-    )
+    assert (
+        actual_error is expected_error
+    ), f"Expected start_execution to succeed but got: {actual_error}"
     actual_resp = _ddb(lws_session).get_item(
         TableName=TEST_TABLE,
         Key={TEST_PK: {"S": expected_item_key}},
@@ -469,6 +469,6 @@ def execution_failed_item_not_found(world):
     expected_error = None
     # Assert: the execution should have started successfully (lws does not raise on GetItem miss)
     actual_error = world["error"]
-    assert actual_error is expected_error, (
-        f"Expected start_execution to succeed but got: {actual_error}"
-    )
+    assert (
+        actual_error is expected_error
+    ), f"Expected start_execution to succeed but got: {actual_error}"

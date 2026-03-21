@@ -180,9 +180,7 @@ def queue_is_not_active_given():
 
 @given("the queue does not exist")
 def queue_does_not_exist():
-    pytest.skip(
-        "lws does not validate SQS queue existence when configuring a state machine task"
-    )
+    pytest.skip("lws does not validate SQS queue existence when configuring a state machine task")
 
 
 @given('the target queue is "ACTIVE"')
@@ -375,9 +373,9 @@ def sm_will_enqueue_message(world):
     expected_error = None
     # Assert
     actual_error = world["error"]
-    assert actual_error is expected_error, (
-        f"Expected state machine update to succeed but got: {actual_error}"
-    )
+    assert (
+        actual_error is expected_error
+    ), f"Expected state machine update to succeed but got: {actual_error}"
 
 
 @then('the execution is "RUNNING"')
@@ -393,9 +391,9 @@ def message_available_and_execution_succeeded(lws_session, world):
     expected_message = TEST_MESSAGE_BODY
     # Assert
     actual_error = world["error"]
-    assert actual_error is expected_error, (
-        f"Expected start_execution to succeed but got: {actual_error}"
-    )
+    assert (
+        actual_error is expected_error
+    ), f"Expected start_execution to succeed but got: {actual_error}"
     url = _queue_url(lws_session)
     resp = _sqs(lws_session).receive_message(QueueUrl=url, MaxNumberOfMessages=1, WaitTimeSeconds=1)
     actual_messages = resp.get("Messages", [])
@@ -404,6 +402,6 @@ def message_available_and_execution_succeeded(lws_session, world):
         f"in queue '{TEST_QUEUE}' but queue was empty"
     )
     actual_body = actual_messages[0].get("Body", "")
-    assert expected_message in actual_body, (
-        f"Expected message body to contain '{expected_message}' but got: {actual_body}"
-    )
+    assert (
+        expected_message in actual_body
+    ), f"Expected message body to contain '{expected_message}' but got: {actual_body}"

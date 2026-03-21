@@ -294,9 +294,9 @@ def message_available_in_queue(lws_session):
         f"in queue '{TEST_QUEUE}' but queue was empty"
     )
     actual_body = actual_messages[0].get("Body", "")
-    assert expected_message in actual_body, (
-        f"Expected message body to contain '{expected_message}' but got: {actual_body}"
-    )
+    assert (
+        expected_message in actual_body
+    ), f"Expected message body to contain '{expected_message}' but got: {actual_body}"
 
 
 @then('the message is "DELETED"')
