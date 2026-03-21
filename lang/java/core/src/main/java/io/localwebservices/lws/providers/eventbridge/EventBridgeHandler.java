@@ -21,29 +21,28 @@ public class EventBridgeHandler implements HttpHandler {
 
   private final ServerState state;
   private final EventBridgeStore store;
-  private SqsHandler sqsHandler;
-  private SnsHandler snsHandler;
-  private StepFunctionsHandler stepFunctionsHandler;
+  private final EventBridgeDispatchOps dispatchOps;
 
   public EventBridgeHandler(ServerState state) {
     this.state = state;
     this.store = new EventBridgeStore();
+    this.dispatchOps = new EventBridgeDispatchOps(store, state);
     state.resetCallbacks.add(store::reset);
   }
 
   /** Wires in the SQS handler for EventBridge→SQS target dispatch. */
   public void setSqsHandler(SqsHandler sqsHandler) {
-    this.sqsHandler = sqsHandler;
+    dispatchOps.setSqsHandler(sqsHandler);
   }
 
   /** Wires in the SNS handler for EventBridge→SNS target dispatch. */
   public void setSnsHandler(SnsHandler snsHandler) {
-    this.snsHandler = snsHandler;
+    dispatchOps.setSnsHandler(snsHandler);
   }
 
   /** Wires in the StepFunctions handler for EventBridge→StepFunctions target dispatch. */
   public void setStepFunctionsHandler(StepFunctionsHandler stepFunctionsHandler) {
-    this.stepFunctionsHandler = stepFunctionsHandler;
+    dispatchOps.setStepFunctionsHandler(stepFunctionsHandler);
   }
 
   /**
@@ -51,18 +50,8 @@ public class EventBridgeHandler implements HttpHandler {
    * contain "Entries" as a List of event entry maps. Returns a map with "FailedEntryCount" and
    * "Entries".
    */
-  @SuppressWarnings("unchecked")
   public Map<String, Object> executePutEvents(Map<String, Object> params) {
-    List<Map<String, Object>> entries =
-        (List<Map<String, Object>>) params.getOrDefault("Entries", List.of());
-    List<Map<String, Object>> resultEntries = new ArrayList<>();
-    for (int i = 0; i < entries.size(); i++) {
-      resultEntries.add(Map.of("EventId", UUID.randomUUID().toString()));
-    }
-    Map<String, Object> result = new LinkedHashMap<>();
-    result.put("FailedEntryCount", 0);
-    result.put("Entries", resultEntries);
-    return result;
+    return dispatchOps.executePutEvents(params);
   }
 
   @Override
@@ -108,54 +97,9 @@ public class EventBridgeHandler implements HttpHandler {
         {
           List<Map<String, Object>> entries =
               (List<Map<String, Object>>) body.getOrDefault("Entries", List.of());
-          List<Map<String, Object>> resultEntries = new ArrayList<>();
-          int failedCount = 0;
-          for (Map<String, Object> entry : entries) {
-            String busName = (String) entry.getOrDefault("EventBusName", "default");
-            if (!store.eventBuses.containsKey(busName)) {
-              failedCount++;
-              resultEntries.add(
-                  Map.of(
-                      "ErrorCode",
-                      "ResourceNotFoundException",
-                      "ErrorMessage",
-                      "Event bus " + busName + " does not exist."));
-              continue;
-            }
-            boolean hasEnabledRuleWithTarget =
-                store.rules.values().stream()
-                    .filter(r -> busName.equals(r.getOrDefault("EventBusName", "default")))
-                    .filter(r -> "ENABLED".equals(r.getOrDefault("State", "ENABLED")))
-                    .anyMatch(
-                        r -> {
-                          String ruleName = (String) r.get("Name");
-                          List<Map<String, Object>> targets =
-                              store.ruleTargets.getOrDefault(ruleName, List.of());
-                          return !targets.isEmpty();
-                        });
-            if (!hasEnabledRuleWithTarget) {
-              failedCount++;
-              resultEntries.add(
-                  Map.of(
-                      "ErrorCode",
-                      "ResourceNotFoundException",
-                      "ErrorMessage",
-                      "No enabled rule with targets for event bus " + busName));
-            } else if (EventBridgeCapacityChecker.isExhausted(store, state, busName)) {
-              failedCount++;
-              resultEntries.add(
-                  Map.of(
-                      "ErrorCode",
-                      "ResourceNotFoundException",
-                      "ErrorMessage",
-                      "Target service has no available capacity."));
-            } else {
-              String eventId = UUID.randomUUID().toString();
-              resultEntries.add(Map.of("EventId", eventId));
-              dispatchEventToTargets(busName, entry);
-            }
-          }
-          if (failedCount > 0 && failedCount == entries.size()) {
+          Map<String, Object> result = dispatchOps.processPutEvents(entries);
+          boolean allFailed = Boolean.TRUE.equals(result.remove("allFailed"));
+          if (allFailed) {
             sendJson(
                 exchange,
                 400,
@@ -166,8 +110,7 @@ public class EventBridgeHandler implements HttpHandler {
                     "No enabled rule with targets for event bus."));
             break;
           }
-          sendJson(
-              exchange, 200, Map.of("FailedEntryCount", failedCount, "Entries", resultEntries));
+          sendJson(exchange, 200, result);
           break;
         }
       case "CreateEventBus":
@@ -528,36 +471,6 @@ public class EventBridgeHandler implements HttpHandler {
                   "message",
                   "Not implemented: " + operation));
         }
-    }
-  }
-
-  private void dispatchEventToTargets(String busName, Map<String, Object> event) {
-    String eventJson;
-    try {
-      eventJson = MAPPER.writeValueAsString(event);
-    } catch (Exception e) {
-      eventJson = "{}";
-    }
-    for (Map<String, Object> rule : store.rules.values()) {
-      if (!busName.equals(rule.getOrDefault("EventBusName", "default"))) continue;
-      if (!"ENABLED".equals(rule.getOrDefault("State", "ENABLED"))) continue;
-      String ruleName = (String) rule.get("Name");
-      List<Map<String, Object>> targets = store.ruleTargets.getOrDefault(ruleName, List.of());
-      for (Map<String, Object> target : targets) {
-        String arn = (String) target.getOrDefault("Arn", "");
-        dispatchToTarget(arn, eventJson);
-      }
-    }
-  }
-
-  private void dispatchToTarget(String arn, String eventJson) {
-    if (arn.contains(":sqs:") && sqsHandler != null) {
-      String queueName = arn.substring(arn.lastIndexOf(':') + 1);
-      sqsHandler.deliverToQueue(queueName, eventJson);
-    } else if (arn.contains(":sns:") && snsHandler != null) {
-      snsHandler.publishToTopic(arn, eventJson);
-    } else if (arn.contains(":states:") && stepFunctionsHandler != null) {
-      stepFunctionsHandler.startExecution(arn, eventJson);
     }
   }
 

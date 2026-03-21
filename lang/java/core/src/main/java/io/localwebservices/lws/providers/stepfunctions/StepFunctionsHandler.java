@@ -25,54 +25,49 @@ public class StepFunctionsHandler implements HttpHandler {
 
   private final ServerState state;
   private final StepFunctionsStore store;
-
-  private DynamoDbHandler dynamoDbHandler;
-  private SqsHandler sqsHandler;
-  private SnsHandler snsHandler;
-  private S3Handler s3Handler;
-  private SecretsManagerHandler secretsManagerHandler;
-  private SsmHandler ssmHandler;
-  private EventBridgeHandler eventBridgeHandler;
+  private final StepFunctionsServiceTaskOps serviceTaskOps = new StepFunctionsServiceTaskOps();
+  private final StepFunctionsSyncExecutor syncExecutor;
 
   public StepFunctionsHandler(ServerState state) {
     this.state = state;
     this.store = new StepFunctionsStore();
+    this.syncExecutor = new StepFunctionsSyncExecutor(store, serviceTaskOps);
     state.resetCallbacks.add(store::reset);
   }
 
   /** Wires in the DynamoDB handler for service task bridge execution. */
   public void setDynamoDbHandler(DynamoDbHandler dynamoDbHandler) {
-    this.dynamoDbHandler = dynamoDbHandler;
+    serviceTaskOps.setDynamoDbHandler(dynamoDbHandler);
   }
 
   /** Wires in the SQS handler for service task bridge execution. */
   public void setSqsHandler(SqsHandler sqsHandler) {
-    this.sqsHandler = sqsHandler;
+    serviceTaskOps.setSqsHandler(sqsHandler);
   }
 
   /** Wires in the SNS handler for service task bridge execution. */
   public void setSnsHandler(SnsHandler snsHandler) {
-    this.snsHandler = snsHandler;
+    serviceTaskOps.setSnsHandler(snsHandler);
   }
 
   /** Wires in the S3 handler for service task bridge execution. */
   public void setS3Handler(S3Handler s3Handler) {
-    this.s3Handler = s3Handler;
+    serviceTaskOps.setS3Handler(s3Handler);
   }
 
   /** Wires in the SecretsManager handler for service task bridge execution. */
   public void setSecretsManagerHandler(SecretsManagerHandler secretsManagerHandler) {
-    this.secretsManagerHandler = secretsManagerHandler;
+    serviceTaskOps.setSecretsManagerHandler(secretsManagerHandler);
   }
 
   /** Wires in the SSM handler for service task bridge execution. */
   public void setSsmHandler(SsmHandler ssmHandler) {
-    this.ssmHandler = ssmHandler;
+    serviceTaskOps.setSsmHandler(ssmHandler);
   }
 
   /** Wires in the EventBridge handler for service task bridge execution. */
   public void setEventBridgeHandler(EventBridgeHandler eventBridgeHandler) {
-    this.eventBridgeHandler = eventBridgeHandler;
+    serviceTaskOps.setEventBridgeHandler(eventBridgeHandler);
   }
 
   /**
@@ -93,126 +88,8 @@ public class StepFunctionsHandler implements HttpHandler {
    * task's Parameters field from the state machine definition. Returns the task output map, or null
    * if the ARN is not a recognised service integration.
    */
-  @SuppressWarnings("unchecked")
   public Map<String, Object> executeServiceTask(String resourceArn, Map<String, Object> params) {
-    if (resourceArn == null) {
-      return null;
-    }
-    if ("arn:aws:states:::dynamodb:putItem".equals(resourceArn)) {
-      if (dynamoDbHandler == null) return new LinkedHashMap<>();
-      return dynamoDbHandler.executePutItem(params);
-    }
-    if ("arn:aws:states:::dynamodb:getItem".equals(resourceArn)) {
-      if (dynamoDbHandler == null) return new LinkedHashMap<>();
-      return dynamoDbHandler.executeGetItem(params);
-    }
-    if ("arn:aws:states:::sqs:sendMessage".equals(resourceArn)) {
-      if (sqsHandler == null) return new LinkedHashMap<>();
-      return sqsHandler.executeSendMessage(params);
-    }
-    if ("arn:aws:states:::sns:publish".equals(resourceArn)) {
-      if (snsHandler == null) return new LinkedHashMap<>();
-      return snsHandler.executePublish(params);
-    }
-    if ("arn:aws:states:::s3:getObject".equals(resourceArn)) {
-      if (s3Handler == null) return new LinkedHashMap<>();
-      return s3Handler.executeGetObject(params);
-    }
-    if ("arn:aws:states:::s3:putObject".equals(resourceArn)) {
-      if (s3Handler == null) return new LinkedHashMap<>();
-      return s3Handler.executePutObject(params);
-    }
-    if ("arn:aws:states:::secretsmanager:getSecretValue".equals(resourceArn)) {
-      if (secretsManagerHandler == null) return new LinkedHashMap<>();
-      return secretsManagerHandler.executeGetSecretValue(params);
-    }
-    if ("arn:aws:states:::ssm:getParameter".equals(resourceArn)) {
-      if (ssmHandler == null) return new LinkedHashMap<>();
-      return ssmHandler.executeGetParameter(params);
-    }
-    if ("arn:aws:states:::events:putEvents".equals(resourceArn)) {
-      if (eventBridgeHandler == null) return new LinkedHashMap<>();
-      return eventBridgeHandler.executePutEvents(params);
-    }
-    return null;
-  }
-
-  /**
-   * Executes a state machine synchronously by walking its states. Returns the final output as a
-   * JSON string, or the original input if execution cannot be performed.
-   */
-  @SuppressWarnings("unchecked")
-  private String executeSynchronously(String smArn, String input) {
-    Map<String, Object> sm = store.getStateMachine(smArn);
-    if (sm == null) {
-      return input;
-    }
-    String definitionStr = (String) sm.get("definition");
-    if (definitionStr == null) {
-      return input;
-    }
-    Map<String, Object> definition;
-    try {
-      definition = MAPPER.readValue(definitionStr, Map.class);
-    } catch (Exception e) {
-      return input;
-    }
-    Map<String, Object> states = (Map<String, Object>) definition.get("States");
-    if (states == null) {
-      return input;
-    }
-    String startAt = (String) definition.get("StartAt");
-    if (startAt == null) {
-      return input;
-    }
-
-    Map<String, Object> currentData;
-    try {
-      currentData =
-          input != null && !input.isEmpty()
-              ? MAPPER.readValue(input, Map.class)
-              : new LinkedHashMap<>();
-    } catch (Exception e) {
-      currentData = new LinkedHashMap<>();
-    }
-
-    String currentStateName = startAt;
-    int maxSteps = 100;
-    int steps = 0;
-    while (currentStateName != null && steps < maxSteps) {
-      steps++;
-      Map<String, Object> stateDefObj = (Map<String, Object>) states.get(currentStateName);
-      if (stateDefObj == null) {
-        break;
-      }
-      String stateType = (String) stateDefObj.get("Type");
-      if ("Task".equals(stateType)) {
-        String resource = (String) stateDefObj.get("Resource");
-        Map<String, Object> taskParams =
-            stateDefObj.containsKey("Parameters")
-                ? (Map<String, Object>) stateDefObj.get("Parameters")
-                : currentData;
-        Map<String, Object> taskOutput = executeServiceTask(resource, taskParams);
-        if (taskOutput != null) {
-          currentData = taskOutput;
-        }
-      } else if ("Pass".equals(stateType)) {
-        if (stateDefObj.containsKey("Result")) {
-          currentData = (Map<String, Object>) stateDefObj.get("Result");
-        }
-      }
-      Boolean end = (Boolean) stateDefObj.get("End");
-      if (Boolean.TRUE.equals(end)) {
-        break;
-      }
-      currentStateName = (String) stateDefObj.get("Next");
-    }
-
-    try {
-      return MAPPER.writeValueAsString(currentData);
-    } catch (Exception e) {
-      return input;
-    }
+    return serviceTaskOps.executeServiceTask(resourceArn, params);
   }
 
   @Override
@@ -399,7 +276,7 @@ public class StepFunctionsHandler implements HttpHandler {
           String execName =
               body.containsKey("name") ? (String) body.get("name") : UUID.randomUUID().toString();
           String input = (String) body.getOrDefault("input", "{}");
-          String output = executeSynchronously(smArn, input);
+          String output = syncExecutor.execute(smArn, input);
           Map<String, Object> exec = store.startExecutionWithOutput(smArn, execName, input, output);
           sendJson(
               exchange,
@@ -441,7 +318,7 @@ public class StepFunctionsHandler implements HttpHandler {
                   + execName;
           double now = Instant.now().getEpochSecond() * 1.0;
           String input = (String) body.getOrDefault("input", "{}");
-          String output = executeSynchronously(smArn, input);
+          String output = syncExecutor.execute(smArn, input);
           sendJson(
               exchange,
               200,

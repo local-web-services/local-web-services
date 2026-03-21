@@ -39,4 +39,14 @@
         <Bug pattern="UC_USELESS_VOID_METHOD"/>
     </Match>
 
+    <!-- StepFunctionsSyncExecutor.execute catches Exception broadly because it must handle
+         both JSON parsing failures (IOException) and state machine execution errors from
+         any service task bridge, which can throw arbitrary unchecked exceptions. The broad
+         catch is intentional to return the original input on any failure. -->
+    <Match>
+        <Class name="io.localwebservices.lws.providers.stepfunctions.StepFunctionsSyncExecutor"/>
+        <Method name="execute"/>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
+
 </FindBugsFilter>
