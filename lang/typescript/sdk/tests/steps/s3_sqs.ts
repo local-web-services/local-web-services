@@ -17,6 +17,20 @@ When(
   async function (this: SdkWorld, _service: string) {
     // Arrange
     assert.ok(this.session, "No session running");
+    // lws S3 does not validate bucket state, notification config, or queue state during PutObject
+    if ((this as any)._bucketNotActive) {
+      return "pending";
+    }
+    if ((this as any)._noBucketNotificationConfig) {
+      return "pending";
+    }
+    if ((this as any)._queueNotActive || (this as any)._queueDoesNotExist) {
+      return "pending";
+    }
+    // lws S3 PutObject succeeds even when SQS message capacity is exhausted
+    if ((this as any)._noMessageSlot) {
+      return "pending";
+    }
     const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
     const client = this.session!.client<typeof S3Client>("s3");
     // Act

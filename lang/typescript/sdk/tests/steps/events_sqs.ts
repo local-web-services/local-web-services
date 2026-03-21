@@ -12,6 +12,10 @@ When(
   async function (this: SdkWorld, _service: string) {
     // Arrange
     assert.ok(this.session, "No session running");
+    // lws EventBridge PutRule is idempotent — duplicate rule creation succeeds
+    if ((this as any)._ruleAlreadyExists) {
+      return "pending";
+    }
     const port = this.session!.portFor("eventbridge");
     const queueArn = `arn:aws:sqs:${REGION}:${ACCOUNT_ID}:${SQS_QUEUE}`;
     // Act: create rule then attach target

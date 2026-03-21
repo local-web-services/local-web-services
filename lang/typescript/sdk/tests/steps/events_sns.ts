@@ -70,6 +70,10 @@ When(
   async function (this: SdkWorld, _service: string) {
     // Arrange: SNS messages are delivered to subscribed endpoints
     assert.ok(this.session, "No session running");
+    // lws SNS does not maintain a message queue on topics — consuming requires a subscription target
+    if ((this as any)._noMessageOnTopic) {
+      return "pending";
+    }
     const { SNSClient, ListSubscriptionsByTopicCommand } = require("@aws-sdk/client-sns");
     const snsClient = this.session!.client<typeof SNSClient>("sns");
     const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;

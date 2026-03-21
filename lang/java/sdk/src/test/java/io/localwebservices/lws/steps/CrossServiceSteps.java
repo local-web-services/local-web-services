@@ -61,8 +61,8 @@ public class CrossServiceSteps {
   private static final String TEST_ACCOUNT = "000000000000";
 
   /**
-   * Shared in-process session started once for ALL cross-service scenarios to avoid port
-   * exhaustion from repeatedly creating and destroying 21-server stacks per scenario.
+   * Shared in-process session started once for ALL cross-service scenarios to avoid port exhaustion
+   * from repeatedly creating and destroying 21-server stacks per scenario.
    */
   private static LwsSession sharedSession;
 
@@ -183,10 +183,7 @@ public class CrossServiceSteps {
           r ->
               r.tableName(name)
                   .keySchema(
-                      KeySchemaElement.builder()
-                          .attributeName("id")
-                          .keyType(KeyType.HASH)
-                          .build())
+                      KeySchemaElement.builder().attributeName("id").keyType(KeyType.HASH).build())
                   .attributeDefinitions(
                       AttributeDefinition.builder()
                           .attributeName("id")
@@ -527,8 +524,7 @@ public class CrossServiceSteps {
       // Act
       var subscribeResponse =
           snsClient.subscribe(
-              r ->
-                  r.topicArn(expectedTopicArn).protocol("sqs").endpoint(expectedQueueArn));
+              r -> r.topicArn(expectedTopicArn).protocol("sqs").endpoint(expectedQueueArn));
       // Assert
       assertNotNull(subscribeResponse.subscriptionArn(), "expected a subscription ARN");
     }
@@ -847,8 +843,7 @@ public class CrossServiceSteps {
   public void theStateMachineAlreadyHasAnTaskConfigured(String service) {
     // Arrange / Act / Assert — not reachable via public API
     Assumptions.assumeTrue(
-        false,
-        "state machine " + service + " task already-configured not reachable via SDK API");
+        false, "state machine " + service + " task already-configured not reachable via SDK API");
   }
 
   @Given("an execution is \"RUNNING\"")
@@ -857,7 +852,9 @@ public class CrossServiceSteps {
     sfnCreateStandardSM(TEST_SFN_SM);
     try (SfnClient client = world.session.sfnClient()) {
       // Act
-      var result = client.startExecution(r -> r.stateMachineArn(world.lastStateMachineArn).input(TEST_SFN_INPUT));
+      var result =
+          client.startExecution(
+              r -> r.stateMachineArn(world.lastStateMachineArn).input(TEST_SFN_INPUT));
       world.lastExecutionArn = result.executionArn();
     }
     // Assert — execution now running; verified by subsequent steps
@@ -1160,7 +1157,8 @@ public class CrossServiceSteps {
   @When("a running execution attempts to get an item that does not exist and the execution fails")
   public void aRunningExecutionAttemptsToGetAnItemThatDoesNotExist() {
     // Arrange / Act / Assert — internal execution failure not reachable via public API
-    Assumptions.assumeTrue(false, "internal execution DynamoDB task failure not reachable via SDK API");
+    Assumptions.assumeTrue(
+        false, "internal execution DynamoDB task failure not reachable via SDK API");
   }
 
   // -------------------------------------------------------------------------
@@ -1197,7 +1195,8 @@ public class CrossServiceSteps {
   @When("a running execution reaches the {string} task state and sends a message to the queue")
   public void aRunningExecutionReachesTaskStateAndSendsMessageToQueue(String service) {
     // Arrange / Act / Assert — internal execution task not reachable via public API
-    Assumptions.assumeTrue(false, "internal execution " + service + " task not reachable via SDK API");
+    Assumptions.assumeTrue(
+        false, "internal execution " + service + " task not reachable via SDK API");
   }
 
   @When("an execution of the state machine is started")
@@ -1206,7 +1205,8 @@ public class CrossServiceSteps {
     try (SfnClient client = world.session.sfnClient()) {
       // Act
       var response =
-          client.startExecution(r -> r.stateMachineArn(world.lastStateMachineArn).input(TEST_SFN_INPUT));
+          client.startExecution(
+              r -> r.stateMachineArn(world.lastStateMachineArn).input(TEST_SFN_INPUT));
       world.lastExecutionArn = response.executionArn();
       // Assert
       world.setSuccess(response);
@@ -1257,7 +1257,8 @@ public class CrossServiceSteps {
       boolean actualExists =
           response.eventBuses().stream().anyMatch(b -> b.name().equals(TEST_EVENT_BUS));
       // Assert
-      assertTrue(actualExists, "expected event bus '" + TEST_EVENT_BUS + "' to be " + expectedState);
+      assertTrue(
+          actualExists, "expected event bus '" + TEST_EVENT_BUS + "' to be " + expectedState);
     }
   }
 
@@ -1268,7 +1269,8 @@ public class CrossServiceSteps {
     // Act
     try (S3Client client = world.session.s3Client()) {
       ListBucketsResponse response = client.listBuckets();
-      boolean actualExists = response.buckets().stream().anyMatch(b -> b.name().equals(expectedBucketName));
+      boolean actualExists =
+          response.buckets().stream().anyMatch(b -> b.name().equals(expectedBucketName));
       // Assert
       assertTrue(actualExists, "expected bucket '" + expectedBucketName + "' to exist");
     }
@@ -1294,7 +1296,8 @@ public class CrossServiceSteps {
     // Act
     try (SfnClient client = world.session.sfnClient()) {
       ListStateMachinesResponse response = client.listStateMachines();
-      boolean actualExists = response.stateMachines().stream().anyMatch(sm -> sm.name().equals(expectedSmName));
+      boolean actualExists =
+          response.stateMachines().stream().anyMatch(sm -> sm.name().equals(expectedSmName));
       // Assert
       assertTrue(actualExists, "expected state machine '" + expectedSmName + "' to be ACTIVE");
     }
@@ -1307,7 +1310,8 @@ public class CrossServiceSteps {
     // Act
     try (SfnClient client = world.session.sfnClient()) {
       ListStateMachinesResponse response = client.listStateMachines();
-      boolean actualExists = response.stateMachines().stream().anyMatch(sm -> sm.name().equals(expectedSmName));
+      boolean actualExists =
+          response.stateMachines().stream().anyMatch(sm -> sm.name().equals(expectedSmName));
       // Assert
       assertTrue(actualExists, "expected state machine '" + expectedSmName + "' to be ACTIVE");
     }
@@ -1322,9 +1326,11 @@ public class CrossServiceSteps {
       ListExecutionsResponse response =
           client.listExecutions(r -> r.stateMachineArn(world.lastStateMachineArn));
       boolean actualFound =
-          response.executions().stream().anyMatch(e -> e.executionArn().equals(expectedExecutionArn));
+          response.executions().stream()
+              .anyMatch(e -> e.executionArn().equals(expectedExecutionArn));
       // Assert
-      assertTrue(actualFound, "expected execution " + expectedExecutionArn + " to be in state " + state);
+      assertTrue(
+          actualFound, "expected execution " + expectedExecutionArn + " to be in state " + state);
     } catch (Exception e) {
       // If state machine or execution does not exist, execution is not running
       assertFalse(
@@ -1377,12 +1383,14 @@ public class CrossServiceSteps {
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
       var response =
           client.listRules(r -> r.namePrefix(expectedRuleName).eventBusName(TEST_EVENT_BUS));
-      actualRuleExists = response.rules().stream().anyMatch(rule -> rule.name().equals(expectedRuleName));
+      actualRuleExists =
+          response.rules().stream().anyMatch(rule -> rule.name().equals(expectedRuleName));
     } catch (Exception e) {
       actualRuleExists = false;
     }
     // Assert
-    assertTrue(actualRuleExists, "expected rule '" + expectedRuleName + "' to exist and be ENABLED");
+    assertTrue(
+        actualRuleExists, "expected rule '" + expectedRuleName + "' to exist and be ENABLED");
   }
 
   @Then("the rule is \"ENABLED\" and will publish to the topic when matching events are received")
@@ -1394,12 +1402,14 @@ public class CrossServiceSteps {
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
       var response =
           client.listRules(r -> r.namePrefix(expectedRuleName).eventBusName(TEST_EVENT_BUS));
-      actualRuleExists = response.rules().stream().anyMatch(rule -> rule.name().equals(expectedRuleName));
+      actualRuleExists =
+          response.rules().stream().anyMatch(rule -> rule.name().equals(expectedRuleName));
     } catch (Exception e) {
       actualRuleExists = false;
     }
     // Assert
-    assertTrue(actualRuleExists, "expected rule '" + expectedRuleName + "' to exist and be ENABLED");
+    assertTrue(
+        actualRuleExists, "expected rule '" + expectedRuleName + "' to exist and be ENABLED");
   }
 
   @Then("the state machine will enqueue a message when it reaches the task state")
@@ -1485,8 +1495,7 @@ public class CrossServiceSteps {
     boolean actualQueueGone;
     try (SqsClient client = world.session.sqsClient()) {
       ListQueuesResponse response = client.listQueues();
-      actualQueueGone =
-          response.queueUrls().stream().noneMatch(u -> u.contains(TEST_SQS_QUEUE));
+      actualQueueGone = response.queueUrls().stream().noneMatch(u -> u.contains(TEST_SQS_QUEUE));
     }
     // Assert
     assertTrue(actualQueueGone, "expected queue '" + TEST_SQS_QUEUE + "' to be deleted");

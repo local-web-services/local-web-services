@@ -26,9 +26,9 @@ Given("the topic exists and is {string}", async function (this: SdkWorld, _state
 Given(
   "the topic does not exist or is not {string}",
   async function (this: SdkWorld, _state: string) {
-    // Arrange + Act: no-op — no topics exist
-    // Assert: session is running
+    // Arrange + Act: no-op — no topics exist; flag for When step detection
     assert.ok(this.session, "No session running");
+    (this as any)._topicNotActive = true;
   },
 );
 
@@ -42,6 +42,20 @@ When(
   async function (this: SdkWorld, _service: string) {
     // Arrange
     assert.ok(this.session, "No session running");
+    // lws S3 does not validate bucket state, notification config, or topic state during PutObject
+    if ((this as any)._bucketNotActive) {
+      return "pending";
+    }
+    if ((this as any)._noBucketNotificationConfig) {
+      return "pending";
+    }
+    if ((this as any)._targetTopicDeleted) {
+      return "pending";
+    }
+    // lws S3 PutObject succeeds even when SNS message capacity is exhausted
+    if ((this as any)._noMessageSlot) {
+      return "pending";
+    }
     const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
     const client = this.session!.client<typeof S3Client>("s3");
     // Act

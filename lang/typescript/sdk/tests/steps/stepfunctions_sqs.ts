@@ -13,7 +13,7 @@ When(
     // Arrange
     if ((this as any)._queueDoesNotExist || (this as any)._queueNotActive) {
       // lws does not validate queue state when configuring SFN task definitions — skip
-      return (this as any).pending();
+      return "pending";
     }
     assert.ok(this.session, "No session running");
     const sfnPort = this.session!.portFor("stepfunctions");
@@ -62,7 +62,7 @@ When(
     // Arrange
     if ((this as any)._noMessageSlot) {
       // lws SFN task invokes SQS directly bypassing capacity checks — skip
-      return (this as any).pending();
+      return "pending";
     }
     // The execution was already started in the Given step
     assert.ok(this.session, "No session running");
