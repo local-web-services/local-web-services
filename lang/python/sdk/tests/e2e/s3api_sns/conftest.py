@@ -347,7 +347,8 @@ def object_exists_but_no_notification(lws_session, world):
     # Assert
     actual_error = world["error"]
     assert actual_error is expected_error, (
-        f"Expected put_object to succeed (even without notification delivery) but got: {actual_error}"
+        "Expected put_object to succeed (even without notification delivery)"
+        f" but got: {actual_error}"
     )
     actual_objects = _s3(lws_session).list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
     actual_keys = [obj["Key"] for obj in actual_objects]
