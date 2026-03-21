@@ -15,10 +15,9 @@ import (
 func registerSSMSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Given(`^an SSM parameter "([^"]*)" with value "([^"]*)" exists$`, func(name, value string) error {
 		_, err := world.SSMClient().PutParameter(context.Background(), &ssm.PutParameterInput{
-			Name:      aws.String(name),
-			Value:     aws.String(value),
-			Type:      ssmtypes.ParameterTypeString,
-			Overwrite: aws.Bool(true),
+			Name:  aws.String(name),
+			Value: aws.String(value),
+			Type:  ssmtypes.ParameterTypeString,
 		})
 		return err
 	})

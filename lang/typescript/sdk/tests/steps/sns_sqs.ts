@@ -61,8 +61,12 @@ When(
   async function (this: SdkWorld, _service: string) {
     // Arrange
     assert.ok(this.session, "No session running");
-    const { SQSClient, GetQueueUrlCommand, ReceiveMessageCommand, DeleteMessageCommand } =
-      require("@aws-sdk/client-sqs");
+    const {
+      SQSClient,
+      GetQueueUrlCommand,
+      ReceiveMessageCommand,
+      DeleteMessageCommand,
+    } = require("@aws-sdk/client-sqs");
     const client = this.session!.client<typeof SQSClient>("sqs");
     // Act
     try {

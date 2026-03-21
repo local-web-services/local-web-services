@@ -52,21 +52,67 @@ When("a DynamoDB PutItem task is configured on the state machine", async functio
 When(
   "a running execution writes an item to the DynamoDB table and succeeds",
   async function (this: SdkWorld) {
-    // Arrange: execution already ran during Given step; check item was written
+    // Arrange
     assert.ok(this.session, "No session running");
-    const { DynamoDBClient, GetItemCommand } = require("@aws-sdk/client-dynamodb");
-    const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
-    // Act: check if item exists in table
+    const sfnPort = this.session!.portFor("stepfunctions");
+    const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
+    // Act: create table if not exists
+    const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
+    const ddbClient = this.session!.client<typeof DynamoDBClient>("dynamodb");
     try {
-      const result = await client.send(
-        new GetItemCommand({
+      await ddbClient.send(
+        new CreateTableCommand({
           TableName: DDB_TABLE,
-          Key: TEST_ITEM_KEY,
+          KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+          AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
+          BillingMode: "PAY_PER_REQUEST",
         }),
       );
-      this.lastCallResult = { success: true, output: result };
-    } catch (err: unknown) {
-      this.lastCallResult = { success: false, output: null, error: err };
+    } catch {
+      // May already exist
+    }
+    // Act: update state machine with DynamoDB PutItem task
+    const updateResponse = await fetch(`http://127.0.0.1:${sfnPort}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-amz-json-1.0",
+        "X-Amz-Target": "AWSStepFunctions.UpdateStateMachine",
+      },
+      body: JSON.stringify({
+        stateMachineArn: smArn,
+        definition: JSON.stringify({
+          Comment: "test with DynamoDB",
+          StartAt: "PutItem",
+          States: {
+            PutItem: {
+              Type: "Task",
+              Resource: "arn:aws:states:::dynamodb:putItem",
+              Parameters: { TableName: DDB_TABLE, Item: TEST_ITEM_KEY },
+              End: true,
+            },
+          },
+        }),
+      }),
+    });
+    if (!updateResponse.ok) {
+      const errData = await updateResponse.json();
+      this.lastCallResult = { success: false, output: null, error: errData };
+      return;
+    }
+    // Act: start execution (synchronous — runs DDB PutItem task, writes item)
+    const startResponse = await fetch(`http://127.0.0.1:${sfnPort}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-amz-json-1.0",
+        "X-Amz-Target": "AWSStepFunctions.StartExecution",
+      },
+      body: JSON.stringify({ stateMachineArn: smArn, input: JSON.stringify({}) }),
+    });
+    const data = await startResponse.json();
+    if (startResponse.ok) {
+      this.lastCallResult = { success: true, output: data };
+    } else {
+      this.lastCallResult = { success: false, output: null, error: data };
     }
     // Assert: captured in lastCallResult
   },
@@ -138,10 +184,7 @@ Then(
     const actualExists = machines.some((m) => m.name === SFN_SM);
     // Assert
     if (expectedState === "ACTIVE") {
-      assert.ok(
-        actualExists,
-        `Expected state machine "${SFN_SM}" to be ACTIVE but not found`,
-      );
+      assert.ok(actualExists, `Expected state machine "${SFN_SM}" to be ACTIVE but not found`);
     }
   },
 );

@@ -654,10 +654,9 @@ func (s *Session) preCreateResources(spec SessionSpec) error {
 		ssmc := s.SSMClient()
 		for _, p := range spec.Parameters {
 			if _, err := ssmc.PutParameter(ctx, &ssm.PutParameterInput{
-				Name:      aws.String(p),
-				Value:     aws.String(""),
-				Type:      ssmtypes.ParameterTypeString,
-				Overwrite: aws.Bool(true),
+				Name:  aws.String(p),
+				Value: aws.String(""),
+				Type:  ssmtypes.ParameterTypeString,
 			}); err != nil {
 				return fmt.Errorf("put parameter %q: %w", p, err)
 			}

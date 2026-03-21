@@ -96,9 +96,8 @@ Then(
     const port = this.session!.portFor("eventbridge");
     // Act
     const result = await ebCall(port, "ListRules", { EventBusName: EB_BUS });
-    const rules: Array<{ Name?: string; State?: string }> = (
-      result.data as { Rules?: Array<{ Name?: string; State?: string }> }
-    ).Rules ?? [];
+    const rules: Array<{ Name?: string; State?: string }> =
+      (result.data as { Rules?: Array<{ Name?: string; State?: string }> }).Rules ?? [];
     const actualRule = rules.find((r) => r.Name === EB_RULE);
     // Assert
     assert.ok(actualRule, `Expected rule "${EB_RULE}" to exist`);

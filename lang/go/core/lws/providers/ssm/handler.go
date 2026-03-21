@@ -138,8 +138,12 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 				return
 			}
 		} else if *overwrite {
-			// Overwrite=true: upsert mode — create if not present, update if present.
-			_ = existing
+			// Overwrite=true: update-only — fail if parameter does not exist.
+			if !exists {
+				h.store.mu.Unlock()
+				writeErr(w, "ParameterNotFound", "Parameter not found: "+name, 400)
+				return
+			}
 		} else {
 			// Overwrite=false: update-mode that records ParameterAlreadyExists.
 			// Fail if parameter does NOT exist (nothing to conflict with).
