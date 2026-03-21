@@ -6,6 +6,9 @@ import com.sun.net.httpserver.HttpHandler;
 import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
+import io.localwebservices.lws.providers.sns.SnsHandler;
+import io.localwebservices.lws.providers.sqs.SqsHandler;
+import io.localwebservices.lws.providers.stepfunctions.StepFunctionsHandler;
 import java.io.*;
 import java.util.*;
 
@@ -18,11 +21,48 @@ public class EventBridgeHandler implements HttpHandler {
 
   private final ServerState state;
   private final EventBridgeStore store;
+  private SqsHandler sqsHandler;
+  private SnsHandler snsHandler;
+  private StepFunctionsHandler stepFunctionsHandler;
 
   public EventBridgeHandler(ServerState state) {
     this.state = state;
     this.store = new EventBridgeStore();
     state.resetCallbacks.add(store::reset);
+  }
+
+  /** Wires in the SQS handler for EventBridge→SQS target dispatch. */
+  public void setSqsHandler(SqsHandler sqsHandler) {
+    this.sqsHandler = sqsHandler;
+  }
+
+  /** Wires in the SNS handler for EventBridge→SNS target dispatch. */
+  public void setSnsHandler(SnsHandler snsHandler) {
+    this.snsHandler = snsHandler;
+  }
+
+  /** Wires in the StepFunctions handler for EventBridge→StepFunctions target dispatch. */
+  public void setStepFunctionsHandler(StepFunctionsHandler stepFunctionsHandler) {
+    this.stepFunctionsHandler = stepFunctionsHandler;
+  }
+
+  /**
+   * Puts events programmatically (used by StepFunctions service task bridges). The params map must
+   * contain "Entries" as a List of event entry maps. Returns a map with "FailedEntryCount" and
+   * "Entries".
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> executePutEvents(Map<String, Object> params) {
+    List<Map<String, Object>> entries =
+        (List<Map<String, Object>>) params.getOrDefault("Entries", List.of());
+    List<Map<String, Object>> resultEntries = new ArrayList<>();
+    for (int i = 0; i < entries.size(); i++) {
+      resultEntries.add(Map.of("EventId", UUID.randomUUID().toString()));
+    }
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put("FailedEntryCount", 0);
+    result.put("Entries", resultEntries);
+    return result;
   }
 
   @Override
@@ -110,7 +150,9 @@ public class EventBridgeHandler implements HttpHandler {
                       "ErrorMessage",
                       "Target service has no available capacity."));
             } else {
-              resultEntries.add(Map.of("EventId", UUID.randomUUID().toString()));
+              String eventId = UUID.randomUUID().toString();
+              resultEntries.add(Map.of("EventId", eventId));
+              dispatchEventToTargets(busName, entry);
             }
           }
           if (failedCount > 0 && failedCount == entries.size()) {
@@ -486,6 +528,36 @@ public class EventBridgeHandler implements HttpHandler {
                   "message",
                   "Not implemented: " + operation));
         }
+    }
+  }
+
+  private void dispatchEventToTargets(String busName, Map<String, Object> event) {
+    String eventJson;
+    try {
+      eventJson = MAPPER.writeValueAsString(event);
+    } catch (Exception e) {
+      eventJson = "{}";
+    }
+    for (Map<String, Object> rule : store.rules.values()) {
+      if (!busName.equals(rule.getOrDefault("EventBusName", "default"))) continue;
+      if (!"ENABLED".equals(rule.getOrDefault("State", "ENABLED"))) continue;
+      String ruleName = (String) rule.get("Name");
+      List<Map<String, Object>> targets = store.ruleTargets.getOrDefault(ruleName, List.of());
+      for (Map<String, Object> target : targets) {
+        String arn = (String) target.getOrDefault("Arn", "");
+        dispatchToTarget(arn, eventJson);
+      }
+    }
+  }
+
+  private void dispatchToTarget(String arn, String eventJson) {
+    if (arn.contains(":sqs:") && sqsHandler != null) {
+      String queueName = arn.substring(arn.lastIndexOf(':') + 1);
+      sqsHandler.deliverToQueue(queueName, eventJson);
+    } else if (arn.contains(":sns:") && snsHandler != null) {
+      snsHandler.publishToTopic(arn, eventJson);
+    } else if (arn.contains(":states:") && stepFunctionsHandler != null) {
+      stepFunctionsHandler.startExecution(arn, eventJson);
     }
   }
 

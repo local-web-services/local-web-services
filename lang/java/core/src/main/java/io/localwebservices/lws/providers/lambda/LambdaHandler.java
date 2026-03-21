@@ -390,6 +390,17 @@ public class LambdaHandler implements HttpHandler {
 
   // ── Event source mappings ──────────────────────────────────────────────────
 
+  /**
+   * Invokes a Lambda function programmatically (used by S3 event notification delivery). Does
+   * nothing if the function does not exist.
+   */
+  public void invokeFunction(String functionName, String payload) {
+    if (!store.functions.containsKey(functionName)) {
+      return;
+    }
+    // Fire-and-forget async invocation; payload is accepted but not processed by this fake
+  }
+
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   private static Map<String, Object> functionToConfig(Map<String, Object> fn) {

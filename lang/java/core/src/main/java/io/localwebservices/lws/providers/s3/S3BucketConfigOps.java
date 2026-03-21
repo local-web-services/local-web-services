@@ -95,14 +95,25 @@ class S3BucketConfigOps {
         }
       case "GetBucketNotificationConfiguration":
         {
-          S3HttpHelper.sendXml(
-              exchange,
-              200,
-              "<?xml version=\"1.0\" encoding=\"UTF-8\"?><NotificationConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"></NotificationConfiguration>");
+          String notifXml =
+              store.bucketNotifications.getOrDefault(
+                  bucket,
+                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?><NotificationConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"></NotificationConfiguration>");
+          S3HttpHelper.sendXml(exchange, 200, notifXml);
           return true;
         }
       case "PutBucketNotificationConfiguration":
         {
+          if (!store.buckets.containsKey(bucket)) {
+            S3HttpHelper.sendS3Error(
+                exchange, 404, "NoSuchBucket", "The specified bucket does not exist.");
+            return true;
+          }
+          byte[] body;
+          try (InputStream is = exchange.getRequestBody()) {
+            body = is.readAllBytes();
+          }
+          store.bucketNotifications.put(bucket, new String(body, StandardCharsets.UTF_8));
           S3HttpHelper.sendEmpty(exchange, 200);
           return true;
         }

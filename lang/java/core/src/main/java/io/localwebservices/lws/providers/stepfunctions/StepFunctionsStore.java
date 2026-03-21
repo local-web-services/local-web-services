@@ -70,6 +70,15 @@ public class StepFunctionsStore {
   }
 
   public Map<String, Object> startExecution(String smArn, String execName, String input) {
+    return startExecutionWithOutput(smArn, execName, input, input);
+  }
+
+  /**
+   * Records a new execution with an explicit output (used when the execution engine has computed
+   * the real output via service task bridges).
+   */
+  public Map<String, Object> startExecutionWithOutput(
+      String smArn, String execName, String input, String output) {
     String machineName = smArn.contains(":") ? smArn.substring(smArn.lastIndexOf(':') + 1) : smArn;
     String execArn =
         "arn:aws:states:" + REGION + ":" + ACCOUNT + ":execution:" + machineName + ":" + execName;
@@ -82,7 +91,7 @@ public class StepFunctionsStore {
     exec.put("startDate", startDate);
     exec.put("stopDate", startDate);
     exec.put("input", input);
-    exec.put("output", input);
+    exec.put("output", output != null ? output : input);
     executions.put(execArn, exec);
     return exec;
   }

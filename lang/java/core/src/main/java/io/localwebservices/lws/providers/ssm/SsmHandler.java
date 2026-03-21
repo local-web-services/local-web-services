@@ -24,6 +24,27 @@ public class SsmHandler implements HttpHandler {
     state.resetCallbacks.add(store::reset);
   }
 
+  /**
+   * Gets a parameter programmatically (used by StepFunctions service task bridges). The params map
+   * must contain "Name". Returns a map with "Parameter".
+   */
+  public Map<String, Object> executeGetParameter(Map<String, Object> params) {
+    String name = (String) params.get("Name");
+    Map<String, Object> param = store.getParameter(name);
+    if (param == null) {
+      throw new RuntimeException("ParameterNotFound: Parameter " + name + " not found");
+    }
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put(
+        "Parameter",
+        Map.of(
+            "Name", param.get("Name"),
+            "Value", param.get("Value"),
+            "Type", param.get("Type"),
+            "Version", param.get("Version")));
+    return result;
+  }
+
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     String target = exchange.getRequestHeaders().getFirst("X-Amz-Target");

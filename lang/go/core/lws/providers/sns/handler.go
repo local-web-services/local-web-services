@@ -1,6 +1,7 @@
 package sns
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -265,15 +266,74 @@ func parseFilterPolicy(raw string) map[string][]string {
 
 // Handler is the HTTP handler for the SNS provider.
 type Handler struct {
-	state *state.ServerState
-	store *Store
+	state   *state.ServerState
+	store   *Store
+	sqsPort int
 }
 
 // NewHandler creates a new SNS handler and registers the reset callback.
-func NewHandler(ss *state.ServerState) *Handler {
+func NewHandler(ss *state.ServerState, sqsPort int) *Handler {
 	store := NewStore()
 	ss.AddResetCallback(store.Reset)
-	return &Handler{state: ss, store: store}
+	return &Handler{state: ss, store: store, sqsPort: sqsPort}
+}
+
+// deliverToSQSByEndpoint delivers an SNS notification to a concrete SQS queue endpoint.
+// endpoint is either a queue URL or an ARN like arn:aws:sqs:region:account:name.
+func (h *Handler) deliverToSQSByEndpoint(endpoint, topicArn, messageID, message string, msgAttrs map[string]MessageAttribute) {
+	if h.sqsPort == 0 {
+		return
+	}
+
+	// Resolve the queue URL.
+	var queueURL string
+	if strings.HasPrefix(endpoint, "http") {
+		queueURL = endpoint
+	} else {
+		// ARN: arn:aws:sqs:region:account:queueName
+		parts := strings.Split(endpoint, ":")
+		queueName := parts[len(parts)-1]
+		queueURL = fmt.Sprintf("http://127.0.0.1:%d/%s/%s", h.sqsPort, accountID, queueName)
+	}
+
+	// Build the SNS notification envelope.
+	envelope := map[string]interface{}{
+		"Type":      "Notification",
+		"MessageId": messageID,
+		"TopicArn":  topicArn,
+		"Message":   message,
+	}
+	if len(msgAttrs) > 0 {
+		attrs := make(map[string]map[string]string, len(msgAttrs))
+		for k, v := range msgAttrs {
+			attrs[k] = map[string]string{
+				"DataType":    v.DataType,
+				"StringValue": v.StringValue,
+			}
+		}
+		envelope["MessageAttributes"] = attrs
+	} else {
+		envelope["MessageAttributes"] = map[string]interface{}{}
+	}
+
+	envelopeJSON, _ := json.Marshal(envelope)
+
+	payload, _ := json.Marshal(map[string]string{
+		"QueueUrl":    queueURL,
+		"MessageBody": string(envelopeJSON),
+	})
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.sqsPort), bytes.NewReader(payload))
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+	req.Header.Set("X-Amz-Target", "AmazonSQS.SendMessage")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return
+	}
+	resp.Body.Close()
 }
 
 // ServeHTTP dispatches SNS requests (supports both JSON and form-encoded).
@@ -390,7 +450,9 @@ func (h *Handler) handleJSON(w http.ResponseWriter, action string, body map[stri
 
 	case "Publish":
 		topicArn := getString(body, "TopicArn")
+		message := getString(body, "Message")
 		msgAttrs := parseMessageAttributesJSON(body["MessageAttributes"])
+		messageID := fmt.Sprintf("msg-%d", time.Now().UnixNano())
 
 		if topicArn != "" {
 			t := h.store.getTopic(topicArn)
@@ -398,14 +460,22 @@ func (h *Handler) handleJSON(w http.ResponseWriter, action string, body map[stri
 				writeErr("NotFound", "Topic not found: "+topicArn)
 				return
 			}
-			// Filter-policy matching (fire-and-forget; no real delivery in test mode).
+			// Deliver to each matching subscription.
 			h.store.mu.RLock()
+			var sqsSubs []*Subscription
 			for _, sub := range t.Subscriptions {
-				_ = matchesFilterPolicy(sub.FilterPolicy, msgAttrs)
+				if !matchesFilterPolicy(sub.FilterPolicy, msgAttrs) {
+					continue
+				}
+				if sub.Protocol == "sqs" {
+					sqsSubs = append(sqsSubs, sub)
+				}
 			}
 			h.store.mu.RUnlock()
+			for _, sub := range sqsSubs {
+				h.deliverToSQSByEndpoint(sub.Endpoint, topicArn, messageID, message, msgAttrs)
+			}
 		}
-		messageID := fmt.Sprintf("msg-%d", time.Now().UnixNano())
 		writeOK(map[string]string{"MessageId": messageID})
 
 	case "Subscribe":
@@ -565,6 +635,7 @@ func (h *Handler) handleForm(w http.ResponseWriter, action string, form url.Valu
 			writeXMLErr("InvalidParameter", "TopicArn must not be empty")
 			return
 		}
+		message := form.Get("Message")
 		msgAttrs := parseMessageAttributesForm(form)
 		t := h.store.getTopic(topicArn)
 		if t == nil {
@@ -574,8 +645,14 @@ func (h *Handler) handleForm(w http.ResponseWriter, action string, form url.Valu
 		// Fail if no subscriptions exist for the topic (all subscriptions are treated as confirmed).
 		h.store.mu.RLock()
 		hasSubscription := len(t.Subscriptions) > 0
+		var sqsSubs []*Subscription
 		for _, sub := range t.Subscriptions {
-			_ = matchesFilterPolicy(sub.FilterPolicy, msgAttrs)
+			if !matchesFilterPolicy(sub.FilterPolicy, msgAttrs) {
+				continue
+			}
+			if sub.Protocol == "sqs" {
+				sqsSubs = append(sqsSubs, sub)
+			}
 		}
 		h.store.mu.RUnlock()
 		if !hasSubscription {
@@ -583,6 +660,9 @@ func (h *Handler) handleForm(w http.ResponseWriter, action string, form url.Valu
 			return
 		}
 		messageID := fmt.Sprintf("msg-%d", time.Now().UnixNano())
+		for _, sub := range sqsSubs {
+			h.deliverToSQSByEndpoint(sub.Endpoint, topicArn, messageID, message, msgAttrs)
+		}
 		writeXMLOK(fmt.Sprintf(`PublishResponse xmlns="http://sns.amazonaws.com/doc/2010-03-31/"><PublishResult><MessageId>%s</MessageId></PublishResult><ResponseMetadata><RequestId>0</RequestId></ResponseMetadata></PublishResponse>`, messageID))
 
 	case "Subscribe":

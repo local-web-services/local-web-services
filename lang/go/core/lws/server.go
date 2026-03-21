@@ -102,32 +102,42 @@ func StartServer(basePort int) (*Server, error) {
 	// S3
 	ebPort := basePort + ServiceOffsets["eventbridge"]
 	s3Mux := http.NewServeMux()
-	s3Mux.Handle("/", s3.NewHandler(state, sqsPort, ebPort))
+	s3Mux.Handle("/", s3.NewHandler(state, sqsPort, ebPort, basePort+ServiceOffsets["sns"]))
 	if err := srv.startService(s3Mux, basePort+ServiceOffsets["s3"]); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("s3 server: %w", err)
 	}
 
 	// SNS
+	snsPort := basePort + ServiceOffsets["sns"]
 	snsMux := http.NewServeMux()
-	snsMux.Handle("/", sns.NewHandler(state))
-	if err := srv.startService(snsMux, basePort+ServiceOffsets["sns"]); err != nil {
+	snsMux.Handle("/", sns.NewHandler(state, sqsPort))
+	if err := srv.startService(snsMux, snsPort); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("sns server: %w", err)
 	}
 
 	// EventBridge
+	sfnPort := basePort + ServiceOffsets["stepfunctions"]
 	ebMux := http.NewServeMux()
-	ebMux.Handle("/", eventbridge.NewHandler(state))
-	if err := srv.startService(ebMux, basePort+ServiceOffsets["eventbridge"]); err != nil {
+	ebMux.Handle("/", eventbridge.NewHandler(state, sqsPort, snsPort, sfnPort))
+	if err := srv.startService(ebMux, ebPort); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("eventbridge server: %w", err)
 	}
 
 	// Step Functions
 	sfnMux := http.NewServeMux()
-	sfnMux.Handle("/", stepfunctions.NewHandler(state))
-	if err := srv.startService(sfnMux, basePort+ServiceOffsets["stepfunctions"]); err != nil {
+	sfnMux.Handle("/", stepfunctions.NewHandler(state, stepfunctions.ServicePorts{
+		DynamoDB:       basePort + ServiceOffsets["dynamodb"],
+		SQS:            sqsPort,
+		S3:             basePort + ServiceOffsets["s3"],
+		SNS:            snsPort,
+		SecretsManager: basePort + ServiceOffsets["secretsmanager"],
+		SSM:            basePort + ServiceOffsets["ssm"],
+		EventBridge:    ebPort,
+	}))
+	if err := srv.startService(sfnMux, sfnPort); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("stepfunctions server: %w", err)
 	}

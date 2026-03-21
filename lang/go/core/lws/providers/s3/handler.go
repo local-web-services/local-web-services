@@ -154,17 +154,18 @@ type Handler struct {
 	store   *Store
 	sqsPort int
 	ebPort  int
+	snsPort int
 }
 
 // NewHandler creates a new S3 handler and registers the reset callback.
-func NewHandler(ss *state.ServerState, sqsPort, ebPort int) *Handler {
+func NewHandler(ss *state.ServerState, sqsPort, ebPort, snsPort int) *Handler {
 	store := NewStore()
 	ss.AddResetCallback(store.Reset)
-	return &Handler{state: ss, store: store, sqsPort: sqsPort, ebPort: ebPort}
+	return &Handler{state: ss, store: store, sqsPort: sqsPort, ebPort: ebPort, snsPort: snsPort}
 }
 
 // dispatchNotification fires an S3 event notification to the configured target.
-func (h *Handler) dispatchNotification(bucket, key string) error {
+func (h *Handler) dispatchNotification(bucket, key, eventName string) error {
 	h.store.mu.RLock()
 	b := h.store.buckets[bucket]
 	var nc *NotificationConfig
@@ -181,7 +182,7 @@ func (h *Handler) dispatchNotification(bucket, key string) error {
 		"Records": []map[string]interface{}{
 			{
 				"eventSource": "aws:s3",
-				"eventName":   "ObjectCreated:Put",
+				"eventName":   eventName,
 				"s3": map[string]interface{}{
 					"bucket": map[string]string{"name": bucket},
 					"object": map[string]string{"key": key},
@@ -208,12 +209,29 @@ func (h *Handler) dispatchNotification(bucket, key string) error {
 			return err
 		}
 		resp.Body.Close()
+	case "sns":
+		payload, _ := json.Marshal(map[string]string{
+			"TopicArn": nc.Target,
+			"Message":  string(eventBody),
+		})
+		req, _ := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.snsPort), bytes.NewReader(payload))
+		req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+		req.Header.Set("X-Amz-Target", "SNS.Publish")
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return err
+		}
+		resp.Body.Close()
 	case "eventbridge":
+		detailType := "Object Created"
+		if strings.HasPrefix(eventName, "ObjectRemoved") {
+			detailType = "Object Deleted"
+		}
 		payload, _ := json.Marshal(map[string]interface{}{
 			"Entries": []map[string]string{
 				{
 					"Source":       "aws.s3",
-					"DetailType":   "Object Created",
+					"DetailType":   detailType,
 					"Detail":       string(eventBody),
 					"EventBusName": nc.Target,
 				},
@@ -518,7 +536,7 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		b.Objects[key] = newObj
 		h.store.mu.Unlock()
 
-		h.dispatchNotification(bucket, key) //nolint:errcheck
+		h.dispatchNotification(bucket, key, "ObjectCreated:Put") //nolint:errcheck
 		w.Header().Set("ETag", etag)
 		w.WriteHeader(200)
 
@@ -581,6 +599,7 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		}
 		delete(b.Objects, key)
 		h.store.mu.Unlock()
+		h.dispatchNotification(bucket, key, "ObjectRemoved:Delete") //nolint:errcheck
 		w.WriteHeader(204)
 
 	case "DeleteObjects":
@@ -1004,7 +1023,28 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		w.WriteHeader(204)
 
 	case "GetBucketNotificationConfiguration":
-		xmlReply(w, `<NotificationConfiguration></NotificationConfiguration>`, 200)
+		b := h.store.getBucket(bucket)
+		if b == nil {
+			xmlErr(w, "NoSuchBucket", "The bucket does not exist", 404)
+			return
+		}
+		h.store.mu.RLock()
+		nc := b.Notification
+		h.store.mu.RUnlock()
+		if nc == nil || nc.Type == "" {
+			xmlReply(w, `<NotificationConfiguration></NotificationConfiguration>`, 200)
+			return
+		}
+		var inner string
+		switch nc.Type {
+		case "sqs":
+			inner = fmt.Sprintf(`<QueueConfiguration><Queue>%s</Queue><Event>s3:ObjectCreated:*</Event></QueueConfiguration>`, escapeXML(nc.Target))
+		case "sns":
+			inner = fmt.Sprintf(`<TopicConfiguration><Topic>%s</Topic><Event>s3:ObjectCreated:*</Event></TopicConfiguration>`, escapeXML(nc.Target))
+		case "eventbridge":
+			inner = `<EventBridgeConfiguration></EventBridgeConfiguration>`
+		}
+		xmlReply(w, fmt.Sprintf(`<NotificationConfiguration>%s</NotificationConfiguration>`, inner), 200)
 
 	case "PutBucketNotificationConfiguration":
 		b := h.store.getBucket(bucket)

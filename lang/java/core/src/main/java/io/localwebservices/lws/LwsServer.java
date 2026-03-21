@@ -106,10 +106,12 @@ public class LwsServer {
     servers.add(mgmtServer);
 
     // DynamoDB at basePort+1
+    DynamoDbHandler dynamoDbHandler;
     {
       int port = basePort + SERVICE_OFFSETS.get("dynamodb");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new DynamoDbHandler(state));
+      dynamoDbHandler = new DynamoDbHandler(state);
+      server.createContext("/", dynamoDbHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
@@ -117,10 +119,12 @@ public class LwsServer {
     }
 
     // SQS at basePort+2
+    SqsHandler sqsHandler;
     {
       int port = basePort + SERVICE_OFFSETS.get("sqs");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new SqsHandler(state, port));
+      sqsHandler = new SqsHandler(state, port);
+      server.createContext("/", sqsHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
@@ -128,10 +132,12 @@ public class LwsServer {
     }
 
     // S3 at basePort+3
+    S3Handler s3Handler;
     {
       int port = basePort + SERVICE_OFFSETS.get("s3");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new S3Handler(state));
+      s3Handler = new S3Handler(state);
+      server.createContext("/", s3Handler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
@@ -139,21 +145,30 @@ public class LwsServer {
     }
 
     // SNS at basePort+4
+    SnsHandler snsHandler;
     {
       int port = basePort + SERVICE_OFFSETS.get("sns");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new SnsHandler(state));
+      snsHandler = new SnsHandler(state);
+      snsHandler.setSqsHandler(sqsHandler);
+      server.createContext("/", snsHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
       ports.put("sns", port);
     }
+    s3Handler.setSnsHandler(snsHandler);
+    s3Handler.setSqsHandler(sqsHandler);
 
     // EventBridge at basePort+5
+    EventBridgeHandler eventBridgeHandler;
     {
       int port = basePort + SERVICE_OFFSETS.get("eventbridge");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new EventBridgeHandler(state));
+      eventBridgeHandler = new EventBridgeHandler(state);
+      eventBridgeHandler.setSqsHandler(sqsHandler);
+      eventBridgeHandler.setSnsHandler(snsHandler);
+      server.createContext("/", eventBridgeHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
@@ -161,10 +176,18 @@ public class LwsServer {
     }
 
     // Step Functions at basePort+6
+    StepFunctionsHandler stepFunctionsHandler;
     {
       int port = basePort + SERVICE_OFFSETS.get("stepfunctions");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new StepFunctionsHandler(state));
+      stepFunctionsHandler = new StepFunctionsHandler(state);
+      stepFunctionsHandler.setDynamoDbHandler(dynamoDbHandler);
+      stepFunctionsHandler.setSqsHandler(sqsHandler);
+      stepFunctionsHandler.setSnsHandler(snsHandler);
+      stepFunctionsHandler.setS3Handler(s3Handler);
+      stepFunctionsHandler.setEventBridgeHandler(eventBridgeHandler);
+      eventBridgeHandler.setStepFunctionsHandler(stepFunctionsHandler);
+      server.createContext("/", stepFunctionsHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
@@ -186,7 +209,9 @@ public class LwsServer {
     {
       int port = basePort + SERVICE_OFFSETS.get("lambda");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new LambdaHandler(state));
+      LambdaHandler lambdaHandler = new LambdaHandler(state);
+      s3Handler.setLambdaHandler(lambdaHandler);
+      server.createContext("/", lambdaHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
@@ -208,7 +233,9 @@ public class LwsServer {
     {
       int port = basePort + SERVICE_OFFSETS.get("ssm");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new SsmHandler(state));
+      SsmHandler ssmHandler = new SsmHandler(state);
+      stepFunctionsHandler.setSsmHandler(ssmHandler);
+      server.createContext("/", ssmHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
@@ -219,7 +246,9 @@ public class LwsServer {
     {
       int port = basePort + SERVICE_OFFSETS.get("secretsmanager");
       HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-      server.createContext("/", new SecretsManagerHandler(state));
+      SecretsManagerHandler secretsManagerHandler = new SecretsManagerHandler(state);
+      stepFunctionsHandler.setSecretsManagerHandler(secretsManagerHandler);
+      server.createContext("/", secretsManagerHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);

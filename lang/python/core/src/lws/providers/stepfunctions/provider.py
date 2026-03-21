@@ -16,17 +16,18 @@ from typing import Any
 from lws.interfaces.compute import ICompute
 from lws.interfaces.state_machine import IStateMachine
 from lws.providers.stepfunctions._provider_helpers import (
+    LambdaComputeBridge,
     _build_async_response,
     _build_execution_arn,
     _build_execution_history_events,
     _build_state_machine_description,
     _build_sync_response,
-    _extract_function_name,
-    _find_provider_by_arn,
-    _invoke_compute,
     _parse_cloud_assembly_config,
-    _process_invocation_result,
     _resolve_definition,
+)
+from lws.providers.stepfunctions._service_task_bridge import (
+    ServiceTaskBridge,
+    _CompositeComputeInvoker,
 )
 from lws.providers.stepfunctions.asl_parser import (
     StateMachineDefinition,
@@ -66,49 +67,6 @@ class StateMachineConfig:
 
 
 # ---------------------------------------------------------------------------
-# Compute bridge - adapts ICompute to ComputeInvoker protocol
-# ---------------------------------------------------------------------------
-
-
-class LambdaComputeBridge:
-    """Bridges ICompute providers to the ComputeInvoker protocol.
-
-    Resolves Lambda ARNs from Task state Resource fields to local
-    compute handlers.
-    """
-
-    def __init__(self, compute_providers: dict[str, ICompute]) -> None:
-        self._providers = compute_providers
-
-    async def invoke_function(self, resource_arn: str, payload: Any) -> Any:
-        """Invoke a Lambda function by resolving its resource ARN."""
-        # Handle SFN service integration: arn:...:states:::lambda:invoke
-        if "lambda:invoke" in resource_arn and isinstance(payload, dict):
-            fn_ref = payload.get("FunctionName", "")
-            actual_payload = payload.get("Payload", payload)
-            function_name = _extract_function_name(fn_ref)
-            compute = self._providers.get(function_name)
-            if compute is None:
-                compute = _find_provider_by_arn(self._providers, fn_ref)
-            if compute is None:
-                raise RuntimeError(f"No compute provider for: {fn_ref}")
-            result = await _invoke_compute(compute, function_name, actual_payload)
-            inner = _process_invocation_result(result, resource_arn)
-            # Wrap in service integration envelope (matches real AWS behaviour)
-            return {"Payload": inner, "StatusCode": 200}
-
-        function_name = _extract_function_name(resource_arn)
-        compute = self._providers.get(function_name)
-        if compute is None:
-            compute = _find_provider_by_arn(self._providers, resource_arn)
-        if compute is None:
-            raise RuntimeError(f"No compute provider for: {resource_arn}")
-
-        result = await _invoke_compute(compute, function_name, payload)
-        return _process_invocation_result(result, resource_arn)
-
-
-# ---------------------------------------------------------------------------
 # Provider
 # ---------------------------------------------------------------------------
 
@@ -130,6 +88,7 @@ class StepFunctionsProvider(IStateMachine):
         self._workflow_types: dict[str, WorkflowType] = {}
         self._executions: dict[str, ExecutionHistory] = {}
         self._compute_providers: dict[str, ICompute] = {}
+        self._service_providers: dict[str, Any] = {}
         self._tags: dict[str, dict[str, str]] = {}
         self._max_wait_seconds = max_wait_seconds
         self._running = False
@@ -197,6 +156,10 @@ class StepFunctionsProvider(IStateMachine):
     def set_compute_providers(self, providers: dict[str, ICompute]) -> None:
         """Register compute providers for Lambda Task invocation."""
         self._compute_providers = providers
+
+    def set_service_providers(self, providers: dict[str, Any]) -> None:
+        """Register service providers for service integration Task invocation."""
+        self._service_providers = providers
 
     # ------------------------------------------------------------------
     # IStateMachine implementation
@@ -452,8 +415,12 @@ class StepFunctionsProvider(IStateMachine):
     def _create_engine(self, definition: StateMachineDefinition) -> ExecutionEngine:
         """Create an execution engine with the current compute bridge."""
         compute: ComputeInvoker | None = None
-        if self._compute_providers:
-            compute = LambdaComputeBridge(self._compute_providers)
+        lambda_bridge = LambdaComputeBridge(self._compute_providers)
+        if self._service_providers:
+            service_bridge = ServiceTaskBridge(self._service_providers)
+            compute = _CompositeComputeInvoker(service_bridge, lambda_bridge)
+        elif self._compute_providers:
+            compute = lambda_bridge
         return ExecutionEngine(
             definition=definition,
             compute=compute,

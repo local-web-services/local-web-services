@@ -8,6 +8,7 @@ import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
 import { createRequestContext, recordLog } from "../../middleware/logging";
 import * as qs from "querystring";
+import type { SqsStore } from "../sqs";
 
 const ACCOUNT_ID = "000000000000";
 const REGION = "us-east-1";
@@ -31,6 +32,11 @@ interface Subscription {
 export class SnsStore {
   private topics: Map<string, Topic> = new Map();
   private subscriptions: Map<string, Subscription> = new Map();
+  private sqsStore: SqsStore | null = null;
+
+  setSqsStore(sqsStore: SqsStore): void {
+    this.sqsStore = sqsStore;
+  }
 
   reset(): void {
     this.topics.clear();
@@ -86,10 +92,28 @@ export class SnsStore {
   }
 
   publish(topicArn: string, message: string, subject?: string): string {
-    void subject; // SNS → SQS fan-out not implemented; just return message ID
+    void subject;
     const topic = this.topics.get(topicArn);
     if (!topic) throw new Error(`Topic not found: ${topicArn}`);
-    return uuidv4();
+    const messageId = uuidv4();
+    if (this.sqsStore) {
+      const envelope = JSON.stringify({
+        Type: "Notification",
+        MessageId: messageId,
+        TopicArn: topicArn,
+        Message: message,
+        MessageAttributes: {},
+      });
+      for (const sub of topic.subscriptions) {
+        if (sub.protocol === "sqs") {
+          const queue = this.sqsStore.getQueue(sub.endpoint);
+          if (queue) {
+            queue.sendMessage(envelope);
+          }
+        }
+      }
+    }
+    return messageId;
   }
 
   listSubscriptions(): Subscription[] {

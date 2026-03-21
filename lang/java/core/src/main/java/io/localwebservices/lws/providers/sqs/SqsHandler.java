@@ -29,6 +29,37 @@ public class SqsHandler implements HttpHandler {
     state.resetCallbacks.add(store::reset);
   }
 
+  /**
+   * Sends a message to a queue programmatically (used by StepFunctions service task bridges). The
+   * params map must contain "QueueUrl" and "MessageBody" keys. Returns a map with "MessageId".
+   */
+  public Map<String, Object> executeSendMessage(Map<String, Object> params) {
+    String queueUrl = (String) params.get("QueueUrl");
+    String messageBody = (String) params.get("MessageBody");
+    int delay =
+        params.get("DelaySeconds") != null ? ((Number) params.get("DelaySeconds")).intValue() : 0;
+    SqsStore.LocalQueue q = store.getQueue(queueUrl);
+    if (q == null) {
+      throw new RuntimeException("Queue not found: " + queueUrl);
+    }
+    String msgId = q.sendMessage(messageBody, delay);
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put("MessageId", msgId);
+    result.put("MD5OfMessageBody", SqsStore.md5(messageBody));
+    return result;
+  }
+
+  /**
+   * Delivers a message body directly to the named queue. Used for cross-service delivery (e.g.
+   * SNS→SQS, EventBridge→SQS). Does nothing if the queue does not exist.
+   */
+  public void deliverToQueue(String queueNameOrUrl, String messageBody) {
+    SqsStore.LocalQueue q = store.getQueue(queueNameOrUrl);
+    if (q != null) {
+      q.sendMessage(messageBody, 0);
+    }
+  }
+
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     try (InputStream is = exchange.getRequestBody()) {

@@ -14,9 +14,239 @@ import {
   type Execution,
   type TaskInvoker,
 } from "./engine";
+import type { DynamoStore } from "../dynamodb/store";
+import type { SqsStore } from "../sqs";
+import type { SnsStore } from "../sns";
+import type { S3Store } from "../s3";
+import type { SecretsManagerStore } from "../secretsmanager";
+import type { SsmStore } from "../ssm";
+import type { EventBridgeStore } from "../eventbridge";
 
 const REGION = "us-east-1";
 const ACCOUNT_ID = "000000000000";
+
+// ─── Service integration ARN patterns ────────────────────────────────────────
+// Resource ARNs of the form: arn:aws:states:::service:operation
+
+interface ServiceStores {
+  dynamodb?: DynamoStore;
+  sqs?: SqsStore;
+  sns?: SnsStore;
+  s3?: S3Store;
+  secretsmanager?: SecretsManagerStore;
+  ssm?: SsmStore;
+  eventbridge?: EventBridgeStore;
+}
+
+/**
+ * ServiceTaskInvoker handles service integration ARNs
+ * (arn:aws:states:::service:operation) and delegates to the
+ * appropriate in-process provider store.
+ */
+export class ServiceTaskInvoker implements TaskInvoker {
+  private stores: ServiceStores;
+
+  constructor(stores: ServiceStores = {}) {
+    this.stores = stores;
+  }
+
+  async invoke(resource: string, input: unknown): Promise<unknown> {
+    const params = input as Record<string, unknown>;
+
+    // Service integration ARNs: arn:aws:states:::service:operation[.sync]
+    if (resource.startsWith("arn:aws:states:::")) {
+      const suffix = resource.slice("arn:aws:states:::".length);
+      // Strip optional sync/waitForTaskToken qualifiers (e.g., ".sync", ".sync:2", ".waitForTaskToken")
+      const colonIdx = suffix.indexOf(":");
+      if (colonIdx !== -1) {
+        const service = suffix.slice(0, colonIdx);
+        const operationWithQualifier = suffix.slice(colonIdx + 1);
+        // Strip qualifier after first "." if present
+        const dotIdx = operationWithQualifier.indexOf(".");
+        const operation =
+          dotIdx !== -1 ? operationWithQualifier.slice(0, dotIdx) : operationWithQualifier;
+        return this.invokeServiceIntegration(service, operation, params);
+      }
+    }
+
+    // Fall through: Lambda ARNs or unknown resources — return input unchanged
+    return input;
+  }
+
+  private invokeServiceIntegration(
+    service: string,
+    operation: string,
+    params: Record<string, unknown>,
+  ): unknown {
+    switch (service) {
+      case "dynamodb":
+        return this.invokeDynamoDb(operation, params);
+      case "sqs":
+        return this.invokeSqs(operation, params);
+      case "sns":
+        return this.invokeSns(operation, params);
+      case "s3":
+        return this.invokeS3(operation, params);
+      case "secretsmanager":
+        return this.invokeSecretsManager(operation, params);
+      case "ssm":
+        return this.invokeSsm(operation, params);
+      case "events":
+        return this.invokeEventBridge(operation, params);
+      default:
+        // Unknown service integration — return params unchanged
+        return params;
+    }
+  }
+
+  private invokeDynamoDb(operation: string, params: Record<string, unknown>): unknown {
+    const store = this.stores.dynamodb;
+    if (!store) return params;
+    switch (operation) {
+      case "putItem": {
+        store.putItem(params.TableName as string, params.Item as Record<string, unknown>);
+        return {};
+      }
+      case "getItem": {
+        const item = store.getItem(
+          params.TableName as string,
+          params.Key as Record<string, unknown>,
+        );
+        return item ? { Item: item } : {};
+      }
+      default:
+        return params;
+    }
+  }
+
+  private invokeSqs(operation: string, params: Record<string, unknown>): unknown {
+    const store = this.stores.sqs;
+    if (!store) return params;
+    switch (operation) {
+      case "sendMessage": {
+        const queue = store.getQueue(params.QueueUrl as string);
+        if (!queue) throw new Error(`Queue not found: ${params.QueueUrl as string}`);
+        const messageId = queue.sendMessage(params.MessageBody as string);
+        const { createHash } = require("crypto") as typeof import("crypto");
+        const md5 = createHash("md5")
+          .update(params.MessageBody as string)
+          .digest("hex");
+        return { MessageId: messageId, MD5OfMessageBody: md5 };
+      }
+      default:
+        return params;
+    }
+  }
+
+  private invokeSns(operation: string, params: Record<string, unknown>): unknown {
+    const store = this.stores.sns;
+    if (!store) return params;
+    switch (operation) {
+      case "publish": {
+        const messageId = store.publish(
+          params.TopicArn as string,
+          params.Message as string,
+          params.Subject as string | undefined,
+        );
+        return { MessageId: messageId };
+      }
+      default:
+        return params;
+    }
+  }
+
+  private invokeS3(operation: string, params: Record<string, unknown>): unknown {
+    const store = this.stores.s3;
+    if (!store) return params;
+    switch (operation) {
+      case "getObject": {
+        const obj = store.getObject(params.Bucket as string, params.Key as string);
+        if (!obj) throw new Error(`NoSuchKey: ${params.Key as string}`);
+        return { Body: obj.body.toString(), ContentType: obj.contentType };
+      }
+      case "putObject": {
+        const body =
+          typeof params.Body === "string"
+            ? Buffer.from(params.Body)
+            : Buffer.isBuffer(params.Body)
+              ? (params.Body as Buffer)
+              : Buffer.from(JSON.stringify(params.Body));
+        const contentType =
+          (params.ContentType as string | undefined) ?? "application/octet-stream";
+        store.putObject(params.Bucket as string, params.Key as string, body, {
+          "content-type": contentType,
+        });
+        return {};
+      }
+      default:
+        return params;
+    }
+  }
+
+  private invokeSecretsManager(operation: string, params: Record<string, unknown>): unknown {
+    const store = this.stores.secretsmanager;
+    if (!store) return params;
+    switch (operation) {
+      case "getSecretValue": {
+        const secret = store.getSecret(params.SecretId as string);
+        if (!secret)
+          throw new Error(
+            `ResourceNotFoundException: Secret ${params.SecretId as string} not found`,
+          );
+        const result: Record<string, unknown> = {
+          ARN: secret.arn,
+          Name: secret.name,
+          VersionId: secret.versionId,
+        };
+        if (secret.secretString !== undefined) result.SecretString = secret.secretString;
+        if (secret.secretBinary !== undefined) result.SecretBinary = secret.secretBinary;
+        return result;
+      }
+      default:
+        return params;
+    }
+  }
+
+  private invokeSsm(operation: string, params: Record<string, unknown>): unknown {
+    const store = this.stores.ssm;
+    if (!store) return params;
+    switch (operation) {
+      case "getParameter": {
+        const param = store.getParameter(params.Name as string, params.WithDecryption as boolean);
+        if (!param) throw new Error(`ParameterNotFound: ${params.Name as string}`);
+        return {
+          Parameter: {
+            Name: param.name,
+            Value: param.value,
+            Type: param.type,
+            Version: param.version,
+            ARN: param.arn,
+          },
+        };
+      }
+      default:
+        return params;
+    }
+  }
+
+  private invokeEventBridge(operation: string, params: Record<string, unknown>): unknown {
+    const store = this.stores.eventbridge;
+    if (!store) return params;
+    switch (operation) {
+      case "putEvents": {
+        const entries = (params.Entries as Array<Record<string, unknown>>) ?? [];
+        const busName = (entries[0]?.EventBusName as string) ?? "default";
+        store.putEvents(busName, entries);
+        return {
+          FailedEntryCount: 0,
+          Entries: entries.map(() => ({ EventId: uuidv4() })),
+        };
+      }
+      default:
+        return params;
+    }
+  }
+}
 
 interface StateMachine {
   name: string;
@@ -35,11 +265,13 @@ export class StepFunctionsStore {
   private tags: Map<string, Record<string, string>> = new Map();
 
   constructor(invoker?: TaskInvoker) {
-    this.taskInvoker = invoker ?? {
-      async invoke(_resource: string, input: unknown): Promise<unknown> {
-        return input;
-      },
-    };
+    this.taskInvoker = invoker ?? new ServiceTaskInvoker();
+  }
+
+  setServiceStores(stores: ServiceStores): void {
+    // Replace the task invoker with a new ServiceTaskInvoker wired to the given stores.
+    // This is the primary wiring point called by server.ts after all stores are created.
+    this.taskInvoker = new ServiceTaskInvoker(stores);
   }
 
   reset(): void {

@@ -26,6 +26,33 @@ public class DynamoDbHandler implements HttpHandler {
     state.resetCallbacks.add(store::reset);
   }
 
+  /**
+   * Puts an item into a DynamoDB table programmatically (used by StepFunctions service task
+   * bridges). The body map must contain "TableName" and "Item" keys.
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> executePutItem(Map<String, Object> params) {
+    String tableName = (String) params.get("TableName");
+    Map<String, Object> item = (Map<String, Object>) params.get("Item");
+    store.putItem(tableName, item);
+    return new LinkedHashMap<>();
+  }
+
+  /**
+   * Gets an item from a DynamoDB table programmatically (used by StepFunctions service task
+   * bridges). The body map must contain "TableName" and "Key" keys.
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> executeGetItem(Map<String, Object> params) {
+    String tableName = (String) params.get("TableName");
+    Map<String, Object> key = (Map<String, Object>) params.get("Key");
+    Map<String, Object> item = store.getItem(tableName, key);
+    if (item != null) {
+      return new LinkedHashMap<>(Map.of("Item", item));
+    }
+    return new LinkedHashMap<>();
+  }
+
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     String target = exchange.getRequestHeaders().getFirst("X-Amz-Target");

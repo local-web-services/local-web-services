@@ -14,6 +14,7 @@ public class S3Store {
   public final Map<String, Map<String, String>> bucketWebsites = new ConcurrentHashMap<>();
   public final Map<String, Map<String, Object>> multipartUploads = new ConcurrentHashMap<>();
   public final Map<String, Map<Integer, byte[]>> multipartParts = new ConcurrentHashMap<>();
+  public final Map<String, String> bucketNotifications = new ConcurrentHashMap<>();
 
   public void reset() {
     buckets.clear();
@@ -24,5 +25,6 @@ public class S3Store {
     bucketWebsites.clear();
     multipartUploads.clear();
     multipartParts.clear();
+    bucketNotifications.clear();
   }
 }

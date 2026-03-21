@@ -8,6 +8,9 @@ import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
 import { createRequestContext, recordLog } from "../../middleware/logging";
+import type { SqsStore } from "../sqs";
+import type { SnsStore } from "../sns";
+import type { StepFunctionsStore } from "../stepfunctions";
 
 const REGION = "us-east-1";
 const ACCOUNT_ID = "000000000000";
@@ -46,10 +49,25 @@ interface Target {
 export class EventBridgeStore {
   private buses: Map<string, EventBus> = new Map();
   private eventLog: Array<Record<string, unknown>> = [];
+  private sqsStore: SqsStore | null = null;
+  private snsStore: SnsStore | null = null;
+  private stepFunctionsStore: StepFunctionsStore | null = null;
 
   constructor() {
     // Create default event bus
     this._createBus("default");
+  }
+
+  setSqsStore(sqsStore: SqsStore): void {
+    this.sqsStore = sqsStore;
+  }
+
+  setSnsStore(snsStore: SnsStore): void {
+    this.snsStore = snsStore;
+  }
+
+  setStepFunctionsStore(stepFunctionsStore: StepFunctionsStore): void {
+    this.stepFunctionsStore = stepFunctionsStore;
   }
 
   reset(): void {
@@ -262,6 +280,25 @@ export class EventBridgeStore {
       }
     }
     this.eventLog.push(...events);
+    const eventPayload = JSON.stringify(events);
+    for (const rule of rulesWithTargets) {
+      for (const target of rule.targets) {
+        const messageBody = target.Input ?? eventPayload;
+        if (target.Arn.includes(":sqs:") && this.sqsStore) {
+          const queue = this.sqsStore.getQueue(target.Arn);
+          if (queue) {
+            queue.sendMessage(messageBody);
+          }
+        } else if (target.Arn.includes(":sns:") && this.snsStore) {
+          const topic = this.snsStore.getTopic(target.Arn);
+          if (topic) {
+            this.snsStore.publish(target.Arn, messageBody);
+          }
+        } else if (target.Arn.includes(":states:") && this.stepFunctionsStore) {
+          void this.stepFunctionsStore.startExecution(target.Arn, messageBody);
+        }
+      }
+    }
     return null;
   }
 

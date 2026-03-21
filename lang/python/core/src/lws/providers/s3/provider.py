@@ -38,6 +38,7 @@ class S3Provider(IObjectStore):
         self._preconfigured_buckets: frozenset[str] = frozenset(self._buckets)
         self._storage = LocalBucketStorage(data_dir)
         self._dispatcher = NotificationDispatcher()
+        self._dispatcher.set_config_getter(self._get_notification_config_safe)
         self._started = False
         self._bucket_created: dict[str, float] = {}
         self._bucket_tagging: dict[str, dict[str, str]] = {}
@@ -362,4 +363,26 @@ class S3Provider(IObjectStore):
             handler=handler,
             prefix_filter=prefix_filter,
             suffix_filter=suffix_filter,
+        )
+
+    def set_notification_providers(
+        self,
+        sns_provider: object | None = None,
+        sqs_provider: object | None = None,
+        events_provider: object | None = None,
+        compute_providers: dict | None = None,
+    ) -> None:
+        """Wire SNS, SQS, EventBridge, and Lambda providers for notification dispatch."""
+        self._dispatcher.set_notification_providers(
+            sns_provider=sns_provider,
+            sqs_provider=sqs_provider,
+            events_provider=events_provider,
+            compute_providers=compute_providers,
+        )
+
+    def _get_notification_config_safe(self, bucket_name: str) -> str:
+        """Return the notification config XML for a bucket, or an empty config if not set."""
+        return self._bucket_notification_configs.get(
+            bucket_name,
+            '<?xml version="1.0" encoding="UTF-8"?><NotificationConfiguration/>',
         )
