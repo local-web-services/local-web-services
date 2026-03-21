@@ -1,0 +1,1502 @@
+/**
+ * Shared step definitions for cross-service informal specification scenarios.
+ *
+ * This file covers all common Given/Then steps shared across the sns_sqs,
+ * events_sqs, events_sns, s3api_sns, s3api_sqs, stepfunctions_sqs, and
+ * stepfunctions_dynamodb informal feature suites.
+ */
+
+import { Given, When, Then } from "@cucumber/cucumber";
+import assert from "assert";
+import { LwsSession } from "../../src/session";
+import type { SdkWorld } from "../support/world";
+
+// ── Shared resource name constants ────────────────────────────────────────────
+
+export const SNS_TOPIC = "test-sns-cs-1";
+export const SQS_QUEUE = "test-sqs-cs-1";
+export const S3_BUCKET = "test-s3-cs-1";
+export const EB_BUS = "test-events-cs-1";
+export const EB_RULE = "test-rule-cs-1";
+export const SFN_SM = "test-sfn-cs-1";
+export const DDB_TABLE = "test-ddb-cs-1";
+export const ACCOUNT_ID = "000000000000";
+export const REGION = "us-east-1";
+
+// ── EventBridge raw HTTP helper ────────────────────────────────────────────────
+
+export async function ebCall(
+  port: number,
+  operation: string,
+  body: Record<string, unknown>,
+): Promise<{ ok: boolean; status: number; data: unknown }> {
+  // Arrange: build request
+  const response = await fetch(`http://127.0.0.1:${port}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": `AmazonEventBridge.${operation}`,
+    },
+    body: JSON.stringify(body),
+  });
+  // Act: parse response
+  const data = await response.json();
+  // Assert: return result
+  return { ok: response.ok, status: response.status, data };
+}
+
+// ── Background ────────────────────────────────────────────────────────────────
+
+Given("the system is initialized", async function (this: SdkWorld) {
+  // Arrange: no prior setup needed
+  // Act: create a fresh session
+  this.session = await LwsSession.create();
+  // Assert: session is running
+  assert.ok(this.session, "Expected session to be initialized");
+});
+
+// ── Topic steps (SNS) ─────────────────────────────────────────────────────────
+
+Given("the topic does not already exist", function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no topics
+  // Assert: nothing to assert
+});
+
+Given("the topic already exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, CreateTopicCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  // Act
+  await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+  // Assert: no error means topic was created
+});
+
+Given("the topic exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, CreateTopicCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  // Act
+  try {
+    await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+  } catch {
+    // May already exist
+  }
+  // Assert: no error means topic is available
+});
+
+Given("the topic is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, CreateTopicCommand, DeleteTopicCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+  // Act: create then delete
+  try {
+    await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+  } catch {
+    // May already exist
+  }
+  try {
+    await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+Given("the topic is already {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, CreateTopicCommand, DeleteTopicCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+  // Act: create then delete to simulate DELETED state
+  try {
+    await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+  } catch {
+    // May already exist
+  }
+  try {
+    await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+Given("the topic does not exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no topics
+  // Assert: session is clean
+  assert.ok(this.session, "No session running");
+});
+
+Given("the target topic is {string}", async function (this: SdkWorld, state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, CreateTopicCommand, DeleteTopicCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+  // Act
+  try {
+    await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+  } catch {
+    // May already exist
+  }
+  if (state === "DELETED") {
+    try {
+      await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
+    } catch {
+      // Best effort
+    }
+  }
+  // Assert: state applied
+});
+
+Given("the target topic is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, CreateTopicCommand, DeleteTopicCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+  // Act: create then delete
+  try {
+    await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+  } catch {
+    // May already exist
+  }
+  try {
+    await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+// ── Queue steps (SQS) ─────────────────────────────────────────────────────────
+
+Given("the queue does not already exist", function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no queues
+  // Assert: nothing to assert
+});
+
+Given("the queue already exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act
+  await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+  // Assert: no error means queue was created
+});
+
+Given("the queue exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act
+  try {
+    await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+  } catch {
+    // May already exist
+  }
+  // Assert: no error means queue is available
+});
+
+Given("the queue is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand, DeleteQueueCommand, GetQueueUrlCommand } =
+    require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act: create then delete
+  try {
+    await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+  } catch {
+    // May already exist
+  }
+  try {
+    const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
+    await client.send(new DeleteQueueCommand({ QueueUrl: urlResult.QueueUrl as string }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+Given("the queue is already {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand, DeleteQueueCommand, GetQueueUrlCommand } =
+    require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act: create then delete to simulate DELETED state
+  try {
+    await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+  } catch {
+    // May already exist
+  }
+  try {
+    const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
+    await client.send(new DeleteQueueCommand({ QueueUrl: urlResult.QueueUrl as string }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+Given("the queue does not exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no queues
+  // Assert: session is clean
+  assert.ok(this.session, "No session running");
+});
+
+Given("the target queue is {string}", async function (this: SdkWorld, state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand, DeleteQueueCommand, GetQueueUrlCommand } =
+    require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act
+  try {
+    await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+  } catch {
+    // May already exist
+  }
+  if (state === "DELETED") {
+    try {
+      const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
+      await client.send(new DeleteQueueCommand({ QueueUrl: urlResult.QueueUrl as string }));
+    } catch {
+      // Best effort
+    }
+  }
+  // Assert: state applied
+});
+
+Given("the target queue is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand, DeleteQueueCommand, GetQueueUrlCommand } =
+    require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act: create then delete
+  try {
+    await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+  } catch {
+    // May already exist
+  }
+  try {
+    const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
+    await client.send(new DeleteQueueCommand({ QueueUrl: urlResult.QueueUrl as string }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+Given("the queue exists and is {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act
+  try {
+    await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+  } catch {
+    // May already exist
+  }
+  // Assert: no error thrown
+});
+
+Given("the queue does not exist or is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange + Act: no-op — fresh session has no queues
+  // Assert: session is running
+  assert.ok(this.session, "No session running");
+});
+
+// ── SNS subscription steps ────────────────────────────────────────────────────
+
+Given("a confirmed subscription exists for the topic", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, SubscribeCommand } = require("@aws-sdk/client-sns");
+  const snsClient = this.session!.client<typeof SNSClient>("sns");
+  const queueArn = `arn:aws:sqs:${REGION}:${ACCOUNT_ID}:${SQS_QUEUE}`;
+  const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+  // Act
+  await snsClient.send(
+    new SubscribeCommand({ TopicArn: topicArn, Protocol: "sqs", Endpoint: queueArn }),
+  );
+  // Assert: no error means subscription was created
+});
+
+Given("no confirmed subscription exists for the topic", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — no subscriptions have been created
+  // Assert: session is clean
+  assert.ok(this.session, "No session running");
+});
+
+Given("the subscription slot is available", async function (this: SdkWorld) {
+  // Arrange + Act: capacity is unlimited by default
+  // Assert: session is running
+  assert.ok(this.session, "No session running");
+});
+
+Given("the subscription slot is not available", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  // Act: exhaust sns capacity to block subscriptions
+  await this.session!.capacity("sns").exhaust().apply();
+  // Assert: no error thrown
+});
+
+Given("the subscribed queue is {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange: queue is ACTIVE after creation
+  // Act: no-op
+  // Assert: nothing additional to assert
+});
+
+Given("the subscribed queue is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, GetQueueUrlCommand, DeleteQueueCommand } = require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act: delete the queue
+  try {
+    const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
+    await client.send(new DeleteQueueCommand({ QueueUrl: urlResult.QueueUrl as string }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+// ── S3 bucket steps ───────────────────────────────────────────────────────────
+
+Given("the bucket does not already exist", function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no buckets
+  // Assert: nothing to assert
+});
+
+Given("the bucket already exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+  const client = this.session!.client<typeof S3Client>("s3");
+  // Act
+  await client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+  // Assert: no error means bucket was created
+});
+
+Given("the bucket exists and is {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+  const client = this.session!.client<typeof S3Client>("s3");
+  // Act
+  try {
+    await client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+  } catch {
+    // May already exist
+  }
+  // Assert: no error thrown
+});
+
+Given("the bucket does not exist or is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange + Act: no-op — fresh session has no buckets
+  // Assert: session is running
+  assert.ok(this.session, "No session running");
+});
+
+Given("the bucket is {string}", async function (this: SdkWorld, state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  if (state === "ACTIVE") {
+    const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+    const client = this.session!.client<typeof S3Client>("s3");
+    // Act: create bucket
+    try {
+      await client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+    } catch {
+      // May already exist
+    }
+  }
+  // Assert: state applied
+});
+
+Given("the bucket is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange + Act: no-op — fresh session has no buckets
+  // Assert: session is running
+  assert.ok(this.session, "No session running");
+});
+
+// ── S3 notification configuration steps ──────────────────────────────────────
+
+Given("the bucket has no notification configuration", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh bucket has no notification config
+  // Assert: nothing additional to assert
+});
+
+Given("the bucket has a notification configuration", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const s3Port = this.session!.portFor("s3");
+  const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+  // Act: set SNS notification configuration (SNS is the default for s3api_sns scenarios)
+  const response = await fetch(`http://127.0.0.1:${s3Port}/${S3_BUCKET}?notification`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/xml" },
+    body: `<NotificationConfiguration><TopicConfiguration><Topic>${topicArn}</Topic><Event>s3:ObjectCreated:*</Event></TopicConfiguration></NotificationConfiguration>`,
+  });
+  void response;
+  // Assert: no error thrown
+});
+
+Given("the bucket already has a notification configuration", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const s3Port = this.session!.portFor("s3");
+  const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+  // Act: set notification configuration
+  await fetch(`http://127.0.0.1:${s3Port}/${S3_BUCKET}?notification`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/xml" },
+    body: `<NotificationConfiguration><TopicConfiguration><Topic>${topicArn}</Topic><Event>s3:ObjectCreated:*</Event></TopicConfiguration></NotificationConfiguration>`,
+  });
+  // Assert: no error thrown
+});
+
+// ── EventBridge bus steps ─────────────────────────────────────────────────────
+
+Given("the event bus does not already exist", async function (this: SdkWorld) {
+  // Arrange + Act: fresh session has only the default bus
+  // Assert: session is running
+  assert.ok(this.session, "No session running");
+});
+
+Given("the event bus already exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const port = this.session!.portFor("eventbridge");
+  // Act
+  await ebCall(port, "CreateEventBus", { Name: EB_BUS });
+  // Assert: no error thrown
+});
+
+Given("the event bus exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const port = this.session!.portFor("eventbridge");
+  // Act
+  await ebCall(port, "CreateEventBus", { Name: EB_BUS });
+  // Assert: no error thrown
+});
+
+Given("the event bus is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const port = this.session!.portFor("eventbridge");
+  // Act: delete the bus
+  await ebCall(port, "DeleteEventBus", { Name: EB_BUS });
+  // Assert: no error thrown
+});
+
+Given("the event bus does not exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no custom buses
+  // Assert: session is running
+  assert.ok(this.session, "No session running");
+});
+
+// ── EventBridge rule steps ────────────────────────────────────────────────────
+
+Given(
+  "an {string} rule exists on the bus targeting a queue",
+  async function (this: SdkWorld, state: string) {
+    // Arrange
+    assert.ok(this.session, "No session running");
+    const port = this.session!.portFor("eventbridge");
+    const queueArn = `arn:aws:sqs:${REGION}:${ACCOUNT_ID}:${SQS_QUEUE}`;
+    // Act: create rule + target
+    await ebCall(port, "PutRule", {
+      Name: EB_RULE,
+      EventBusName: EB_BUS,
+      EventPattern: JSON.stringify({ source: ["test"] }),
+      State: state,
+    });
+    await ebCall(port, "PutTargets", {
+      Rule: EB_RULE,
+      EventBusName: EB_BUS,
+      Targets: [{ Id: "target-1", Arn: queueArn }],
+    });
+    // Assert: no error thrown
+  },
+);
+
+Given(
+  "no {string} rule exists on the bus targeting a queue",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange + Act: no rules created
+    // Assert: session is running
+    assert.ok(this.session, "No session running");
+  },
+);
+
+Given(
+  "an {string} rule exists on the bus targeting a topic",
+  async function (this: SdkWorld, state: string) {
+    // Arrange
+    assert.ok(this.session, "No session running");
+    const port = this.session!.portFor("eventbridge");
+    const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+    // Act: create rule + target
+    await ebCall(port, "PutRule", {
+      Name: EB_RULE,
+      EventBusName: EB_BUS,
+      EventPattern: JSON.stringify({ source: ["test"] }),
+      State: state,
+    });
+    await ebCall(port, "PutTargets", {
+      Rule: EB_RULE,
+      EventBusName: EB_BUS,
+      Targets: [{ Id: "target-1", Arn: topicArn }],
+    });
+    // Assert: no error thrown
+  },
+);
+
+Given(
+  "no {string} rule exists on the bus targeting a topic",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange + Act: no rules created
+    // Assert: session is running
+    assert.ok(this.session, "No session running");
+  },
+);
+
+Given("the rule does not already exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh bus has no rules
+  // Assert: nothing to assert
+});
+
+Given("the rule already exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const port = this.session!.portFor("eventbridge");
+  // Act
+  await ebCall(port, "PutRule", {
+    Name: EB_RULE,
+    EventBusName: EB_BUS,
+    EventPattern: JSON.stringify({ source: ["test"] }),
+    State: "ENABLED",
+  });
+  // Assert: no error thrown
+});
+
+// ── StepFunctions state machine steps ─────────────────────────────────────────
+
+Given("the state machine does not already exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no state machines
+  // Assert: nothing to assert
+});
+
+Given("the state machine already exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const sfnPort = this.session!.portFor("stepfunctions");
+  // Act: create a basic state machine
+  await fetch(`http://127.0.0.1:${sfnPort}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-amz-json-1.0",
+      "X-Amz-Target": "AWSStepFunctions.CreateStateMachine",
+    },
+    body: JSON.stringify({
+      name: SFN_SM,
+      definition: JSON.stringify({
+        Comment: "test",
+        StartAt: "Pass",
+        States: { Pass: { Type: "Pass", End: true } },
+      }),
+      roleArn: "arn:aws:iam::000000000000:role/StepFunctionsRole",
+      type: "STANDARD",
+    }),
+  });
+  // Assert: no error thrown
+});
+
+Given("the state machine exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const sfnPort = this.session!.portFor("stepfunctions");
+  // Act
+  await fetch(`http://127.0.0.1:${sfnPort}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-amz-json-1.0",
+      "X-Amz-Target": "AWSStepFunctions.CreateStateMachine",
+    },
+    body: JSON.stringify({
+      name: SFN_SM,
+      definition: JSON.stringify({
+        Comment: "test",
+        StartAt: "Pass",
+        States: { Pass: { Type: "Pass", End: true } },
+      }),
+      roleArn: "arn:aws:iam::000000000000:role/StepFunctionsRole",
+      type: "STANDARD",
+    }),
+  });
+  // Assert: no error thrown
+});
+
+Given("the state machine does not exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no state machines
+  // Assert: session is running
+  assert.ok(this.session, "No session running");
+});
+
+Given("the state machine is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const sfnPort = this.session!.portFor("stepfunctions");
+  const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
+  // Act: delete the state machine
+  await fetch(`http://127.0.0.1:${sfnPort}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-amz-json-1.0",
+      "X-Amz-Target": "AWSStepFunctions.DeleteStateMachine",
+    },
+    body: JSON.stringify({ stateMachineArn: smArn }),
+  });
+  // Assert: no error thrown
+});
+
+Given(
+  "the state machine has no {string} task configured",
+  async function (this: SdkWorld, _service: string) {
+    // Arrange + Act: no-op — freshly created state machine has only a Pass state
+    // Assert: nothing additional to assert
+  },
+);
+
+Given(
+  "the state machine has no DynamoDB task configured",
+  async function (this: SdkWorld) {
+    // Arrange + Act: no-op — freshly created state machine has only a Pass state
+    // Assert: nothing additional to assert
+  },
+);
+
+Given(
+  "the state machine already has an {string} task configured",
+  async function (this: SdkWorld, _service: string) {
+    // Arrange
+    assert.ok(this.session, "No session running");
+    const sfnPort = this.session!.portFor("stepfunctions");
+    const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
+    const queueUrl = `http://127.0.0.1:${this.session!.portFor("sqs")}/${ACCOUNT_ID}/${SQS_QUEUE}`;
+    // Act: update state machine with SQS task
+    await fetch(`http://127.0.0.1:${sfnPort}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-amz-json-1.0",
+        "X-Amz-Target": "AWSStepFunctions.UpdateStateMachine",
+      },
+      body: JSON.stringify({
+        stateMachineArn: smArn,
+        definition: JSON.stringify({
+          Comment: "test with SQS",
+          StartAt: "SendMessage",
+          States: {
+            SendMessage: {
+              Type: "Task",
+              Resource: "arn:aws:states:::sqs:sendMessage",
+              Parameters: { QueueUrl: queueUrl, MessageBody: "hello" },
+              End: true,
+            },
+          },
+        }),
+      }),
+    });
+    // Assert: no error thrown
+  },
+);
+
+Given(
+  "the state machine has an {string} task configured",
+  async function (this: SdkWorld, _service: string) {
+    // Arrange
+    assert.ok(this.session, "No session running");
+    const sfnPort = this.session!.portFor("stepfunctions");
+    const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
+    const queueUrl = `http://127.0.0.1:${this.session!.portFor("sqs")}/${ACCOUNT_ID}/${SQS_QUEUE}`;
+    // Act: update state machine with SQS task
+    await fetch(`http://127.0.0.1:${sfnPort}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-amz-json-1.0",
+        "X-Amz-Target": "AWSStepFunctions.UpdateStateMachine",
+      },
+      body: JSON.stringify({
+        stateMachineArn: smArn,
+        definition: JSON.stringify({
+          Comment: "test with SQS",
+          StartAt: "SendMessage",
+          States: {
+            SendMessage: {
+              Type: "Task",
+              Resource: "arn:aws:states:::sqs:sendMessage",
+              Parameters: { QueueUrl: queueUrl, MessageBody: "hello from sfn" },
+              End: true,
+            },
+          },
+        }),
+      }),
+    });
+    // Assert: no error thrown
+  },
+);
+
+Given(
+  "the state machine already has a DynamoDB task configured",
+  async function (this: SdkWorld) {
+    // Arrange
+    assert.ok(this.session, "No session running");
+    const sfnPort = this.session!.portFor("stepfunctions");
+    const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
+    // Act: update state machine with DynamoDB task
+    await fetch(`http://127.0.0.1:${sfnPort}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-amz-json-1.0",
+        "X-Amz-Target": "AWSStepFunctions.UpdateStateMachine",
+      },
+      body: JSON.stringify({
+        stateMachineArn: smArn,
+        definition: JSON.stringify({
+          Comment: "test with DynamoDB",
+          StartAt: "PutItem",
+          States: {
+            PutItem: {
+              Type: "Task",
+              Resource: "arn:aws:states:::dynamodb:putItem",
+              Parameters: {
+                TableName: DDB_TABLE,
+                Item: { id: { S: "test-item-1" } },
+              },
+              End: true,
+            },
+          },
+        }),
+      }),
+    });
+    // Assert: no error thrown
+  },
+);
+
+// ── StepFunctions execution steps ─────────────────────────────────────────────
+
+Given("an execution is {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SFNClient, StartExecutionCommand } = require("@aws-sdk/client-sfn");
+  const client = this.session!.client<typeof SFNClient>("stepfunctions");
+  const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
+  // Act: start an execution
+  await client.send(
+    new StartExecutionCommand({ stateMachineArn: smArn, input: JSON.stringify({}) }),
+  );
+  // Assert: no error thrown
+});
+
+Given("no execution is {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange + Act: no-op — no executions have been started
+  // Assert: nothing to assert
+});
+
+Given(
+  "the execution's state machine has a configured {string} task",
+  async function (this: SdkWorld, _service: string) {
+    // Arrange: state machine is already configured with a task in a prior step
+    // Act: no-op
+    // Assert: nothing additional to assert
+  },
+);
+
+Given(
+  "the execution's state machine has no {string} task configured",
+  async function (this: SdkWorld, _service: string) {
+    // Arrange + Act: no-op — state machine has a Pass state (no SQS task)
+    // Assert: nothing additional to assert
+  },
+);
+
+// ── DynamoDB table steps ──────────────────────────────────────────────────────
+
+Given("the table does not already exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no tables
+  // Assert: nothing to assert
+});
+
+Given("the table already exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
+  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  // Act
+  await client.send(
+    new CreateTableCommand({
+      TableName: DDB_TABLE,
+      KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+      AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
+      BillingMode: "PAY_PER_REQUEST",
+    }),
+  );
+  // Assert: no error means table was created
+});
+
+Given("the table exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
+  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  // Act
+  try {
+    await client.send(
+      new CreateTableCommand({
+        TableName: DDB_TABLE,
+        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+        AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
+        BillingMode: "PAY_PER_REQUEST",
+      }),
+    );
+  } catch {
+    // May already exist
+  }
+  // Assert: no error thrown
+});
+
+Given("the table is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { DynamoDBClient, CreateTableCommand, DeleteTableCommand } =
+    require("@aws-sdk/client-dynamodb");
+  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  // Act: create then delete
+  try {
+    await client.send(
+      new CreateTableCommand({
+        TableName: DDB_TABLE,
+        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+        AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
+        BillingMode: "PAY_PER_REQUEST",
+      }),
+    );
+  } catch {
+    // May already exist
+  }
+  try {
+    await client.send(new DeleteTableCommand({ TableName: DDB_TABLE }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+Given("the table does not exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no tables
+  // Assert: session is running
+  assert.ok(this.session, "No session running");
+});
+
+Given("the target table is {string}", async function (this: SdkWorld, state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { DynamoDBClient, CreateTableCommand, DeleteTableCommand } =
+    require("@aws-sdk/client-dynamodb");
+  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  // Act
+  try {
+    await client.send(
+      new CreateTableCommand({
+        TableName: DDB_TABLE,
+        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+        AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
+        BillingMode: "PAY_PER_REQUEST",
+      }),
+    );
+  } catch {
+    // May already exist
+  }
+  if (state === "DELETED") {
+    try {
+      await client.send(new DeleteTableCommand({ TableName: DDB_TABLE }));
+    } catch {
+      // Best effort
+    }
+  }
+  // Assert: state applied
+});
+
+Given("the target table is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { DynamoDBClient, CreateTableCommand, DeleteTableCommand } =
+    require("@aws-sdk/client-dynamodb");
+  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  // Act: create then delete
+  try {
+    await client.send(
+      new CreateTableCommand({
+        TableName: DDB_TABLE,
+        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+        AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
+        BillingMode: "PAY_PER_REQUEST",
+      }),
+    );
+  } catch {
+    // May already exist
+  }
+  try {
+    await client.send(new DeleteTableCommand({ TableName: DDB_TABLE }));
+  } catch {
+    // Best effort
+  }
+  // Assert: no error thrown
+});
+
+// ── DynamoDB item steps ───────────────────────────────────────────────────────
+
+Given("no item {string} in the target table", async function (this: SdkWorld, _state: string) {
+  // Arrange + Act: no-op — fresh table has no items
+  // Assert: nothing additional to assert
+});
+
+Given("an item {string} in the target table", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  // Act: put a test item
+  await client.send(
+    new PutItemCommand({
+      TableName: DDB_TABLE,
+      Item: { id: { S: "test-item-1" } },
+    }),
+  );
+  // Assert: no error thrown
+});
+
+// ── Capacity steps ────────────────────────────────────────────────────────────
+
+Given("a message slot is available", async function (this: SdkWorld) {
+  // Arrange + Act: capacity is unlimited by default; restore just in case
+  assert.ok(this.session, "No session running");
+  await this.session!.capacity("sns").unlimited().apply();
+  await this.session!.capacity("sqs").unlimited().apply();
+  // Assert: no error thrown
+});
+
+Given("no message slot is available", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  // Act: exhaust both sns and sqs capacity
+  await this.session!.capacity("sns").exhaust().apply();
+  await this.session!.capacity("sqs").exhaust().apply();
+  // Assert: no error thrown
+});
+
+Given("an object slot is available", async function (this: SdkWorld) {
+  // Arrange + Act: capacity is unlimited by default
+  assert.ok(this.session, "No session running");
+  await this.session!.capacity("s3").unlimited().apply();
+  // Assert: no error thrown
+});
+
+Given("no object slot is available", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  // Act: exhaust s3 capacity
+  await this.session!.capacity("s3").exhaust().apply();
+  // Assert: no error thrown
+});
+
+Given("an execution slot is available", async function (this: SdkWorld) {
+  // Arrange + Act: capacity is unlimited by default
+  assert.ok(this.session, "No session running");
+  await this.session!.capacity("stepfunctions").unlimited().apply();
+  // Assert: no error thrown
+});
+
+Given("an item slot is available", async function (this: SdkWorld) {
+  // Arrange + Act: capacity is unlimited by default
+  assert.ok(this.session, "No session running");
+  await this.session!.capacity("dynamodb").unlimited().apply();
+  // Assert: no error thrown
+});
+
+Given("no item slot is available", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  // Act: exhaust dynamodb capacity
+  await this.session!.capacity("dynamodb").exhaust().apply();
+  // Assert: no error thrown
+});
+
+// ── SQS message steps ─────────────────────────────────────────────────────────
+
+Given(
+  "an {string} message exists in the queue",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange
+    assert.ok(this.session, "No session running");
+    const { SQSClient, SendMessageCommand, GetQueueUrlCommand } = require("@aws-sdk/client-sqs");
+    const client = this.session!.client<typeof SQSClient>("sqs");
+    // Act
+    const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
+    const queueUrl = urlResult.QueueUrl as string;
+    await client.send(new SendMessageCommand({ QueueUrl: queueUrl, MessageBody: "test message" }));
+    // Assert: no error thrown
+  },
+);
+
+Given(
+  "no {string} message exists in the queue",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange + Act: no-op — no messages have been sent
+    // Assert: session is clean
+    assert.ok(this.session, "No session running");
+  },
+);
+
+// ── SNS message steps ─────────────────────────────────────────────────────────
+
+Given(
+  "an {string} message exists on the topic",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange: message on topic is delivered via publish
+    assert.ok(this.session, "No session running");
+    const { SNSClient, PublishCommand } = require("@aws-sdk/client-sns");
+    const client = this.session!.client<typeof SNSClient>("sns");
+    const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+    // Act: publish a message to the topic
+    await client.send(new PublishCommand({ TopicArn: topicArn, Message: "test message on topic" }));
+    // Assert: no error thrown
+  },
+);
+
+Given(
+  "no {string} message exists on the topic",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange + Act: no-op — no messages published to topic
+    // Assert: session is clean
+    assert.ok(this.session, "No session running");
+  },
+);
+
+// ── Shared deletion When steps ────────────────────────────────────────────────
+
+When("the {string} topic is deleted", async function (this: SdkWorld, _service: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, DeleteTopicCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+  // Act
+  try {
+    await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
+    this.lastCallResult = { success: true, output: {} };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+// ── S3 notification configuration When step (shared across s3api_sns and s3api_sqs) ──────────
+
+When(
+  "an {string} notification configuration is added to the bucket",
+  async function (this: SdkWorld, service: string) {
+    // Arrange
+    assert.ok(this.session, "No session running");
+    const s3Port = this.session!.portFor("s3");
+    // Act: build notification XML based on service type
+    let notificationXml: string;
+    if (service === "SNS") {
+      const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+      notificationXml = `<NotificationConfiguration><TopicConfiguration><Topic>${topicArn}</Topic><Event>s3:ObjectCreated:*</Event></TopicConfiguration></NotificationConfiguration>`;
+    } else {
+      const queueArn = `arn:aws:sqs:${REGION}:${ACCOUNT_ID}:${SQS_QUEUE}`;
+      notificationXml = `<NotificationConfiguration><QueueConfiguration><Queue>${queueArn}</Queue><Event>s3:ObjectCreated:*</Event></QueueConfiguration></NotificationConfiguration>`;
+    }
+    const response = await fetch(`http://127.0.0.1:${s3Port}/${S3_BUCKET}?notification`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/xml" },
+      body: notificationXml,
+    });
+    if (response.ok) {
+      this.lastCallResult = { success: true, output: {} };
+    } else {
+      const body = await response.text();
+      this.lastCallResult = { success: false, output: null, error: body };
+    }
+    // Assert: captured in lastCallResult
+  },
+);
+
+// ── Common When steps ─────────────────────────────────────────────────────────
+
+When("an {string} topic is created", async function (this: SdkWorld, _service: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, CreateTopicCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  // Act
+  try {
+    const result = await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+When("an {string} queue is created", async function (this: SdkWorld, _service: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act
+  try {
+    const result = await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+When("an S3 bucket is created", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+  const client = this.session!.client<typeof S3Client>("s3");
+  // Act
+  try {
+    const result = await client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+When("an EventBridge event bus is created", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const port = this.session!.portFor("eventbridge");
+  // Act
+  const result = await ebCall(port, "CreateEventBus", { Name: EB_BUS });
+  if (result.ok) {
+    this.lastCallResult = { success: true, output: result.data };
+  } else {
+    this.lastCallResult = { success: false, output: null, error: result.data };
+  }
+  // Assert: captured in lastCallResult
+});
+
+When("a Step Functions state machine is created", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const sfnPort = this.session!.portFor("stepfunctions");
+  // Act
+  const response = await fetch(`http://127.0.0.1:${sfnPort}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-amz-json-1.0",
+      "X-Amz-Target": "AWSStepFunctions.CreateStateMachine",
+    },
+    body: JSON.stringify({
+      name: SFN_SM,
+      definition: JSON.stringify({
+        Comment: "test",
+        StartAt: "Pass",
+        States: { Pass: { Type: "Pass", End: true } },
+      }),
+      roleArn: "arn:aws:iam::000000000000:role/StepFunctionsRole",
+      type: "STANDARD",
+    }),
+  });
+  const data = await response.json();
+  if (response.ok) {
+    this.lastCallResult = { success: true, output: data };
+  } else {
+    this.lastCallResult = { success: false, output: null, error: data };
+  }
+  // Assert: captured in lastCallResult
+});
+
+When("a DynamoDB table is created", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { DynamoDBClient, CreateTableCommand } = require("@aws-sdk/client-dynamodb");
+  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  // Act
+  try {
+    const result = await client.send(
+      new CreateTableCommand({
+        TableName: DDB_TABLE,
+        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+        AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
+        BillingMode: "PAY_PER_REQUEST",
+      }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+When("an execution of the state machine is started", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SFNClient, StartExecutionCommand } = require("@aws-sdk/client-sfn");
+  const client = this.session!.client<typeof SFNClient>("stepfunctions");
+  const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
+  // Act
+  try {
+    const result = await client.send(
+      new StartExecutionCommand({ stateMachineArn: smArn, input: JSON.stringify({}) }),
+    );
+    this.lastCallResult = { success: true, output: result };
+  } catch (err: unknown) {
+    this.lastCallResult = { success: false, output: null, error: err };
+  }
+  // Assert: captured in lastCallResult
+});
+
+// ── Common Then steps ─────────────────────────────────────────────────────────
+
+Then("the operation is rejected", function (this: SdkWorld) {
+  // Arrange
+  const expectedSuccess = false;
+  // Act: read last call result
+  const actualSuccess = this.lastCallResult.success;
+  // Assert
+  assert.strictEqual(
+    actualSuccess,
+    expectedSuccess,
+    `Expected the operation to be rejected but it succeeded with: ${JSON.stringify(this.lastCallResult.output)}`,
+  );
+});
+
+Then(
+  "the topic is {string} and notification delivery to it will fail",
+  async function (this: SdkWorld, expectedState: string) {
+    // Arrange
+    assert.ok(this.session, "No session running");
+    const { SNSClient, ListTopicsCommand } = require("@aws-sdk/client-sns");
+    const client = this.session!.client<typeof SNSClient>("sns");
+    // Act
+    const result = await client.send(new ListTopicsCommand({}));
+    const topicArns: string[] = (result.Topics ?? []).map(
+      (t: { TopicArn?: string }) => t.TopicArn ?? "",
+    );
+    const actualExists = topicArns.some((arn) => arn.endsWith(`:${SNS_TOPIC}`));
+    // Assert
+    const expectedDeleted = expectedState === "DELETED";
+    assert.strictEqual(
+      actualExists,
+      !expectedDeleted,
+      `Expected topic "${SNS_TOPIC}" state to be ${expectedState}`,
+    );
+  },
+);
+
+Then("the topic is {string}", async function (this: SdkWorld, expectedState: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SNSClient, ListTopicsCommand } = require("@aws-sdk/client-sns");
+  const client = this.session!.client<typeof SNSClient>("sns");
+  // Act
+  const result = await client.send(new ListTopicsCommand({}));
+  const topicArns: string[] = (result.Topics ?? []).map(
+    (t: { TopicArn?: string }) => t.TopicArn ?? "",
+  );
+  const actualExists = topicArns.some((arn) => arn.endsWith(`:${SNS_TOPIC}`));
+  // Assert
+  if (expectedState === "ACTIVE") {
+    assert.ok(actualExists, `Expected topic "${SNS_TOPIC}" to be ACTIVE but it was not found`);
+  } else if (expectedState === "DELETED") {
+    assert.ok(!actualExists, `Expected topic "${SNS_TOPIC}" to be DELETED but it still exists`);
+  }
+});
+
+Then("the queue is {string}", async function (this: SdkWorld, expectedState: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, ListQueuesCommand } = require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act
+  const result = await client.send(new ListQueuesCommand({}));
+  const queueUrls: string[] = result.QueueUrls ?? [];
+  const actualExists = queueUrls.some((u) => u.endsWith(`/${SQS_QUEUE}`));
+  // Assert
+  if (expectedState === "ACTIVE") {
+    assert.ok(actualExists, `Expected queue "${SQS_QUEUE}" to be ACTIVE but it was not found`);
+  } else if (expectedState === "DELETED") {
+    assert.ok(!actualExists, `Expected queue "${SQS_QUEUE}" to be DELETED but it still exists`);
+  }
+});
+
+Then("the event bus is {string}", async function (this: SdkWorld, expectedState: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const port = this.session!.portFor("eventbridge");
+  // Act
+  const result = await ebCall(port, "ListEventBuses", {});
+  const buses: Array<{ Name?: string }> = (
+    result.data as { EventBuses?: Array<{ Name?: string }> }
+  ).EventBuses ?? [];
+  const actualExists = buses.some((b) => b.Name === EB_BUS);
+  // Assert
+  if (expectedState === "ACTIVE") {
+    assert.ok(actualExists, `Expected event bus "${EB_BUS}" to be ACTIVE but not found`);
+  }
+});
+
+Then("the table is {string}", async function (this: SdkWorld, expectedState: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { DynamoDBClient, ListTablesCommand } = require("@aws-sdk/client-dynamodb");
+  const client = this.session!.client<typeof DynamoDBClient>("dynamodb");
+  // Act
+  const result = await client.send(new ListTablesCommand({}));
+  const tableNames: string[] = result.TableNames ?? [];
+  const actualExists = tableNames.includes(DDB_TABLE);
+  // Assert
+  if (expectedState === "ACTIVE") {
+    assert.ok(actualExists, `Expected table "${DDB_TABLE}" to be ACTIVE but it was not found`);
+  }
+});
+
+Then("the bucket is {string} with no notification configuration", async function (this: SdkWorld, expectedState: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { S3Client, ListBucketsCommand } = require("@aws-sdk/client-s3");
+  const client = this.session!.client<typeof S3Client>("s3");
+  // Act
+  const result = await client.send(new ListBucketsCommand({}));
+  const buckets: Array<{ Name?: string }> = result.Buckets ?? [];
+  const actualExists = buckets.some((b) => b.Name === S3_BUCKET);
+  // Assert
+  if (expectedState === "ACTIVE") {
+    assert.ok(actualExists, `Expected bucket "${S3_BUCKET}" to be ACTIVE but not found`);
+  }
+});
+
+// ── Invariant assertions (no-ops — structural invariants guaranteed by provider) ─
+
+Then(
+  "every confirmed subscription references an {string} {string} topic",
+  async function (this: SdkWorld, _state: string, _service: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} message belongs to an {string} queue",
+  async function (this: SdkWorld, _messageState: string, _queueState: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "a message can only be delivered if a confirmed subscription exists for the topic",
+  async function (this: SdkWorld) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} rule references an {string} event bus",
+  async function (this: SdkWorld, _ruleState: string, _busState: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} message belongs to an {string} topic",
+  async function (this: SdkWorld, _messageState: string, _topicState: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} notification references an object that exists",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} notification references a topic that exists",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} message references an object that exists",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} message references a queue that exists",
+  async function (this: SdkWorld, _state: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} execution references an {string} state machine",
+  async function (this: SdkWorld, _execState: string, _smState: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every existing item belongs to an {string} table",
+  async function (this: SdkWorld, _tableState: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);

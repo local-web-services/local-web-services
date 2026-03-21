@@ -281,8 +281,22 @@ def subscription_confirmed(lws_session):
 
 
 @then('the message is "AVAILABLE" in the queue')
-def message_available_in_queue(world):
-    pytest.skip("lws does not support SNS-to-SQS message delivery")
+def message_available_in_queue(lws_session):
+    # Arrange
+    url = _queue_url(lws_session)
+    expected_message = TEST_MESSAGE
+    # Act
+    resp = _sqs(lws_session).receive_message(QueueUrl=url, MaxNumberOfMessages=1, WaitTimeSeconds=1)
+    # Assert
+    actual_messages = resp.get("Messages", [])
+    assert len(actual_messages) > 0, (
+        f"Expected at least one message containing '{expected_message}' "
+        f"in queue '{TEST_QUEUE}' but queue was empty"
+    )
+    actual_body = actual_messages[0].get("Body", "")
+    assert expected_message in actual_body, (
+        f"Expected message body to contain '{expected_message}' but got: {actual_body}"
+    )
 
 
 @then('the message is "DELETED"')

@@ -15,4 +15,5 @@ func registerAllSteps(sc *godog.ScenarioContext, world *World) {
 	registerDynamoDBHelperSteps(sc, world)
 	registerSQSHelperSteps(sc, world)
 	registerDiscoverySteps(sc, world)
+	registerSequenceSteps(sc, world)
 }

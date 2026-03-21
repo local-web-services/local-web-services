@@ -25,6 +25,11 @@ public class WorldContext {
   public List<software.amazon.awssdk.services.sqs.model.Message> lastMessages;
   public int lastMessageCount = 0;
 
+  // Cross-service state
+  public String lastTopicArn;
+  public String lastStateMachineArn;
+  public String lastExecutionArn;
+
   public void setSuccess(Object output) {
     lastSuccess = true;
     lastOutput = output;

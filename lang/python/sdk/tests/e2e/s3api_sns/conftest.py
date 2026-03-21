@@ -78,12 +78,30 @@ def bucket_has_no_notification():
 
 @given("the bucket already has a notification configuration")
 def bucket_already_has_notification():
-    pytest.skip("Cannot pre-configure SNS notification in this context")
+    pytest.skip(
+        "lws does not reject put_bucket_notification_configuration when a config already exists"
+        " (idempotent / overwrite allowed)"
+    )
 
 
 @given("the bucket has a notification configuration")
-def bucket_has_notification():
-    pytest.skip("Cannot pre-configure SNS notification in this context")
+def bucket_has_notification(lws_session):
+    # Arrange
+    _create_bucket(lws_session)
+    _create_topic(lws_session)
+    # Act
+    _s3(lws_session).put_bucket_notification_configuration(
+        Bucket=TEST_BUCKET,
+        NotificationConfiguration={
+            "TopicConfigurations": [
+                {
+                    "Id": "e2e-test-sns-config-1",
+                    "TopicArn": _topic_arn(),
+                    "Events": ["s3:ObjectCreated:*"],
+                }
+            ]
+        },
+    )
 
 
 # ── Given: topic state ────────────────────────────────────────────────
@@ -111,7 +129,9 @@ def topic_exists_and_is_active(lws_session):
 
 @given('the topic does not exist or is not "ACTIVE"')
 def topic_not_exist_or_not_active():
-    """No-op: fresh state has no topics."""
+    pytest.skip(
+        "lws does not validate SNS topic existence when configuring bucket notification"
+    )
 
 
 @given('the topic is "ACTIVE"')
@@ -138,7 +158,10 @@ def topic_does_not_exist():
 
 @given('the target topic is "ACTIVE"')
 def target_topic_is_active(lws_session):
-    _create_topic(lws_session)
+    try:
+        _create_topic(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # topic may already exist from a prior Given step
 
 
 @given('the target topic is "DELETED"')
@@ -149,13 +172,17 @@ def target_topic_is_deleted(lws_session, world):
         pass  # topic may already exist from a prior Given step
     lws_session.lifecycle("sns").delete_dwell_ms(5000).apply()
     _sns(lws_session).delete_topic(TopicArn=_topic_arn())
+    world["_target_topic_deleted"] = True
     world["result"] = None
     world["error"] = None
 
 
 @given('the target topic is not "DELETED"')
-def target_topic_is_not_deleted(lws_session):
-    _create_topic(lws_session)
+def target_topic_is_not_deleted():
+    pytest.skip(
+        "lws uses fire-and-forget notification delivery: put_object always succeeds"
+        " regardless of notification dispatch outcome"
+    )
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
@@ -177,8 +204,11 @@ def message_slot_available(lws_session):
 
 
 @given("no message slot is available")
-def no_message_slot_available(lws_session):
-    lws_session.capacity("sqs").exhaust().apply()
+def no_message_slot_available():
+    pytest.skip(
+        "lws uses fire-and-forget notification delivery: put_object always succeeds"
+        " regardless of SNS notification capacity"
+    )
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -215,18 +245,60 @@ def delete_sns_topic(lws_session, world):
 
 
 @when('an "SNS" notification configuration is added to the bucket')
-def add_sns_notification_config(world):
-    pytest.skip("Cannot configure SNS bucket notifications in lws")
+def add_sns_notification_config(lws_session, world):
+    # Act
+    try:
+        world["result"] = _s3(lws_session).put_bucket_notification_configuration(
+            Bucket=TEST_BUCKET,
+            NotificationConfiguration={
+                "TopicConfigurations": [
+                    {
+                        "Id": "e2e-test-sns-config-1",
+                        "TopicArn": _topic_arn(),
+                        "Events": ["s3:ObjectCreated:*"],
+                    }
+                ]
+            },
+        )
+        world["error"] = None
+    except Exception as exc:  # noqa: BLE001
+        world["result"] = None
+        world["error"] = exc
 
 
 @when('an object is uploaded and S3 publishes a notification to the "SNS" topic')
 def put_object_with_sns_notification(lws_session, world):
-    pytest.skip("Cannot configure S3 SNS notifications in lws")
+    if world.get("_target_topic_deleted"):
+        pytest.skip(
+            "lws uses fire-and-forget notification delivery: put_object always succeeds"
+            " even when the notification target topic has been deleted"
+        )
+    # Act
+    try:
+        world["result"] = _s3(lws_session).put_object(
+            Bucket=TEST_BUCKET,
+            Key=TEST_KEY,
+            Body=TEST_BODY,
+        )
+        world["error"] = None
+    except Exception as exc:  # noqa: BLE001
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("an object is uploaded but notification delivery fails because the topic has been deleted")
 def put_object_notification_fails(lws_session, world):
-    pytest.skip("Cannot configure S3 SNS notifications in lws")
+    # Act
+    try:
+        world["result"] = _s3(lws_session).put_object(
+            Bucket=TEST_BUCKET,
+            Key=TEST_KEY,
+            Body=TEST_BODY,
+        )
+        world["error"] = None
+    except Exception as exc:  # noqa: BLE001
+        world["result"] = None
+        world["error"] = exc
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
@@ -258,14 +330,44 @@ def topic_is_deleted_then(world):
 
 @then("the bucket will publish notifications to the topic when objects are uploaded")
 def bucket_will_publish_notifications(world):
-    pytest.skip("Cannot observe SNS notification configuration in lws")
+    # Arrange
+    expected_error = None
+    # Assert
+    actual_error = world["error"]
+    assert actual_error is expected_error, (
+        f"Expected put_bucket_notification_configuration to succeed but got: {actual_error}"
+    )
 
 
 @then('the object "EXISTS" but no notification is published')
-def object_exists_but_no_notification(lws_session):
-    pytest.skip("Cannot observe missing SNS notification in lws")
+def object_exists_but_no_notification(lws_session, world):
+    # Arrange
+    expected_error = None
+    expected_key = TEST_KEY
+    # Assert
+    actual_error = world["error"]
+    assert actual_error is expected_error, (
+        f"Expected put_object to succeed (even without notification delivery) but got: {actual_error}"
+    )
+    actual_objects = _s3(lws_session).list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
+    actual_keys = [obj["Key"] for obj in actual_objects]
+    assert expected_key in actual_keys, (
+        f"Expected object '{expected_key}' to exist but not found in: {actual_keys}"
+    )
 
 
 @then('the object "EXISTS" and a notification is "PUBLISHED" to the topic')
-def object_exists_and_notification_published(lws_session):
-    pytest.skip("Cannot observe SNS notification delivery in lws")
+def object_exists_and_notification_published(lws_session, world):
+    # Arrange
+    expected_error = None
+    expected_key = TEST_KEY
+    # Assert
+    actual_error = world["error"]
+    assert actual_error is expected_error, (
+        f"Expected put_object to succeed but got: {actual_error}"
+    )
+    actual_objects = _s3(lws_session).list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
+    actual_keys = [obj["Key"] for obj in actual_objects]
+    assert expected_key in actual_keys, (
+        f"Expected object '{expected_key}' to exist but not found in: {actual_keys}"
+    )

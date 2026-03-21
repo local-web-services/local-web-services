@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/eventbridge"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/aws/aws-sdk-go-v2/service/sfn"
@@ -37,7 +38,7 @@ type World struct {
 	lastResult          LastResult
 	lastStateMachineArn string
 	lastExecArn         string
-	lastLogCapture      *fakeCaptureAdapter // set by logs_test.go steps
+	lastLogCapture      *lws.LogCapture
 	lastMessages        interface{}
 	fakedResponseBody   string
 	sessionOpen         bool
@@ -65,7 +66,10 @@ func (w *World) reset() {
 }
 
 func (w *World) cleanup() {
-	w.lastLogCapture = nil
+	if w.lastLogCapture != nil {
+		w.lastLogCapture.Stop()
+		w.lastLogCapture = nil
+	}
 }
 
 func (w *World) DynamoDBClient() *dynamodb.Client {
@@ -93,6 +97,13 @@ func (w *World) S3Client() *s3.Client {
 func (w *World) SNSClient() *sns.Client {
 	port := basePort + core.ServiceOffsets["sns"]
 	return sns.NewFromConfig(w.awsCfg, func(o *sns.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+func (w *World) EventBridgeClient() *eventbridge.Client {
+	port := basePort + core.ServiceOffsets["eventbridge"]
+	return eventbridge.NewFromConfig(w.awsCfg, func(o *eventbridge.Options) {
 		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
 	})
 }

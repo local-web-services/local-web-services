@@ -235,6 +235,62 @@ def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, An
     }
 
 
+def _wire_providers(
+    providers: dict[str, Any],
+    ssm_state: Any = None,
+    secretsmanager_state: Any = None,
+) -> None:
+    """Wire cross-service provider dependencies.
+
+    Connects SNS→SQS delivery, EventBridge→SQS/SNS dispatch,
+    S3 bucket notification dispatch, and StepFunctions service task bridge.
+
+    Args:
+        providers: Provider dict from ``_create_providers``.
+        ssm_state: Optional SSM state object for service task bridge.
+        secretsmanager_state: Optional Secrets Manager state for service task bridge.
+    """
+    from lws.providers.stepfunctions._service_task_bridge import (
+        SecretsManagerStateAdapter,
+        SsmStateAdapter,
+    )
+
+    sns_provider = providers["sns"]
+    sqs_provider = providers["sqs"]
+    eb_provider = providers["events"]
+    s3_provider = providers["s3"]
+    sf_provider = providers["stepfunctions"]
+    dynamo_provider = providers["dynamodb"]
+
+    # SNS → SQS delivery
+    sns_provider.set_queue_provider(sqs_provider)
+
+    # EventBridge → SQS / SNS dispatch
+    eb_provider.set_queue_provider(sqs_provider)
+    eb_provider.set_sns_provider(sns_provider)
+
+    # S3 bucket notifications → SNS / SQS / EventBridge
+    s3_provider.set_notification_providers(
+        sns_provider=sns_provider,
+        sqs_provider=sqs_provider,
+        events_provider=eb_provider,
+    )
+
+    # StepFunctions service task bridge
+    service_providers: dict[str, Any] = {
+        "dynamodb": dynamo_provider,
+        "sqs": sqs_provider,
+        "s3": s3_provider,
+        "sns": sns_provider,
+        "eventbridge": eb_provider,
+    }
+    if ssm_state is not None:
+        service_providers["ssm"] = SsmStateAdapter(ssm_state)
+    if secretsmanager_state is not None:
+        service_providers["secretsmanager"] = SecretsManagerStateAdapter(secretsmanager_state)
+    sf_provider.set_service_providers(service_providers)
+
+
 def _build_service_apps(
     providers: dict[str, Any],
     ports: dict[str, int],
@@ -441,6 +497,15 @@ async def start_services(
     )
     # Merge ssm/secretsmanager state wrappers so the management reset endpoint can reach them
     all_providers = {**providers, **extra_providers}
+
+    # Wire cross-service provider dependencies (SNS→SQS, S3 notifications,
+    # EventBridge dispatch, StepFunctions service tasks).
+    _wire_providers(
+        providers,
+        ssm_state=getattr(extra_providers.get("ssm"), "_state", None),
+        secretsmanager_state=getattr(extra_providers.get("secretsmanager"), "_state", None),
+    )
+
     await _start_providers(providers)
     mgmt_app = _create_management_app(
         all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs

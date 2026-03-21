@@ -28,7 +28,16 @@ func TestMain(m *testing.M) {
 
 	opts := godog.Options{
 		Format: "pretty",
-		Paths:  []string{"../../../../lang/specification/sdk/features"},
+		Paths: []string{
+			"../../../../lang/specification/sdk/features",
+			"../../../../lang/specification/core/informal/sns_sqs/sequences.feature",
+			"../../../../lang/specification/core/informal/events_sqs/sequences.feature",
+			"../../../../lang/specification/core/informal/events_sns/sequences.feature",
+			"../../../../lang/specification/core/informal/s3api_sns/sequences.feature",
+			"../../../../lang/specification/core/informal/s3api_sqs/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_sqs/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_dynamodb/sequences.feature",
+		},
 	}
 	status := godog.TestSuite{
 		Name:                "lws-go-sdk",
