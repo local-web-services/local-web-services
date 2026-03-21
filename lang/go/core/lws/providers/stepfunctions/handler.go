@@ -483,7 +483,7 @@ func (e *engine) executeServiceTask(resource string, input interface{}) (interfa
 		op := strings.TrimPrefix(rest, "dynamodb:")
 		target := dynamoDBTarget(op)
 		if target == "" {
-			return nil, "States.TaskFailed", "unsupported DynamoDB operation: "+op
+			return nil, "States.TaskFailed", "unsupported DynamoDB operation: " + op
 		}
 		return e.callJSONService(e.servicePorts.DynamoDB, target, body)
 
@@ -491,7 +491,7 @@ func (e *engine) executeServiceTask(resource string, input interface{}) (interfa
 		op := strings.TrimPrefix(rest, "sqs:")
 		target := sqsTarget(op)
 		if target == "" {
-			return nil, "States.TaskFailed", "unsupported SQS operation: "+op
+			return nil, "States.TaskFailed", "unsupported SQS operation: " + op
 		}
 		return e.callJSONService(e.servicePorts.SQS, target, body)
 
@@ -499,7 +499,7 @@ func (e *engine) executeServiceTask(resource string, input interface{}) (interfa
 		op := strings.TrimPrefix(rest, "sns:")
 		action := snsAction(op)
 		if action == "" {
-			return nil, "States.TaskFailed", "unsupported SNS operation: "+op
+			return nil, "States.TaskFailed", "unsupported SNS operation: " + op
 		}
 		return e.callFormService(e.servicePorts.SNS, action, body)
 
@@ -511,7 +511,7 @@ func (e *engine) executeServiceTask(resource string, input interface{}) (interfa
 		op := strings.TrimPrefix(rest, "secretsmanager:")
 		target := secretsManagerTarget(op)
 		if target == "" {
-			return nil, "States.TaskFailed", "unsupported SecretsManager operation: "+op
+			return nil, "States.TaskFailed", "unsupported SecretsManager operation: " + op
 		}
 		return e.callJSONService(e.servicePorts.SecretsManager, target, body)
 
@@ -519,7 +519,7 @@ func (e *engine) executeServiceTask(resource string, input interface{}) (interfa
 		op := strings.TrimPrefix(rest, "ssm:")
 		target := ssmTarget(op)
 		if target == "" {
-			return nil, "States.TaskFailed", "unsupported SSM operation: "+op
+			return nil, "States.TaskFailed", "unsupported SSM operation: " + op
 		}
 		return e.callJSONService(e.servicePorts.SSM, target, body)
 
@@ -527,27 +527,27 @@ func (e *engine) executeServiceTask(resource string, input interface{}) (interfa
 		op := strings.TrimPrefix(rest, "events:")
 		target := eventBridgeTarget(op)
 		if target == "" {
-			return nil, "States.TaskFailed", "unsupported EventBridge operation: "+op
+			return nil, "States.TaskFailed", "unsupported EventBridge operation: " + op
 		}
 		return e.callJSONService(e.servicePorts.EventBridge, target, body)
 
 	default:
-		return nil, "States.TaskFailed", "unsupported service integration: "+resource
+		return nil, "States.TaskFailed", "unsupported service integration: " + resource
 	}
 }
 
 // dynamoDBTarget maps a DynamoDB operation name to its X-Amz-Target value.
 func dynamoDBTarget(op string) string {
 	ops := map[string]string{
-		"putItem":           "DynamoDB_20120810.PutItem",
-		"getItem":           "DynamoDB_20120810.GetItem",
-		"deleteItem":        "DynamoDB_20120810.DeleteItem",
-		"updateItem":        "DynamoDB_20120810.UpdateItem",
-		"query":             "DynamoDB_20120810.Query",
-		"scan":              "DynamoDB_20120810.Scan",
-		"batchGetItem":      "DynamoDB_20120810.BatchGetItem",
-		"batchWriteItem":    "DynamoDB_20120810.BatchWriteItem",
-		"transactGetItems":  "DynamoDB_20120810.TransactGetItems",
+		"putItem":            "DynamoDB_20120810.PutItem",
+		"getItem":            "DynamoDB_20120810.GetItem",
+		"deleteItem":         "DynamoDB_20120810.DeleteItem",
+		"updateItem":         "DynamoDB_20120810.UpdateItem",
+		"query":              "DynamoDB_20120810.Query",
+		"scan":               "DynamoDB_20120810.Scan",
+		"batchGetItem":       "DynamoDB_20120810.BatchGetItem",
+		"batchWriteItem":     "DynamoDB_20120810.BatchWriteItem",
+		"transactGetItems":   "DynamoDB_20120810.TransactGetItems",
 		"transactWriteItems": "DynamoDB_20120810.TransactWriteItems",
 	}
 	if t, ok := ops[op]; ok {
@@ -563,14 +563,14 @@ func dynamoDBTarget(op string) string {
 // sqsTarget maps an SQS operation name to its X-Amz-Target value.
 func sqsTarget(op string) string {
 	ops := map[string]string{
-		"sendMessage":           "AmazonSQS.SendMessage",
-		"receiveMessage":        "AmazonSQS.ReceiveMessage",
-		"deleteMessage":         "AmazonSQS.DeleteMessage",
-		"getQueueUrl":           "AmazonSQS.GetQueueUrl",
-		"createQueue":           "AmazonSQS.CreateQueue",
-		"deleteQueue":           "AmazonSQS.DeleteQueue",
-		"sendMessageBatch":      "AmazonSQS.SendMessageBatch",
-		"deleteMessageBatch":    "AmazonSQS.DeleteMessageBatch",
+		"sendMessage":        "AmazonSQS.SendMessage",
+		"receiveMessage":     "AmazonSQS.ReceiveMessage",
+		"deleteMessage":      "AmazonSQS.DeleteMessage",
+		"getQueueUrl":        "AmazonSQS.GetQueueUrl",
+		"createQueue":        "AmazonSQS.CreateQueue",
+		"deleteQueue":        "AmazonSQS.DeleteQueue",
+		"sendMessageBatch":   "AmazonSQS.SendMessageBatch",
+		"deleteMessageBatch": "AmazonSQS.DeleteMessageBatch",
 	}
 	if t, ok := ops[op]; ok {
 		return t
@@ -584,12 +584,12 @@ func sqsTarget(op string) string {
 // snsAction maps an SNS operation name to its Action query parameter value.
 func snsAction(op string) string {
 	ops := map[string]string{
-		"publish":          "Publish",
-		"createTopic":      "CreateTopic",
-		"deleteTopic":      "DeleteTopic",
-		"subscribe":        "Subscribe",
-		"unsubscribe":      "Unsubscribe",
-		"publishBatch":     "PublishBatch",
+		"publish":      "Publish",
+		"createTopic":  "CreateTopic",
+		"deleteTopic":  "DeleteTopic",
+		"subscribe":    "Subscribe",
+		"unsubscribe":  "Unsubscribe",
+		"publishBatch": "PublishBatch",
 	}
 	if t, ok := ops[op]; ok {
 		return t
@@ -603,14 +603,14 @@ func snsAction(op string) string {
 // secretsManagerTarget maps a SecretsManager operation to its X-Amz-Target value.
 func secretsManagerTarget(op string) string {
 	ops := map[string]string{
-		"getSecretValue":      "secretsmanager.GetSecretValue",
-		"createSecret":        "secretsmanager.CreateSecret",
-		"deleteSecret":        "secretsmanager.DeleteSecret",
-		"describeSecret":      "secretsmanager.DescribeSecret",
-		"listSecrets":         "secretsmanager.ListSecrets",
-		"putSecretValue":      "secretsmanager.PutSecretValue",
-		"rotateSecret":        "secretsmanager.RotateSecret",
-		"updateSecret":        "secretsmanager.UpdateSecret",
+		"getSecretValue": "secretsmanager.GetSecretValue",
+		"createSecret":   "secretsmanager.CreateSecret",
+		"deleteSecret":   "secretsmanager.DeleteSecret",
+		"describeSecret": "secretsmanager.DescribeSecret",
+		"listSecrets":    "secretsmanager.ListSecrets",
+		"putSecretValue": "secretsmanager.PutSecretValue",
+		"rotateSecret":   "secretsmanager.RotateSecret",
+		"updateSecret":   "secretsmanager.UpdateSecret",
 	}
 	if t, ok := ops[op]; ok {
 		return t
