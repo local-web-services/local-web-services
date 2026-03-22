@@ -194,10 +194,16 @@ export class SqsStore {
   }
 
   getQueue(nameOrUrl: string): LocalQueue | undefined {
-    // Support both queue name and queue URL
+    // Support queue name, queue URL, and queue ARN
     if (nameOrUrl.includes("/")) {
       // URL format: http://host:port/000000000000/QueueName
       const parts = nameOrUrl.split("/");
+      const name = parts[parts.length - 1];
+      return this.queues.get(name);
+    }
+    if (nameOrUrl.startsWith("arn:aws:sqs:")) {
+      // ARN format: arn:aws:sqs:region:account:QueueName
+      const parts = nameOrUrl.split(":");
       const name = parts[parts.length - 1];
       return this.queues.get(name);
     }

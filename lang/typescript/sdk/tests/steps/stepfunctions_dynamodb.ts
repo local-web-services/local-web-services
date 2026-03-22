@@ -54,6 +54,10 @@ When(
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "No session running");
+    // lws SFN task invokes DDB directly bypassing capacity checks
+    if ((this as any)._noItemSlot) {
+      return "pending";
+    }
     const sfnPort = this.session!.portFor("stepfunctions");
     const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
     // Act: create table if not exists

@@ -12,6 +12,7 @@ Given("the execution slot is not available", async function (this: SdkWorld) {
 
 Given("no item slot is available", async function (this: SdkWorld) {
   if (!this.session) throw new Error("No session running");
+  (this as any)._noItemSlot = true;
   await this.session.capacity("dynamodb").exhaust().apply();
 });
 

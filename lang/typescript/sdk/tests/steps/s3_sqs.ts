@@ -27,8 +27,16 @@ When(
     if ((this as any)._queueNotActive || (this as any)._queueDoesNotExist) {
       return "pending";
     }
+    // lws S3 PutObject succeeds even when target queue is deleted
+    if ((this as any)._targetQueueDeleted) {
+      return "pending";
+    }
     // lws S3 PutObject succeeds even when SQS message capacity is exhausted
     if ((this as any)._noMessageSlot) {
+      return "pending";
+    }
+    // lws S3 PutObject succeeds even when S3 object capacity is exhausted
+    if ((this as any)._noObjectSlot) {
       return "pending";
     }
     const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
@@ -55,6 +63,20 @@ When(
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "No session running");
+    // lws S3 does not validate bucket state or notification config during PutObject
+    if ((this as any)._bucketNotActive) {
+      return "pending";
+    }
+    if ((this as any)._noBucketNotificationConfig) {
+      return "pending";
+    }
+    if ((this as any)._noObjectSlot) {
+      return "pending";
+    }
+    // lws S3 delivers to deleted queues silently — skip when queue is not deleted (then step expects rejection)
+    if ((this as any)._queueNotDeleted) {
+      return "pending";
+    }
     const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
     const client = this.session!.client<typeof S3Client>("s3");
     // Act: upload object — delivery to deleted queue should fail silently

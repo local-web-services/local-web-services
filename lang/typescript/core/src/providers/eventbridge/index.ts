@@ -452,26 +452,8 @@ function handleOperation(
     case "PutTargets": {
       const ptBusName = (body.EventBusName as string) ?? "default";
       const ptTargets = (body.Targets as Target[]) ?? [];
-      // Validate that each target ARN references an existing resource
-      for (const t of ptTargets) {
-        if (t.Arn) {
-          const arnParts = t.Arn.split(":");
-          // arn:aws:<service>:region:account:...
-          const service = arnParts[2] ?? "";
-          const checker = state.arnExistsCheckers.get(service);
-          if (checker && !checker(t.Arn)) {
-            jsonReply(
-              reply,
-              {
-                __type: "ResourceNotFoundException",
-                message: `Target resource not found: ${t.Arn}`,
-              },
-              400,
-            );
-            return;
-          }
-        }
-      }
+      // Note: AWS EventBridge allows PutTargets even if the target resource does not yet exist.
+      // We do not validate target resource existence here to match real AWS behaviour.
       const ptError = store.putTargets(ptBusName, body.Rule as string, ptTargets);
       if (ptError === "rule_not_found") {
         jsonReply(reply, { __type: "ResourceNotFoundException", message: "Rule not found." }, 400);
