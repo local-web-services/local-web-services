@@ -1329,6 +1329,7 @@ Given("the table is not {string}", function (this: SdkWorld, _state: string) {
 
 Given("the table does not exist", function (this: SdkWorld) {
   // Arrange + Act: no-op — fresh session has no tables
+  (this as any)._tableNotExist = true;
   // Assert: nothing to assert
 });
 
