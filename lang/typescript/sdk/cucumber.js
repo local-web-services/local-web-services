@@ -65,6 +65,16 @@ module.exports = {
       "../../../lang/specification/core/informal/stepfunctions_s3api/get_object_task.feature",
       "../../../lang/specification/core/informal/stepfunctions_s3api/get_object_not_found_task.feature",
       "../../../lang/specification/core/informal/stepfunctions_s3api/start_execution.feature",
+      // stepfunctions_secretsmanager cross-service paths
+      "../../../lang/specification/core/informal/stepfunctions_secretsmanager/create_state_machine.feature",
+      "../../../lang/specification/core/informal/stepfunctions_secretsmanager/create_secret.feature",
+      "../../../lang/specification/core/informal/stepfunctions_secretsmanager/schedule_secret_deletion.feature",
+      "../../../lang/specification/core/informal/stepfunctions_secretsmanager/start_execution.feature",
+      // stepfunctions_ssm cross-service paths
+      "../../../lang/specification/core/informal/stepfunctions_ssm/create_state_machine.feature",
+      "../../../lang/specification/core/informal/stepfunctions_ssm/create_parameter.feature",
+      "../../../lang/specification/core/informal/stepfunctions_ssm/delete_parameter.feature",
+      "../../../lang/specification/core/informal/stepfunctions_ssm/start_execution.feature",
     ],
     format: ["progress"],
     timeout: 60000,

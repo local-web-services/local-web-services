@@ -173,6 +173,7 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
       eventBridgeStore = registerEventBridge(instance, state);
       eventBridgeStore.setSqsStore(sqsStore);
       eventBridgeStore.setSnsStore(snsStore);
+      eventBridgeStore.setDynamoDbStore(dynamoStore);
     });
     const port = basePort + SERVICE_OFFSETS.eventbridge;
     serviceApps.push({ name: "eventbridge", app, port });

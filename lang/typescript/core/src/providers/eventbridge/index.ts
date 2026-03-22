@@ -11,6 +11,7 @@ import { createRequestContext, recordLog } from "../../middleware/logging";
 import type { SqsStore } from "../sqs";
 import type { SnsStore } from "../sns";
 import type { StepFunctionsStore } from "../stepfunctions";
+import type { DynamoStore } from "../dynamodb/store";
 
 const REGION = "us-east-1";
 const ACCOUNT_ID = "000000000000";
@@ -21,6 +22,7 @@ function serviceFromArn(arn: string): string | null {
   if (arn.includes(":sns:")) return "sns";
   if (arn.includes(":states:")) return "stepfunctions";
   if (arn.includes(":lambda:")) return "lambda";
+  if (arn.includes(":dynamodb:")) return "dynamodb";
   return null;
 }
 
@@ -52,6 +54,7 @@ export class EventBridgeStore {
   private sqsStore: SqsStore | null = null;
   private snsStore: SnsStore | null = null;
   private stepFunctionsStore: StepFunctionsStore | null = null;
+  private dynamoDbStore: DynamoStore | null = null;
 
   constructor() {
     // Create default event bus
@@ -68,6 +71,10 @@ export class EventBridgeStore {
 
   setStepFunctionsStore(stepFunctionsStore: StepFunctionsStore): void {
     this.stepFunctionsStore = stepFunctionsStore;
+  }
+
+  setDynamoDbStore(dynamoDbStore: DynamoStore): void {
+    this.dynamoDbStore = dynamoDbStore;
   }
 
   reset(): void {
@@ -270,6 +277,9 @@ export class EventBridgeStore {
     const rulesWithTargets = enabledRules.filter((r) => r.targets.length > 0);
     if (rulesWithTargets.length === 0) return "no_target";
     if (capacityConfigs) {
+      if (isExhausted(capacityConfigs["events"] ?? { slots: null })) {
+        return "capacity_exhausted";
+      }
       for (const rule of rulesWithTargets) {
         for (const target of rule.targets) {
           const service = serviceFromArn(target.Arn);
@@ -296,6 +306,13 @@ export class EventBridgeStore {
           }
         } else if (target.Arn.includes(":states:") && this.stepFunctionsStore) {
           void this.stepFunctionsStore.startExecution(target.Arn, messageBody);
+        } else if (target.Arn.includes(":dynamodb:") && this.dynamoDbStore) {
+          const tableNameMatch = target.Arn.match(/[/]([^/]+)$/);
+          const tableName = tableNameMatch ? tableNameMatch[1] : "";
+          if (tableName) {
+            const item = typeof messageBody === "string" ? JSON.parse(messageBody) : messageBody;
+            this.dynamoDbStore.putItem(tableName, item as Record<string, unknown>);
+          }
         }
       }
     }

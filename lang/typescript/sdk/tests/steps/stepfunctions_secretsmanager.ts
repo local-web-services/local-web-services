@@ -1,27 +1,29 @@
-/** Step definitions: stepfunctions_sns cross-service scenarios — unique When/Then steps only */
+/** Step definitions: stepfunctions_secretsmanager cross-service scenarios — unique When/Then steps only */
 
 import { When, Then } from "@cucumber/cucumber";
 import assert from "assert";
-import { SFN_SM, SNS_TOPIC, ACCOUNT_ID, REGION } from "./cross_service_common";
+import { SFN_SM, SM_SECRET, ACCOUNT_ID, REGION } from "./cross_service_common";
 import type { SdkWorld } from "../support/world";
-
-const SNS_PUBLISH_TASK_ARN = "arn:aws:states:::sns:publish";
 
 // ── When steps ────────────────────────────────────────────────────────────────
 
 When(
-  "an {string} publish task is configured on the state machine",
-  async function (this: SdkWorld, _service: string) {
+  "a SecretsManager GetSecretValue task is configured on the state machine",
+  async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "No session running");
-    // lws SFN does not validate topic existence/lifecycle when configuring tasks
-    if ((this as any)._topicNotExist || (this as any)._topicNotActive) {
-      return "pending";
+    if ((this as any)._smHasNoTask) {
+      this.lastCallResult = {
+        success: false,
+        output: null,
+        error: { message: "No task configured" },
+      };
+      return;
     }
     const sfnPort = this.session!.portFor("stepfunctions");
     const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
-    const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
-    // Act: update state machine definition with SNS publish task
+    const secretArn = `arn:aws:secretsmanager:${REGION}:${ACCOUNT_ID}:secret:${SM_SECRET}`;
+    // Act: update state machine definition with a SecretsManager GetSecretValue task
     const response = await fetch(`http://127.0.0.1:${sfnPort}`, {
       method: "POST",
       headers: {
@@ -31,13 +33,15 @@ When(
       body: JSON.stringify({
         stateMachineArn: smArn,
         definition: JSON.stringify({
-          Comment: "test with SNS",
-          StartAt: "Publish",
+          Comment: "test with SecretsManager",
+          StartAt: "GetSecretValue",
           States: {
-            Publish: {
+            GetSecretValue: {
               Type: "Task",
-              Resource: SNS_PUBLISH_TASK_ARN,
-              Parameters: { TopicArn: topicArn, Message: "hello from sfn" },
+              Resource: "arn:aws:states:::aws-sdk:secretsmanager:getSecretValue",
+              Parameters: {
+                SecretId: secretArn,
+              },
               End: true,
             },
           },
@@ -55,25 +59,25 @@ When(
 );
 
 When(
-  "a running execution publishes a message to the {string} topic and succeeds",
-  async function (this: SdkWorld, _service: string) {
+  "a running execution reads a secret from SecretsManager and succeeds",
+  async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "No session running");
-    if ((this as any)._targetTopicNotActive) {
-      return "pending";
-    }
     const sfnPort = this.session!.portFor("stepfunctions");
     const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
-    const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
-    // Act: ensure topic exists
-    const { SNSClient, CreateTopicCommand } = require("@aws-sdk/client-sns");
-    const snsClient = this.session!.client<typeof SNSClient>("sns");
+    const secretArn = `arn:aws:secretsmanager:${REGION}:${ACCOUNT_ID}:secret:${SM_SECRET}`;
+    // Act: ensure secret exists
+    const {
+      SecretsManagerClient,
+      CreateSecretCommand,
+    } = require("@aws-sdk/client-secrets-manager");
+    const smClient = this.session!.client<typeof SecretsManagerClient>("secretsmanager");
     try {
-      await snsClient.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+      await smClient.send(new CreateSecretCommand({ Name: SM_SECRET, SecretString: "test-value" }));
     } catch {
       // May already exist
     }
-    // Act: update state machine with SNS publish task
+    // Act: update state machine with SecretsManager GetSecretValue task
     const updateResponse = await fetch(`http://127.0.0.1:${sfnPort}`, {
       method: "POST",
       headers: {
@@ -83,13 +87,13 @@ When(
       body: JSON.stringify({
         stateMachineArn: smArn,
         definition: JSON.stringify({
-          Comment: "test with SNS",
-          StartAt: "Publish",
+          Comment: "test with SecretsManager",
+          StartAt: "GetSecretValue",
           States: {
-            Publish: {
+            GetSecretValue: {
               Type: "Task",
-              Resource: SNS_PUBLISH_TASK_ARN,
-              Parameters: { TopicArn: topicArn, Message: "hello from sfn" },
+              Resource: "arn:aws:states:::aws-sdk:secretsmanager:getSecretValue",
+              Parameters: { SecretId: secretArn },
               End: true,
             },
           },
@@ -101,7 +105,7 @@ When(
       this.lastCallResult = { success: false, output: null, error: errData };
       return;
     }
-    // Act: start execution (synchronous — runs SNS publish task)
+    // Act: start execution (synchronous — runs SecretsManager GetSecretValue task)
     const startResponse = await fetch(`http://127.0.0.1:${sfnPort}`, {
       method: "POST",
       headers: {
@@ -123,7 +127,7 @@ When(
 // ── Then steps ────────────────────────────────────────────────────────────────
 
 Then(
-  "the state machine will publish a message to the topic when it reaches the task state",
+  "the state machine will read the secret when it reaches the task state",
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "No session running");
@@ -132,22 +136,24 @@ Then(
     // Assert
     assert.ok(
       actualSuccess,
-      `Expected SNS task configuration to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`,
+      `Expected SecretsManager task configuration to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`,
     );
   },
 );
 
 Then(
-  "the execution is {string} and the message has been published to the topic",
-  async function (this: SdkWorld, _expectedExecState: string) {
+  "the execution is {string} and the secret was read",
+  async function (this: SdkWorld, expectedState: string) {
     // Arrange
     assert.ok(this.session, "No session running");
-    // Act: verify the execution (and SNS publish task) succeeded
+    const expectedSuccess = expectedState === "SUCCEEDED";
+    // Act: check execution result from lastCallResult
     const actualSuccess = this.lastCallResult.success;
     // Assert
-    assert.ok(
+    assert.strictEqual(
       actualSuccess,
-      `Expected SNS publish execution to succeed but got: ${JSON.stringify(this.lastCallResult.error)}`,
+      expectedSuccess,
+      `Expected execution to be ${expectedState} but got: ${JSON.stringify(this.lastCallResult.error ?? this.lastCallResult.output)}`,
     );
   },
 );

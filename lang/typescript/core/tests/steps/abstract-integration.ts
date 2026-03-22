@@ -3,7 +3,7 @@
 import { Given, When, Then } from "@cucumber/cucumber";
 import assert from "assert";
 import { CreateQueueCommand, DeleteQueueCommand, SendMessageCommand } from "@aws-sdk/client-sqs";
-import { DeleteTableCommand } from "@aws-sdk/client-dynamodb";
+import { CreateTableCommand, DeleteTableCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { CreateTopicCommand, DeleteTopicCommand } from "@aws-sdk/client-sns";
 import {
   CreateEventBusCommand,
@@ -959,9 +959,45 @@ When("an EventBridge rule is disabled", async function (this: LwsWorld) {
 
 When(
   "an event matches an {string} rule and EventBridge writes an item to the DynamoDB target",
-  function (this: LwsWorld, _state: string) {
-    // Internal routing — not reachable via API
-    return "pending";
+  async function (this: LwsWorld, _state: string) {
+    // Arrange: create the DynamoDB table and wire it as the rule target, then act
+    const ddb = this.dynamodbClient();
+    const eb = this.eventbridgeClient();
+    try {
+      await ddb.send(
+        new CreateTableCommand({
+          TableName: TEST_DDB_TABLE,
+          KeySchema: [{ AttributeName: "pk", KeyType: "HASH" }],
+          AttributeDefinitions: [{ AttributeName: "pk", AttributeType: "S" }],
+          BillingMode: "PAY_PER_REQUEST",
+        }),
+      );
+      const tableArn = `arn:aws:dynamodb:us-east-1:000000000000:table/${TEST_DDB_TABLE}`;
+      await eb.send(
+        new PutTargetsCommand({
+          Rule: TEST_EVENT_RULE,
+          EventBusName: TEST_EVENT_BUS,
+          Targets: [{ Id: "target1", Arn: tableArn }],
+        }),
+      );
+
+      // Act: put an event so EventBridge routes it to DynamoDB
+      const result = await eb.send(
+        new PutEventsCommand({
+          Entries: [
+            {
+              EventBusName: TEST_EVENT_BUS,
+              Source: "test.source",
+              DetailType: "TestEvent",
+              Detail: JSON.stringify({ pk: "event-1", message: "hello" }),
+            },
+          ],
+        }),
+      );
+      this.lastResult = { success: true, output: result };
+    } catch (err) {
+      this.lastResult = { success: false, output: err, error: err };
+    }
   },
 );
 
@@ -1418,8 +1454,25 @@ Then('the rule is "DISABLED" and will not match events', function (this: LwsWorl
 
 Then(
   "the item {string} in the table and the event is recorded as {string}",
-  function (this: LwsWorld, _itemState: string, _eventState: string) {
-    return "pending";
+  async function (this: LwsWorld, _itemState: string, _eventState: string) {
+    // Assert: PutEvents succeeded
+    const expectedSuccess = true;
+    const actualSuccess = this.lastResult.success;
+    assert.strictEqual(
+      actualSuccess,
+      expectedSuccess,
+      `Expected success but got: ${JSON.stringify(this.lastResult.output)}`,
+    );
+
+    // Assert: item was written to the DynamoDB table
+    const ddb = this.dynamodbClient();
+    const scanResult = await ddb.send(new ScanCommand({ TableName: TEST_DDB_TABLE }));
+    const expectedMinCount = 1;
+    const actualCount = scanResult.Items?.length ?? 0;
+    assert.ok(
+      actualCount >= expectedMinCount,
+      `Expected at least ${String(expectedMinCount)} item in table but found ${String(actualCount)}`,
+    );
   },
 );
 
