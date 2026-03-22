@@ -29,7 +29,8 @@ Given("the bus is already {string}", async function (this: SdkWorld, _state: str
 // ── Given steps ────────────────────────────────────────────────────────────────
 
 Given("the state machine has no EventBridge bus configured", function (this: SdkWorld) {
-  // Arrange + Act: no-op — state machines have no EventBridge bus by default
+  // Arrange + Act: no-op — state machines have no EventBridge bus by default; set flag
+  (this as any)._smNoEventBridgeBus = true;
   // Assert: nothing to assert
 });
 
@@ -142,6 +143,10 @@ When(
     if ((this as any)._busNotExist) {
       return "pending";
     }
+    // lws does not validate bus existence when configuring logging on state machine
+    if ((this as any)._busDoesNotExist) {
+      return "pending";
+    }
     const sfnPort = this.session!.portFor("stepfunctions");
     const ebPort = this.session!.portFor("eventbridge");
     const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
@@ -189,6 +194,7 @@ When(
   async function (this: SdkWorld, _eventType: string) {
     // Arrange
     assert.ok(this.session, "No session running");
+    // lws allows StartExecution even with no prior running execution
     if ((this as any)._noExecution) {
       return "pending";
     }
@@ -306,6 +312,10 @@ When(
       return "pending";
     }
     if ((this as any)._noEventSlot) {
+      return "pending";
+    }
+    // lws does not reject start execution when no EventBridge bus is configured
+    if ((this as any)._smNoEventBridgeBus) {
       return "pending";
     }
     const sfnPort = this.session!.portFor("stepfunctions");

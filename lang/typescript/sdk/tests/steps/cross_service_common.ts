@@ -649,9 +649,10 @@ Given("the bus exists and is {string}", async function (this: SdkWorld, _state: 
 });
 
 Given("the bus does not exist or is not {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange + Act: no-op — fresh session has no custom buses
-  // Assert: session is running
+  // Arrange + Act: no-op — fresh session has no custom buses; set flag for When steps
   assert.ok(this.session, "No session running");
+  (this as any)._busDoesNotExist = true;
+  // Assert: nothing to assert
 });
 
 Given("the event bus does not already exist", async function (this: SdkWorld) {
@@ -1154,7 +1155,8 @@ Given("an execution is {string}", async function (this: SdkWorld, _state: string
 });
 
 Given("no execution is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange + Act: no-op — no executions have been started
+  // Arrange + Act: no-op — no executions have been started; set flag for When steps
+  (this as any)._noExecution = true;
   // Assert: nothing to assert
 });
 
