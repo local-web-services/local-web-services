@@ -7,6 +7,7 @@ import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
 import { createRequestContext, recordLog } from "../../middleware/logging";
+import type { EventBridgeStore } from "../eventbridge";
 
 const REGION = "us-east-1";
 const ACCOUNT_ID = "000000000000";
@@ -24,6 +25,16 @@ interface SsmParameter {
 
 export class SsmStore {
   private params: Map<string, SsmParameter> = new Map();
+  private eventBridgeStore: EventBridgeStore | null = null;
+  private eventBridgeBusName: string = "default";
+
+  setEventBridgeStore(store: EventBridgeStore): void {
+    this.eventBridgeStore = store;
+  }
+
+  setEventBridgeBusName(busName: string): void {
+    this.eventBridgeBusName = busName;
+  }
 
   reset(): void {
     this.params.clear();
@@ -99,6 +110,36 @@ export class SsmStore {
     }
     return params;
   }
+
+  emitPutParameterEvent(paramName: string): void {
+    if (!this.eventBridgeStore) return;
+    try {
+      this.eventBridgeStore.putEventsInternal(this.eventBridgeBusName, [
+        {
+          source: "aws.ssm",
+          "detail-type": "Parameter Store Change",
+          detail: { name: paramName, operation: "Create" },
+        },
+      ]);
+    } catch {
+      // ignore if bus does not exist
+    }
+  }
+
+  emitDeleteParameterEvent(paramName: string): void {
+    if (!this.eventBridgeStore) return;
+    try {
+      this.eventBridgeStore.putEventsInternal(this.eventBridgeBusName, [
+        {
+          source: "aws.ssm",
+          "detail-type": "Parameter Store Change",
+          detail: { name: paramName, operation: "Delete" },
+        },
+      ]);
+    } catch {
+      // ignore if bus does not exist
+    }
+  }
 }
 
 function jsonReply(reply: FastifyReply, data: unknown, status = 200): void {
@@ -154,13 +195,14 @@ function handleSsmOp(
   switch (operation) {
     case "PutParameter": {
       const overwrite = body.Overwrite as boolean | undefined;
-      const existing = store.getParameter(body.Name as string);
+      const putParamName = body.Name as string;
+      const existing = store.getParameter(putParamName);
       if (existing && overwrite !== true) {
         jsonReply(
           reply,
           {
             __type: "ParameterAlreadyExists",
-            message: `Parameter ${body.Name as string} already exists`,
+            message: `Parameter ${putParamName} already exists`,
           },
           400,
         );
@@ -175,12 +217,13 @@ function handleSsmOp(
         return;
       }
       const param = store.putParameter(
-        body.Name as string,
+        putParamName,
         body.Value as string,
         (body.Type as string) ?? "String",
         body.Description as string | undefined,
       );
       jsonReply(reply, { Version: param.version, Tier: "Standard" });
+      store.emitPutParameterEvent(putParamName);
       break;
     }
 
@@ -237,13 +280,15 @@ function handleSsmOp(
     }
 
     case "DeleteParameter": {
-      const paramToDelete = store.getParameter(body.Name as string);
+      const deleteParamName = body.Name as string;
+      const paramToDelete = store.getParameter(deleteParamName);
       if (!paramToDelete) {
         jsonReply(reply, { __type: "ParameterNotFound", message: "Parameter not found." }, 400);
         return;
       }
-      store.deleteParameter(body.Name as string);
+      store.deleteParameter(deleteParamName);
       jsonReply(reply, {});
+      store.emitDeleteParameterEvent(deleteParamName);
       break;
     }
 

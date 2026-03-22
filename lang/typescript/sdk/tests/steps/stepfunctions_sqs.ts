@@ -129,13 +129,27 @@ Then(
 Then("the execution is {string}", async function (this: SdkWorld, expectedState: string) {
   // Arrange
   assert.ok(this.session, "No session running");
-  // Act: check if execution was started successfully
+  // Act: check execution status from lastCallResult
   const actualSuccess = this.lastCallResult.success;
+  const outputData = this.lastCallResult.output as Record<string, unknown> | null;
+  const actualStatus = (outputData?.status as string) ?? null;
   // Assert
   if (expectedState === "RUNNING") {
     assert.ok(
       actualSuccess,
       `Expected execution to be RUNNING but last call failed: ${JSON.stringify(this.lastCallResult.error)}`,
+    );
+  } else if (actualStatus !== null) {
+    const expectedStateVal = expectedState;
+    assert.strictEqual(
+      actualStatus,
+      expectedStateVal,
+      `Expected execution status "${expectedStateVal}" but got "${actualStatus}"`,
+    );
+  } else {
+    assert.ok(
+      actualSuccess,
+      `Expected execution to be ${expectedState} but last call failed: ${JSON.stringify(this.lastCallResult.error)}`,
     );
   }
 });

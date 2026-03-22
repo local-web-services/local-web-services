@@ -257,6 +257,10 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
   // Wire EventBridge store into StepFunctions for execution lifecycle event publishing
   sfStore.setEventBridgeStore(eventBridgeStore);
 
+  // Wire EventBridge store into SecretsManager and SSM for API call event publishing
+  secretsManagerStore.setEventBridgeStore(eventBridgeStore);
+  ssmStore.setEventBridgeStore(eventBridgeStore);
+
   // RDS
   {
     const app = createApp();
