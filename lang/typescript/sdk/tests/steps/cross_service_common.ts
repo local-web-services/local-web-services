@@ -156,23 +156,33 @@ Given("the target topic is {string}", async function (this: SdkWorld, state: str
   // Assert: state applied
 });
 
-Given("the target topic is not {string}", async function (this: SdkWorld, _state: string) {
+Given("the target topic is not {string}", async function (this: SdkWorld, state: string) {
   // Arrange
   assert.ok(this.session, "No session running");
   const { SNSClient, CreateTopicCommand, DeleteTopicCommand } = require("@aws-sdk/client-sns");
   const client = this.session!.client<typeof SNSClient>("sns");
   const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
-  // Act: create then delete; flag for S3 skip detection
-  (this as any)._topicNotDeleted = true;
-  try {
-    await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
-  } catch {
-    // May already exist
-  }
-  try {
-    await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
-  } catch {
-    // Best effort
+  if (state === "DELETED") {
+    // Topic is not deleted = it is ACTIVE; flag for S3 skip detection
+    (this as any)._topicNotDeleted = true;
+    try {
+      await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+    } catch {
+      // May already exist
+    }
+  } else {
+    // Topic is not ACTIVE = it is deleted/non-existent; flag for EventBridge skip detection
+    (this as any)._targetTopicNotActive = true;
+    try {
+      await client.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+    } catch {
+      // May already exist
+    }
+    try {
+      await client.send(new DeleteTopicCommand({ TopicArn: topicArn }));
+    } catch {
+      // Best effort
+    }
   }
   // Assert: no error thrown
 });
@@ -294,17 +304,38 @@ Given("the target queue is {string}", async function (this: SdkWorld, state: str
   // Assert: state applied
 });
 
-Given("the target queue is not {string}", async function (this: SdkWorld, _state: string) {
+Given("the target queue is not {string}", async function (this: SdkWorld, state: string) {
   // Arrange
   assert.ok(this.session, "No session running");
-  const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+  const {
+    SQSClient,
+    CreateQueueCommand,
+    DeleteQueueCommand,
+    GetQueueUrlCommand,
+  } = require("@aws-sdk/client-sqs");
   const client = this.session!.client<typeof SQSClient>("sqs");
-  // Act: create queue (it is ACTIVE, not deleted); flag for S3 skip detection
-  (this as any)._queueNotDeleted = true;
-  try {
-    await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
-  } catch {
-    // May already exist
+  if (state === "DELETED") {
+    // Queue is not deleted = it is ACTIVE; flag for S3 skip detection
+    (this as any)._queueNotDeleted = true;
+    try {
+      await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+    } catch {
+      // May already exist
+    }
+  } else {
+    // Queue is not ACTIVE = it is deleted/non-existent; flag for EventBridge skip detection
+    (this as any)._targetQueueNotActive = true;
+    try {
+      await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+    } catch {
+      // May already exist
+    }
+    try {
+      const urlResult = await client.send(new GetQueueUrlCommand({ QueueName: SQS_QUEUE }));
+      await client.send(new DeleteQueueCommand({ QueueUrl: urlResult.QueueUrl as string }));
+    } catch {
+      // Best effort
+    }
   }
   // Assert: no error thrown
 });
@@ -369,10 +400,20 @@ Given("the subscription slot is not available", async function (this: SdkWorld) 
   // Assert: no error thrown
 });
 
-Given("the subscribed queue is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange: queue is ACTIVE after creation
-  // Act: no-op
-  // Assert: nothing additional to assert
+Given("the subscribed queue is {string}", async function (this: SdkWorld, state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+  const client = this.session!.client<typeof SQSClient>("sqs");
+  // Act: ensure queue exists when state is ACTIVE
+  if (state === "ACTIVE") {
+    try {
+      await client.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+    } catch {
+      // May already exist
+    }
+  }
+  // Assert: no error thrown
 });
 
 Given("the subscribed queue is not {string}", async function (this: SdkWorld, _state: string) {

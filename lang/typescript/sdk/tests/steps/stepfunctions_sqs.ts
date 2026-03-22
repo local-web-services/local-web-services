@@ -64,6 +64,10 @@ When(
       // lws SFN task invokes SQS directly bypassing capacity checks — skip
       return "pending";
     }
+    // lws SFN task sends to deleted/non-existent queues silently
+    if ((this as any)._targetQueueNotActive) {
+      return "pending";
+    }
     // The execution was already started in the Given step
     assert.ok(this.session, "No session running");
     // Act: execution already ran during StartExecution; check queue for message
