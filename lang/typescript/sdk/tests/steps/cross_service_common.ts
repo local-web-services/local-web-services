@@ -540,6 +540,14 @@ Given(
     assert.ok(this.session, "No session running");
     const port = this.session!.portFor("eventbridge");
     const queueArn = `arn:aws:sqs:${REGION}:${ACCOUNT_ID}:${SQS_QUEUE}`;
+    // Act: ensure queue exists before PutTargets (arnExistsCheckers validates)
+    const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+    const sqsClient = this.session!.client<typeof SQSClient>("sqs");
+    try {
+      await sqsClient.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+    } catch {
+      // May already exist
+    }
     // Act: create rule + target
     await ebCall(port, "PutRule", {
       Name: EB_RULE,
@@ -572,6 +580,14 @@ Given(
     assert.ok(this.session, "No session running");
     const port = this.session!.portFor("eventbridge");
     const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+    // Act: ensure topic exists before PutTargets (arnExistsCheckers validates)
+    const { SNSClient, CreateTopicCommand } = require("@aws-sdk/client-sns");
+    const snsClient = this.session!.client<typeof SNSClient>("sns");
+    try {
+      await snsClient.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+    } catch {
+      // May already exist
+    }
     // Act: create rule + target
     await ebCall(port, "PutRule", {
       Name: EB_RULE,
