@@ -319,6 +319,45 @@ export class EventBridgeStore {
     return null;
   }
 
+  /**
+   * putEventsInternal — called by other services (e.g. S3) to deliver events
+   * directly to an event bus without capacity or rule checks. Events are logged
+   * and dispatched to all ENABLED rule targets on the named bus.
+   */
+  putEventsInternal(busName: string, events: Array<Record<string, unknown>>): void {
+    const bus = this.getActiveEventBus(busName);
+    if (!bus) return;
+    this.eventLog.push(...events);
+    const eventPayload = JSON.stringify(events);
+    const enabledRules = bus.rules.filter((r) => r.state === "ENABLED");
+    for (const rule of enabledRules) {
+      for (const target of rule.targets) {
+        const messageBody = target.Input ?? eventPayload;
+        if (target.Arn.includes(":sqs:") && this.sqsStore) {
+          const queue = this.sqsStore.getQueue(target.Arn);
+          if (queue) {
+            queue.sendMessage(messageBody);
+          }
+        } else if (target.Arn.includes(":sns:") && this.snsStore) {
+          try {
+            this.snsStore.publish(target.Arn, messageBody);
+          } catch {
+            // ignore if topic does not exist
+          }
+        } else if (target.Arn.includes(":states:") && this.stepFunctionsStore) {
+          void this.stepFunctionsStore.startExecution(target.Arn, messageBody);
+        } else if (target.Arn.includes(":dynamodb:") && this.dynamoDbStore) {
+          const tableNameMatch = target.Arn.match(/[/]([^/]+)$/);
+          const tableName = tableNameMatch ? tableNameMatch[1] : "";
+          if (tableName) {
+            const item = typeof messageBody === "string" ? JSON.parse(messageBody) : messageBody;
+            this.dynamoDbStore.putItem(tableName, item as Record<string, unknown>);
+          }
+        }
+      }
+    }
+  }
+
   getEvents(): Array<Record<string, unknown>> {
     return [...this.eventLog];
   }

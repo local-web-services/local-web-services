@@ -9,6 +9,7 @@ import { applyIamAuth } from "../../middleware/iam";
 import { createRequestContext, recordLog } from "../../middleware/logging";
 import type { SnsStore } from "../sns";
 import type { SqsStore } from "../sqs";
+import type { EventBridgeStore } from "../eventbridge";
 
 const ACCOUNT_ID = "000000000000";
 const REGION = "us-east-1";
@@ -33,9 +34,14 @@ interface NotificationTopicConfig {
   events: string[];
 }
 
+interface NotificationEventBridgeConfig {
+  eventBusArn: string;
+}
+
 interface BucketNotificationConfig {
   queueConfigurations: NotificationQueueConfig[];
   topicConfigurations: NotificationTopicConfig[];
+  eventBridgeConfiguration?: NotificationEventBridgeConfig;
 }
 
 interface S3Bucket {
@@ -59,6 +65,7 @@ export class S3Store {
   > = new Map();
   private snsStore: SnsStore | null = null;
   private sqsStore: SqsStore | null = null;
+  private eventBridgeStore: EventBridgeStore | null = null;
 
   setSnsStore(snsStore: SnsStore): void {
     this.snsStore = snsStore;
@@ -66,6 +73,10 @@ export class S3Store {
 
   setSqsStore(sqsStore: SqsStore): void {
     this.sqsStore = sqsStore;
+  }
+
+  setEventBridgeStore(store: EventBridgeStore): void {
+    this.eventBridgeStore = store;
   }
 
   reset(): void {
@@ -233,6 +244,25 @@ export class S3Store {
             // ignore if topic does not exist
           }
         }
+      }
+    }
+
+    if (config.eventBridgeConfiguration && this.eventBridgeStore) {
+      const busArn = config.eventBridgeConfiguration.eventBusArn;
+      const busNameMatch = busArn.match(/event-bus\/(.+)$/);
+      const busName = busNameMatch ? busNameMatch[1] : busArn;
+      const s3EventEntry = {
+        source: "aws.s3",
+        "detail-type": "Object Created",
+        detail: {
+          bucket: { name: bucketName },
+          object: { key },
+        },
+      };
+      try {
+        this.eventBridgeStore.putEventsInternal(busName, [s3EventEntry]);
+      } catch {
+        // ignore if bus does not exist
       }
     }
   }
@@ -541,7 +571,19 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         for (const m of topicMatches) {
           topicConfigurations.push({ topicArn: m[1], events: [m[2]] });
         }
-        store.setBucketNotificationConfig(bucket, { queueConfigurations, topicConfigurations });
+        let eventBridgeConfiguration: NotificationEventBridgeConfig | undefined;
+        const ebMatch =
+          /<EventBridgeConfiguration>\s*<EventBusArn>([^<]+)<\/EventBusArn>\s*<\/EventBridgeConfiguration>/.exec(
+            bodyStr,
+          );
+        if (ebMatch) {
+          eventBridgeConfiguration = { eventBusArn: ebMatch[1] };
+        }
+        store.setBucketNotificationConfig(bucket, {
+          queueConfigurations,
+          topicConfigurations,
+          eventBridgeConfiguration,
+        });
         reply.status(200).send("");
         recordLog(state, ctx, req.method, req.url, reply.statusCode);
         return;
@@ -738,9 +780,12 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
                 `<TopicConfiguration><Topic>${escapeXml(t.topicArn)}</Topic>${t.events.map((e) => `<Event>${escapeXml(e)}</Event>`).join("")}</TopicConfiguration>`,
             )
             .join("");
+          const ebXml = notifConfig.eventBridgeConfiguration
+            ? `<EventBridgeConfiguration><EventBusArn>${escapeXml(notifConfig.eventBridgeConfiguration.eventBusArn)}</EventBusArn></EventBridgeConfiguration>`
+            : "";
           xmlReply(
             reply,
-            `<NotificationConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${queueXml}${topicXml}</NotificationConfiguration>`,
+            `<NotificationConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${queueXml}${topicXml}${ebXml}</NotificationConfiguration>`,
           );
         }
         recordLog(state, ctx, req.method, req.url, reply.statusCode);

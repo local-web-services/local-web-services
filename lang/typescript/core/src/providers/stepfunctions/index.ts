@@ -256,6 +256,7 @@ interface StateMachine {
   type: string;
   status: string;
   creationDate: number;
+  eventBridgeBusArn?: string;
 }
 
 export class StepFunctionsStore {
@@ -263,6 +264,7 @@ export class StepFunctionsStore {
   private executions: Map<string, Execution> = new Map();
   private taskInvoker: TaskInvoker;
   private tags: Map<string, Record<string, string>> = new Map();
+  private _eventBridgeStore: EventBridgeStore | null = null;
 
   constructor(invoker?: TaskInvoker) {
     this.taskInvoker = invoker ?? new ServiceTaskInvoker();
@@ -272,6 +274,10 @@ export class StepFunctionsStore {
     // Replace the task invoker with a new ServiceTaskInvoker wired to the given stores.
     // This is the primary wiring point called by server.ts after all stores are created.
     this.taskInvoker = new ServiceTaskInvoker(stores);
+  }
+
+  setEventBridgeStore(store: EventBridgeStore): void {
+    this._eventBridgeStore = store;
   }
 
   reset(): void {
@@ -335,8 +341,29 @@ export class StepFunctionsStore {
 
     this.executions.set(executionArn, execution);
 
+    // Publish STARTED event if EventBridge bus is configured
+    const busArnForStart = sm.eventBridgeBusArn;
+    if (busArnForStart && this._eventBridgeStore) {
+      const busNameForStart = busArnForStart.split("/").pop() ?? busArnForStart;
+      const startedEvent = {
+        source: "aws.states",
+        "detail-type": "Step Functions Execution Status Change",
+        EventBusName: busArnForStart,
+        Detail: JSON.stringify({
+          executionArn,
+          stateMachineArn,
+          name: executionName,
+          status: "STARTED",
+          startDate: execution.startDate,
+        }),
+      };
+      this._eventBridgeStore.putEventsInternal(busNameForStart, [startedEvent]);
+    }
+
     // Run the state machine asynchronously
     const inputData = input ? JSON.parse(input) : {};
+    const capturedBusArn = sm.eventBridgeBusArn;
+    const capturedEbStore = this._eventBridgeStore;
     runStateMachine(sm.definition, inputData, executionArn, this.taskInvoker)
       .then((result) => {
         const exec = this.executions.get(executionArn);
@@ -350,6 +377,25 @@ export class StepFunctionsStore {
           exec.output = JSON.stringify(result.output);
         }
         exec.stopDate = Date.now() / 1000;
+        // Publish execution lifecycle event to EventBridge if configured
+        if (capturedBusArn && capturedEbStore) {
+          const busName = capturedBusArn.split("/").pop() ?? capturedBusArn;
+          const finalStatus = exec.status as string;
+          const executionEvent = {
+            source: "aws.states",
+            "detail-type": "Step Functions Execution Status Change",
+            EventBusName: capturedBusArn,
+            Detail: JSON.stringify({
+              executionArn,
+              stateMachineArn,
+              name: executionName,
+              status: finalStatus,
+              startDate: execution.startDate,
+              stopDate: exec.stopDate,
+            }),
+          };
+          capturedEbStore.putEventsInternal(busName, [executionEvent]);
+        }
       })
       .catch((err) => {
         const exec = this.executions.get(executionArn);
@@ -358,6 +404,26 @@ export class StepFunctionsStore {
         exec.error = "States.Runtime";
         exec.cause = String(err);
         exec.stopDate = Date.now() / 1000;
+        // Publish FAILED event to EventBridge if configured
+        if (capturedBusArn && capturedEbStore) {
+          const busName = capturedBusArn.split("/").pop() ?? capturedBusArn;
+          const executionEvent = {
+            source: "aws.states",
+            "detail-type": "Step Functions Execution Status Change",
+            EventBusName: capturedBusArn,
+            Detail: JSON.stringify({
+              executionArn,
+              stateMachineArn,
+              name: executionName,
+              status: "FAILED",
+              startDate: execution.startDate,
+              stopDate: exec.stopDate,
+              error: exec.error,
+              cause: exec.cause,
+            }),
+          };
+          capturedEbStore.putEventsInternal(busName, [executionEvent]);
+        }
       });
 
     return execution;
@@ -635,6 +701,23 @@ async function handleOperation(
           typeof body.definition === "string"
             ? JSON.parse(body.definition as string)
             : (body.definition as StateMachineDefinition);
+      }
+      // Extract EventBridge bus ARN from loggingConfiguration.destinations
+      if (body.loggingConfiguration) {
+        const loggingConfig = body.loggingConfiguration as Record<string, unknown>;
+        const destinations = loggingConfig.destinations as
+          | Array<Record<string, unknown>>
+          | undefined;
+        if (destinations && destinations.length > 0) {
+          const dest = destinations[0];
+          const cloudWatchLogsLogGroup = dest.cloudWatchLogsLogGroup as
+            | Record<string, unknown>
+            | undefined;
+          const busArn = cloudWatchLogsLogGroup?.logGroupArn as string | undefined;
+          if (busArn) {
+            sm.eventBridgeBusArn = busArn;
+          }
+        }
       }
       jsonReply(reply, { updateDate: Date.now() / 1000 });
       break;

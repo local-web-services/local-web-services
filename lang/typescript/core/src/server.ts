@@ -160,7 +160,7 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
     serviceApps.push({ name: "sns", app, port });
   }
 
-  // Wire SNS and SQS stores into S3 for bucket event notifications
+  // Wire SNS, SQS, and EventBridge stores into S3 for bucket event notifications
   s3Store.setSnsStore(snsStore);
   s3Store.setSqsStore(sqsStore);
 
@@ -178,6 +178,9 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
     const port = basePort + SERVICE_OFFSETS.eventbridge;
     serviceApps.push({ name: "eventbridge", app, port });
   }
+
+  // Wire EventBridge store into S3 for bucket EventBridge notification delivery
+  s3Store.setEventBridgeStore(eventBridgeStore);
 
   // StepFunctions (store captured for service integration wiring below)
   // eslint-disable-next-line prefer-const
@@ -250,6 +253,9 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
     ssm: ssmStore,
     eventbridge: eventBridgeStore,
   });
+
+  // Wire EventBridge store into StepFunctions for execution lifecycle event publishing
+  sfStore.setEventBridgeStore(eventBridgeStore);
 
   // RDS
   {
