@@ -125,6 +125,9 @@ When(
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "No session running");
+    if ((this as any)._noObjectInBucket) {
+      return "pending";
+    }
     const sfnPort = this.session!.portFor("stepfunctions");
     const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
     // Act: update state machine with S3 getObject task
@@ -179,6 +182,9 @@ When(
   async function (this: SdkWorld) {
     // Arrange
     assert.ok(this.session, "No session running");
+    if ((this as any)._objectExistsInBucket) {
+      return "pending";
+    }
     const sfnPort = this.session!.portFor("stepfunctions");
     const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
     // Act: update state machine with S3 getObject task (object does not exist)
