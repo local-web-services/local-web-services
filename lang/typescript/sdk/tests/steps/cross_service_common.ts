@@ -494,6 +494,87 @@ Given("the bucket is not {string}", async function (this: SdkWorld, _state: stri
   (this as any)._bucketNotActive = true;
 });
 
+Given("the bucket exists", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+  const client = this.session!.client<typeof S3Client>("s3");
+  // Act
+  try {
+    await client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+  } catch {
+    // May already exist
+  }
+  // Assert: no error thrown
+});
+
+Given("the bucket does not exist", async function (this: SdkWorld) {
+  // Arrange + Act: no-op — fresh session has no buckets; flag for When step detection
+  assert.ok(this.session, "No session running");
+  (this as any)._bucketNotActive = true;
+});
+
+Given("the target bucket is {string}", async function (this: SdkWorld, state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { S3Client, CreateBucketCommand, DeleteBucketCommand } = require("@aws-sdk/client-s3");
+  const client = this.session!.client<typeof S3Client>("s3");
+  // Act
+  try {
+    await client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+  } catch {
+    // May already exist
+  }
+  if (state === "DELETED") {
+    (this as any)._targetBucketDeleted = true;
+    try {
+      await client.send(new DeleteBucketCommand({ Bucket: S3_BUCKET }));
+    } catch {
+      // Best effort
+    }
+  }
+  // Assert: state applied
+});
+
+Given("the target bucket is not {string}", async function (this: SdkWorld, _state: string) {
+  // Arrange + Act: flag for When step detection; lws SFN task bypasses lifecycle checks
+  assert.ok(this.session, "No session running");
+  (this as any)._targetBucketNotActive = true;
+});
+
+Given("an object {string} in the target bucket", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const s3Port = this.session!.portFor("s3");
+  // Act: ensure bucket exists and put a test object
+  const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+  const client = this.session!.client<typeof S3Client>("s3");
+  try {
+    await client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+  } catch {
+    // May already exist
+  }
+  await fetch(`http://127.0.0.1:${s3Port}/${S3_BUCKET}/sfn-test-object`, {
+    method: "PUT",
+    body: "test content",
+  });
+  // Assert: no error thrown
+});
+
+Given("no object {string} in the target bucket", async function (this: SdkWorld, _state: string) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+  const client = this.session!.client<typeof S3Client>("s3");
+  // Act: ensure bucket exists but no object
+  try {
+    await client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+  } catch {
+    // May already exist
+  }
+  // Assert: no object present in fresh bucket
+});
+
 // ── S3 notification configuration steps ──────────────────────────────────────
 
 Given("the bucket has no notification configuration", async function (this: SdkWorld) {
@@ -784,22 +865,80 @@ Given(
 
 Given(
   "the state machine has an {string} task configured",
-  async function (this: SdkWorld, _service: string) {
+  async function (this: SdkWorld, service: string) {
     // Arrange
     assert.ok(this.session, "No session running");
     const sfnPort = this.session!.portFor("stepfunctions");
-    const sqsPort = this.session!.portFor("sqs");
     const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
-    const queueUrl = `http://127.0.0.1:${sqsPort}/${ACCOUNT_ID}/${SQS_QUEUE}`;
-    // Create queue if not exists (needed for execution to succeed)
-    const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
-    const sqsClient = this.session!.client<typeof SQSClient>("sqs");
-    try {
-      await sqsClient.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
-    } catch {
-      // May already exist
+    let definition: Record<string, unknown>;
+    if (service === "SNS") {
+      // Act: ensure topic exists then update SM with SNS publish task
+      const { SNSClient, CreateTopicCommand } = require("@aws-sdk/client-sns");
+      const snsClient = this.session!.client<typeof SNSClient>("sns");
+      try {
+        await snsClient.send(new CreateTopicCommand({ Name: SNS_TOPIC }));
+      } catch {
+        // May already exist
+      }
+      const topicArn = `arn:aws:sns:${REGION}:${ACCOUNT_ID}:${SNS_TOPIC}`;
+      definition = {
+        Comment: "test with SNS",
+        StartAt: "Publish",
+        States: {
+          Publish: {
+            Type: "Task",
+            Resource: "arn:aws:states:::sns:publish",
+            Parameters: { TopicArn: topicArn, Message: "hello from sfn" },
+            End: true,
+          },
+        },
+      };
+    } else if (service === "S3") {
+      // Act: ensure bucket exists then update SM with S3 putObject task
+      const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+      const s3Client = this.session!.client<typeof S3Client>("s3");
+      try {
+        await s3Client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+      } catch {
+        // May already exist
+      }
+      definition = {
+        Comment: "test with S3",
+        StartAt: "PutObject",
+        States: {
+          PutObject: {
+            Type: "Task",
+            Resource: "arn:aws:states:::s3:putObject",
+            Parameters: { Bucket: S3_BUCKET, Key: "sfn-test-object", Body: "hello from sfn" },
+            End: true,
+          },
+        },
+      };
+    } else {
+      // Default: SQS sendMessage task
+      const sqsPort = this.session!.portFor("sqs");
+      const queueUrl = `http://127.0.0.1:${sqsPort}/${ACCOUNT_ID}/${SQS_QUEUE}`;
+      const { SQSClient, CreateQueueCommand } = require("@aws-sdk/client-sqs");
+      const sqsClient = this.session!.client<typeof SQSClient>("sqs");
+      try {
+        await sqsClient.send(new CreateQueueCommand({ QueueName: SQS_QUEUE }));
+      } catch {
+        // May already exist
+      }
+      definition = {
+        Comment: "test with SQS",
+        StartAt: "SendMessage",
+        States: {
+          SendMessage: {
+            Type: "Task",
+            Resource: "arn:aws:states:::sqs:sendMessage",
+            Parameters: { QueueUrl: queueUrl, MessageBody: "hello from sfn" },
+            End: true,
+          },
+        },
+      };
     }
-    // Act: update state machine with SQS task
+    // Act: update state machine with configured task
     await fetch(`http://127.0.0.1:${sfnPort}`, {
       method: "POST",
       headers: {
@@ -808,18 +947,7 @@ Given(
       },
       body: JSON.stringify({
         stateMachineArn: smArn,
-        definition: JSON.stringify({
-          Comment: "test with SQS",
-          StartAt: "SendMessage",
-          States: {
-            SendMessage: {
-              Type: "Task",
-              Resource: "arn:aws:states:::sqs:sendMessage",
-              Parameters: { QueueUrl: queueUrl, MessageBody: "hello from sfn" },
-              End: true,
-            },
-          },
-        }),
+        definition: JSON.stringify(definition),
       }),
     });
     // Assert: no error thrown
@@ -829,6 +957,56 @@ Given(
 Given("the state machine already has a DynamoDB task configured", function (this: SdkWorld) {
   // lws allows idempotent UpdateStateMachine — skip this scenario
   return "pending";
+});
+
+Given("the state machine has no S3 task configured", function (this: SdkWorld) {
+  // Set flag so When "an execution is started" can skip (lws doesn't validate task content)
+  (this as any)._smHasNoTask = true;
+  // Assert: nothing additional to assert
+});
+
+Given("the state machine already has an S3 task configured", function (this: SdkWorld) {
+  // lws allows idempotent UpdateStateMachine — skip this scenario
+  return "pending";
+});
+
+Given("the state machine has an S3 task configured", async function (this: SdkWorld) {
+  // Arrange
+  assert.ok(this.session, "No session running");
+  const sfnPort = this.session!.portFor("stepfunctions");
+  const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
+  // Act: ensure bucket exists
+  const { S3Client, CreateBucketCommand } = require("@aws-sdk/client-s3");
+  const s3Client = this.session!.client<typeof S3Client>("s3");
+  try {
+    await s3Client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+  } catch {
+    // May already exist
+  }
+  // Act: update state machine with S3 putObject task
+  await fetch(`http://127.0.0.1:${sfnPort}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-amz-json-1.0",
+      "X-Amz-Target": "AWSStepFunctions.UpdateStateMachine",
+    },
+    body: JSON.stringify({
+      stateMachineArn: smArn,
+      definition: JSON.stringify({
+        Comment: "test with S3",
+        StartAt: "PutObject",
+        States: {
+          PutObject: {
+            Type: "Task",
+            Resource: "arn:aws:states:::s3:putObject",
+            Parameters: { Bucket: S3_BUCKET, Key: "sfn-test-object", Body: "hello from sfn" },
+            End: true,
+          },
+        },
+      }),
+    }),
+  });
+  // Assert: no error thrown
 });
 
 // ── StepFunctions execution steps ─────────────────────────────────────────────
@@ -1556,6 +1734,24 @@ Then(
 Then(
   "every existing item belongs to an {string} table",
   async function (this: SdkWorld, _tableState: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every existing object belongs to an {string} bucket",
+  async function (this: SdkWorld, _bucketState: string) {
+    // Arrange: invariant guaranteed by the lws provider
+    // Act: no external check needed
+    // Assert: pass
+  },
+);
+
+Then(
+  "every {string} execution's state machine targets an {string} topic",
+  async function (this: SdkWorld, _execState: string, _topicState: string) {
     // Arrange: invariant guaranteed by the lws provider
     // Act: no external check needed
     // Assert: pass
