@@ -466,7 +466,7 @@ async function handleSqsAction(
       const maxMessages = parseInt(String(body.MaxNumberOfMessages ?? "1"), 10);
       const waitTime = parseInt(String(body.WaitTimeSeconds ?? "0"), 10);
       const messages = queue.receiveMessages(maxMessages, waitTime);
-      if (messages.length === 0) {
+      if (messages.length === 0 && queue.totalMessageCount() > 0) {
         errorReply("AWS.SimpleQueueService.EmptyBatch", "No messages available.");
         return;
       }
