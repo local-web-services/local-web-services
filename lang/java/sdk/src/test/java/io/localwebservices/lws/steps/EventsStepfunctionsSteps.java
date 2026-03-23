@@ -216,14 +216,6 @@ public class EventsStepfunctionsSteps {
         actualRuleEnabled, "expected rule '" + expectedRuleName + "' to exist and be ENABLED");
   }
 
-  @Then("the execution is \"RUNNING\"")
-  public void theExecutionIsRunning() {
-    // Arrange / Act / Assert — EventBridge→StepFunctions execution start not verifiable via API
-    Assumptions.assumeTrue(
-        false,
-        "lws limitation: EventBridge→StepFunctions execution start not verifiable via SDK API");
-  }
-
   @Then("the execution is \"SUCCEEDED\"")
   public void theExecutionIsSucceeded() {
     // Arrange
