@@ -45,6 +45,7 @@ class ResourceStateTracker:
     def __init__(self, config: ResourceLifecycleConfig) -> None:
         self._config = config
         self._states: dict[str, str] = {}
+        self._tasks: dict[str, asyncio.Task[None]] = {}
         config._trackers.append(self)
 
     @property
@@ -65,7 +66,10 @@ class ResourceStateTracker:
         self._states.pop(resource_id, None)
 
     def reset(self) -> None:
-        """Clear all tracked states."""
+        """Clear all tracked states and cancel any pending async transitions."""
+        for task in self._tasks.values():
+            task.cancel()
+        self._tasks.clear()
         self._states.clear()
 
     def all_states(self) -> dict[str, str]:
@@ -93,8 +97,14 @@ class ResourceStateTracker:
                 asyncio.ensure_future(on_complete())
             return
 
+        # Cancel any pending transition for the same resource
+        existing = self._tasks.pop(resource_id, None)
+        if existing is not None and not existing.done():
+            existing.cancel()
+
         async def _run() -> None:
             await asyncio.sleep(delay_ms / 1000.0)
+            self._tasks.pop(resource_id, None)
             if target_state is None:
                 self.remove(resource_id)
             else:
@@ -102,7 +112,7 @@ class ResourceStateTracker:
             if on_complete is not None:
                 await on_complete()
 
-        asyncio.ensure_future(_run())
+        self._tasks[resource_id] = asyncio.ensure_future(_run())
 
 
 def apply_delete_lifecycle(
