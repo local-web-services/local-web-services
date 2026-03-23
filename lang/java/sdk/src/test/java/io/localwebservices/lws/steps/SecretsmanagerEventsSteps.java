@@ -2,7 +2,6 @@ package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -179,14 +178,5 @@ public class SecretsmanagerEventsSteps {
     Assumptions.assumeTrue(
         false,
         "lws limitation: SecretsManager does not dispatch " + eventType + " events to EventBridge");
-  }
-
-  // -------------------------------------------------------------------------
-  // Invariant catch-all And steps
-  // -------------------------------------------------------------------------
-
-  @And("every {string} event references a secret that exists")
-  public void everyEventReferencesASecretThatExists(String deliveryState) {
-    // Arrange / Act / Assert — no-op: model-level invariant; not verifiable via public API
   }
 }

@@ -1,13 +1,9 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
-import software.amazon.awssdk.services.eventbridge.model.ListEventBusesResponse;
 
 /**
  * Shared step definitions for EventBridge event bus preconditions and assertions.
@@ -173,24 +169,6 @@ public class CrossServiceEventBusSteps {
       world.setSuccess(response);
     } catch (Exception e) {
       world.setFailure(e);
-    }
-  }
-
-  // -------------------------------------------------------------------------
-  // Then — bus state assertion
-  // -------------------------------------------------------------------------
-
-  @Then("the bus is \"ACTIVE\"")
-  public void theBusIsActive() {
-    // Arrange
-    String expectedBusName = TEST_EVENT_BUS;
-    // Act
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse response = client.listEventBuses(r -> r.namePrefix(expectedBusName));
-      boolean actualExists =
-          response.eventBuses().stream().anyMatch(b -> b.name().equals(expectedBusName));
-      // Assert
-      assertTrue(actualExists, "expected event bus '" + expectedBusName + "' to be ACTIVE");
     }
   }
 }

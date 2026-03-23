@@ -78,11 +78,8 @@ public class StepfunctionsSsmSteps {
     try (SsmClient client = world.session.ssmClient()) {
       client.putParameter(
           r -> r.name(name).value(value).type(ParameterType.STRING).overwrite(false));
-    } catch (Exception e) {
-      String msg = e.getMessage() != null ? e.getMessage() : "";
-      if (!msg.contains("ParameterAlreadyExists")) {
-        throw e;
-      }
+    } catch (software.amazon.awssdk.services.ssm.model.ParameterAlreadyExistsException ignored) {
+      // parameter already exists — acceptable for setup steps
     }
   }
 
@@ -147,7 +144,9 @@ public class StepfunctionsSsmSteps {
 
   @Given("the parameter does not already exist")
   public void theParameterDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no SSM parameters
+    // Arrange — ensure parameter does not exist (delete if present from previous test)
+    ssmDeleteParameter(TEST_SSM_PARAM);
+    // Assert — parameter is gone; verified by subsequent steps
   }
 
   @Given("the parameter already exists")

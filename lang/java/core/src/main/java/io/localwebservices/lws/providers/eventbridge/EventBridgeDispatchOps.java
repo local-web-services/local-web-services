@@ -146,7 +146,9 @@ class EventBridgeDispatchOps {
     } else if (arn.contains(":sns:") && snsHandler != null) {
       snsHandler.publishToTopic(arn, eventJson);
     } else if (arn.contains(":states:") && stepFunctionsHandler != null) {
-      stepFunctionsHandler.startExecution(arn, eventJson);
+      // Normalize ARN: AWS uses both ":stateMachine/name" and ":stateMachine:name" formats.
+      String normalizedArn = arn.replace(":stateMachine/", ":stateMachine:");
+      stepFunctionsHandler.startExecution(normalizedArn, eventJson);
     }
   }
 }

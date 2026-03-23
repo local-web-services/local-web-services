@@ -7,10 +7,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.sfn.SfnClient;
-import software.amazon.awssdk.services.sfn.model.DescribeExecutionResponse;
-import software.amazon.awssdk.services.sfn.model.ExecutionStatus;
 import software.amazon.awssdk.services.sfn.model.ListStateMachinesResponse;
 import software.amazon.awssdk.services.sfn.model.StateMachineType;
 
@@ -201,20 +198,6 @@ public class StepfunctionsS3apiSteps {
   // Then — assertions
   // -------------------------------------------------------------------------
 
-  @Then("the bucket is \"ACTIVE\"")
-  public void theBucketIsActive() {
-    // Arrange
-    String expectedBucketName = TEST_S3_BUCKET;
-    // Act
-    try (S3Client client = world.session.s3Client()) {
-      ListBucketsResponse listResponse = client.listBuckets();
-      boolean actualExists =
-          listResponse.buckets().stream().anyMatch(b -> b.name().equals(expectedBucketName));
-      // Assert
-      assertTrue(actualExists, "expected bucket '" + expectedBucketName + "' to be ACTIVE");
-    }
-  }
-
   @Then("the state machine is \"ACTIVE\" with no S3 task configured")
   public void theStateMachineIsActiveWithNoS3TaskConfigured() {
     // Arrange
@@ -227,30 +210,6 @@ public class StepfunctionsS3apiSteps {
       // Assert
       assertTrue(actualExists, "expected state machine '" + expectedSmName + "' to be ACTIVE");
     }
-  }
-
-  @Then("the execution is \"RUNNING\"")
-  public void theExecutionIsRunning() {
-    // Arrange
-    String expectedExecutionArn = world.lastExecutionArn;
-    // Act
-    try (SfnClient client = world.session.sfnClient()) {
-      DescribeExecutionResponse response =
-          client.describeExecution(r -> r.executionArn(expectedExecutionArn));
-      ExecutionStatus actualStatus = response.status();
-      // Assert
-      assertTrue(
-          ExecutionStatus.RUNNING.equals(actualStatus)
-              || ExecutionStatus.SUCCEEDED.equals(actualStatus),
-          "expected execution " + expectedExecutionArn + " to be RUNNING but was " + actualStatus);
-    }
-  }
-
-  @Then("the execution is \"SUCCEEDED\"")
-  public void theExecutionIsSucceeded() {
-    // Arrange / Act / Assert — execution SUCCEEDED state not directly verifiable via SDK API
-    Assumptions.assumeTrue(
-        false, "lws limitation: execution SUCCEEDED state not verifiable via SDK API");
   }
 
   @Then("the execution is \"FAILED\" with a NoSuchKey error")

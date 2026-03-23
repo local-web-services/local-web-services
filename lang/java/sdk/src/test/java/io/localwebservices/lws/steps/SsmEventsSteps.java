@@ -2,7 +2,6 @@ package io.localwebservices.lws.steps;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assumptions;
@@ -142,14 +141,5 @@ public class SsmEventsSteps {
     // Arrange / Act / Assert — lws does not dispatch events to EventBridge; skip
     Assumptions.assumeTrue(
         false, "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
-  }
-
-  // -------------------------------------------------------------------------
-  // Invariant catch-all And steps
-  // -------------------------------------------------------------------------
-
-  @And("every {string} event references a parameter that exists \\(in any state\\)")
-  public void everyEventReferencesAParameterThatExists(String deliveryState) {
-    // Arrange / Act / Assert — no-op: model-level invariant; not verifiable via public API
   }
 }
