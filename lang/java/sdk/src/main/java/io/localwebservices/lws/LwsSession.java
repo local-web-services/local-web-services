@@ -28,6 +28,7 @@ import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
 import software.amazon.awssdk.services.neptune.NeptuneClient;
 import software.amazon.awssdk.services.opensearch.OpenSearchClient;
+import software.amazon.awssdk.services.organizations.OrganizationsClient;
 import software.amazon.awssdk.services.rds.RdsClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3tables.S3TablesClient;
@@ -223,6 +224,15 @@ public class LwsSession implements AutoCloseable {
   public SecretsManagerClient secretsManagerClient() {
     return SecretsManagerClient.builder()
         .endpointOverride(endpointFor("secretsmanager"))
+        .region(Region.US_EAST_1)
+        .credentialsProvider(testCredentials())
+        .build();
+  }
+
+  /** Returns a pre-configured Organizations client pointing at the local emulator. */
+  public OrganizationsClient organizationsClient() {
+    return OrganizationsClient.builder()
+        .endpointOverride(endpointFor("organizations"))
         .region(Region.US_EAST_1)
         .credentialsProvider(testCredentials())
         .build();
@@ -451,7 +461,7 @@ public class LwsSession implements AutoCloseable {
 
   static int findFreePort() throws IOException {
     int maxOffset = SERVICE_OFFSETS.values().stream().mapToInt(Integer::intValue).max().orElse(20);
-    for (int attempt = 0; attempt < 20; attempt++) {
+    for (int attempt = 0; attempt < 100; attempt++) {
       List<ServerSocket> held = new ArrayList<>();
       try {
         held.add(new ServerSocket(0));
@@ -468,6 +478,6 @@ public class LwsSession implements AutoCloseable {
         for (ServerSocket s : held) s.close();
       }
     }
-    throw new IOException("Could not find a free contiguous port range after 20 attempts");
+    throw new IOException("Could not find a free contiguous port range after 100 attempts");
   }
 }

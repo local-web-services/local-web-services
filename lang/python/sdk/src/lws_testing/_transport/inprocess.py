@@ -139,6 +139,23 @@ class _SecretsManagerStateProvider:
         return True
 
 
+class _OrganizationsStateProvider:
+    """Thin wrapper that exposes _OrganizationsState as a resettable provider."""
+
+    def __init__(self, state: Any) -> None:
+        self._state = state
+
+    @property
+    def name(self) -> str:
+        return "organizations"
+
+    async def reset(self) -> None:
+        self._state.reset()
+
+    async def health_check(self) -> bool:
+        return True
+
+
 def _create_management_app(
     providers: dict[str, Any],
     chaos_configs: dict[str, Any],
@@ -233,6 +250,7 @@ def _build_service_apps(
     from lws.providers.apigateway.routes import create_apigateway_management_app
     from lws.providers.dynamodb.routes import create_dynamodb_app
     from lws.providers.eventbridge.routes import create_eventbridge_app
+    from lws.providers.organizations.routes import create_organizations_app
     from lws.providers.s3.routes import create_s3_app
     from lws.providers.secretsmanager.routes import create_secretsmanager_app
     from lws.providers.sns.routes import create_sns_app
@@ -321,9 +339,16 @@ def _build_service_apps(
         ),
     ]
 
+    organizations_app, organizations_state = create_organizations_app(
+        chaos=chaos_configs["organizations"],
+        aws_fake=fake_configs["organizations"],
+    )
+    service_apps.append(("organizations", organizations_app))
+
     extra_providers = {
         "ssm": _SsmStateProvider(ssm_state),
         "secretsmanager": _SecretsManagerStateProvider(secretsmanager_state),
+        "organizations": _OrganizationsStateProvider(organizations_state),
     }
 
     return service_apps, extra_providers
@@ -363,6 +388,7 @@ _SERVICE_NAMES = [
     "secretsmanager",
     "events",
     "apigateway",
+    "organizations",
 ]
 
 

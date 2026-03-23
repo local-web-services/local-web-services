@@ -14,6 +14,7 @@ import io.localwebservices.lws.providers.lambda.LambdaHandler;
 import io.localwebservices.lws.providers.memorydb.MemoryDbHandler;
 import io.localwebservices.lws.providers.neptune.NeptuneHandler;
 import io.localwebservices.lws.providers.opensearch.OpenSearchHandler;
+import io.localwebservices.lws.providers.organizations.OrganizationsHandler;
 import io.localwebservices.lws.providers.rds.RdsHandler;
 import io.localwebservices.lws.providers.s3.S3Handler;
 import io.localwebservices.lws.providers.s3tables.S3TablesHandler;
@@ -61,6 +62,7 @@ public class LwsServer {
     SERVICE_OFFSETS.put("elasticsearch", 18);
     SERVICE_OFFSETS.put("opensearch", 19);
     SERVICE_OFFSETS.put("s3tables", 20);
+    SERVICE_OFFSETS.put("organizations", 50);
   }
 
   public static class RunningServer {
@@ -321,6 +323,17 @@ public class LwsServer {
       server.start();
       servers.add(server);
       ports.put("s3tables", port);
+    }
+
+    // Organizations at basePort+50
+    {
+      int port = basePort + SERVICE_OFFSETS.get("organizations");
+      HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
+      server.createContext("/", new OrganizationsHandler(state));
+      server.setExecutor(Executors.newCachedThreadPool());
+      server.start();
+      servers.add(server);
+      ports.put("organizations", port);
     }
 
     return new RunningServer(state, basePort, ports, servers);

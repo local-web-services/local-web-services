@@ -62,6 +62,30 @@ def _register_ssm_secretsmanager_providers(
     )
 
 
+def _register_organizations_provider(
+    providers: dict,
+    *,
+    chaos_configs: dict,
+    aws_fake_configs: dict,
+    organizations_port: int,
+) -> None:
+    """Register the Organizations HTTP provider."""
+    from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
+        _HttpServiceProvider,
+    )
+    from lws.providers.organizations.routes import (  # pylint: disable=import-outside-toplevel
+        create_organizations_app,
+    )
+
+    providers["__organizations_http__"] = _HttpServiceProvider(
+        "organizations-http",
+        lambda c=chaos_configs.get("organizations"), m=aws_fake_configs.get(
+            "organizations"
+        ): create_organizations_app(chaos=c, aws_fake=m),
+        organizations_port,
+    )
+
+
 def _register_experimental_providers(
     providers: dict[str, Provider],
     ports: dict[str, int],

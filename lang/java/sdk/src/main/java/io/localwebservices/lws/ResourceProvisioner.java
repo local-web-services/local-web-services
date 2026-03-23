@@ -49,6 +49,7 @@ class ResourceProvisioner {
     SERVICE_OFFSETS.put("elasticsearch", 18);
     SERVICE_OFFSETS.put("opensearch", 19);
     SERVICE_OFFSETS.put("s3tables", 20);
+    SERVICE_OFFSETS.put("organizations", 50);
   }
 
   static void provision(LwsSession session, SessionSpec spec) {

@@ -18,6 +18,7 @@ import (
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/memorydb"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/neptune"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/opensearch"
+	"github.com/local-web-services/local-web-services-go-core/lws/providers/organizations"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/rds"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/s3"
 	"github.com/local-web-services/local-web-services-go-core/lws/providers/s3tables"
@@ -50,6 +51,7 @@ var ServiceOffsets = map[string]int{
 	"elasticsearch":  18,
 	"opensearch":     19,
 	"s3tables":       20,
+	"organizations":  50,
 }
 
 // Server represents a running local AWS services server.
@@ -240,6 +242,14 @@ func StartServer(basePort int) (*Server, error) {
 	if err := srv.startService(s3tablesMux, basePort+ServiceOffsets["s3tables"]); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("s3tables server: %w", err)
+	}
+
+	// Organizations
+	orgsMux := http.NewServeMux()
+	orgsMux.Handle("/", organizations.NewHandler(state))
+	if err := srv.startService(orgsMux, basePort+ServiceOffsets["organizations"]); err != nil {
+		srv.Close()
+		return nil, fmt.Errorf("organizations server: %w", err)
 	}
 
 	return srv, nil

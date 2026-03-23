@@ -37,3 +37,13 @@ When adding a new feature:
 - E2E tests must use Gherkin / pytest-bdd (Given/When/Then in feature files, step definitions in conftest.py)
 - No magic strings in assertions — use `expected_*` and `actual_*` variables
 - E2E tests must never be skipped — no `@skip`/`@wip`/`@xfail` tags, no `pytest.mark.skip` decorators. If a test needs Docker or other dependencies, configure CI to provide them instead of skipping.
+
+# Quality Check Policy
+
+Never work around a failing quality check (lint, formatting, CPD, tests) by disguising the violation rather than fixing the root cause. Examples of cheating that are not permitted:
+
+- Changing code style just to avoid a CPD duplicate detection hit instead of extracting shared code
+- Renaming a symbol only to satisfy a naming rule without understanding the intent
+- Disabling or suppressing a check without explicit instruction
+
+When a check fails, identify the correct fix. If the fix is non-trivial, explain it and propose it. Shortcuts require explicit user approval.

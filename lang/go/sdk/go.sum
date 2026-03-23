@@ -60,6 +60,8 @@ github.com/aws/aws-sdk-go-v2/service/neptune v1.44.2 h1:J/ecGv0YXAg1BHfONW0I5hLJ
 github.com/aws/aws-sdk-go-v2/service/neptune v1.44.2/go.mod h1:fRiaBN1K0Hgf2GNcfHR6L15pemQKMoQmKxmBqDYkSV4=
 github.com/aws/aws-sdk-go-v2/service/opensearch v1.60.1 h1:QAi6CqC2U03SIxyWmoXIvRvNzfQ6N+vZSzue2E24Scw=
 github.com/aws/aws-sdk-go-v2/service/opensearch v1.60.1/go.mod h1:7XWoG2/GxmdXCmqEUL39kknKvPU3GKl79xsGiCXuZM4=
+github.com/aws/aws-sdk-go-v2/service/organizations v1.50.5 h1:V0skJdwjmwcaxtGy2ws1WdBhG5Nkz6A/Ghvl6HXwzNc=
+github.com/aws/aws-sdk-go-v2/service/organizations v1.50.5/go.mod h1:GIRcFyaju2WCHMsO1JkoSxBUGgXplULEXIJYdevIba4=
 github.com/aws/aws-sdk-go-v2/service/rds v1.116.3 h1:H/ZYZ6QR4EXJAYElI5xkIM/yCz+A4uHIvWpzl+IfJks=
 github.com/aws/aws-sdk-go-v2/service/rds v1.116.3/go.mod h1:QbXW4coAMakHQhf1qhE0eVVCen9gwB/Kvn+HHHKhpGY=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.58.0 h1:4rhV0Hn+bf8IAIUphRX1moBcEvKJipCPmswMCl6Q5mw=

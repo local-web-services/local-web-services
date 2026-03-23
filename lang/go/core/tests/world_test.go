@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/eventbridge"
+	"github.com/aws/aws-sdk-go-v2/service/organizations"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/aws/aws-sdk-go-v2/service/sfn"
@@ -80,6 +81,17 @@ type World struct {
 	lastStateMachineArn string
 	lastSubscriptionArn string
 	lastTopicArn        string
+
+	// Organizations multi-step storage
+	orgsOrgId          string
+	orgsRootId         string
+	orgsAccountId      string
+	orgsOuId           string
+	orgsOuName         string
+	orgsPolicyId       string
+	orgsTargetId       string
+	orgsSourceParentId string
+	orgsDestParentId   string
 
 	// uploadNoParts indicates that the current multipart upload scenario
 	// should NOT auto-upload parts before completing (tests the "no parts" failure case).
@@ -200,6 +212,13 @@ func (w *World) SSMClient() *ssm.Client {
 func (w *World) SecretsManagerClient() *secretsmanager.Client {
 	port := basePort + lws.ServiceOffsets["secretsmanager"]
 	return secretsmanager.NewFromConfig(w.awsCfg, func(o *secretsmanager.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+func (w *World) OrganizationsClient() *organizations.Client {
+	port := basePort + lws.ServiceOffsets["organizations"]
+	return organizations.NewFromConfig(w.awsCfg, func(o *organizations.Options) {
 		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
 	})
 }

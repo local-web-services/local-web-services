@@ -33,6 +33,7 @@ const SERVICE_OFFSETS: Record<string, number> = {
   lambda: 8,
   apigateway: 9,
   ssm: 12,
+  organizations: 50,
   secretsmanager: 13,
   rds: 10,
   docdb: 11,
@@ -57,6 +58,7 @@ const SERVICE_ENV_VARS: Record<string, string> = {
   cognitoidp: "AWS_ENDPOINT_URL_COGNITO_IDP",
   lambda: "AWS_ENDPOINT_URL_LAMBDA",
   ssm: "AWS_ENDPOINT_URL_SSM",
+  organizations: "AWS_ENDPOINT_URL_ORGANIZATIONS",
   secretsmanager: "AWS_ENDPOINT_URL_SECRETS_MANAGER",
   rds: "AWS_ENDPOINT_URL_RDS",
   docdb: "AWS_ENDPOINT_URL_DOCDB",
@@ -355,6 +357,10 @@ export class LwsSession {
       case "ssm": {
         const { SSMClient } = require("@aws-sdk/client-ssm");
         return new SSMClient({ endpoint: endpointUrl, credentials, region }) as T;
+      }
+      case "organizations": {
+        const { OrganizationsClient } = require("@aws-sdk/client-organizations");
+        return new OrganizationsClient({ endpoint: endpointUrl, credentials, region }) as T;
       }
       case "secretsmanager": {
         const { SecretsManagerClient } = require("@aws-sdk/client-secrets-manager");
