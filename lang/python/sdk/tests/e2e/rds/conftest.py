@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when
 
 TEST_CLUSTER = "e2e-test-cluster-1"

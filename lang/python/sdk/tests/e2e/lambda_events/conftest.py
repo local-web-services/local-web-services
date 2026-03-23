@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when

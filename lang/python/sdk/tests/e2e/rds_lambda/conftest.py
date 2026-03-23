@@ -287,7 +287,7 @@ def rds_lambda_invocation_success():
 def function_is_deleted_procs_fail(lws_session):
     expected_exists = False
     actual_exists = _get_function_exists(lws_session)
-    assert actual_exists == expected_exists, f"Expected function to be deleted but it still exists"
+    assert actual_exists == expected_exists, "Expected function to be deleted but it still exists"
 
 
 @then('the invocation is "FAILED" with a function not found error')
