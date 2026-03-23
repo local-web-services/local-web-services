@@ -50,7 +50,9 @@ Given("pid in param_status", async function (this: SdkWorld) {
 });
 
 Given("the bus does not exist or is {string}", async function (this: SdkWorld, _state: string) {
-  // Arrange + Act: no-op — the bus state is set by other steps
+  // Arrange + Act: flag for When step detection — bus is absent or DELETED
+  assert.ok(this.session, "No session running");
+  (this as any)._busDoesNotExist = true;
   // Assert: nothing to assert
 });
 

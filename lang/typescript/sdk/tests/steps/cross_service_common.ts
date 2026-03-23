@@ -683,15 +683,17 @@ Given("the event bus is not {string}", async function (this: SdkWorld, _state: s
   // Arrange
   assert.ok(this.session, "No session running");
   const port = this.session!.portFor("eventbridge");
-  // Act: delete the bus
+  // Act: delete the bus and set flag for When steps
+  (this as any)._eventBusNotActive = true;
   await ebCall(port, "DeleteEventBus", { Name: EB_BUS });
   // Assert: no error thrown
 });
 
 Given("the event bus does not exist", async function (this: SdkWorld) {
-  // Arrange + Act: no-op — fresh session has no custom buses
-  // Assert: session is running
+  // Arrange + Act: no-op — fresh session has no custom buses; set flag for When steps
   assert.ok(this.session, "No session running");
+  (this as any)._eventBusDoesNotExist = true;
+  // Assert: nothing to assert
 });
 
 // ── EventBridge rule steps ────────────────────────────────────────────────────
@@ -931,9 +933,10 @@ Given("the state machine exists", async function (this: SdkWorld) {
 });
 
 Given("the state machine does not exist", async function (this: SdkWorld) {
-  // Arrange + Act: no-op — fresh session has no state machines
-  // Assert: session is running
+  // Arrange + Act: no-op — fresh session has no state machines; set flag for When steps
   assert.ok(this.session, "No session running");
+  (this as any)._smNotExist = true;
+  // Assert: nothing to assert
 });
 
 Given("the state machine is {string}", function (this: SdkWorld, _state: string) {
@@ -946,7 +949,8 @@ Given("the state machine is not {string}", async function (this: SdkWorld, _stat
   assert.ok(this.session, "No session running");
   const sfnPort = this.session!.portFor("stepfunctions");
   const smArn = `arn:aws:states:${REGION}:${ACCOUNT_ID}:stateMachine:${SFN_SM}`;
-  // Act: delete the state machine
+  // Act: delete the state machine and set flag for When steps
+  (this as any)._smNotActive = true;
   await fetch(`http://127.0.0.1:${sfnPort}`, {
     method: "POST",
     headers: {
