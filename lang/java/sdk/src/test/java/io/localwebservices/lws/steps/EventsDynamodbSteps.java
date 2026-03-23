@@ -15,12 +15,17 @@ import software.amazon.awssdk.services.dynamodb.model.KeyType;
 import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
-import software.amazon.awssdk.services.eventbridge.model.ListEventBusesResponse;
 import software.amazon.awssdk.services.eventbridge.model.ListRulesResponse;
 import software.amazon.awssdk.services.eventbridge.model.RuleState;
 import software.amazon.awssdk.services.eventbridge.model.Target;
 
-/** Step definitions for the events_dynamodb cross-service suite. */
+/**
+ * Step definitions for the events_dynamodb cross-service suite.
+ *
+ * <p>Bus lifecycle steps (bus existence/state Given steps, event slot capacity steps, and the
+ * bus is "ACTIVE" Then) are defined in {@link CrossServiceEventBusSteps} and intentionally absent
+ * here to avoid DuplicateStepDefinitionException.
+ */
 public class EventsDynamodbSteps {
 
   private static final String TEST_EVENT_BUS = "test-bus-1";
@@ -47,62 +52,6 @@ public class EventsDynamodbSteps {
   @Given("^tid in table_status$")
   public void tidInTableStatus() {
     // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
-  }
-
-  // ---------------------------------------------------------------------------
-  // Capacity preconditions (events_dynamodb-specific)
-  // ---------------------------------------------------------------------------
-
-  @Given("an event slot is available")
-  public void anEventSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: event slots are unlimited by default
-  }
-
-  @Given("no event slot is available")
-  public void noEventSlotIsAvailable() {
-    // Arrange / Act / Assert — capacity exhaustion not configurable via SDK API
-    Assumptions.assumeTrue(false, "capacity exhaustion not configurable via SDK API");
-  }
-
-  // ---------------------------------------------------------------------------
-  // Event bus preconditions (events_dynamodb-specific wording uses "bus" not "event bus")
-  // ---------------------------------------------------------------------------
-
-  @Given("the bus does not already exist")
-  public void theBusDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no custom event buses
-  }
-
-  @Given("the bus already exists")
-  public void theBusAlreadyExists() {
-    // Arrange
-    EventBridgeClient client = world.session.eventBridgeClient();
-    // Act
-    client.createEventBus(r -> r.name(TEST_EVENT_BUS));
-    // Assert — bus now exists; verified by subsequent steps
-  }
-
-  @Given("the bus exists and is {string}")
-  public void theBusExistsAndIs(String state) {
-    // Arrange
-    EventBridgeClient client = world.session.eventBridgeClient();
-    // Act
-    try {
-      client.createEventBus(r -> r.name(TEST_EVENT_BUS));
-    } catch (Exception ignored) {
-      // bus may already exist
-    }
-    // Assert — bus is ACTIVE; only ACTIVE state reachable via public create API
-    String expectedState = "ACTIVE";
-    assertTrue(
-        expectedState.equals(state),
-        "expected bus state '" + state + "' but only ACTIVE is reachable via SDK API");
-  }
-
-  @Given("the bus does not exist or is not {string}")
-  public void theBusDoesNotExistOrIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE bus state not reachable via public API
-    Assumptions.assumeTrue(false, "bus non-ACTIVE state not reachable via SDK API");
   }
 
   // ---------------------------------------------------------------------------
@@ -347,24 +296,6 @@ public class EventsDynamodbSteps {
   // ---------------------------------------------------------------------------
   // Then steps
   // ---------------------------------------------------------------------------
-
-  @Then("the bus is \"ACTIVE\"")
-  public void theBusIsActive() {
-    // Arrange
-    String expectedBusName = TEST_EVENT_BUS;
-    // Act
-    EventBridgeClient client = world.session.eventBridgeClient();
-    boolean actualExists;
-    try {
-      ListEventBusesResponse response = client.listEventBuses(r -> r.namePrefix(expectedBusName));
-      actualExists =
-          response.eventBuses().stream().anyMatch(b -> b.name().equals(expectedBusName));
-    } catch (Exception e) {
-      actualExists = false;
-    }
-    // Assert
-    assertTrue(actualExists, "expected event bus '" + expectedBusName + "' to be ACTIVE");
-  }
 
   @Then("the rule is \"DISABLED\" on the bus with the DynamoDB target configured")
   public void theRuleIsDisabledOnTheBusWithTheDynamoDbTargetConfigured() {

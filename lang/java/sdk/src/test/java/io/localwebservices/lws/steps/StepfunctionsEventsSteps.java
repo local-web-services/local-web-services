@@ -24,6 +24,11 @@ import software.amazon.awssdk.services.sfn.model.ListStateMachinesResponse;
  * Given steps, execution Given steps, event-bus create When, state machine create When) are
  * intentionally absent here to avoid duplicate-step errors.
  *
+ * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot
+ * capacity steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are
+ * defined in {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
+ * DuplicateStepDefinitionException.
+ *
  * <p>Steps requiring StepFunctions to deliver execution lifecycle events to EventBridge
  * are skipped via {@code Assumptions.assumeTrue(false, ...)} because the lws Java core does not
  * implement the StepFunctions EventBridge event-publishing integration.
@@ -43,27 +48,6 @@ public class StepfunctionsEventsSteps {
   // Helpers
   // -------------------------------------------------------------------------
 
-  private void ebCreateBus(String busName) {
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      client.createEventBus(r -> r.name(busName));
-    } catch (Exception e) {
-      String msg = e.getMessage() != null ? e.getMessage() : "";
-      if (!msg.contains("AlreadyExists")
-          && !msg.contains("ResourceInUse")
-          && !msg.contains("already exists")) {
-        throw e;
-      }
-    }
-  }
-
-  private void ebDeleteBus(String busName) {
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      client.deleteEventBus(r -> r.name(busName));
-    } catch (Exception e) {
-      // Ignore — already deleted or does not exist
-    }
-  }
-
   private boolean ebBusExists(String busName) {
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
       ListEventBusesResponse response = client.listEventBuses(r -> r.namePrefix(busName));
@@ -71,93 +55,6 @@ public class StepfunctionsEventsSteps {
     } catch (Exception e) {
       return false;
     }
-  }
-
-  // -------------------------------------------------------------------------
-  // FizzBee model initialisation preconditions (sequences.feature)
-  //
-  // Note: "busid" is distinct from "bid" used in CrossServiceSteps, so these
-  // do not conflict with the existing bid preconditions.
-  // -------------------------------------------------------------------------
-
-  @Given("^busid not in bus_status$")
-  public void busidNotInBusStatus() {
-    // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
-  }
-
-  @Given("^busid in bus_status$")
-  public void busidInBusStatus() {
-    // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
-  }
-
-  // -------------------------------------------------------------------------
-  // Capacity Given steps (stepfunctions_events specific)
-  // -------------------------------------------------------------------------
-
-  @Given("an event slot is available")
-  public void anEventSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: event slots are unlimited by default
-  }
-
-  @Given("no event slot is available")
-  public void noEventSlotIsAvailable() {
-    // Arrange / Act / Assert — capacity exhaustion not configurable via SDK API
-    Assumptions.assumeTrue(false, "event slot capacity exhaustion not configurable via SDK API");
-  }
-
-  // -------------------------------------------------------------------------
-  // EventBridge bus Given steps (stepfunctions_events)
-  // -------------------------------------------------------------------------
-
-  @Given("the bus does not already exist")
-  public void theBusDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no custom event buses
-  }
-
-  @Given("the bus already exists")
-  public void theBusAlreadyExists() {
-    // Arrange
-    ebCreateBus(TEST_EVENT_BUS);
-    // Assert — bus now exists; verified by subsequent steps
-  }
-
-  @Given("the bus exists")
-  public void theBusExists() {
-    // Arrange
-    ebCreateBus(TEST_EVENT_BUS);
-    // Assert — bus now exists; verified by subsequent steps
-  }
-
-  @Given("the bus does not exist")
-  public void theBusDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no custom event buses
-  }
-
-  @Given("the bus is already {string}")
-  public void theBusIsAlready(String state) {
-    // Arrange — create then delete the bus to reach DELETED state
-    ebCreateBus(TEST_EVENT_BUS);
-    ebDeleteBus(TEST_EVENT_BUS);
-    // Assert — bus is now deleted; verified by subsequent steps
-  }
-
-  @Given("the bus is {string}")
-  public void theBusIs(String state) {
-    // Arrange
-    if ("ACTIVE".equals(state)) {
-      ebCreateBus(TEST_EVENT_BUS);
-    } else if ("DELETED".equals(state)) {
-      ebCreateBus(TEST_EVENT_BUS);
-      ebDeleteBus(TEST_EVENT_BUS);
-    }
-    // Assert — bus state applied; verified by subsequent steps
-  }
-
-  @Given("the bus is not {string}")
-  public void theBusIsNot(String state) {
-    // Arrange — ensure bus is ACTIVE (not deleted)
-    ebCreateBus(TEST_EVENT_BUS);
-    // Assert — bus is ACTIVE; verified by subsequent steps
   }
 
   // -------------------------------------------------------------------------
@@ -208,37 +105,6 @@ public class StepfunctionsEventsSteps {
     // Arrange / Act / Assert — not reachable via public API
     Assumptions.assumeTrue(
         false, "lws limitation: StepFunctions EventBridge bus configuration not implemented");
-  }
-
-  @Given("the bus exists and is {string}")
-  public void theBusExistsAndIs(String state) {
-    // Arrange
-    ebCreateBus(TEST_EVENT_BUS);
-    // Assert — bus now exists and is ACTIVE; verified by subsequent steps
-  }
-
-  @Given("the bus does not exist or is not {string}")
-  public void theBusDoesNotExistOrIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE bus state not reachable via public API
-    Assumptions.assumeTrue(
-        false, "EventBridge bus non-ACTIVE/absent state not reachable via SDK API");
-  }
-
-  // -------------------------------------------------------------------------
-  // When — EventBridge bus lifecycle actions
-  // -------------------------------------------------------------------------
-
-  @When("the EventBridge event bus is deleted")
-  public void theEventBridgeEventBusIsDeleted() {
-    // Arrange
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      var response = client.deleteEventBus(r -> r.name(TEST_EVENT_BUS));
-      // Assert
-      world.setSuccess(response);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
   }
 
   // -------------------------------------------------------------------------

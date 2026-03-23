@@ -20,6 +20,11 @@ import software.amazon.awssdk.services.s3.model.PutBucketNotificationConfigurati
  *
  * <p>Covers: create_bucket, create_event_bus, delete_event_bus,
  * enable_event_bridge_notification, put_object_with_event, put_object_event_fails, sequences.
+ *
+ * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot
+ * capacity steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are
+ * defined in {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
+ * DuplicateStepDefinitionException.
  */
 public class S3apiEventsSteps {
 
@@ -83,72 +88,6 @@ public class S3apiEventsSteps {
   }
 
   // -------------------------------------------------------------------------
-  // FizzBee model initialisation preconditions (sequences)
-  // -------------------------------------------------------------------------
-
-  @Given("^busid not in bus_status$")
-  public void busidNotInBusStatus() {
-    // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
-  }
-
-  @Given("^busid in bus_status$")
-  public void busidInBusStatus() {
-    // Arrange / Act / Assert — no-op: FizzBee model initialisation precondition
-  }
-
-  // -------------------------------------------------------------------------
-  // Given — bus state
-  // -------------------------------------------------------------------------
-
-  @Given("the bus does not already exist")
-  public void theBusDoesNotAlreadyExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no event buses
-  }
-
-  @Given("the bus already exists")
-  public void theBusAlreadyExists() {
-    // Arrange
-    ebCreateBus(TEST_EVENT_BUS);
-    // Assert — bus now exists; verified by subsequent steps
-  }
-
-  @Given("the bus exists")
-  public void theBusExists() {
-    // Arrange
-    ebCreateBus(TEST_EVENT_BUS);
-    // Assert — bus now exists; verified by subsequent steps
-  }
-
-  @Given("the bus does not exist")
-  public void theBusDoesNotExist() {
-    // Arrange / Act / Assert — no-op: fresh session has no event buses
-  }
-
-  @Given("the bus is {string}")
-  public void theBusIs(String state) {
-    // Arrange / Act / Assert — no-op: bus is ACTIVE by default when it exists
-  }
-
-  @Given("the bus is already {string}")
-  public void theBusIsAlready(String state) {
-    // Arrange / Act / Assert — non-ACTIVE bus lifecycle state not reachable via public SDK API
-    Assumptions.assumeTrue(false, "lws limitation: bus non-ACTIVE lifecycle state not reachable");
-  }
-
-  @Given("the bus exists and is {string}")
-  public void theBusExistsAndIs(String state) {
-    // Arrange
-    ebCreateBus(TEST_EVENT_BUS);
-    // Assert — bus now exists and is ACTIVE
-  }
-
-  @Given("the bus does not exist or is not {string}")
-  public void theBusDoesNotExistOrIsNot(String state) {
-    // Arrange / Act / Assert — non-ACTIVE bus state not reachable via public SDK API
-    Assumptions.assumeTrue(false, "lws limitation: bus non-ACTIVE state not reachable via SDK");
-  }
-
-  // -------------------------------------------------------------------------
   // Given — bucket + bus notification configuration
   // -------------------------------------------------------------------------
 
@@ -189,33 +128,9 @@ public class S3apiEventsSteps {
         false, "lws limitation: target bus non-DELETED state not reachable via SDK");
   }
 
-  @Given("an event slot is available")
-  public void anEventSlotIsAvailable() {
-    // Arrange / Act / Assert — no-op: lws imposes no event capacity limits
-  }
-
-  @Given("no event slot is available")
-  public void noEventSlotIsAvailable() {
-    // Arrange / Act / Assert — lws imposes no event capacity limit
-    Assumptions.assumeTrue(false, "lws limitation: no event slot capacity enforcement");
-  }
-
   // -------------------------------------------------------------------------
   // When — S3 / EventBridge actions
   // -------------------------------------------------------------------------
-
-  @When("the EventBridge event bus is deleted")
-  public void theEventBridgeEventBusIsDeleted() {
-    // Arrange
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      // Act
-      var response = client.deleteEventBus(r -> r.name(TEST_EVENT_BUS));
-      // Assert
-      world.setSuccess(response);
-    } catch (Exception e) {
-      world.setFailure(e);
-    }
-  }
 
   @When("EventBridge notifications are enabled on the bucket targeting a specific bus")
   public void eventBridgeNotificationsAreEnabledOnTheBucketTargetingASpecificBus() {
@@ -270,20 +185,6 @@ public class S3apiEventsSteps {
     }
   }
 
-  @Then("the bus is \"ACTIVE\"")
-  public void theBusIsActive() {
-    // Arrange
-    String expectedBusName = TEST_EVENT_BUS;
-    // Act
-    try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse listResponse = client.listEventBuses(r -> r.namePrefix(TEST_EVENT_BUS));
-      boolean actualExists =
-          listResponse.eventBuses().stream().anyMatch(b -> b.name().equals(expectedBusName));
-      // Assert
-      assertTrue(actualExists, "expected event bus '" + expectedBusName + "' to be ACTIVE");
-    }
-  }
-
   @Then("the bus is \"DELETED\" and event delivery to it will fail")
   public void theBusIsDeletedAndEventDeliveryToItWillFail() {
     // Arrange
@@ -328,5 +229,4 @@ public class S3apiEventsSteps {
     Assumptions.assumeTrue(
         false, "lws limitation: S3 EventBridge event failure not verifiable via SDK API");
   }
-
 }

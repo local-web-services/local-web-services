@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
@@ -281,5 +280,4 @@ public class StepfunctionsS3apiSteps {
     Assumptions.assumeTrue(
         false, "lws limitation: S3 task wiring not verifiable via SDK API");
   }
-
 }

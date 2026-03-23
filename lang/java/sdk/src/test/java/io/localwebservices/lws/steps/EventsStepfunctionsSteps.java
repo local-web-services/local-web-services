@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.And;
@@ -19,8 +18,6 @@ import software.amazon.awssdk.services.sfn.SfnClient;
 import software.amazon.awssdk.services.sfn.model.ExecutionStatus;
 import software.amazon.awssdk.services.sfn.model.ListExecutionsResponse;
 import software.amazon.awssdk.services.sfn.model.ListStateMachinesResponse;
-import software.amazon.awssdk.services.sfn.model.StartExecutionResponse;
-import software.amazon.awssdk.services.sfn.model.StateMachineType;
 
 /** Step definitions for the events_stepfunctions cross-service suite. */
 public class EventsStepfunctionsSteps {
