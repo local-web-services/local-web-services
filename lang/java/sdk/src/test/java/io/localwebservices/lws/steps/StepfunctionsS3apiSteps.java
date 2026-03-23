@@ -73,8 +73,7 @@ public class StepfunctionsS3apiSteps {
     } catch (Exception e) {
       String msg = e.getMessage() != null ? e.getMessage() : "";
       if (msg.contains("StateMachineAlreadyExists")) {
-        world.lastStateMachineArn =
-            "arn:aws:states:us-east-1:000000000000:stateMachine:" + name;
+        world.lastStateMachineArn = "arn:aws:states:us-east-1:000000000000:stateMachine:" + name;
       } else {
         throw e;
       }
@@ -163,8 +162,7 @@ public class StepfunctionsS3apiSteps {
   public void theStateMachineAlreadyHasAnS3TaskConfigured() {
     // Arrange / Act / Assert — not reachable via public API
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: state machine S3 task already-configured not reachable via SDK");
+        false, "lws limitation: state machine S3 task already-configured not reachable via SDK");
   }
 
   // -------------------------------------------------------------------------
@@ -182,24 +180,21 @@ public class StepfunctionsS3apiSteps {
   public void aRunningExecutionWritesAnObjectToTheS3BucketAndSucceeds() {
     // Arrange / Act / Assert — internal execution S3 task not directly verifiable via SDK API
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: running execution S3 write task not verifiable via SDK API");
+        false, "lws limitation: running execution S3 write task not verifiable via SDK API");
   }
 
   @When("a running execution reads an existing object from the S3 bucket and succeeds")
   public void aRunningExecutionReadsAnExistingObjectFromTheS3BucketAndSucceeds() {
     // Arrange / Act / Assert — internal execution S3 task not directly verifiable via SDK API
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: running execution S3 read task not verifiable via SDK API");
+        false, "lws limitation: running execution S3 read task not verifiable via SDK API");
   }
 
   @When("a running execution fails to read because no object exists in the bucket")
   public void aRunningExecutionFailsToReadBecauseNoObjectExistsInTheBucket() {
     // Arrange / Act / Assert — internal execution S3 task failure not directly verifiable via API
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: running execution S3 read failure not verifiable via SDK API");
+        false, "lws limitation: running execution S3 read failure not verifiable via SDK API");
   }
 
   // -------------------------------------------------------------------------
@@ -262,22 +257,19 @@ public class StepfunctionsS3apiSteps {
   public void theExecutionIsFailedWithANoSuchKeyError() {
     // Arrange / Act / Assert — execution FAILED state not directly verifiable via SDK API
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: execution FAILED with NoSuchKey not verifiable via SDK API");
+        false, "lws limitation: execution FAILED with NoSuchKey not verifiable via SDK API");
   }
 
   @Then("the object \"EXISTS\" in the bucket and the execution is \"SUCCEEDED\"")
   public void theObjectExistsInTheBucketAndTheExecutionIsSucceeded() {
     // Arrange / Act / Assert — execution SUCCEEDED with S3 object not verifiable via SDK API
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: object exists and execution SUCCEEDED not verifiable via SDK API");
+        false, "lws limitation: object exists and execution SUCCEEDED not verifiable via SDK API");
   }
 
   @Then("the state machine will read or write objects to the bucket when it reaches the task state")
   public void theStateMachineWillReadOrWriteObjectsToTheBucketWhenItReachesTheTaskState() {
     // Arrange / Act / Assert — S3 task wiring not verifiable via public SDK API
-    Assumptions.assumeTrue(
-        false, "lws limitation: S3 task wiring not verifiable via SDK API");
+    Assumptions.assumeTrue(false, "lws limitation: S3 task wiring not verifiable via SDK API");
   }
 }

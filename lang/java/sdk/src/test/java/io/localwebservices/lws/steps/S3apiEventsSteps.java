@@ -18,12 +18,12 @@ import software.amazon.awssdk.services.s3.model.PutBucketNotificationConfigurati
 /**
  * Step definitions for the s3api_events cross-service test suite.
  *
- * <p>Covers: create_bucket, create_event_bus, delete_event_bus,
- * enable_event_bridge_notification, put_object_with_event, put_object_event_fails, sequences.
+ * <p>Covers: create_bucket, create_event_bus, delete_event_bus, enable_event_bridge_notification,
+ * put_object_with_event, put_object_event_fails, sequences.
  *
- * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot
- * capacity steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are
- * defined in {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
+ * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot capacity
+ * steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are defined in
+ * {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
  * DuplicateStepDefinitionException.
  */
 public class S3apiEventsSteps {
@@ -105,8 +105,7 @@ public class S3apiEventsSteps {
   public void theBucketAlreadyHasAnEventBridgeNotificationConfigured() {
     // Arrange / Act / Assert — not reachable via public SDK API
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: bucket EventBridge notification already-configured not reachable");
+        false, "lws limitation: bucket EventBridge notification already-configured not reachable");
   }
 
   @Given("the target bus is {string}")
@@ -191,7 +190,8 @@ public class S3apiEventsSteps {
     String expectedBusName = TEST_EVENT_BUS;
     // Act
     try (EventBridgeClient client = world.session.eventBridgeClient()) {
-      ListEventBusesResponse listResponse = client.listEventBuses(r -> r.namePrefix(TEST_EVENT_BUS));
+      ListEventBusesResponse listResponse =
+          client.listEventBuses(r -> r.namePrefix(TEST_EVENT_BUS));
       boolean actualExists =
           listResponse.eventBuses().stream().anyMatch(b -> b.name().equals(expectedBusName));
       // Assert
@@ -207,8 +207,7 @@ public class S3apiEventsSteps {
     try (S3Client client = world.session.s3Client()) {
       GetBucketNotificationConfigurationResponse notifResponse =
           client.getBucketNotificationConfiguration(r -> r.bucket(expectedBucketName));
-      boolean actualHasEventBridgeConfig =
-          notifResponse.eventBridgeConfiguration() != null;
+      boolean actualHasEventBridgeConfig = notifResponse.eventBridgeConfiguration() != null;
       // Assert
       assertTrue(
           actualHasEventBridgeConfig,

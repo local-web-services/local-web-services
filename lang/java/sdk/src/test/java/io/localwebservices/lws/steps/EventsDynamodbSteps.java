@@ -22,9 +22,9 @@ import software.amazon.awssdk.services.eventbridge.model.Target;
 /**
  * Step definitions for the events_dynamodb cross-service suite.
  *
- * <p>Bus lifecycle steps (bus existence/state Given steps, event slot capacity steps, and the
- * bus is "ACTIVE" Then) are defined in {@link CrossServiceEventBusSteps} and intentionally absent
- * here to avoid DuplicateStepDefinitionException.
+ * <p>Bus lifecycle steps (bus existence/state Given steps, event slot capacity steps, and the bus
+ * is "ACTIVE" Then) are defined in {@link CrossServiceEventBusSteps} and intentionally absent here
+ * to avoid DuplicateStepDefinitionException.
  */
 public class EventsDynamodbSteps {
 
@@ -69,10 +69,7 @@ public class EventsDynamodbSteps {
               r.tableName(TEST_DDB_TABLE)
                   .billingMode(BillingMode.PAY_PER_REQUEST)
                   .keySchema(
-                      KeySchemaElement.builder()
-                          .attributeName("id")
-                          .keyType(KeyType.HASH)
-                          .build())
+                      KeySchemaElement.builder().attributeName("id").keyType(KeyType.HASH).build())
                   .attributeDefinitions(
                       AttributeDefinition.builder()
                           .attributeName("id")
@@ -103,8 +100,7 @@ public class EventsDynamodbSteps {
   @Given("the target table is \"DELETING\"")
   public void theTargetTableIsDeleting() {
     // Arrange / Act / Assert — DELETING table state not reachable via public API
-    Assumptions.assumeTrue(
-        false, "lws limitation: DELETING table state not reachable via SDK API");
+    Assumptions.assumeTrue(false, "lws limitation: DELETING table state not reachable via SDK API");
   }
 
   @Given("the target table is not \"DELETING\"")

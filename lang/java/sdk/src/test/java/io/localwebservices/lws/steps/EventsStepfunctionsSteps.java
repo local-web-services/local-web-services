@@ -123,8 +123,7 @@ public class EventsStepfunctionsSteps {
               .detailType("TestEvent")
               .detail("{}")
               .build();
-      PutEventsResponse putResult =
-          client.putEvents(r -> r.entries(entry));
+      PutEventsResponse putResult = client.putEvents(r -> r.entries(entry));
       boolean actualSuccess = putResult.failedEntryCount() == 0;
       // Assert
       if (actualSuccess) {
@@ -139,7 +138,8 @@ public class EventsStepfunctionsSteps {
 
   @When("a running execution completes successfully")
   public void aRunningExecutionCompletesSuccessfully() {
-    // Arrange / Act / Assert — internal execution completion not directly triggerable via public API
+    // Arrange / Act / Assert — internal execution completion not directly triggerable via public
+    // API
     Assumptions.assumeTrue(
         false,
         "lws limitation: internal execution completion not directly triggerable via SDK API");
@@ -166,8 +166,7 @@ public class EventsStepfunctionsSteps {
     boolean actualExists;
     try {
       ListEventBusesResponse response = client.listEventBuses(r -> r.namePrefix(expectedBusName));
-      actualExists =
-          response.eventBuses().stream().anyMatch(b -> b.name().equals(expectedBusName));
+      actualExists = response.eventBuses().stream().anyMatch(b -> b.name().equals(expectedBusName));
     } catch (Exception e) {
       actualExists = false;
     }
@@ -193,8 +192,7 @@ public class EventsStepfunctionsSteps {
     assertTrue(actualExists, "expected state machine '" + expectedSmName + "' to be ACTIVE");
   }
 
-  @Then(
-      "the rule is \"ENABLED\" and will trigger an execution when matching events are published")
+  @Then("the rule is \"ENABLED\" and will trigger an execution when matching events are published")
   public void theRuleIsEnabledAndWillTriggerAnExecutionWhenMatchingEventsArePublished() {
     // Arrange
     String expectedRuleName = TEST_EVENT_RULE;

@@ -30,9 +30,7 @@ public class StepfunctionsSsmSteps {
   private static final String TEST_REGION = "us-east-1";
   private static final String TEST_ACCOUNT = "000000000000";
 
-  /**
-   * State machine definition that uses the SSM GetParameter integration task.
-   */
+  /** State machine definition that uses the SSM GetParameter integration task. */
   private static final String TEST_SFN_SSM_DEFINITION =
       "{\"StartAt\":\"GetParam\","
           + "\"States\":{\"GetParam\":{"

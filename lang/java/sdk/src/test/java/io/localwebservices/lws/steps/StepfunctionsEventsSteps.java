@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.cucumber.java.en.Given;
@@ -16,22 +15,22 @@ import software.amazon.awssdk.services.sfn.model.ListStateMachinesResponse;
 /**
  * Step definitions for the stepfunctions_events cross-service feature suite.
  *
- * <p>Covers: create_state_machine, create_event_bus, delete_event_bus,
- * configure_event_publishing, execution_succeeds_event_delivered, execution_succeeds_event_fails,
+ * <p>Covers: create_state_machine, create_event_bus, delete_event_bus, configure_event_publishing,
+ * execution_succeeds_event_delivered, execution_succeeds_event_fails,
  * start_execution_event_delivered, start_execution_event_fails, sequences.
  *
  * <p>Steps already defined in {@link CrossServiceSteps} (e.g. invariant catch-alls, state-machine
  * Given steps, execution Given steps, event-bus create When, state machine create When) are
  * intentionally absent here to avoid duplicate-step errors.
  *
- * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot
- * capacity steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are
- * defined in {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
+ * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot capacity
+ * steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are defined in
+ * {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
  * DuplicateStepDefinitionException.
  *
- * <p>Steps requiring StepFunctions to deliver execution lifecycle events to EventBridge
- * are skipped via {@code Assumptions.assumeTrue(false, ...)} because the lws Java core does not
- * implement the StepFunctions EventBridge event-publishing integration.
+ * <p>Steps requiring StepFunctions to deliver execution lifecycle events to EventBridge are skipped
+ * via {@code Assumptions.assumeTrue(false, ...)} because the lws Java core does not implement the
+ * StepFunctions EventBridge event-publishing integration.
  */
 public class StepfunctionsEventsSteps {
 
@@ -123,8 +122,7 @@ public class StepfunctionsEventsSteps {
   // When — execution lifecycle with event delivery (lws limitation)
   // -------------------------------------------------------------------------
 
-  @When(
-      "an execution starts and Step Functions delivers a {string} event to the EventBridge bus")
+  @When("an execution starts and Step Functions delivers a {string} event to the EventBridge bus")
   public void anExecutionStartsAndStepFunctionsDeliversEventToEventBridgeBus(String eventType) {
     // Arrange / Act / Assert — StepFunctions to EventBridge event delivery not implemented
     Assumptions.assumeTrue(
@@ -157,20 +155,6 @@ public class StepfunctionsEventsSteps {
   // -------------------------------------------------------------------------
   // Then — EventBridge bus assertions
   // -------------------------------------------------------------------------
-
-  @Then("the bus is {string}")
-  public void thenTheBusIs(String state) {
-    // Arrange
-    String expectedBusName = TEST_EVENT_BUS;
-    // Act
-    boolean actualExists = ebBusExists(expectedBusName);
-    // Assert
-    if ("ACTIVE".equals(state)) {
-      assertTrue(actualExists, "expected event bus '" + expectedBusName + "' to be ACTIVE");
-    } else {
-      assertFalse(actualExists, "expected event bus '" + expectedBusName + "' to be absent");
-    }
-  }
 
   @Then("the bus is {string} and execution event delivery will fail")
   public void theBusIsDeletedAndExecutionEventDeliveryWillFail(String state) {

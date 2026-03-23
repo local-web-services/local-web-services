@@ -183,8 +183,7 @@ public class StepfunctionsSecretsmanagerSteps {
     try (SecretsManagerClient client = world.session.secretsManagerClient()) {
       ListSecretsResponse response = client.listSecrets();
       boolean actualExists =
-          response.secretList().stream()
-              .anyMatch(s -> s.name().equals(expectedSecretName));
+          response.secretList().stream().anyMatch(s -> s.name().equals(expectedSecretName));
       // Assert
       assertTrue(actualExists, "expected secret '" + expectedSecretName + "' to be ACTIVE");
     }
@@ -227,8 +226,7 @@ public class StepfunctionsSecretsmanagerSteps {
               .anyMatch(e -> e.executionArn().equals(expectedExecutionArn));
       // Assert
       assertTrue(
-          actualFound,
-          "expected execution " + expectedExecutionArn + " to be in state FAILED");
+          actualFound, "expected execution " + expectedExecutionArn + " to be in state FAILED");
     }
   }
 }

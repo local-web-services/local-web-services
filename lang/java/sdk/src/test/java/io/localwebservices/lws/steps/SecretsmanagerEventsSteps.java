@@ -18,18 +18,17 @@ import software.amazon.awssdk.services.secretsmanager.model.ListSecretsResponse;
  * delete_event_bus, delete_secret_event_delivered, rotate_secret_event_delivered, sequences.
  *
  * <p>lws limitation note: SecretsManagerHandler does not dispatch events to EventBridge when
- * secrets are created or deleted. Steps that verify event delivery use
- * {@code Assumptions.assumeTrue(false, ...)} to skip rather than fail.
+ * secrets are created or deleted. Steps that verify event delivery use {@code
+ * Assumptions.assumeTrue(false, ...)} to skip rather than fail.
  *
- * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot
- * capacity steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are
- * defined in {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
+ * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot capacity
+ * steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are defined in
+ * {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
  * DuplicateStepDefinitionException.
  *
  * <p>Secret precondition steps (sid preconditions, the secret already exists/does not already
- * exist/exists/does not exist Given steps) are defined in
- * {@link StepfunctionsSecretsmanagerSteps} and intentionally absent here to avoid
- * DuplicateStepDefinitionException.
+ * exist/exists/does not exist Given steps) are defined in {@link StepfunctionsSecretsmanagerSteps}
+ * and intentionally absent here to avoid DuplicateStepDefinitionException.
  */
 public class SecretsmanagerEventsSteps {
 
@@ -80,15 +79,12 @@ public class SecretsmanagerEventsSteps {
   // When — SecretsManager cross-service actions
   // -------------------------------------------------------------------------
 
-  @When(
-      "a secret is created and Secrets Manager delivers a {string} event to the EventBridge bus")
+  @When("a secret is created and Secrets Manager delivers a {string} event to the EventBridge bus")
   public void aSecretIsCreatedAndSecretsManagerDeliversEventToEventBridgeBus(String eventType) {
     // Arrange / Act / Assert — lws SecretsManagerHandler does not dispatch to EventBridge; skip
     Assumptions.assumeTrue(
         false,
-        "lws limitation: SecretsManager does not dispatch "
-            + eventType
-            + " events to EventBridge");
+        "lws limitation: SecretsManager does not dispatch " + eventType + " events to EventBridge");
   }
 
   @When("a secret is created but the {string} event delivery fails because the bus is deleted")
@@ -112,9 +108,7 @@ public class SecretsmanagerEventsSteps {
     // Arrange / Act / Assert — lws SecretsManagerHandler does not dispatch to EventBridge; skip
     Assumptions.assumeTrue(
         false,
-        "lws limitation: SecretsManager does not dispatch "
-            + eventType
-            + " events to EventBridge");
+        "lws limitation: SecretsManager does not dispatch " + eventType + " events to EventBridge");
   }
 
   @When("a secret rotation occurs and Secrets Manager delivers a {string} event to the bus")
@@ -142,8 +136,7 @@ public class SecretsmanagerEventsSteps {
     }
     // Assert
     assertTrue(
-        actualBusGone,
-        "expected event bus '" + expectedBusName + "' to be DELETED (deleted/gone)");
+        actualBusGone, "expected event bus '" + expectedBusName + "' to be DELETED (deleted/gone)");
   }
 
   // -------------------------------------------------------------------------
@@ -156,9 +149,7 @@ public class SecretsmanagerEventsSteps {
     // Arrange / Act / Assert — lws does not dispatch events to EventBridge; skip
     Assumptions.assumeTrue(
         false,
-        "lws limitation: SecretsManager does not dispatch "
-            + eventType
-            + " events to EventBridge");
+        "lws limitation: SecretsManager does not dispatch " + eventType + " events to EventBridge");
   }
 
   @Then("the secret is {string} but no event is delivered")
@@ -171,8 +162,7 @@ public class SecretsmanagerEventsSteps {
       boolean actualExists =
           response.secretList().stream().anyMatch(s -> s.name().equals(expectedSecretName));
       // Assert
-      assertTrue(
-          actualExists, "expected secret '" + expectedSecretName + "' to be " + secretState);
+      assertTrue(actualExists, "expected secret '" + expectedSecretName + "' to be " + secretState);
     }
   }
 
@@ -188,9 +178,7 @@ public class SecretsmanagerEventsSteps {
     // Arrange / Act / Assert — lws does not dispatch events to EventBridge; skip
     Assumptions.assumeTrue(
         false,
-        "lws limitation: SecretsManager does not dispatch "
-            + eventType
-            + " events to EventBridge");
+        "lws limitation: SecretsManager does not dispatch " + eventType + " events to EventBridge");
   }
 
   // -------------------------------------------------------------------------

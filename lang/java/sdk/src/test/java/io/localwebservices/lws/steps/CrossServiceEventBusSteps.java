@@ -12,9 +12,8 @@ import software.amazon.awssdk.services.eventbridge.model.ListEventBusesResponse;
 /**
  * Shared step definitions for EventBridge event bus preconditions and assertions.
  *
- * <p>These steps are common across multiple cross-service test suites:
- * s3api_events, secretsmanager_events, ssm_events, stepfunctions_events, events_dynamodb,
- * events_stepfunctions.
+ * <p>These steps are common across multiple cross-service test suites: s3api_events,
+ * secretsmanager_events, ssm_events, stepfunctions_events, events_dynamodb, events_stepfunctions.
  *
  * <p>Each suite's own Steps class handles service-specific steps only. All bus-lifecycle
  * Given/When/Then steps are consolidated here to avoid DuplicateStepDefinitionException.

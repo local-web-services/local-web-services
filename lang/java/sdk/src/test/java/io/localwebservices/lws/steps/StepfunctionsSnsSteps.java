@@ -40,8 +40,7 @@ public class StepfunctionsSnsSteps {
   @When("a running execution publishes a message to the \"SNS\" topic and succeeds")
   public void aRunningExecutionPublishesAMessageToSnsTopicAndSucceeds() {
     // Arrange / Act / Assert — internal execution SNS publish task not reachable via public API
-    Assumptions.assumeTrue(
-        false, "internal execution SNS publish task not reachable via SDK API");
+    Assumptions.assumeTrue(false, "internal execution SNS publish task not reachable via SDK API");
   }
 
   // -------------------------------------------------------------------------

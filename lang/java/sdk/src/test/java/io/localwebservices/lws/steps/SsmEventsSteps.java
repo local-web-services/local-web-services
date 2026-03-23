@@ -16,17 +16,17 @@ import software.amazon.awssdk.services.ssm.SsmClient;
  * put_parameter_event_fails, delete_parameter_event_delivered, sequences.
  *
  * <p>lws limitation note: SsmHandler does not dispatch events to EventBridge when parameters are
- * created or deleted. Steps that verify event delivery use
- * {@code Assumptions.assumeTrue(false, ...)} to skip rather than fail.
+ * created or deleted. Steps that verify event delivery use {@code Assumptions.assumeTrue(false,
+ * ...)} to skip rather than fail.
  *
- * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot
- * capacity steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are
- * defined in {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
+ * <p>Bus lifecycle steps (busid preconditions, bus existence/state Given steps, event slot capacity
+ * steps, the EventBridge event bus is deleted When, and the bus is "ACTIVE" Then) are defined in
+ * {@link CrossServiceEventBusSteps} and intentionally absent here to avoid
  * DuplicateStepDefinitionException.
  *
  * <p>Parameter precondition steps (pid preconditions, the parameter already/does not/exists/is
- * already Given steps) are defined in {@link StepfunctionsSsmSteps} and intentionally absent
- * here to avoid DuplicateStepDefinitionException.
+ * already Given steps) are defined in {@link StepfunctionsSsmSteps} and intentionally absent here
+ * to avoid DuplicateStepDefinitionException.
  */
 public class SsmEventsSteps {
 
@@ -62,12 +62,10 @@ public class SsmEventsSteps {
       String service, String eventType) {
     // Arrange / Act / Assert — lws SsmHandler does not dispatch to EventBridge; skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
+        false, "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
   }
 
-  @When(
-      "a parameter is created but the {string} event delivery fails because the bus is deleted")
+  @When("a parameter is created but the {string} event delivery fails because the bus is deleted")
   public void aParameterIsCreatedButEventDeliveryFailsBecauseBusIsDeleted(String eventType) {
     // Arrange
     try (SsmClient client = world.session.ssmClient()) {
@@ -91,8 +89,7 @@ public class SsmEventsSteps {
       String service, String eventType) {
     // Arrange / Act / Assert — lws SsmHandler does not dispatch to EventBridge; skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
+        false, "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
   }
 
   // -------------------------------------------------------------------------
@@ -114,8 +111,7 @@ public class SsmEventsSteps {
     }
     // Assert
     assertTrue(
-        actualBusGone,
-        "expected event bus '" + expectedBusName + "' to be DELETED (deleted/gone)");
+        actualBusGone, "expected event bus '" + expectedBusName + "' to be DELETED (deleted/gone)");
   }
 
   // -------------------------------------------------------------------------
@@ -127,8 +123,7 @@ public class SsmEventsSteps {
       String paramState, String eventType, String eventDeliveryState) {
     // Arrange / Act / Assert — lws does not dispatch events to EventBridge; skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
+        false, "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
   }
 
   @Then("the parameter {string} but no event is delivered")
@@ -138,8 +133,7 @@ public class SsmEventsSteps {
     // Act
     boolean actualExists = ssmParameterExists();
     // Assert
-    assertTrue(
-        actualExists, "expected parameter '" + expectedParamName + "' to be " + paramState);
+    assertTrue(actualExists, "expected parameter '" + expectedParamName + "' to be " + paramState);
   }
 
   @Then("the parameter is {string} and the {string} event is {string}")
@@ -147,8 +141,7 @@ public class SsmEventsSteps {
       String paramState, String eventType, String eventDeliveryState) {
     // Arrange / Act / Assert — lws does not dispatch events to EventBridge; skip
     Assumptions.assumeTrue(
-        false,
-        "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
+        false, "lws limitation: SSM does not dispatch " + eventType + " events to EventBridge");
   }
 
   // -------------------------------------------------------------------------
