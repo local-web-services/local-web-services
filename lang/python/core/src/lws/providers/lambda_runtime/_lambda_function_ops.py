@@ -10,10 +10,6 @@ from fastapi import Request, Response
 
 from lws.logging.logger import get_logger
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-from lws.providers.lambda_runtime._lambda_code_resolver import (  # noqa: F401
-    resolve_code_path,
-    resolve_code_path_from_name,
-)
 
 _logger = get_logger("ldk.lambda-mgmt")
 

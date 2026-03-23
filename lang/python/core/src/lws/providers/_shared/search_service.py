@@ -92,6 +92,7 @@ class _SearchState:
         self.domains: dict[str, _Domain] = {}
 
     def reset(self) -> None:
+        """Clear all stored domains."""
         self.domains.clear()
 
 

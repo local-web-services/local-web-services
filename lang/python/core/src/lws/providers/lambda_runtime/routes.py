@@ -21,6 +21,10 @@ from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.lambda_helpers import build_default_lambda_context
 from lws.providers._shared.request_helpers import parse_json_body
+from lws.providers.lambda_runtime._lambda_code_resolver import (
+    resolve_code_path,
+    resolve_code_path_from_name,
+)
 from lws.providers.lambda_runtime._lambda_esm_ops import (
     handle_create_event_source_mapping,
     handle_delete_event_source_mapping,
@@ -43,8 +47,6 @@ from lws.providers.lambda_runtime._lambda_function_ops import (
     handle_untag_resource,
     handle_update_function_code,
     handle_update_function_configuration,
-    resolve_code_path,
-    resolve_code_path_from_name,
 )
 from lws.providers.lambda_runtime._lambda_registry import LambdaRegistry
 from lws.providers.lambda_runtime._lambda_url_ops import (
@@ -58,10 +60,6 @@ _logger = get_logger("ldk.lambda-mgmt")
 
 _ACCOUNT_ID = "000000000000"
 _REGION = "us-east-1"
-
-# Re-export with original underscore-prefixed names for backward compatibility
-_resolve_code_path = resolve_code_path
-_resolve_code_path_from_name = resolve_code_path_from_name
 
 
 class _LambdaState:
