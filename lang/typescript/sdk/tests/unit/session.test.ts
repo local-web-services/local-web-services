@@ -149,6 +149,7 @@ describe("LwsSession", () => {
         "stepfunctions",
         "ssm",
         "secretsmanager",
+        "organizations",
       ];
 
       // Act & Assert

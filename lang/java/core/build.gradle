@@ -65,6 +65,7 @@ dependencies {
     testImplementation 'software.amazon.awssdk:sfn'
     testImplementation 'software.amazon.awssdk:ssm'
     testImplementation 'software.amazon.awssdk:secretsmanager'
+    testImplementation 'software.amazon.awssdk:organizations'
     testImplementation 'software.amazon.awssdk:url-connection-client'
 
     testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"

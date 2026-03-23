@@ -24,6 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/memorydb"
 	"github.com/aws/aws-sdk-go-v2/service/neptune"
 	"github.com/aws/aws-sdk-go-v2/service/opensearch"
+	"github.com/aws/aws-sdk-go-v2/service/organizations"
 	"github.com/aws/aws-sdk-go-v2/service/rds"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3tables"
@@ -58,6 +59,7 @@ var serviceOffsets = map[string]int{
 	"elasticsearch":  18,
 	"opensearch":     19,
 	"s3tables":       20,
+	"organizations":  50,
 }
 
 // serviceEnvVars maps service names to AWS SDK endpoint URL environment variables.
@@ -461,6 +463,14 @@ func (s *Session) OpenSearchClient() *opensearch.Client {
 func (s *Session) S3TablesClient() *s3tables.Client {
 	port, _ := s.PortFor("s3tables")
 	return s3tables.NewFromConfig(s.awsCfg, func(o *s3tables.Options) {
+		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+	})
+}
+
+// OrganizationsClient returns a pre-configured Organizations client.
+func (s *Session) OrganizationsClient() *organizations.Client {
+	port, _ := s.PortFor("organizations")
+	return organizations.NewFromConfig(s.awsCfg, func(o *organizations.Options) {
 		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
 	})
 }

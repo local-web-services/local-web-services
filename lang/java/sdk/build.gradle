@@ -61,6 +61,7 @@ dependencies {
     api 'software.amazon.awssdk:elasticsearch'
     api 'software.amazon.awssdk:opensearch'
     api 'software.amazon.awssdk:s3tables:2.32.26'
+    api 'software.amazon.awssdk:organizations'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
 
     // Java core in-process server — available in main source for direct type reference

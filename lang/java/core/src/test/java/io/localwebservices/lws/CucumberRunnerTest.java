@@ -31,6 +31,7 @@ import org.junit.platform.suite.api.*;
 @SelectClasspathResource("informal/stepfunctions_sns")
 @SelectClasspathResource("informal/stepfunctions_sqs")
 @SelectClasspathResource("informal/stepfunctions_ssm")
+@SelectClasspathResource("informal/organizations")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "io.localwebservices.lws.steps")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "progress")
 @ConfigurationParameter(

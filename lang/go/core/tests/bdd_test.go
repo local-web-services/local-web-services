@@ -55,6 +55,7 @@ func TestMain(m *testing.M) {
 			"../../../../lang/specification/core/informal/stepfunctions_sns",
 			"../../../../lang/specification/core/informal/stepfunctions_sqs",
 			"../../../../lang/specification/core/informal/stepfunctions_ssm",
+			"../../../../lang/specification/core/informal/organizations",
 		},
 		Tags: "@minimal,@standard&&~@internal",
 	}

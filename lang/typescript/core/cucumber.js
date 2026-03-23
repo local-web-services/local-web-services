@@ -28,6 +28,7 @@ module.exports = {
       "../../../lang/specification/core/informal/stepfunctions_sns/**/*.feature",
       "../../../lang/specification/core/informal/stepfunctions_sqs/**/*.feature",
       "../../../lang/specification/core/informal/stepfunctions_ssm/**/*.feature",
+      "../../../lang/specification/core/informal/organizations/**/*.feature",
     ],
     tags: "(@minimal or @standard) and not @internal",
     format: ["progress"],

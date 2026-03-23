@@ -39,6 +39,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/memorydb v1.33.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/neptune v1.44.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/opensearch v1.60.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/organizations v1.50.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/rds v1.116.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.58.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3tables v1.14.3 // indirect

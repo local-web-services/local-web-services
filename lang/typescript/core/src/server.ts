@@ -24,6 +24,7 @@ import { registerGlacier } from "./providers/glacier";
 import { registerElasticsearch } from "./providers/elasticsearch";
 import { registerOpenSearch } from "./providers/opensearch";
 import { registerS3Tables } from "./providers/s3tables";
+import { registerOrganizations } from "./providers/organizations";
 
 export interface LwsServerConfig {
   basePort: number;
@@ -59,6 +60,7 @@ const SERVICE_OFFSETS: Record<string, number> = {
   elasticsearch: 18,
   opensearch: 19,
   s3tables: 20,
+  organizations: 50,
 };
 
 function createApp(rawBody = false): FastifyInstance {
@@ -267,6 +269,14 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
     await app.register(async (instance) => registerS3Tables(instance, state));
     const port = basePort + SERVICE_OFFSETS.s3tables;
     serviceApps.push({ name: "s3tables", app, port });
+  }
+
+  // Organizations
+  {
+    const app = createApp();
+    await app.register(async (instance) => registerOrganizations(instance, state));
+    const port = basePort + SERVICE_OFFSETS.organizations;
+    serviceApps.push({ name: "organizations", app, port });
   }
 
   // Start all service apps

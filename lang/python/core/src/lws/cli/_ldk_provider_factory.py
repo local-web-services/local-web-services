@@ -34,6 +34,7 @@ from lws.cli._ldk_providers_core import (  # noqa: F401  # pylint: disable=unuse
 )
 from lws.cli._ldk_providers_extended import (  # noqa: F401  # pylint: disable=unused-import
     _register_experimental_providers,
+    _register_organizations_provider,
     _register_ssm_secretsmanager_providers,
 )
 from lws.config.loader import LdkConfig
@@ -55,6 +56,7 @@ _CHAOS_SERVICES = [
     "ssm",
     "secretsmanager",
     "iam",
+    "organizations",
 ]
 
 _LIFECYCLE_SERVICES = [
@@ -235,9 +237,10 @@ def _create_providers(  # pylint: disable=too-many-statements
         }
         lambda_registry.register(func.name, func_config, compute_providers[func.name])
 
-    # 8. Add SSM and Secrets Manager endpoints, rebuild SDK env, update compute
+    # 8. Add SSM, Secrets Manager, and Organizations endpoints, rebuild SDK env, update compute
     local_endpoints["ssm"] = f"http://127.0.0.1:{ports['ssm']}"
     local_endpoints["secretsmanager"] = f"http://127.0.0.1:{ports['secretsmanager']}"
+    local_endpoints["organizations"] = f"http://127.0.0.1:{ports['organizations']}"
     sdk_env = build_sdk_env(local_endpoints)
     for compute in lambda_registry.compute.values():
         if hasattr(compute, "sdk_env"):
@@ -299,6 +302,14 @@ def _create_providers(  # pylint: disable=too-many-statements
         iam_auth_bundle=iam_auth_bundle,
         ssm_port=ports["ssm"],
         secretsmanager_port=ports["secretsmanager"],
+    )
+
+    # 12. Organizations
+    _register_organizations_provider(
+        providers,
+        chaos_configs=chaos_configs,
+        aws_fake_configs=aws_fake_configs,
+        organizations_port=ports["organizations"],
     )
 
     # Fake server provider

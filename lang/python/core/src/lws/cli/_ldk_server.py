@@ -31,6 +31,7 @@ from lws.cli._ldk_provider_factory import (
     _register_experimental_providers,
     _register_fake_provider,
 )
+from lws.cli._ldk_providers_extended import _register_organizations_provider
 from lws.cli.display import print_error
 from lws.cli.experimental import EXPERIMENTAL_SERVICES
 from lws.config.loader import LdkConfig
@@ -116,6 +117,7 @@ def _create_terraform_providers(
         "cognito-idp": f"http://127.0.0.1:{ports['cognito-idp']}",
         "ssm": f"http://127.0.0.1:{ports['ssm']}",
         "secretsmanager": f"http://127.0.0.1:{ports['secretsmanager']}",
+        "organizations": f"http://127.0.0.1:{ports['organizations']}",
     }
     sdk_env = build_sdk_env(local_endpoints)
 
@@ -152,6 +154,14 @@ def _create_terraform_providers(
     from lws.providers.sts.routes import create_sts_app  # pylint: disable=import-outside-toplevel
 
     providers["__sts_http__"] = _HttpServiceProvider("sts-http", create_sts_app, ports["sts"])
+
+    # Organizations
+    _register_organizations_provider(
+        providers,
+        chaos_configs=chaos_configs,
+        aws_fake_configs=aws_fake_configs,
+        organizations_port=ports["organizations"],
+    )
 
     # SSM Parameter Store
     from lws.providers.ssm.routes import create_ssm_app  # pylint: disable=import-outside-toplevel

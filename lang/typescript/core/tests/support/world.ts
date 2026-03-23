@@ -19,6 +19,7 @@ import { SFNClient } from "@aws-sdk/client-sfn";
 import { SSMClient } from "@aws-sdk/client-ssm";
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
+import { OrganizationsClient } from "@aws-sdk/client-organizations";
 import * as cli from "../../src/cli";
 
 const BASE_PORT = 19300;
@@ -73,6 +74,17 @@ export class LwsWorld extends World {
   lastTopicArn: string | undefined;
   lastFile: string | undefined;
 
+  // Organizations multi-step storage
+  orgsOrgId: string = "";
+  orgsRootId: string = "";
+  orgsAccountId: string = "";
+  orgsOuId: string = "";
+  orgsOuName: string = "";
+  orgsPolicyId: string = "";
+  orgsTargetId: string = "";
+  orgsSourceParentId: string = "";
+  orgsDestParentId: string = "";
+
   // Track registered AWS fakes by name → service
   registeredFakes: Map<string, string> = new Map();
 
@@ -114,6 +126,9 @@ export class LwsWorld extends World {
   }
   get secretsmanagerPort(): number {
     return BASE_PORT + 13;
+  }
+  get organizationsPort(): number {
+    return BASE_PORT + 50;
   }
 
   dynamodbClient(): DynamoDBClient {
@@ -185,6 +200,14 @@ export class LwsWorld extends World {
   cognitoClient(): CognitoIdentityProviderClient {
     return new CognitoIdentityProviderClient({
       endpoint: `http://127.0.0.1:${this.cognitoPort}`,
+      credentials: { accessKeyId: "test", secretAccessKey: "test" },
+      region: "us-east-1",
+    });
+  }
+
+  organizationsClient(): OrganizationsClient {
+    return new OrganizationsClient({
+      endpoint: `http://127.0.0.1:${this.organizationsPort}`,
       credentials: { accessKeyId: "test", secretAccessKey: "test" },
       region: "us-east-1",
     });

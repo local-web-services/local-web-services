@@ -9,6 +9,7 @@ import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
+import software.amazon.awssdk.services.organizations.OrganizationsClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
@@ -47,6 +48,17 @@ public class WorldContext {
   public boolean timedSuccess = false;
   public Object timedOutput = null;
   public long timedElapsedMs = 0;
+
+  // Organizations multi-step state
+  public String orgsOrgId;
+  public String orgsRootId;
+  public String orgsAccountId;
+  public String orgsOuId;
+  public String orgsOuName;
+  public String orgsPolicyId;
+  public String orgsTargetId;
+  public String orgsSourceParentId;
+  public String orgsDestParentId;
 
   // Multi-step state
   public String lastReceiptHandle;
@@ -110,6 +122,10 @@ public class WorldContext {
 
   public int secretsmanagerPort() {
     return BASE_PORT + 13;
+  }
+
+  public int organizationsPort() {
+    return BASE_PORT + 50;
   }
 
   private static final StaticCredentialsProvider CREDS =
@@ -180,6 +196,14 @@ public class WorldContext {
   public SecretsManagerClient secretsManagerClient() {
     return SecretsManagerClient.builder()
         .endpointOverride(URI.create("http://127.0.0.1:" + secretsmanagerPort()))
+        .credentialsProvider(CREDS)
+        .region(Region.US_EAST_1)
+        .build();
+  }
+
+  public OrganizationsClient organizationsClient() {
+    return OrganizationsClient.builder()
+        .endpointOverride(URI.create("http://127.0.0.1:" + organizationsPort()))
         .credentialsProvider(CREDS)
         .region(Region.US_EAST_1)
         .build();
