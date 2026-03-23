@@ -10,7 +10,7 @@ from lws.providers.apigateway.routes import create_apigateway_management_app
 
 
 def _client() -> TestClient:
-    return TestClient(create_apigateway_management_app())
+    return TestClient(create_apigateway_management_app()[0])
 
 
 class TestListIntegrations:

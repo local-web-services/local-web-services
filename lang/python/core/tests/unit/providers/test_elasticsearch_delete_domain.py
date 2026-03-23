@@ -12,7 +12,7 @@ from lws.providers.elasticsearch.routes import create_elasticsearch_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_elasticsearch_app()
+    app, _ = create_elasticsearch_app()
     return TestClient(app)
 
 

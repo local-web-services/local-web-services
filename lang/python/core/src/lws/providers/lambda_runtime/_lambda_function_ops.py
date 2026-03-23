@@ -4,13 +4,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from pathlib import Path
 from typing import Any
 
 from fastapi import Request, Response
 
 from lws.logging.logger import get_logger
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers.lambda_runtime._lambda_code_resolver import (  # noqa: F401
+    resolve_code_path,
+    resolve_code_path_from_name,
+)
 
 _logger = get_logger("ldk.lambda-mgmt")
 
@@ -81,6 +84,15 @@ async def handle_create_function(
     if not function_name:
         return _json_response({"message": "FunctionName is required"}, 400)
 
+    if registry.get_config(function_name) is not None:
+        return _json_response(
+            {
+                "__type": "ResourceConflictException",
+                "Message": f"Function already exist: {function_name}",
+            },
+            409,
+        )
+
     func_config = {
         "FunctionName": function_name,
         "Runtime": body.get("Runtime", "nodejs18.x"),
@@ -129,7 +141,7 @@ async def handle_get_function(
         return _json_response(
             {
                 "Message": f"Function not found: {function_name}",
-                "Type": "ResourceNotFoundException",
+                "__type": "ResourceNotFoundException",
             },
             404,
         )
@@ -139,7 +151,7 @@ async def handle_get_function(
             return _json_response(
                 {
                     "Message": f"Function {function_name} is in state {state}",
-                    "Type": "ResourceConflictException",
+                    "__type": "ResourceConflictException",
                 },
                 409,
             )
@@ -158,13 +170,30 @@ async def handle_delete_function(
     tracker: ResourceStateTracker,
 ) -> Response:
     """Handle DeleteFunction."""
+    if registry.get_config(function_name) is None:
+        if not (lifecycle.enabled and tracker.get_state(function_name) is not None):
+            return _json_response(
+                {
+                    "Message": f"Function not found: {function_name}",
+                    "__type": "ResourceNotFoundException",
+                },
+                404,
+            )
     if lifecycle.enabled:
         state = tracker.get_state(function_name)
         if state == "CREATING":
             return _json_response(
                 {
                     "Message": f"Function {function_name} is still being created",
-                    "Type": "ResourceConflictException",
+                    "__type": "ResourceConflictException",
+                },
+                409,
+            )
+        if state == "DELETING":
+            return _json_response(
+                {
+                    "Message": f"Function {function_name} is already being deleted",
+                    "__type": "ResourceConflictException",
                 },
                 409,
             )
@@ -196,7 +225,7 @@ async def handle_update_function_configuration(
         return _json_response(
             {
                 "Message": f"Function not found: {function_name}",
-                "Type": "ResourceNotFoundException",
+                "__type": "ResourceNotFoundException",
             },
             404,
         )
@@ -206,7 +235,7 @@ async def handle_update_function_configuration(
             return _json_response(
                 {
                     "Message": f"Function {function_name} is in state {state}",
-                    "Type": "ResourceConflictException",
+                    "__type": "ResourceConflictException",
                 },
                 409,
             )
@@ -240,7 +269,7 @@ async def handle_update_function_code(
         return _json_response(
             {
                 "Message": f"Function not found: {function_name}",
-                "Type": "ResourceNotFoundException",
+                "__type": "ResourceNotFoundException",
             },
             404,
         )
@@ -250,7 +279,7 @@ async def handle_update_function_code(
             return _json_response(
                 {
                     "Message": f"Function {function_name} is in state {state}",
-                    "Type": "ResourceConflictException",
+                    "__type": "ResourceConflictException",
                 },
                 409,
             )
@@ -265,7 +294,7 @@ async def handle_list_versions(function_name: str, registry: Any) -> Response:
         return _json_response(
             {
                 "Message": f"Function not found: {function_name}",
-                "Type": "ResourceNotFoundException",
+                "__type": "ResourceNotFoundException",
             },
             404,
         )
@@ -281,12 +310,33 @@ async def handle_add_permission(
     function_name: str,
     request: Request,
     permissions: dict[str, dict[str, Any]],
+    registry: Any = None,
+    lifecycle: ResourceLifecycleConfig | None = None,
+    tracker: ResourceStateTracker | None = None,
 ) -> Response:
     """Handle AddPermission."""
     from lws.providers._shared.request_helpers import (  # pylint: disable=import-outside-toplevel
         parse_json_body,
     )
 
+    if registry is not None and registry.get_config(function_name) is None:
+        return _json_response(
+            {
+                "Message": f"Function not found: {function_name}",
+                "__type": "ResourceNotFoundException",
+            },
+            404,
+        )
+    if lifecycle is not None and lifecycle.enabled and tracker is not None:
+        state = tracker.get_state(function_name)
+        if state in ("CREATING", "DELETING"):
+            return _json_response(
+                {
+                    "Message": f"Function {function_name} is in state {state}",
+                    "__type": "ResourceConflictException",
+                },
+                409,
+            )
     body = await parse_json_body(request)
     sid = body.get("StatementId", str(uuid.uuid4())[:8])
     permissions.setdefault(function_name, {})[sid] = body
@@ -338,8 +388,25 @@ async def handle_remove_permission(
     permissions: dict[str, dict[str, Any]],
 ) -> Response:
     """Handle RemovePermission."""
-    permissions.get(function_name, {}).pop(sid, None)
+    func_perms = permissions.get(function_name)
+    if func_perms is None or sid not in func_perms:
+        return _json_response(
+            {
+                "Message": f"No policy or statement found for function: {function_name}/{sid}",
+                "__type": "ResourceNotFoundException",
+            },
+            404,
+        )
+    func_perms.pop(sid, None)
     return Response(status_code=204)
+
+
+def _function_name_from_arn(arn: str) -> str:
+    """Extract function name from a Lambda ARN."""
+    parts = arn.split(":")
+    if len(parts) >= 7 and parts[5] == "function":
+        return parts[6]
+    return arn.split("/")[-1] if "/" in arn else arn
 
 
 async def handle_tag_resource(arn: str, request: Request, registry: Any) -> Response:
@@ -348,6 +415,15 @@ async def handle_tag_resource(arn: str, request: Request, registry: Any) -> Resp
         parse_json_body,
     )
 
+    function_name = _function_name_from_arn(arn)
+    if registry.get_config(function_name) is None:
+        return _json_response(
+            {
+                "Message": f"Function not found: {function_name}",
+                "__type": "ResourceNotFoundException",
+            },
+            404,
+        )
     body = await parse_json_body(request)
     tags = body.get("Tags", {})
     registry.tag_resource(arn, tags)
@@ -357,6 +433,15 @@ async def handle_tag_resource(arn: str, request: Request, registry: Any) -> Resp
 
 async def handle_untag_resource(arn: str, request: Request, registry: Any) -> Response:
     """Handle UntagResource."""
+    function_name = _function_name_from_arn(arn)
+    if registry.get_config(function_name) is None:
+        return _json_response(
+            {
+                "Message": f"Function not found: {function_name}",
+                "__type": "ResourceNotFoundException",
+            },
+            404,
+        )
     tag_keys_param = request.query_params.get("tagKeys", "")
     tag_keys = [k for k in tag_keys_param.split(",") if k]
     registry.untag_resource(arn, tag_keys)
@@ -368,55 +453,3 @@ async def handle_list_tags(arn: str, registry: Any) -> Response:
     """Handle ListTags."""
     tags = registry.get_tags(arn)
     return _json_response({"Tags": tags})
-
-
-def resolve_code_path(filename: str | None, project_dir: Path | None) -> Path | None:
-    """Resolve the Lambda code path from Terraform's zip Filename."""
-    if not filename:
-        return None
-
-    zip_path = Path(filename)
-
-    if zip_path.is_dir():
-        return zip_path
-
-    if project_dir is not None:
-        stem = zip_path.stem
-        candidate = project_dir / "lambda" / stem
-        if candidate.is_dir():
-            return candidate
-
-        candidate2 = project_dir / "src" / "lambda" / stem
-        if candidate2.is_dir():
-            return candidate2
-
-    if zip_path.parent.exists():
-        return zip_path.parent
-
-    return Path(".")
-
-
-def resolve_code_path_from_name(function_name: str, project_dir: Path) -> Path | None:
-    """Try to find the Lambda source directory using the function name."""
-    import re  # pylint: disable=import-outside-toplevel
-
-    name = function_name
-    for suffix in ("Function", "Lambda", "Handler"):
-        if name.endswith(suffix):
-            name = name[: -len(suffix)]
-            break
-
-    kebab = re.sub(r"(?<=[a-z0-9])([A-Z])", r"-\1", name).lower()
-    snake = re.sub(r"(?<=[a-z0-9])([A-Z])", r"_\1", name).lower()
-    lower = name.lower()
-
-    candidates = [kebab, snake, lower, function_name]
-
-    for candidate in candidates:
-        for base in [project_dir / "lambda", project_dir / "src" / "lambda"]:
-            path = base / candidate
-            if path.is_dir():
-                _logger.debug("Resolved code path for %s → %s", function_name, path)
-                return path
-
-    return None

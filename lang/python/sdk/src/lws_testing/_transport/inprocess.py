@@ -6,6 +6,19 @@ import socket
 from pathlib import Path
 from typing import Any
 
+from lws_testing._transport._provider_wrappers import (
+    _ApiGatewayStateProvider,
+    _ElasticsearchStateProvider,
+    _GlacierStateProvider,
+    _LambdaRegistryProvider,
+    _OpensearchStateProvider,
+    _OrganizationsStateProvider,
+    _S3TablesStateProvider,
+    _SecretsManagerStateProvider,
+    _SsmStateProvider,
+    _StubOrchestrator,
+)
+
 
 def _free_port() -> int:
     """Return a free ephemeral TCP port on localhost."""
@@ -86,76 +99,6 @@ def _make_initial_secret(spec: str | dict[str, Any]) -> dict[str, Any]:
     return spec
 
 
-class _StubOrchestrator:
-    """Minimal Orchestrator stub for the management API."""
-
-    def __init__(self, providers: dict[str, Any]) -> None:
-        self._providers = providers
-        self._running = True
-
-    @property
-    def providers(self) -> dict[str, Any]:
-        return self._providers
-
-    @property
-    def running(self) -> bool:
-        return self._running
-
-    def request_shutdown(self) -> None:
-        self._running = False
-
-
-class _SsmStateProvider:
-    """Thin wrapper that exposes _SsmState as a resettable provider."""
-
-    def __init__(self, state: Any) -> None:
-        self._state = state
-
-    @property
-    def name(self) -> str:
-        return "ssm"
-
-    async def reset(self) -> None:
-        self._state.reset()
-
-    async def health_check(self) -> bool:
-        return True
-
-
-class _SecretsManagerStateProvider:
-    """Thin wrapper that exposes _SecretsState as a resettable provider."""
-
-    def __init__(self, state: Any) -> None:
-        self._state = state
-
-    @property
-    def name(self) -> str:
-        return "secretsmanager"
-
-    async def reset(self) -> None:
-        self._state.reset()
-
-    async def health_check(self) -> bool:
-        return True
-
-
-class _OrganizationsStateProvider:
-    """Thin wrapper that exposes _OrganizationsState as a resettable provider."""
-
-    def __init__(self, state: Any) -> None:
-        self._state = state
-
-    @property
-    def name(self) -> str:
-        return "organizations"
-
-    async def reset(self) -> None:
-        self._state.reset()
-
-    async def health_check(self) -> bool:
-        return True
-
-
 def _create_management_app(
     providers: dict[str, Any],
     chaos_configs: dict[str, Any],
@@ -213,6 +156,8 @@ def _convert_spec(spec: dict[str, Any]) -> dict[str, list[Any]]:
 
 def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, Any]:
     """Instantiate all service providers."""
+    from lws.providers.cognito._cognito_auth import UserPoolConfig
+    from lws.providers.cognito.provider import CognitoProvider
     from lws.providers.dynamodb.provider import SqliteDynamoProvider
     from lws.providers.eventbridge.provider import EventBridgeProvider
     from lws.providers.s3.provider import S3Provider
@@ -220,18 +165,20 @@ def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, An
     from lws.providers.sqs.provider import SqsProvider
     from lws.providers.stepfunctions.provider import StepFunctionsProvider
 
-    dynamo_data = data_dir / "dynamodb"
-    dynamo_data.mkdir(parents=True, exist_ok=True)
-    s3_data = data_dir / "s3"
-    s3_data.mkdir(parents=True, exist_ok=True)
+    for subdir in ("dynamodb", "s3", "cognito"):
+        (data_dir / subdir).mkdir(parents=True, exist_ok=True)
 
     return {
-        "dynamodb": SqliteDynamoProvider(data_dir=dynamo_data, tables=cfg["tables"]),
+        "dynamodb": SqliteDynamoProvider(data_dir=data_dir / "dynamodb", tables=cfg["tables"]),
         "sqs": SqsProvider(queues=cfg["queues"]),
-        "s3": S3Provider(data_dir=s3_data, buckets=cfg["buckets"]),
+        "s3": S3Provider(data_dir=data_dir / "s3", buckets=cfg["buckets"]),
         "sns": SnsProvider(topics=cfg["topics"]),
         "stepfunctions": StepFunctionsProvider(state_machines=cfg["state_machines"]),
         "events": EventBridgeProvider(),
+        "cognito-idp": CognitoProvider(
+            data_dir=data_dir / "cognito",
+            config=UserPoolConfig(user_pool_id="us-east-1_e2etest001"),
+        ),
     }
 
 
@@ -317,7 +264,12 @@ def _build_service_apps(
     from lws.providers.ssm.routes import create_ssm_app
     from lws.providers.stepfunctions.routes import create_stepfunctions_app
 
+    from lws_testing._transport._extended_services import build_extended_service_apps
+
     _cap = capacity_configs or {}
+    extended_apps, extended_extra_providers = build_extended_service_apps(
+        providers, lifecycle_configs, capacity_configs=_cap
+    )
 
     ssm_app, ssm_state = create_ssm_app(
         initial_parameters=cfg["parameters"] or None,
@@ -400,10 +352,13 @@ def _build_service_apps(
         ),
         (
             "apigateway",
-            create_apigateway_management_app(
-                lifecycle=lifecycle_configs["apigateway"],
-            ),
+            (
+                _apigateway_app := create_apigateway_management_app(
+                    lifecycle=lifecycle_configs["apigateway"],
+                )
+            )[0],
         ),
+        *extended_apps,
     ]
 
     organizations_app, organizations_state = create_organizations_app(
@@ -416,6 +371,12 @@ def _build_service_apps(
         "ssm": _SsmStateProvider(ssm_state),
         "secretsmanager": _SecretsManagerStateProvider(secretsmanager_state),
         "organizations": _OrganizationsStateProvider(organizations_state),
+        "lambda": _LambdaRegistryProvider(extended_extra_providers["lambda_registry"]),
+        "apigateway-state": _ApiGatewayStateProvider(_apigateway_app[1]),
+        "glacier": _GlacierStateProvider(extended_extra_providers["glacier_state"]),
+        "s3tables": _S3TablesStateProvider(extended_extra_providers["s3tables_state"]),
+        "es": _ElasticsearchStateProvider(extended_extra_providers["elasticsearch_state"]),
+        "opensearch-state": _OpensearchStateProvider(extended_extra_providers["opensearch_state"]),
     }
 
     return service_apps, extra_providers
@@ -456,6 +417,17 @@ _SERVICE_NAMES = [
     "events",
     "apigateway",
     "organizations",
+    "cognito-idp",
+    "docdb",
+    "neptune",
+    "rds",
+    "elasticache",
+    "memorydb",
+    "es",
+    "opensearch",
+    "glacier",
+    "s3tables",
+    "lambda",
 ]
 
 

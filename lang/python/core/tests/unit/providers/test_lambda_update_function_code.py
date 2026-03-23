@@ -78,6 +78,4 @@ class TestUpdateFunctionCode:
         )
         assert resp.status_code == 404, f"Expected {404!r} but got {resp.status_code!r}"
         data = resp.json()
-        assert (
-            data["Type"] == "ResourceNotFoundException"
-        ), f'Expected {"ResourceNotFoundException"!r} but got {data["Type"]!r}'
+        assert data["__type"] == "ResourceNotFoundException"

@@ -10,7 +10,7 @@ from lws.providers.glacier.routes import create_glacier_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_glacier_app()
+    app, _ = create_glacier_app()
     return TestClient(app)
 
 
@@ -41,10 +41,10 @@ class TestCreateVault:
         actual_location = response.headers["location"]
         assert actual_location.endswith(expected_location_suffix), "Expected value to be truthy"
 
-    def test_create_vault_idempotent(self, client: TestClient) -> None:
+    def test_create_vault_duplicate_returns_409(self, client: TestClient) -> None:
         # Arrange
-        expected_status_code = 201
-        vault_name = "idempotent-vault"
+        expected_status_code = 409
+        vault_name = "duplicate-vault"
         client.put(f"/-/vaults/{vault_name}")
 
         # Act

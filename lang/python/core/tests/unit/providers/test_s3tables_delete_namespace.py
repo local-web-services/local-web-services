@@ -10,12 +10,12 @@ from lws.providers.s3tables.routes import create_s3tables_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_s3tables_app()
+    app, _ = create_s3tables_app()
     return TestClient(app)
 
 
 def _create_table_bucket(client: TestClient, name: str) -> None:
-    client.put("/table-buckets", json={"name": name})
+    client.put("/buckets", json={"name": name})
 
 
 class TestDeleteNamespace:
@@ -25,12 +25,12 @@ class TestDeleteNamespace:
         namespace_name = "del-ns"
         _create_table_bucket(client, bucket_name)
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces",
+            f"/namespaces/{bucket_name}",
             json={"namespace": [namespace_name]},
         )
 
         # Act
-        response = client.delete(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}")
+        response = client.delete(f"/namespaces/{bucket_name}/{namespace_name}")
 
         # Assert
         expected_status = 204
@@ -45,15 +45,15 @@ class TestDeleteNamespace:
         namespace_name = "del-listed-ns"
         _create_table_bucket(client, bucket_name)
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces",
+            f"/namespaces/{bucket_name}",
             json={"namespace": [namespace_name]},
         )
 
         # Act
-        client.delete(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}")
+        client.delete(f"/namespaces/{bucket_name}/{namespace_name}")
 
         # Assert
-        list_response = client.get(f"/table-buckets/{bucket_name}/namespaces")
+        list_response = client.get(f"/namespaces/{bucket_name}")
         actual_body = list_response.json()
         actual_namespaces = [ns["namespace"] for ns in actual_body["namespaces"]]
         assert [
@@ -69,7 +69,7 @@ class TestDeleteNamespace:
         _create_table_bucket(client, bucket_name)
 
         # Act
-        response = client.delete(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}")
+        response = client.delete(f"/namespaces/{bucket_name}/{namespace_name}")
 
         # Assert
         expected_status = 404
@@ -89,7 +89,7 @@ class TestDeleteNamespace:
         namespace_name = "any-ns"
 
         # Act
-        response = client.delete(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}")
+        response = client.delete(f"/namespaces/{bucket_name}/{namespace_name}")
 
         # Assert
         expected_status = 404

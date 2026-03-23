@@ -27,7 +27,8 @@ async def provider():
 
 @pytest.fixture
 def app(provider):
-    return create_opensearch_app()
+    app, _ = create_opensearch_app()
+    return app
 
 
 @pytest.fixture

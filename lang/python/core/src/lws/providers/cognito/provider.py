@@ -76,6 +76,12 @@ class CognitoProvider(Provider):
         """Check if the user store is healthy."""
         return await self._store.is_healthy()
 
+    async def reset(self) -> None:
+        """Clear all user pool state (pool name, clients, and users) for test isolation."""
+        self._config.user_pool_name = ""
+        self._clients.clear()
+        await self._store.clear()
+
     # -- Public API -----------------------------------------------------------
 
     @property

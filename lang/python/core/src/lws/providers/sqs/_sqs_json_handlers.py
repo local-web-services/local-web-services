@@ -213,6 +213,41 @@ class _SqsJsonHandlersMixin:
             )
         attrs = body.get("Attributes", {})
         config = self.provider.configs.get(queue_name)  # type: ignore[attr-defined]
+        if "RedrivePolicy" in attrs:
+            existing_policy = (config.custom_attrs.get("RedrivePolicy") if config else None) or (
+                queue.dead_letter_queue is not None  # type: ignore[attr-defined]
+            )
+            if existing_policy:
+                return _json_error(
+                    "InvalidParameterValue",
+                    "A dead-letter queue is already configured for this queue.",
+                    status_code=400,
+                )
+            import json as _json_lib
+
+            try:
+                redrive = _json_lib.loads(attrs["RedrivePolicy"])
+                dlq_arn = redrive.get("deadLetterTargetArn", "")
+                dlq_name = dlq_arn.split(":")[-1] if ":" in dlq_arn else dlq_arn
+            except (ValueError, KeyError):
+                dlq_name = ""
+            if dlq_name:
+                dlq = self.provider.get_queue(dlq_name)  # type: ignore[attr-defined]
+                if dlq is None:
+                    return _json_error(
+                        "InvalidParameterValue",
+                        f"Value {dlq_arn!r} for parameter RedrivePolicy is invalid. "
+                        "Reason: Dead letter target does not exist.",
+                        status_code=400,
+                    )
+                dlq_state = self._get_lifecycle_error_json(dlq_name)  # type: ignore[attr-defined]
+                if dlq_state is not None:
+                    return _json_error(
+                        "InvalidParameterValue",
+                        f"Value {dlq_arn!r} for parameter RedrivePolicy is invalid. "
+                        "Reason: Dead letter target is not ACTIVE.",
+                        status_code=400,
+                    )
         _apply_queue_attrs(queue, attrs, config)
         return _json_response({})
 

@@ -10,7 +10,7 @@ from lws.providers.s3tables.routes import create_s3tables_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_s3tables_app()
+    app, _ = create_s3tables_app()
     return TestClient(app)
 
 
@@ -18,10 +18,10 @@ class TestGetTableBucket:
     def test_get_table_bucket_returns_details(self, client: TestClient) -> None:
         # Arrange
         bucket_name = "get-bucket"
-        client.put("/table-buckets", json={"name": bucket_name})
+        client.put("/buckets", json={"name": bucket_name})
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}")
+        response = client.get(f"/buckets/{bucket_name}")
 
         # Assert
         expected_status = 200
@@ -31,18 +31,16 @@ class TestGetTableBucket:
         ), f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
         actual_name = actual_body["name"]
-        assert actual_name == bucket_name, f"Expected {bucket_name!r} but got {actual_name!r}"
-        assert (
-            "tableBucketARN" in actual_body
-        ), f'Expected {"tableBucketARN"!r} to be in {actual_body!r}'
-        assert "createdAt" in actual_body, f'Expected {"createdAt"!r} to be in {actual_body!r}'
+        assert actual_name == bucket_name
+        assert "arn" in actual_body
+        assert "createdAt" in actual_body
 
     def test_get_table_bucket_not_found(self, client: TestClient) -> None:
         # Arrange
         bucket_name = "nonexistent-bucket"
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}")
+        response = client.get(f"/buckets/{bucket_name}")
 
         # Assert
         expected_status = 404

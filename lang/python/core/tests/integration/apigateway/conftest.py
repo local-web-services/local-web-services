@@ -30,7 +30,7 @@ async def provider():
 
 @pytest.fixture
 def app(provider):
-    return create_apigateway_management_app()
+    return create_apigateway_management_app()[0]
 
 
 @pytest.fixture

@@ -118,9 +118,13 @@ class CognitoRouter:
         return _json_response(result)
 
     async def _create_user_pool(self, body: dict) -> Response:
-        """Handle CreateUserPool operation."""
         pool_name = body.get("PoolName", "default")
         config = self._provider.config
+        if config.user_pool_name == pool_name:
+            return _error_response(
+                "ResourceInUseException",
+                f"User pool with name '{pool_name}' already exists",
+            )
         config.user_pool_name = pool_name
         pool_id = config.user_pool_id
         arn = f"arn:aws:cognito-idp:us-east-1:000000000000:userpool/{pool_id}"

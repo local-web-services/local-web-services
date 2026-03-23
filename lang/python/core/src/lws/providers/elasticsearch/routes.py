@@ -10,7 +10,11 @@ from dataclasses import replace
 from fastapi import FastAPI
 
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
-from lws.providers._shared.search_service import SearchServiceConfig, create_search_service_app
+from lws.providers._shared.search_service import (
+    SearchServiceConfig,
+    _SearchState,
+    create_search_service_app,
+)
 
 _ES_CONFIG = SearchServiceConfig(
     service_name="elasticsearch",
@@ -38,8 +42,11 @@ def create_elasticsearch_app(
     *,
     container_manager=None,
     lifecycle: ResourceLifecycleConfig | None = None,
-) -> FastAPI:
-    """Create a FastAPI application that speaks the Elasticsearch Service wire protocol."""
+) -> tuple[FastAPI, _SearchState]:
+    """Create a FastAPI application that speaks the Elasticsearch Service wire protocol.
+
+    Returns a tuple of (app, state) so callers can expose state for reset.
+    """
     updates: dict = {}
     if container_manager:
         updates["container_manager"] = container_manager

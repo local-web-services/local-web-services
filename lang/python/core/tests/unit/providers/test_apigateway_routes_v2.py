@@ -18,7 +18,7 @@ class TestApiGatewayV2Routes:
 
     @pytest.fixture
     def client(self, registry):
-        app = create_apigateway_management_app(lambda_registry=registry)
+        app = create_apigateway_management_app(lambda_registry=registry)[0]
         transport = httpx.ASGITransport(app=app)
         return httpx.AsyncClient(transport=transport, base_url="http://test")
 

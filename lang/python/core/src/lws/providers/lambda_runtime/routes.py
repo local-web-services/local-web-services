@@ -28,7 +28,6 @@ from lws.providers.lambda_runtime._lambda_esm_ops import (
     handle_list_event_source_mappings,
 )
 from lws.providers.lambda_runtime._lambda_function_ops import (
-    _function_arn,
     _json_response,
     handle_add_permission,
     handle_create_function,
@@ -48,6 +47,12 @@ from lws.providers.lambda_runtime._lambda_function_ops import (
     resolve_code_path_from_name,
 )
 from lws.providers.lambda_runtime._lambda_registry import LambdaRegistry
+from lws.providers.lambda_runtime._lambda_url_ops import (
+    handle_create_function_url_config,
+    handle_delete_function_url_config,
+    handle_get_function_url_config,
+    handle_update_function_url_config,
+)
 
 _logger = get_logger("ldk.lambda-mgmt")
 
@@ -195,6 +200,11 @@ class LambdaManagementRouter:
         r.add_api_route("/2015-03-31/tags/{arn:path}", self._untag_resource, methods=["DELETE"])
         r.add_api_route("/2015-03-31/tags/{arn:path}", self._list_tags, methods=["GET"])
         r.add_api_route(
+            "/2017-10-31/functions/{function_name}/concurrency",
+            self._put_function_concurrency,
+            methods=["PUT"],
+        )
+        r.add_api_route(
             "/{path:path}",
             self._stub_handler,
             methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -280,7 +290,14 @@ class LambdaManagementRouter:
     # -- Permissions ---------------------------------------------------------
 
     async def _add_permission(self, function_name: str, request: Request) -> Response:
-        return await handle_add_permission(function_name, request, self._state.permissions)
+        return await handle_add_permission(
+            function_name,
+            request,
+            self._state.permissions,
+            self._registry,
+            self._lifecycle,
+            self._tracker,
+        )
 
     async def _get_policy(self, function_name: str) -> Response:
         return await handle_get_policy(function_name, self._state.permissions)
@@ -322,100 +339,18 @@ class LambdaManagementRouter:
     # -- Function URLs -------------------------------------------------------
 
     async def _create_function_url_config(self, function_name: str, request: Request) -> Response:
-        body = await parse_json_body(request)
-        if self._registry.get_function_url(function_name) is not None:
-            return _json_response(
-                {
-                    "Message": f"Function URL already exists for: {function_name}",
-                    "Type": "ResourceConflictException",
-                },
-                409,
-            )
-        auth_type = body.get("AuthType", "NONE")
-        cors = body.get("Cors")
-        invoke_mode = body.get("InvokeMode", "BUFFERED")
-
-        url_config: dict[str, Any] = {
-            "FunctionName": function_name,
-            "FunctionArn": _function_arn(function_name),
-            "AuthType": auth_type,
-            "Cors": cors,
-            "InvokeMode": invoke_mode,
-            "FunctionUrl": "",
-            "CreationTime": "",
-        }
-
-        compute = self._registry.get_compute(function_name)
-        if compute is not None:
-            port = self._allocate_function_url_port()
-            url_config["FunctionUrl"] = f"http://localhost:{port}/"
-            url_config["_port"] = port
-
-            from lws.providers.lambda_function_url.provider import (  # pylint: disable=import-outside-toplevel
-                LambdaFunctionUrlProvider,
-            )
-
-            provider = LambdaFunctionUrlProvider(
-                function_name=function_name,
-                compute=compute,
-                port=port,
-                cors_config=cors,
-            )
-            try:
-                await provider.start()
-                self._registry.register_function_url(function_name, url_config, provider)
-            except Exception as exc:
-                _logger.error("Failed to start Function URL for %s: %s", function_name, exc)
-                self._registry.register_function_url(function_name, url_config)
-        else:
-            self._registry.register_function_url(function_name, url_config)
-
-        _logger.info("Created Function URL for %s", function_name)
-        return _json_response(url_config, 201)
+        return await handle_create_function_url_config(
+            function_name, request, self._registry, self._allocate_function_url_port
+        )
 
     async def _get_function_url_config(self, function_name: str) -> Response:
-        url_config = self._registry.get_function_url(function_name)
-        if url_config is None:
-            return _json_response(
-                {
-                    "Message": f"Function URL config not found for: {function_name}",
-                    "Type": "ResourceNotFoundException",
-                },
-                404,
-            )
-        return _json_response(url_config)
+        return await handle_get_function_url_config(function_name, self._registry)
 
     async def _update_function_url_config(self, function_name: str, request: Request) -> Response:
-        body = await parse_json_body(request)
-        url_config = self._registry.get_function_url(function_name)
-        if url_config is None:
-            return _json_response(
-                {
-                    "Message": f"Function URL config not found for: {function_name}",
-                    "Type": "ResourceNotFoundException",
-                },
-                404,
-            )
-        if "AuthType" in body:
-            url_config["AuthType"] = body["AuthType"]
-        if "Cors" in body:
-            url_config["Cors"] = body["Cors"]
-        if "InvokeMode" in body:
-            url_config["InvokeMode"] = body["InvokeMode"]
-        _logger.info("Updated Function URL config for %s", function_name)
-        return _json_response(url_config)
+        return await handle_update_function_url_config(function_name, request, self._registry)
 
     async def _delete_function_url_config(self, function_name: str) -> Response:
-        provider = self._registry.function_url_providers.get(function_name)
-        if provider is not None:
-            try:
-                await provider.stop()
-            except Exception as exc:
-                _logger.warning(
-                    "Error stopping Function URL provider for %s: %s", function_name, exc
-                )
-        self._registry.delete_function_url(function_name)
-        return Response(status_code=204)
+        return await handle_delete_function_url_config(function_name, self._registry)
 
     def _allocate_function_url_port(self) -> int:
         """Allocate a dynamic port for a new Function URL provider."""
@@ -425,6 +360,35 @@ class LambdaManagementRouter:
         while port in used:
             port += 1
         return port
+
+    async def _put_function_concurrency(self, function_name: str, request: Request) -> Response:
+        config = self._registry.get_config(function_name)
+        if config is None:
+            return _json_response(
+                {
+                    "Message": f"Function not found: {function_name}",
+                    "Type": "ResourceNotFoundException",
+                },
+                404,
+            )
+        if self._lifecycle.enabled:
+            state = self._tracker.get_state(function_name)
+            if state in ("CREATING", "DELETING"):
+                return _json_response(
+                    {
+                        "Message": f"Function {function_name} is in state {state}",
+                        "Type": "ResourceConflictException",
+                    },
+                    409,
+                )
+        body = await parse_json_body(request)
+        reserved = body.get("ReservedConcurrentExecutions", 0)
+        return _json_response(
+            {
+                "FunctionName": function_name,
+                "ReservedConcurrentExecutions": reserved,
+            }
+        )
 
     async def _stub_handler(self, request: Request, path: str) -> Response:
         _logger.warning("Unknown Lambda path: %s %s", request.method, path)

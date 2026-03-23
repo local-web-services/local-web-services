@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Query, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
@@ -20,6 +20,7 @@ from lws.providers.s3tables._s3tables_handlers import (
     _delete_namespace,
     _delete_table,
     _delete_table_bucket,
+    _delete_table_policy,
     _error_response,
     _get_namespace,
     _get_table,
@@ -27,6 +28,7 @@ from lws.providers.s3tables._s3tables_handlers import (
     _list_namespaces,
     _list_table_buckets,
     _list_tables,
+    _put_table_policy,
 )
 from lws.providers.s3tables._s3tables_state import _S3TablesState
 
@@ -82,20 +84,36 @@ async def _s3tables_delete_table_bucket(
     return resp
 
 
+def _split_arn_and_suffix(path: str, n: int) -> tuple[str, ...]:
+    """Split a decoded path into (tableBucketARN, *n_trailing_parts).
+
+    ARN values like ``arn:aws:s3tables:us-east-1:000000000000:bucket/name``
+    contain a literal slash which Starlette decodes from ``%2F`` before
+    routing.  Using ``{param:path}`` captures everything including those
+    slashes.  This helper then peels off the last ``n`` slash-delimited
+    segments as the trailing parts (namespace, table name, etc.) and returns
+    the remainder as the ARN.
+    """
+    parts = path.rsplit("/", n)
+    if len(parts) != n + 1:
+        return (path,) + ("",) * n
+    return tuple(parts)
+
+
 def _register_bucket_routes(
     app: FastAPI, state: _S3TablesState, tracker: ResourceStateTracker, lc: ResourceLifecycleConfig
 ) -> None:
     """Register table bucket CRUD routes."""
 
-    @app.put("/table-buckets")
+    @app.put("/buckets")
     async def create_table_bucket(request: Request) -> Response:
         return await _s3tables_create_table_bucket(request, state, lc, tracker)
 
-    @app.get("/table-buckets")
+    @app.get("/buckets")
     async def list_table_buckets() -> Response:
         return await _list_table_buckets(state)
 
-    @app.get("/table-buckets/{tableBucketARN}")
+    @app.get("/buckets/{tableBucketARN:path}")
     async def get_table_bucket(tableBucketARN: str) -> Response:
         if lc.enabled:
             bucket_state = tracker.get_state(tableBucketARN)
@@ -107,7 +125,7 @@ def _register_bucket_routes(
                 )
         return await _get_table_bucket(tableBucketARN, state)
 
-    @app.delete("/table-buckets/{tableBucketARN}")
+    @app.delete("/buckets/{tableBucketARN:path}")
     async def delete_table_bucket(tableBucketARN: str) -> Response:
         return await _s3tables_delete_table_bucket(tableBucketARN, state, lc, tracker)
 
@@ -115,44 +133,79 @@ def _register_bucket_routes(
 def _register_namespace_routes(app: FastAPI, state: _S3TablesState) -> None:
     """Register namespace CRUD routes."""
 
-    @app.put("/table-buckets/{tableBucketARN}/namespaces")
-    async def create_namespace(tableBucketARN: str, request: Request) -> Response:
+    @app.put("/namespaces/{path:path}")
+    async def create_namespace(path: str, request: Request) -> Response:
+        tableBucketARN = path
         return await _create_namespace(tableBucketARN, request, state)
 
-    @app.get("/table-buckets/{tableBucketARN}/namespaces")
-    async def list_namespaces(tableBucketARN: str) -> Response:
-        return await _list_namespaces(tableBucketARN, state)
+    @app.get("/namespaces/{path:path}")
+    async def list_or_get_namespace(path: str) -> Response:
+        # Distinguish GET /namespaces/{arn} (list) from GET /namespaces/{arn}/{ns} (get).
+        #
+        # ARN values start with "arn:" and contain exactly one slash
+        # (the "bucket/<name>" portion).  A plain bucket name has no slashes.
+        # A namespace name never contains a slash.
+        #
+        # Routing rules:
+        #   path starts with "arn:" and has 1 slash  → bare ARN → ListNamespaces
+        #   path starts with "arn:" and has 2 slashes → ARN + namespace → GetNamespace
+        #   path has 0 slashes (simple name)           → ListNamespaces
+        #   path has 1 slash  (simple-name/namespace)  → GetNamespace
+        slash_count = path.count("/")
+        is_arn = path.startswith("arn:")
+        arn_bare_slashes = 1  # a bare ARN has exactly one slash
+        if (is_arn and slash_count > arn_bare_slashes) or (not is_arn and slash_count > 0):
+            tableBucketARN, namespace = _split_arn_and_suffix(path, 1)[:2]
+            return await _get_namespace(tableBucketARN, namespace, state)
+        return await _list_namespaces(path, state)
 
-    @app.get("/table-buckets/{tableBucketARN}/namespaces/{namespace}")
-    async def get_namespace(tableBucketARN: str, namespace: str) -> Response:
-        return await _get_namespace(tableBucketARN, namespace, state)
-
-    @app.delete("/table-buckets/{tableBucketARN}/namespaces/{namespace}")
-    async def delete_namespace(tableBucketARN: str, namespace: str) -> Response:
+    @app.delete("/namespaces/{path:path}")
+    async def delete_namespace(path: str) -> Response:
+        tableBucketARN, namespace = _split_arn_and_suffix(path, 1)[:2]
         return await _delete_namespace(tableBucketARN, namespace, state)
 
 
 def _register_table_routes(app: FastAPI, state: _S3TablesState) -> None:
     """Register table CRUD routes."""
 
-    @app.put("/table-buckets/{tableBucketARN}/namespaces/{namespace}/tables")
-    async def create_table(tableBucketARN: str, namespace: str, request: Request) -> Response:
+    @app.put("/tables/{path:path}")
+    async def create_or_put_policy(path: str, request: Request) -> Response:
+        # PUT /tables/{arn}/{ns}          → create_table
+        # PUT /tables/{arn}/{ns}/{name}/policy → put_table_policy
+        if path.endswith("/policy"):
+            inner = path[: -len("/policy")]
+            tableBucketARN, namespace, name = _split_arn_and_suffix(inner, 2)[:3]
+            return await _put_table_policy(tableBucketARN, namespace, name, request, state)
+        tableBucketARN, namespace = _split_arn_and_suffix(path, 1)[:2]
         return await _create_table(tableBucketARN, namespace, request, state)
 
-    @app.get("/table-buckets/{tableBucketARN}/namespaces/{namespace}/tables")
-    async def list_tables(tableBucketARN: str, namespace: str) -> Response:
+    @app.get("/tables/{tableBucketARN:path}")
+    async def list_tables(tableBucketARN: str, namespace: str = Query(default=None)) -> Response:
         return await _list_tables(tableBucketARN, namespace, state)
 
-    @app.get("/table-buckets/{tableBucketARN}/namespaces/{namespace}/tables/{tableName}")
-    async def get_table(tableBucketARN: str, namespace: str, tableName: str) -> Response:
-        return await _get_table(tableBucketARN, namespace, tableName, state)
+    @app.get("/get-table")
+    async def get_table(
+        tableBucketARN: str = Query(...),
+        namespace: str = Query(...),
+        name: str = Query(...),
+    ) -> Response:
+        return await _get_table(tableBucketARN, namespace, name, state)
 
-    @app.delete("/table-buckets/{tableBucketARN}/namespaces/{namespace}/tables/{tableName}")
-    async def delete_table(tableBucketARN: str, namespace: str, tableName: str) -> Response:
-        return await _delete_table(tableBucketARN, namespace, tableName, state)
+    @app.delete("/tables/{path:path}")
+    async def delete_table_or_policy(path: str) -> Response:
+        # DELETE /tables/{arn}/{ns}/{name}/policy → delete_table_policy
+        # DELETE /tables/{arn}/{ns}/{name}         → delete_table
+        if path.endswith("/policy"):
+            inner = path[: -len("/policy")]
+            tableBucketARN, namespace, name = _split_arn_and_suffix(inner, 2)[:3]
+            return await _delete_table_policy(tableBucketARN, namespace, name, state)
+        tableBucketARN, namespace, name = _split_arn_and_suffix(path, 2)[:3]
+        return await _delete_table(tableBucketARN, namespace, name, state)
 
 
-def create_s3tables_app(lifecycle: ResourceLifecycleConfig | None = None) -> FastAPI:
+def create_s3tables_app(
+    lifecycle: ResourceLifecycleConfig | None = None,
+) -> tuple[FastAPI, _S3TablesState]:
     """Create a FastAPI application that speaks the S3 Tables REST API."""
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
@@ -165,4 +218,4 @@ def create_s3tables_app(lifecycle: ResourceLifecycleConfig | None = None) -> Fas
     _register_namespace_routes(app, state)
     _register_table_routes(app, state)
 
-    return app
+    return app, state

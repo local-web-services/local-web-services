@@ -52,6 +52,11 @@ class ApiGatewayManagementRouter:
             return _not_found("RestApi", api_id)
         return None
 
+    def reset(self) -> None:
+        """Clear all REST API state and cancel pending lifecycle transitions."""
+        self._state.reset()
+        self._tracker.reset()
+
     def _register_routes(self) -> None:
         r = self.router
 
@@ -71,6 +76,11 @@ class ApiGatewayManagementRouter:
         body = await parse_json_body(request)
         name = body.get("name", "")
         description = body.get("description", "")
+        if self._state.find_by_name(name) is not None:
+            return _json_response(
+                {"message": f"REST API with name '{name}' already exists"},
+                status_code=409,
+            )
         api = self._state.create_rest_api(name, description)
         # Lifecycle: set CREATING status if dwell time configured
         if self._lifecycle.enabled and self._lifecycle.create_dwell_ms > 0:

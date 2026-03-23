@@ -182,7 +182,12 @@ async def _handle_describe_event_bus(provider: EventBridgeProvider, body: dict) 
         attrs = provider.describe_event_bus(bus_name)
     except KeyError:
         return Response(
-            content=json.dumps({"Error": f"Event bus not found: {bus_name}"}),
+            content=json.dumps(
+                {
+                    "__type": "ResourceNotFoundException",
+                    "message": f"Event bus {bus_name} does not exist.",
+                }
+            ),
             status_code=400,
             media_type="application/json",
         )

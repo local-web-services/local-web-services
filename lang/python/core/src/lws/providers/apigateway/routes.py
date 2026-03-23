@@ -64,6 +64,7 @@ __all__ = [
     "_route_path_matches",
     "ApiGatewayManagementRouter",
     "ApiGatewayV2Router",
+    "ApiGatewayRouterBundle",
     "create_apigateway_management_app",
 ]
 
@@ -81,10 +82,27 @@ def _json_response(data: dict, status_code: int = 200) -> Response:
 # ---------------------------------------------------------------------------
 
 
+class ApiGatewayRouterBundle:
+    """Holds the V1 and V2 routers so callers can reset both together."""
+
+    def __init__(
+        self,
+        v1_router: ApiGatewayManagementRouter,
+        v2_router: ApiGatewayV2Router,
+    ) -> None:
+        self._v1 = v1_router
+        self._v2 = v2_router
+
+    def reset(self) -> None:
+        """Clear all API Gateway state and cancel pending lifecycle transitions."""
+        self._v1.reset()
+        self._v2.reset()
+
+
 def create_apigateway_management_app(
     lambda_registry: LambdaRegistry | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
-) -> FastAPI:
+) -> tuple[FastAPI, ApiGatewayRouterBundle]:
     """Create a FastAPI app that speaks the API Gateway management protocol.
 
     Args:
@@ -93,6 +111,10 @@ def create_apigateway_management_app(
         lifecycle: Optional lifecycle simulation config. When provided with
             ``create_dwell_ms > 0``, newly created REST APIs and HTTP APIs will
             transition through CREATING before becoming ACTIVE.
+
+    Returns:
+        A tuple of (app, router_bundle). Call ``router_bundle.reset()`` to
+        clear all API Gateway state between tests.
     """
     app = FastAPI(title="LDK API Gateway Management")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="apigateway-mgmt")
@@ -132,4 +154,4 @@ def create_apigateway_management_app(
             404,
         )
 
-    return app
+    return app, ApiGatewayRouterBundle(v1_router, v2_router)

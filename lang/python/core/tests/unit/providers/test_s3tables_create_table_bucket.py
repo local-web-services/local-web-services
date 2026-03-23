@@ -10,7 +10,7 @@ from lws.providers.s3tables.routes import create_s3tables_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_s3tables_app()
+    app, _ = create_s3tables_app()
     return TestClient(app)
 
 
@@ -20,7 +20,7 @@ class TestCreateTableBucket:
         bucket_name = "my-test-bucket"
 
         # Act
-        response = client.put("/table-buckets", json={"name": bucket_name})
+        response = client.put("/buckets", json={"name": bucket_name})
 
         # Assert
         expected_status = 200
@@ -29,20 +29,16 @@ class TestCreateTableBucket:
             actual_status == expected_status
         ), f"Expected {expected_status!r} but got {actual_status!r}"
         actual_body = response.json()
-        assert (
-            "tableBucketARN" in actual_body
-        ), f'Expected {"tableBucketARN"!r} to be in {actual_body!r}'
-        assert (
-            bucket_name in actual_body["tableBucketARN"]
-        ), f'Expected {bucket_name!r} to be in {actual_body["tableBucketARN"]!r}'
+        assert "arn" in actual_body
+        assert bucket_name in actual_body["arn"]
 
     def test_create_table_bucket_duplicate_returns_conflict(self, client: TestClient) -> None:
         # Arrange
         bucket_name = "dup-bucket"
-        client.put("/table-buckets", json={"name": bucket_name})
+        client.put("/buckets", json={"name": bucket_name})
 
         # Act
-        response = client.put("/table-buckets", json={"name": bucket_name})
+        response = client.put("/buckets", json={"name": bucket_name})
 
         # Assert
         expected_status = 409
@@ -61,7 +57,7 @@ class TestCreateTableBucket:
         # No name provided
 
         # Act
-        response = client.put("/table-buckets", json={})
+        response = client.put("/buckets", json={})
 
         # Assert
         expected_status = 400

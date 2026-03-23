@@ -131,6 +131,16 @@ class _SqsQueueOpsMixin:
             return err
         attrs = _extract_queue_attributes(params)
         config = self.provider.configs.get(queue_name)  # type: ignore[attr-defined]
+        if "RedrivePolicy" in attrs:
+            existing_policy = (config.custom_attrs.get("RedrivePolicy") if config else None) or (
+                queue.dead_letter_queue is not None  # type: ignore[attr-defined]
+            )
+            if existing_policy:
+                return _error_xml(
+                    "InvalidParameterValue",
+                    "A dead-letter queue is already configured for this queue.",
+                    status_code=400,
+                )
         _apply_queue_attrs(queue, attrs, config)
         xml = (
             "<SetQueueAttributesResponse>"
