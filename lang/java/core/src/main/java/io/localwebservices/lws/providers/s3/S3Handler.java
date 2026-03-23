@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
+import io.localwebservices.lws.providers.eventbridge.EventBridgeHandler;
 import io.localwebservices.lws.providers.lambda.LambdaHandler;
 import io.localwebservices.lws.providers.sns.SnsHandler;
 import io.localwebservices.lws.providers.sqs.SqsHandler;
@@ -40,6 +41,13 @@ public class S3Handler implements HttpHandler {
   /** Wires in the Lambda handler so that S3 can dispatch notifications to Lambda functions. */
   public void setLambdaHandler(LambdaHandler lambdaHandler) {
     notificationOps.setLambdaHandler(lambdaHandler);
+  }
+
+  /**
+   * Wires in the EventBridge handler so that S3 can dispatch notifications to EventBridge buses.
+   */
+  public void setEventBridgeHandler(EventBridgeHandler eventBridgeHandler) {
+    notificationOps.setEventBridgeHandler(eventBridgeHandler);
   }
 
   /**

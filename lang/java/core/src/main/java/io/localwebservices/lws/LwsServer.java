@@ -168,12 +168,14 @@ public class LwsServer {
       eventBridgeHandler = new EventBridgeHandler(state);
       eventBridgeHandler.setSqsHandler(sqsHandler);
       eventBridgeHandler.setSnsHandler(snsHandler);
+      eventBridgeHandler.setDynamoDbHandler(dynamoDbHandler);
       server.createContext("/", eventBridgeHandler);
       server.setExecutor(Executors.newCachedThreadPool());
       server.start();
       servers.add(server);
       ports.put("eventbridge", port);
     }
+    s3Handler.setEventBridgeHandler(eventBridgeHandler);
 
     // Step Functions at basePort+6
     StepFunctionsHandler stepFunctionsHandler;

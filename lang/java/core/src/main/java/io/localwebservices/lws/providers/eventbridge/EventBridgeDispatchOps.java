@@ -2,6 +2,7 @@ package io.localwebservices.lws.providers.eventbridge;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.localwebservices.lws.ServerState;
+import io.localwebservices.lws.providers.dynamodb.DynamoDbHandler;
 import io.localwebservices.lws.providers.sns.SnsHandler;
 import io.localwebservices.lws.providers.sqs.SqsHandler;
 import io.localwebservices.lws.providers.stepfunctions.StepFunctionsHandler;
@@ -12,8 +13,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Handles event dispatch for EventBridge. Dispatches events to SQS queues, SNS topics, and Step
- * Functions state machines based on rule targets. Also handles PutEvents wire-protocol logic.
+ * Handles event dispatch for EventBridge. Dispatches events to SQS queues, SNS topics, Step
+ * Functions state machines, and DynamoDB tables based on rule targets. Also handles PutEvents
+ * wire-protocol logic.
  */
 class EventBridgeDispatchOps {
 
@@ -24,6 +26,7 @@ class EventBridgeDispatchOps {
   private SqsHandler sqsHandler;
   private SnsHandler snsHandler;
   private StepFunctionsHandler stepFunctionsHandler;
+  private DynamoDbHandler dynamoDbHandler;
 
   EventBridgeDispatchOps(EventBridgeStore store, ServerState state) {
     this.store = store;
@@ -40,6 +43,10 @@ class EventBridgeDispatchOps {
 
   void setStepFunctionsHandler(StepFunctionsHandler stepFunctionsHandler) {
     this.stepFunctionsHandler = stepFunctionsHandler;
+  }
+
+  void setDynamoDbHandler(DynamoDbHandler dynamoDbHandler) {
+    this.dynamoDbHandler = dynamoDbHandler;
   }
 
   /**
@@ -149,6 +156,14 @@ class EventBridgeDispatchOps {
       // Normalize ARN: AWS uses both ":stateMachine/name" and ":stateMachine:name" formats.
       String normalizedArn = arn.replace(":stateMachine/", ":stateMachine:");
       stepFunctionsHandler.startExecution(normalizedArn, eventJson);
+    } else if (arn.contains(":dynamodb:") && dynamoDbHandler != null) {
+      String tableName = arn.substring(arn.lastIndexOf('/') + 1);
+      Map<String, Object> item = new LinkedHashMap<>();
+      item.put("event", Map.of("S", eventJson));
+      Map<String, Object> putParams = new LinkedHashMap<>();
+      putParams.put("TableName", tableName);
+      putParams.put("Item", item);
+      dynamoDbHandler.executePutItem(putParams);
     }
   }
 }

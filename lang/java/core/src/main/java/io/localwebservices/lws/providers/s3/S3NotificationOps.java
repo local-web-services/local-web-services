@@ -1,6 +1,7 @@
 package io.localwebservices.lws.providers.s3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.localwebservices.lws.providers.eventbridge.EventBridgeHandler;
 import io.localwebservices.lws.providers.lambda.LambdaHandler;
 import io.localwebservices.lws.providers.sns.SnsHandler;
 import io.localwebservices.lws.providers.sqs.SqsHandler;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 /**
  * Handles S3 bucket notification dispatch. Reads the bucket notification configuration and
- * dispatches events to SNS topics, SQS queues, or Lambda functions.
+ * dispatches events to SNS topics, SQS queues, Lambda functions, or EventBridge buses.
  */
 class S3NotificationOps {
 
@@ -20,6 +21,7 @@ class S3NotificationOps {
   private SnsHandler snsHandler;
   private SqsHandler sqsHandler;
   private LambdaHandler lambdaHandler;
+  private EventBridgeHandler eventBridgeHandler;
 
   S3NotificationOps(S3Store store) {
     this.store = store;
@@ -37,9 +39,13 @@ class S3NotificationOps {
     this.lambdaHandler = lambdaHandler;
   }
 
+  void setEventBridgeHandler(EventBridgeHandler eventBridgeHandler) {
+    this.eventBridgeHandler = eventBridgeHandler;
+  }
+
   /**
    * Reads the bucket notification configuration and dispatches an S3 event to any configured SNS
-   * topics, SQS queues, or Lambda functions.
+   * topics, SQS queues, Lambda functions, or EventBridge buses.
    */
   void dispatchNotification(String bucket, String key, String eventName) {
     String notifXml = store.bucketNotifications.get(bucket);
@@ -50,6 +56,7 @@ class S3NotificationOps {
     dispatchToSnsTopics(notifXml, eventJson, eventName);
     dispatchToSqsQueues(notifXml, eventJson, eventName);
     dispatchToLambdaFunctions(notifXml, eventJson, eventName);
+    dispatchToEventBridge(notifXml, eventJson, eventName);
   }
 
   private String buildEventJson(String bucket, String key, String eventName) {
@@ -119,6 +126,29 @@ class S3NotificationOps {
         String functionName = functionArn.substring(functionArn.lastIndexOf(':') + 1);
         lambdaHandler.invokeFunction(functionName, eventJson);
       }
+      idx = blockEnd + 1;
+    }
+  }
+
+  private void dispatchToEventBridge(String notifXml, String eventJson, String eventName) {
+    if (eventBridgeHandler == null) return;
+    int idx = 0;
+    while ((idx = notifXml.indexOf("<EventBridgeConfiguration>", idx)) >= 0) {
+      int blockEnd = notifXml.indexOf("</EventBridgeConfiguration>", idx);
+      if (blockEnd < 0) break;
+      String block = notifXml.substring(idx, blockEnd);
+      String busName = extractXmlValue(block, "EventBridgeBusName");
+      if (busName == null) {
+        busName = "default";
+      }
+      Map<String, Object> entry = new LinkedHashMap<>();
+      entry.put("EventBusName", busName);
+      entry.put("Source", "aws.s3");
+      entry.put("DetailType", "Object" + eventName);
+      entry.put("Detail", eventJson);
+      Map<String, Object> params = new LinkedHashMap<>();
+      params.put("Entries", List.of(entry));
+      eventBridgeHandler.executePutEvents(params);
       idx = blockEnd + 1;
     }
   }

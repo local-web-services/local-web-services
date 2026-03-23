@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
+import io.localwebservices.lws.providers.dynamodb.DynamoDbHandler;
 import io.localwebservices.lws.providers.sns.SnsHandler;
 import io.localwebservices.lws.providers.sqs.SqsHandler;
 import io.localwebservices.lws.providers.stepfunctions.StepFunctionsHandler;
@@ -43,6 +44,11 @@ public class EventBridgeHandler implements HttpHandler {
   /** Wires in the StepFunctions handler for EventBridge→StepFunctions target dispatch. */
   public void setStepFunctionsHandler(StepFunctionsHandler stepFunctionsHandler) {
     dispatchOps.setStepFunctionsHandler(stepFunctionsHandler);
+  }
+
+  /** Wires in the DynamoDB handler for EventBridge→DynamoDB target dispatch. */
+  public void setDynamoDbHandler(DynamoDbHandler dynamoDbHandler) {
+    dispatchOps.setDynamoDbHandler(dynamoDbHandler);
   }
 
   /**
