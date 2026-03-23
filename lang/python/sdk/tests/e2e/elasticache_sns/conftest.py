@@ -196,7 +196,8 @@ def configure_notification(lws_session, world):
 
 
 @when(
-    'a cluster modification event occurs and ElastiCache publishes a notification to the "SNS" topic'
+    "a cluster modification event occurs and ElastiCache publishes a notification "
+    'to the "SNS" topic'
 )
 def cluster_event_notification_delivered(lws_session, world):
     pytest.skip(

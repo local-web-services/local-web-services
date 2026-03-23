@@ -222,7 +222,8 @@ def api_receives_request_starts_execution(world):
 
 
 @when(
-    'the Step Functions execution completes successfully and the "API" returns a successful response'
+    'the Step Functions execution completes successfully and the "API" '
+    "returns a successful response"
 )
 def sfn_execution_succeeds_apigw(world):
     pytest.skip("Cannot configure StepFunctions integration on REST API in lws")
