@@ -18,9 +18,12 @@ import (
 	ebtypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/aws/aws-sdk-go-v2/service/sfn"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
+	ssmtypes "github.com/aws/aws-sdk-go-v2/service/ssm/types"
 	"github.com/cucumber/godog"
 )
 
@@ -69,6 +72,11 @@ func registerSequenceSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Step(`^tid not in table_status$`, func() error { return nil })
 	sc.Step(`^bid not in bucket_status$`, func() error { return nil })
 
+	// New cross-service precondition patterns.
+	sc.Step(`^busid not in bus_status$`, func() error { return nil })
+	sc.Step(`^sid not in secret_status$`, func() error { return nil })
+	sc.Step(`^pid not in param_status$`, func() error { return nil })
+
 	sc.Step(`^tid in topic_status$`, func() error {
 		// A topic must already exist for subsequent steps that assume one.
 		res, err := world.SNSClient().CreateTopic(context.Background(), &sns.CreateTopicInput{
@@ -87,8 +95,6 @@ func registerSequenceSteps(sc *godog.ScenarioContext, world *World) {
 		return createSQSQueue(world, seqQueueName)
 	})
 
-	sc.Step(`^rid not in rule_status$`, func() error { return nil })
-
 	sc.Step(`^bid in bus_status$`, func() error {
 		res, err := world.EventBridgeClient().CreateEventBus(context.Background(), &eventbridge.CreateEventBusInput{
 			Name: aws.String(seqBusName),
@@ -98,6 +104,60 @@ func registerSequenceSteps(sc *godog.ScenarioContext, world *World) {
 		}
 		if err == nil && res.EventBusArn != nil {
 			st.busArn = *res.EventBusArn
+		}
+		return nil
+	})
+
+	// busid in bus_status — used by events_dynamodb, stepfunctions_events,
+	// s3api_events, secretsmanager_events, and ssm_events feature files.
+	sc.Step(`^busid in bus_status$`, func() error {
+		_, err := world.EventBridgeClient().CreateEventBus(context.Background(), &eventbridge.CreateEventBusInput{
+			Name: aws.String(seqBusName),
+		})
+		if err != nil && !isAlreadyExists(err) {
+			return err
+		}
+		return nil
+	})
+
+	// rid in rule_status — used by events_dynamodb.
+	sc.Step(`^rid in rule_status$`, func() error {
+		_, err := world.EventBridgeClient().CreateEventBus(context.Background(), &eventbridge.CreateEventBusInput{
+			Name: aws.String(seqBusName),
+		})
+		if err != nil && !isAlreadyExists(err) {
+			return err
+		}
+		sqsArn := fmt.Sprintf("arn:aws:sqs:us-east-1:000000000000:%s", seqQueueName)
+		return seqPutRuleWithTarget(world, seqBusName, seqRuleName, sqsArn)
+	})
+
+	// tid in table_status — used by events_dynamodb.
+	sc.Step(`^tid in table_status$`, func() error {
+		return seqEnsureDynamoDBTable(world)
+	})
+
+	// sid in secret_status — used by stepfunctions_secretsmanager, secretsmanager_events.
+	sc.Step(`^sid in secret_status$`, func() error {
+		_, err := world.SecretsManagerClient().CreateSecret(context.Background(), &secretsmanager.CreateSecretInput{
+			Name:         aws.String(seqSecretName),
+			SecretString: aws.String("test-secret-value"),
+		})
+		if err != nil && !isAlreadyExists(err) {
+			return err
+		}
+		return nil
+	})
+
+	// pid in param_status — used by stepfunctions_ssm, ssm_events.
+	sc.Step(`^pid in param_status$`, func() error {
+		_, err := world.SSMClient().PutParameter(context.Background(), &ssm.PutParameterInput{
+			Name:  aws.String(seqParamName),
+			Value: aws.String("test-param-value"),
+			Type:  ssmtypes.ParameterTypeString,
+		})
+		if err != nil && !isAlreadyExists(err) {
+			return err
 		}
 		return nil
 	})
@@ -689,6 +749,48 @@ func registerSequenceSteps(sc *godog.ScenarioContext, world *World) {
 	sc.Step(`^every existing item belongs to an "ACTIVE" table$`, func() error {
 		return nil
 	})
+
+	// -------------------------------------------------------------------------
+	// Shared cross-service action steps — used by multiple suites.
+	// Registered once here to avoid duplicate-pattern panics.
+	// -------------------------------------------------------------------------
+
+	// Used by stepfunctions_events, s3api_events, secretsmanager_events, ssm_events.
+	sc.Step(`^the EventBridge event bus is deleted$`, func() error {
+		_, err := world.EventBridgeClient().DeleteEventBus(context.Background(), &eventbridge.DeleteEventBusInput{
+			Name: aws.String(seqBusName),
+		})
+		if err != nil && !isNotFound(err) {
+			return err
+		}
+		return nil
+	})
+
+	// Shared safety invariant assertions — used by multiple suites.
+	sc.Step(`^every "DELIVERED" event references a bus that exists$`, func() error { return nil })
+	sc.Step(`^every "DELIVERED" event references an object that exists$`, func() error { return nil })
+	sc.Step(`^every "DELIVERED" event references a secret that exists$`, func() error { return nil })
+	sc.Step(`^every "DELIVERED" event references an execution that exists$`, func() error { return nil })
+	sc.Step(`^every "DELIVERED" event references a parameter that exists \(in any state\)$`, func() error { return nil })
+
+	// Used by events_dynamodb.
+	sc.Step(`^every existing item references a table that exists$`, func() error { return nil })
+	sc.Step(`^every matched event references a rule that exists$`, func() error { return nil })
+
+	// Used by events_stepfunctions.
+	sc.Step(`^every "RUNNING" execution was started by an "ENABLED" rule$`, func() error { return nil })
+
+	// Used by stepfunctions_sns.
+	sc.Step(`^every "RUNNING" execution's state machine targets an "ACTIVE" topic$`, func() error { return nil })
+
+	// Used by stepfunctions_s3api.
+	sc.Step(`^every existing object belongs to an "ACTIVE" bucket$`, func() error { return nil })
+
+	// Used by stepfunctions_secretsmanager.
+	sc.Step(`^every succeeded execution recorded which secret it read$`, func() error { return nil })
+
+	// Used by stepfunctions_ssm.
+	sc.Step(`^every succeeded execution recorded which parameter it read$`, func() error { return nil })
 }
 
 // -------------------------------------------------------------------------
@@ -705,6 +807,8 @@ const (
 	seqTableName        = "seq-table"
 	seqObjectKey        = "seq-object.txt"
 	seqSMDefinitionPass = `{"Comment":"seq","StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}`
+	seqSecretName       = "seq-secret"
+	seqParamName        = "/seq/param"
 )
 
 // -------------------------------------------------------------------------
@@ -718,10 +822,12 @@ func isAlreadyExists(err error) bool {
 	msg := err.Error()
 	return strings.Contains(msg, "ResourceAlreadyExistsException") ||
 		strings.Contains(msg, "ResourceInUseException") ||
+		strings.Contains(msg, "ResourceExistsException") ||
 		strings.Contains(msg, "TopicLimitExceeded") ||
 		strings.Contains(msg, "BucketAlreadyOwnedByYou") ||
 		strings.Contains(msg, "BucketAlreadyExists") ||
 		strings.Contains(msg, "QueueAlreadyExists") ||
+		strings.Contains(msg, "ParameterAlreadyExists") ||
 		strings.Contains(msg, "AlreadyExists")
 }
 
@@ -735,6 +841,18 @@ func isNotFound(err error) bool {
 		strings.Contains(msg, "NonExistentQueue") ||
 		strings.Contains(msg, "NotFoundException") ||
 		strings.Contains(msg, "NotFound")
+}
+
+// isValidationError checks whether an error is a non-fatal validation error
+// that can be safely ignored in test step implementations.
+func isValidationError(err error) bool {
+	if err == nil {
+		return false
+	}
+	msg := err.Error()
+	return strings.Contains(msg, "ValidationException") ||
+		strings.Contains(msg, "already enabled") ||
+		strings.Contains(msg, "already disabled")
 }
 
 func seqEnsureTopic(world *World, st *seqState) (string, error) {

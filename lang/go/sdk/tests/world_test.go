@@ -3,8 +3,12 @@ package tests
 import (
 	"context"
 	"fmt"
+	"net"
+	"net/http"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -22,6 +26,29 @@ import (
 const basePort = 19401
 
 var sharedServer *core.Server
+
+// sharedHTTPClient is a single http.Client shared across all scenarios to
+// keep connections alive and avoid exhausting macOS ephemeral ports when
+// running thousands of scenarios sequentially.
+var sharedHTTPClient = awshttp.NewBuildableClient().WithTransportOptions(func(tr *http.Transport) {
+	tr.MaxIdleConns = 100
+	tr.MaxIdleConnsPerHost = 20
+	tr.IdleConnTimeout = 90 * time.Second
+	tr.DialContext = (&net.Dialer{
+		Timeout:   10 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}).DialContext
+})
+
+// sharedAWSConfig is loaded once and reused for all clients.
+var sharedAWSConfig = func() aws.Config {
+	cfg, _ := config.LoadDefaultConfig(context.Background(),
+		config.WithRegion("us-east-1"),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider("test", "test", "")),
+		config.WithHTTPClient(sharedHTTPClient),
+	)
+	return cfg
+}()
 
 // LastResult stores the outcome of a service API call.
 type LastResult struct {
@@ -42,16 +69,24 @@ type World struct {
 	lastMessages        interface{}
 	fakedResponseBody   string
 	sessionOpen         bool
+
+	// Cached service clients — reused within a scenario to avoid creating
+	// new http.Transport instances (and thus new ephemeral TCP connections)
+	// for every API call.
+	dynamodbClient       *dynamodb.Client
+	sqsClient            *sqs.Client
+	s3Client             *s3.Client
+	snsClient            *sns.Client
+	eventbridgeClient    *eventbridge.Client
+	sfnClient            *sfn.Client
+	ssmClient            *ssm.Client
+	secretsmanagerClient *secretsmanager.Client
 }
 
 func newWorld() *World {
-	awsCfg, _ := config.LoadDefaultConfig(context.Background(),
-		config.WithRegion("us-east-1"),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider("test", "test", "")),
-	)
 	return &World{
 		managementPort: basePort,
-		awsCfg:         awsCfg,
+		awsCfg:         sharedAWSConfig,
 	}
 }
 
@@ -63,6 +98,8 @@ func (w *World) reset() {
 	w.lastMessages = nil
 	w.fakedResponseBody = ""
 	w.sessionOpen = false
+	// Keep cached clients — they share the persistent sharedHTTPClient
+	// transport and can safely be reused across scenarios.
 }
 
 func (w *World) cleanup() {
@@ -73,60 +110,84 @@ func (w *World) cleanup() {
 }
 
 func (w *World) DynamoDBClient() *dynamodb.Client {
-	port := basePort + core.ServiceOffsets["dynamodb"]
-	return dynamodb.NewFromConfig(w.awsCfg, func(o *dynamodb.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
-	})
+	if w.dynamodbClient == nil {
+		port := basePort + core.ServiceOffsets["dynamodb"]
+		w.dynamodbClient = dynamodb.NewFromConfig(w.awsCfg, func(o *dynamodb.Options) {
+			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+		})
+	}
+	return w.dynamodbClient
 }
 
 func (w *World) SQSClient() *sqs.Client {
-	port := basePort + core.ServiceOffsets["sqs"]
-	return sqs.NewFromConfig(w.awsCfg, func(o *sqs.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
-	})
+	if w.sqsClient == nil {
+		port := basePort + core.ServiceOffsets["sqs"]
+		w.sqsClient = sqs.NewFromConfig(w.awsCfg, func(o *sqs.Options) {
+			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+		})
+	}
+	return w.sqsClient
 }
 
 func (w *World) S3Client() *s3.Client {
-	port := basePort + core.ServiceOffsets["s3"]
-	return s3.NewFromConfig(w.awsCfg, func(o *s3.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
-		o.UsePathStyle = true
-	})
+	if w.s3Client == nil {
+		port := basePort + core.ServiceOffsets["s3"]
+		w.s3Client = s3.NewFromConfig(w.awsCfg, func(o *s3.Options) {
+			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+			o.UsePathStyle = true
+		})
+	}
+	return w.s3Client
 }
 
 func (w *World) SNSClient() *sns.Client {
-	port := basePort + core.ServiceOffsets["sns"]
-	return sns.NewFromConfig(w.awsCfg, func(o *sns.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
-	})
+	if w.snsClient == nil {
+		port := basePort + core.ServiceOffsets["sns"]
+		w.snsClient = sns.NewFromConfig(w.awsCfg, func(o *sns.Options) {
+			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+		})
+	}
+	return w.snsClient
 }
 
 func (w *World) EventBridgeClient() *eventbridge.Client {
-	port := basePort + core.ServiceOffsets["eventbridge"]
-	return eventbridge.NewFromConfig(w.awsCfg, func(o *eventbridge.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
-	})
+	if w.eventbridgeClient == nil {
+		port := basePort + core.ServiceOffsets["eventbridge"]
+		w.eventbridgeClient = eventbridge.NewFromConfig(w.awsCfg, func(o *eventbridge.Options) {
+			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+		})
+	}
+	return w.eventbridgeClient
 }
 
 func (w *World) SFNClient() *sfn.Client {
-	port := basePort + core.ServiceOffsets["stepfunctions"]
-	return sfn.NewFromConfig(w.awsCfg, func(o *sfn.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
-	})
+	if w.sfnClient == nil {
+		port := basePort + core.ServiceOffsets["stepfunctions"]
+		w.sfnClient = sfn.NewFromConfig(w.awsCfg, func(o *sfn.Options) {
+			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+		})
+	}
+	return w.sfnClient
 }
 
 func (w *World) SSMClient() *ssm.Client {
-	port := basePort + core.ServiceOffsets["ssm"]
-	return ssm.NewFromConfig(w.awsCfg, func(o *ssm.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
-	})
+	if w.ssmClient == nil {
+		port := basePort + core.ServiceOffsets["ssm"]
+		w.ssmClient = ssm.NewFromConfig(w.awsCfg, func(o *ssm.Options) {
+			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+		})
+	}
+	return w.ssmClient
 }
 
 func (w *World) SecretsManagerClient() *secretsmanager.Client {
-	port := basePort + core.ServiceOffsets["secretsmanager"]
-	return secretsmanager.NewFromConfig(w.awsCfg, func(o *secretsmanager.Options) {
-		o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
-	})
+	if w.secretsmanagerClient == nil {
+		port := basePort + core.ServiceOffsets["secretsmanager"]
+		w.secretsmanagerClient = secretsmanager.NewFromConfig(w.awsCfg, func(o *secretsmanager.Options) {
+			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+		})
+	}
+	return w.secretsmanagerClient
 }
 
 func (w *World) SQSQueueURL(queueName string) string {
