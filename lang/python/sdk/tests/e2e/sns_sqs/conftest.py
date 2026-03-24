@@ -112,12 +112,19 @@ def queue_is_active_given():
 
 @given('the queue is not "ACTIVE"')
 def queue_is_not_active_given(lws_session, world):
-    pytest.skip("lws does not enforce queue lifecycle state during SNS subscribe")
+    try:
+        _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session))
+    except Exception:  # noqa: BLE001
+        pass
+    lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
+    _create_queue(lws_session)
+    world["result"] = None
+    world["error"] = None
 
 
 @given("the queue does not exist")
 def queue_does_not_exist():
-    pytest.skip("lws does not validate SQS queue existence when subscribing to an SNS topic")
+    """No-op: fresh state has no queues."""
 
 
 @given('the subscribed queue is "ACTIVE"')

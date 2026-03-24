@@ -129,7 +129,7 @@ def topic_exists_and_is_active(lws_session):
 
 @given('the topic does not exist or is not "ACTIVE"')
 def topic_not_exist_or_not_active():
-    pytest.skip("lws does not validate SNS topic existence when configuring bucket notification")
+    """No-op: fresh state has no topics, so the topic does not exist."""
 
 
 @given('the topic is "ACTIVE"')

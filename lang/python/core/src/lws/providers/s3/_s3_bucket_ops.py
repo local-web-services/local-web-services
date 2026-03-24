@@ -7,7 +7,10 @@ import xml.etree.ElementTree as ET
 from fastapi import Request, Response
 
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
+from lws.providers.s3.notifications import _parse_notification_config
 from lws.providers.s3.provider import S3Provider
+from lws.providers.sns.provider import SnsProvider
+from lws.providers.sqs.provider import SqsProvider
 
 from ._s3_xml_helpers import _error_xml, _json_s3_response, _xml_escape, _xml_response
 
@@ -155,13 +158,59 @@ async def _get_bucket_versioning(bucket: str, provider: S3Provider) -> Response:
 # ------------------------------------------------------------------
 
 
+def _validate_notification_targets(
+    config_xml: str,
+    sns_provider: SnsProvider | None,
+    sqs_provider: SqsProvider | None,
+) -> Response | None:
+    """Validate that all SNS and SQS targets in the notification config exist.
+
+    Returns an error Response if any referenced topic or queue does not exist,
+    or None if all targets are valid.
+    """
+    targets = _parse_notification_config(config_xml)
+    for target in targets:
+        target_type = target.get("target_type", "")
+        arn = target.get("arn", "")
+        resource_name = arn.rsplit(":", 1)[-1] if ":" in arn else arn
+        if target_type == "sns" and sns_provider is not None:
+            topic = None
+            try:
+                topic = sns_provider.get_topic(resource_name)
+            except (KeyError, Exception):  # noqa: BLE001
+                topic = None
+            if topic is None:
+                return _error_xml(
+                    "InvalidArgument",
+                    f"SNS topic does not exist: {arn}",
+                    400,
+                )
+        elif target_type == "sqs" and sqs_provider is not None:
+            queue = sqs_provider.get_queue(resource_name)
+            if queue is None:
+                return _error_xml(
+                    "InvalidArgument",
+                    f"SQS queue does not exist: {arn}",
+                    400,
+                )
+    return None
+
+
 async def _put_bucket_notification_configuration(
-    bucket: str, request: Request, provider: S3Provider
+    bucket: str,
+    request: Request,
+    provider: S3Provider,
+    sns_provider: SnsProvider | None = None,
+    sqs_provider: SqsProvider | None = None,
 ) -> Response:
     """Handle PutBucketNotificationConfiguration (PUT /{bucket}?notification)."""
     body = await request.body()
+    config_xml = body.decode("utf-8")
+    err = _validate_notification_targets(config_xml, sns_provider, sqs_provider)
+    if err is not None:
+        return err
     try:
-        provider.put_bucket_notification_configuration(bucket, body.decode("utf-8"))
+        provider.put_bucket_notification_configuration(bucket, config_xml)
     except KeyError:
         return _error_xml("NoSuchBucket", f"The specified bucket does not exist: {bucket}", 404)
     return Response(status_code=200)

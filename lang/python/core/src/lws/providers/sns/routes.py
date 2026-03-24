@@ -31,6 +31,7 @@ from lws.providers._shared.aws_operation_fake import (
 )
 from lws.providers.sns._sns_handlers import _ACTION_HANDLERS
 from lws.providers.sns.provider import SnsProvider
+from lws.providers.sqs.provider import SqsProvider
 
 _logger = get_logger("ldk.sns")
 
@@ -147,18 +148,74 @@ async def _lifecycle_delete_topic(
     return resp
 
 
+def _check_sqs_subscribe_target(
+    action: str,
+    params: dict,
+    sqs_provider: SqsProvider | None,
+    sqs_tracker: ResourceStateTracker | None,
+) -> Response | None:
+    """Return an error response if the SQS endpoint does not exist or is not ACTIVE.
+
+    Only applies to Subscribe actions with protocol=sqs.
+    """
+    if action != "Subscribe":
+        return None
+    protocol = params.get("Protocol", "")
+    if protocol != "sqs":
+        return None
+    if sqs_provider is None:
+        return None
+    endpoint = params.get("Endpoint", "")
+    if endpoint.startswith("http"):
+        queue_name = endpoint.rsplit("/", 1)[-1]
+    elif ":" in endpoint:
+        queue_name = endpoint.rsplit(":", 1)[-1]
+    else:
+        queue_name = endpoint
+    queue = sqs_provider.get_queue(queue_name)
+    if queue is None:
+        xml = (
+            "<ErrorResponse><Error>"
+            "<Code>InvalidParameter</Code>"
+            f"<Message>SQS queue does not exist: {endpoint}</Message>"
+            "</Error>"
+            f"<RequestId>{uuid.uuid4()}</RequestId>"
+            "</ErrorResponse>"
+        )
+        return Response(content=xml, status_code=400, media_type="text/xml")
+    if sqs_tracker is not None:
+        state = sqs_tracker.get_state(queue_name)
+        if state in ("CREATING", "DELETING"):
+            xml = (
+                "<ErrorResponse><Error>"
+                "<Code>InvalidParameter</Code>"
+                f"<Message>SQS queue is not ACTIVE: {endpoint} (status: {state})</Message>"
+                "</Error>"
+                f"<RequestId>{uuid.uuid4()}</RequestId>"
+                "</ErrorResponse>"
+            )
+            return Response(content=xml, status_code=400, media_type="text/xml")
+    return None
+
+
 async def _sns_dispatch(
     request: Request,
     provider: SnsProvider,
     lc: ResourceLifecycleConfig,
     tracker: ResourceStateTracker,
     sqs_capacity: AwsCapacityConfig | None = None,
+    sqs_provider: SqsProvider | None = None,
+    sqs_tracker: ResourceStateTracker | None = None,
 ) -> Response:
     """Route a single SNS request."""
     params = await _parse_form(request)
     action = params.get("Action", "")
 
     err = _check_sns_topic_lifecycle(action, params, lc, tracker)
+    if err is not None:
+        return err
+
+    err = _check_sqs_subscribe_target(action, params, sqs_provider, sqs_tracker)
     if err is not None:
         return err
 
@@ -203,10 +260,25 @@ def create_sns_app(
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     sqs_capacity: AwsCapacityConfig | None = None,
+    sqs_provider: SqsProvider | None = None,
+    sqs_tracker: ResourceStateTracker | None = None,
+    tracker_ref: list[ResourceStateTracker] | None = None,
 ) -> FastAPI:
-    """Create a FastAPI application that speaks the SNS wire protocol."""
+    """Create a FastAPI application that speaks the SNS wire protocol.
+
+    Args:
+        sqs_provider: Optional SQS provider used to validate SQS queue existence
+            on Subscribe calls.
+        sqs_tracker: Optional SQS lifecycle tracker used to validate that the
+            target SQS queue is ACTIVE on Subscribe calls.
+        tracker_ref: Optional single-element list; if provided, the lifecycle
+            ``ResourceStateTracker`` used by this app is deposited at index 0
+            so callers can share it with other services (e.g. EventBridge).
+    """
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
+    if tracker_ref is not None:
+        tracker_ref.append(_tracker)
 
     app = FastAPI(title="LDK SNS")
     if aws_fake is not None:
@@ -218,6 +290,8 @@ def create_sns_app(
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
-        return await _sns_dispatch(request, provider, _lc, _tracker, sqs_capacity)
+        return await _sns_dispatch(
+            request, provider, _lc, _tracker, sqs_capacity, sqs_provider, sqs_tracker
+        )
 
     return app

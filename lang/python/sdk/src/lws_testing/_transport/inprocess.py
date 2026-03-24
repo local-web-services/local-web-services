@@ -187,16 +187,7 @@ def _wire_providers(
     ssm_state: Any = None,
     secretsmanager_state: Any = None,
 ) -> None:
-    """Wire cross-service provider dependencies.
-
-    Connects SNS→SQS delivery, EventBridge→SQS/SNS dispatch,
-    S3 bucket notification dispatch, and StepFunctions service task bridge.
-
-    Args:
-        providers: Provider dict from ``_create_providers``.
-        ssm_state: Optional SSM state object for service task bridge.
-        secretsmanager_state: Optional Secrets Manager state for service task bridge.
-    """
+    """Wire cross-service provider dependencies (SNS→SQS, EventBridge, S3 notifications, SF)."""
     from lws.providers.stepfunctions._service_task_bridge import (
         SecretsManagerStateAdapter,
         SsmStateAdapter,
@@ -303,6 +294,7 @@ def _build_service_apps(
                 chaos=chaos_configs["sqs"],
                 aws_fake=fake_configs["sqs"],
                 lifecycle=lifecycle_configs["sqs"],
+                tracker_ref=(_sqs_tracker_ref := []),
                 capacity=_cap.get("sqs"),
             ),
         ),
@@ -314,6 +306,8 @@ def _build_service_apps(
                 aws_fake=fake_configs["s3"],
                 lifecycle=lifecycle_configs["s3"],
                 capacity=_cap.get("s3"),
+                sns_provider=providers["sns"],
+                sqs_provider=providers["sqs"],
             ),
         ),
         (
@@ -324,6 +318,9 @@ def _build_service_apps(
                 aws_fake=fake_configs["sns"],
                 lifecycle=lifecycle_configs["sns"],
                 sqs_capacity=_cap.get("sqs"),
+                sqs_provider=providers["sqs"],
+                sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
+                tracker_ref=(_sns_tracker_ref := []),
             ),
         ),
         (
@@ -348,6 +345,10 @@ def _build_service_apps(
                 lifecycle=lifecycle_configs["events"],
                 sf_tracker=_sf_tracker_ref[0] if _sf_tracker_ref else None,
                 sqs_capacity=_cap.get("sqs"),
+                sqs_provider=providers["sqs"],
+                sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
+                sns_provider=providers["sns"],
+                sns_tracker=_sns_tracker_ref[0] if _sns_tracker_ref else None,
             ),
         ),
         (

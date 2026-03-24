@@ -37,6 +37,10 @@ def _create_topic(lws_session, name=TEST_TOPIC):
 
 
 def _create_rule_targeting_sns(lws_session, bus=TEST_BUS, rule=TEST_RULE):
+    try:
+        _sns(lws_session).create_topic(Name=TEST_TOPIC)
+    except Exception:  # noqa: BLE001
+        pass
     _events(lws_session).put_rule(
         Name=rule,
         EventBusName=bus,
@@ -128,12 +132,19 @@ def topic_is_active_given():
 
 @given('the topic is not "ACTIVE"')
 def topic_is_not_active_given(lws_session, world):
-    pytest.skip("lws does not reject put_rule when the topic is not ACTIVE")
+    try:
+        _sns(lws_session).delete_topic(TopicArn=_topic_arn())
+    except Exception:  # noqa: BLE001
+        pass
+    lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
+    _create_topic(lws_session)
+    world["result"] = None
+    world["error"] = None
 
 
 @given("the topic does not exist")
 def topic_does_not_exist():
-    pytest.skip("lws does not validate SNS topic target existence when creating a rule")
+    """No-op: fresh state has no topics."""
 
 
 @given('the target topic is "ACTIVE"')
@@ -210,11 +221,16 @@ def create_topic(lws_session, world):
 @when('an EventBridge rule is created to route matching events to an "SNS" topic')
 def put_rule_targeting_sns(lws_session, world):
     try:
-        world["result"] = _events(lws_session).put_rule(
+        _events(lws_session).put_rule(
             Name=TEST_RULE,
             EventBusName=TEST_BUS,
             EventPattern=EVENT_PATTERN,
             State="ENABLED",
+        )
+        world["result"] = _events(lws_session).put_targets(
+            Rule=TEST_RULE,
+            EventBusName=TEST_BUS,
+            Targets=[{"Id": "t1", "Arn": _topic_arn()}],
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

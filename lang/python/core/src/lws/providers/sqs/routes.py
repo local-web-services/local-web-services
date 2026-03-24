@@ -198,9 +198,17 @@ def create_sqs_app(
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    tracker_ref: list[ResourceStateTracker] | None = None,
     capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
-    """Create a FastAPI application that speaks the SQS wire protocol."""
+    """Create a FastAPI application that speaks the SQS wire protocol.
+
+    Args:
+        tracker_ref: Optional single-element list; if provided, the lifecycle
+            ``ResourceStateTracker`` used by this app is deposited at index 0
+            so callers can share it with other services (e.g. EventBridge, SNS).
+        capacity: Optional capacity configuration for slot-limit enforcement.
+    """
     import lws.providers.sqs._sqs_helpers as _helpers  # noqa: PLC0415  # pylint: disable=import-outside-toplevel
 
     _helpers._sqs_port = port  # noqa: SLF001  # pylint: disable=protected-access
@@ -212,5 +220,7 @@ def create_sqs_app(
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.XML_IAM)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="sqs")
     sqs_router = SqsRouter(provider, lifecycle=lifecycle, capacity=capacity)
+    if tracker_ref is not None:
+        tracker_ref.append(sqs_router._tracker)  # noqa: SLF001  # pylint: disable=protected-access
     app.include_router(sqs_router.router)
     return app

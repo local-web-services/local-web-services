@@ -130,7 +130,7 @@ def queue_exists_and_is_active(lws_session):
 
 @given('the queue does not exist or is not "ACTIVE"')
 def queue_not_exist_or_not_active():
-    pytest.skip("lws does not validate SQS queue existence when configuring bucket notification")
+    """No-op: fresh state has no queues, so the queue does not exist."""
 
 
 @given('the queue is "ACTIVE"')

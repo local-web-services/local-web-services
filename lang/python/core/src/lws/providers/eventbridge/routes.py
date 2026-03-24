@@ -31,6 +31,8 @@ from lws.providers._shared.aws_operation_fake import (
 )
 from lws.providers.eventbridge._eventbridge_handlers import TARGET_HANDLERS
 from lws.providers.eventbridge.provider import EventBridgeProvider
+from lws.providers.sns.provider import SnsProvider
+from lws.providers.sqs.provider import SqsProvider
 
 _logger = get_logger("ldk.eventbridge")
 
@@ -176,6 +178,92 @@ def _check_sf_target_lifecycle(
     return _check_sf_targets(body, sf_tracker)
 
 
+def _check_sqs_targets(
+    body: dict,
+    sqs_provider: SqsProvider,
+    sqs_tracker: ResourceStateTracker | None,
+) -> Response | None:
+    """Return an error response if any SQS target queue does not exist or is not ACTIVE."""
+    for t in body.get("Targets", []):
+        arn = t.get("Arn", "")
+        if ":sqs:" not in arn:
+            continue
+        queue_name = arn.rsplit(":", 1)[-1]
+        queue = sqs_provider.get_queue(queue_name)
+        if queue is None:
+            return Response(
+                content=json.dumps({"Error": f"SQS queue does not exist: {arn}"}),
+                status_code=400,
+                media_type="application/json",
+            )
+        if sqs_tracker is not None:
+            state = sqs_tracker.get_state(queue_name)
+            if state in ("CREATING", "DELETING"):
+                return Response(
+                    content=json.dumps(
+                        {"Error": f"SQS queue is not ACTIVE: {arn} (status: {state})"}
+                    ),
+                    status_code=400,
+                    media_type="application/json",
+                )
+    return None
+
+
+def _check_sns_targets(
+    body: dict,
+    sns_provider: SnsProvider,
+    sns_tracker: ResourceStateTracker | None,
+) -> Response | None:
+    """Return an error response if any SNS target topic does not exist or is not ACTIVE."""
+    for t in body.get("Targets", []):
+        arn = t.get("Arn", "")
+        if ":sns:" not in arn:
+            continue
+        topic_name = arn.rsplit(":", 1)[-1]
+        topic = None
+        try:
+            topic = sns_provider.get_topic(topic_name)
+        except (KeyError, Exception):  # noqa: BLE001
+            topic = None
+        if topic is None:
+            return Response(
+                content=json.dumps({"Error": f"SNS topic does not exist: {arn}"}),
+                status_code=400,
+                media_type="application/json",
+            )
+        if sns_tracker is not None:
+            state = sns_tracker.get_state(topic_name)
+            if state in ("CREATING", "DELETING"):
+                return Response(
+                    content=json.dumps(
+                        {"Error": f"SNS topic is not ACTIVE: {arn} (status: {state})"}
+                    ),
+                    status_code=400,
+                    media_type="application/json",
+                )
+    return None
+
+
+def _check_put_targets_validation(
+    target: str,
+    body: dict,
+    sqs_provider: SqsProvider | None,
+    sqs_tracker: ResourceStateTracker | None,
+    sns_provider: SnsProvider | None,
+    sns_tracker: ResourceStateTracker | None,
+) -> Response | None:
+    """Validate SQS and SNS targets when PutTargets is called."""
+    if target != "AWSEvents.PutTargets":
+        return None
+    if sqs_provider is not None:
+        err = _check_sqs_targets(body, sqs_provider, sqs_tracker)
+        if err is not None:
+            return err
+    if sns_provider is not None:
+        return _check_sns_targets(body, sns_provider, sns_tracker)
+    return None
+
+
 async def _handle_eventbridge_lifecycle(
     target: str,
     handler: Any,
@@ -191,6 +279,27 @@ async def _handle_eventbridge_lifecycle(
     return None
 
 
+def _check_capacity(
+    target: str,
+    sqs_capacity: AwsCapacityConfig | None,
+) -> Response | None:
+    """Return a 503 if PutEvents is called when SQS capacity is exhausted."""
+    if target != "AWSEvents.PutEvents":
+        return None
+    if sqs_capacity is None or not sqs_capacity.is_exhausted:
+        return None
+    return Response(
+        content=json.dumps(
+            {
+                "__type": "ServiceUnavailableException",
+                "message": "lws: no message slots available",
+            }
+        ),
+        status_code=503,
+        media_type="application/json",
+    )
+
+
 async def _eventbridge_dispatch(
     request: Request,
     provider: EventBridgeProvider,
@@ -198,6 +307,10 @@ async def _eventbridge_dispatch(
     tracker: ResourceStateTracker,
     sf_tracker: ResourceStateTracker | None,
     sqs_capacity: AwsCapacityConfig | None = None,
+    sqs_provider: SqsProvider | None = None,
+    sqs_tracker: ResourceStateTracker | None = None,
+    sns_provider: SnsProvider | None = None,
+    sns_tracker: ResourceStateTracker | None = None,
 ) -> Response:
     """Route a single EventBridge request."""
     target = request.headers.get("x-amz-target", "")
@@ -211,17 +324,15 @@ async def _eventbridge_dispatch(
     if err is not None:
         return err
 
-    if target == "AWSEvents.PutEvents" and sqs_capacity is not None and sqs_capacity.is_exhausted:
-        return Response(
-            content=json.dumps(
-                {
-                    "__type": "ServiceUnavailableException",
-                    "message": "lws: no message slots available",
-                }
-            ),
-            status_code=503,
-            media_type="application/json",
-        )
+    err = _check_put_targets_validation(
+        target, body, sqs_provider, sqs_tracker, sns_provider, sns_tracker
+    )
+    if err is not None:
+        return err
+
+    err = _check_capacity(target, sqs_capacity)
+    if err is not None:
+        return err
 
     handler = TARGET_HANDLERS.get(target)
     if handler is None:
@@ -253,6 +364,10 @@ def create_eventbridge_app(
     lifecycle: ResourceLifecycleConfig | None = None,
     sf_tracker: ResourceStateTracker | None = None,
     sqs_capacity: AwsCapacityConfig | None = None,
+    sqs_provider: SqsProvider | None = None,
+    sqs_tracker: ResourceStateTracker | None = None,
+    sns_provider: SnsProvider | None = None,
+    sns_tracker: ResourceStateTracker | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the EventBridge wire protocol.
 
@@ -260,6 +375,14 @@ def create_eventbridge_app(
         sf_tracker: Optional Step Functions lifecycle tracker.  When provided,
             ``PutTargets`` calls whose target ARNs point at a Step Functions
             state machine will be rejected if that machine is not yet ACTIVE.
+        sqs_provider: Optional SQS provider used to validate SQS queue existence
+            on PutTargets calls.
+        sqs_tracker: Optional SQS lifecycle tracker used to validate that target
+            SQS queues are ACTIVE on PutTargets calls.
+        sns_provider: Optional SNS provider used to validate SNS topic existence
+            on PutTargets calls.
+        sns_tracker: Optional SNS lifecycle tracker used to validate that target
+            SNS topics are ACTIVE on PutTargets calls.
     """
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
@@ -270,7 +393,16 @@ def create_eventbridge_app(
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         return await _eventbridge_dispatch(
-            request, provider, _lc, _tracker, sf_tracker, sqs_capacity
+            request,
+            provider,
+            _lc,
+            _tracker,
+            sf_tracker,
+            sqs_capacity,
+            sqs_provider,
+            sqs_tracker,
+            sns_provider,
+            sns_tracker,
         )
 
     return app
