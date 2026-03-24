@@ -120,7 +120,7 @@ func StartServer(basePort int) (*Server, error) {
 	// EventBridge
 	sfnPort := basePort + ServiceOffsets["stepfunctions"]
 	ebMux := http.NewServeMux()
-	ebMux.Handle("/", eventbridge.NewHandler(state, sqsPort, snsPort, sfnPort))
+	ebMux.Handle("/", eventbridge.NewHandler(state, sqsPort, snsPort, sfnPort, basePort+ServiceOffsets["dynamodb"]))
 	if err := srv.startService(ebMux, ebPort); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("eventbridge server: %w", err)

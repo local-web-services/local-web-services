@@ -75,17 +75,18 @@ func ruleARN(busName, ruleName string) string {
 }
 
 type Handler struct {
-	state   *state.ServerState
-	store   *Store
-	sqsPort int
-	snsPort int
-	sfnPort int
+	state        *state.ServerState
+	store        *Store
+	sqsPort      int
+	snsPort      int
+	sfnPort      int
+	dynamodbPort int
 }
 
-func NewHandler(s *state.ServerState, sqsPort, snsPort, sfnPort int) *Handler {
+func NewHandler(s *state.ServerState, sqsPort, snsPort, sfnPort, dynamodbPort int) *Handler {
 	store := NewStore()
 	s.AddResetCallback(store.Reset)
-	return &Handler{state: s, store: store, sqsPort: sqsPort, snsPort: snsPort, sfnPort: sfnPort}
+	return &Handler{state: s, store: store, sqsPort: sqsPort, snsPort: snsPort, sfnPort: sfnPort, dynamodbPort: dynamodbPort}
 }
 
 // dispatchToTarget delivers an event to a non-Lambda target based on the ARN type.
@@ -95,7 +96,15 @@ func (h *Handler) dispatchToTarget(target map[string]interface{}, event map[stri
 		return
 	}
 
-	eventJSON, _ := json.Marshal(event)
+	// If the target has an Input override, use it as the message body; otherwise use the event.
+	var messageBody string
+	if input := getString(target, "Input"); input != "" {
+		messageBody = input
+	} else {
+		b, _ := json.Marshal(event)
+		messageBody = string(b)
+	}
+	eventJSON := []byte(messageBody)
 
 	// Determine target type from ARN.
 	// SQS ARN: arn:aws:sqs:region:account:queueName
@@ -150,6 +159,34 @@ func (h *Handler) dispatchToTarget(target map[string]interface{}, event map[stri
 		}
 		req.Header.Set("Content-Type", "application/x-amz-json-1.0")
 		req.Header.Set("X-Amz-Target", "AWSStepFunctions.StartExecution")
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return
+		}
+		resp.Body.Close()
+
+	case strings.Contains(targetArn, ":dynamodb:") && h.dynamodbPort != 0:
+		// Extract table name from ARN: arn:aws:dynamodb:region:account:table/TableName
+		parts := strings.Split(targetArn, "/")
+		tableName := parts[len(parts)-1]
+		if tableName == "" {
+			return
+		}
+		// Use the event JSON as the item — parse it as a map
+		var item map[string]interface{}
+		if err := json.Unmarshal(eventJSON, &item); err != nil {
+			return
+		}
+		payload, _ := json.Marshal(map[string]interface{}{
+			"TableName": tableName,
+			"Item":      item,
+		})
+		req, err := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.dynamodbPort), bytes.NewReader(payload))
+		if err != nil {
+			return
+		}
+		req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+		req.Header.Set("X-Amz-Target", "DynamoDB_20120810.PutItem")
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			return
