@@ -210,6 +210,29 @@ class ServiceTaskBridge:
         if status == "CREATING":
             raise RuntimeError(f"SNS topic '{topic_name}' is not yet ACTIVE")
 
+    def _validate_s3_bucket_exists(self, params: dict) -> str | None:
+        """Return an error if the S3 bucket in *params* does not exist."""
+        bucket = params.get("Bucket", "")
+        s3 = self._services.get("s3")
+        if (
+            bucket and s3 is not None and bucket not in s3._buckets
+        ):  # pylint: disable=protected-access
+            return f"S3 bucket does not exist: {bucket}"
+        return None
+
+    def _validate_sns_topic_exists(self, params: dict) -> str | None:
+        """Return an error if the SNS topic in *params* does not exist."""
+        topic_arn = params.get("TopicArn", "")
+        topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+        sns = self._services.get("sns")
+        if not (topic_name and sns is not None):
+            return None
+        try:
+            sns.get_topic(topic_name)
+        except KeyError:
+            return f"SNS topic does not exist: {topic_name}"
+        return None
+
     def validate_definition(self, definition: StateMachineDefinition) -> str | None:
         """Check that all S3 buckets and SNS topics referenced in *definition* exist.
 
@@ -220,27 +243,40 @@ class ServiceTaskBridge:
             TaskState,
         )
 
-        s3 = self._services.get("s3")
-        sns = self._services.get("sns")
-
         for state in definition.states.values():
             if not isinstance(state, TaskState):
                 continue
             params = state.parameters or {}
             if "s3:putObject" in state.resource or "s3:getObject" in state.resource:
-                bucket = params.get("Bucket", "")
-                if (
-                    bucket and s3 is not None and bucket not in s3._buckets
-                ):  # pylint: disable=protected-access
-                    return f"S3 bucket does not exist: {bucket}"
+                err = self._validate_s3_bucket_exists(params)
+                if err:
+                    return err
             if "sns:publish" in state.resource:
-                topic_arn = params.get("TopicArn", "")
-                topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
-                if topic_name and sns is not None:
-                    try:
-                        sns.get_topic(topic_name)
-                    except KeyError:
-                        return f"SNS topic does not exist: {topic_name}"
+                err = self._validate_sns_topic_exists(params)
+                if err:
+                    return err
+        return None
+
+    def _check_s3_preconditions(self, bucket: str) -> str | None:
+        """Return an error if the S3 bucket lifecycle or capacity blocks execution."""
+        if not bucket:
+            return None
+        s3_tracker = self._services.get("s3_tracker")
+        if s3_tracker is not None and s3_tracker.get_state(bucket) == "CREATING":
+            return f"S3 bucket '{bucket}' is not yet ACTIVE"
+        s3_capacity = self._services.get("s3_capacity")
+        if s3_capacity is not None and s3_capacity.is_exhausted:
+            return "S3 object capacity is exhausted"
+        return None
+
+    def _check_sns_preconditions(self, topic_arn: str) -> str | None:
+        """Return an error if the SNS topic lifecycle blocks execution."""
+        topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+        if not topic_name:
+            return None
+        sns_tracker = self._services.get("sns_tracker")
+        if sns_tracker is not None and sns_tracker.get_state(topic_name) == "CREATING":
+            return f"SNS topic '{topic_name}' is not yet ACTIVE"
         return None
 
     def validate_execution_preconditions(self, definition: StateMachineDefinition) -> str | None:
@@ -258,21 +294,13 @@ class ServiceTaskBridge:
                 continue
             params = state.parameters or {}
             if "s3:putObject" in state.resource:
-                bucket = params.get("Bucket", "")
-                if bucket:
-                    s3_tracker = self._services.get("s3_tracker")
-                    if s3_tracker is not None and s3_tracker.get_state(bucket) == "CREATING":
-                        return f"S3 bucket '{bucket}' is not yet ACTIVE"
-                    s3_capacity = self._services.get("s3_capacity")
-                    if s3_capacity is not None and s3_capacity.is_exhausted:
-                        return "S3 object capacity is exhausted"
+                err = self._check_s3_preconditions(params.get("Bucket", ""))
+                if err:
+                    return err
             if "sns:publish" in state.resource:
-                topic_arn = params.get("TopicArn", "")
-                topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
-                if topic_name:
-                    sns_tracker = self._services.get("sns_tracker")
-                    if sns_tracker is not None and sns_tracker.get_state(topic_name) == "CREATING":
-                        return f"SNS topic '{topic_name}' is not yet ACTIVE"
+                err = self._check_sns_preconditions(params.get("TopicArn", ""))
+                if err:
+                    return err
         return None
 
     async def _invoke_secretsmanager_get_secret_value(self, payload: Any) -> dict:
