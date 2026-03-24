@@ -7,8 +7,8 @@ package io.localwebservices.lws.steps;
  * put_object_notification_fails, delete_topic, sequences.
  *
  * <p>All steps used by this suite are already defined in {@link CrossServiceSteps} (system
- * initialisation, bucket/topic Given setups, notification configuration, object upload,
- * invariant catch-alls). No suite-specific steps are needed here.
+ * initialisation, bucket/topic Given setups, notification configuration, object upload, invariant
+ * catch-alls). No suite-specific steps are needed here.
  */
 public class S3apiSnsSteps {
 
