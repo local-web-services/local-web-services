@@ -1071,7 +1071,7 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 			TopicConfig *struct {
 				TopicArn string `xml:"Topic"`
 			} `xml:"TopicConfiguration"`
-			EventBridgeConfig  *struct{} `xml:"EventBridgeConfiguration"`
+			EventBridgeConfig    *struct{} `xml:"EventBridgeConfiguration"`
 			LambdaFunctionConfig *struct {
 				FunctionArn string `xml:"CloudFunction"`
 			} `xml:"CloudFunctionConfiguration"`
