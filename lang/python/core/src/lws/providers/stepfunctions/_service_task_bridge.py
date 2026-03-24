@@ -214,9 +214,7 @@ class ServiceTaskBridge:
         """Return an error if the S3 bucket in *params* does not exist."""
         bucket = params.get("Bucket", "")
         s3 = self._services.get("s3")
-        if (
-            bucket and s3 is not None and bucket not in s3._buckets
-        ):  # pylint: disable=protected-access
+        if bucket and s3 is not None and not s3.bucket_exists(bucket):
             return f"S3 bucket does not exist: {bucket}"
         return None
 

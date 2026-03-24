@@ -180,6 +180,10 @@ class S3Provider(IObjectStore):
             "CreationDate": time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime(created)),
         }
 
+    def bucket_exists(self, bucket_name: str) -> bool:
+        """Return True if the bucket exists."""
+        return bucket_name in self._buckets
+
     async def list_buckets(self) -> list[str]:
         """Return sorted list of bucket names."""
         return sorted(self._buckets)
