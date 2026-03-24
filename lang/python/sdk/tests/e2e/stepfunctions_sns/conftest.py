@@ -176,6 +176,10 @@ def topic_is_active_given():
 
 @given('the topic is not "ACTIVE"')
 def topic_is_not_active_given(lws_session, world):
+    try:
+        _sns(lws_session).delete_topic(TopicArn=_topic_arn())
+    except Exception:  # noqa: BLE001
+        pass
     lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
     _create_topic(lws_session)
     world["result"] = None
@@ -194,6 +198,10 @@ def target_topic_is_active():
 
 @given('the target topic is not "ACTIVE"')
 def target_topic_is_not_active(lws_session, world):
+    try:
+        _sns(lws_session).delete_topic(TopicArn=_topic_arn())
+    except Exception:  # noqa: BLE001
+        pass
     lws_session.lifecycle("sns").create_dwell_ms(5000).apply()
     _create_topic(lws_session)
     world["result"] = None

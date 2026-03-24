@@ -194,6 +194,10 @@ def bucket_is_active_given():
 
 @given('the bucket is not "ACTIVE"')
 def bucket_is_not_active_given(lws_session, world):
+    try:
+        _s3(lws_session).delete_bucket(Bucket=TEST_BUCKET)
+    except Exception:  # noqa: BLE001
+        pass
     lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
     world["result"] = None
@@ -212,6 +216,10 @@ def target_bucket_is_active():
 
 @given('the target bucket is not "ACTIVE"')
 def target_bucket_is_not_active(lws_session, world):
+    try:
+        _s3(lws_session).delete_bucket(Bucket=TEST_BUCKET)
+    except Exception:  # noqa: BLE001
+        pass
     lws_session.lifecycle("s3").create_dwell_ms(5000).apply()
     _create_bucket(lws_session)
     world["result"] = None

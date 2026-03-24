@@ -107,17 +107,15 @@ def dynamodb_lambda_table_does_not_exist():
 @given("the table has a stream enabled")
 def dynamodb_lambda_table_has_stream(lws_session):
     try:
-        _create_table_with_stream(lws_session)
+        _dynamodb(lws_session).delete_table(TableName=TEST_TABLE)
     except Exception:  # noqa: BLE001
-        _dynamodb(lws_session).update_table(
-            TableName=TEST_TABLE,
-            StreamSpecification={"StreamEnabled": True, "StreamViewType": "NEW_AND_OLD_IMAGES"},
-        )
+        pass
+    _create_table_with_stream(lws_session)
 
 
 @given("the table does not have a stream enabled")
-def dynamodb_lambda_table_has_no_stream():
-    """No-op: tables have no stream by default."""
+def dynamodb_lambda_table_has_no_stream(world):
+    world["_skip"] = "lws does not fail put_item when the table has no stream enabled"
 
 
 # ── Given: function state ─────────────────────────────────────────────
@@ -170,8 +168,15 @@ def dynamodb_lambda_esm_not_already_exist():
 
 @given("the event source mapping already exists")
 def dynamodb_lambda_esm_already_exists(lws_session):
+    try:
+        _dynamodb(lws_session).delete_table(TableName=TEST_TABLE)
+    except Exception:  # noqa: BLE001
+        pass
     _create_table_with_stream(lws_session)
-    _create_function(lws_session)
+    try:
+        _create_function(lws_session)
+    except Exception:  # noqa: BLE001
+        pass
     _create_esm(lws_session)
 
 

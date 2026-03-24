@@ -232,7 +232,7 @@ def _parse_topic_configs(root: ET.Element, ns: str) -> list[dict]:
 def _parse_lambda_configs(root: ET.Element, ns: str) -> list[dict]:
     """Extract Lambda function notification targets from an XML root element."""
     targets: list[dict] = []
-    for lambda_cfg in root.findall(f"{ns}LambdaFunctionConfiguration"):
+    for lambda_cfg in root.findall(f"{ns}CloudFunctionConfiguration"):
         arn_elem = lambda_cfg.find(f"{ns}CloudFunction")
         arn = arn_elem.text if arn_elem is not None and arn_elem.text else ""
         prefix_filter, suffix_filter = _parse_filter(lambda_cfg, ns)

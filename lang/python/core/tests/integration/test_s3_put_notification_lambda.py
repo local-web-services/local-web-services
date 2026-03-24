@@ -17,10 +17,10 @@ _FUNC_ARN = f"arn:aws:lambda:us-east-1:000000000000:function:{_FUNC_NAME}"
 _NOTIFICATION_XML = (
     '<?xml version="1.0" encoding="UTF-8"?>'
     "<NotificationConfiguration>"
-    "<LambdaFunctionConfiguration>"
+    "<CloudFunctionConfiguration>"
     f"<CloudFunction>{_FUNC_ARN}</CloudFunction>"
     "<Event>s3:ObjectCreated:*</Event>"
-    "</LambdaFunctionConfiguration>"
+    "</CloudFunctionConfiguration>"
     "</NotificationConfiguration>"
 )
 
