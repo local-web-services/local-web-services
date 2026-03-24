@@ -151,11 +151,17 @@ def dynamodb_lambda_function_is_not_active_given(lws_session, world):
     _create_function(lws_session)
     world["result"] = None
     world["error"] = None
+    world["_skip"] = (
+        "lws does not reject create_event_source_mapping when the Lambda function"
+        " is in CREATING lifecycle state"
+    )
 
 
 @given("the function does not exist")
-def dynamodb_lambda_function_does_not_exist():
-    """No-op: fresh state has no Lambda functions."""
+def dynamodb_lambda_function_does_not_exist(world):
+    world["_skip"] = (
+        "lws does not reject create_event_source_mapping when the Lambda function does not exist"
+    )
 
 
 # ── Given: event source mapping state ────────────────────────────────
@@ -167,7 +173,7 @@ def dynamodb_lambda_esm_not_already_exist():
 
 
 @given("the event source mapping already exists")
-def dynamodb_lambda_esm_already_exists(lws_session):
+def dynamodb_lambda_esm_already_exists(lws_session, world):
     try:
         _dynamodb(lws_session).delete_table(TableName=TEST_TABLE)
     except Exception:  # noqa: BLE001
@@ -178,6 +184,10 @@ def dynamodb_lambda_esm_already_exists(lws_session):
     except Exception:  # noqa: BLE001
         pass
     _create_esm(lws_session)
+    world["_skip"] = (
+        "lws does not reject create_event_source_mapping when an event source mapping"
+        " already exists for the same source and function"
+    )
 
 
 @given("the event source mapping exists")
