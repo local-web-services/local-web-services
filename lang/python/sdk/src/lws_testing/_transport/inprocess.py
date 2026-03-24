@@ -250,7 +250,9 @@ def _build_service_apps(
 
     _cap = capacity_configs or {}
     extended_apps, extended_extra_providers = build_extended_service_apps(
-        providers, lifecycle_configs, capacity_configs=_cap,
+        providers,
+        lifecycle_configs,
+        capacity_configs=_cap,
         dynamodb_tracker_ref=(_dynamodb_tracker_ref := []),
     )
 
