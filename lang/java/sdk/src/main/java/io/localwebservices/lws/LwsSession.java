@@ -23,6 +23,7 @@ import software.amazon.awssdk.services.docdb.DocDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.elasticache.ElastiCacheClient;
 import software.amazon.awssdk.services.elasticsearch.ElasticsearchClient;
+import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.glacier.GlacierClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.memorydb.MemoryDbClient;
@@ -211,6 +212,15 @@ public class LwsSession implements AutoCloseable {
         .build();
   }
 
+  /** Returns a pre-configured EventBridge client pointing at the local emulator. */
+  public EventBridgeClient eventBridgeClient() {
+    return EventBridgeClient.builder()
+        .endpointOverride(endpointFor("eventbridge"))
+        .region(Region.US_EAST_1)
+        .credentialsProvider(testCredentials())
+        .build();
+  }
+
   /** Returns a pre-configured SSM client pointing at the local emulator. */
   public SsmClient ssmClient() {
     return SsmClient.builder()
@@ -322,6 +332,7 @@ public class LwsSession implements AutoCloseable {
     if (clientClass == SfnClient.class) return clientClass.cast(sfnClient());
     if (clientClass == S3Client.class) return clientClass.cast(s3Client());
     if (clientClass == SnsClient.class) return clientClass.cast(snsClient());
+    if (clientClass == EventBridgeClient.class) return clientClass.cast(eventBridgeClient());
     if (clientClass == SsmClient.class) return clientClass.cast(ssmClient());
     if (clientClass == SecretsManagerClient.class) return clientClass.cast(secretsManagerClient());
     if (clientClass == CognitoIdentityProviderClient.class)
@@ -360,6 +371,11 @@ public class LwsSession implements AutoCloseable {
   /** Returns a {@link ChaosBuilder} for the given service (e.g. {@code "stepfunctions"}). */
   public ChaosBuilder chaos(String service) {
     return new ChaosBuilder(this, service);
+  }
+
+  /** Returns a {@link CapacityBuilder} for the given service (e.g. {@code "stepfunctions"}). */
+  public CapacityBuilder capacity(String service) {
+    return new CapacityBuilder(this, service);
   }
 
   /**

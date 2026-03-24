@@ -92,6 +92,10 @@ class _GlacierState:
         """Return the vaults store."""
         return self._vaults
 
+    def reset(self) -> None:
+        """Clear all vaults, archives, and jobs."""
+        self._vaults.clear()
+
 
 # ------------------------------------------------------------------
 # Helpers

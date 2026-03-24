@@ -5,6 +5,10 @@ import com.sun.net.httpserver.HttpHandler;
 import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
+import io.localwebservices.lws.providers.eventbridge.EventBridgeHandler;
+import io.localwebservices.lws.providers.lambda.LambdaHandler;
+import io.localwebservices.lws.providers.sns.SnsHandler;
+import io.localwebservices.lws.providers.sqs.SqsHandler;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -17,10 +21,74 @@ public class S3Handler implements HttpHandler {
   private final S3Store store = new S3Store();
   private final S3BucketConfigOps bucketConfigOps = new S3BucketConfigOps(store);
   private final S3MultipartOps multipartOps = new S3MultipartOps(store);
+  private final S3NotificationOps notificationOps = new S3NotificationOps(store);
 
   public S3Handler(ServerState state) {
     this.state = state;
     state.resetCallbacks.add(store::reset);
+  }
+
+  /** Wires in the SNS handler so that S3 can dispatch notifications to SNS topics. */
+  public void setSnsHandler(SnsHandler snsHandler) {
+    notificationOps.setSnsHandler(snsHandler);
+  }
+
+  /** Wires in the SQS handler so that S3 can dispatch notifications to SQS queues. */
+  public void setSqsHandler(SqsHandler sqsHandler) {
+    notificationOps.setSqsHandler(sqsHandler);
+  }
+
+  /** Wires in the Lambda handler so that S3 can dispatch notifications to Lambda functions. */
+  public void setLambdaHandler(LambdaHandler lambdaHandler) {
+    notificationOps.setLambdaHandler(lambdaHandler);
+  }
+
+  /**
+   * Wires in the EventBridge handler so that S3 can dispatch notifications to EventBridge buses.
+   */
+  public void setEventBridgeHandler(EventBridgeHandler eventBridgeHandler) {
+    notificationOps.setEventBridgeHandler(eventBridgeHandler);
+  }
+
+  /**
+   * Gets an object from S3 programmatically (used by StepFunctions service task bridges). The
+   * params map must contain "Bucket" and "Key" keys. Returns a map with "Body" as a byte[].
+   */
+  public Map<String, Object> executeGetObject(Map<String, Object> params) {
+    String bucket = (String) params.get("Bucket");
+    String key = (String) params.get("Key");
+    Map<String, byte[]> bucketObjs = store.objects.get(bucket);
+    if (bucketObjs == null || !bucketObjs.containsKey(key)) {
+      throw new RuntimeException("NoSuchKey: The specified key does not exist: " + key);
+    }
+    byte[] data = bucketObjs.get(key);
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put("Body", data);
+    result.put("ContentLength", data.length);
+    return result;
+  }
+
+  /**
+   * Puts an object into S3 programmatically (used by StepFunctions service task bridges). The
+   * params map must contain "Bucket", "Key", and "Body" keys. Returns an empty map.
+   */
+  public Map<String, Object> executePutObject(Map<String, Object> params) {
+    String bucket = (String) params.get("Bucket");
+    String key = (String) params.get("Key");
+    Object bodyObj = params.get("Body");
+    byte[] data;
+    if (bodyObj instanceof byte[]) {
+      data = (byte[]) bodyObj;
+    } else if (bodyObj instanceof String) {
+      data = ((String) bodyObj).getBytes(StandardCharsets.UTF_8);
+    } else {
+      data = new byte[0];
+    }
+    if (!store.buckets.containsKey(bucket)) {
+      throw new RuntimeException("NoSuchBucket: The specified bucket does not exist: " + bucket);
+    }
+    store.objects.computeIfAbsent(bucket, k -> new ConcurrentHashMap<>()).put(key, data);
+    return new LinkedHashMap<>();
   }
 
   @Override
@@ -236,6 +304,7 @@ public class S3Handler implements HttpHandler {
           exchange.getResponseHeaders().set("ETag", "\"" + S3HttpHelper.md5Hex(body) + "\"");
           S3HttpHelper.echoChecksumHeaders(exchange);
           S3HttpHelper.sendEmpty(exchange, 200);
+          notificationOps.dispatchNotification(bucket, key, "ObjectCreated:Put");
           break;
         }
       case "GetObject":
@@ -283,6 +352,7 @@ public class S3Handler implements HttpHandler {
           }
           bucketObjs.remove(key);
           S3HttpHelper.sendEmpty(exchange, 204);
+          notificationOps.dispatchNotification(bucket, key, "ObjectRemoved:Delete");
           break;
         }
       case "DeleteObjects":
@@ -310,6 +380,9 @@ public class S3Handler implements HttpHandler {
             sb.append("<Deleted><Key>").append(k).append("</Key></Deleted>");
           sb.append("</DeleteResult>");
           S3HttpHelper.sendXml(exchange, 200, sb.toString());
+          for (String k : deletedKeys) {
+            notificationOps.dispatchNotification(bucket, k, "ObjectRemoved:Delete");
+          }
           break;
         }
       case "CopyObject":
@@ -351,6 +424,7 @@ public class S3Handler implements HttpHandler {
                   + copyEtag
                   + "\"</ETag><LastModified>2024-01-01T00:00:00.000Z</LastModified></CopyObjectResult>";
           S3HttpHelper.sendXml(exchange, 200, xml);
+          notificationOps.dispatchNotification(bucket, key, "ObjectCreated:Copy");
           break;
         }
       default:

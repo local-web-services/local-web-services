@@ -112,49 +112,85 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
   const serviceApps: Array<{ name: string; app: FastifyInstance; port: number }> = [];
 
   // DynamoDB
+  // eslint-disable-next-line prefer-const
+  let dynamoStore!: import("./providers/dynamodb/store").DynamoStore;
   {
     const app = createApp();
-    await app.register(async (instance) => registerDynamoDb(instance, state));
+    await app.register(async (instance) => {
+      dynamoStore = registerDynamoDb(instance, state);
+    });
     const port = basePort + SERVICE_OFFSETS.dynamodb;
     serviceApps.push({ name: "dynamodb", app, port });
   }
 
   // SQS
+  // eslint-disable-next-line prefer-const
+  let sqsStore!: import("./providers/sqs").SqsStore;
   {
     const sqsPort = basePort + SERVICE_OFFSETS.sqs;
     const app = createApp();
-    await app.register(async (instance) => registerSqs(instance, state, sqsPort));
+    await app.register(async (instance) => {
+      sqsStore = registerSqs(instance, state, sqsPort);
+    });
     serviceApps.push({ name: "sqs", app, port: sqsPort });
   }
 
   // S3 (uses raw body parsing)
+  // eslint-disable-next-line prefer-const
+  let s3Store!: import("./providers/s3").S3Store;
   {
     const app = createApp(true);
-    await app.register(async (instance) => registerS3(instance, state));
+    await app.register(async (instance) => {
+      s3Store = registerS3(instance, state);
+    });
     const port = basePort + SERVICE_OFFSETS.s3;
     serviceApps.push({ name: "s3", app, port });
   }
 
   // SNS
+  // eslint-disable-next-line prefer-const
+  let snsStore!: import("./providers/sns").SnsStore;
   {
     const app = createApp();
-    await app.register(async (instance) => registerSns(instance, state));
+    await app.register(async (instance) => {
+      snsStore = registerSns(instance, state);
+      snsStore.setSqsStore(sqsStore);
+    });
     const port = basePort + SERVICE_OFFSETS.sns;
     serviceApps.push({ name: "sns", app, port });
   }
 
+  // Wire SNS, SQS, and EventBridge stores into S3 for bucket event notifications
+  s3Store.setSnsStore(snsStore);
+  s3Store.setSqsStore(sqsStore);
+
   // EventBridge
+  // eslint-disable-next-line prefer-const
+  let eventBridgeStore!: import("./providers/eventbridge").EventBridgeStore;
   {
     const app = createApp();
-    await app.register(async (instance) => registerEventBridge(instance, state));
+    await app.register(async (instance) => {
+      eventBridgeStore = registerEventBridge(instance, state);
+      eventBridgeStore.setSqsStore(sqsStore);
+      eventBridgeStore.setSnsStore(snsStore);
+      eventBridgeStore.setDynamoDbStore(dynamoStore);
+    });
     const port = basePort + SERVICE_OFFSETS.eventbridge;
     serviceApps.push({ name: "eventbridge", app, port });
   }
 
-  // StepFunctions
+  // Wire EventBridge store into S3 for bucket EventBridge notification delivery
+  s3Store.setEventBridgeStore(eventBridgeStore);
+
+  // StepFunctions (store captured for service integration wiring below)
+  // eslint-disable-next-line prefer-const
+  let sfStore!: import("./providers/stepfunctions").StepFunctionsStore;
   {
     const app = createApp();
-    await app.register(async (instance) => registerStepFunctions(instance, state));
+    await app.register(async (instance) => {
+      sfStore = registerStepFunctions(instance, state);
+      eventBridgeStore.setStepFunctionsStore(sfStore);
+    });
     const port = basePort + SERVICE_OFFSETS.stepfunctions;
     serviceApps.push({ name: "stepfunctions", app, port });
   }
@@ -168,12 +204,19 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
   }
 
   // Lambda
+  // eslint-disable-next-line prefer-const
+  let lambdaStore!: import("./providers/lambda").LambdaStore;
   {
     const app = createApp();
-    await app.register(async (instance) => registerLambda(instance, state));
+    await app.register(async (instance) => {
+      lambdaStore = registerLambda(instance, state);
+    });
     const port = basePort + SERVICE_OFFSETS.lambda;
     serviceApps.push({ name: "lambda", app, port });
   }
+
+  // Wire Lambda store into S3 for bucket Lambda notification dispatch
+  s3Store.setLambdaStore(lambdaStore);
 
   // API Gateway
   {
@@ -184,20 +227,46 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
   }
 
   // SSM
+  // eslint-disable-next-line prefer-const
+  let ssmStore!: import("./providers/ssm").SsmStore;
   {
     const app = createApp();
-    await app.register(async (instance) => registerSsm(instance, state));
+    await app.register(async (instance) => {
+      ssmStore = registerSsm(instance, state);
+    });
     const port = basePort + SERVICE_OFFSETS.ssm;
     serviceApps.push({ name: "ssm", app, port });
   }
 
   // SecretsManager
+  // eslint-disable-next-line prefer-const
+  let secretsManagerStore!: import("./providers/secretsmanager").SecretsManagerStore;
   {
     const app = createApp();
-    await app.register(async (instance) => registerSecretsManager(instance, state));
+    await app.register(async (instance) => {
+      secretsManagerStore = registerSecretsManager(instance, state);
+    });
     const port = basePort + SERVICE_OFFSETS.secretsmanager;
     serviceApps.push({ name: "secretsmanager", app, port });
   }
+
+  // Wire service integration stores into StepFunctions task invoker
+  sfStore.setServiceStores({
+    dynamodb: dynamoStore,
+    sqs: sqsStore,
+    sns: snsStore,
+    s3: s3Store,
+    secretsmanager: secretsManagerStore,
+    ssm: ssmStore,
+    eventbridge: eventBridgeStore,
+  });
+
+  // Wire EventBridge store into StepFunctions for execution lifecycle event publishing
+  sfStore.setEventBridgeStore(eventBridgeStore);
+
+  // Wire EventBridge store into SecretsManager and SSM for API call event publishing
+  secretsManagerStore.setEventBridgeStore(eventBridgeStore);
+  ssmStore.setEventBridgeStore(eventBridgeStore);
 
   // RDS
   {

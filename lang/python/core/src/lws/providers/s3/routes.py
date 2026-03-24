@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
@@ -48,6 +49,8 @@ from lws.providers.s3._s3_object_ops import (
 )
 from lws.providers.s3._s3_xml_helpers import _error_xml, _xml_response
 from lws.providers.s3.provider import S3Provider
+from lws.providers.sns.provider import SnsProvider
+from lws.providers.sqs.provider import SqsProvider
 
 _logger = get_logger("ldk.s3")
 
@@ -232,9 +235,14 @@ async def _s3_put_bucket_route(
     provider: S3Provider,
     lc: ResourceLifecycleConfig,
     tracker: ResourceStateTracker,
+    sns_provider: SnsProvider | None = None,
+    sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
 ) -> Response:
     if not any(k in request.query_params for k in _S3_BUCKET_MODIFY_PARAMS):
-        resp = await _dispatch_put_bucket(bucket, request, provider)
+        resp = await _dispatch_put_bucket(
+            bucket, request, provider, sns_provider, sqs_provider, compute_providers
+        )
         if resp.status_code == 200 and lc.enabled and lc.create_dwell_ms > 0:
             tracker.set_state(bucket, "CREATING")
             tracker.schedule_transition(bucket, "ACTIVE", lc.create_dwell_ms)
@@ -242,10 +250,19 @@ async def _s3_put_bucket_route(
     err = _s3_bucket_lifecycle_error(bucket, lc, tracker)
     if err is not None:
         return err
-    return await _dispatch_put_bucket(bucket, request, provider)
+    return await _dispatch_put_bucket(
+        bucket, request, provider, sns_provider, sqs_provider, compute_providers
+    )
 
 
-async def _dispatch_put_bucket(bucket: str, request: Request, provider: S3Provider) -> Response:
+async def _dispatch_put_bucket(
+    bucket: str,
+    request: Request,
+    provider: S3Provider,
+    sns_provider: SnsProvider | None = None,
+    sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
+) -> Response:
     """Dispatch PUT /{bucket} based on query parameters."""
     if "versioning" in request.query_params:
         return await _put_bucket_versioning(bucket, request, provider)
@@ -256,7 +273,9 @@ async def _dispatch_put_bucket(bucket: str, request: Request, provider: S3Provid
     if "policy" in request.query_params:
         return await _put_bucket_policy(bucket, request, provider)
     if "notification" in request.query_params:
-        return await _put_bucket_notification_configuration(bucket, request, provider)
+        return await _put_bucket_notification_configuration(
+            bucket, request, provider, sns_provider, sqs_provider, compute_providers
+        )
     return await _create_bucket(bucket, provider)
 
 
@@ -270,10 +289,12 @@ def _register_object_routes(
     provider: S3Provider,
     lc: ResourceLifecycleConfig | None = None,
     tracker: ResourceStateTracker | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> None:
     """Register object-level S3 routes on *app*."""
     _lc = lc or ResourceLifecycleConfig()
     _tracker = tracker or ResourceStateTracker(_lc)
+    _capacity = capacity or AwsCapacityConfig()
 
     @app.api_route("/{bucket}/{key:path}", methods=["POST"])
     async def post_object(bucket: str, key: str, request: Request) -> Response:
@@ -284,6 +305,8 @@ def _register_object_routes(
 
     @app.api_route("/{bucket}/{key:path}", methods=["PUT"])
     async def put_object(bucket: str, key: str, request: Request) -> Response:
+        if _capacity.is_exhausted:
+            return _error_xml("ServiceUnavailableException", "lws: no object slots available", 503)
         err = _s3_bucket_lifecycle_error(bucket, _lc, _tracker)
         if err is not None:
             return err
@@ -310,6 +333,9 @@ def _register_bucket_routes(
     provider: S3Provider,
     lc: ResourceLifecycleConfig | None = None,
     tracker: ResourceStateTracker | None = None,
+    sns_provider: SnsProvider | None = None,
+    sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
 ) -> None:
     """Register bucket-level S3 routes on *app*."""
     _lc = lc or ResourceLifecycleConfig()
@@ -326,7 +352,9 @@ def _register_bucket_routes(
 
     @app.api_route("/{bucket}", methods=["PUT"])
     async def create_bucket(bucket: str, request: Request) -> Response:
-        return await _s3_put_bucket_route(bucket, request, provider, _lc, _tracker)
+        return await _s3_put_bucket_route(
+            bucket, request, provider, _lc, _tracker, sns_provider, sqs_provider, compute_providers
+        )
 
     @app.api_route("/{bucket}", methods=["DELETE"])
     async def delete_bucket(bucket: str, request: Request) -> Response:
@@ -358,10 +386,17 @@ def create_s3_app(
     aws_fake: AwsFakeConfig | None = None,
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    capacity: AwsCapacityConfig | None = None,
+    sns_provider: SnsProvider | None = None,
+    sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
+    tracker_ref: list | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
+    if tracker_ref is not None:
+        tracker_ref.append(_tracker)
 
     app = FastAPI()
     if aws_fake is not None:
@@ -375,8 +410,10 @@ def create_s3_app(
     async def list_buckets() -> Response:
         return await _list_all_buckets(provider)
 
-    _register_object_routes(app, provider, _lc, _tracker)
-    _register_bucket_routes(app, provider, _lc, _tracker)
+    _register_object_routes(app, provider, _lc, _tracker, capacity)
+    _register_bucket_routes(
+        app, provider, _lc, _tracker, sns_provider, sqs_provider, compute_providers
+    )
 
     # Wrap the ASGI app with virtual-hosted-style rewriting so requests
     # like ``Host: my-bucket.host.docker.internal`` are handled transparently.

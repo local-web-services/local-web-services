@@ -85,7 +85,17 @@ def _parse_table_config(body: dict) -> TableConfig:
             )
         )
 
-    return TableConfig(table_name=table_name, key_schema=key_schema, gsi_definitions=gsi_defs)
+    stream_spec = body.get("StreamSpecification", {})
+    stream_enabled = bool(stream_spec.get("StreamEnabled", False))
+    stream_view_type = stream_spec.get("StreamViewType", "NEW_AND_OLD_IMAGES")
+
+    return TableConfig(
+        table_name=table_name,
+        key_schema=key_schema,
+        gsi_definitions=gsi_defs,
+        stream_enabled=stream_enabled,
+        stream_view_type=stream_view_type,
+    )
 
 
 def _unwrap_item(item: dict) -> dict:

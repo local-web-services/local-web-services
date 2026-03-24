@@ -34,6 +34,7 @@ class ResourceProvisioner {
     SERVICE_OFFSETS.put("sqs", 2);
     SERVICE_OFFSETS.put("s3", 3);
     SERVICE_OFFSETS.put("sns", 4);
+    SERVICE_OFFSETS.put("eventbridge", 5);
     SERVICE_OFFSETS.put("stepfunctions", 6);
     SERVICE_OFFSETS.put("cognito-idp", 7);
     SERVICE_OFFSETS.put("lambda", 8);

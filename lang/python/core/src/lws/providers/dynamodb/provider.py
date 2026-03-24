@@ -41,7 +41,7 @@ from lws.providers.dynamodb._provider_helpers import (
     update_gsi_entry,
 )
 from lws.providers.dynamodb.expressions import apply_filter_expression
-from lws.providers.dynamodb.streams import StreamDispatcher
+from lws.providers.dynamodb.streams import StreamConfiguration, StreamDispatcher, StreamViewType
 from lws.providers.dynamodb.update_expression import apply_update_expression
 
 # Re-export JSON helpers so existing code importing them from this module continues to work
@@ -151,7 +151,29 @@ class SqliteDynamoProvider(IKeyValueStore):
             await conn.commit()
 
         if self._stream_dispatcher is not None:
+            for table_name, config in self._tables.items():
+                if config.stream_enabled:
+                    self._configure_stream_for_table(table_name, config)
             await self._stream_dispatcher.start()
+
+    def _configure_stream_for_table(self, table_name: str, config: TableConfig) -> None:
+        """Register *table_name* with the stream dispatcher using *config*."""
+        if self._stream_dispatcher is None:
+            return
+        try:
+            view_type = StreamViewType(config.stream_view_type)
+        except ValueError:
+            view_type = StreamViewType.NEW_AND_OLD_IMAGES
+        key_attributes = [config.key_schema.partition_key.name]
+        if config.key_schema.sort_key:
+            key_attributes.append(config.key_schema.sort_key.name)
+        self._stream_dispatcher.configure_stream(
+            StreamConfiguration(
+                table_name=table_name,
+                view_type=view_type,
+                key_attributes=key_attributes,
+            )
+        )
 
     async def stop(self) -> None:
         if self._stream_dispatcher is not None:
@@ -223,7 +245,10 @@ class SqliteDynamoProvider(IKeyValueStore):
         self._version_store.record_write(table_name, pk, sk, old_item_json)
 
         # Stream events (P1-26)
-        await self._emit_stream_event(table_name, item, old_item_json, config)
+        if self._stream_dispatcher is not None:
+            await emit_stream_event(
+                self._stream_dispatcher, table_name, item, old_item_json, config
+            )
 
     async def get_item(
         self,
@@ -277,8 +302,10 @@ class SqliteDynamoProvider(IKeyValueStore):
         self._version_store.record_write(table_name, pk, sk, old_item_json)
 
         # Stream events (P1-26)
-        if old_item_json is not None:
-            await self._emit_delete_stream_event(table_name, json.loads(old_item_json), config)
+        if old_item_json is not None and self._stream_dispatcher is not None:
+            await emit_delete_stream_event(
+                self._stream_dispatcher, table_name, json.loads(old_item_json), config
+            )
 
     async def update_item(
         self,
@@ -400,6 +427,10 @@ class SqliteDynamoProvider(IKeyValueStore):
             config, self._connections, self._recycled_connections, self._data_dir
         )
         self._connections[config.table_name] = conn
+
+        if config.stream_enabled and self._stream_dispatcher is not None:
+            self._configure_stream_for_table(config.table_name, config)
+
         return self._build_table_description(config)
 
     async def delete_table(self, table_name: str) -> dict:
@@ -461,28 +492,3 @@ class SqliteDynamoProvider(IKeyValueStore):
     ) -> list[dict]:
         """Apply GSI projection filtering to query results."""
         return apply_gsi_projection(self._tables[table_name], index_name, items)
-
-    async def _emit_stream_event(
-        self,
-        table_name: str,
-        new_item: dict,
-        old_item_json: str | None,
-        config: TableConfig,
-    ) -> None:
-        """Emit a stream event for put/update operations."""
-        if self._stream_dispatcher is None:
-            return
-        await emit_stream_event(
-            self._stream_dispatcher, table_name, new_item, old_item_json, config
-        )
-
-    async def _emit_delete_stream_event(
-        self,
-        table_name: str,
-        old_item: dict,
-        config: TableConfig,
-    ) -> None:
-        """Emit a REMOVE stream event."""
-        if self._stream_dispatcher is None:
-            return
-        await emit_delete_stream_event(self._stream_dispatcher, table_name, old_item, config)

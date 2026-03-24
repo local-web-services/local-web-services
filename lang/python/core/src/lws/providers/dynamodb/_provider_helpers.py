@@ -233,6 +233,18 @@ def build_table_description(config: TableConfig) -> dict:
             )
         description["GlobalSecondaryIndexes"] = gsis
 
+    if config.stream_enabled:
+        stream_arn = (
+            f"arn:aws:dynamodb:us-east-1:000000000000:table/{config.table_name}"
+            f"/stream/2024-01-01T00:00:00.000"
+        )
+        description["StreamSpecification"] = {
+            "StreamEnabled": True,
+            "StreamViewType": config.stream_view_type,
+        }
+        description["LatestStreamArn"] = stream_arn
+        description["LatestStreamLabel"] = "2024-01-01T00:00:00.000"
+
     return description
 
 

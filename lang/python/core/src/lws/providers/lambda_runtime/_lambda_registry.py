@@ -53,6 +53,14 @@ class LambdaRegistry:
         self._compute.pop(name, None)
         return removed
 
+    def reset(self) -> None:
+        """Clear all registered functions, compute instances, tags, and URLs."""
+        self._functions.clear()
+        self._compute.clear()
+        self._tags.clear()
+        self._function_urls.clear()
+        self._function_url_providers.clear()
+
     def list_functions(self) -> list[dict[str, Any]]:
         """Return all stored function configurations."""
         return list(self._functions.values())

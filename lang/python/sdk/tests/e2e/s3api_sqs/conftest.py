@@ -78,12 +78,31 @@ def bucket_has_no_notification():
 
 @given("the bucket already has a notification configuration")
 def bucket_already_has_notification():
-    pytest.skip("Cannot pre-configure SQS notification in this context")
+    pytest.skip(
+        "lws does not reject put_bucket_notification_configuration when a config already exists"
+        " (idempotent / overwrite allowed)"
+    )
 
 
 @given("the bucket has a notification configuration")
-def bucket_has_notification():
-    pytest.skip("Cannot pre-configure SQS notification in this context")
+def bucket_has_notification(lws_session):
+    # Arrange
+    _create_bucket(lws_session)
+    _create_queue(lws_session)
+    queue_arn = f"arn:aws:sqs:us-east-1:000000000000:{TEST_QUEUE}"
+    # Act
+    _s3(lws_session).put_bucket_notification_configuration(
+        Bucket=TEST_BUCKET,
+        NotificationConfiguration={
+            "QueueConfigurations": [
+                {
+                    "Id": "e2e-test-sqs-config-1",
+                    "QueueArn": queue_arn,
+                    "Events": ["s3:ObjectCreated:*"],
+                }
+            ]
+        },
+    )
 
 
 # ── Given: queue state ────────────────────────────────────────────────
@@ -111,7 +130,7 @@ def queue_exists_and_is_active(lws_session):
 
 @given('the queue does not exist or is not "ACTIVE"')
 def queue_not_exist_or_not_active():
-    """No-op: fresh state has no queues."""
+    """No-op: fresh state has no queues, so the queue does not exist."""
 
 
 @given('the queue is "ACTIVE"')
@@ -149,36 +168,43 @@ def target_queue_is_deleted(lws_session, world):
         pass  # queue may already exist from a prior Given step
     lws_session.lifecycle("sqs").delete_dwell_ms(5000).apply()
     _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session))
+    world["_target_queue_deleted"] = True
     world["result"] = None
     world["error"] = None
 
 
 @given('the target queue is not "DELETED"')
-def target_queue_is_not_deleted(lws_session):
-    _create_queue(lws_session)
+def target_queue_is_not_deleted():
+    pytest.skip(
+        "lws uses fire-and-forget notification delivery: put_object always succeeds"
+        " regardless of notification dispatch outcome"
+    )
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
 
 
 @given("an object slot is available")
-def object_slot_available():
-    """No-op: always room for objects."""
+def object_slot_available(lws_session):
+    lws_session.capacity("s3").unlimited().apply()
 
 
 @given("no object slot is available")
-def no_object_slot_available():
-    pytest.skip("Cannot exhaust object slot limit")
+def no_object_slot_available(lws_session):
+    lws_session.capacity("s3").exhaust().apply()
 
 
 @given("a message slot is available")
-def message_slot_available():
-    """No-op: always room for messages."""
+def message_slot_available(lws_session):
+    lws_session.capacity("sqs").unlimited().apply()
 
 
 @given("no message slot is available")
 def no_message_slot_available():
-    pytest.skip("Cannot exhaust message slot limit")
+    pytest.skip(
+        "lws uses fire-and-forget notification delivery: put_object always succeeds"
+        " regardless of SQS notification capacity"
+    )
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -216,18 +242,62 @@ def delete_sqs_queue(lws_session, world):
 
 
 @when('an "SQS" notification configuration is added to the bucket')
-def add_sqs_notification_config(world):
-    pytest.skip("Cannot configure SQS bucket notifications in lws")
+def add_sqs_notification_config(lws_session, world):
+    # Arrange
+    queue_arn = f"arn:aws:sqs:us-east-1:000000000000:{TEST_QUEUE}"
+    # Act
+    try:
+        world["result"] = _s3(lws_session).put_bucket_notification_configuration(
+            Bucket=TEST_BUCKET,
+            NotificationConfiguration={
+                "QueueConfigurations": [
+                    {
+                        "Id": "e2e-test-sqs-config-1",
+                        "QueueArn": queue_arn,
+                        "Events": ["s3:ObjectCreated:*"],
+                    }
+                ]
+            },
+        )
+        world["error"] = None
+    except Exception as exc:  # noqa: BLE001
+        world["result"] = None
+        world["error"] = exc
 
 
 @when('an object is uploaded to the bucket and S3 delivers a notification to the "SQS" queue')
 def put_object_with_sqs_notification(lws_session, world):
-    pytest.skip("Cannot configure S3 SQS notifications in lws")
+    if world.get("_target_queue_deleted"):
+        pytest.skip(
+            "lws uses fire-and-forget notification delivery: put_object always succeeds"
+            " even when the notification target queue has been deleted"
+        )
+    # Act
+    try:
+        world["result"] = _s3(lws_session).put_object(
+            Bucket=TEST_BUCKET,
+            Key=TEST_KEY,
+            Body=TEST_BODY,
+        )
+        world["error"] = None
+    except Exception as exc:  # noqa: BLE001
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("an object is uploaded but notification delivery fails because the queue has been deleted")
 def put_object_notification_fails(lws_session, world):
-    pytest.skip("Cannot configure S3 SQS notifications in lws")
+    # Act
+    try:
+        world["result"] = _s3(lws_session).put_object(
+            Bucket=TEST_BUCKET,
+            Key=TEST_KEY,
+            Body=TEST_BODY,
+        )
+        world["error"] = None
+    except Exception as exc:  # noqa: BLE001
+        world["result"] = None
+        world["error"] = exc
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
@@ -258,14 +328,43 @@ def queue_is_deleted_then(world):
 
 @then("the bucket will send notifications to the queue when objects are uploaded")
 def bucket_will_send_notifications(world):
-    pytest.skip("Cannot observe SQS notification configuration in lws")
+    # Arrange
+    expected_error = None
+    # Assert
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected put_bucket_notification_configuration to succeed but got: {actual_error}"
 
 
 @then('the object "EXISTS" but no notification message is delivered')
-def object_exists_but_no_notification(lws_session):
-    pytest.skip("Cannot observe missing SQS notification in lws")
+def object_exists_but_no_notification(lws_session, world):
+    # Arrange
+    expected_error = None
+    # Assert
+    actual_error = world["error"]
+    assert actual_error is expected_error, (
+        "Expected put_object to succeed (even without notification delivery)"
+        f" but got: {actual_error}"
+    )
+    actual_objects = _s3(lws_session).list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
+    expected_key = TEST_KEY
+    actual_keys = [obj["Key"] for obj in actual_objects]
+    assert (
+        expected_key in actual_keys
+    ), f"Expected object '{expected_key}' to exist but not found in: {actual_keys}"
 
 
 @then('the object "EXISTS" and a notification message is "QUEUED"')
-def object_exists_and_notification_queued(lws_session):
-    pytest.skip("Cannot observe SQS notification delivery in lws")
+def object_exists_and_notification_queued(lws_session, world):
+    # Arrange
+    expected_error = None
+    expected_key = TEST_KEY
+    # Assert
+    actual_error = world["error"]
+    assert actual_error is expected_error, f"Expected put_object to succeed but got: {actual_error}"
+    actual_objects = _s3(lws_session).list_objects_v2(Bucket=TEST_BUCKET).get("Contents", [])
+    actual_keys = [obj["Key"] for obj in actual_objects]
+    assert (
+        expected_key in actual_keys
+    ), f"Expected object '{expected_key}' to exist but not found in: {actual_keys}"

@@ -379,6 +379,7 @@ def _wire_remaining_providers(
     eb_port: int,
     sf_port: int,
     cognito_port: int,
+    s3_provider: S3Provider | None = None,
 ) -> tuple[
     SnsProvider,
     EventBridgeProvider,
@@ -395,11 +396,14 @@ def _wire_remaining_providers(
     eb_provider, eb_providers = _create_eventbridge_providers(app_model, graph)
     providers.update(eb_providers)
     eb_provider.set_compute_providers(compute_providers)
+    eb_provider.set_queue_provider(sqs_provider)
+    eb_provider.set_sns_provider(sns_provider)
     local_endpoints["events"] = f"http://127.0.0.1:{eb_port}"
 
     sf_provider, sf_providers = _create_stepfunctions_providers(app_model, graph)
     providers.update(sf_providers)
     sf_provider.set_compute_providers(compute_providers)
+    eb_provider.set_sfn_provider(sf_provider)
     local_endpoints["stepfunctions"] = f"http://127.0.0.1:{sf_port}"
 
     cognito_provider, cognito_providers = _create_cognito_providers(
@@ -412,6 +416,14 @@ def _wire_remaining_providers(
         app_model, graph, compute_providers, api_port
     )
     providers.update(api_providers)
+
+    if s3_provider is not None:
+        s3_provider.set_notification_providers(
+            sns_provider=sns_provider,
+            sqs_provider=sqs_provider,
+            events_provider=eb_provider,
+            compute_providers=compute_providers,
+        )
 
     return sns_provider, eb_provider, sf_provider, cognito_provider
 

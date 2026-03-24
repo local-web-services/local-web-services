@@ -61,14 +61,18 @@ class _ApiGatewayState:
         self._apis: dict[str, _RestApi] = {}
 
     def create_rest_api(self, name: str, description: str = "") -> _RestApi:
-        """Create a new REST API with a generated ID and root resource."""
+        """Create and store a new REST API, returning it."""
         api_id = str(uuid.uuid4())[:10]
         api = _RestApi(id=api_id, name=name, description=description)
         self._apis[api_id] = api
         return api
 
+    def find_by_name(self, name: str) -> _RestApi | None:
+        """Return the first REST API with the given name, or None."""
+        return next((api for api in self._apis.values() if api.name == name), None)
+
     def get_rest_api(self, api_id: str) -> _RestApi | None:
-        """Return the REST API with the given ID, or None if not found."""
+        """Return the REST API with the given ID, or None."""
         return self._apis.get(api_id)
 
     def list_rest_apis(self) -> list[_RestApi]:
@@ -78,6 +82,10 @@ class _ApiGatewayState:
     def delete_rest_api(self, api_id: str) -> bool:
         """Delete the REST API with the given ID, returning True if it existed."""
         return self._apis.pop(api_id, None) is not None
+
+    def reset(self) -> None:
+        """Clear all stored REST APIs."""
+        self._apis.clear()
 
 
 # ---------------------------------------------------------------------------
@@ -128,3 +136,7 @@ class _ApiGatewayV2State:
     def delete_api(self, api_id: str) -> bool:
         """Delete the HTTP API with the given ID, returning True if it existed."""
         return self._apis.pop(api_id, None) is not None
+
+    def reset(self) -> None:
+        """Clear all stored HTTP APIs."""
+        self._apis.clear()

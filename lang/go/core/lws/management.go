@@ -31,6 +31,7 @@ func RegisterManagementAPI(mux *http.ServeMux, state *ServerState, shutdownCh ch
 			return
 		}
 		state.Reset()
+		state.ResetCapacity()
 		writeJSON(w, map[string]string{"status": "ok"}, 200)
 	})
 
@@ -122,6 +123,33 @@ func RegisterManagementAPI(mux *http.ServeMux, state *ServerState, shutdownCh ch
 				}
 				state.EnableChaos(service)
 				state.SetChaosRule(service, "*", rule)
+			}
+			writeJSON(w, map[string]string{"status": "ok"}, 200)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+
+	// GET /_ldk/capacity and POST /_ldk/capacity
+	mux.HandleFunc("/_ldk/capacity", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			status := state.GetAllCapacityStatus()
+			result := make(map[string]map[string]interface{})
+			for svc, rule := range status {
+				result[svc] = map[string]interface{}{"slots": rule.Slots}
+			}
+			writeJSON(w, result, 200)
+		case http.MethodPost:
+			var body map[string]struct {
+				Slots *int `json:"slots"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				writeJSONError(w, "ValidationException", "invalid JSON", 400)
+				return
+			}
+			for svc, cfg := range body {
+				state.SetCapacityRule(svc, CapacityRule{Slots: cfg.Slots})
 			}
 			writeJSON(w, map[string]string{"status": "ok"}, 200)
 		default:

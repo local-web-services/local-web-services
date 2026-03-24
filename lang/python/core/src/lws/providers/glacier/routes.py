@@ -44,8 +44,13 @@ _REGION = "us-east-1"
 
 async def _create_vault(state: _GlacierState, vault_name: str) -> Response:
     """Handle CreateVault (PUT /-/vaults/{vaultName})."""
-    if vault_name not in state.vaults:
-        state.vaults[vault_name] = _Vault(vault_name)
+    if vault_name in state.vaults:
+        return _error_response(
+            "ResourceInUseException",
+            f"Vault with name '{vault_name}' already exists",
+            status_code=409,
+        )
+    state.vaults[vault_name] = _Vault(vault_name)
 
     return Response(
         status_code=201,
@@ -360,7 +365,9 @@ async def _lifecycle_describe_vault(
     return await _describe_vault(state, vault_name)
 
 
-def create_glacier_app(lifecycle: ResourceLifecycleConfig | None = None) -> FastAPI:
+def create_glacier_app(
+    lifecycle: ResourceLifecycleConfig | None = None,
+) -> tuple[FastAPI, _GlacierState]:
     """Create a FastAPI application that speaks the Glacier REST wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
@@ -405,4 +412,4 @@ def create_glacier_app(lifecycle: ResourceLifecycleConfig | None = None) -> Fast
     async def get_job_output(vault_name: str, job_id: str) -> Response:
         return await _get_job_output(state, vault_name, job_id)
 
-    return app
+    return app, state

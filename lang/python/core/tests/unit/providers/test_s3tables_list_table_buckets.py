@@ -10,7 +10,7 @@ from lws.providers.s3tables.routes import create_s3tables_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_s3tables_app()
+    app, _ = create_s3tables_app()
     return TestClient(app)
 
 
@@ -20,7 +20,7 @@ class TestListTableBuckets:
         # No buckets created
 
         # Act
-        response = client.get("/table-buckets")
+        response = client.get("/buckets")
 
         # Assert
         expected_status = 200
@@ -36,10 +36,10 @@ class TestListTableBuckets:
     def test_list_table_buckets_returns_created_buckets(self, client: TestClient) -> None:
         # Arrange
         bucket_name = "listed-bucket"
-        client.put("/table-buckets", json={"name": bucket_name})
+        client.put("/buckets", json={"name": bucket_name})
 
         # Act
-        response = client.get("/table-buckets")
+        response = client.get("/buckets")
 
         # Assert
         expected_status = 200
@@ -55,11 +55,11 @@ class TestListTableBuckets:
         # Arrange
         bucket_name_a = "bucket-a"
         bucket_name_b = "bucket-b"
-        client.put("/table-buckets", json={"name": bucket_name_a})
-        client.put("/table-buckets", json={"name": bucket_name_b})
+        client.put("/buckets", json={"name": bucket_name_a})
+        client.put("/buckets", json={"name": bucket_name_b})
 
         # Act
-        response = client.get("/table-buckets")
+        response = client.get("/buckets")
 
         # Assert
         expected_count = 2

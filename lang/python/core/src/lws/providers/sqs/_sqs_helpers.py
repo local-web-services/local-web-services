@@ -303,3 +303,49 @@ def _find_and_update_visibility(queue: object, receipt_handle: str, vt: int, now
             found = True
             break
     return found
+
+
+def _validate_redrive_policy(
+    attrs: dict, queue: object, config: object, provider: object, get_lifecycle_error: object
+) -> Response | None:
+    """Validate the RedrivePolicy attribute value.
+
+    Returns an error Response if invalid, or None if valid.
+    """
+    existing_policy = (
+        config.custom_attrs.get("RedrivePolicy") if config else None  # type: ignore[union-attr]
+    ) or (
+        queue.dead_letter_queue is not None
+    )  # type: ignore[union-attr]
+    if existing_policy:
+        return _json_error(
+            "InvalidParameterValue",
+            "A dead-letter queue is already configured for this queue.",
+            status_code=400,
+        )
+    try:
+        redrive = _json.loads(attrs["RedrivePolicy"])
+        dlq_arn = redrive.get("deadLetterTargetArn", "")
+        dlq_name = dlq_arn.split(":")[-1] if ":" in dlq_arn else dlq_arn
+    except (ValueError, KeyError):
+        dlq_name = ""
+        dlq_arn = ""
+    if not dlq_name:
+        return None
+    dlq = provider.get_queue(dlq_name)  # type: ignore[union-attr]
+    if dlq is None:
+        return _json_error(
+            "InvalidParameterValue",
+            f"Value {dlq_arn!r} for parameter RedrivePolicy is invalid. "
+            "Reason: Dead letter target does not exist.",
+            status_code=400,
+        )
+    dlq_lifecycle_err = get_lifecycle_error(dlq_name)  # type: ignore[operator]
+    if dlq_lifecycle_err is not None:
+        return _json_error(
+            "InvalidParameterValue",
+            f"Value {dlq_arn!r} for parameter RedrivePolicy is invalid. "
+            "Reason: Dead letter target is not ACTIVE.",
+            status_code=400,
+        )
+    return None

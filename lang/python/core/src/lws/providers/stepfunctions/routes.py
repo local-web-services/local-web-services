@@ -10,10 +10,21 @@ from fastapi import APIRouter, FastAPI, Request, Response
 
 from lws.logging.logger import get_logger
 from lws.logging.middleware import RequestLoggingMiddleware
-from lws.providers._shared.aws_chaos import AwsChaosConfig, AwsChaosMiddleware, ErrorFormat
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
+from lws.providers._shared.aws_chaos import (
+    AwsChaosConfig,
+    AwsChaosMiddleware,
+    ErrorFormat,
+)
 from lws.providers._shared.aws_iam_auth import IamAuthBundle, add_iam_auth_middleware
-from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
-from lws.providers._shared.aws_operation_fake import AwsFakeConfig, AwsOperationFakeMiddleware
+from lws.providers._shared.aws_lifecycle import (
+    ResourceLifecycleConfig,
+    ResourceStateTracker,
+)
+from lws.providers._shared.aws_operation_fake import (
+    AwsFakeConfig,
+    AwsOperationFakeMiddleware,
+)
 from lws.providers._shared.request_helpers import parse_json_body, resolve_api_action
 from lws.providers.stepfunctions._stepfunctions_helpers import (
     _error_response,
@@ -32,11 +43,15 @@ class StepFunctionsRouter:
     """Route Step Functions API requests to a StepFunctionsProvider backend."""
 
     def __init__(
-        self, provider: StepFunctionsProvider, lifecycle: ResourceLifecycleConfig | None = None
+        self,
+        provider: StepFunctionsProvider,
+        lifecycle: ResourceLifecycleConfig | None = None,
+        capacity: AwsCapacityConfig | None = None,
     ) -> None:
         self.provider = provider
         self._lifecycle = lifecycle or ResourceLifecycleConfig()
         self._tracker = ResourceStateTracker(self._lifecycle)
+        self._capacity = capacity or AwsCapacityConfig()
         self.router = APIRouter()
         self.router.add_api_route("/", self._dispatch, methods=["POST"])
 
@@ -87,6 +102,11 @@ class StepFunctionsRouter:
 
     async def _start_execution(self, body: dict) -> Response:
         """Handle StartExecution API action (STANDARD workflows only)."""
+        if self._capacity.is_exhausted:
+            return _error_response(
+                "ServiceUnavailableException", "lws: no execution slots available"
+            )
+
         sm_name = _extract_state_machine_name(body)
         input_data = _parse_input(body)
         execution_name = body.get("name")
@@ -112,19 +132,14 @@ class StepFunctionsRouter:
                 "use StartSyncExecution for EXPRESS workflows.",
             )
 
-        try:
-            result = await self.provider.start_execution(
-                state_machine_name=sm_name,
-                input_data=input_data,
-                execution_name=execution_name,
-            )
-        except KeyError as exc:
-            return _error_response("StateMachineDoesNotExist", str(exc))
-
-        return _json_response(result)
+        return await self._run_execution(sm_name, input_data, execution_name)
 
     async def _start_sync_execution(self, body: dict) -> Response:
         """Handle StartSyncExecution API action (EXPRESS workflows only)."""
+        if self._capacity.is_exhausted:
+            return _error_response(
+                "ServiceUnavailableException", "lws: no execution slots available"
+            )
         sm_name = _extract_state_machine_name(body)
         input_data = _parse_input(body)
         execution_name = body.get("name")
@@ -137,15 +152,25 @@ class StepFunctionsRouter:
                 "use StartExecution for STANDARD workflows.",
             )
 
+        return await self._run_execution(sm_name, input_data, execution_name)
+
+    async def _run_execution(
+        self, sm_name: str, input_data: str | None, execution_name: str | None
+    ) -> Response:
+        """Call provider.start_execution and translate errors to HTTP responses."""
         try:
             result = await self.provider.start_execution(
                 state_machine_name=sm_name,
                 input_data=input_data,
                 execution_name=execution_name,
             )
+        except ValueError as exc:
+            return _error_response(
+                "StateMachineDeleting",
+                f"State machine is not ACTIVE: {exc}",
+            )
         except KeyError as exc:
             return _error_response("StateMachineDoesNotExist", str(exc))
-
         return _json_response(result)
 
     async def _describe_execution(self, body: dict) -> Response:
@@ -208,10 +233,15 @@ class StepFunctionsRouter:
         status = "ACTIVE"
         if self._lifecycle.enabled and self._lifecycle.create_dwell_ms > 0:
             self._tracker.set_state(name, "CREATING")
+            self.provider.set_state_machine_status(name, "CREATING")
+            _prov = self.provider
+            _sm = name
+
+            async def _activate_sm() -> None:
+                _prov.set_state_machine_status(_sm, "ACTIVE")
+
             self._tracker.schedule_transition(
-                name,
-                "ACTIVE",
-                self._lifecycle.create_dwell_ms,
+                name, "ACTIVE", self._lifecycle.create_dwell_ms, on_complete=_activate_sm
             )
             status = "CREATING"
         return _json_response(
@@ -297,15 +327,6 @@ class StepFunctionsRouter:
 
     def _sm_name_from_arn(self, resource_arn: str) -> str:
         return resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
-
-    def _check_sm_exists(self, resource_arn: str) -> Response | None:
-        sm_name = self._sm_name_from_arn(resource_arn)
-        if sm_name not in self.provider.list_state_machines():
-            return _error_response(
-                "ResourceNotFoundException",
-                f"Resource not found: {resource_arn}",
-            )
-        return None
 
     def _check_sm_lifecycle(self, resource_arn: str) -> Response | None:
         """Return error response if SM is not in ACTIVE state (CREATING or DELETING)."""
@@ -411,6 +432,11 @@ class StepFunctionsRouter:
                 "StateMachineDoesNotExist",
                 f"State machine not found: {sm_arn}",
             )
+        except ValueError as exc:
+            return _error_response(
+                "InvalidDefinition",
+                str(exc),
+            )
         return _json_response({"updateDate": update_date})
 
     async def _get_execution_history(self, body: dict) -> Response:
@@ -443,6 +469,7 @@ def create_stepfunctions_app(
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     tracker_ref: list[ResourceStateTracker] | None = None,
+    capacity: AwsCapacityConfig | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the Step Functions wire protocol.
 
@@ -450,6 +477,7 @@ def create_stepfunctions_app(
         tracker_ref: Optional single-element list; if provided, the lifecycle
             ``ResourceStateTracker`` used by this app is deposited at index 0
             so callers can share it with other services (e.g. EventBridge).
+        capacity: Optional capacity configuration for slot-limit enforcement.
     """
     app = FastAPI()
     if aws_fake is not None:
@@ -460,7 +488,7 @@ def create_stepfunctions_app(
     if chaos is not None:
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="stepfunctions")
-    sfn_router = StepFunctionsRouter(provider, lifecycle=lifecycle)
+    sfn_router = StepFunctionsRouter(provider, lifecycle=lifecycle, capacity=capacity)
     if tracker_ref is not None:
         tracker_ref.append(sfn_router.tracker)
     app.include_router(sfn_router.router)

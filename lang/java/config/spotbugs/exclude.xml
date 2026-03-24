@@ -30,4 +30,23 @@
         <Bug pattern="DE_MIGHT_IGNORE,REC_CATCH_EXCEPTION"/>
     </Match>
 
+    <!-- LambdaHandler.invokeFunction is an intentional fire-and-forget no-op fake that
+         accepts the call for cross-service delivery but does not execute the Lambda
+         function body. SpotBugs flags it as UC_USELESS_VOID_METHOD. -->
+    <Match>
+        <Class name="io.localwebservices.lws.providers.lambda.LambdaHandler"/>
+        <Method name="invokeFunction"/>
+        <Bug pattern="UC_USELESS_VOID_METHOD"/>
+    </Match>
+
+    <!-- StepFunctionsSyncExecutor.execute catches Exception broadly because it must handle
+         both JSON parsing failures (IOException) and state machine execution errors from
+         any service task bridge, which can throw arbitrary unchecked exceptions. The broad
+         catch is intentional to return the original input on any failure. -->
+    <Match>
+        <Class name="io.localwebservices.lws.providers.stepfunctions.StepFunctionsSyncExecutor"/>
+        <Method name="execute"/>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
+
 </FindBugsFilter>

@@ -1,5 +1,13 @@
 /** Shared type definitions for the TypeScript core. */
 
+export interface CapacityConfig {
+  slots: number | null; // null = unlimited; 0 = exhausted
+}
+
+export function isExhausted(config: CapacityConfig): boolean {
+  return config.slots !== null && config.slots === 0;
+}
+
 export interface ChaosRule {
   error_code?: string;
   error_message?: string;
@@ -59,6 +67,30 @@ export interface LogEntry {
   request_id: string;
 }
 
+const CAPACITY_SERVICES = [
+  "dynamodb",
+  "sqs",
+  "s3",
+  "sns",
+  "stepfunctions",
+  "events",
+  "cognito-idp",
+  "ssm",
+  "secretsmanager",
+  "lambda",
+  "apigateway",
+] as const;
+
+export type CapacityService = (typeof CAPACITY_SERVICES)[number];
+
+export function defaultCapacityConfigs(): Record<string, CapacityConfig> {
+  const configs: Record<string, CapacityConfig> = {};
+  for (const service of CAPACITY_SERVICES) {
+    configs[service] = { slots: null };
+  }
+  return configs;
+}
+
 export interface ServerState {
   /** Chaos rules: service -> operation -> ChaosRule */
   chaosRules: Map<string, Map<string, ChaosRule>>;
@@ -79,6 +111,8 @@ export interface ServerState {
    * Key is a short service name (e.g. "sns", "sqs", "stepfunctions").
    */
   arnExistsCheckers: Map<string, (arn: string) => boolean>;
+  /** Capacity configs: service -> CapacityConfig */
+  capacityConfigs: Record<string, CapacityConfig>;
 }
 
 export function createServerState(): ServerState {
@@ -90,5 +124,6 @@ export function createServerState(): ServerState {
     logSubscribers: new Set(),
     resetCallbacks: [],
     arnExistsCheckers: new Map(),
+    capacityConfigs: defaultCapacityConfigs(),
   };
 }

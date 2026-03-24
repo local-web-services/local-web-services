@@ -22,7 +22,10 @@ async def start_uvicorn_server(
     port: int,
     host: str = "0.0.0.0",
 ) -> tuple[uvicorn.Server, asyncio.Task]:  # type: ignore[type-arg]
-    """Start a uvicorn server and wait for it to bind."""
+    """Start a uvicorn server and wait for it to bind.
+
+    Raises OSError if the server fails to bind within the timeout.
+    """
     uvi_config = uvicorn.Config(app=app, host=host, port=port, log_level="warning")
     server = uvicorn.Server(uvi_config)
     task = asyncio.create_task(server.serve())
@@ -30,6 +33,9 @@ async def start_uvicorn_server(
         if server.started:
             break
         await asyncio.sleep(0.1)
+    if not server.started:
+        task.cancel()
+        raise OSError(f"Failed to bind server on {host}:{port} — port may be in use")
     return server, task
 
 

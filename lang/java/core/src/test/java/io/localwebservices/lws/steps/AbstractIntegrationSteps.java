@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.localwebservices.lws.cli.LwsCli;
 import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
@@ -247,53 +248,53 @@ public class AbstractIntegrationSteps {
   // -------------------------------------------------------------------------
 
   @Given("an event slot is available")
-  public void anEventSlotIsAvailable() {
-    // no-op: always available in fake
+  public void anEventSlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "events");
   }
 
   @Given("no event slot is available")
-  public void noEventSlotIsAvailable() {
-    Assumptions.assumeTrue(false, "Event slot limit not reachable via API");
+  public void noEventSlotIsAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "events");
   }
 
   @Given("an item slot is available")
-  public void anItemSlotIsAvailable() {
-    // no-op
+  public void anItemSlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "dynamodb");
   }
 
   @Given("no item slot is available")
-  public void noItemSlotIsAvailable() {
-    Assumptions.assumeTrue(false, "Item slot limit not reachable via API");
+  public void noItemSlotIsAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "dynamodb");
   }
 
   @Given("a message slot is available")
-  public void aMessageSlotIsAvailable() {
-    // no-op
+  public void aMessageSlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "sqs");
   }
 
   @Given("no message slot is available")
-  public void noMessageSlotIsAvailable() {
-    Assumptions.assumeTrue(false, "Message slot limit not reachable via API");
+  public void noMessageSlotIsAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "sqs");
   }
 
   @Given("an object slot is available")
-  public void anObjectSlotIsAvailable() {
-    // no-op
+  public void anObjectSlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "s3");
   }
 
   @Given("no object slot is available")
-  public void noObjectSlotIsAvailable() {
-    Assumptions.assumeTrue(false, "Object slot limit not reachable via API");
+  public void noObjectSlotIsAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "s3");
   }
 
   @Given("an execution slot is available")
-  public void anExecutionSlotIsAvailable() {
-    // no-op
+  public void anExecutionSlotIsAvailable() throws Exception {
+    LwsCli.capacityUnlimited(world.managementPort(), "stepfunctions");
   }
 
   @Given("no execution slot is available")
-  public void noExecutionSlotIsAvailable() {
-    Assumptions.assumeTrue(false, "Execution slot limit not reachable via API");
+  public void noExecutionSlotIsAvailable() throws Exception {
+    LwsCli.capacityExhaust(world.managementPort(), "stepfunctions");
   }
 
   // -------------------------------------------------------------------------

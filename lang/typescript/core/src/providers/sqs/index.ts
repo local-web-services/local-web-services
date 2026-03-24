@@ -194,10 +194,16 @@ export class SqsStore {
   }
 
   getQueue(nameOrUrl: string): LocalQueue | undefined {
-    // Support both queue name and queue URL
+    // Support queue name, queue URL, and queue ARN
     if (nameOrUrl.includes("/")) {
       // URL format: http://host:port/000000000000/QueueName
       const parts = nameOrUrl.split("/");
+      const name = parts[parts.length - 1];
+      return this.queues.get(name);
+    }
+    if (nameOrUrl.startsWith("arn:aws:sqs:")) {
+      // ARN format: arn:aws:sqs:region:account:QueueName
+      const parts = nameOrUrl.split(":");
       const name = parts[parts.length - 1];
       return this.queues.get(name);
     }
@@ -460,7 +466,7 @@ async function handleSqsAction(
       const maxMessages = parseInt(String(body.MaxNumberOfMessages ?? "1"), 10);
       const waitTime = parseInt(String(body.WaitTimeSeconds ?? "0"), 10);
       const messages = queue.receiveMessages(maxMessages, waitTime);
-      if (messages.length === 0) {
+      if (messages.length === 0 && queue.totalMessageCount() > 0) {
         errorReply("AWS.SimpleQueueService.EmptyBatch", "No messages available.");
         return;
       }

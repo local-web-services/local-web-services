@@ -117,3 +117,23 @@ func LifecycleDisable(port int, service string) error {
 		service: map[string]interface{}{"enabled": false, "create_dwell_ms": 0, "delete_dwell_ms": 0},
 	})
 }
+
+// CapacityExhaust sets the slot count for a service to zero (no capacity available).
+func CapacityExhaust(port int, service string) error {
+	slots := 0
+	return managementPost(port, "/_ldk/capacity", map[string]interface{}{
+		service: map[string]interface{}{"slots": slots},
+	})
+}
+
+// CapacityUnlimited removes the slot limit for a service.
+func CapacityUnlimited(port int, service string) error {
+	return managementPost(port, "/_ldk/capacity", map[string]interface{}{
+		service: map[string]interface{}{"slots": nil},
+	})
+}
+
+// CapacityStatus returns the current capacity status for all services.
+func CapacityStatus(port int) (map[string]interface{}, error) {
+	return managementGet(port, "/_ldk/capacity")
+}

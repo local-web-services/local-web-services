@@ -112,12 +112,19 @@ def queue_is_active_given():
 
 @given('the queue is not "ACTIVE"')
 def queue_is_not_active_given(lws_session, world):
-    pytest.skip("lws does not enforce queue lifecycle state during SNS subscribe")
+    try:
+        _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session))
+    except Exception:  # noqa: BLE001
+        pass
+    lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
+    _create_queue(lws_session)
+    world["result"] = None
+    world["error"] = None
 
 
 @given("the queue does not exist")
 def queue_does_not_exist():
-    pytest.skip("lws does not validate SQS queue existence when subscribing to an SNS topic")
+    """No-op: fresh state has no queues."""
 
 
 @given('the subscribed queue is "ACTIVE"')
@@ -173,13 +180,13 @@ def no_available_message_exists():
 
 
 @given("a message slot is available")
-def message_slot_available():
-    """No-op: always room for messages."""
+def message_slot_available(lws_session):
+    lws_session.capacity("sqs").unlimited().apply()
 
 
 @given("no message slot is available")
-def no_message_slot_available():
-    pytest.skip("Cannot exhaust message slot limit")
+def no_message_slot_available(lws_session):
+    lws_session.capacity("sqs").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -281,8 +288,22 @@ def subscription_confirmed(lws_session):
 
 
 @then('the message is "AVAILABLE" in the queue')
-def message_available_in_queue(world):
-    pytest.skip("lws does not support SNS-to-SQS message delivery")
+def message_available_in_queue(lws_session):
+    # Arrange
+    url = _queue_url(lws_session)
+    expected_message = TEST_MESSAGE
+    # Act
+    resp = _sqs(lws_session).receive_message(QueueUrl=url, MaxNumberOfMessages=1, WaitTimeSeconds=1)
+    # Assert
+    actual_messages = resp.get("Messages", [])
+    assert len(actual_messages) > 0, (
+        f"Expected at least one message containing '{expected_message}' "
+        f"in queue '{TEST_QUEUE}' but queue was empty"
+    )
+    actual_body = actual_messages[0].get("Body", "")
+    assert (
+        expected_message in actual_body
+    ), f"Expected message body to contain '{expected_message}' but got: {actual_body}"
 
 
 @then('the message is "DELETED"')

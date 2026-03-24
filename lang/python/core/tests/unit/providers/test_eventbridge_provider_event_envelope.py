@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock
 import httpx
 
 from lws.interfaces import ICompute, InvocationResult
+from lws.providers.eventbridge._eventbridge_state import _extract_function_name
 from lws.providers.eventbridge.provider import (
     EventBridgeProvider,
     EventBusConfig,
@@ -15,7 +16,6 @@ from lws.providers.eventbridge.provider import (
     RuleTarget,
     _build_event_envelope,
     _build_scheduled_event,
-    _extract_function_name,
 )
 
 # ---------------------------------------------------------------------------

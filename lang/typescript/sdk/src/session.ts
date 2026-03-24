@@ -19,6 +19,7 @@ import { FakeBuilder } from "./builders/fake";
 import { ChaosBuilder } from "./builders/chaos";
 import { IamBuilder } from "./builders/iam";
 import { LifecycleBuilder } from "./builders/lifecycle";
+import { CapacityBuilder } from "./builders/capacity";
 import { LogCapture, LogEntry } from "./logs";
 
 // Port offsets relative to the base port (matches ldk.py _create_providers)
@@ -469,6 +470,10 @@ export class LwsSession {
 
   lifecycle(service: string): LifecycleBuilder {
     return new LifecycleBuilder(service, this._basePort);
+  }
+
+  capacity(service: string): CapacityBuilder {
+    return new CapacityBuilder(service, this._basePort);
   }
 
   async recentLogs(): Promise<LogEntry[]> {

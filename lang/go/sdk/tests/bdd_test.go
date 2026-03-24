@@ -28,7 +28,26 @@ func TestMain(m *testing.M) {
 
 	opts := godog.Options{
 		Format: "pretty",
-		Paths:  []string{"../../../../lang/specification/sdk/features"},
+		Paths: []string{
+			"../../../../lang/specification/sdk/features",
+			"../../../../lang/specification/core/informal/sns_sqs/sequences.feature",
+			"../../../../lang/specification/core/informal/events_sqs/sequences.feature",
+			"../../../../lang/specification/core/informal/events_sns/sequences.feature",
+			"../../../../lang/specification/core/informal/events_dynamodb/sequences.feature",
+			"../../../../lang/specification/core/informal/events_stepfunctions/sequences.feature",
+			"../../../../lang/specification/core/informal/s3api_sns/sequences.feature",
+			"../../../../lang/specification/core/informal/s3api_sqs/sequences.feature",
+			"../../../../lang/specification/core/informal/s3api_events/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_sqs/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_dynamodb/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_sns/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_s3api/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_secretsmanager/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_ssm/sequences.feature",
+			"../../../../lang/specification/core/informal/stepfunctions_events/sequences.feature",
+			"../../../../lang/specification/core/informal/secretsmanager_events/sequences.feature",
+			"../../../../lang/specification/core/informal/ssm_events/sequences.feature",
+		},
 	}
 	status := godog.TestSuite{
 		Name:                "lws-go-sdk",

@@ -10,12 +10,12 @@ from lws.providers.s3tables.routes import create_s3tables_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_s3tables_app()
+    app, _ = create_s3tables_app()
     return TestClient(app)
 
 
 def _create_table_bucket(client: TestClient, name: str) -> None:
-    client.put("/table-buckets", json={"name": name})
+    client.put("/buckets", json={"name": name})
 
 
 class TestListNamespaces:
@@ -25,7 +25,7 @@ class TestListNamespaces:
         _create_table_bucket(client, bucket_name)
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}/namespaces")
+        response = client.get(f"/namespaces/{bucket_name}")
 
         # Assert
         expected_status = 200
@@ -44,12 +44,12 @@ class TestListNamespaces:
         namespace_name = "listed-ns"
         _create_table_bucket(client, bucket_name)
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces",
+            f"/namespaces/{bucket_name}",
             json={"namespace": [namespace_name]},
         )
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}/namespaces")
+        response = client.get(f"/namespaces/{bucket_name}")
 
         # Assert
         expected_status = 200
@@ -68,7 +68,7 @@ class TestListNamespaces:
         bucket_name = "no-such-ns-bucket"
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}/namespaces")
+        response = client.get(f"/namespaces/{bucket_name}")
 
         # Assert
         expected_status = 404

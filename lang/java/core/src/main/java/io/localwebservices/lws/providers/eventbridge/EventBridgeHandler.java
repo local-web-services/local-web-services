@@ -6,6 +6,10 @@ import com.sun.net.httpserver.HttpHandler;
 import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
+import io.localwebservices.lws.providers.dynamodb.DynamoDbHandler;
+import io.localwebservices.lws.providers.sns.SnsHandler;
+import io.localwebservices.lws.providers.sqs.SqsHandler;
+import io.localwebservices.lws.providers.stepfunctions.StepFunctionsHandler;
 import java.io.*;
 import java.util.*;
 
@@ -18,11 +22,42 @@ public class EventBridgeHandler implements HttpHandler {
 
   private final ServerState state;
   private final EventBridgeStore store;
+  private final EventBridgeDispatchOps dispatchOps;
 
   public EventBridgeHandler(ServerState state) {
     this.state = state;
     this.store = new EventBridgeStore();
+    this.dispatchOps = new EventBridgeDispatchOps(store, state);
     state.resetCallbacks.add(store::reset);
+  }
+
+  /** Wires in the SQS handler for EventBridge→SQS target dispatch. */
+  public void setSqsHandler(SqsHandler sqsHandler) {
+    dispatchOps.setSqsHandler(sqsHandler);
+  }
+
+  /** Wires in the SNS handler for EventBridge→SNS target dispatch. */
+  public void setSnsHandler(SnsHandler snsHandler) {
+    dispatchOps.setSnsHandler(snsHandler);
+  }
+
+  /** Wires in the StepFunctions handler for EventBridge→StepFunctions target dispatch. */
+  public void setStepFunctionsHandler(StepFunctionsHandler stepFunctionsHandler) {
+    dispatchOps.setStepFunctionsHandler(stepFunctionsHandler);
+  }
+
+  /** Wires in the DynamoDB handler for EventBridge→DynamoDB target dispatch. */
+  public void setDynamoDbHandler(DynamoDbHandler dynamoDbHandler) {
+    dispatchOps.setDynamoDbHandler(dynamoDbHandler);
+  }
+
+  /**
+   * Puts events programmatically (used by StepFunctions service task bridges). The params map must
+   * contain "Entries" as a List of event entry maps. Returns a map with "FailedEntryCount" and
+   * "Entries".
+   */
+  public Map<String, Object> executePutEvents(Map<String, Object> params) {
+    return dispatchOps.executePutEvents(params);
   }
 
   @Override
@@ -68,45 +103,9 @@ public class EventBridgeHandler implements HttpHandler {
         {
           List<Map<String, Object>> entries =
               (List<Map<String, Object>>) body.getOrDefault("Entries", List.of());
-          List<Map<String, Object>> resultEntries = new ArrayList<>();
-          int failedCount = 0;
-          for (Map<String, Object> entry : entries) {
-            String busName = (String) entry.getOrDefault("EventBusName", "default");
-            if (!store.eventBuses.containsKey(busName)) {
-              failedCount++;
-              resultEntries.add(
-                  Map.of(
-                      "ErrorCode",
-                      "ResourceNotFoundException",
-                      "ErrorMessage",
-                      "Event bus " + busName + " does not exist."));
-              continue;
-            }
-            // Check if any ENABLED rule is associated with this bus and has targets
-            boolean hasEnabledRuleWithTarget =
-                store.rules.values().stream()
-                    .filter(r -> busName.equals(r.getOrDefault("EventBusName", "default")))
-                    .filter(r -> "ENABLED".equals(r.getOrDefault("State", "ENABLED")))
-                    .anyMatch(
-                        r -> {
-                          String ruleName = (String) r.get("Name");
-                          List<Map<String, Object>> targets =
-                              store.ruleTargets.getOrDefault(ruleName, List.of());
-                          return !targets.isEmpty();
-                        });
-            if (!hasEnabledRuleWithTarget) {
-              failedCount++;
-              resultEntries.add(
-                  Map.of(
-                      "ErrorCode",
-                      "ResourceNotFoundException",
-                      "ErrorMessage",
-                      "No enabled rule with targets for event bus " + busName));
-            } else {
-              resultEntries.add(Map.of("EventId", UUID.randomUUID().toString()));
-            }
-          }
-          if (failedCount > 0 && failedCount == entries.size()) {
+          Map<String, Object> result = dispatchOps.processPutEvents(entries);
+          boolean allFailed = Boolean.TRUE.equals(result.remove("allFailed"));
+          if (allFailed) {
             sendJson(
                 exchange,
                 400,
@@ -117,8 +116,7 @@ public class EventBridgeHandler implements HttpHandler {
                     "No enabled rule with targets for event bus."));
             break;
           }
-          sendJson(
-              exchange, 200, Map.of("FailedEntryCount", failedCount, "Entries", resultEntries));
+          sendJson(exchange, 200, result);
           break;
         }
       case "CreateEventBus":
@@ -161,7 +159,6 @@ public class EventBridgeHandler implements HttpHandler {
                     "Event bus " + busName + " does not exist."));
             break;
           }
-          // Check if bus has associated rules
           boolean hasRules =
               store.rules.values().stream()
                   .anyMatch(r -> busName.equals(r.getOrDefault("EventBusName", "default")));
@@ -340,7 +337,6 @@ public class EventBridgeHandler implements HttpHandler {
           List<String> ids = (List<String>) body.getOrDefault("Ids", List.of());
           List<Map<String, Object>> targets =
               store.ruleTargets.getOrDefault(ruleName, new ArrayList<>());
-          // Check all targets exist before removing
           List<String> notFound = new ArrayList<>();
           for (String id : ids) {
             boolean found = targets.stream().anyMatch(t -> id.equals(t.get("Id")));

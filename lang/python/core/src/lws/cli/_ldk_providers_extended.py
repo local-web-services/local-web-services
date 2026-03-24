@@ -22,14 +22,23 @@ def _register_ssm_secretsmanager_providers(
     iam_auth_bundle: IamAuthBundle | None,
     ssm_port: int,
     secretsmanager_port: int,
-) -> None:
-    """Register SSM and Secrets Manager HTTP providers."""
+) -> tuple:
+    """Register SSM and Secrets Manager HTTP providers.
+
+    Returns a tuple of ``(ssm_state, secretsmanager_state)`` so callers can
+    wire the state objects directly into the StepFunctions service task bridge
+    without going through the HTTP layer.
+    """
     from lws.cli._ldk_http_registry import (  # pylint: disable=import-outside-toplevel
         _HttpServiceProvider,
+    )
+    from lws.providers.secretsmanager._secretsmanager_state import (  # pylint: disable=import-outside-toplevel
+        _SecretsState,
     )
     from lws.providers.secretsmanager.routes import (  # pylint: disable=import-outside-toplevel
         create_secretsmanager_app,
     )
+    from lws.providers.ssm._ssm_state import _SsmState  # pylint: disable=import-outside-toplevel
     from lws.providers.ssm.routes import create_ssm_app  # pylint: disable=import-outside-toplevel
 
     ssm_params = [
@@ -40,26 +49,33 @@ def _register_ssm_secretsmanager_providers(
         {"name": s.name, "description": s.description, "secret_string": s.secret_string}
         for s in app_model.secrets
     ]
+
+    ssm_state = _SsmState()
+    sm_state = _SecretsState()
+
     providers["__ssm_http__"] = _HttpServiceProvider(
         "ssm-http",
-        lambda ia=iam_auth_bundle: create_ssm_app(
+        lambda ia=iam_auth_bundle, st=ssm_state: create_ssm_app(
             ssm_params,
             chaos=chaos_configs.get("ssm"),
             aws_fake=aws_fake_configs.get("ssm"),
             iam_auth=ia,
+            state=st,
         ),
         ssm_port,
     )
     providers["__secretsmanager_http__"] = _HttpServiceProvider(
         "secretsmanager-http",
-        lambda ia=iam_auth_bundle: create_secretsmanager_app(
+        lambda ia=iam_auth_bundle, st=sm_state: create_secretsmanager_app(
             sm_secrets,
             chaos=chaos_configs.get("secretsmanager"),
             aws_fake=aws_fake_configs.get("secretsmanager"),
             iam_auth=ia,
+            state=st,
         ),
         secretsmanager_port,
     )
+    return ssm_state, sm_state
 
 
 def _register_organizations_provider(

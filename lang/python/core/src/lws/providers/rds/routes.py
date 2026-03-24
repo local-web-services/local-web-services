@@ -2,6 +2,7 @@
 
 Implements the RDS control-plane wire protocol that AWS SDKs and Terraform use,
 using JSON request/response format with X-Amz-Target header dispatch.
+Also implements the RDS Data API (POST /execute) — see ``_rds_data_api`` module.
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ from lws.providers._shared.response_helpers import (
 from lws.providers._shared.response_helpers import (
     json_response as _json_response,
 )
+from lws.providers.rds._rds_data_api import handle_execute_statement as _handle_execute_statement
 from lws.providers.rds._rds_state import (
     _ENGINE_VERSIONS,
     _DBCluster,
@@ -185,6 +187,9 @@ async def _handle_create_db_cluster(state: _RdsState, body: dict) -> Response:
         data_plane_endpoint=endpoint,
     )
     state.clusters[db_cluster_id] = cluster
+
+    # Eagerly open a SQLite connection so the Data API is available immediately
+    await state.get_or_create_cluster_db(cluster.arn)
 
     return _json_response({"DBCluster": _format_db_cluster(cluster)})
 
@@ -473,5 +478,10 @@ def create_rds_app(
     @app.post("/")
     async def dispatch(request: Request) -> Response:
         return await _rds_dispatch(request, state, _lc, _instance_tracker, _cluster_tracker)
+
+    @app.post("/execute")
+    async def execute_statement(request: Request) -> Response:
+        body = await parse_json_body(request)
+        return await _handle_execute_statement(state, body)
 
     return app

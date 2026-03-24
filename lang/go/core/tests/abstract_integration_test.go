@@ -914,22 +914,35 @@ func registerAbstractIntegrationSteps(sc *godog.ScenarioContext, world *World) {
 		return nil
 	})
 
-	// events_dynamodb: event matching — simulate EB routing by writing item to DDB directly.
+	// events_dynamodb: event matching — dispatch event via EventBridge to DynamoDB target.
 	sc.Step(`^an event matches an "ENABLED" rule and EventBridge writes an item to the DynamoDB target$`, func() error {
 		// Reject if no rule is enabled — a required precondition.
 		if !world.ebRuleCreated {
 			setResult(world, nil, fmt.Errorf("InvalidRequest: no ENABLED rule exists to match the event"))
 			return nil
 		}
-		if err := ddbCreateTable(world); err != nil {
-			setResult(world, nil, err)
+		ddbARN := fmt.Sprintf("arn:aws:dynamodb:us-east-1:000000000000:table/%s", testDDBTable)
+		itemJSON := fmt.Sprintf(`{"%s": "event-record-1"}`, testDDBKey)
+		_, putTargetsErr := world.EventBridgeClient().PutTargets(context.Background(), &eventbridge.PutTargetsInput{
+			Rule:         aws.String(testEventRule),
+			EventBusName: aws.String(testEventBus),
+			Targets: []ebtypes.Target{{
+				Id:    aws.String("t-ddb-1"),
+				Arn:   aws.String(ddbARN),
+				Input: aws.String(itemJSON),
+			}},
+		})
+		if putTargetsErr != nil {
+			setResult(world, nil, putTargetsErr)
 			return nil
 		}
-		out, err := world.DynamoDBClient().PutItem(context.Background(), &dynamodb.PutItemInput{
-			TableName: aws.String(testDDBTable),
-			Item: map[string]ddbtypes.AttributeValue{
-				testDDBKey: &ddbtypes.AttributeValueMemberS{Value: "event-record-1"},
-			},
+		out, err := world.EventBridgeClient().PutEvents(context.Background(), &eventbridge.PutEventsInput{
+			Entries: []ebtypes.PutEventsRequestEntry{{
+				EventBusName: aws.String(testEventBus),
+				Source:       aws.String("test.source"),
+				DetailType:   aws.String("TestEvent"),
+				Detail:       aws.String(`{"key":"value"}`),
+			}},
 		})
 		setResult(world, out, err)
 		return nil

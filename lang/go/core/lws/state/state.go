@@ -16,6 +16,16 @@ type ChaosRule struct {
 	Timeout         bool
 }
 
+// CapacityRule holds the slot configuration for a service.
+type CapacityRule struct {
+	Slots *int `json:"slots"` // nil = unlimited; 0 = exhausted
+}
+
+// IsExhausted returns true when slots is set to zero.
+func (r CapacityRule) IsExhausted() bool {
+	return r.Slots != nil && *r.Slots == 0
+}
+
 // IamStatement is a single IAM policy statement.
 type IamStatement struct {
 	Effect   string      // "Allow" or "Deny"
@@ -84,14 +94,18 @@ type ServerState struct {
 	// fakeRules: service -> []FakeRule
 	fakeRules map[string][]FakeRule
 
+	// capacityRules: service -> CapacityRule
+	capacityRules map[string]CapacityRule
+
 	// resetCallbacks called on POST /_ldk/reset
 	resetCallbacks []func()
 }
 
 func NewServerState() *ServerState {
 	return &ServerState{
-		chaosRules: make(map[string]map[string]*ChaosRule),
-		fakeRules:  make(map[string][]FakeRule),
+		chaosRules:    make(map[string]map[string]*ChaosRule),
+		fakeRules:     make(map[string][]FakeRule),
+		capacityRules: make(map[string]CapacityRule),
 		iamConfig: IamConfig{
 			Identities:       make(map[string]IamIdentity),
 			ResourcePolicies: make(map[string]IamPolicy),
@@ -109,6 +123,7 @@ func (s *ServerState) Reset() {
 	s.mu.Lock()
 	s.chaosRules = make(map[string]map[string]*ChaosRule)
 	s.fakeRules = make(map[string][]FakeRule)
+	s.capacityRules = make(map[string]CapacityRule)
 	s.iamConfig = IamConfig{
 		Identities:       make(map[string]IamIdentity),
 		ResourcePolicies: make(map[string]IamPolicy),
@@ -257,6 +272,38 @@ func (s *ServerState) ClearFakeRules(service string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.fakeRules, service)
+}
+
+// GetCapacityRule returns the CapacityRule for a service (default: unlimited).
+func (s *ServerState) GetCapacityRule(service string) CapacityRule {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.capacityRules[service]
+}
+
+// SetCapacityRule sets the CapacityRule for a service.
+func (s *ServerState) SetCapacityRule(service string, rule CapacityRule) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.capacityRules[service] = rule
+}
+
+// ResetCapacity clears all capacity rules back to unlimited.
+func (s *ServerState) ResetCapacity() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.capacityRules = make(map[string]CapacityRule)
+}
+
+// GetAllCapacityStatus returns a copy of all current capacity rules.
+func (s *ServerState) GetAllCapacityStatus() map[string]CapacityRule {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	result := make(map[string]CapacityRule, len(s.capacityRules))
+	for k, v := range s.capacityRules {
+		result[k] = v
+	}
+	return result
 }
 
 // toKebab converts CamelCase to kebab-case for operation matching.

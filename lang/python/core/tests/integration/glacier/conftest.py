@@ -23,7 +23,8 @@ async def provider():
 
 @pytest.fixture
 def app(provider):
-    return create_glacier_app()
+    app, _ = create_glacier_app()
+    return app
 
 
 @pytest.fixture

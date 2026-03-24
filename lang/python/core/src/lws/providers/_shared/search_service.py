@@ -91,6 +91,10 @@ class _SearchState:
     def __init__(self) -> None:
         self.domains: dict[str, _Domain] = {}
 
+    def reset(self) -> None:
+        """Clear all stored domains."""
+        self.domains.clear()
+
 
 # ------------------------------------------------------------------
 # Format helpers
@@ -317,6 +321,12 @@ async def _handle_remove_tags(
             "ResourceNotFoundException",
             f"Domain with ARN {arn} not found.",
         )
+    missing = [key for key in tag_keys if key not in domain.tags]
+    if missing:
+        return _error_response(
+            "ValidationException",
+            f"Tag key(s) not found on domain: {missing}",
+        )
     for key in tag_keys:
         domain.tags.pop(key, None)
     return _json_response({})
@@ -343,8 +353,13 @@ _GENERIC_HANDLERS = {
 # ------------------------------------------------------------------
 
 
-def create_search_service_app(config: SearchServiceConfig) -> FastAPI:
-    """Create a FastAPI app that speaks a search-service wire protocol."""
+def create_search_service_app(  # noqa: C901
+    config: SearchServiceConfig,
+) -> tuple[FastAPI, _SearchState]:
+    """Create a FastAPI app that speaks a search-service wire protocol.
+
+    Returns a tuple of (app, state) so callers can expose the state for reset.
+    """
     logger = get_logger(config.logger_name)
     app = FastAPI(title=f"LDK {config.service_name.title()}")
     app.add_middleware(RequestLoggingMiddleware, logger=logger, service_name=config.service_name)
@@ -357,6 +372,14 @@ def create_search_service_app(config: SearchServiceConfig) -> FastAPI:
     for generic_name, handler in _GENERIC_HANDLERS.items():
         specific_name = config.action_map.get(generic_name, generic_name)
         action_handlers[specific_name] = handler
+
+    # Determine URL prefix and domain path based on service
+    if config.service_name == "elasticsearch":
+        version_prefix = "/2015-01-01"
+        domain_path = "es/domain"
+    else:
+        version_prefix = "/2021-01-01"
+        domain_path = "opensearch/domain"
 
     @app.post("/")
     async def dispatch(request: Request) -> Response:
@@ -374,4 +397,56 @@ def create_search_service_app(config: SearchServiceConfig) -> FastAPI:
 
         return await handler(state, body, config, _tracker)
 
-    return app
+    @app.post(f"{version_prefix}/{domain_path}")
+    async def rest_create_domain(request: Request) -> Response:
+        body = await parse_json_body(request)
+        return await _handle_create_domain(state, body, config, _tracker)
+
+    @app.get(f"{version_prefix}/{domain_path}/{{DomainName}}")
+    async def rest_describe_domain(DomainName: str) -> Response:
+        return await _handle_describe_domain(state, {"DomainName": DomainName}, config, _tracker)
+
+    @app.delete(f"{version_prefix}/{domain_path}/{{DomainName}}")
+    async def rest_delete_domain(DomainName: str) -> Response:
+        return await _handle_delete_domain(state, {"DomainName": DomainName}, config, _tracker)
+
+    @app.get(f"{version_prefix}/domain")
+    async def rest_list_domains() -> Response:
+        return await _handle_list_domain_names(state, {}, config, _tracker)
+
+    @app.post(f"{version_prefix}/tags")
+    async def rest_add_tags(request: Request) -> Response:
+        body = await parse_json_body(request)
+        return await _handle_add_tags(state, body, config, _tracker)
+
+    @app.post(f"{version_prefix}/tags-removal")
+    async def rest_remove_tags(request: Request) -> Response:
+        body = await parse_json_body(request)
+        return await _handle_remove_tags(state, body, config, _tracker)
+
+    @app.get(f"{version_prefix}/tags/")
+    async def rest_list_tags(arn: str = "") -> Response:
+        return await _handle_list_tags(state, {"ARN": arn}, config, _tracker)
+
+    @app.post(f"{version_prefix}/{domain_path}/{{DomainName}}/config")
+    async def rest_update_domain_config(DomainName: str, request: Request) -> Response:
+        body = await parse_json_body(request)
+        domain = state.domains.get(DomainName)
+        if domain is None:
+            return _error_response(
+                "ResourceNotFoundException",
+                f"Domain {DomainName} not found.",
+                status_code=409,
+            )
+        lc_state = _tracker.get_state(DomainName)
+        if lc_state in ("CREATING", "DELETING"):
+            return _error_response(
+                "ValidationException",
+                f"Domain {DomainName} is not in an active state.",
+            )
+        cluster_config = body.get(config.cluster_config_field)
+        if cluster_config:
+            domain.cluster_config.update(cluster_config)
+        return _json_response({"DomainConfig": {"DomainName": {"Value": DomainName}}})
+
+    return app, state

@@ -10,7 +10,7 @@ from lws.providers.glacier.routes import create_glacier_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_glacier_app()
+    app, _ = create_glacier_app()
     return TestClient(app)
 
 

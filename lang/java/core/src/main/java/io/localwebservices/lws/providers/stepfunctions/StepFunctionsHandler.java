@@ -7,6 +7,13 @@ import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.FakeMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
+import io.localwebservices.lws.providers.dynamodb.DynamoDbHandler;
+import io.localwebservices.lws.providers.eventbridge.EventBridgeHandler;
+import io.localwebservices.lws.providers.s3.S3Handler;
+import io.localwebservices.lws.providers.secretsmanager.SecretsManagerHandler;
+import io.localwebservices.lws.providers.sns.SnsHandler;
+import io.localwebservices.lws.providers.sqs.SqsHandler;
+import io.localwebservices.lws.providers.ssm.SsmHandler;
 import java.io.*;
 import java.time.Instant;
 import java.util.*;
@@ -18,11 +25,71 @@ public class StepFunctionsHandler implements HttpHandler {
 
   private final ServerState state;
   private final StepFunctionsStore store;
+  private final StepFunctionsServiceTaskOps serviceTaskOps = new StepFunctionsServiceTaskOps();
+  private final StepFunctionsSyncExecutor syncExecutor;
 
   public StepFunctionsHandler(ServerState state) {
     this.state = state;
     this.store = new StepFunctionsStore();
+    this.syncExecutor = new StepFunctionsSyncExecutor(store, serviceTaskOps);
     state.resetCallbacks.add(store::reset);
+  }
+
+  /** Wires in the DynamoDB handler for service task bridge execution. */
+  public void setDynamoDbHandler(DynamoDbHandler dynamoDbHandler) {
+    serviceTaskOps.setDynamoDbHandler(dynamoDbHandler);
+  }
+
+  /** Wires in the SQS handler for service task bridge execution. */
+  public void setSqsHandler(SqsHandler sqsHandler) {
+    serviceTaskOps.setSqsHandler(sqsHandler);
+  }
+
+  /** Wires in the SNS handler for service task bridge execution. */
+  public void setSnsHandler(SnsHandler snsHandler) {
+    serviceTaskOps.setSnsHandler(snsHandler);
+  }
+
+  /** Wires in the S3 handler for service task bridge execution. */
+  public void setS3Handler(S3Handler s3Handler) {
+    serviceTaskOps.setS3Handler(s3Handler);
+  }
+
+  /** Wires in the SecretsManager handler for service task bridge execution. */
+  public void setSecretsManagerHandler(SecretsManagerHandler secretsManagerHandler) {
+    serviceTaskOps.setSecretsManagerHandler(secretsManagerHandler);
+  }
+
+  /** Wires in the SSM handler for service task bridge execution. */
+  public void setSsmHandler(SsmHandler ssmHandler) {
+    serviceTaskOps.setSsmHandler(ssmHandler);
+  }
+
+  /** Wires in the EventBridge handler for service task bridge execution. */
+  public void setEventBridgeHandler(EventBridgeHandler eventBridgeHandler) {
+    serviceTaskOps.setEventBridgeHandler(eventBridgeHandler);
+  }
+
+  /**
+   * Starts a Step Functions execution programmatically (used by EventBridge→StepFunctions
+   * delivery). Returns the execution ARN, or null if the state machine does not exist.
+   */
+  public String startExecution(String stateMachineArn, String input) {
+    if (!store.stateMachineExists(stateMachineArn)) {
+      return null;
+    }
+    String execName = UUID.randomUUID().toString();
+    Map<String, Object> exec = store.startExecution(stateMachineArn, execName, input);
+    return (String) exec.get("executionArn");
+  }
+
+  /**
+   * Executes a service integration task identified by its resource ARN. The params map contains the
+   * task's Parameters field from the state machine definition. Returns the task output map, or null
+   * if the ARN is not a recognised service integration.
+   */
+  public Map<String, Object> executeServiceTask(String resourceArn, Map<String, Object> params) {
+    return serviceTaskOps.executeServiceTask(resourceArn, params);
   }
 
   @Override
@@ -183,6 +250,17 @@ public class StepFunctionsHandler implements HttpHandler {
         }
       case "StartExecution":
         {
+          if (state.getCapacityConfig("stepfunctions").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ExecutionLimitExceeded",
+                    "message",
+                    "The maximum number of running executions has been reached."));
+            break;
+          }
           String smArn = (String) body.get("stateMachineArn");
           if (!store.stateMachineExists(smArn)) {
             sendJson(
@@ -198,7 +276,8 @@ public class StepFunctionsHandler implements HttpHandler {
           String execName =
               body.containsKey("name") ? (String) body.get("name") : UUID.randomUUID().toString();
           String input = (String) body.getOrDefault("input", "{}");
-          Map<String, Object> exec = store.startExecution(smArn, execName, input);
+          String output = syncExecutor.execute(smArn, input);
+          Map<String, Object> exec = store.startExecutionWithOutput(smArn, execName, input, output);
           sendJson(
               exchange,
               200,
@@ -207,6 +286,17 @@ public class StepFunctionsHandler implements HttpHandler {
         }
       case "StartSyncExecution":
         {
+          if (state.getCapacityConfig("stepfunctions").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ExecutionLimitExceeded",
+                    "message",
+                    "The maximum number of running executions has been reached."));
+            break;
+          }
           String smArn = (String) body.get("stateMachineArn");
           if (!store.stateMachineExists(smArn)) {
             sendJson(
@@ -228,6 +318,7 @@ public class StepFunctionsHandler implements HttpHandler {
                   + execName;
           double now = Instant.now().getEpochSecond() * 1.0;
           String input = (String) body.getOrDefault("input", "{}");
+          String output = syncExecutor.execute(smArn, input);
           sendJson(
               exchange,
               200,
@@ -239,7 +330,7 @@ public class StepFunctionsHandler implements HttpHandler {
                   "startDate", now,
                   "stopDate", now,
                   "input", input,
-                  "output", input));
+                  "output", output));
           break;
         }
       case "StopExecution":

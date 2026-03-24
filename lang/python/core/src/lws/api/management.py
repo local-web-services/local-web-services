@@ -19,6 +19,9 @@ from lws.api._management_aws_fake import (
     _handle_get_aws_fake,
     _handle_set_aws_fake,
 )
+from lws.api._management_capacity import (
+    _register_capacity_routes,
+)
 from lws.api._management_chaos import (
     _handle_get_chaos,
     _handle_set_chaos,
@@ -33,6 +36,7 @@ from lws.api._management_lifecycle import (
 from lws.api.gui import get_dashboard_html
 from lws.interfaces.provider import Provider
 from lws.logging.logger import get_logger, get_ws_handler
+from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_chaos import AwsChaosConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
 from lws.providers._shared.aws_operation_fake import AwsFakeConfig
@@ -48,13 +52,39 @@ class StatusResponse(BaseModel):
     providers: list[dict[str, Any]]
 
 
+def _reset_chaos_configs(chaos_configs: dict[str, AwsChaosConfig] | None) -> None:
+    """Reset all chaos configs to their default (disabled) state."""
+    if chaos_configs is None:
+        return
+    for cfg in chaos_configs.values():
+        cfg.enabled = False
+        cfg.error_rate = 0.0
+        cfg.latency_min_ms = 0
+        cfg.latency_max_ms = 0
+        cfg.errors = []
+        cfg.connection_reset_rate = 0.0
+        cfg.timeout_rate = 0.0
+
+
+def _reset_lifecycle_configs(lifecycle_configs: dict[str, ResourceLifecycleConfig] | None) -> None:
+    """Reset all lifecycle configs to their default (disabled) state."""
+    if lifecycle_configs is None:
+        return
+    for cfg in lifecycle_configs.values():
+        cfg.enabled = False
+        cfg.create_dwell_ms = 0
+        cfg.delete_dwell_ms = 0
+        cfg.reset_all_trackers()
+
+
 async def _handle_reset(
     providers_map: dict[str, Provider],
     chaos_configs: dict[str, AwsChaosConfig] | None = None,
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     lifecycle_configs: dict[str, ResourceLifecycleConfig] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> JSONResponse:
-    """Reset all provider data and state, including chaos, fake, and lifecycle configs."""
+    """Reset all provider data and state, including chaos, fake, lifecycle, and capacity configs."""
     _logger.info("Reset requested via management API")
     reset_count = 0
 
@@ -66,26 +96,17 @@ async def _handle_reset(
             except Exception as exc:
                 _logger.error("Error resetting %s: %s", provider.name, exc)
 
-    if chaos_configs is not None:
-        for cfg in chaos_configs.values():
-            cfg.enabled = False
-            cfg.error_rate = 0.0
-            cfg.latency_min_ms = 0
-            cfg.latency_max_ms = 0
-            cfg.errors = []
-            cfg.connection_reset_rate = 0.0
-            cfg.timeout_rate = 0.0
+    _reset_chaos_configs(chaos_configs)
 
     if aws_fake_configs is not None:
         for cfg in aws_fake_configs.values():
             cfg.rules = []
 
-    if lifecycle_configs is not None:
-        for cfg in lifecycle_configs.values():
-            cfg.enabled = False
-            cfg.create_dwell_ms = 0
-            cfg.delete_dwell_ms = 0
-            cfg.reset_all_trackers()
+    _reset_lifecycle_configs(lifecycle_configs)
+
+    if capacity_configs is not None:
+        for cfg in capacity_configs.values():
+            cfg.reset()
 
     return JSONResponse(content={"status": "ok", "providers_reset": reset_count})
 
@@ -167,6 +188,7 @@ def create_management_router(
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     iam_auth_bundle: Any | None = None,
     lifecycle_configs: dict[str, ResourceLifecycleConfig] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> APIRouter:
     """Create a management API router.
 
@@ -179,6 +201,7 @@ def create_management_router(
         iam_auth_bundle: Optional IAM auth bundle for runtime IAM auth management.
         lifecycle_configs: Map of service name to mutable ``ResourceLifecycleConfig``
             for runtime updates.
+        capacity_configs: Map of service name to mutable ``AwsCapacityConfig`` for runtime updates.
 
     Returns:
         A FastAPI ``APIRouter`` to be included in the main application.
@@ -189,6 +212,7 @@ def create_management_router(
     _chaos_configs = chaos_configs or {}
     _aws_fake_configs = aws_fake_configs or {}
     _lifecycle_configs = lifecycle_configs or {}
+    _capacity_configs = capacity_configs or {}
 
     _register_core_routes(
         router,
@@ -198,12 +222,14 @@ def create_management_router(
         _chaos_configs,
         _aws_fake_configs,
         _lifecycle_configs,
+        _capacity_configs,
     )
     _register_chaos_routes(router, _chaos_configs)
     _register_iam_auth_routes(router, iam_auth_bundle)
     _register_function_url_routes(router, all_providers)
     _register_aws_fake_routes(router, _aws_fake_configs)
     _register_lifecycle_routes(router, _lifecycle_configs)
+    _register_capacity_routes(router, _capacity_configs)
 
     return router
 
@@ -216,13 +242,14 @@ def _register_core_routes(
     chaos_configs: dict[str, AwsChaosConfig] | None = None,
     aws_fake_configs: dict[str, AwsFakeConfig] | None = None,
     lifecycle_configs: dict[str, ResourceLifecycleConfig] | None = None,
+    capacity_configs: dict[str, AwsCapacityConfig] | None = None,
 ) -> None:
     """Register core management routes (reset, status, resources, gui, ws, shutdown, proxy)."""
 
     @router.post("/reset")
     async def reset_state() -> JSONResponse:
         return await _handle_reset(
-            all_providers, chaos_configs, aws_fake_configs, lifecycle_configs
+            all_providers, chaos_configs, aws_fake_configs, lifecycle_configs, capacity_configs
         )
 
     @router.get("/status")

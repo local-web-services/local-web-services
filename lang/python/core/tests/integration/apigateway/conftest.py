@@ -30,7 +30,7 @@ async def provider():
 
 @pytest.fixture
 def app(provider):
-    return create_apigateway_management_app()
+    return create_apigateway_management_app()[0]
 
 
 @pytest.fixture
@@ -171,6 +171,11 @@ def api_is_not_active(world):
 @given("a resource slot is available")
 def resource_slot_unallocated():
     """No-op: fresh state has no allocated resource slots."""
+
+
+@given("no resource slot is available")
+def no_resource_slot_available(world):
+    pytest.skip("Cannot exhaust resource slots in stateless integration tests.")
 
 
 @given("the resource slot is already allocated")

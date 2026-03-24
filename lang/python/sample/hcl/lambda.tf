@@ -27,6 +27,7 @@ resource "aws_lambda_function" "create_order" {
   role             = aws_iam_role.create_order.arn
   handler          = "index.handler"
   runtime          = "python3.12"
+  timeout          = 30
   filename         = data.archive_file.create_order.output_path
   source_code_hash = data.archive_file.create_order.output_base64sha256
 
@@ -43,6 +44,7 @@ resource "aws_lambda_function" "get_order" {
   role             = aws_iam_role.get_order.arn
   handler          = "index.handler"
   runtime          = "python3.12"
+  timeout          = 30
   filename         = data.archive_file.get_order.output_path
   source_code_hash = data.archive_file.get_order.output_base64sha256
 
@@ -58,6 +60,7 @@ resource "aws_lambda_function" "process_order" {
   role             = aws_iam_role.process_order.arn
   handler          = "index.handler"
   runtime          = "python3.12"
+  timeout          = 30
   filename         = data.archive_file.process_order.output_path
   source_code_hash = data.archive_file.process_order.output_base64sha256
 
@@ -77,6 +80,7 @@ resource "aws_lambda_function" "generate_receipt" {
   role             = aws_iam_role.generate_receipt.arn
   handler          = "index.handler"
   runtime          = "python3.12"
+  timeout          = 30
   filename         = data.archive_file.generate_receipt.output_path
   source_code_hash = data.archive_file.generate_receipt.output_base64sha256
 

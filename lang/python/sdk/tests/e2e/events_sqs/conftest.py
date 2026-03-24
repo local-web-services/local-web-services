@@ -131,12 +131,19 @@ def queue_is_active_given():
 
 @given('the queue is not "ACTIVE"')
 def queue_is_not_active_given(lws_session, world):
-    pytest.skip("lws does not reject put_rule when the queue is not ACTIVE")
+    try:
+        _sqs(lws_session).delete_queue(QueueUrl=_queue_url(lws_session))
+    except Exception:  # noqa: BLE001
+        pass
+    lws_session.lifecycle("sqs").create_dwell_ms(5000).apply()
+    _create_queue(lws_session)
+    world["result"] = None
+    world["error"] = None
 
 
 @given("the queue does not exist")
 def queue_does_not_exist():
-    pytest.skip("lws does not validate SQS queue target existence when creating a rule")
+    """No-op: fresh state has no queues."""
 
 
 @given('the target queue is "ACTIVE"')
@@ -181,13 +188,13 @@ def no_available_message_in_queue():
 
 
 @given("a message slot is available")
-def message_slot_available():
-    """No-op: always room for messages."""
+def message_slot_available(lws_session):
+    lws_session.capacity("sqs").unlimited().apply()
 
 
 @given("no message slot is available")
-def no_message_slot_available():
-    pytest.skip("Cannot exhaust message slot limit")
+def no_message_slot_available(lws_session):
+    lws_session.capacity("sqs").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -216,11 +223,16 @@ def create_queue(lws_session, world):
 @when('an EventBridge rule is created to route matching events to the "SQS" queue')
 def put_rule_targeting_sqs(lws_session, world):
     try:
-        world["result"] = _events(lws_session).put_rule(
+        _events(lws_session).put_rule(
             Name=TEST_RULE,
             EventBusName=TEST_BUS,
             EventPattern=EVENT_PATTERN,
             State="ENABLED",
+        )
+        world["result"] = _events(lws_session).put_targets(
+            Rule=TEST_RULE,
+            EventBusName=TEST_BUS,
+            Targets=[{"Id": "t1", "Arn": _queue_arn()}],
         )
         world["error"] = None
     except (ClientError, Exception) as exc:

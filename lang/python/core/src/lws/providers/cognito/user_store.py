@@ -107,6 +107,14 @@ class UserStore:
         )
         await self._conn.commit()
 
+    async def clear(self) -> None:
+        """Delete all users, tokens, and reset codes for test isolation."""
+        if self._conn is not None:
+            await self._conn.execute("DELETE FROM users")
+            await self._conn.execute("DELETE FROM refresh_tokens")
+            await self._conn.execute("DELETE FROM password_reset_codes")
+            await self._conn.commit()
+
     async def stop(self) -> None:
         """Close the SQLite database."""
         if self._conn is not None:

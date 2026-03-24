@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import io.localwebservices.lws.ServerState;
 import io.localwebservices.lws.middleware.ChaosMiddleware;
 import io.localwebservices.lws.middleware.IamMiddleware;
+import io.localwebservices.lws.providers.sqs.SqsHandler;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -19,10 +20,50 @@ public class SnsHandler implements HttpHandler {
   private final ServerState state;
   private final SnsStore store = new SnsStore();
   private final SnsFormActions formActions = new SnsFormActions(store);
+  private SqsHandler sqsHandler;
 
   public SnsHandler(ServerState state) {
     this.state = state;
     state.resetCallbacks.add(store::reset);
+  }
+
+  /** Wires in the SQS handler so that SNS can deliver to SQS subscriptions. */
+  public void setSqsHandler(SqsHandler sqsHandler) {
+    this.sqsHandler = sqsHandler;
+  }
+
+  /**
+   * Publishes a message to an SNS topic programmatically (used by StepFunctions service task
+   * bridges). The params map must contain "TopicArn" and "Message" keys. Returns a map with
+   * "MessageId".
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> executePublish(Map<String, Object> params) {
+    String topicArn = (String) params.get("TopicArn");
+    if (topicArn == null || !store.topics.containsKey(topicArn)) {
+      throw new RuntimeException("Topic not found: " + topicArn);
+    }
+    String message = (String) params.getOrDefault("Message", "");
+    Map<String, Object> messageAttributes =
+        (Map<String, Object>) params.getOrDefault("MessageAttributes", Map.of());
+    String msgId = UUID.randomUUID().toString();
+    deliverToSqsSubscriptions(topicArn, message, msgId, messageAttributes);
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put("MessageId", msgId);
+    return result;
+  }
+
+  /**
+   * Publishes a message to the given topic ARN programmatically (used by EventBridge→SNS delivery).
+   * Returns the generated message ID, or null if the topic does not exist.
+   */
+  public String publishToTopic(String topicArn, String message) {
+    if (topicArn == null || !store.topics.containsKey(topicArn)) {
+      return null;
+    }
+    String msgId = UUID.randomUUID().toString();
+    deliverToSqsSubscriptions(topicArn, message, msgId, Map.of());
+    return msgId;
   }
 
   @Override
@@ -64,6 +105,16 @@ public class SnsHandler implements HttpHandler {
     try {
       if (IamMiddleware.applyIamAuth(state, "sns", action, exchange, !isJson)) return;
       if (ChaosMiddleware.applyChaos(state, "sns", action, exchange, !isJson)) return;
+      if (("Publish".equals(action) || "Subscribe".equals(action))
+          && state.getCapacityConfig("sns").isExhausted()) {
+        sendError(
+            exchange,
+            "KMSThrottlingException",
+            "No capacity available for SNS operation.",
+            isJson,
+            400);
+        return;
+      }
 
       if (isJson) {
         handleJsonAction(action, jsonBody, exchange);
@@ -119,6 +170,15 @@ public class SnsHandler implements HttpHandler {
         }
       case "Publish":
         {
+          if (state.getCapacityConfig("sns").isExhausted()) {
+            sendError(
+                exchange,
+                "KMSThrottlingException",
+                "No capacity available for SNS delivery.",
+                true,
+                400);
+            break;
+          }
           String publishTopicArn = (String) body.get("TopicArn");
           if (publishTopicArn == null || !store.topics.containsKey(publishTopicArn)) {
             sendError(exchange, "NotFound", "Topic not found: " + publishTopicArn, true, 400);
@@ -137,12 +197,25 @@ public class SnsHandler implements HttpHandler {
                 400);
             break;
           }
+          String message = (String) body.getOrDefault("Message", "");
+          Map<String, Object> messageAttributes =
+              (Map<String, Object>) body.getOrDefault("MessageAttributes", Map.of());
           String msgId = UUID.randomUUID().toString();
+          deliverToSqsSubscriptions(publishTopicArn, message, msgId, messageAttributes);
           sendJsonResponse(exchange, Map.of("MessageId", msgId));
           break;
         }
       case "Subscribe":
         {
+          if (state.getCapacityConfig("sns").isExhausted()) {
+            sendError(
+                exchange,
+                "KMSThrottlingException",
+                "No capacity available for SNS subscription.",
+                true,
+                400);
+            break;
+          }
           String topicArn = (String) body.get("TopicArn");
           if (topicArn == null || !store.topics.containsKey(topicArn)) {
             sendError(exchange, "NotFound", "Topic not found: " + topicArn, true, 400);
@@ -277,6 +350,30 @@ public class SnsHandler implements HttpHandler {
         }
       default:
         sendError(exchange, "InvalidAction", "Unknown: " + action, true, 400);
+    }
+  }
+
+  private void deliverToSqsSubscriptions(
+      String topicArn, String message, String msgId, Map<String, Object> messageAttributes) {
+    if (sqsHandler == null) return;
+    for (Map<String, Object> sub : store.subscriptions.values()) {
+      if (!"sqs".equals(sub.get("Protocol"))) continue;
+      if (!topicArn.equals(sub.get("TopicArn"))) continue;
+      String endpoint = (String) sub.get("Endpoint");
+      if (endpoint == null) continue;
+      Map<String, Object> envelope = new LinkedHashMap<>();
+      envelope.put("Type", "Notification");
+      envelope.put("MessageId", msgId);
+      envelope.put("TopicArn", topicArn);
+      envelope.put("Message", message);
+      envelope.put("MessageAttributes", messageAttributes);
+      String envelopeJson;
+      try {
+        envelopeJson = MAPPER.writeValueAsString(envelope);
+      } catch (Exception e) {
+        envelopeJson = "{\"Message\":\"" + message + "\"}";
+      }
+      sqsHandler.deliverToQueue(endpoint, envelopeJson);
     }
   }
 

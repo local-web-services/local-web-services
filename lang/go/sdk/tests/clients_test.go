@@ -90,8 +90,7 @@ func dispatchServiceCall(world *World, service, operation string) error {
 	case "secretsmanager":
 		return callSecretsManagerOp(world, ctx, operation)
 	default:
-		world.lastResult = LastResult{Success: true, Output: map[string]interface{}{"message": fmt.Sprintf("pending: %s %s", service, operation)}}
-		return godog.ErrPending
+		return fmt.Errorf("unsupported service: %s", service)
 	}
 }
 
@@ -102,8 +101,7 @@ func callDynamoDBOp(world *World, ctx context.Context, operation string) error {
 		result, err := client.ListTables(ctx, &dynamodb.ListTablesInput{})
 		setResult(world, result, err)
 	default:
-		world.lastResult = LastResult{Success: true, Output: map[string]interface{}{"message": fmt.Sprintf("pending dynamodb: %s", operation)}}
-		return godog.ErrPending
+		return fmt.Errorf("unsupported dynamodb operation: %s", operation)
 	}
 	return nil
 }
@@ -115,8 +113,7 @@ func callSQSOp(world *World, ctx context.Context, operation string) error {
 		result, err := client.ListQueues(ctx, &sqs.ListQueuesInput{})
 		setResult(world, result, err)
 	default:
-		world.lastResult = LastResult{Success: true, Output: map[string]interface{}{"message": fmt.Sprintf("pending sqs: %s", operation)}}
-		return godog.ErrPending
+		return fmt.Errorf("unsupported sqs operation: %s", operation)
 	}
 	return nil
 }
@@ -128,8 +125,7 @@ func callS3Op(world *World, ctx context.Context, operation string) error {
 		result, err := client.ListBuckets(ctx, &s3.ListBucketsInput{})
 		setResult(world, result, err)
 	default:
-		world.lastResult = LastResult{Success: true, Output: map[string]interface{}{"message": fmt.Sprintf("pending s3: %s", operation)}}
-		return godog.ErrPending
+		return fmt.Errorf("unsupported s3 operation: %s", operation)
 	}
 	return nil
 }
@@ -141,8 +137,7 @@ func callSNSOp(world *World, ctx context.Context, operation string) error {
 		result, err := client.ListTopics(ctx, &sns.ListTopicsInput{})
 		setResult(world, result, err)
 	default:
-		world.lastResult = LastResult{Success: true, Output: map[string]interface{}{"message": fmt.Sprintf("pending sns: %s", operation)}}
-		return godog.ErrPending
+		return fmt.Errorf("unsupported sns operation: %s", operation)
 	}
 	return nil
 }
@@ -168,8 +163,7 @@ func callSFNOp(world *World, ctx context.Context, operation string) error {
 		result, err := client.ListStateMachines(ctx, &sfn.ListStateMachinesInput{})
 		setResult(world, result, err)
 	default:
-		world.lastResult = LastResult{Success: true, Output: map[string]interface{}{"message": fmt.Sprintf("pending sfn: %s", operation)}}
-		return godog.ErrPending
+		return fmt.Errorf("unsupported stepfunctions operation: %s", operation)
 	}
 	return nil
 }
@@ -181,8 +175,7 @@ func callSSMOp(world *World, ctx context.Context, operation string) error {
 		result, err := client.DescribeParameters(ctx, &ssm.DescribeParametersInput{})
 		setResult(world, result, err)
 	default:
-		world.lastResult = LastResult{Success: true, Output: map[string]interface{}{"message": fmt.Sprintf("pending ssm: %s", operation)}}
-		return godog.ErrPending
+		return fmt.Errorf("unsupported ssm operation: %s", operation)
 	}
 	return nil
 }
@@ -194,8 +187,7 @@ func callSecretsManagerOp(world *World, ctx context.Context, operation string) e
 		result, err := client.ListSecrets(ctx, &secretsmanager.ListSecretsInput{})
 		setResult(world, result, err)
 	default:
-		world.lastResult = LastResult{Success: true, Output: map[string]interface{}{"message": fmt.Sprintf("pending secretsmanager: %s", operation)}}
-		return godog.ErrPending
+		return fmt.Errorf("unsupported secretsmanager operation: %s", operation)
 	}
 	return nil
 }

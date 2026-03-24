@@ -1,7 +1,7 @@
-"""Helper functions for the StepFunctions provider.
+"""Helper functions and compute bridges for the StepFunctions provider.
 
 Contains: definition resolution, ARN building, execution response building,
-Lambda compute bridge utilities, and cloud assembly parsing.
+Lambda compute bridge, and cloud assembly parsing.
 """
 
 from __future__ import annotations
@@ -149,6 +149,49 @@ def _process_invocation_result(result: InvocationResult, _resource_arn: str) -> 
             cause=result.error,
         )
     return result.payload
+
+
+# ---------------------------------------------------------------------------
+# Lambda compute bridge
+# ---------------------------------------------------------------------------
+
+
+class LambdaComputeBridge:
+    """Bridges ICompute providers to the ComputeInvoker protocol.
+
+    Resolves Lambda ARNs from Task state Resource fields to local
+    compute handlers.
+    """
+
+    def __init__(self, compute_providers: dict[str, ICompute]) -> None:
+        self._providers = compute_providers
+
+    async def invoke_function(self, resource_arn: str, payload: Any) -> Any:
+        """Invoke a Lambda function by resolving its resource ARN."""
+        # Handle SFN service integration: arn:...:states:::lambda:invoke
+        if "lambda:invoke" in resource_arn and isinstance(payload, dict):
+            fn_ref = payload.get("FunctionName", "")
+            actual_payload = payload.get("Payload", payload)
+            function_name = _extract_function_name(fn_ref)
+            compute = self._providers.get(function_name)
+            if compute is None:
+                compute = _find_provider_by_arn(self._providers, fn_ref)
+            if compute is None:
+                raise RuntimeError(f"No compute provider for: {fn_ref}")
+            result = await _invoke_compute(compute, function_name, actual_payload)
+            inner = _process_invocation_result(result, resource_arn)
+            # Wrap in service integration envelope (matches real AWS behaviour)
+            return {"Payload": inner, "StatusCode": 200}
+
+        function_name = _extract_function_name(resource_arn)
+        compute = self._providers.get(function_name)
+        if compute is None:
+            compute = _find_provider_by_arn(self._providers, resource_arn)
+        if compute is None:
+            raise RuntimeError(f"No compute provider for: {resource_arn}")
+
+        result = await _invoke_compute(compute, function_name, payload)
+        return _process_invocation_result(result, resource_arn)
 
 
 # ---------------------------------------------------------------------------
@@ -307,4 +350,20 @@ def _parse_cloud_assembly_config(
         workflow_type=workflow_type,
         role_arn=resource_properties.get("RoleArn", ""),
         definition_substitutions={},
+    )
+
+
+def parse_cloud_assembly_state_machine(
+    logical_id: str,
+    resource_properties: dict[str, Any],
+    resource_mapping: dict[str, str] | None = None,
+) -> StateMachineConfig:
+    """Parse an AWS::StepFunctions::StateMachine from cloud assembly properties."""
+    from lws.providers.stepfunctions.provider import (  # pylint: disable=import-outside-toplevel
+        StateMachineConfig,
+        WorkflowType,
+    )
+
+    return _parse_cloud_assembly_config(
+        logical_id, resource_properties, resource_mapping, StateMachineConfig, WorkflowType
     )

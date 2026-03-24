@@ -24,6 +24,26 @@ public class SecretsManagerHandler implements HttpHandler {
     state.resetCallbacks.add(store::reset);
   }
 
+  /**
+   * Gets a secret value programmatically (used by StepFunctions service task bridges). The params
+   * map must contain "SecretId". Returns a map with the secret fields.
+   */
+  public Map<String, Object> executeGetSecretValue(Map<String, Object> params) {
+    String secretId = (String) params.get("SecretId");
+    Map<String, Object> secret = store.findSecret(secretId);
+    if (secret == null) {
+      throw new RuntimeException("ResourceNotFoundException: Secret not found: " + secretId);
+    }
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put("Name", secret.get("Name"));
+    result.put("ARN", secret.get("ARN"));
+    result.put("VersionId", secret.get("VersionId"));
+    result.put("CreatedDate", secret.get("CreatedDate"));
+    if (secret.get("SecretString") != null) result.put("SecretString", secret.get("SecretString"));
+    if (secret.get("SecretBinary") != null) result.put("SecretBinary", secret.get("SecretBinary"));
+    return result;
+  }
+
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     String target = exchange.getRequestHeaders().getFirst("X-Amz-Target");

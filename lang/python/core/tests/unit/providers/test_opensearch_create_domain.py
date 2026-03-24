@@ -12,7 +12,7 @@ from lws.providers.opensearch.routes import create_opensearch_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_opensearch_app()
+    app, _ = create_opensearch_app()
     return TestClient(app)
 
 

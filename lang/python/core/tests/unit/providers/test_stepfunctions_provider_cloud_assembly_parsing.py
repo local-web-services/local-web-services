@@ -11,11 +11,11 @@ import json
 import httpx
 import pytest
 
+from lws.providers.stepfunctions._provider_helpers import parse_cloud_assembly_state_machine
 from lws.providers.stepfunctions.provider import (
     StateMachineConfig,
     StepFunctionsProvider,
     WorkflowType,
-    parse_cloud_assembly_state_machine,
 )
 from lws.providers.stepfunctions.routes import create_stepfunctions_app
 

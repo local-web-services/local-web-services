@@ -25,7 +25,8 @@ async def provider():
 
 @pytest.fixture
 def app(provider):
-    return create_s3tables_app()
+    app, _ = create_s3tables_app()
+    return app
 
 
 @pytest.fixture
@@ -38,7 +39,7 @@ async def client(app):
 
 
 def _create_bucket(client: TestClient, name: str = INT_BUCKET) -> None:
-    client.put("/table-buckets", json={"name": name})
+    client.put("/buckets", json={"name": name})
 
 
 def _create_namespace(
@@ -47,7 +48,7 @@ def _create_namespace(
     namespace: str = INT_NAMESPACE,
 ) -> None:
     client.put(
-        f"/table-buckets/{bucket}/namespaces",
+        f"/namespaces/{bucket}",
         json={"namespace": [namespace]},
     )
 
@@ -59,7 +60,7 @@ def _create_table(
     table: str = INT_TABLE,
 ) -> None:
     client.put(
-        f"/table-buckets/{bucket}/namespaces/{namespace}/tables",
+        f"/tables/{bucket}/{namespace}",
         json={"name": table, "format": "ICEBERG"},
     )
 
@@ -337,7 +338,7 @@ def table_has_one_or_fewer_snapshots():
 
 @when("a table bucket is created")
 def create_table_bucket(client: TestClient, world: dict):
-    r = client.put("/table-buckets", json={"name": INT_BUCKET})
+    r = client.put("/buckets", json={"name": INT_BUCKET})
     if r.status_code < 300:
         world["result"] = r.json()
         world["error"] = None
@@ -348,7 +349,7 @@ def create_table_bucket(client: TestClient, world: dict):
 
 @when("a table bucket is deleted")
 def delete_table_bucket(client: TestClient, world: dict):
-    r = client.delete(f"/table-buckets/{INT_BUCKET}")
+    r = client.delete(f"/buckets/{INT_BUCKET}")
     if r.status_code < 300:
         world["result"] = None
         world["error"] = None
@@ -373,7 +374,7 @@ def finish_deleting_table_bucket(world: dict):
 @when("a namespace is created in a table bucket")
 def create_namespace(client: TestClient, world: dict):
     r = client.put(
-        f"/table-buckets/{INT_BUCKET}/namespaces",
+        f"/namespaces/{INT_BUCKET}",
         json={"namespace": [INT_NAMESPACE]},
     )
     if r.status_code < 300:
@@ -386,7 +387,7 @@ def create_namespace(client: TestClient, world: dict):
 
 @when("a namespace is deleted from a table bucket")
 def delete_namespace(client: TestClient, world: dict):
-    r = client.delete(f"/table-buckets/{INT_BUCKET}/namespaces/{INT_NAMESPACE}")
+    r = client.delete(f"/namespaces/{INT_BUCKET}/{INT_NAMESPACE}")
     if r.status_code < 300:
         world["result"] = None
         world["error"] = None
@@ -406,7 +407,7 @@ def finish_deleting_namespace(world: dict):
 @when("a table is created in a namespace")
 def create_table(client: TestClient, world: dict):
     r = client.put(
-        f"/table-buckets/{INT_BUCKET}/namespaces/{INT_NAMESPACE}/tables",
+        f"/tables/{INT_BUCKET}/{INT_NAMESPACE}",
         json={"name": INT_TABLE, "format": "ICEBERG"},
     )
     if r.status_code < 300:
@@ -419,7 +420,7 @@ def create_table(client: TestClient, world: dict):
 
 @when("a table is deleted")
 def delete_table(client: TestClient, world: dict):
-    r = client.delete(f"/table-buckets/{INT_BUCKET}/namespaces/{INT_NAMESPACE}/tables/{INT_TABLE}")
+    r = client.delete(f"/tables/{INT_BUCKET}/{INT_NAMESPACE}/{INT_TABLE}")
     if r.status_code < 300:
         world["result"] = None
         world["error"] = None
@@ -495,7 +496,7 @@ def finish_compaction(world: dict):
 
 @then('the bucket is in "CREATING" state')
 def bucket_is_in_creating_state(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}")
+    r = client.get(f"/buckets/{INT_BUCKET}")
     expected_valid_statuses = ("CREATING", "ACTIVE")
     actual_status = r.json().get("status", "ACTIVE")
     assert (
@@ -505,7 +506,7 @@ def bucket_is_in_creating_state(client: TestClient):
 
 @then('the bucket is "ACTIVE"')
 def bucket_is_active_then(client: TestClient):
-    r = client.get("/table-buckets")
+    r = client.get("/buckets")
     actual_names = [b["name"] for b in r.json().get("tableBuckets", [])]
     expected_bucket = INT_BUCKET
     assert (
@@ -515,7 +516,7 @@ def bucket_is_active_then(client: TestClient):
 
 @then('the bucket enters "DELETING" state')
 def bucket_enters_deleting_state(client: TestClient):
-    r = client.get("/table-buckets")
+    r = client.get("/buckets")
     actual_names = [b["name"] for b in r.json().get("tableBuckets", [])]
     expected_bucket = INT_BUCKET
     assert (
@@ -525,7 +526,7 @@ def bucket_enters_deleting_state(client: TestClient):
 
 @then('the bucket is "DELETED" and all its namespaces and tables are "DELETED"')
 def bucket_is_deleted_and_all_children_deleted(client: TestClient):
-    r = client.get("/table-buckets")
+    r = client.get("/buckets")
     actual_names = [b["name"] for b in r.json().get("tableBuckets", [])]
     expected_bucket = INT_BUCKET
     assert (
@@ -543,7 +544,7 @@ def bucket_deleting_has_no_active_namespaces():
 
 @then('the namespace is "ACTIVE"')
 def namespace_is_active_then(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}/namespaces")
+    r = client.get(f"/namespaces/{INT_BUCKET}")
     actual_namespaces = [ns["namespace"] for ns in r.json().get("namespaces", [])]
     expected_namespace = [INT_NAMESPACE]
     assert (
@@ -553,7 +554,7 @@ def namespace_is_active_then(client: TestClient):
 
 @then('the namespace enters "DELETING" state')
 def namespace_enters_deleting_state(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}/namespaces")
+    r = client.get(f"/namespaces/{INT_BUCKET}")
     actual_namespaces = [ns["namespace"] for ns in r.json().get("namespaces", [])]
     expected_namespace = [INT_NAMESPACE]
     assert expected_namespace not in actual_namespaces, (
@@ -564,7 +565,7 @@ def namespace_enters_deleting_state(client: TestClient):
 
 @then('the namespace is "DELETED" and all its tables are "DELETED"')
 def namespace_is_deleted_and_tables_deleted(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}/namespaces")
+    r = client.get(f"/namespaces/{INT_BUCKET}")
     actual_namespaces = [ns["namespace"] for ns in r.json().get("namespaces", [])]
     expected_namespace = [INT_NAMESPACE]
     assert (
@@ -582,7 +583,10 @@ def namespace_deleting_has_no_active_tables():
 
 @then('the table is in "CREATING" state')
 def table_is_in_creating_state(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}/namespaces/{INT_NAMESPACE}/tables/{INT_TABLE}")
+    r = client.get(
+        "/get-table",
+        params={"tableBucketARN": INT_BUCKET, "namespace": INT_NAMESPACE, "name": INT_TABLE},
+    )
     expected_valid_statuses = ("CREATING", "ACTIVE")
     actual_status = r.json().get("status", "ACTIVE")
     assert (
@@ -592,7 +596,10 @@ def table_is_in_creating_state(client: TestClient):
 
 @then('the table is "ACTIVE"')
 def table_is_active_then(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}/namespaces/{INT_NAMESPACE}/tables/{INT_TABLE}")
+    r = client.get(
+        "/get-table",
+        params={"tableBucketARN": INT_BUCKET, "namespace": INT_NAMESPACE, "name": INT_TABLE},
+    )
     expected_status_code = 200
     assert (
         r.status_code == expected_status_code
@@ -601,7 +608,10 @@ def table_is_active_then(client: TestClient):
 
 @then('the table enters "DELETING" state')
 def table_enters_deleting_state(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}/namespaces/{INT_NAMESPACE}/tables/{INT_TABLE}")
+    r = client.get(
+        "/get-table",
+        params={"tableBucketARN": INT_BUCKET, "namespace": INT_NAMESPACE, "name": INT_TABLE},
+    )
     expected_status_code = 404
     assert (
         r.status_code == expected_status_code
@@ -610,7 +620,10 @@ def table_enters_deleting_state(client: TestClient):
 
 @then('the table returns to "ACTIVE" state')
 def table_returns_to_active_state(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}/namespaces/{INT_NAMESPACE}/tables/{INT_TABLE}")
+    r = client.get(
+        "/get-table",
+        params={"tableBucketARN": INT_BUCKET, "namespace": INT_NAMESPACE, "name": INT_TABLE},
+    )
     expected_status_code = 200
     assert (
         r.status_code == expected_status_code
@@ -619,7 +632,10 @@ def table_returns_to_active_state(client: TestClient):
 
 @then('the table is "DELETED" and all its snapshots are "DELETED"')
 def table_is_deleted_and_snapshots_deleted(client: TestClient):
-    r = client.get(f"/table-buckets/{INT_BUCKET}/namespaces/{INT_NAMESPACE}/tables/{INT_TABLE}")
+    r = client.get(
+        "/get-table",
+        params={"tableBucketARN": INT_BUCKET, "namespace": INT_NAMESPACE, "name": INT_TABLE},
+    )
     expected_status_code = 404
     assert (
         r.status_code == expected_status_code

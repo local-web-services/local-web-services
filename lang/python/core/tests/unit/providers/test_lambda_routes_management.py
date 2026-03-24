@@ -5,9 +5,11 @@ from __future__ import annotations
 import httpx
 import pytest
 
+from lws.providers.lambda_runtime._lambda_code_resolver import (
+    resolve_code_path_from_name as _resolve_code_path_from_name,
+)
 from lws.providers.lambda_runtime.routes import (
     LambdaRegistry,
-    _resolve_code_path_from_name,
     create_lambda_management_app,
 )
 

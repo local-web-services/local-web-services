@@ -10,17 +10,17 @@ from lws.providers.s3tables.routes import create_s3tables_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_s3tables_app()
+    app, _ = create_s3tables_app()
     return TestClient(app)
 
 
 def _create_table_bucket(client: TestClient, name: str) -> None:
-    client.put("/table-buckets", json={"name": name})
+    client.put("/buckets", json={"name": name})
 
 
 def _create_namespace(client: TestClient, bucket_name: str, namespace_name: str) -> None:
     client.put(
-        f"/table-buckets/{bucket_name}/namespaces",
+        f"/namespaces/{bucket_name}",
         json={"namespace": [namespace_name]},
     )
 
@@ -34,7 +34,7 @@ class TestListTables:
         _create_namespace(client, bucket_name, namespace_name)
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables")
+        response = client.get(f"/tables/{bucket_name}", params={"namespace": namespace_name})
 
         # Assert
         expected_status = 200
@@ -53,12 +53,12 @@ class TestListTables:
         _create_table_bucket(client, bucket_name)
         _create_namespace(client, bucket_name, namespace_name)
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name, "format": "ICEBERG"},
         )
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables")
+        response = client.get(f"/tables/{bucket_name}", params={"namespace": namespace_name})
 
         # Assert
         expected_status = 200
@@ -79,16 +79,16 @@ class TestListTables:
         _create_table_bucket(client, bucket_name)
         _create_namespace(client, bucket_name, namespace_name)
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name_a, "format": "ICEBERG"},
         )
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name_b, "format": "ICEBERG"},
         )
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables")
+        response = client.get(f"/tables/{bucket_name}", params={"namespace": namespace_name})
 
         # Assert
         expected_count = 2
@@ -101,10 +101,10 @@ class TestListTables:
     def test_list_tables_bucket_not_found(self, client: TestClient) -> None:
         # Arrange
         bucket_name = "no-bucket-list-tbl"
-        namespace_name = "irrelevant-ns"
+        namespace_name = "any-ns"
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables")
+        response = client.get(f"/tables/{bucket_name}", params={"namespace": namespace_name})
 
         # Assert
         expected_status = 404
@@ -120,7 +120,7 @@ class TestListTables:
         _create_table_bucket(client, bucket_name)
 
         # Act
-        response = client.get(f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables")
+        response = client.get(f"/tables/{bucket_name}", params={"namespace": namespace_name})
 
         # Assert
         expected_status = 404

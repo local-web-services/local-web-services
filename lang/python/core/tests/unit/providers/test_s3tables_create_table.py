@@ -10,17 +10,17 @@ from lws.providers.s3tables.routes import create_s3tables_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_s3tables_app()
+    app, _ = create_s3tables_app()
     return TestClient(app)
 
 
 def _create_table_bucket(client: TestClient, name: str) -> None:
-    client.put("/table-buckets", json={"name": name})
+    client.put("/buckets", json={"name": name})
 
 
 def _create_namespace(client: TestClient, bucket_name: str, namespace_name: str) -> None:
     client.put(
-        f"/table-buckets/{bucket_name}/namespaces",
+        f"/namespaces/{bucket_name}",
         json={"namespace": [namespace_name]},
     )
 
@@ -36,7 +36,7 @@ class TestCreateTable:
 
         # Act
         response = client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name, "format": "ICEBERG"},
         )
 
@@ -60,13 +60,13 @@ class TestCreateTable:
         _create_table_bucket(client, bucket_name)
         _create_namespace(client, bucket_name, namespace_name)
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name, "format": "ICEBERG"},
         )
 
         # Act
         response = client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name, "format": "ICEBERG"},
         )
 
@@ -91,7 +91,7 @@ class TestCreateTable:
 
         # Act
         response = client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"format": "ICEBERG"},
         )
 
@@ -115,7 +115,7 @@ class TestCreateTable:
 
         # Act
         response = client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name, "format": "ICEBERG"},
         )
 
@@ -140,7 +140,7 @@ class TestCreateTable:
 
         # Act
         response = client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name, "format": "ICEBERG"},
         )
 

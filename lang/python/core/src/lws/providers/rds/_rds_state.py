@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import aiosqlite
+
 from lws.providers._shared.resource_container import ResourceContainerManager
 from lws.providers._shared.response_helpers import (
     iso_now as _iso_now,
@@ -84,6 +86,7 @@ class _RdsState:
     ) -> None:
         self._instances: dict[str, _DBInstance] = {}
         self._clusters: dict[str, _DBCluster] = {}
+        self._cluster_dbs: dict[str, aiosqlite.Connection] = {}
         self.postgres_container_manager = postgres_container_manager
         self.mysql_container_manager = mysql_container_manager
 
@@ -96,6 +99,18 @@ class _RdsState:
     def clusters(self) -> dict[str, _DBCluster]:
         """Return the clusters store."""
         return self._clusters
+
+    @property
+    def cluster_dbs(self) -> dict[str, aiosqlite.Connection]:
+        """Return the per-cluster SQLite connection map."""
+        return self._cluster_dbs
+
+    async def get_or_create_cluster_db(self, cluster_arn: str) -> aiosqlite.Connection:
+        """Return or lazily open the SQLite connection for the given cluster ARN."""
+        if cluster_arn not in self._cluster_dbs:
+            conn = await aiosqlite.connect(":memory:")
+            self._cluster_dbs[cluster_arn] = conn
+        return self._cluster_dbs[cluster_arn]
 
 
 def _format_db_instance(instance: _DBInstance) -> dict[str, Any]:

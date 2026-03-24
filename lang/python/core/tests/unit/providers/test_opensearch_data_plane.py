@@ -28,7 +28,7 @@ class TestOpenSearchDataPlaneEndpoint:
         expected_endpoint = "localhost:9200"
         fake_cm = AsyncMock()
         fake_cm.start_container.return_value = expected_endpoint
-        app = create_opensearch_app(container_manager=fake_cm)
+        app, _ = create_opensearch_app(container_manager=fake_cm)
         client = TestClient(app)
 
         # Act
@@ -48,7 +48,7 @@ class TestOpenSearchDataPlaneEndpoint:
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
         expected_suffix = "aoss.amazonaws.com"
-        app = create_opensearch_app()
+        app, _ = create_opensearch_app()
         client = TestClient(app)
 
         # Act
@@ -68,7 +68,7 @@ class TestOpenSearchDataPlaneEndpoint:
         # Arrange
         fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:9200"
-        app = create_opensearch_app(container_manager=fake_cm)
+        app, _ = create_opensearch_app(container_manager=fake_cm)
         client = TestClient(app)
         _post(client, "CreateDomain", {"DomainName": "test-domain"})
 

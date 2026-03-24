@@ -23,16 +23,18 @@ echo "Order ID: $ORDER_ID"
 
 echo ""
 echo "=== Starting OrderWorkflow ==="
-SFN_ARN=$(aws --endpoint-url "http://localhost:${SFN_PORT}" stepfunctions list-state-machines \
-  --query "stateMachines[?name=='OrderWorkflow'].stateMachineArn" \
-  --output text)
+SFN_ARN=$(curl -sf -X POST "http://localhost:${SFN_PORT}/" \
+  -H "Content-Type: application/x-amz-json-1.0" \
+  -H "X-Amz-Target: AmazonStates.ListStateMachines" \
+  -d '{}' | python3 -c "import sys,json; machines=json.load(sys.stdin)['stateMachines']; print([m['stateMachineArn'] for m in machines if m['name']=='OrderWorkflow'][0])")
 
 SFN_INPUT=$(python3 -c "import json; print(json.dumps({'orderId': '$ORDER_ID', 'items': ['widget', 'gadget'], 'total': 49.99}))")
+EXEC_NAME="order-$(echo "$ORDER_ID" | tr -d '-')"
 
-START_RESPONSE=$(aws --endpoint-url "http://localhost:${SFN_PORT}" stepfunctions start-execution \
-  --state-machine-arn "$SFN_ARN" \
-  --name "order-$(echo "$ORDER_ID" | tr -d '-')" \
-  --input "$SFN_INPUT")
+START_RESPONSE=$(curl -sf -X POST "http://localhost:${SFN_PORT}/" \
+  -H "Content-Type: application/x-amz-json-1.0" \
+  -H "X-Amz-Target: AmazonStates.StartExecution" \
+  -d "{\"stateMachineArn\": \"${SFN_ARN}\", \"name\": \"${EXEC_NAME}\", \"input\": ${SFN_INPUT}}")
 
 echo "$START_RESPONSE"
 
@@ -41,8 +43,10 @@ EXEC_ARN=$(echo "$START_RESPONSE" | python3 -c "import sys,json; print(json.load
 echo ""
 echo "=== Polling for workflow completion ==="
 for i in $(seq 1 15); do
-  DESC_RESPONSE=$(aws --endpoint-url "http://localhost:${SFN_PORT}" stepfunctions describe-execution \
-    --execution-arn "$EXEC_ARN")
+  DESC_RESPONSE=$(curl -sf -X POST "http://localhost:${SFN_PORT}/" \
+    -H "Content-Type: application/x-amz-json-1.0" \
+    -H "X-Amz-Target: AmazonStates.DescribeExecution" \
+    -d "{\"executionArn\": \"${EXEC_ARN}\"}")
 
   STATUS=$(echo "$DESC_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])")
   echo "  Attempt $i: $STATUS"
@@ -68,8 +72,14 @@ echo "$GET_RESPONSE" | python3 -m json.tool
 
 echo ""
 echo "=== Checking SSM Parameter ==="
-aws --endpoint-url "http://localhost:${SSM_PORT}" ssm get-parameter --name /orders/config/max-items
+curl -sf -X POST "http://localhost:${SSM_PORT}/" \
+  -H "Content-Type: application/x-amz-json-1.1" \
+  -H "X-Amz-Target: AmazonSSM.GetParameter" \
+  -d '{"Name": "/orders/config/max-items"}' | python3 -m json.tool
 
 echo ""
 echo "=== Checking Secret ==="
-aws --endpoint-url "http://localhost:${SM_PORT}" secretsmanager get-secret-value --secret-id orders/notification-api-key
+curl -sf -X POST "http://localhost:${SM_PORT}/" \
+  -H "Content-Type: application/x-amz-json-1.1" \
+  -H "X-Amz-Target: secretsmanager.GetSecretValue" \
+  -d '{"SecretId": "orders/notification-api-key"}' | python3 -m json.tool

@@ -1,8 +1,10 @@
 package stepfunctions
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
 	"net/http"
 	"strings"
@@ -92,17 +94,29 @@ func (r *responseRecorder) WriteHeader(code int) {
 	r.ResponseWriter.WriteHeader(code)
 }
 
+// ServicePorts holds the local port numbers for each service the engine may call.
+type ServicePorts struct {
+	DynamoDB       int
+	SQS            int
+	S3             int
+	SNS            int
+	SecretsManager int
+	SSM            int
+	EventBridge    int
+}
+
 // Handler is the HTTP handler for the Step Functions provider.
 type Handler struct {
-	state *state.ServerState
-	store *Store
+	state        *state.ServerState
+	store        *Store
+	servicePorts ServicePorts
 }
 
 // NewHandler creates a new Step Functions handler and registers the reset callback.
-func NewHandler(ss *state.ServerState) *Handler {
+func NewHandler(ss *state.ServerState, ports ServicePorts) *Handler {
 	store := NewStore()
 	ss.AddResetCallback(store.Reset)
-	return &Handler{state: ss, store: store}
+	return &Handler{state: ss, store: store, servicePorts: ports}
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -209,17 +223,18 @@ func smDesc(sm *StateMachine) map[string]interface{} {
 
 // engine runs a parsed state machine definition against an input document.
 type engine struct {
-	definition map[string]interface{}
-	history    []HistoryEvent
-	eventID    int
+	definition   map[string]interface{}
+	history      []HistoryEvent
+	eventID      int
+	servicePorts ServicePorts
 }
 
-func newEngine(definition string) (*engine, error) {
+func newEngine(definition string, ports ServicePorts) (*engine, error) {
 	var def map[string]interface{}
 	if err := json.Unmarshal([]byte(definition), &def); err != nil {
 		return nil, fmt.Errorf("invalid definition: %w", err)
 	}
-	return &engine{definition: def}, nil
+	return &engine{definition: def, servicePorts: ports}, nil
 }
 
 func (e *engine) addEvent(eventType string, details map[string]interface{}) {
@@ -357,17 +372,447 @@ func (e *engine) executePass(def map[string]interface{}, input interface{}) (int
 	return output, next, "", ""
 }
 
-// executeTask implements the Task state (mocked — returns {"status":"ok"} or Catch).
+// executeTask implements the Task state. If the Resource is a service integration
+// ARN (arn:aws:states:::service:operation) it dispatches to the local fake.
+// Otherwise it returns a stub result.
 func (e *engine) executeTask(def map[string]interface{}, input interface{}) (interface{}, string, string, string) {
 	next, _ := def["Next"].(string)
 
 	effective := resolveInputPath(def, input)
 
-	// Mock task result.
-	taskResult := map[string]interface{}{"status": "ok", "input": effective}
+	resource, _ := def["Resource"].(string)
+	if isServiceIntegrationARN(resource) {
+		// Parameters can override the effective input for the service call.
+		callInput := effective
+		if params, ok := def["Parameters"]; ok {
+			callInput = resolveParameters(params, input)
+		}
+		taskResult, errCode, errCause := e.executeServiceTask(resource, callInput)
+		if errCode != "" {
+			// Check Catch.
+			if caught, catchNext := e.tryCatch(def, errCode, errCause); caught {
+				return input, catchNext, "", ""
+			}
+			return nil, "", errCode, errCause
+		}
+		output := applyResultPath(def, input, taskResult)
+		return output, next, "", ""
+	}
 
+	// Stub: unknown resource — return minimal result.
+	taskResult := map[string]interface{}{"status": "ok", "input": effective}
 	output := applyResultPath(def, input, taskResult)
 	return output, next, "", ""
+}
+
+// isServiceIntegrationARN reports whether resource is a service integration ARN.
+func isServiceIntegrationARN(resource string) bool {
+	return strings.HasPrefix(resource, "arn:aws:states:::")
+}
+
+// tryCatch checks whether any Catch clause matches errCode and returns the next state.
+func (e *engine) tryCatch(def map[string]interface{}, errCode, errCause string) (bool, string) {
+	catchRaw, ok := def["Catch"].([]interface{})
+	if !ok {
+		return false, ""
+	}
+	for _, cRaw := range catchRaw {
+		c, ok := cRaw.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		errorsRaw, _ := c["ErrorEquals"].([]interface{})
+		for _, eRaw := range errorsRaw {
+			e2, _ := eRaw.(string)
+			if e2 == "States.ALL" || e2 == errCode {
+				next, _ := c["Next"].(string)
+				return true, next
+			}
+		}
+	}
+	return false, ""
+}
+
+// resolveParameters resolves a Parameters block against the current input.
+// Supports "$.key" style references (keys ending with ".$").
+func resolveParameters(params interface{}, input interface{}) interface{} {
+	switch p := params.(type) {
+	case map[string]interface{}:
+		result := make(map[string]interface{}, len(p))
+		for k, v := range p {
+			if strings.HasSuffix(k, ".$") {
+				realKey := strings.TrimSuffix(k, ".$")
+				if pathStr, ok := v.(string); ok {
+					result[realKey] = resolveJSONPath(pathStr, input)
+				} else {
+					result[realKey] = v
+				}
+			} else {
+				result[k] = resolveParameters(v, input)
+			}
+		}
+		return result
+	case []interface{}:
+		result := make([]interface{}, len(p))
+		for i, v := range p {
+			result[i] = resolveParameters(v, input)
+		}
+		return result
+	default:
+		return params
+	}
+}
+
+// executeServiceTask dispatches to the appropriate local fake service.
+// Returns (result, errorCode, errorCause).
+func (e *engine) executeServiceTask(resource string, input interface{}) (interface{}, string, string) {
+	// Strip arn:aws:states::: prefix and optional .waitForTaskToken/.sync:2 suffixes.
+	rest := strings.TrimPrefix(resource, "arn:aws:states:::")
+	// Remove integration pattern suffixes.
+	for _, suffix := range []string{".waitForTaskToken", ".sync:2", ".sync"} {
+		rest = strings.TrimSuffix(rest, suffix)
+	}
+
+	body, ok := input.(map[string]interface{})
+	if !ok {
+		body = make(map[string]interface{})
+	}
+
+	switch {
+	case strings.HasPrefix(rest, "dynamodb:"):
+		op := strings.TrimPrefix(rest, "dynamodb:")
+		target := dynamoDBTarget(op)
+		if target == "" {
+			return nil, "States.TaskFailed", "unsupported DynamoDB operation: " + op
+		}
+		return e.callJSONService(e.servicePorts.DynamoDB, target, body)
+
+	case strings.HasPrefix(rest, "sqs:"):
+		op := strings.TrimPrefix(rest, "sqs:")
+		target := sqsTarget(op)
+		if target == "" {
+			return nil, "States.TaskFailed", "unsupported SQS operation: " + op
+		}
+		return e.callJSONService(e.servicePorts.SQS, target, body)
+
+	case strings.HasPrefix(rest, "sns:"):
+		op := strings.TrimPrefix(rest, "sns:")
+		action := snsAction(op)
+		if action == "" {
+			return nil, "States.TaskFailed", "unsupported SNS operation: " + op
+		}
+		return e.callFormService(e.servicePorts.SNS, action, body)
+
+	case strings.HasPrefix(rest, "s3:"):
+		op := strings.TrimPrefix(rest, "s3:")
+		return e.callS3Service(op, body)
+
+	case strings.HasPrefix(rest, "secretsmanager:"):
+		op := strings.TrimPrefix(rest, "secretsmanager:")
+		target := secretsManagerTarget(op)
+		if target == "" {
+			return nil, "States.TaskFailed", "unsupported SecretsManager operation: " + op
+		}
+		return e.callJSONService(e.servicePorts.SecretsManager, target, body)
+
+	case strings.HasPrefix(rest, "ssm:"):
+		op := strings.TrimPrefix(rest, "ssm:")
+		target := ssmTarget(op)
+		if target == "" {
+			return nil, "States.TaskFailed", "unsupported SSM operation: " + op
+		}
+		return e.callJSONService(e.servicePorts.SSM, target, body)
+
+	case strings.HasPrefix(rest, "events:"):
+		op := strings.TrimPrefix(rest, "events:")
+		target := eventBridgeTarget(op)
+		if target == "" {
+			return nil, "States.TaskFailed", "unsupported EventBridge operation: " + op
+		}
+		return e.callJSONService(e.servicePorts.EventBridge, target, body)
+
+	default:
+		return nil, "States.TaskFailed", "unsupported service integration: " + resource
+	}
+}
+
+// dynamoDBTarget maps a DynamoDB operation name to its X-Amz-Target value.
+func dynamoDBTarget(op string) string {
+	ops := map[string]string{
+		"putItem":            "DynamoDB_20120810.PutItem",
+		"getItem":            "DynamoDB_20120810.GetItem",
+		"deleteItem":         "DynamoDB_20120810.DeleteItem",
+		"updateItem":         "DynamoDB_20120810.UpdateItem",
+		"query":              "DynamoDB_20120810.Query",
+		"scan":               "DynamoDB_20120810.Scan",
+		"batchGetItem":       "DynamoDB_20120810.BatchGetItem",
+		"batchWriteItem":     "DynamoDB_20120810.BatchWriteItem",
+		"transactGetItems":   "DynamoDB_20120810.TransactGetItems",
+		"transactWriteItems": "DynamoDB_20120810.TransactWriteItems",
+	}
+	if t, ok := ops[op]; ok {
+		return t
+	}
+	// Try capitalising first letter.
+	if t, ok := ops[lcFirst(op)]; ok {
+		return t
+	}
+	return ""
+}
+
+// sqsTarget maps an SQS operation name to its X-Amz-Target value.
+func sqsTarget(op string) string {
+	ops := map[string]string{
+		"sendMessage":        "AmazonSQS.SendMessage",
+		"receiveMessage":     "AmazonSQS.ReceiveMessage",
+		"deleteMessage":      "AmazonSQS.DeleteMessage",
+		"getQueueUrl":        "AmazonSQS.GetQueueUrl",
+		"createQueue":        "AmazonSQS.CreateQueue",
+		"deleteQueue":        "AmazonSQS.DeleteQueue",
+		"sendMessageBatch":   "AmazonSQS.SendMessageBatch",
+		"deleteMessageBatch": "AmazonSQS.DeleteMessageBatch",
+	}
+	if t, ok := ops[op]; ok {
+		return t
+	}
+	if t, ok := ops[lcFirst(op)]; ok {
+		return t
+	}
+	return ""
+}
+
+// snsAction maps an SNS operation name to its Action query parameter value.
+func snsAction(op string) string {
+	ops := map[string]string{
+		"publish":      "Publish",
+		"createTopic":  "CreateTopic",
+		"deleteTopic":  "DeleteTopic",
+		"subscribe":    "Subscribe",
+		"unsubscribe":  "Unsubscribe",
+		"publishBatch": "PublishBatch",
+	}
+	if t, ok := ops[op]; ok {
+		return t
+	}
+	if t, ok := ops[lcFirst(op)]; ok {
+		return t
+	}
+	return ""
+}
+
+// secretsManagerTarget maps a SecretsManager operation to its X-Amz-Target value.
+func secretsManagerTarget(op string) string {
+	ops := map[string]string{
+		"getSecretValue": "secretsmanager.GetSecretValue",
+		"createSecret":   "secretsmanager.CreateSecret",
+		"deleteSecret":   "secretsmanager.DeleteSecret",
+		"describeSecret": "secretsmanager.DescribeSecret",
+		"listSecrets":    "secretsmanager.ListSecrets",
+		"putSecretValue": "secretsmanager.PutSecretValue",
+		"rotateSecret":   "secretsmanager.RotateSecret",
+		"updateSecret":   "secretsmanager.UpdateSecret",
+	}
+	if t, ok := ops[op]; ok {
+		return t
+	}
+	if t, ok := ops[lcFirst(op)]; ok {
+		return t
+	}
+	return ""
+}
+
+// ssmTarget maps an SSM operation to its X-Amz-Target value.
+func ssmTarget(op string) string {
+	ops := map[string]string{
+		"getParameter":        "AmazonSSM.GetParameter",
+		"getParameters":       "AmazonSSM.GetParameters",
+		"putParameter":        "AmazonSSM.PutParameter",
+		"deleteParameter":     "AmazonSSM.DeleteParameter",
+		"getParametersByPath": "AmazonSSM.GetParametersByPath",
+	}
+	if t, ok := ops[op]; ok {
+		return t
+	}
+	if t, ok := ops[lcFirst(op)]; ok {
+		return t
+	}
+	return ""
+}
+
+// eventBridgeTarget maps an EventBridge operation to its X-Amz-Target value.
+func eventBridgeTarget(op string) string {
+	ops := map[string]string{
+		"putEvents": "AmazonEventBridge.PutEvents",
+		"putRule":   "AmazonEventBridge.PutRule",
+	}
+	if t, ok := ops[op]; ok {
+		return t
+	}
+	if t, ok := ops[lcFirst(op)]; ok {
+		return t
+	}
+	return ""
+}
+
+// lcFirst lowercases only the first character of s.
+func lcFirst(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToLower(s[:1]) + s[1:]
+}
+
+// callJSONService POSTs a JSON body to a local service port with the given X-Amz-Target header.
+func (e *engine) callJSONService(port int, target string, body map[string]interface{}) (interface{}, string, string) {
+	if port == 0 {
+		return nil, "States.TaskFailed", fmt.Sprintf("service port not configured for target %s", target)
+	}
+	b, err := json.Marshal(body)
+	if err != nil {
+		return nil, "States.TaskFailed", err.Error()
+	}
+	url := fmt.Sprintf("http://127.0.0.1:%d/", port)
+	req, err := http.NewRequest("POST", url, bytes.NewReader(b))
+	if err != nil {
+		return nil, "States.TaskFailed", err.Error()
+	}
+	req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+	req.Header.Set("X-Amz-Target", target)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, "States.TaskFailed", err.Error()
+	}
+	defer resp.Body.Close()
+	respBody, _ := io.ReadAll(resp.Body)
+	var result interface{}
+	json.Unmarshal(respBody, &result)
+	if resp.StatusCode >= 400 {
+		errCode := "States.TaskFailed"
+		errCause := string(respBody)
+		if rm, ok := result.(map[string]interface{}); ok {
+			if t, ok := rm["__type"].(string); ok {
+				errCode = t
+			}
+			if m, ok := rm["message"].(string); ok {
+				errCause = m
+			}
+		}
+		return nil, errCode, errCause
+	}
+	return result, "", ""
+}
+
+// callFormService POSTs a form-encoded body to a local service port (used for SNS).
+func (e *engine) callFormService(port int, action string, body map[string]interface{}) (interface{}, string, string) {
+	if port == 0 {
+		return nil, "States.TaskFailed", fmt.Sprintf("SNS port not configured for action %s", action)
+	}
+	// Build form body: Action=Publish&TopicArn=...&Message=...
+	parts := []string{"Action=" + action}
+	for k, v := range body {
+		parts = append(parts, urlEncodeSimple(k)+"="+urlEncodeSimple(fmt.Sprintf("%v", v)))
+	}
+	formBody := strings.Join(parts, "&")
+
+	url := fmt.Sprintf("http://127.0.0.1:%d/", port)
+	req, err := http.NewRequest("POST", url, strings.NewReader(formBody))
+	if err != nil {
+		return nil, "States.TaskFailed", err.Error()
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, "States.TaskFailed", err.Error()
+	}
+	defer resp.Body.Close()
+	respBody, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode >= 400 {
+		return nil, "States.TaskFailed", string(respBody)
+	}
+	// SNS returns XML; return it as a raw string result.
+	return map[string]interface{}{"Response": string(respBody)}, "", ""
+}
+
+// callS3Service performs a REST call to the local S3 fake.
+// For putObject: PUT /{Bucket}/{Key} with body.
+// For getObject: GET /{Bucket}/{Key}.
+func (e *engine) callS3Service(operation string, body map[string]interface{}) (interface{}, string, string) {
+	if e.servicePorts.S3 == 0 {
+		return nil, "States.TaskFailed", "S3 port not configured"
+	}
+
+	bucket, _ := body["Bucket"].(string)
+	key, _ := body["Key"].(string)
+	if bucket == "" || key == "" {
+		return nil, "States.TaskFailed", "S3 operation requires Bucket and Key"
+	}
+
+	urlStr := fmt.Sprintf("http://127.0.0.1:%d/%s/%s", e.servicePorts.S3, bucket, key)
+
+	switch strings.ToLower(operation) {
+	case "putobject":
+		bodyBytes := []byte{}
+		if b, ok := body["Body"].(string); ok {
+			bodyBytes = []byte(b)
+		}
+		req, err := http.NewRequest("PUT", urlStr, bytes.NewReader(bodyBytes))
+		if err != nil {
+			return nil, "States.TaskFailed", err.Error()
+		}
+		if ct, ok := body["ContentType"].(string); ok {
+			req.Header.Set("Content-Type", ct)
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return nil, "States.TaskFailed", err.Error()
+		}
+		defer resp.Body.Close()
+		respBody, _ := io.ReadAll(resp.Body)
+		if resp.StatusCode >= 400 {
+			return nil, "States.TaskFailed", string(respBody)
+		}
+		etag := resp.Header.Get("ETag")
+		return map[string]interface{}{"ETag": etag}, "", ""
+
+	case "getobject":
+		req, err := http.NewRequest("GET", urlStr, nil)
+		if err != nil {
+			return nil, "States.TaskFailed", err.Error()
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return nil, "States.TaskFailed", err.Error()
+		}
+		defer resp.Body.Close()
+		respBody, _ := io.ReadAll(resp.Body)
+		if resp.StatusCode >= 400 {
+			return nil, "States.TaskFailed", string(respBody)
+		}
+		return map[string]interface{}{
+			"Body":        string(respBody),
+			"ContentType": resp.Header.Get("Content-Type"),
+		}, "", ""
+
+	default:
+		return nil, "States.TaskFailed", "unsupported S3 operation: " + operation
+	}
+}
+
+// urlEncodeSimple percent-encodes a string for use in form bodies.
+func urlEncodeSimple(s string) string {
+	var buf strings.Builder
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+			c == '-' || c == '_' || c == '.' || c == '~' {
+			buf.WriteByte(c)
+		} else {
+			fmt.Fprintf(&buf, "%%%02X", c)
+		}
+	}
+	return buf.String()
 }
 
 // executeChoice implements the Choice state.
@@ -741,6 +1186,11 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 			input = "{}"
 		}
 
+		if h.state.GetCapacityRule("stepfunctions").IsExhausted() {
+			writeErr(w, "ServiceUnavailableException", "No execution slot is available", 503)
+			return
+		}
+
 		h.store.mu.RLock()
 		sm, smExists := h.store.stateMachines[smArn]
 		h.store.mu.RUnlock()
@@ -770,7 +1220,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		h.store.mu.Unlock()
 
 		// Run the state machine engine.
-		eng, err := newEngine(sm.Definition)
+		eng, err := newEngine(sm.Definition, h.servicePorts)
 		if err == nil {
 			outputJSON, status, _, _ := eng.run(input)
 			now := time.Now()
@@ -823,7 +1273,7 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		outputJSON := input
 		status := "SUCCEEDED"
 
-		eng, err := newEngine(sm.Definition)
+		eng, err := newEngine(sm.Definition, h.servicePorts)
 		if err == nil {
 			out, stat, _, _ := eng.run(input)
 			outputJSON = out

@@ -81,6 +81,11 @@ class ApiGatewayV2Router:
         """Return the V2 API state."""
         return self._state
 
+    def reset(self) -> None:
+        """Clear all HTTP API state and cancel pending lifecycle transitions."""
+        self._state.reset()
+        self._tracker.reset()
+
     def _register_routes(self) -> None:
         r = self.router
 

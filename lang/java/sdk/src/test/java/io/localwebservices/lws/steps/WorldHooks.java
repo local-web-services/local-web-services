@@ -26,7 +26,7 @@ public class WorldHooks {
       }
       world.logCapture = null;
     }
-    if (world.session != null) {
+    if (world.session != null && !CrossServiceSteps.isSharedSession(world.session)) {
       try {
         world.session.close();
       } catch (Exception ignored) {

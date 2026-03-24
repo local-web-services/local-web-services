@@ -18,6 +18,7 @@ from lws.providers.sqs._sqs_helpers import (
     _json_response,
     _queue_url,
     _send_message_and_get_md5,
+    _validate_redrive_policy,
 )
 from lws.providers.sqs.provider import build_queue_config
 
@@ -32,6 +33,11 @@ class _SqsJsonHandlersMixin:
     """
 
     async def _json_send_message(self, body: dict) -> Response:
+        if self._capacity.is_exhausted:  # type: ignore[attr-defined]
+            return _json_error(
+                "ServiceUnavailableException",
+                "lws: no message slots available",
+            )
         queue_name = _extract_queue_name_from_url(body.get("QueueUrl", ""))
         err = self._get_lifecycle_error_json(queue_name)  # type: ignore[attr-defined]
         if err is not None:
@@ -208,6 +214,16 @@ class _SqsJsonHandlersMixin:
             )
         attrs = body.get("Attributes", {})
         config = self.provider.configs.get(queue_name)  # type: ignore[attr-defined]
+        if "RedrivePolicy" in attrs:
+            err = _validate_redrive_policy(
+                attrs,
+                queue,
+                config,
+                self.provider,  # type: ignore[attr-defined]
+                self._get_lifecycle_error_json,  # type: ignore[attr-defined]
+            )
+            if err is not None:
+                return err
         _apply_queue_attrs(queue, attrs, config)
         return _json_response({})
 

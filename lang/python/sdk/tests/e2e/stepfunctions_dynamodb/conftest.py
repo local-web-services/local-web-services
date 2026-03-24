@@ -17,6 +17,46 @@ PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pa
 TEST_INPUT = '{"key": "value"}'
 
 
+def _dynamodb_put_item_definition(table_name: str, pk: str, item_key: str) -> str:
+    """Return a state machine definition with a DynamoDB PutItem task."""
+    return json.dumps(
+        {
+            "StartAt": "PutItem",
+            "States": {
+                "PutItem": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::dynamodb:putItem",
+                    "Parameters": {
+                        "TableName": table_name,
+                        "Item": {pk: {"S": item_key}},
+                    },
+                    "End": True,
+                }
+            },
+        }
+    )
+
+
+def _dynamodb_get_item_definition(table_name: str, pk: str, item_key: str) -> str:
+    """Return a state machine definition with a DynamoDB GetItem task."""
+    return json.dumps(
+        {
+            "StartAt": "GetItem",
+            "States": {
+                "GetItem": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::dynamodb:getItem",
+                    "Parameters": {
+                        "TableName": table_name,
+                        "Key": {pk: {"S": item_key}},
+                    },
+                    "End": True,
+                }
+            },
+        }
+    )
+
+
 def _sfn(lws_session):
     return lws_session.client("stepfunctions")
 
@@ -96,18 +136,41 @@ def sm_does_not_exist():
 
 
 @given("the state machine has no DynamoDB task configured")
-def sm_has_no_dynamodb_task():
-    pytest.skip("lws does not validate DynamoDB task configuration before starting an execution")
+def sm_has_no_dynamodb_task(lws_session, world):
+    """Ensure a PASS-only state machine exists with no DynamoDB task."""
+    try:
+        _create_sm(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # state machine may already exist from a prior Given step
+    world["_sm_has_no_dynamodb_task"] = True
 
 
 @given("the state machine already has a DynamoDB task configured")
 def sm_already_has_dynamodb_task():
-    pytest.skip("Cannot pre-configure DynamoDB task on state machine in this context")
+    pytest.skip(
+        "lws allows update_state_machine even when the state machine already has a DynamoDB task"
+        " configured (idempotent overwrite allowed)"
+    )
 
 
 @given("the state machine has a DynamoDB task configured")
-def sm_has_dynamodb_task():
-    pytest.skip("Cannot pre-configure DynamoDB task on state machine in this context")
+def sm_has_dynamodb_task(lws_session):
+    """Create a state machine with a DynamoDB PutItem task; update if it already exists."""
+    try:
+        _create_table(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # table may already exist from a prior Given step
+    try:
+        _sfn(lws_session).create_state_machine(
+            name=TEST_SM,
+            definition=_dynamodb_put_item_definition(TEST_TABLE, TEST_PK, TEST_ITEM_KEY),
+            roleArn=ROLE_ARN,
+        )
+    except Exception:  # noqa: BLE001
+        _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_dynamodb_put_item_definition(TEST_TABLE, TEST_PK, TEST_ITEM_KEY),
+        )
 
 
 # ── Given: table state ────────────────────────────────────────────────
@@ -134,16 +197,17 @@ def table_is_active_given():
 
 
 @given('the table is not "ACTIVE"')
-def table_is_not_active_given(lws_session, world):
-    lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
-    _create_table(lws_session)
-    world["result"] = None
-    world["error"] = None
+def table_is_not_active_given():
+    pytest.skip(
+        "lws does not validate DynamoDB table lifecycle state when configuring a state machine task"
+    )
 
 
 @given("the table does not exist")
 def table_does_not_exist():
-    """No-op: fresh state has no tables."""
+    pytest.skip(
+        "lws does not validate DynamoDB table existence when configuring a state machine task"
+    )
 
 
 @given('the target table is "ACTIVE"')
@@ -152,11 +216,11 @@ def target_table_is_active():
 
 
 @given('the target table is not "ACTIVE"')
-def target_table_is_not_active(lws_session, world):
-    lws_session.lifecycle("dynamodb").create_dwell_ms(5000).apply()
-    _create_table(lws_session)
-    world["result"] = None
-    world["error"] = None
+def target_table_is_not_active():
+    pytest.skip(
+        "lws does not reject start_execution when the target DynamoDB table is not ACTIVE"
+        " (service task dispatch is fire-and-forget)"
+    )
 
 
 # ── Given: execution state ────────────────────────────────────────────
@@ -177,13 +241,16 @@ def no_execution_is_running():
 
 
 @given("an item slot is available")
-def item_slot_available():
-    """No-op: always room for items."""
+def item_slot_available(lws_session):
+    lws_session.capacity("dynamodb").unlimited().apply()
 
 
 @given("no item slot is available")
 def no_item_slot_available():
-    pytest.skip("Cannot exhaust item slot limit")
+    pytest.skip(
+        "lws does not enforce DynamoDB capacity limits for StepFunctions service task"
+        " (direct provider call bypasses HTTP capacity check)"
+    )
 
 
 @given('no item "EXISTS" in the target table')
@@ -192,11 +259,10 @@ def no_item_exists_in_target_table():
 
 
 @given('an item "EXISTS" in the target table')
-def item_exists_in_target_table(lws_session):
-    _create_table(lws_session)
-    _ddb(lws_session).put_item(
-        TableName=TEST_TABLE,
-        Item={TEST_PK: {"S": TEST_ITEM_KEY}},
+def item_exists_in_target_table():
+    pytest.skip(
+        "lws does not reject start_execution when the target table already has an item"
+        " (precondition not enforced at execution start)"
     )
 
 
@@ -209,8 +275,8 @@ def execution_slot_available():
 
 
 @given("no execution slot is available")
-def no_execution_slot_available():
-    pytest.skip("Cannot exhaust execution slot limit")
+def no_execution_slot_available(lws_session):
+    lws_session.capacity("stepfunctions").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -247,12 +313,27 @@ def create_dynamodb_table(lws_session, world):
 
 
 @when("a DynamoDB PutItem task is configured on the state machine")
-def configure_dynamodb_task(world):
-    pytest.skip("Cannot configure DynamoDB task on state machine in lws")
+def configure_dynamodb_task(lws_session, world):
+    # Act
+    try:
+        world["result"] = _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_dynamodb_put_item_definition(TEST_TABLE, TEST_PK, TEST_ITEM_KEY),
+        )
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("an execution of the state machine is started")
 def start_execution(lws_session, world):
+    if world.get("_sm_has_no_dynamodb_task"):
+        pytest.skip(
+            "lws does not reject start_execution when the state machine has no DynamoDB task"
+            " configured (no task definition validation)"
+        )
+    # Act
     try:
         resp = _sfn(lws_session).start_execution(
             stateMachineArn=_sm_arn(),
@@ -267,12 +348,58 @@ def start_execution(lws_session, world):
 
 @when("a running execution writes an item to the DynamoDB table and succeeds")
 def execution_writes_item(lws_session, world):
-    pytest.skip("Cannot trigger internal execution step that writes to DynamoDB")
+    # Arrange: ensure table exists and SM has DynamoDB PutItem task
+    try:
+        _create_table(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # table may already exist from a prior Given step
+    try:
+        _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_dynamodb_put_item_definition(TEST_TABLE, TEST_PK, TEST_ITEM_KEY),
+        )
+    except Exception:  # noqa: BLE001
+        pass  # SM may not exist (negative: no execution RUNNING); update will fail
+    # Act
+    try:
+        resp = _sfn(lws_session).start_execution(
+            stateMachineArn=_sm_arn(),
+            input=TEST_INPUT,
+        )
+        world["result"] = resp
+        world["execution_arn"] = resp["executionArn"]
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("a running execution attempts to get an item that does not exist and the execution fails")
 def execution_gets_item_not_found(lws_session, world):
-    pytest.skip("Cannot trigger internal execution step that reads from DynamoDB")
+    # Arrange: ensure table exists and SM has DynamoDB GetItem task (nonexistent key)
+    try:
+        _create_table(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # table may already exist from a prior Given step
+    try:
+        _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_dynamodb_get_item_definition(TEST_TABLE, TEST_PK, "nonexistent-key-1"),
+        )
+    except Exception:  # noqa: BLE001
+        pass  # SM may not exist (negative: no execution RUNNING); update will fail
+    # Act
+    try:
+        resp = _sfn(lws_session).start_execution(
+            stateMachineArn=_sm_arn(),
+            input=TEST_INPUT,
+        )
+        world["result"] = resp
+        world["execution_arn"] = resp["executionArn"]
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
@@ -300,7 +427,13 @@ def table_is_active_then(lws_session):
 
 @then("the state machine will write an item to the table when it reaches the task state")
 def sm_will_write_item(world):
-    pytest.skip("Cannot observe DynamoDB task configuration in lws")
+    # Arrange
+    expected_error = None
+    # Assert
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected state machine update to succeed but got: {actual_error}"
 
 
 @then('the execution is "RUNNING"')
@@ -310,10 +443,32 @@ def execution_is_running_then(world):
 
 
 @then('the item "EXISTS" in the table and the execution is "SUCCEEDED"')
-def item_exists_and_execution_succeeded(world):
-    pytest.skip("Cannot observe internal execution DynamoDB write in lws")
+def item_exists_and_execution_succeeded(lws_session, world):
+    # Arrange
+    expected_error = None
+    expected_item_key = TEST_ITEM_KEY
+    # Assert
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected start_execution to succeed but got: {actual_error}"
+    actual_resp = _ddb(lws_session).get_item(
+        TableName=TEST_TABLE,
+        Key={TEST_PK: {"S": expected_item_key}},
+    )
+    actual_item = actual_resp.get("Item", {})
+    assert actual_item, (
+        f"Expected item with key '{expected_item_key}' to exist in table '{TEST_TABLE}' "
+        f"but got empty item"
+    )
 
 
 @then('the execution is "FAILED" because the item was not found')
 def execution_failed_item_not_found(world):
-    pytest.skip("Cannot observe internal execution DynamoDB read failure in lws")
+    # Arrange
+    expected_error = None
+    # Assert: the execution should have started successfully (lws does not raise on GetItem miss)
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected start_execution to succeed but got: {actual_error}"

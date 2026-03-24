@@ -10,17 +10,17 @@ from lws.providers.s3tables.routes import create_s3tables_app
 
 @pytest.fixture()
 def client() -> TestClient:
-    app = create_s3tables_app()
+    app, _ = create_s3tables_app()
     return TestClient(app)
 
 
 def _create_table_bucket(client: TestClient, name: str) -> None:
-    client.put("/table-buckets", json={"name": name})
+    client.put("/buckets", json={"name": name})
 
 
 def _create_namespace(client: TestClient, bucket_name: str, namespace_name: str) -> None:
     client.put(
-        f"/table-buckets/{bucket_name}/namespaces",
+        f"/namespaces/{bucket_name}",
         json={"namespace": [namespace_name]},
     )
 
@@ -34,14 +34,12 @@ class TestDeleteTable:
         _create_table_bucket(client, bucket_name)
         _create_namespace(client, bucket_name, namespace_name)
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name, "format": "ICEBERG"},
         )
 
         # Act
-        response = client.delete(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables/{table_name}"
-        )
+        response = client.delete(f"/tables/{bucket_name}/{namespace_name}/{table_name}")
 
         # Assert
         expected_status = 204
@@ -58,19 +56,15 @@ class TestDeleteTable:
         _create_table_bucket(client, bucket_name)
         _create_namespace(client, bucket_name, namespace_name)
         client.put(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables",
+            f"/tables/{bucket_name}/{namespace_name}",
             json={"name": table_name, "format": "ICEBERG"},
         )
 
         # Act
-        client.delete(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables/{table_name}"
-        )
+        client.delete(f"/tables/{bucket_name}/{namespace_name}/{table_name}")
 
         # Assert
-        list_response = client.get(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables"
-        )
+        list_response = client.get(f"/tables/{bucket_name}", params={"namespace": namespace_name})
         actual_body = list_response.json()
         actual_names = [t["name"] for t in actual_body["tables"]]
         assert (
@@ -86,9 +80,7 @@ class TestDeleteTable:
         _create_namespace(client, bucket_name, namespace_name)
 
         # Act
-        response = client.delete(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables/{table_name}"
-        )
+        response = client.delete(f"/tables/{bucket_name}/{namespace_name}/{table_name}")
 
         # Assert
         expected_status = 404
@@ -109,9 +101,7 @@ class TestDeleteTable:
         table_name = "any-table"
 
         # Act
-        response = client.delete(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables/{table_name}"
-        )
+        response = client.delete(f"/tables/{bucket_name}/{namespace_name}/{table_name}")
 
         # Assert
         expected_status = 404
@@ -128,9 +118,7 @@ class TestDeleteTable:
         _create_table_bucket(client, bucket_name)
 
         # Act
-        response = client.delete(
-            f"/table-buckets/{bucket_name}/namespaces/{namespace_name}/tables/{table_name}"
-        )
+        response = client.delete(f"/tables/{bucket_name}/{namespace_name}/{table_name}")
 
         # Assert
         expected_status = 404

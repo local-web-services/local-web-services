@@ -24,6 +24,7 @@ func registerAllSteps(sc *godog.ScenarioContext, world *World) {
 	registerOrganizationsSteps(sc, world)
 	registerChaosSteps(sc, world)
 	registerIAMSteps(sc, world)
+	registerCapacitySteps(sc, world)
 	registerPendingSteps(sc, world)
 }
 

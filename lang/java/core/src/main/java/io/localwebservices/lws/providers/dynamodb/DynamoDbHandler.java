@@ -19,11 +19,40 @@ public class DynamoDbHandler implements HttpHandler {
 
   private final ServerState state;
   private final DynamoDbStore store;
+  private final DynamoDbTransactionOps txOps;
 
   public DynamoDbHandler(ServerState state) {
     this.state = state;
     this.store = new DynamoDbStore();
+    this.txOps = new DynamoDbTransactionOps(store);
     state.resetCallbacks.add(store::reset);
+  }
+
+  /**
+   * Puts an item into a DynamoDB table programmatically (used by StepFunctions service task
+   * bridges). The body map must contain "TableName" and "Item" keys.
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> executePutItem(Map<String, Object> params) {
+    String tableName = (String) params.get("TableName");
+    Map<String, Object> item = (Map<String, Object>) params.get("Item");
+    store.putItem(tableName, item);
+    return new LinkedHashMap<>();
+  }
+
+  /**
+   * Gets an item from a DynamoDB table programmatically (used by StepFunctions service task
+   * bridges). The body map must contain "TableName" and "Key" keys.
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> executeGetItem(Map<String, Object> params) {
+    String tableName = (String) params.get("TableName");
+    Map<String, Object> key = (Map<String, Object>) params.get("Key");
+    Map<String, Object> item = store.getItem(tableName, key);
+    if (item != null) {
+      return new LinkedHashMap<>(Map.of("Item", item));
+    }
+    return new LinkedHashMap<>();
   }
 
   @Override
@@ -171,6 +200,17 @@ public class DynamoDbHandler implements HttpHandler {
         }
       case "PutItem":
         {
+          if (state.getCapacityConfig("dynamodb").isExhausted()) {
+            sendJson(
+                exchange,
+                400,
+                Map.of(
+                    "__type",
+                    "ProvisionedThroughputExceededException",
+                    "message",
+                    "The level of configured provisioned throughput for the table was exceeded."));
+            break;
+          }
           String tableName = (String) body.get("TableName");
           Map<String, Object> item = (Map<String, Object>) body.get("Item");
           store.putItem(tableName, item);
@@ -329,86 +369,27 @@ public class DynamoDbHandler implements HttpHandler {
         {
           List<Map<String, Object>> txItems =
               (List<Map<String, Object>>) body.getOrDefault("TransactItems", List.of());
-          List<Object> responses = new ArrayList<>();
-          for (Map<String, Object> txItem : txItems) {
-            Map<String, Object> get = (Map<String, Object>) txItem.get("Get");
-            if (get != null) {
-              String tableName = (String) get.get("TableName");
-              Map<String, Object> key = (Map<String, Object>) get.get("Key");
-              Map<String, Object> item = store.getItem(tableName, key);
-              responses.add(item != null ? Map.of("Item", item) : Map.of());
-            }
-          }
-          sendJson(exchange, 200, Map.of("Responses", responses));
+          sendJson(exchange, 200, txOps.transactGetItems(txItems));
           break;
         }
       case "TransactWriteItems":
         {
           List<Map<String, Object>> txItems =
               (List<Map<String, Object>>) body.getOrDefault("TransactItems", List.of());
-          // First pass: evaluate condition checks
-          List<Map<String, Object>> cancellationReasons = new ArrayList<>();
-          boolean transactionCancelled = false;
-          for (Map<String, Object> txItem : txItems) {
-            if (txItem.containsKey("ConditionCheck")) {
-              Map<String, Object> cc = (Map<String, Object>) txItem.get("ConditionCheck");
-              String condExpr = (String) cc.get("ConditionExpression");
-              if (condExpr != null) {
-                Map<String, Object> existingItem =
-                    store.getItem(
-                        (String) cc.get("TableName"), (Map<String, Object>) cc.get("Key"));
-                Map<String, String> exprNames =
-                    (Map<String, String>) cc.get("ExpressionAttributeNames");
-                Map<String, Object> exprValues =
-                    (Map<String, Object>) cc.get("ExpressionAttributeValues");
-                boolean condMet =
-                    store.evaluateFilter(
-                        existingItem != null ? existingItem : Map.of(),
-                        condExpr,
-                        exprNames,
-                        exprValues);
-                if (!condMet) {
-                  transactionCancelled = true;
-                  cancellationReasons.add(Map.of("Code", "ConditionalCheckFailed"));
-                } else {
-                  cancellationReasons.add(Map.of());
-                }
-              } else {
-                cancellationReasons.add(Map.of());
-              }
-            } else {
-              cancellationReasons.add(Map.of());
-            }
-          }
-          if (transactionCancelled) {
+          Map<String, Object> result = txOps.transactWriteItems(txItems);
+          if (Boolean.TRUE.equals(result.get("cancelled"))) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> reasons = (List<Map<String, Object>>) result.get("reasons");
             sendJson(
                 exchange,
                 400,
                 Map.of(
                     "__type", "TransactionCanceledException",
                     "message", "Transaction cancelled",
-                    "CancellationReasons", cancellationReasons));
-            break;
+                    "CancellationReasons", reasons));
+          } else {
+            sendJson(exchange, 200, Map.of());
           }
-          // Second pass: apply writes
-          for (Map<String, Object> txItem : txItems) {
-            if (txItem.containsKey("Put")) {
-              Map<String, Object> put = (Map<String, Object>) txItem.get("Put");
-              store.putItem((String) put.get("TableName"), (Map<String, Object>) put.get("Item"));
-            } else if (txItem.containsKey("Delete")) {
-              Map<String, Object> del = (Map<String, Object>) txItem.get("Delete");
-              store.deleteItem((String) del.get("TableName"), (Map<String, Object>) del.get("Key"));
-            } else if (txItem.containsKey("Update")) {
-              Map<String, Object> upd = (Map<String, Object>) txItem.get("Update");
-              store.updateItem(
-                  (String) upd.get("TableName"),
-                  (Map<String, Object>) upd.get("Key"),
-                  (String) upd.get("UpdateExpression"),
-                  (Map<String, String>) upd.get("ExpressionAttributeNames"),
-                  (Map<String, Object>) upd.get("ExpressionAttributeValues"));
-            }
-          }
-          sendJson(exchange, 200, Map.of());
           break;
         }
       case "DescribeTimeToLive":

@@ -1,7 +1,8 @@
 /** Management API — /_ldk/* endpoints. */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import type { ServerState, ChaosRule, FakeRule, IamPolicy } from "../types";
+import type { ServerState, ChaosRule, FakeRule, IamPolicy, CapacityConfig } from "../types";
+import { defaultCapacityConfigs } from "../types";
 import { WebSocketServer, type WebSocket } from "ws";
 
 // Normalize operation name: "StartExecution" == "start-execution" == "startexecution"
@@ -25,6 +26,16 @@ export function registerManagementApi(
     state.fakeRules.clear();
     state.iamConfig = { enforce: false, identities: {}, resource_policies: {} };
     state.logBuffer = [];
+
+    const defaultConfigs = defaultCapacityConfigs();
+    for (const service of Object.keys(state.capacityConfigs)) {
+      state.capacityConfigs[service] = { slots: null };
+    }
+    for (const service of Object.keys(defaultConfigs)) {
+      if (!(service in state.capacityConfigs)) {
+        state.capacityConfigs[service] = { slots: null };
+      }
+    }
 
     for (const cb of state.resetCallbacks) {
       try {
@@ -136,6 +147,22 @@ export function registerManagementApi(
       serviceRules.set("*", rule);
     }
 
+    reply.send({ status: "ok" });
+  });
+
+  // GET /_ldk/capacity
+  app.get("/_ldk/capacity", async (_req: FastifyRequest, reply: FastifyReply) => {
+    reply.send(state.capacityConfigs);
+  });
+
+  // POST /_ldk/capacity
+  app.post("/_ldk/capacity", async (req: FastifyRequest, reply: FastifyReply) => {
+    const body = req.body as Record<string, { slots: number | null }>;
+    for (const [service, config] of Object.entries(body)) {
+      if (service in state.capacityConfigs) {
+        state.capacityConfigs[service] = config as CapacityConfig;
+      }
+    }
     reply.send({ status: "ok" });
   });
 

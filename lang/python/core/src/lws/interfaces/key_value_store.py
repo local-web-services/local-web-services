@@ -38,6 +38,8 @@ class TableConfig:
     table_name: str
     key_schema: KeySchema
     gsi_definitions: list[GsiDefinition] = field(default_factory=list)
+    stream_enabled: bool = False
+    stream_view_type: str = "NEW_AND_OLD_IMAGES"
 
 
 class IKeyValueStore(Provider):

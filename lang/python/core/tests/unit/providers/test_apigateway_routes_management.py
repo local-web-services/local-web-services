@@ -12,7 +12,7 @@ from lws.providers.apigateway.routes import create_apigateway_management_app
 class TestApiGatewayManagementRoutes:
     @pytest.fixture
     async def client(self):
-        app = create_apigateway_management_app()
+        app = create_apigateway_management_app()[0]
         transport = ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
             yield c

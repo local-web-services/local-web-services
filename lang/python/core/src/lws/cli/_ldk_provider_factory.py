@@ -214,6 +214,7 @@ def _create_providers(  # pylint: disable=too-many-statements
         eb_port=ports["events"],
         sf_port=ports["stepfunctions"],
         cognito_port=ports["cognito-idp"],
+        s3_provider=s3_provider,
     )
     _ecs_provider, ecs_providers = _create_ecs_providers(app_model, graph)
     providers.update(ecs_providers)
@@ -294,7 +295,7 @@ def _create_providers(  # pylint: disable=too-many-statements
     )
 
     # 11. SSM Parameter Store and Secrets Manager (pre-seeded from CloudFormation)
-    _register_ssm_secretsmanager_providers(
+    ssm_state, sm_state = _register_ssm_secretsmanager_providers(
         providers,
         app_model=app_model,
         chaos_configs=chaos_configs,
@@ -310,6 +311,24 @@ def _create_providers(  # pylint: disable=too-many-statements
         chaos_configs=chaos_configs,
         aws_fake_configs=aws_fake_configs,
         organizations_port=ports["organizations"],
+    )
+
+    # 13. Wire service providers into the StepFunctions engine
+    from lws.providers.stepfunctions._service_task_bridge import (  # pylint: disable=import-outside-toplevel
+        SecretsManagerStateAdapter,
+        SsmStateAdapter,
+    )
+
+    sf_provider.set_service_providers(
+        {
+            "dynamodb": dynamo_provider,
+            "sqs": sqs_provider,
+            "s3": s3_provider,
+            "sns": sns_provider,
+            "eventbridge": eb_provider,
+            "ssm": SsmStateAdapter(ssm_state),
+            "secretsmanager": SecretsManagerStateAdapter(sm_state),
+        }
     )
 
     # Fake server provider

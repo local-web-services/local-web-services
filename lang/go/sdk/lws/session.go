@@ -508,6 +508,11 @@ func (s *Session) Chaos(service string) *ChaosBuilder {
 	return &ChaosBuilder{session: s, service: service}
 }
 
+// Capacity returns a CapacityBuilder for the given service (e.g. "stepfunctions").
+func (s *Session) Capacity(service string) *CapacityBuilder {
+	return newCapacityBuilder(s, service)
+}
+
 // StartLogCapture connects to the WebSocket log stream and begins recording entries.
 func (s *Session) StartLogCapture() (*LogCapture, error) {
 	return newLogCapture(s)
@@ -649,10 +654,9 @@ func (s *Session) preCreateResources(spec SessionSpec) error {
 		ssmc := s.SSMClient()
 		for _, p := range spec.Parameters {
 			if _, err := ssmc.PutParameter(ctx, &ssm.PutParameterInput{
-				Name:      aws.String(p),
-				Value:     aws.String(""),
-				Type:      ssmtypes.ParameterTypeString,
-				Overwrite: aws.Bool(true),
+				Name:  aws.String(p),
+				Value: aws.String(""),
+				Type:  ssmtypes.ParameterTypeString,
 			}); err != nil {
 				return fmt.Errorf("put parameter %q: %w", p, err)
 			}

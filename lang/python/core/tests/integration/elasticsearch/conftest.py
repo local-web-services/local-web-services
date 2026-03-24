@@ -27,7 +27,8 @@ async def provider():
 
 @pytest.fixture
 def app(provider):
-    return create_elasticsearch_app()
+    app, _ = create_elasticsearch_app()
+    return app
 
 
 @pytest.fixture

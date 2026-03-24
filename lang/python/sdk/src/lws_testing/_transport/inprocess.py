@@ -6,6 +6,19 @@ import socket
 from pathlib import Path
 from typing import Any
 
+from lws_testing._transport._provider_wrappers import (
+    _ApiGatewayStateProvider,
+    _ElasticsearchStateProvider,
+    _GlacierStateProvider,
+    _LambdaRegistryProvider,
+    _OpensearchStateProvider,
+    _OrganizationsStateProvider,
+    _S3TablesStateProvider,
+    _SecretsManagerStateProvider,
+    _SsmStateProvider,
+    _StubOrchestrator,
+)
+
 
 def _free_port() -> int:
     """Return a free ephemeral TCP port on localhost."""
@@ -86,83 +99,14 @@ def _make_initial_secret(spec: str | dict[str, Any]) -> dict[str, Any]:
     return spec
 
 
-class _StubOrchestrator:
-    """Minimal Orchestrator stub for the management API."""
-
-    def __init__(self, providers: dict[str, Any]) -> None:
-        self._providers = providers
-        self._running = True
-
-    @property
-    def providers(self) -> dict[str, Any]:
-        return self._providers
-
-    @property
-    def running(self) -> bool:
-        return self._running
-
-    def request_shutdown(self) -> None:
-        self._running = False
-
-
-class _SsmStateProvider:
-    """Thin wrapper that exposes _SsmState as a resettable provider."""
-
-    def __init__(self, state: Any) -> None:
-        self._state = state
-
-    @property
-    def name(self) -> str:
-        return "ssm"
-
-    async def reset(self) -> None:
-        self._state.reset()
-
-    async def health_check(self) -> bool:
-        return True
-
-
-class _SecretsManagerStateProvider:
-    """Thin wrapper that exposes _SecretsState as a resettable provider."""
-
-    def __init__(self, state: Any) -> None:
-        self._state = state
-
-    @property
-    def name(self) -> str:
-        return "secretsmanager"
-
-    async def reset(self) -> None:
-        self._state.reset()
-
-    async def health_check(self) -> bool:
-        return True
-
-
-class _OrganizationsStateProvider:
-    """Thin wrapper that exposes _OrganizationsState as a resettable provider."""
-
-    def __init__(self, state: Any) -> None:
-        self._state = state
-
-    @property
-    def name(self) -> str:
-        return "organizations"
-
-    async def reset(self) -> None:
-        self._state.reset()
-
-    async def health_check(self) -> bool:
-        return True
-
-
 def _create_management_app(
     providers: dict[str, Any],
     chaos_configs: dict[str, Any],
     fake_configs: dict[str, Any],
     lifecycle_configs: dict[str, Any],
+    capacity_configs: dict[str, Any] | None = None,
 ) -> Any:
-    """Build a FastAPI management app with reset, fake, chaos, and lifecycle endpoints."""
+    """Build a FastAPI management app with reset, fake, chaos, lifecycle, and capacity endpoints."""
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     from lws.api.management import _handle_reset, create_management_router
@@ -176,6 +120,7 @@ def _create_management_app(
         chaos_configs=chaos_configs,
         aws_fake_configs=fake_configs,
         lifecycle_configs=lifecycle_configs,
+        capacity_configs=capacity_configs,
     )
     app.include_router(router)
 
@@ -211,6 +156,8 @@ def _convert_spec(spec: dict[str, Any]) -> dict[str, list[Any]]:
 
 def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, Any]:
     """Instantiate all service providers."""
+    from lws.providers.cognito._cognito_auth import UserPoolConfig
+    from lws.providers.cognito.provider import CognitoProvider
     from lws.providers.dynamodb.provider import SqliteDynamoProvider
     from lws.providers.eventbridge.provider import EventBridgeProvider
     from lws.providers.s3.provider import S3Provider
@@ -218,19 +165,59 @@ def _create_providers(cfg: dict[str, list[Any]], data_dir: Path) -> dict[str, An
     from lws.providers.sqs.provider import SqsProvider
     from lws.providers.stepfunctions.provider import StepFunctionsProvider
 
-    dynamo_data = data_dir / "dynamodb"
-    dynamo_data.mkdir(parents=True, exist_ok=True)
-    s3_data = data_dir / "s3"
-    s3_data.mkdir(parents=True, exist_ok=True)
+    for subdir in ("dynamodb", "s3", "cognito"):
+        (data_dir / subdir).mkdir(parents=True, exist_ok=True)
 
     return {
-        "dynamodb": SqliteDynamoProvider(data_dir=dynamo_data, tables=cfg["tables"]),
+        "dynamodb": SqliteDynamoProvider(data_dir=data_dir / "dynamodb", tables=cfg["tables"]),
         "sqs": SqsProvider(queues=cfg["queues"]),
-        "s3": S3Provider(data_dir=s3_data, buckets=cfg["buckets"]),
+        "s3": S3Provider(data_dir=data_dir / "s3", buckets=cfg["buckets"]),
         "sns": SnsProvider(topics=cfg["topics"]),
         "stepfunctions": StepFunctionsProvider(state_machines=cfg["state_machines"]),
         "events": EventBridgeProvider(),
+        "cognito-idp": CognitoProvider(
+            data_dir=data_dir / "cognito",
+            config=UserPoolConfig(user_pool_id="us-east-1_e2etest001"),
+        ),
     }
+
+
+def _wire_providers(
+    providers: dict[str, Any],
+    ssm_state: Any = None,
+    secretsmanager_state: Any = None,
+    **extra_service_providers: Any,
+) -> None:
+    """Wire cross-service provider dependencies (SNS→SQS, EventBridge, S3 notifications, SF)."""
+    from lws.providers.stepfunctions._service_task_bridge import (
+        SecretsManagerStateAdapter,
+        SsmStateAdapter,
+    )
+
+    sns = providers["sns"]
+    sqs = providers["sqs"]
+    eb = providers["events"]
+    s3 = providers["s3"]
+    sf = providers["stepfunctions"]
+
+    sns.set_queue_provider(sqs)
+    eb.set_queue_provider(sqs)
+    eb.set_sns_provider(sns)
+    s3.set_notification_providers(sns_provider=sns, sqs_provider=sqs, events_provider=eb)
+
+    svc: dict[str, Any] = {
+        "dynamodb": providers["dynamodb"],
+        "sqs": sqs,
+        "s3": s3,
+        "sns": sns,
+        "eventbridge": eb,
+    }
+    if ssm_state is not None:
+        svc["ssm"] = SsmStateAdapter(ssm_state)
+    if secretsmanager_state is not None:
+        svc["secretsmanager"] = SecretsManagerStateAdapter(secretsmanager_state)
+    svc.update({k: v for k, v in extra_service_providers.items() if v is not None})
+    sf.set_service_providers(svc)
 
 
 def _build_service_apps(
@@ -240,6 +227,7 @@ def _build_service_apps(
     fake_configs: dict[str, Any],
     lifecycle_configs: dict[str, Any],
     cfg: dict[str, list[Any]],
+    capacity_configs: dict[str, Any] | None = None,
 ) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
     """Build FastAPI apps for all services.
 
@@ -257,6 +245,16 @@ def _build_service_apps(
     from lws.providers.sqs.routes import create_sqs_app
     from lws.providers.ssm.routes import create_ssm_app
     from lws.providers.stepfunctions.routes import create_stepfunctions_app
+
+    from lws_testing._transport._extended_services import build_extended_service_apps
+
+    _cap = capacity_configs or {}
+    extended_apps, extended_extra_providers = build_extended_service_apps(
+        providers,
+        lifecycle_configs,
+        capacity_configs=_cap,
+        dynamodb_tracker_ref=(_dynamodb_tracker_ref := []),
+    )
 
     ssm_app, ssm_state = create_ssm_app(
         initial_parameters=cfg["parameters"] or None,
@@ -279,6 +277,8 @@ def _build_service_apps(
                 chaos=chaos_configs["dynamodb"],
                 aws_fake=fake_configs["dynamodb"],
                 lifecycle=lifecycle_configs["dynamodb"],
+                capacity=_cap.get("dynamodb"),
+                tracker_ref=_dynamodb_tracker_ref,
             ),
         ),
         (
@@ -289,6 +289,8 @@ def _build_service_apps(
                 chaos=chaos_configs["sqs"],
                 aws_fake=fake_configs["sqs"],
                 lifecycle=lifecycle_configs["sqs"],
+                tracker_ref=(_sqs_tracker_ref := []),
+                capacity=_cap.get("sqs"),
             ),
         ),
         (
@@ -298,6 +300,11 @@ def _build_service_apps(
                 chaos=chaos_configs["s3"],
                 aws_fake=fake_configs["s3"],
                 lifecycle=lifecycle_configs["s3"],
+                capacity=_cap.get("s3"),
+                sns_provider=providers["sns"],
+                sqs_provider=providers["sqs"],
+                compute_providers=extended_extra_providers["lambda_registry"].compute,
+                tracker_ref=(_s3_tracker_ref := []),
             ),
         ),
         (
@@ -307,6 +314,10 @@ def _build_service_apps(
                 chaos=chaos_configs["sns"],
                 aws_fake=fake_configs["sns"],
                 lifecycle=lifecycle_configs["sns"],
+                sqs_capacity=_cap.get("sqs"),
+                sqs_provider=providers["sqs"],
+                sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
+                tracker_ref=(_sns_tracker_ref := []),
             ),
         ),
         (
@@ -317,6 +328,7 @@ def _build_service_apps(
                 aws_fake=fake_configs["stepfunctions"],
                 lifecycle=lifecycle_configs["stepfunctions"],
                 tracker_ref=(_sf_tracker_ref := []),
+                capacity=_cap.get("stepfunctions"),
             ),
         ),
         ("ssm", ssm_app),
@@ -329,14 +341,25 @@ def _build_service_apps(
                 aws_fake=fake_configs["events"],
                 lifecycle=lifecycle_configs["events"],
                 sf_tracker=_sf_tracker_ref[0] if _sf_tracker_ref else None,
+                sqs_capacity=_cap.get("sqs"),
+                sqs_provider=providers["sqs"],
+                sqs_tracker=_sqs_tracker_ref[0] if _sqs_tracker_ref else None,
+                sns_provider=providers["sns"],
+                sns_tracker=_sns_tracker_ref[0] if _sns_tracker_ref else None,
             ),
         ),
         (
             "apigateway",
-            create_apigateway_management_app(
-                lifecycle=lifecycle_configs["apigateway"],
-            ),
+            (
+                _apigateway_app := create_apigateway_management_app(
+                    lifecycle=lifecycle_configs["apigateway"],
+                    service_providers={
+                        k: providers[k] for k in ("dynamodb", "sqs", "s3", "sns", "stepfunctions")
+                    },
+                )
+            )[0],
         ),
+        *extended_apps,
     ]
 
     organizations_app, organizations_state = create_organizations_app(
@@ -349,15 +372,17 @@ def _build_service_apps(
         "ssm": _SsmStateProvider(ssm_state),
         "secretsmanager": _SecretsManagerStateProvider(secretsmanager_state),
         "organizations": _OrganizationsStateProvider(organizations_state),
+        "lambda": _LambdaRegistryProvider(extended_extra_providers["lambda_registry"]),
+        "apigateway-state": _ApiGatewayStateProvider(_apigateway_app[1]),
+        "glacier": _GlacierStateProvider(extended_extra_providers["glacier_state"]),
+        "s3tables": _S3TablesStateProvider(extended_extra_providers["s3tables_state"]),
+        "es": _ElasticsearchStateProvider(extended_extra_providers["elasticsearch_state"]),
+        "opensearch-state": _OpensearchStateProvider(extended_extra_providers["opensearch_state"]),
+        "_s3_tracker_ref": _s3_tracker_ref,
+        "_sns_tracker_ref": _sns_tracker_ref,
     }
 
     return service_apps, extra_providers
-
-
-async def _start_providers(providers: dict[str, Any]) -> None:
-    """Start the lifecycle of all service providers."""
-    for provider in providers.values():
-        await provider.start()
 
 
 async def _start_all_servers(
@@ -389,6 +414,17 @@ _SERVICE_NAMES = [
     "events",
     "apigateway",
     "organizations",
+    "cognito-idp",
+    "docdb",
+    "neptune",
+    "rds",
+    "elasticache",
+    "memorydb",
+    "es",
+    "opensearch",
+    "glacier",
+    "s3tables",
+    "lambda",
 ]
 
 
@@ -403,6 +439,7 @@ async def start_services(
         ``servers_list`` is a list of ``(Server, Task)`` pairs that can be
         passed directly to :func:`stop_services`.
     """
+    from lws.providers._shared.aws_capacity import AwsCapacityConfig
     from lws.providers._shared.aws_chaos import AwsChaosConfig
     from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig
     from lws.providers._shared.aws_operation_fake import AwsFakeConfig
@@ -414,16 +451,40 @@ async def start_services(
     chaos_configs: dict[str, Any] = {s: AwsChaosConfig() for s in _SERVICE_NAMES}
     fake_configs: dict[str, Any] = {s: AwsFakeConfig(service=s) for s in _SERVICE_NAMES}
     lifecycle_configs: dict[str, Any] = {s: ResourceLifecycleConfig() for s in _SERVICE_NAMES}
+    capacity_configs: dict[str, Any] = {s: AwsCapacityConfig() for s in _SERVICE_NAMES}
     ports: dict[str, int] = {s: _free_port() for s in _SERVICE_NAMES}
     mgmt_port = _free_port()
 
     service_apps, extra_providers = _build_service_apps(
-        providers, ports, chaos_configs, fake_configs, lifecycle_configs, cfg
+        providers,
+        ports,
+        chaos_configs,
+        fake_configs,
+        lifecycle_configs,
+        cfg,
+        capacity_configs,
     )
     # Merge ssm/secretsmanager state wrappers so the management reset endpoint can reach them
     all_providers = {**providers, **extra_providers}
-    await _start_providers(providers)
-    mgmt_app = _create_management_app(all_providers, chaos_configs, fake_configs, lifecycle_configs)
+
+    # Wire cross-service provider dependencies (SNS→SQS, S3 notifications,
+    # EventBridge dispatch, StepFunctions service tasks).
+    _s3t = extra_providers.get("_s3_tracker_ref", [])
+    _snt = extra_providers.get("_sns_tracker_ref", [])
+    _wire_providers(
+        providers,
+        ssm_state=getattr(extra_providers.get("ssm"), "_state", None),
+        secretsmanager_state=getattr(extra_providers.get("secretsmanager"), "_state", None),
+        s3_tracker=_s3t[0] if _s3t else None,
+        sns_tracker=_snt[0] if _snt else None,
+        s3_capacity=capacity_configs.get("s3"),
+    )
+
+    for provider in providers.values():
+        await provider.start()
+    mgmt_app = _create_management_app(
+        all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs
+    )
     servers = await _start_all_servers(service_apps, ports, mgmt_app, mgmt_port)
 
     return log_handler, ports, mgmt_port, servers

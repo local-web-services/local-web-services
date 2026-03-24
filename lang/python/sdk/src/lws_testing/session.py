@@ -385,6 +385,12 @@ class LwsSession:
 
         return LifecycleBuilder(service, self._mgmt_port)
 
+    def capacity(self, service: str) -> Any:
+        """Return a fluent capacity builder for the given service."""
+        from lws_testing._builders.capacity import CapacityBuilder
+
+        return CapacityBuilder(service, self._mgmt_port)
+
     @property
     def iam(self) -> Any:
         """Return the IAM authorization builder."""

@@ -158,6 +158,10 @@ export class LocalQueue {
     ).length;
   }
 
+  totalMessageCount(): number {
+    return this._messages.length;
+  }
+
   private _purgeDedupCache(): void {
     const now = Date.now();
     for (const [key, expiry] of this._dedupCache) {

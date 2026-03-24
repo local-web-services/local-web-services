@@ -125,7 +125,19 @@ func NewHandler(state *state.ServerState) *Handler {
 	return &Handler{state: state, store: store}
 }
 
+// responseRecorder captures the HTTP status code written during a request.
+type responseRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (r *responseRecorder) WriteHeader(code int) {
+	r.status = code
+	r.ResponseWriter.WriteHeader(code)
+}
+
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	target := r.Header.Get("X-Amz-Target")
 	operation := ""
 	if strings.HasPrefix(target, "DynamoDB_20120810.") {
@@ -137,10 +149,14 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if state.ApplyIAMAuth(h.state, "dynamodb", operation, r, w, false) {
+	rec := &responseRecorder{ResponseWriter: w, status: 200}
+
+	if state.ApplyIAMAuth(h.state, "dynamodb", operation, r, rec, false) {
+		h.appendLog(operation, r, rec.status, time.Since(start))
 		return
 	}
-	if state.ApplyChaos(h.state, "dynamodb", operation, w, false, false) {
+	if state.ApplyChaos(h.state, "dynamodb", operation, rec, false, false) {
+		h.appendLog(operation, r, rec.status, time.Since(start))
 		return
 	}
 
@@ -150,7 +166,21 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		body = make(map[string]interface{})
 	}
 
-	h.handle(w, operation, body)
+	h.handle(rec, operation, body)
+	h.appendLog(operation, r, rec.status, time.Since(start))
+}
+
+func (h *Handler) appendLog(operation string, r *http.Request, status int, duration time.Duration) {
+	h.state.AppendLog(state.LogEntry{
+		Timestamp:  time.Now().UTC().Format(time.RFC3339),
+		Service:    "dynamodb",
+		Operation:  operation,
+		Method:     r.Method,
+		Path:       r.URL.Path,
+		Status:     status,
+		DurationMs: duration.Milliseconds(),
+		RequestID:  state.NewRequestID(),
+	})
 }
 
 func writeOK(w http.ResponseWriter, data interface{}) {
@@ -685,6 +715,10 @@ func (h *Handler) handle(w http.ResponseWriter, operation string, body map[strin
 		t := h.store.getTable(name)
 		if t == nil {
 			writeErr(w, "ResourceNotFoundException", "Table not found: "+name, 400)
+			return
+		}
+		if h.state.GetCapacityRule("dynamodb").IsExhausted() {
+			writeErr(w, "ProvisionedThroughputExceededException", "No item slot is available", 400)
 			return
 		}
 		item, _ := body["Item"].(map[string]interface{})

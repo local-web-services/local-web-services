@@ -28,7 +28,7 @@ class TestElasticsearchDataPlaneEndpoint:
         expected_endpoint = "localhost:9200"
         fake_cm = AsyncMock()
         fake_cm.start_container.return_value = expected_endpoint
-        app = create_elasticsearch_app(container_manager=fake_cm)
+        app, _ = create_elasticsearch_app(container_manager=fake_cm)
         client = TestClient(app)
 
         # Act
@@ -48,7 +48,7 @@ class TestElasticsearchDataPlaneEndpoint:
     def test_without_container_manager_uses_synthetic_endpoint(self) -> None:
         # Arrange
         expected_suffix = "es.amazonaws.com"
-        app = create_elasticsearch_app()
+        app, _ = create_elasticsearch_app()
         client = TestClient(app)
 
         # Act
@@ -68,7 +68,7 @@ class TestElasticsearchDataPlaneEndpoint:
         # Arrange
         fake_cm = AsyncMock()
         fake_cm.start_container.return_value = "localhost:9200"
-        app = create_elasticsearch_app(container_manager=fake_cm)
+        app, _ = create_elasticsearch_app(container_manager=fake_cm)
         client = TestClient(app)
         _post(client, "CreateElasticsearchDomain", {"DomainName": "test-domain"})
 

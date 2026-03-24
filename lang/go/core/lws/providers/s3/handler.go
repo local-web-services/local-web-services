@@ -150,21 +150,23 @@ func (s *Store) newVersionID() string {
 
 // Handler is the HTTP handler for the S3 provider.
 type Handler struct {
-	state   *state.ServerState
-	store   *Store
-	sqsPort int
-	ebPort  int
+	state      *state.ServerState
+	store      *Store
+	sqsPort    int
+	ebPort     int
+	snsPort    int
+	lambdaPort int
 }
 
 // NewHandler creates a new S3 handler and registers the reset callback.
-func NewHandler(ss *state.ServerState, sqsPort, ebPort int) *Handler {
+func NewHandler(ss *state.ServerState, sqsPort, ebPort, snsPort, lambdaPort int) *Handler {
 	store := NewStore()
 	ss.AddResetCallback(store.Reset)
-	return &Handler{state: ss, store: store, sqsPort: sqsPort, ebPort: ebPort}
+	return &Handler{state: ss, store: store, sqsPort: sqsPort, ebPort: ebPort, snsPort: snsPort, lambdaPort: lambdaPort}
 }
 
 // dispatchNotification fires an S3 event notification to the configured target.
-func (h *Handler) dispatchNotification(bucket, key string) error {
+func (h *Handler) dispatchNotification(bucket, key, eventName string) error {
 	h.store.mu.RLock()
 	b := h.store.buckets[bucket]
 	var nc *NotificationConfig
@@ -181,7 +183,7 @@ func (h *Handler) dispatchNotification(bucket, key string) error {
 		"Records": []map[string]interface{}{
 			{
 				"eventSource": "aws:s3",
-				"eventName":   "ObjectCreated:Put",
+				"eventName":   eventName,
 				"s3": map[string]interface{}{
 					"bucket": map[string]string{"name": bucket},
 					"object": map[string]string{"key": key},
@@ -208,12 +210,29 @@ func (h *Handler) dispatchNotification(bucket, key string) error {
 			return err
 		}
 		resp.Body.Close()
+	case "sns":
+		payload, _ := json.Marshal(map[string]string{
+			"TopicArn": nc.Target,
+			"Message":  string(eventBody),
+		})
+		req, _ := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.snsPort), bytes.NewReader(payload))
+		req.Header.Set("Content-Type", "application/x-amz-json-1.0")
+		req.Header.Set("X-Amz-Target", "SNS.Publish")
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return err
+		}
+		resp.Body.Close()
 	case "eventbridge":
+		detailType := "Object Created"
+		if strings.HasPrefix(eventName, "ObjectRemoved") {
+			detailType = "Object Deleted"
+		}
 		payload, _ := json.Marshal(map[string]interface{}{
 			"Entries": []map[string]string{
 				{
 					"Source":       "aws.s3",
-					"DetailType":   "Object Created",
+					"DetailType":   detailType,
 					"Detail":       string(eventBody),
 					"EventBusName": nc.Target,
 				},
@@ -222,6 +241,17 @@ func (h *Handler) dispatchNotification(bucket, key string) error {
 		req, _ := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:%d/", h.ebPort), bytes.NewReader(payload))
 		req.Header.Set("Content-Type", "application/x-amz-json-1.0")
 		req.Header.Set("X-Amz-Target", "AWSEvents.PutEvents")
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return err
+		}
+		resp.Body.Close()
+	case "lambda":
+		parts := strings.Split(nc.Target, ":")
+		functionName := parts[len(parts)-1]
+		url := fmt.Sprintf("http://127.0.0.1:%d/2015-03-31/functions/%s/invocations", h.lambdaPort, functionName)
+		req, _ := http.NewRequest("POST", url, bytes.NewReader(eventBody))
+		req.Header.Set("Content-Type", "application/json")
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			return err
@@ -518,7 +548,7 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		b.Objects[key] = newObj
 		h.store.mu.Unlock()
 
-		h.dispatchNotification(bucket, key) //nolint:errcheck
+		h.dispatchNotification(bucket, key, "ObjectCreated:Put") //nolint:errcheck
 		w.Header().Set("ETag", etag)
 		w.WriteHeader(200)
 
@@ -581,6 +611,7 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		}
 		delete(b.Objects, key)
 		h.store.mu.Unlock()
+		h.dispatchNotification(bucket, key, "ObjectRemoved:Delete") //nolint:errcheck
 		w.WriteHeader(204)
 
 	case "DeleteObjects":
@@ -1004,7 +1035,28 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		w.WriteHeader(204)
 
 	case "GetBucketNotificationConfiguration":
-		xmlReply(w, `<NotificationConfiguration></NotificationConfiguration>`, 200)
+		b := h.store.getBucket(bucket)
+		if b == nil {
+			xmlErr(w, "NoSuchBucket", "The bucket does not exist", 404)
+			return
+		}
+		h.store.mu.RLock()
+		nc := b.Notification
+		h.store.mu.RUnlock()
+		if nc == nil || nc.Type == "" {
+			xmlReply(w, `<NotificationConfiguration></NotificationConfiguration>`, 200)
+			return
+		}
+		var inner string
+		switch nc.Type {
+		case "sqs":
+			inner = fmt.Sprintf(`<QueueConfiguration><Queue>%s</Queue><Event>s3:ObjectCreated:*</Event></QueueConfiguration>`, escapeXML(nc.Target))
+		case "sns":
+			inner = fmt.Sprintf(`<TopicConfiguration><Topic>%s</Topic><Event>s3:ObjectCreated:*</Event></TopicConfiguration>`, escapeXML(nc.Target))
+		case "eventbridge":
+			inner = `<EventBridgeConfiguration></EventBridgeConfiguration>`
+		}
+		xmlReply(w, fmt.Sprintf(`<NotificationConfiguration>%s</NotificationConfiguration>`, inner), 200)
 
 	case "PutBucketNotificationConfiguration":
 		b := h.store.getBucket(bucket)
@@ -1019,7 +1071,10 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 			TopicConfig *struct {
 				TopicArn string `xml:"Topic"`
 			} `xml:"TopicConfiguration"`
-			EventBridgeConfig *struct{} `xml:"EventBridgeConfiguration"`
+			EventBridgeConfig    *struct{} `xml:"EventBridgeConfiguration"`
+			LambdaFunctionConfig *struct {
+				FunctionArn string `xml:"CloudFunction"`
+			} `xml:"CloudFunctionConfiguration"`
 		}
 		body, _ := io.ReadAll(r.Body)
 		if err := xml.Unmarshal(body, &xmlConfig); err != nil {
@@ -1036,6 +1091,9 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 		} else if xmlConfig.EventBridgeConfig != nil {
 			nc.Type = "eventbridge"
 			nc.Target = "default"
+		} else if xmlConfig.LambdaFunctionConfig != nil {
+			nc.Type = "lambda"
+			nc.Target = xmlConfig.LambdaFunctionConfig.FunctionArn
 		}
 		if nc.Type == "sqs" {
 			parts := strings.Split(nc.Target, ":")
@@ -1068,6 +1126,20 @@ func (h *Handler) handle(w http.ResponseWriter, r *http.Request, bucket, key, op
 				resp.Body.Close()
 				if resp.StatusCode != 200 {
 					xmlErr(w, "InvalidArgument", "EventBridge bus not found or not active: "+string(vbody), 400)
+					return
+				}
+			}
+		} else if nc.Type == "lambda" {
+			parts := strings.Split(nc.Target, ":")
+			functionName := parts[len(parts)-1]
+			url := fmt.Sprintf("http://127.0.0.1:%d/2015-03-31/functions/%s", h.lambdaPort, functionName)
+			req, _ := http.NewRequest("GET", url, nil)
+			resp, err := http.DefaultClient.Do(req)
+			if err == nil {
+				vbody, _ := io.ReadAll(resp.Body)
+				resp.Body.Close()
+				if resp.StatusCode != 200 {
+					xmlErr(w, "InvalidArgument", "Lambda function not found: "+string(vbody), 400)
 					return
 				}
 			}

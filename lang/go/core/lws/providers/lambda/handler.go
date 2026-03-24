@@ -297,6 +297,10 @@ func (h *Handler) invokeFunction(w http.ResponseWriter, r *http.Request, name st
 		jsonErr(w, "ResourceNotFoundException", "Function "+name+" not found")
 		return
 	}
+	if h.state.GetCapacityRule("lambda").IsExhausted() {
+		jsonErr(w, "ServiceUnavailableException", "No invocation slot is available")
+		return
+	}
 	invType := r.Header.Get("X-Amz-Invocation-Type")
 	if invType == "Event" {
 		w.WriteHeader(202)

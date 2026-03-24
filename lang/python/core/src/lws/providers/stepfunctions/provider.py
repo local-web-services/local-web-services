@@ -16,17 +16,17 @@ from typing import Any
 from lws.interfaces.compute import ICompute
 from lws.interfaces.state_machine import IStateMachine
 from lws.providers.stepfunctions._provider_helpers import (
+    LambdaComputeBridge,
     _build_async_response,
     _build_execution_arn,
     _build_execution_history_events,
     _build_state_machine_description,
     _build_sync_response,
-    _extract_function_name,
-    _find_provider_by_arn,
-    _invoke_compute,
-    _parse_cloud_assembly_config,
-    _process_invocation_result,
     _resolve_definition,
+)
+from lws.providers.stepfunctions._service_task_bridge import (
+    ServiceTaskBridge,
+    _CompositeComputeInvoker,
 )
 from lws.providers.stepfunctions.asl_parser import (
     StateMachineDefinition,
@@ -66,49 +66,6 @@ class StateMachineConfig:
 
 
 # ---------------------------------------------------------------------------
-# Compute bridge - adapts ICompute to ComputeInvoker protocol
-# ---------------------------------------------------------------------------
-
-
-class LambdaComputeBridge:
-    """Bridges ICompute providers to the ComputeInvoker protocol.
-
-    Resolves Lambda ARNs from Task state Resource fields to local
-    compute handlers.
-    """
-
-    def __init__(self, compute_providers: dict[str, ICompute]) -> None:
-        self._providers = compute_providers
-
-    async def invoke_function(self, resource_arn: str, payload: Any) -> Any:
-        """Invoke a Lambda function by resolving its resource ARN."""
-        # Handle SFN service integration: arn:...:states:::lambda:invoke
-        if "lambda:invoke" in resource_arn and isinstance(payload, dict):
-            fn_ref = payload.get("FunctionName", "")
-            actual_payload = payload.get("Payload", payload)
-            function_name = _extract_function_name(fn_ref)
-            compute = self._providers.get(function_name)
-            if compute is None:
-                compute = _find_provider_by_arn(self._providers, fn_ref)
-            if compute is None:
-                raise RuntimeError(f"No compute provider for: {fn_ref}")
-            result = await _invoke_compute(compute, function_name, actual_payload)
-            inner = _process_invocation_result(result, resource_arn)
-            # Wrap in service integration envelope (matches real AWS behaviour)
-            return {"Payload": inner, "StatusCode": 200}
-
-        function_name = _extract_function_name(resource_arn)
-        compute = self._providers.get(function_name)
-        if compute is None:
-            compute = _find_provider_by_arn(self._providers, resource_arn)
-        if compute is None:
-            raise RuntimeError(f"No compute provider for: {resource_arn}")
-
-        result = await _invoke_compute(compute, function_name, payload)
-        return _process_invocation_result(result, resource_arn)
-
-
-# ---------------------------------------------------------------------------
 # Provider
 # ---------------------------------------------------------------------------
 
@@ -130,7 +87,9 @@ class StepFunctionsProvider(IStateMachine):
         self._workflow_types: dict[str, WorkflowType] = {}
         self._executions: dict[str, ExecutionHistory] = {}
         self._compute_providers: dict[str, ICompute] = {}
+        self._service_providers: dict[str, Any] = {}
         self._tags: dict[str, dict[str, str]] = {}
+        self._statuses: dict[str, str] = {}
         self._max_wait_seconds = max_wait_seconds
         self._running = False
         # Track names of pre-configured (static) state machines so reset()
@@ -155,6 +114,7 @@ class StepFunctionsProvider(IStateMachine):
             definition_data = _resolve_definition(config)
             self._definitions[sm_name] = parse_definition(definition_data)
             self._workflow_types[sm_name] = config.workflow_type
+            self._statuses.setdefault(sm_name, "ACTIVE")
         self._running = True
         logger.info("StepFunctions provider started with %d state machines", len(self._definitions))
 
@@ -163,6 +123,7 @@ class StepFunctionsProvider(IStateMachine):
         self._definitions.clear()
         self._executions.clear()
         self._workflow_types.clear()
+        self._statuses.clear()
         self._running = False
 
     async def reset(self) -> None:
@@ -172,6 +133,7 @@ class StepFunctionsProvider(IStateMachine):
         """
         self._executions.clear()
         self._tags.clear()
+        self._statuses.clear()
         # Remove any state machines that were created dynamically (not pre-configured)
         dynamic_names = [n for n in list(self._definitions.keys()) if n not in self._static_names]
         for name in dynamic_names:
@@ -185,6 +147,7 @@ class StepFunctionsProvider(IStateMachine):
                 definition_data = _resolve_definition(config)
                 self._definitions[sm_name] = parse_definition(definition_data)
                 self._workflow_types[sm_name] = config.workflow_type
+                self._statuses[sm_name] = "ACTIVE"
 
     async def health_check(self) -> bool:
         """Return True if the provider is running."""
@@ -197,6 +160,26 @@ class StepFunctionsProvider(IStateMachine):
     def set_compute_providers(self, providers: dict[str, ICompute]) -> None:
         """Register compute providers for Lambda Task invocation."""
         self._compute_providers = providers
+
+    def set_service_providers(self, providers: dict[str, Any]) -> None:
+        """Register service providers for service integration Task invocation."""
+        self._service_providers = providers
+
+    def set_state_machine_status(self, name: str, status: str) -> None:
+        """Set the lifecycle status of a state machine (e.g. CREATING, ACTIVE, DELETING).
+
+        Used by the routes layer to synchronise lifecycle state into the provider
+        so that ``start_execution`` can enforce the ACTIVE precondition without
+        going through the HTTP layer.
+        """
+        self._statuses[name] = status
+
+    def get_state_machine_status(self, name: str) -> str:
+        """Return the lifecycle status of a state machine.
+
+        Returns ``"ACTIVE"`` when no explicit status has been set.
+        """
+        return self._statuses.get(name, "ACTIVE")
 
     # ------------------------------------------------------------------
     # IStateMachine implementation
@@ -213,8 +196,19 @@ class StepFunctionsProvider(IStateMachine):
         For STANDARD workflows, returns immediately with an execution ARN.
         For EXPRESS workflows, blocks until execution completes.
         """
+        status = self.get_state_machine_status(state_machine_name)
+        if status != "ACTIVE":
+            raise ValueError(
+                f"State machine '{state_machine_name}' is not ACTIVE (current status: {status})"
+            )
         definition = self._get_definition(state_machine_name)
         workflow_type = self._workflow_types.get(state_machine_name, WorkflowType.STANDARD)
+
+        if self._service_providers:
+            bridge = ServiceTaskBridge(self._service_providers)
+            error_msg = bridge.validate_execution_preconditions(definition)
+            if error_msg is not None:
+                raise ValueError(error_msg)
 
         if execution_name is None:
             execution_name = str(uuid.uuid4())
@@ -288,6 +282,7 @@ class StepFunctionsProvider(IStateMachine):
         definition_data = _resolve_definition(config)
         self._definitions[name] = parse_definition(definition_data)
         self._workflow_types[name] = wf_type
+        self._statuses[name] = "ACTIVE"
         return arn
 
     def delete_state_machine(self, name: str) -> None:
@@ -297,6 +292,7 @@ class StepFunctionsProvider(IStateMachine):
         del self._definitions[name]
         self._configs.pop(name, None)
         self._workflow_types.pop(name, None)
+        self._statuses.pop(name, None)
 
     def describe_state_machine(self, name: str) -> dict:
         """Describe a state machine. Raises KeyError if not found."""
@@ -344,9 +340,21 @@ class StepFunctionsProvider(IStateMachine):
             raise KeyError(f"State machine config not found: {name}")
 
         if definition is not None:
+            definition_data = _resolve_definition(
+                StateMachineConfig(
+                    name=name,
+                    definition=definition,
+                    role_arn=config.role_arn,
+                )
+            )
+            parsed = parse_definition(definition_data)
+            if self._service_providers:
+                bridge = ServiceTaskBridge(self._service_providers)
+                error_msg = bridge.validate_definition(parsed)
+                if error_msg is not None:
+                    raise ValueError(error_msg)
             config.definition = definition
-            definition_data = _resolve_definition(config)
-            self._definitions[name] = parse_definition(definition_data)
+            self._definitions[name] = parsed
 
         if role_arn is not None:
             config.role_arn = role_arn
@@ -452,8 +460,12 @@ class StepFunctionsProvider(IStateMachine):
     def _create_engine(self, definition: StateMachineDefinition) -> ExecutionEngine:
         """Create an execution engine with the current compute bridge."""
         compute: ComputeInvoker | None = None
-        if self._compute_providers:
-            compute = LambdaComputeBridge(self._compute_providers)
+        lambda_bridge = LambdaComputeBridge(self._compute_providers)
+        if self._service_providers:
+            service_bridge = ServiceTaskBridge(self._service_providers)
+            compute = _CompositeComputeInvoker(service_bridge, lambda_bridge)
+        elif self._compute_providers:
+            compute = lambda_bridge
         return ExecutionEngine(
             definition=definition,
             compute=compute,
@@ -466,29 +478,3 @@ class StepFunctionsProvider(IStateMachine):
         if definition is None:
             raise KeyError(f"State machine not found: {name}")
         return definition
-
-
-# ---------------------------------------------------------------------------
-# Cloud Assembly parsing (P2-17)
-# ---------------------------------------------------------------------------
-
-
-def parse_cloud_assembly_state_machine(
-    logical_id: str,
-    resource_properties: dict[str, Any],
-    resource_mapping: dict[str, str] | None = None,
-) -> StateMachineConfig:
-    """Parse an AWS::StepFunctions::StateMachine from cloud assembly properties.
-
-    Parameters
-    ----------
-    logical_id:
-        The CloudFormation logical ID.
-    resource_properties:
-        The Properties dict from the CloudFormation resource.
-    resource_mapping:
-        Optional mapping of Lambda ARNs to local function names.
-    """
-    return _parse_cloud_assembly_config(
-        logical_id, resource_properties, resource_mapping, StateMachineConfig, WorkflowType
-    )

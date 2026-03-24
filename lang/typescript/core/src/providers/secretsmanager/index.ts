@@ -7,6 +7,7 @@ import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
 import { createRequestContext, recordLog } from "../../middleware/logging";
+import type { EventBridgeStore } from "../eventbridge";
 
 const REGION = "us-east-1";
 const ACCOUNT_ID = "000000000000";
@@ -26,6 +27,16 @@ interface Secret {
 
 export class SecretsManagerStore {
   private secrets: Map<string, Secret> = new Map();
+  private eventBridgeStore: EventBridgeStore | null = null;
+  private eventBridgeBusName: string = "default";
+
+  setEventBridgeStore(store: EventBridgeStore): void {
+    this.eventBridgeStore = store;
+  }
+
+  setEventBridgeBusName(busName: string): void {
+    this.eventBridgeBusName = busName;
+  }
 
   reset(): void {
     this.secrets.clear();
@@ -167,6 +178,36 @@ export class SecretsManagerStore {
   listSecrets(): Secret[] {
     return Array.from(this.secrets.values());
   }
+
+  emitCreateSecretEvent(secretName: string): void {
+    if (!this.eventBridgeStore) return;
+    try {
+      this.eventBridgeStore.putEventsInternal(this.eventBridgeBusName, [
+        {
+          source: "aws.secretsmanager",
+          "detail-type": "AWS API Call via CloudTrail",
+          detail: { eventName: "CreateSecret", requestParameters: { name: secretName } },
+        },
+      ]);
+    } catch {
+      // ignore if bus does not exist
+    }
+  }
+
+  emitDeleteSecretEvent(secretName: string): void {
+    if (!this.eventBridgeStore) return;
+    try {
+      this.eventBridgeStore.putEventsInternal(this.eventBridgeBusName, [
+        {
+          source: "aws.secretsmanager",
+          "detail-type": "AWS API Call via CloudTrail",
+          detail: { eventName: "DeleteSecret", requestParameters: { name: secretName } },
+        },
+      ]);
+    } catch {
+      // ignore if bus does not exist
+    }
+  }
 }
 
 function jsonReply(reply: FastifyReply, data: unknown, status = 200): void {
@@ -230,8 +271,9 @@ function handleOperation(
 ): void {
   switch (operation) {
     case "CreateSecret": {
+      const secretName = body.Name as string;
       const secret = store.createSecret(
-        body.Name as string,
+        secretName,
         body.SecretString as string | undefined,
         body.SecretBinary as string | undefined,
         body.Description as string | undefined,
@@ -241,6 +283,7 @@ function handleOperation(
         Name: secret.name,
         VersionId: secret.versionId,
       });
+      store.emitCreateSecretEvent(secretName);
       break;
     }
 
@@ -309,8 +352,12 @@ function handleOperation(
 
     case "DeleteSecret": {
       const forceDelete = !!body.ForceDeleteWithoutRecovery;
-      store.deleteSecret(body.SecretId as string, forceDelete);
+      const deleteSecretId = body.SecretId as string;
+      const secretToDelete = store.getSecret(deleteSecretId);
+      const deletedSecretName = secretToDelete?.name ?? deleteSecretId;
+      store.deleteSecret(deleteSecretId, forceDelete);
       jsonReply(reply, {});
+      store.emitDeleteSecretEvent(deletedSecretName);
       break;
     }
 

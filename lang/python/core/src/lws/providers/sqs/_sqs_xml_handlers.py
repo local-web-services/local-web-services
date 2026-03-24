@@ -12,6 +12,7 @@ from lws.providers.sqs._sqs_helpers import (
     _apply_visibility_timeout_to_messages,
     _build_attributes_xml,
     _build_message_attributes_xml,
+    _error_xml,
     _extract_message_attributes,
     _extract_queue_name,
     _find_and_update_visibility,
@@ -36,6 +37,12 @@ class _SqsXmlHandlersMixin(_SqsQueueOpsMixin):
     """
 
     async def _send_message(self, params: dict) -> Response:
+        if self._capacity.is_exhausted:  # type: ignore[attr-defined]
+            return _error_xml(
+                "ServiceUnavailableException",
+                "lws: no message slots available",
+                503,
+            )
         queue_name = _extract_queue_name(params)
         err = self._get_lifecycle_error_xml(queue_name)  # type: ignore[attr-defined]
         if err is not None:

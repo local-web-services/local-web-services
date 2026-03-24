@@ -115,6 +115,13 @@ public class LambdaHandler implements HttpHandler {
       String name = path.split("/")[4];
       if (IamMiddleware.applyIamAuth(state, "lambda", "Invoke", exchange, false)) return;
       if (ChaosMiddleware.applyChaos(state, "lambda", "Invoke", exchange, false)) return;
+      if (state.getCapacityConfig("lambda").isExhausted()) {
+        sendJson(
+            exchange,
+            429,
+            Map.of("__type", "TooManyRequestsException", "message", "Rate Exceeded."));
+        return;
+      }
       handleInvoke(name, exchange);
       return;
     }
@@ -382,6 +389,17 @@ public class LambdaHandler implements HttpHandler {
   }
 
   // ── Event source mappings ──────────────────────────────────────────────────
+
+  /**
+   * Invokes a Lambda function programmatically (used by S3 event notification delivery). Does
+   * nothing if the function does not exist.
+   */
+  public void invokeFunction(String functionName, String payload) {
+    if (!store.functions.containsKey(functionName)) {
+      return;
+    }
+    // Fire-and-forget async invocation; payload is accepted but not processed by this fake
+  }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 

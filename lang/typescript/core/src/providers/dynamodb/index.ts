@@ -3,6 +3,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { DynamoStore, type TableConfig, type KeyAttr, type GsiDef, evaluateFilter } from "./store";
 import type { ServerState } from "../../types";
+import { isExhausted } from "../../types";
 import { applyChaos } from "../../middleware/chaos";
 import { applyFake } from "../../middleware/fake";
 import { applyIamAuth } from "../../middleware/iam";
@@ -50,6 +51,15 @@ export function registerDynamoDb(app: FastifyInstance, state: ServerState): Dyna
       return;
     }
     if (await applyFake(state, "dynamodb", operation, req, reply)) {
+      recordLog(state, ctx, req.method, req.url, reply.statusCode);
+      return;
+    }
+
+    if (
+      operation === "PutItem" &&
+      isExhausted(state.capacityConfigs["dynamodb"] ?? { slots: null })
+    ) {
+      errorReply(reply, "ProvisionedThroughputExceededException", "No write capacity available");
       recordLog(state, ctx, req.method, req.url, reply.statusCode);
       return;
     }

@@ -3,6 +3,7 @@
 Implements the ``IEventBus`` interface and ``Provider`` lifecycle.
 Manages event buses, rules, pattern-based routing, and scheduled rules.
 Lambda targets are invoked via registered compute providers.
+SQS, SNS, and Step Functions targets are also supported.
 """
 
 from __future__ import annotations
@@ -12,17 +13,19 @@ import json
 import logging
 import uuid
 
-from lws.interfaces.compute import ICompute, LambdaContext
+from lws.interfaces.compute import ICompute  # noqa: TC002
 from lws.interfaces.event_bus import IEventBus
 from lws.interfaces.provider import ProviderStatus
+from lws.interfaces.queue import IQueue
+from lws.interfaces.state_machine import IStateMachine
 from lws.providers.eventbridge._eventbridge_state import (
     EventBusConfig,
     RuleConfig,
     RuleTarget,
     _build_event_envelope,
     _build_scheduled_event,
-    _extract_function_name,
 )
+from lws.providers.eventbridge._target_dispatcher import TargetDispatcher
 from lws.providers.eventbridge.pattern_matcher import match_event
 from lws.providers.eventbridge.scheduler import ScheduledRule, ScheduleRunner
 
@@ -52,8 +55,17 @@ class EventBridgeProvider(IEventBus):
         self._tags: dict[str, dict[str, str]] = {}
         self._status = ProviderStatus.STOPPED
         self._compute_providers: dict[str, ICompute] = {}
+        self._queue_provider: IQueue | None = None
+        self._sns_provider: object | None = None
+        self._sfn_provider: IStateMachine | None = None
         self._lock = asyncio.Lock()
         self._scheduler = ScheduleRunner()
+        self._dispatcher = TargetDispatcher(
+            self._compute_providers,
+            self._queue_provider,
+            self._sns_provider,
+            self._sfn_provider,
+        )
 
     # -- Provider lifecycle ---------------------------------------------------
 
@@ -113,6 +125,30 @@ class EventBridgeProvider(IEventBus):
     def set_compute_providers(self, providers: dict[str, ICompute]) -> None:
         """Register compute providers for Lambda target dispatch."""
         self._compute_providers = providers
+        self._rebuild_dispatcher()
+
+    def set_queue_provider(self, provider: IQueue) -> None:
+        """Register a queue provider for SQS target dispatch."""
+        self._queue_provider = provider
+        self._rebuild_dispatcher()
+
+    def set_sns_provider(self, provider: object) -> None:
+        """Register an SNS provider for SNS target dispatch."""
+        self._sns_provider = provider
+        self._rebuild_dispatcher()
+
+    def set_sfn_provider(self, provider: IStateMachine) -> None:
+        """Register a Step Functions provider for state machine target dispatch."""
+        self._sfn_provider = provider
+        self._rebuild_dispatcher()
+
+    def _rebuild_dispatcher(self) -> None:
+        self._dispatcher = TargetDispatcher(
+            self._compute_providers,
+            self._queue_provider,
+            self._sns_provider,
+            self._sfn_provider,
+        )
 
     # -- IEventBus interface --------------------------------------------------
 
@@ -394,33 +430,8 @@ class EventBridgeProvider(IEventBus):
             if match_event(rule.event_pattern, event):
                 matched += 1
                 for target in rule.targets:
-                    asyncio.create_task(self._dispatch_target(target, event))
+                    asyncio.create_task(self._dispatcher.dispatch(target, event))
         return matched
-
-    async def _dispatch_target(self, target: RuleTarget, event: dict) -> None:
-        """Dispatch an event to a single rule target."""
-        try:
-            function_name = _extract_function_name(target.arn)
-            compute = self._compute_providers.get(function_name)
-            if compute is None:
-                logger.error(
-                    "No compute provider for target: %s",
-                    target.arn,
-                )
-                return
-            context = LambdaContext(
-                function_name=function_name,
-                memory_limit_in_mb=128,
-                timeout_seconds=30,
-                aws_request_id=str(uuid.uuid4()),
-                invoked_function_arn=target.arn,
-            )
-            await compute.invoke(event, context)
-        except Exception:
-            logger.exception(
-                "Failed to dispatch event to target %s",
-                target.arn,
-            )
 
     # -- Scheduling -----------------------------------------------------------
 
@@ -445,7 +456,7 @@ class EventBridgeProvider(IEventBus):
         async def _callback() -> None:
             event = _build_scheduled_event(rule)
             for target in rule.targets:
-                await self._dispatch_target(target, event)
+                await self._dispatcher.dispatch(target, event)
 
         return _callback
 

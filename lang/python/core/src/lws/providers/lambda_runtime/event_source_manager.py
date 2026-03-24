@@ -36,10 +36,12 @@ class EventSourceManager:
         queue_providers: dict[str, IQueue],
         stream_dispatchers: dict[str, StreamDispatcher],
         compute_providers: dict[str, ICompute],
+        shared_stream_dispatcher: StreamDispatcher | None = None,
     ) -> None:
         self._queue_providers = queue_providers
         self._stream_dispatchers = stream_dispatchers
         self._compute_providers = compute_providers
+        self._shared_stream_dispatcher = shared_stream_dispatcher
         self._active_pollers: dict[str, SqsEventSourcePoller] = {}
         self._active_stream_handlers: dict[str, tuple[str, Any]] = {}
 
@@ -120,6 +122,8 @@ class EventSourceManager:
         """Activate a DynamoDB Streams event source mapping."""
         table_name = _extract_table_name(event_source_arn)
         dispatcher = self._stream_dispatchers.get(table_name)
+        if dispatcher is None:
+            dispatcher = self._shared_stream_dispatcher
         if dispatcher is None:
             logger.warning("Stream dispatcher not found for table %s", table_name)
             return
