@@ -479,6 +479,7 @@ def create_dynamodb_app(
     iam_auth: IamAuthBundle | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
+    tracker_ref: list | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks the DynamoDB wire protocol."""
     app = FastAPI()
@@ -489,5 +490,7 @@ def create_dynamodb_app(
         app.add_middleware(AwsChaosMiddleware, chaos_config=chaos, error_format=ErrorFormat.JSON)
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="dynamodb")
     dynamo_router = DynamoDbRouter(store, lifecycle=lifecycle, capacity=capacity)
+    if tracker_ref is not None:
+        tracker_ref.append(dynamo_router._tracker)  # pylint: disable=protected-access
     app.include_router(dynamo_router.router)
     return app

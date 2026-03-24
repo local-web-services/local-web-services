@@ -190,7 +190,10 @@ def apigw_sqs_queue_does_not_exist():
 
 @given('the target queue is "ACTIVE"')
 def apigw_sqs_target_queue_is_active(lws_session):
-    _create_queue(lws_session)
+    try:
+        _create_queue(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # resource may already exist from a prior Given step
 
 
 @given('the target queue is not "ACTIVE"')
@@ -282,8 +285,13 @@ def api_receives_request_enqueues(lws_session, world):
         api_id = world.get("api_id") or _get_api_id(lws_session)
         resp = _invoke_api(lws_session, api_id, {"event": "order-created", "orderId": "e2e-1"})
         world["result"] = resp
-        world["error"] = None
         world["invoke_status"] = resp["status_code"]
+        if resp["status_code"] != 200:
+            world["error"] = Exception(
+                f"API request failed with status {resp['status_code']}: {resp.get('body', '')}"
+            )
+        else:
+            world["error"] = None
     except (ClientError, Exception) as exc:  # noqa: BLE001
         world["result"] = None
         world["error"] = exc

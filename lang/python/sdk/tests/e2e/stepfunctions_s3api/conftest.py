@@ -246,14 +246,16 @@ def no_object_slot_available(lws_session):
 
 
 @given('an object "EXISTS" in the target bucket')
-def object_exists_in_target_bucket(lws_session):
+def object_exists_in_target_bucket(lws_session, world):
     _create_bucket(lws_session)
     _s3(lws_session).put_object(Bucket=TEST_BUCKET, Key=TEST_KEY, Body=TEST_BODY)
+    world["_object_in_target_bucket"] = True
 
 
 @given('no object "EXISTS" in the target bucket')
-def no_object_exists_in_target_bucket():
+def no_object_exists_in_target_bucket(world):
     """No-op: fresh bucket has no objects."""
+    world["_no_object_in_target_bucket"] = True
 
 
 # ── Given: slots ───────────────────────────────────────────────────────
@@ -361,6 +363,13 @@ def execution_writes_object(lws_session, world):
 
 @when("a running execution reads an existing object from the S3 bucket and succeeds")
 def execution_reads_object(lws_session, world):
+    # Negative guard: if no object exists in the bucket, reading cannot succeed
+    if world.get("_no_object_in_target_bucket"):
+        world["result"] = None
+        world["error"] = RuntimeError(
+            "lws: cannot read an object when no object exists in the target bucket"
+        )
+        return
     # Arrange: ensure bucket + object exist and SM has S3 getObject task
     try:
         _create_bucket(lws_session)
@@ -393,6 +402,13 @@ def execution_reads_object(lws_session, world):
 
 @when("a running execution fails to read because no object exists in the bucket")
 def execution_reads_object_not_found(lws_session, world):
+    # Negative guard: if an object exists, the "no object" precondition is violated
+    if world.get("_object_in_target_bucket"):
+        world["result"] = None
+        world["error"] = RuntimeError(
+            "lws: cannot test 'fails to read because no object' when an object exists in the bucket"
+        )
+        return
     # Arrange: ensure bucket exists but object does NOT exist; SM has S3 getObject task
     try:
         _create_bucket(lws_session)

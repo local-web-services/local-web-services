@@ -185,7 +185,10 @@ def apigw_sns_topic_is_active_given():
 
 @given('the target topic is "ACTIVE"')
 def apigw_sns_target_topic_is_active(lws_session):
-    _create_topic(lws_session)
+    try:
+        _create_topic(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # resource may already exist from a prior Given step
 
 
 @given('the target topic is not "ACTIVE"')
@@ -295,8 +298,13 @@ def request_publishes_to_sns(lws_session, world):
             {"TopicArn": _topic_arn(), "Message": "e2e-test-message"},
         )
         world["result"] = resp
-        world["error"] = None
         world["invoke_status"] = resp["status_code"]
+        if resp["status_code"] != 200:
+            world["error"] = Exception(
+                f"API request failed with status {resp['status_code']}: {resp.get('body', '')}"
+            )
+        else:
+            world["error"] = None
     except (ClientError, Exception) as exc:  # noqa: BLE001
         world["result"] = None
         world["error"] = exc

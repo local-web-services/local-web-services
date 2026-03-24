@@ -284,8 +284,13 @@ def put_request_writes_object(lws_session, world):
         api_id = world.get("api_id") or _get_api_id(lws_session)
         resp = _invoke_api_put(lws_session, api_id, TEST_BODY)
         world["result"] = resp
-        world["error"] = None
         world["invoke_status"] = resp["status_code"]
+        if resp["status_code"] != 200:
+            world["error"] = Exception(
+                f"API request failed with status {resp['status_code']}: {resp.get('body', '')}"
+            )
+        else:
+            world["error"] = None
     except (ClientError, Exception) as exc:  # noqa: BLE001
         world["result"] = None
         world["error"] = exc

@@ -9,6 +9,7 @@ def build_extended_service_apps(
     providers: dict[str, Any],
     lifecycle_configs: dict[str, Any],
     capacity_configs: dict[str, Any] | None = None,
+    dynamodb_tracker_ref: list | None = None,
 ) -> tuple[list[tuple[str, Any]], dict[str, Any]]:
     """Build FastAPI apps for cognito, docdb, neptune, rds, elasticache, memorydb,
     elasticsearch, opensearch, glacier, s3tables, and lambda services.
@@ -58,6 +59,8 @@ def build_extended_service_apps(
         registry=lambda_registry,
         lifecycle=lifecycle_configs["lambda"],
         event_source_manager=event_source_manager,
+        dynamodb_provider=dynamo_provider,
+        dynamodb_tracker_ref=dynamodb_tracker_ref,
     )
 
     glacier_app, glacier_state = create_glacier_app(lifecycle=lifecycle_configs["glacier"])

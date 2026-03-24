@@ -186,6 +186,7 @@ def _wire_providers(
     providers: dict[str, Any],
     ssm_state: Any = None,
     secretsmanager_state: Any = None,
+    **extra_service_providers: Any,
 ) -> None:
     """Wire cross-service provider dependencies (SNS→SQS, EventBridge, S3 notifications, SF)."""
     from lws.providers.stepfunctions._service_task_bridge import (
@@ -193,40 +194,30 @@ def _wire_providers(
         SsmStateAdapter,
     )
 
-    sns_provider = providers["sns"]
-    sqs_provider = providers["sqs"]
-    eb_provider = providers["events"]
-    s3_provider = providers["s3"]
-    sf_provider = providers["stepfunctions"]
-    dynamo_provider = providers["dynamodb"]
+    sns = providers["sns"]
+    sqs = providers["sqs"]
+    eb = providers["events"]
+    s3 = providers["s3"]
+    sf = providers["stepfunctions"]
 
-    # SNS → SQS delivery
-    sns_provider.set_queue_provider(sqs_provider)
+    sns.set_queue_provider(sqs)
+    eb.set_queue_provider(sqs)
+    eb.set_sns_provider(sns)
+    s3.set_notification_providers(sns_provider=sns, sqs_provider=sqs, events_provider=eb)
 
-    # EventBridge → SQS / SNS dispatch
-    eb_provider.set_queue_provider(sqs_provider)
-    eb_provider.set_sns_provider(sns_provider)
-
-    # S3 bucket notifications → SNS / SQS / EventBridge
-    s3_provider.set_notification_providers(
-        sns_provider=sns_provider,
-        sqs_provider=sqs_provider,
-        events_provider=eb_provider,
-    )
-
-    # StepFunctions service task bridge
-    service_providers: dict[str, Any] = {
-        "dynamodb": dynamo_provider,
-        "sqs": sqs_provider,
-        "s3": s3_provider,
-        "sns": sns_provider,
-        "eventbridge": eb_provider,
+    svc: dict[str, Any] = {
+        "dynamodb": providers["dynamodb"],
+        "sqs": sqs,
+        "s3": s3,
+        "sns": sns,
+        "eventbridge": eb,
     }
     if ssm_state is not None:
-        service_providers["ssm"] = SsmStateAdapter(ssm_state)
+        svc["ssm"] = SsmStateAdapter(ssm_state)
     if secretsmanager_state is not None:
-        service_providers["secretsmanager"] = SecretsManagerStateAdapter(secretsmanager_state)
-    sf_provider.set_service_providers(service_providers)
+        svc["secretsmanager"] = SecretsManagerStateAdapter(secretsmanager_state)
+    svc.update({k: v for k, v in extra_service_providers.items() if v is not None})
+    sf.set_service_providers(svc)
 
 
 def _build_service_apps(
@@ -259,7 +250,8 @@ def _build_service_apps(
 
     _cap = capacity_configs or {}
     extended_apps, extended_extra_providers = build_extended_service_apps(
-        providers, lifecycle_configs, capacity_configs=_cap
+        providers, lifecycle_configs, capacity_configs=_cap,
+        dynamodb_tracker_ref=(_dynamodb_tracker_ref := []),
     )
 
     ssm_app, ssm_state = create_ssm_app(
@@ -284,6 +276,7 @@ def _build_service_apps(
                 aws_fake=fake_configs["dynamodb"],
                 lifecycle=lifecycle_configs["dynamodb"],
                 capacity=_cap.get("dynamodb"),
+                tracker_ref=_dynamodb_tracker_ref,
             ),
         ),
         (
@@ -308,6 +301,8 @@ def _build_service_apps(
                 capacity=_cap.get("s3"),
                 sns_provider=providers["sns"],
                 sqs_provider=providers["sqs"],
+                compute_providers=extended_extra_providers["lambda_registry"].compute,
+                tracker_ref=(_s3_tracker_ref := []),
             ),
         ),
         (
@@ -381,15 +376,11 @@ def _build_service_apps(
         "s3tables": _S3TablesStateProvider(extended_extra_providers["s3tables_state"]),
         "es": _ElasticsearchStateProvider(extended_extra_providers["elasticsearch_state"]),
         "opensearch-state": _OpensearchStateProvider(extended_extra_providers["opensearch_state"]),
+        "_s3_tracker_ref": _s3_tracker_ref,
+        "_sns_tracker_ref": _sns_tracker_ref,
     }
 
     return service_apps, extra_providers
-
-
-async def _start_providers(providers: dict[str, Any]) -> None:
-    """Start the lifecycle of all service providers."""
-    for provider in providers.values():
-        await provider.start()
 
 
 async def _start_all_servers(
@@ -476,13 +467,19 @@ async def start_services(
 
     # Wire cross-service provider dependencies (SNS→SQS, S3 notifications,
     # EventBridge dispatch, StepFunctions service tasks).
+    _s3t = extra_providers.get("_s3_tracker_ref", [])
+    _snt = extra_providers.get("_sns_tracker_ref", [])
     _wire_providers(
         providers,
         ssm_state=getattr(extra_providers.get("ssm"), "_state", None),
         secretsmanager_state=getattr(extra_providers.get("secretsmanager"), "_state", None),
+        s3_tracker=_s3t[0] if _s3t else None,
+        sns_tracker=_snt[0] if _snt else None,
+        s3_capacity=capacity_configs.get("s3"),
     )
 
-    await _start_providers(providers)
+    for provider in providers.values():
+        await provider.start()
     mgmt_app = _create_management_app(
         all_providers, chaos_configs, fake_configs, lifecycle_configs, capacity_configs
     )

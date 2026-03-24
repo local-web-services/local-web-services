@@ -180,7 +180,10 @@ def apigw_dynamodb_table_is_active_given():
 
 @given('the target table is "ACTIVE"')
 def apigw_dynamodb_target_table_is_active(lws_session):
-    _create_table(lws_session)
+    try:
+        _create_table(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # resource may already exist from a prior Given step
 
 
 @given('the target table is not "ACTIVE"')
@@ -296,8 +299,13 @@ def request_writes_to_dynamodb(lws_session, world):
             },
         )
         world["result"] = resp
-        world["error"] = None
         world["invoke_status"] = resp["status_code"]
+        if resp["status_code"] != 200:
+            world["error"] = Exception(
+                f"API request failed with status {resp['status_code']}: {resp.get('body', '')}"
+            )
+        else:
+            world["error"] = None
     except (ClientError, Exception) as exc:  # noqa: BLE001
         world["result"] = None
         world["error"] = exc

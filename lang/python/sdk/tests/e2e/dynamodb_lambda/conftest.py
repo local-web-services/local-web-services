@@ -106,7 +106,13 @@ def dynamodb_lambda_table_does_not_exist():
 
 @given("the table has a stream enabled")
 def dynamodb_lambda_table_has_stream(lws_session):
-    _create_table_with_stream(lws_session)
+    try:
+        _create_table_with_stream(lws_session)
+    except Exception:  # noqa: BLE001
+        _dynamodb(lws_session).update_table(
+            TableName=TEST_TABLE,
+            StreamSpecification={"StreamEnabled": True, "StreamViewType": "NEW_AND_OLD_IMAGES"},
+        )
 
 
 @given("the table does not have a stream enabled")

@@ -390,10 +390,13 @@ def create_s3_app(
     sns_provider: SnsProvider | None = None,
     sqs_provider: SqsProvider | None = None,
     compute_providers: dict | None = None,
+    tracker_ref: list | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
     _tracker = ResourceStateTracker(_lc)
+    if tracker_ref is not None:
+        tracker_ref.append(_tracker)
 
     app = FastAPI()
     if aws_fake is not None:
