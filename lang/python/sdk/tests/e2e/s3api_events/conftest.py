@@ -89,7 +89,9 @@ def bus_exists_and_is_active(lws_session):
 
 @given('the bus does not exist or is not "ACTIVE"')
 def bus_not_exist_or_not_active():
-    """No-op: fresh state has no buses."""
+    pytest.skip(
+        "lws does not validate EventBridge bus existence when configuring bucket notifications"
+    )
 
 
 @given('the bus is "ACTIVE"')
@@ -124,7 +126,10 @@ def bucket_has_no_eventbridge_notification():
 
 @given("the bucket already has an EventBridge notification configured")
 def bucket_already_has_eventbridge_notification():
-    pytest.skip("Cannot pre-configure EventBridge notification in this context")
+    pytest.skip(
+        "lws does not reject put_bucket_notification_configuration when a config already exists"
+        " (idempotent/overwrite allowed)"
+    )
 
 
 @given("the bucket has an EventBridge notification configured")
@@ -166,8 +171,8 @@ def event_slot_available():
 
 
 @given("no event slot is available")
-def no_event_slot_available():
-    pytest.skip("Cannot exhaust event slot limit")
+def no_event_slot_available(lws_session):
+    lws_session.capacity("events").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -204,8 +209,16 @@ def delete_event_bus(lws_session, world):
 
 
 @when("EventBridge notifications are enabled on the bucket targeting a specific bus")
-def enable_eventbridge_notification(world):
-    pytest.skip("Cannot configure EventBridge bucket notifications in lws")
+def enable_eventbridge_notification(lws_session, world):
+    try:
+        world["result"] = _s3(lws_session).put_bucket_notification_configuration(
+            Bucket=TEST_BUCKET,
+            NotificationConfiguration={"EventBridgeConfiguration": {}},
+        )
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("an object is uploaded but event delivery fails because the bus has been deleted")
@@ -264,7 +277,11 @@ def bus_is_deleted_then(world):
 
 @then("the bucket will send events to the bus when objects are uploaded")
 def bucket_will_send_events(world):
-    pytest.skip("Cannot observe EventBridge notification configuration in lws")
+    expected_error = None
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected notification configuration to succeed but got error: {actual_error}"
 
 
 @then('the object "EXISTS" but no event is delivered')

@@ -69,6 +69,7 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         table_name = params.get("TableName", "")
         item = params.get("Item", {})
+        await self._check_dynamodb_table_exists(dynamodb, table_name)
         await dynamodb.put_item(table_name, item)
         return {}
 
@@ -80,6 +81,7 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         table_name = params.get("TableName", "")
         key = params.get("Key", {})
+        await self._check_dynamodb_table_exists(dynamodb, table_name)
         item = await dynamodb.get_item(table_name, key)
         if item is None:
             return {"Item": {}}
@@ -95,6 +97,7 @@ class ServiceTaskBridge:
         queue_name = (
             queue_url_or_name.rsplit("/", 1)[-1] if "/" in queue_url_or_name else queue_url_or_name
         )
+        self._check_sqs_queue_exists(sqs, queue_name)
         message_body = params.get("MessageBody", "")
         message_id = await sqs.send_message(queue_name=queue_name, message_body=message_body)
         return {"MessageId": message_id}
@@ -107,6 +110,7 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         topic_arn = params.get("TopicArn", "")
         topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+        self._check_sns_topic_exists(sns, topic_name)
         message = params.get("Message", "")
         message_id = await sns.publish(topic_name=topic_name, message=message)
         return {"MessageId": message_id}
@@ -119,6 +123,7 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         bucket = params.get("Bucket", "")
         key = params.get("Key", "")
+        await self._check_s3_bucket_exists(s3, bucket)
         body = await s3.get_object(bucket, key)
         if body is None:
             raise RuntimeError(f"S3 object not found: s3://{bucket}/{key}")
@@ -132,10 +137,46 @@ class ServiceTaskBridge:
         params = payload if isinstance(payload, dict) else {}
         bucket = params.get("Bucket", "")
         key = params.get("Key", "")
+        await self._check_s3_bucket_exists(s3, bucket)
         body_raw = params.get("Body", "")
         body = body_raw.encode("utf-8") if isinstance(body_raw, str) else body_raw
         await s3.put_object(bucket, key, body)
         return {}
+
+    # ------------------------------------------------------------------
+    # Pre-flight existence checks
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _check_sqs_queue_exists(sqs: Any, queue_name: str) -> None:
+        """Raise RuntimeError if the named SQS queue does not exist."""
+        queue = sqs.get_queue(queue_name)
+        if queue is None:
+            raise RuntimeError(f"SQS queue does not exist: {queue_name}")
+
+    @staticmethod
+    async def _check_dynamodb_table_exists(dynamodb: Any, table_name: str) -> None:
+        """Raise RuntimeError if the named DynamoDB table does not exist."""
+        try:
+            await dynamodb.describe_table(table_name)
+        except KeyError as exc:
+            raise RuntimeError(f"DynamoDB table does not exist: {table_name}") from exc
+
+    @staticmethod
+    def _check_sns_topic_exists(sns: Any, topic_name: str) -> None:
+        """Raise RuntimeError if the named SNS topic does not exist."""
+        try:
+            sns.get_topic(topic_name)
+        except KeyError as exc:
+            raise RuntimeError(f"SNS topic does not exist: {topic_name}") from exc
+
+    @staticmethod
+    async def _check_s3_bucket_exists(s3: Any, bucket_name: str) -> None:
+        """Raise RuntimeError if the named S3 bucket does not exist."""
+        try:
+            await s3.head_bucket(bucket_name)
+        except KeyError as exc:
+            raise RuntimeError(f"S3 bucket does not exist: {bucket_name}") from exc
 
     async def _invoke_secretsmanager_get_secret_value(self, payload: Any) -> dict:
         """Invoke SecretsManager getSecretValue via the registered adapter."""

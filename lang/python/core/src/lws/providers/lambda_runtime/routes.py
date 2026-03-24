@@ -10,6 +10,8 @@ proxy to invoke Lambda functions.
 
 from __future__ import annotations
 
+import asyncio
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -21,10 +23,7 @@ from lws.providers._shared.aws_capacity import AwsCapacityConfig
 from lws.providers._shared.aws_lifecycle import ResourceLifecycleConfig, ResourceStateTracker
 from lws.providers._shared.lambda_helpers import build_default_lambda_context
 from lws.providers._shared.request_helpers import parse_json_body
-from lws.providers.lambda_runtime._lambda_code_resolver import (
-    resolve_code_path,
-    resolve_code_path_from_name,
-)
+from lws.providers.lambda_runtime._lambda_compute_factory import create_compute
 from lws.providers.lambda_runtime._lambda_esm_ops import (
     handle_create_event_source_mapping,
     handle_delete_event_source_mapping,
@@ -49,23 +48,21 @@ from lws.providers.lambda_runtime._lambda_function_ops import (
     handle_update_function_configuration,
 )
 from lws.providers.lambda_runtime._lambda_registry import LambdaRegistry
+from lws.providers.lambda_runtime._lambda_state import (
+    _LambdaState,
+)
 from lws.providers.lambda_runtime._lambda_url_ops import (
     handle_create_function_url_config,
     handle_delete_function_url_config,
     handle_get_function_url_config,
     handle_update_function_url_config,
 )
+from lws.providers.lambda_runtime.event_source_manager import EventSourceManager
 
 _logger = get_logger("ldk.lambda-mgmt")
 
 _ACCOUNT_ID = "000000000000"
 _REGION = "us-east-1"
-
-
-class _LambdaState:
-    def __init__(self) -> None:
-        self.event_source_mappings: dict[str, dict[str, Any]] = {}
-        self.permissions: dict[str, dict[str, Any]] = {}
 
 
 # ---------------------------------------------------------------------------
@@ -83,6 +80,7 @@ class LambdaManagementRouter:
         sdk_env: dict[str, str] | None = None,
         lifecycle: ResourceLifecycleConfig | None = None,
         capacity: AwsCapacityConfig | None = None,
+        event_source_manager: EventSourceManager | None = None,
     ) -> None:
         self._registry = registry
         self._project_dir = project_dir
@@ -92,6 +90,7 @@ class LambdaManagementRouter:
         self._lifecycle = _lc
         self._tracker = ResourceStateTracker(_lc)
         self._capacity = capacity or AwsCapacityConfig()
+        self._event_source_manager = event_source_manager
         self.router = APIRouter()
         self._register_routes()
 
@@ -203,6 +202,11 @@ class LambdaManagementRouter:
             methods=["PUT"],
         )
         r.add_api_route(
+            "/lws/invocations/{invocation_id}",
+            self._get_invocation_state,
+            methods=["GET"],
+        )
+        r.add_api_route(
             "/{path:path}",
             self._stub_handler,
             methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -277,6 +281,19 @@ class LambdaManagementRouter:
 
         body = await parse_json_body(request)
         context = build_default_lambda_context(function_name)
+
+        invocation_type = request.headers.get("X-Amz-Invocation-Type", "RequestResponse")
+        if invocation_type == "Event":
+            invocation_id = str(uuid.uuid4())
+            self._state.record_invocation(invocation_id)
+            asyncio.create_task(
+                self._run_async_invocation(compute, body, context, invocation_id, function_name)
+            )
+            return Response(
+                status_code=202,
+                headers={"X-Amzn-RequestId": invocation_id},
+            )
+
         result = await compute.invoke(body, context)
 
         if result.error:
@@ -284,6 +301,23 @@ class LambdaManagementRouter:
 
         payload = result.payload if result.payload is not None else {}
         return _json_response(payload)
+
+    async def _run_async_invocation(
+        self,
+        compute: Any,
+        body: Any,
+        context: Any,
+        invocation_id: str,
+        function_name: str,
+    ) -> None:
+        """Execute an asynchronous (Event-type) invocation and record its outcome."""
+        try:
+            result = await compute.invoke(body, context)
+            success = not result.error
+        except Exception:  # pylint: disable=broad-except  # noqa: BLE001
+            _logger.error("Async invocation failed for %s", function_name)
+            success = False
+        self._state.complete_invocation(invocation_id, success=success)
 
     # -- Permissions ---------------------------------------------------------
 
@@ -306,13 +340,37 @@ class LambdaManagementRouter:
     # -- Event source mappings -----------------------------------------------
 
     async def _create_event_source_mapping(self, request: Request) -> Response:
-        return await handle_create_event_source_mapping(request, self._state.event_source_mappings)
+        response = await handle_create_event_source_mapping(
+            request, self._state.event_source_mappings
+        )
+        if response.status_code in (200, 202) and self._event_source_manager is not None:
+            import json  # pylint: disable=import-outside-toplevel
+
+            body = json.loads(response.body)
+            esm_uuid = body.get("UUID", "")
+            mapping = self._state.event_source_mappings.get(esm_uuid)
+            if mapping is not None:
+                mapping_with_compute = dict(mapping)
+                mapping_with_compute.update(
+                    {
+                        k: v
+                        for k, v in self._registry.compute.items()
+                        if k == mapping.get("FunctionArn", "")
+                    }
+                )
+                await self._event_source_manager.activate(mapping)
+        return response
 
     async def _get_event_source_mapping(self, esm_uuid: str) -> Response:
         return await handle_get_event_source_mapping(esm_uuid, self._state.event_source_mappings)
 
     async def _delete_event_source_mapping(self, esm_uuid: str) -> Response:
-        return await handle_delete_event_source_mapping(esm_uuid, self._state.event_source_mappings)
+        response = await handle_delete_event_source_mapping(
+            esm_uuid, self._state.event_source_mappings
+        )
+        if self._event_source_manager is not None:
+            await self._event_source_manager.deactivate(esm_uuid)
+        return response
 
     async def _list_event_source_mappings(self, _request: Request) -> Response:
         return await handle_list_event_source_mappings(self._state.event_source_mappings)
@@ -388,6 +446,12 @@ class LambdaManagementRouter:
             }
         )
 
+    async def _get_invocation_state(self, invocation_id: str) -> Response:
+        state = self._state.get_invocation_state(invocation_id)
+        if state is None:
+            return _json_response({"Message": f"Invocation not found: {invocation_id}"}, 404)
+        return _json_response({"InvocationId": invocation_id, "State": state})
+
     async def _stub_handler(self, request: Request, path: str) -> Response:
         _logger.warning("Unknown Lambda path: %s %s", request.method, path)
         return _json_response(
@@ -399,39 +463,7 @@ class LambdaManagementRouter:
 
     def _create_compute(self, func_config: dict[str, Any]) -> Any:
         """Create an ICompute provider from the function configuration."""
-        from lws.interfaces import ComputeConfig  # pylint: disable=import-outside-toplevel
-        from lws.providers.lambda_runtime.docker import (  # pylint: disable=import-outside-toplevel
-            DockerCompute,
-        )
-
-        function_name = func_config["FunctionName"]
-        runtime = func_config.get("Runtime", "nodejs18.x")
-        handler = func_config.get("Handler", "index.handler")
-        timeout = func_config.get("Timeout", 3)
-        memory_size = func_config.get("MemorySize", 128)
-        env_vars = func_config.get("Environment", {}).get("Variables", {})
-        code_info = func_config.get("Code", {})
-        filename = code_info.get("S3Key") or code_info.get("Filename")
-        code_path = resolve_code_path(filename, self._project_dir)
-
-        if code_path is None and self._project_dir is not None:
-            code_path = resolve_code_path_from_name(function_name, self._project_dir)
-
-        if code_path is None:
-            code_path = Path(".")
-            _logger.warning("Could not resolve code path for %s, using cwd", function_name)
-
-        compute_config = ComputeConfig(
-            function_name=function_name,
-            handler=handler,
-            runtime=runtime,
-            code_path=code_path,
-            timeout=timeout,
-            memory_size=memory_size,
-            environment=env_vars,
-        )
-
-        return DockerCompute(config=compute_config, sdk_env=self._sdk_env)
+        return create_compute(func_config, self._project_dir, self._sdk_env)
 
 
 # ---------------------------------------------------------------------------
@@ -445,6 +477,7 @@ def create_lambda_management_app(
     sdk_env: dict[str, str] | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
+    event_source_manager: EventSourceManager | None = None,
 ) -> FastAPI:
     """Create a FastAPI app that speaks the Lambda management protocol."""
     if registry is None:
@@ -452,7 +485,12 @@ def create_lambda_management_app(
     app = FastAPI(title="LDK Lambda Management")
     app.add_middleware(RequestLoggingMiddleware, logger=_logger, service_name="lambda-mgmt")
     router = LambdaManagementRouter(
-        registry, project_dir=project_dir, sdk_env=sdk_env, lifecycle=lifecycle, capacity=capacity
+        registry,
+        project_dir=project_dir,
+        sdk_env=sdk_env,
+        lifecycle=lifecycle,
+        capacity=capacity,
+        event_source_manager=event_source_manager,
     )
     app.include_router(router.router)
     return app

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import time
 import uuid
+from typing import Any
 
 from fastapi import Request, Response
 
@@ -24,6 +25,11 @@ class ApiGatewayResourceRouter:
 
     def __init__(self, state: _ApiGatewayState) -> None:
         self._res_state = state
+        self._service_providers: dict[str, Any] = {}
+
+    def set_service_providers(self, providers: dict[str, Any]) -> None:
+        """Register backend service providers for integration dispatch."""
+        self._service_providers = providers
 
     def register_resource_routes(self, router) -> None:  # noqa: ANN001
         """Add all sub-API routes to *router*."""

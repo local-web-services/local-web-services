@@ -356,6 +356,9 @@ def _build_service_apps(
             (
                 _apigateway_app := create_apigateway_management_app(
                     lifecycle=lifecycle_configs["apigateway"],
+                    service_providers={
+                        k: providers[k] for k in ("dynamodb", "sqs", "s3", "sns", "stepfunctions")
+                    },
                 )
             )[0],
         ),

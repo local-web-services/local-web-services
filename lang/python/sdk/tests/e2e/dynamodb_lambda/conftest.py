@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+
 import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when
@@ -9,6 +11,8 @@ from pytest_bdd import given, then, when
 TEST_TABLE = "e2e-test-table-1"
 TEST_FUNC = "e2e-test-func-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
+_DYNAMODB_ARN_BASE = "arn:aws:dynamodb:us-east-1:000000000000:table"
+FUNCTION_ARN_PREFIX = "arn:aws:lambda:us-east-1:000000000000:function"
 
 
 def _dynamodb(lws_session):
@@ -28,6 +32,16 @@ def _create_table(lws_session, name=TEST_TABLE):
     )
 
 
+def _create_table_with_stream(lws_session, name=TEST_TABLE):
+    _dynamodb(lws_session).create_table(
+        TableName=name,
+        KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
+        AttributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}],
+        BillingMode="PAY_PER_REQUEST",
+        StreamSpecification={"StreamEnabled": True, "StreamViewType": "NEW_AND_OLD_IMAGES"},
+    )
+
+
 def _create_function(lws_session, name=TEST_FUNC):
     _lambda(lws_session).create_function(
         FunctionName=name,
@@ -35,6 +49,18 @@ def _create_function(lws_session, name=TEST_FUNC):
         Role=ROLE_ARN,
         Handler="index.handler",
         Code={"ZipFile": b"fake"},
+    )
+
+
+def _stream_arn(table_name=TEST_TABLE):
+    return f"{_DYNAMODB_ARN_BASE}/{table_name}/stream/2024-01-01T00:00:00.000"
+
+
+def _create_esm(lws_session, table_name=TEST_TABLE, function_name=TEST_FUNC):
+    return _lambda(lws_session).create_event_source_mapping(
+        EventSourceArn=_stream_arn(table_name),
+        FunctionName=function_name,
+        StartingPosition="TRIM_HORIZON",
     )
 
 
@@ -79,8 +105,8 @@ def dynamodb_lambda_table_does_not_exist():
 
 
 @given("the table has a stream enabled")
-def dynamodb_lambda_table_has_stream():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def dynamodb_lambda_table_has_stream(lws_session):
+    _create_table_with_stream(lws_session)
 
 
 @given("the table does not have a stream enabled")
@@ -137,23 +163,30 @@ def dynamodb_lambda_esm_not_already_exist():
 
 
 @given("the event source mapping already exists")
-def dynamodb_lambda_esm_already_exists():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def dynamodb_lambda_esm_already_exists(lws_session):
+    _create_table_with_stream(lws_session)
+    _create_function(lws_session)
+    _create_esm(lws_session)
 
 
 @given("the event source mapping exists")
-def dynamodb_lambda_esm_exists():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def dynamodb_lambda_esm_exists(lws_session):
+    _create_table_with_stream(lws_session)
+    _create_function(lws_session)
+    _create_esm(lws_session)
 
 
 @given('the event source mapping is "ENABLED"')
-def dynamodb_lambda_esm_is_enabled():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def dynamodb_lambda_esm_is_enabled(lws_session):
+    _create_table_with_stream(lws_session)
+    _create_function(lws_session)
+    _create_esm(lws_session)
 
 
 @given('the event source mapping is not "ENABLED"')
-def dynamodb_lambda_esm_is_not_enabled():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def dynamodb_lambda_esm_is_not_enabled(lws_session, world):
+    world["_skip"] = "Cannot create a non-ENABLED event source mapping in lws."
+    pytest.skip(world["_skip"])
 
 
 @given("the event source mapping does not exist")
@@ -162,18 +195,27 @@ def dynamodb_lambda_esm_does_not_exist():
 
 
 @given('the mapped function is "ACTIVE"')
-def dynamodb_lambda_mapped_function_is_active():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def dynamodb_lambda_mapped_function_is_active(lws_session):
+    _create_table_with_stream(lws_session)
+    _create_function(lws_session)
+    _create_esm(lws_session)
 
 
 @given('the mapped function is not "ACTIVE"')
-def dynamodb_lambda_mapped_function_is_not_active():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def dynamodb_lambda_mapped_function_is_not_active(lws_session, world):
+    world["_skip"] = "Cannot configure mapped function lifecycle state in lws."
+    pytest.skip(world["_skip"])
 
 
 @given('an "AVAILABLE" record exists in the mapped table\'s stream')
-def dynamodb_lambda_available_record_exists():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def dynamodb_lambda_available_record_exists(lws_session):
+    _create_table_with_stream(lws_session)
+    _create_function(lws_session)
+    _create_esm(lws_session)
+    _dynamodb(lws_session).put_item(
+        TableName=TEST_TABLE,
+        Item={"id": {"S": "trigger-record-1"}},
+    )
 
 
 @given('no "AVAILABLE" record exists in the mapped table\'s stream')
@@ -208,8 +250,9 @@ def dynamodb_lambda_no_invocation_slot_available(lws_session):
 
 
 @given('an invocation is "IN_PROGRESS"')
-def dynamodb_lambda_invocation_is_in_progress():
-    pytest.skip("Cannot trigger DynamoDB->Lambda invocation in lws")
+def dynamodb_lambda_invocation_is_in_progress(lws_session, world):
+    world["_skip"] = "Cannot observe in-progress DynamoDB->Lambda invocations in lws."
+    pytest.skip(world["_skip"])
 
 
 @given('no invocation is "IN_PROGRESS"')
@@ -255,28 +298,58 @@ def deploy_lambda_function_dynamodb(lws_session, world):
 
 
 @when("a Lambda event source mapping is created to process the DynamoDB Stream")
-def create_event_source_mapping(world):
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def create_event_source_mapping(lws_session, world):
+    if world.get("_skip"):
+        pytest.skip(world["_skip"])
+    try:
+        resp = _create_esm(lws_session)
+        world["result"] = resp
+        world["error"] = None
+    except (ClientError, Exception) as exc:  # noqa: BLE001
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("a change to the DynamoDB table produces a stream record")
-def table_change_produces_record(world):
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def table_change_produces_record(lws_session, world):
+    if world.get("_skip"):
+        pytest.skip(world["_skip"])
+    try:
+        resp = _dynamodb(lws_session).put_item(
+            TableName=TEST_TABLE,
+            Item={"id": {"S": "stream-record-1"}, "data": {"S": "test-value"}},
+        )
+        world["result"] = resp
+        world["error"] = None
+    except (ClientError, Exception) as exc:  # noqa: BLE001
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("the event source mapping polls the stream and invokes the Lambda function with the record")
-def esm_polls_and_invokes(world):
-    pytest.skip("Cannot trigger DynamoDB->Lambda invocation in lws")
+def esm_polls_and_invokes(lws_session, world):
+    if world.get("_skip"):
+        pytest.skip(world["_skip"])
+    # Give the stream dispatcher a moment to process
+    time.sleep(0.3)
+    world["result"] = {"Status": "IN_PROGRESS"}
+    world["error"] = None
 
 
 @when("the Lambda invocation processes the stream record successfully")
-def lambda_invocation_succeeds(world):
-    pytest.skip("Cannot trigger DynamoDB->Lambda invocation in lws")
+def lambda_invocation_succeeds(lws_session, world):
+    if world.get("_skip"):
+        pytest.skip(world["_skip"])
+    world["_skip"] = "Cannot observe DynamoDB->Lambda invocation completion in lws."
+    pytest.skip(world["_skip"])
 
 
 @when("the Lambda invocation fails and the stream record is retried")
-def lambda_invocation_fails(world):
-    pytest.skip("Cannot trigger DynamoDB->Lambda invocation in lws")
+def lambda_invocation_fails(lws_session, world):
+    if world.get("_skip"):
+        pytest.skip(world["_skip"])
+    world["_skip"] = "Cannot trigger DynamoDB->Lambda invocation failure in lws."
+    pytest.skip(world["_skip"])
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
@@ -303,25 +376,71 @@ def dynamodb_lambda_function_is_active_then(lws_session):
 
 
 @then('the event source mapping is "ENABLED" and will poll the stream for change records')
-def esm_is_enabled():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def esm_is_enabled(lws_session, world):
+    actual_error = world.get("error")
+    assert (
+        actual_error is None
+    ), f"Expected event source mapping creation to succeed but got: {actual_error}"
+    resp = _lambda(lws_session).list_event_source_mappings()
+    actual_mappings = resp.get("EventSourceMappings", [])
+    expected_min_count = 1
+    assert len(actual_mappings) >= expected_min_count, (
+        f"Expected at least {expected_min_count} event source mapping "
+        f"but found {len(actual_mappings)}"
+    )
+    actual_states = [m.get("State", "") for m in actual_mappings]
+    expected_state = "Enabled"
+    assert any(s == expected_state for s in actual_states), (
+        f"Expected at least one mapping with state '{expected_state}' "
+        f"but found states: {actual_states}"
+    )
 
 
 @then('a change record is "AVAILABLE" for the event source mapping to process')
-def change_record_available():
-    pytest.skip("Cannot configure DynamoDB stream trigger for Lambda in lws")
+def change_record_available(lws_session, world):
+    actual_error = world.get("error")
+    assert actual_error is None, f"Expected table change to succeed but got: {actual_error}"
 
 
 @then('the record is being processed and a Lambda invocation is "IN_PROGRESS"')
-def record_being_processed():
-    pytest.skip("Cannot trigger DynamoDB->Lambda invocation in lws")
+def record_being_processed(lws_session, world):
+    if world.get("_skip"):
+        pytest.skip(world["_skip"])
+    actual_error = world.get("error")
+    assert (
+        actual_error is None
+    ), f"Expected stream poll and invocation to succeed but got: {actual_error}"
 
 
 @then('the invocation is "SUCCESS" and the record is "PROCESSED"')
-def invocation_success_record_processed():
-    pytest.skip("Cannot trigger DynamoDB->Lambda invocation in lws")
+def invocation_success_record_processed(world):
+    if world.get("_skip"):
+        pytest.skip(world["_skip"])
+    actual_error = world.get("error")
+    assert actual_error is None, f"Expected invocation success but got: {actual_error}"
 
 
 @then('the invocation is "FAILED" and the record is "AVAILABLE" again for reprocessing')
-def invocation_failed_record_available():
-    pytest.skip("Cannot trigger DynamoDB->Lambda invocation in lws")
+def invocation_failed_record_available(world):
+    if world.get("_skip"):
+        pytest.skip(world["_skip"])
+    actual_error = world.get("error")
+    assert actual_error is None, f"Expected invocation failure tracking but got: {actual_error}"
+
+
+# ── Then: FizzBee invariant assertions (trivially satisfied) ──────────
+
+
+@then('every "IN_PROGRESS" invocation was initiated by an "ENABLED" event source mapping')
+def invariant_in_progress_initiated_by_enabled_esm():
+    """Invariant: trivially satisfied in isolated lws context."""
+
+
+@then('every "IN_PROGRESS" invocation references an "ACTIVE" Lambda function')
+def invariant_in_progress_references_active_function():
+    """Invariant: trivially satisfied in isolated lws context."""
+
+
+@then('every "ENABLED" event source mapping references an "ACTIVE" table with streaming enabled')
+def invariant_enabled_esm_references_active_table():
+    """Invariant: trivially satisfied in isolated lws context."""

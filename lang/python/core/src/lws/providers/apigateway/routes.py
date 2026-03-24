@@ -98,10 +98,15 @@ class ApiGatewayRouterBundle:
         self._v1.reset()
         self._v2.reset()
 
+    def set_service_providers(self, providers: dict) -> None:  # noqa: ANN001
+        """Wire backend service providers into V1 integration dispatch."""
+        self._v1.set_service_providers(providers)
+
 
 def create_apigateway_management_app(
     lambda_registry: LambdaRegistry | None = None,
     lifecycle: ResourceLifecycleConfig | None = None,
+    service_providers: dict | None = None,
 ) -> tuple[FastAPI, ApiGatewayRouterBundle]:
     """Create a FastAPI app that speaks the API Gateway management protocol.
 
@@ -111,6 +116,9 @@ def create_apigateway_management_app(
         lifecycle: Optional lifecycle simulation config. When provided with
             ``create_dwell_ms > 0``, newly created REST APIs and HTTP APIs will
             transition through CREATING before becoming ACTIVE.
+        service_providers: Optional map of service-name → provider instance.
+            When provided, V1 REST API direct service integrations (DynamoDB,
+            SQS, SNS, S3, StepFunctions) will be dispatched to these providers.
 
     Returns:
         A tuple of (app, router_bundle). Call ``router_bundle.reset()`` to
@@ -121,6 +129,8 @@ def create_apigateway_management_app(
 
     # V1 management routes
     v1_router = ApiGatewayManagementRouter(lifecycle=lifecycle)
+    if service_providers:
+        v1_router.set_service_providers(service_providers)
 
     # V2 management routes (+ proxy)
     v2_router = ApiGatewayV2Router(lambda_registry=lambda_registry, lifecycle=lifecycle)
@@ -132,7 +142,11 @@ def create_apigateway_management_app(
     # Wire V2 proxy into the catch-all: override the V1 stub to also try V2 proxy
     @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
     async def _catch_all_with_proxy(request: Request, path: str) -> Response:
-        # Try V2 proxy first
+        # Try V1 REST API direct integration proxy first
+        v1_resp = await v1_router.proxy_v1_request(request, path)
+        if v1_resp is not None:
+            return v1_resp
+        # Try V2 proxy next
         if lambda_registry is not None:
             proxy_resp = await v2_router.proxy_request(request, path)
             if proxy_resp is not None:
@@ -154,4 +168,5 @@ def create_apigateway_management_app(
             404,
         )
 
-    return app, ApiGatewayRouterBundle(v1_router, v2_router)
+    bundle = ApiGatewayRouterBundle(v1_router, v2_router)
+    return app, bundle

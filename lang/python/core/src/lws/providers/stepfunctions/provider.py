@@ -90,6 +90,7 @@ class StepFunctionsProvider(IStateMachine):
         self._compute_providers: dict[str, ICompute] = {}
         self._service_providers: dict[str, Any] = {}
         self._tags: dict[str, dict[str, str]] = {}
+        self._statuses: dict[str, str] = {}
         self._max_wait_seconds = max_wait_seconds
         self._running = False
         # Track names of pre-configured (static) state machines so reset()
@@ -114,6 +115,7 @@ class StepFunctionsProvider(IStateMachine):
             definition_data = _resolve_definition(config)
             self._definitions[sm_name] = parse_definition(definition_data)
             self._workflow_types[sm_name] = config.workflow_type
+            self._statuses.setdefault(sm_name, "ACTIVE")
         self._running = True
         logger.info("StepFunctions provider started with %d state machines", len(self._definitions))
 
@@ -122,6 +124,7 @@ class StepFunctionsProvider(IStateMachine):
         self._definitions.clear()
         self._executions.clear()
         self._workflow_types.clear()
+        self._statuses.clear()
         self._running = False
 
     async def reset(self) -> None:
@@ -131,6 +134,7 @@ class StepFunctionsProvider(IStateMachine):
         """
         self._executions.clear()
         self._tags.clear()
+        self._statuses.clear()
         # Remove any state machines that were created dynamically (not pre-configured)
         dynamic_names = [n for n in list(self._definitions.keys()) if n not in self._static_names]
         for name in dynamic_names:
@@ -144,6 +148,7 @@ class StepFunctionsProvider(IStateMachine):
                 definition_data = _resolve_definition(config)
                 self._definitions[sm_name] = parse_definition(definition_data)
                 self._workflow_types[sm_name] = config.workflow_type
+                self._statuses[sm_name] = "ACTIVE"
 
     async def health_check(self) -> bool:
         """Return True if the provider is running."""
@@ -161,6 +166,22 @@ class StepFunctionsProvider(IStateMachine):
         """Register service providers for service integration Task invocation."""
         self._service_providers = providers
 
+    def set_state_machine_status(self, name: str, status: str) -> None:
+        """Set the lifecycle status of a state machine (e.g. CREATING, ACTIVE, DELETING).
+
+        Used by the routes layer to synchronise lifecycle state into the provider
+        so that ``start_execution`` can enforce the ACTIVE precondition without
+        going through the HTTP layer.
+        """
+        self._statuses[name] = status
+
+    def get_state_machine_status(self, name: str) -> str:
+        """Return the lifecycle status of a state machine.
+
+        Returns ``"ACTIVE"`` when no explicit status has been set.
+        """
+        return self._statuses.get(name, "ACTIVE")
+
     # ------------------------------------------------------------------
     # IStateMachine implementation
     # ------------------------------------------------------------------
@@ -176,6 +197,11 @@ class StepFunctionsProvider(IStateMachine):
         For STANDARD workflows, returns immediately with an execution ARN.
         For EXPRESS workflows, blocks until execution completes.
         """
+        status = self.get_state_machine_status(state_machine_name)
+        if status != "ACTIVE":
+            raise ValueError(
+                f"State machine '{state_machine_name}' is not ACTIVE (current status: {status})"
+            )
         definition = self._get_definition(state_machine_name)
         workflow_type = self._workflow_types.get(state_machine_name, WorkflowType.STANDARD)
 
@@ -251,6 +277,7 @@ class StepFunctionsProvider(IStateMachine):
         definition_data = _resolve_definition(config)
         self._definitions[name] = parse_definition(definition_data)
         self._workflow_types[name] = wf_type
+        self._statuses[name] = "ACTIVE"
         return arn
 
     def delete_state_machine(self, name: str) -> None:
@@ -260,6 +287,7 @@ class StepFunctionsProvider(IStateMachine):
         del self._definitions[name]
         self._configs.pop(name, None)
         self._workflow_types.pop(name, None)
+        self._statuses.pop(name, None)
 
     def describe_state_machine(self, name: str) -> dict:
         """Describe a state machine. Raises KeyError if not found."""

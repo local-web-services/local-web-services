@@ -25,10 +25,12 @@ def build_extended_service_apps(
     """
     from lws.providers.cognito.routes import create_cognito_app
     from lws.providers.docdb.routes import create_docdb_app
+    from lws.providers.dynamodb.streams import StreamDispatcher
     from lws.providers.elasticache.routes import create_elasticache_app
     from lws.providers.elasticsearch.routes import create_elasticsearch_app
     from lws.providers.glacier.routes import create_glacier_app
     from lws.providers.lambda_runtime._lambda_registry import LambdaRegistry
+    from lws.providers.lambda_runtime.event_source_manager import EventSourceManager
     from lws.providers.lambda_runtime.routes import create_lambda_management_app
     from lws.providers.memorydb.routes import create_memorydb_app
     from lws.providers.neptune.routes import create_neptune_app
@@ -37,9 +39,25 @@ def build_extended_service_apps(
     from lws.providers.s3tables.routes import create_s3tables_app
 
     lambda_registry = LambdaRegistry()
+
+    # Wire DynamoDB stream dispatcher into the DynamoDB provider and the Lambda
+    # EventSourceManager so that DynamoDB→Lambda event source mappings work.
+    dynamo_provider = providers.get("dynamodb")
+    stream_dispatcher = StreamDispatcher()
+    if dynamo_provider is not None and dynamo_provider._stream_dispatcher is None:
+        dynamo_provider._stream_dispatcher = stream_dispatcher  # pylint: disable=protected-access
+
+    event_source_manager = EventSourceManager(
+        queue_providers={},
+        stream_dispatchers={},
+        compute_providers=lambda_registry.compute,
+        shared_stream_dispatcher=stream_dispatcher,
+    )
+
     lambda_app = create_lambda_management_app(
         registry=lambda_registry,
         lifecycle=lifecycle_configs["lambda"],
+        event_source_manager=event_source_manager,
     )
 
     glacier_app, glacier_state = create_glacier_app(lifecycle=lifecycle_configs["glacier"])

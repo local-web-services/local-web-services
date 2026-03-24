@@ -158,41 +158,75 @@ async def _get_bucket_versioning(bucket: str, provider: S3Provider) -> Response:
 # ------------------------------------------------------------------
 
 
+def _validate_sns_target(
+    arn: str, resource_name: str, sns_provider: SnsProvider
+) -> Response | None:
+    """Return an error response if the SNS topic referenced by *arn* does not exist."""
+    topic = None
+    try:
+        topic = sns_provider.get_topic(resource_name)
+    except (KeyError, Exception):  # noqa: BLE001
+        topic = None
+    if topic is None:
+        return _error_xml("InvalidArgument", f"SNS topic does not exist: {arn}", 400)
+    return None
+
+
+def _validate_sqs_target(
+    arn: str, resource_name: str, sqs_provider: SqsProvider
+) -> Response | None:
+    """Return an error response if the SQS queue referenced by *arn* does not exist."""
+    queue = sqs_provider.get_queue(resource_name)
+    if queue is None:
+        return _error_xml("InvalidArgument", f"SQS queue does not exist: {arn}", 400)
+    return None
+
+
+def _validate_lambda_target(
+    arn: str, resource_name: str, compute_providers: dict | None
+) -> Response | None:
+    """Return an error response if the Lambda function referenced by *arn* does not exist."""
+    if compute_providers is None:
+        return _error_xml("InvalidArgument", "Lambda/compute provider not available", 400)
+    if resource_name not in compute_providers:
+        return _error_xml("InvalidArgument", f"Lambda function does not exist: {arn}", 400)
+    return None
+
+
+def _validate_single_target(
+    target: dict,
+    sns_provider: SnsProvider | None,
+    sqs_provider: SqsProvider | None,
+    compute_providers: dict | None,
+) -> Response | None:
+    """Validate one notification target entry; return an error response or None."""
+    target_type = target.get("target_type", "")
+    arn = target.get("arn", "")
+    resource_name = arn.rsplit(":", 1)[-1] if ":" in arn else arn
+    if target_type == "sns" and sns_provider is not None:
+        return _validate_sns_target(arn, resource_name, sns_provider)
+    if target_type == "sqs" and sqs_provider is not None:
+        return _validate_sqs_target(arn, resource_name, sqs_provider)
+    if target_type == "lambda":
+        return _validate_lambda_target(arn, resource_name, compute_providers)
+    return None
+
+
 def _validate_notification_targets(
     config_xml: str,
     sns_provider: SnsProvider | None,
     sqs_provider: SqsProvider | None,
+    compute_providers: dict | None = None,
 ) -> Response | None:
-    """Validate that all SNS and SQS targets in the notification config exist.
+    """Validate that all SNS, SQS, and Lambda targets in the notification config exist.
 
-    Returns an error Response if any referenced topic or queue does not exist,
-    or None if all targets are valid.
+    Returns an error Response if any referenced topic, queue, or Lambda function
+    does not exist, or None if all targets are valid.
     """
-    targets = _parse_notification_config(config_xml)
-    for target in targets:
-        target_type = target.get("target_type", "")
-        arn = target.get("arn", "")
-        resource_name = arn.rsplit(":", 1)[-1] if ":" in arn else arn
-        if target_type == "sns" and sns_provider is not None:
-            topic = None
-            try:
-                topic = sns_provider.get_topic(resource_name)
-            except (KeyError, Exception):  # noqa: BLE001
-                topic = None
-            if topic is None:
-                return _error_xml(
-                    "InvalidArgument",
-                    f"SNS topic does not exist: {arn}",
-                    400,
-                )
-        elif target_type == "sqs" and sqs_provider is not None:
-            queue = sqs_provider.get_queue(resource_name)
-            if queue is None:
-                return _error_xml(
-                    "InvalidArgument",
-                    f"SQS queue does not exist: {arn}",
-                    400,
-                )
+    for target in _parse_notification_config(config_xml):
+        err = _validate_single_target(target, sns_provider, sqs_provider, compute_providers)
+        if err is not None:
+            return err
     return None
 
 
@@ -202,11 +236,12 @@ async def _put_bucket_notification_configuration(
     provider: S3Provider,
     sns_provider: SnsProvider | None = None,
     sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
 ) -> Response:
     """Handle PutBucketNotificationConfiguration (PUT /{bucket}?notification)."""
     body = await request.body()
     config_xml = body.decode("utf-8")
-    err = _validate_notification_targets(config_xml, sns_provider, sqs_provider)
+    err = _validate_notification_targets(config_xml, sns_provider, sqs_provider, compute_providers)
     if err is not None:
         return err
     try:

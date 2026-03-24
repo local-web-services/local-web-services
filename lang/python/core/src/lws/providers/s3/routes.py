@@ -237,9 +237,12 @@ async def _s3_put_bucket_route(
     tracker: ResourceStateTracker,
     sns_provider: SnsProvider | None = None,
     sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
 ) -> Response:
     if not any(k in request.query_params for k in _S3_BUCKET_MODIFY_PARAMS):
-        resp = await _dispatch_put_bucket(bucket, request, provider, sns_provider, sqs_provider)
+        resp = await _dispatch_put_bucket(
+            bucket, request, provider, sns_provider, sqs_provider, compute_providers
+        )
         if resp.status_code == 200 and lc.enabled and lc.create_dwell_ms > 0:
             tracker.set_state(bucket, "CREATING")
             tracker.schedule_transition(bucket, "ACTIVE", lc.create_dwell_ms)
@@ -247,7 +250,9 @@ async def _s3_put_bucket_route(
     err = _s3_bucket_lifecycle_error(bucket, lc, tracker)
     if err is not None:
         return err
-    return await _dispatch_put_bucket(bucket, request, provider, sns_provider, sqs_provider)
+    return await _dispatch_put_bucket(
+        bucket, request, provider, sns_provider, sqs_provider, compute_providers
+    )
 
 
 async def _dispatch_put_bucket(
@@ -256,6 +261,7 @@ async def _dispatch_put_bucket(
     provider: S3Provider,
     sns_provider: SnsProvider | None = None,
     sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
 ) -> Response:
     """Dispatch PUT /{bucket} based on query parameters."""
     if "versioning" in request.query_params:
@@ -268,7 +274,7 @@ async def _dispatch_put_bucket(
         return await _put_bucket_policy(bucket, request, provider)
     if "notification" in request.query_params:
         return await _put_bucket_notification_configuration(
-            bucket, request, provider, sns_provider, sqs_provider
+            bucket, request, provider, sns_provider, sqs_provider, compute_providers
         )
     return await _create_bucket(bucket, provider)
 
@@ -329,6 +335,7 @@ def _register_bucket_routes(
     tracker: ResourceStateTracker | None = None,
     sns_provider: SnsProvider | None = None,
     sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
 ) -> None:
     """Register bucket-level S3 routes on *app*."""
     _lc = lc or ResourceLifecycleConfig()
@@ -346,7 +353,7 @@ def _register_bucket_routes(
     @app.api_route("/{bucket}", methods=["PUT"])
     async def create_bucket(bucket: str, request: Request) -> Response:
         return await _s3_put_bucket_route(
-            bucket, request, provider, _lc, _tracker, sns_provider, sqs_provider
+            bucket, request, provider, _lc, _tracker, sns_provider, sqs_provider, compute_providers
         )
 
     @app.api_route("/{bucket}", methods=["DELETE"])
@@ -382,6 +389,7 @@ def create_s3_app(
     capacity: AwsCapacityConfig | None = None,
     sns_provider: SnsProvider | None = None,
     sqs_provider: SqsProvider | None = None,
+    compute_providers: dict | None = None,
 ) -> FastAPI:
     """Create a FastAPI application that speaks a subset of the S3 wire protocol."""
     _lc = lifecycle or ResourceLifecycleConfig()
@@ -400,7 +408,9 @@ def create_s3_app(
         return await _list_all_buckets(provider)
 
     _register_object_routes(app, provider, _lc, _tracker, capacity)
-    _register_bucket_routes(app, provider, _lc, _tracker, sns_provider, sqs_provider)
+    _register_bucket_routes(
+        app, provider, _lc, _tracker, sns_provider, sqs_provider, compute_providers
+    )
 
     # Wrap the ASGI app with virtual-hosted-style rewriting so requests
     # like ``Host: my-bucket.host.docker.internal`` are handled transparently.

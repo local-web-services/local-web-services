@@ -99,7 +99,6 @@ def sm_is_active_given():
 
 @given('the state machine is not "ACTIVE"')
 def sm_is_not_active_given(lws_session, world):
-    pytest.skip("lws does not reject start_execution when the state machine is not ACTIVE")
     try:
         _sfn(lws_session).delete_state_machine(stateMachineArn=_sm_arn())
     except Exception:  # noqa: BLE001

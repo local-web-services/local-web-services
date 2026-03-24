@@ -132,16 +132,7 @@ class StepFunctionsRouter:
                 "use StartSyncExecution for EXPRESS workflows.",
             )
 
-        try:
-            result = await self.provider.start_execution(
-                state_machine_name=sm_name,
-                input_data=input_data,
-                execution_name=execution_name,
-            )
-        except KeyError as exc:
-            return _error_response("StateMachineDoesNotExist", str(exc))
-
-        return _json_response(result)
+        return await self._run_execution(sm_name, input_data, execution_name)
 
     async def _start_sync_execution(self, body: dict) -> Response:
         """Handle StartSyncExecution API action (EXPRESS workflows only)."""
@@ -161,15 +152,25 @@ class StepFunctionsRouter:
                 "use StartExecution for STANDARD workflows.",
             )
 
+        return await self._run_execution(sm_name, input_data, execution_name)
+
+    async def _run_execution(
+        self, sm_name: str, input_data: str | None, execution_name: str | None
+    ) -> Response:
+        """Call provider.start_execution and translate errors to HTTP responses."""
         try:
             result = await self.provider.start_execution(
                 state_machine_name=sm_name,
                 input_data=input_data,
                 execution_name=execution_name,
             )
+        except ValueError as exc:
+            return _error_response(
+                "StateMachineDeleting",
+                f"State machine is not ACTIVE: {exc}",
+            )
         except KeyError as exc:
             return _error_response("StateMachineDoesNotExist", str(exc))
-
         return _json_response(result)
 
     async def _describe_execution(self, body: dict) -> Response:
@@ -232,10 +233,15 @@ class StepFunctionsRouter:
         status = "ACTIVE"
         if self._lifecycle.enabled and self._lifecycle.create_dwell_ms > 0:
             self._tracker.set_state(name, "CREATING")
+            self.provider.set_state_machine_status(name, "CREATING")
+            _prov = self.provider
+            _sm = name
+
+            async def _activate_sm() -> None:
+                _prov.set_state_machine_status(_sm, "ACTIVE")
+
             self._tracker.schedule_transition(
-                name,
-                "ACTIVE",
-                self._lifecycle.create_dwell_ms,
+                name, "ACTIVE", self._lifecycle.create_dwell_ms, on_complete=_activate_sm
             )
             status = "CREATING"
         return _json_response(

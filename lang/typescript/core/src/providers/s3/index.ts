@@ -10,6 +10,7 @@ import { createRequestContext, recordLog } from "../../middleware/logging";
 import type { SnsStore } from "../sns";
 import type { SqsStore } from "../sqs";
 import type { EventBridgeStore } from "../eventbridge";
+import type { LambdaStore } from "../lambda";
 
 const ACCOUNT_ID = "000000000000";
 const REGION = "us-east-1";
@@ -38,9 +39,15 @@ interface NotificationEventBridgeConfig {
   eventBusArn: string;
 }
 
+interface NotificationLambdaConfig {
+  functionArn: string;
+  events: string[];
+}
+
 interface BucketNotificationConfig {
   queueConfigurations: NotificationQueueConfig[];
   topicConfigurations: NotificationTopicConfig[];
+  lambdaConfigurations: NotificationLambdaConfig[];
   eventBridgeConfiguration?: NotificationEventBridgeConfig;
 }
 
@@ -66,6 +73,7 @@ export class S3Store {
   private snsStore: SnsStore | null = null;
   private sqsStore: SqsStore | null = null;
   private eventBridgeStore: EventBridgeStore | null = null;
+  private lambdaStore: LambdaStore | null = null;
 
   setSnsStore(snsStore: SnsStore): void {
     this.snsStore = snsStore;
@@ -77,6 +85,10 @@ export class S3Store {
 
   setEventBridgeStore(store: EventBridgeStore): void {
     this.eventBridgeStore = store;
+  }
+
+  setLambdaStore(store: LambdaStore): void {
+    this.lambdaStore = store;
   }
 
   reset(): void {
@@ -263,6 +275,17 @@ export class S3Store {
         this.eventBridgeStore.putEventsInternal(busName, [s3EventEntry]);
       } catch {
         // ignore if bus does not exist
+      }
+    }
+
+    for (const lambdaCfg of config.lambdaConfigurations ?? []) {
+      if (lambdaCfg.events.some((e) => e === wildcardEvent || e === specificEvent)) {
+        if (this.lambdaStore) {
+          const arnParts = lambdaCfg.functionArn.split(":");
+          const functionName = arnParts[arnParts.length - 1];
+          // Verify function exists; actual invocation is handled via HTTP mock
+          this.lambdaStore.getFunction(functionName);
+        }
       }
     }
   }
@@ -554,22 +577,22 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         const bodyBuf = (req.body as Buffer) ?? Buffer.alloc(0);
         const bodyStr = bodyBuf.toString();
         const queueConfigurations: NotificationQueueConfig[] = [];
-        const queueMatches = [
-          ...bodyStr.matchAll(
-            /<QueueConfiguration>[\s\S]*?<Queue>([^<]+)<\/Queue>[\s\S]*?<Event>([^<]+)<\/Event>[\s\S]*?<\/QueueConfiguration>/g,
-          ),
-        ];
-        for (const m of queueMatches) {
+        const queueRegex =
+          /<QueueConfiguration>[\s\S]*?<Queue>([^<]+)<\/Queue>[\s\S]*?<Event>([^<]+)<\/Event>[\s\S]*?<\/QueueConfiguration>/g;
+        for (const m of bodyStr.matchAll(queueRegex)) {
           queueConfigurations.push({ queueArn: m[1], events: [m[2]] });
         }
         const topicConfigurations: NotificationTopicConfig[] = [];
-        const topicMatches = [
-          ...bodyStr.matchAll(
-            /<TopicConfiguration>[\s\S]*?<Topic>([^<]+)<\/Topic>[\s\S]*?<Event>([^<]+)<\/Event>[\s\S]*?<\/TopicConfiguration>/g,
-          ),
-        ];
-        for (const m of topicMatches) {
+        const topicRegex =
+          /<TopicConfiguration>[\s\S]*?<Topic>([^<]+)<\/Topic>[\s\S]*?<Event>([^<]+)<\/Event>[\s\S]*?<\/TopicConfiguration>/g;
+        for (const m of bodyStr.matchAll(topicRegex)) {
           topicConfigurations.push({ topicArn: m[1], events: [m[2]] });
+        }
+        const lambdaConfigurations: NotificationLambdaConfig[] = [];
+        const lambdaRegex =
+          /<CloudFunctionConfiguration>[\s\S]*?<CloudFunction>([^<]+)<\/CloudFunction>[\s\S]*?<Event>([^<]+)<\/Event>[\s\S]*?<\/CloudFunctionConfiguration>/g;
+        for (const m of bodyStr.matchAll(lambdaRegex)) {
+          lambdaConfigurations.push({ functionArn: m[1], events: [m[2]] });
         }
         let eventBridgeConfiguration: NotificationEventBridgeConfig | undefined;
         const ebMatch =
@@ -582,6 +605,7 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
         store.setBucketNotificationConfig(bucket, {
           queueConfigurations,
           topicConfigurations,
+          lambdaConfigurations,
           eventBridgeConfiguration,
         });
         reply.status(200).send("");
@@ -780,12 +804,18 @@ export function registerS3(app: FastifyInstance, state: ServerState): S3Store {
                 `<TopicConfiguration><Topic>${escapeXml(t.topicArn)}</Topic>${t.events.map((e) => `<Event>${escapeXml(e)}</Event>`).join("")}</TopicConfiguration>`,
             )
             .join("");
+          const lambdaXml = (notifConfig.lambdaConfigurations ?? [])
+            .map(
+              (l) =>
+                `<CloudFunctionConfiguration><CloudFunction>${escapeXml(l.functionArn)}</CloudFunction>${l.events.map((e) => `<Event>${escapeXml(e)}</Event>`).join("")}</CloudFunctionConfiguration>`,
+            )
+            .join("");
           const ebXml = notifConfig.eventBridgeConfiguration
             ? `<EventBridgeConfiguration><EventBusArn>${escapeXml(notifConfig.eventBridgeConfiguration.eventBusArn)}</EventBusArn></EventBridgeConfiguration>`
             : "";
           xmlReply(
             reply,
-            `<NotificationConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${queueXml}${topicXml}${ebXml}</NotificationConfiguration>`,
+            `<NotificationConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${queueXml}${topicXml}${lambdaXml}${ebXml}</NotificationConfiguration>`,
           );
         }
         recordLog(state, ctx, req.method, req.url, reply.statusCode);

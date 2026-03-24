@@ -204,12 +204,19 @@ export async function startServer(config: LwsServerConfig): Promise<LwsServer> {
   }
 
   // Lambda
+  // eslint-disable-next-line prefer-const
+  let lambdaStore!: import("./providers/lambda").LambdaStore;
   {
     const app = createApp();
-    await app.register(async (instance) => registerLambda(instance, state));
+    await app.register(async (instance) => {
+      lambdaStore = registerLambda(instance, state);
+    });
     const port = basePort + SERVICE_OFFSETS.lambda;
     serviceApps.push({ name: "lambda", app, port });
   }
+
+  // Wire Lambda store into S3 for bucket Lambda notification dispatch
+  s3Store.setLambdaStore(lambdaStore);
 
   // API Gateway
   {

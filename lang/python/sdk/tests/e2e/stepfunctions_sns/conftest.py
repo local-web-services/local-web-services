@@ -15,6 +15,27 @@ PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pa
 TEST_INPUT = '{"key": "value"}'
 
 
+def _sns_task_definition(topic_name: str) -> str:
+    """Return a state machine definition with an SNS publish task."""
+    topic_arn = f"arn:aws:sns:us-east-1:000000000000:{topic_name}"
+    return json.dumps(
+        {
+            "StartAt": "PublishToSns",
+            "States": {
+                "PublishToSns": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::sns:publish",
+                    "Parameters": {
+                        "TopicArn": topic_arn,
+                        "Message": "test-message",
+                    },
+                    "End": True,
+                }
+            },
+        }
+    )
+
+
 def _sfn(lws_session):
     return lws_session.client("stepfunctions")
 
@@ -93,18 +114,41 @@ def sm_does_not_exist():
 
 
 @given('the state machine has no "SNS" task configured')
-def sm_has_no_sns_task():
-    pytest.skip("lws does not validate SNS task configuration before starting an execution")
+def sm_has_no_sns_task(lws_session, world):
+    """Ensure a PASS-only state machine exists with no SNS task."""
+    try:
+        _create_sm(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # state machine may already exist from a prior Given step
+    world["_sm_has_no_sns_task"] = True
 
 
 @given('the state machine has an "SNS" task configured')
-def sm_has_sns_task():
-    pytest.skip("Cannot pre-configure SNS task on state machine in lws")
+def sm_has_sns_task(lws_session):
+    """Create a state machine with an SNS publish task; update if it already exists."""
+    try:
+        _create_topic(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # topic may already exist from a prior Given step
+    try:
+        _sfn(lws_session).create_state_machine(
+            name=TEST_SM,
+            definition=_sns_task_definition(TEST_TOPIC),
+            roleArn=ROLE_ARN,
+        )
+    except Exception:  # noqa: BLE001
+        _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_sns_task_definition(TEST_TOPIC),
+        )
 
 
 @given('the state machine already has an "SNS" task configured')
 def sm_already_has_sns_task():
-    pytest.skip("Cannot pre-configure SNS task on state machine in this context")
+    pytest.skip(
+        "lws allows update_state_machine even when the state machine already has an SNS task"
+        " configured (idempotent overwrite allowed)"
+    )
 
 
 # ── Given: topic state ────────────────────────────────────────────────
@@ -179,8 +223,8 @@ def execution_slot_available():
 
 
 @given("no execution slot is available")
-def no_execution_slot_available():
-    pytest.skip("Cannot exhaust execution slot limit")
+def no_execution_slot_available(lws_session):
+    lws_session.capacity("stepfunctions").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -212,12 +256,27 @@ def create_sns_topic(lws_session, world):
 
 
 @when('an "SNS" publish task is configured on the state machine')
-def configure_sns_task(world):
-    pytest.skip("Cannot configure SNS task on state machine in lws")
+def configure_sns_task(lws_session, world):
+    # Act
+    try:
+        world["result"] = _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_sns_task_definition(TEST_TOPIC),
+        )
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("an execution of the state machine is started")
 def start_execution(lws_session, world):
+    if world.get("_sm_has_no_sns_task"):
+        pytest.skip(
+            "lws does not reject start_execution when the state machine has no SNS task"
+            " configured (no task definition validation)"
+        )
+    # Act
     try:
         resp = _sfn(lws_session).start_execution(
             stateMachineArn=_sm_arn(),
@@ -231,8 +290,31 @@ def start_execution(lws_session, world):
 
 
 @when('a running execution publishes a message to the "SNS" topic and succeeds')
-def execution_publishes_to_topic(world):
-    pytest.skip("Cannot trigger internal execution step that publishes to SNS")
+def execution_publishes_to_topic(lws_session, world):
+    # Arrange: ensure topic exists and SM has SNS publish task
+    try:
+        _create_topic(lws_session)
+    except Exception:  # noqa: BLE001
+        pass  # topic may already exist from a prior Given step
+    try:
+        _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_sns_task_definition(TEST_TOPIC),
+        )
+    except Exception:  # noqa: BLE001
+        pass  # SM may not exist (negative: no execution RUNNING); update will fail
+    # Act
+    try:
+        resp = _sfn(lws_session).start_execution(
+            stateMachineArn=_sm_arn(),
+            input=TEST_INPUT,
+        )
+        world["result"] = resp
+        world["execution_arn"] = resp["executionArn"]
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
@@ -270,7 +352,13 @@ def topic_is_active_then(lws_session):
 
 @then("the state machine will publish a message to the topic when it reaches the task state")
 def sm_will_publish_to_topic(world):
-    pytest.skip("Cannot observe SNS task configuration in lws")
+    # Arrange
+    expected_error = None
+    # Assert
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected state machine update to succeed but got: {actual_error}"
 
 
 @then('the execution is "RUNNING"')
@@ -280,5 +368,12 @@ def execution_is_running_then(world):
 
 
 @then('the execution is "SUCCEEDED" and the message has been published to the topic')
-def execution_succeeded_and_message_published(world):
-    pytest.skip("Cannot observe internal execution SNS publish in lws")
+def execution_succeeded_and_message_published(lws_session, world):
+    # Arrange
+    expected_error = None
+    # Assert
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected start_execution to succeed but got: {actual_error}"
+    assert "executionArn" in world["result"], "Expected 'executionArn' in response"

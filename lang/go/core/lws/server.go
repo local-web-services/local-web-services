@@ -101,8 +101,9 @@ func StartServer(basePort int) (*Server, error) {
 
 	// S3
 	ebPort := basePort + ServiceOffsets["eventbridge"]
+	lambdaPort := basePort + ServiceOffsets["lambda"]
 	s3Mux := http.NewServeMux()
-	s3Mux.Handle("/", s3.NewHandler(state, sqsPort, ebPort, basePort+ServiceOffsets["sns"]))
+	s3Mux.Handle("/", s3.NewHandler(state, sqsPort, ebPort, basePort+ServiceOffsets["sns"], lambdaPort))
 	if err := srv.startService(s3Mux, basePort+ServiceOffsets["s3"]); err != nil {
 		srv.Close()
 		return nil, fmt.Errorf("s3 server: %w", err)

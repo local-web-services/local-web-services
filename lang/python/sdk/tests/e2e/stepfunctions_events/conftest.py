@@ -169,8 +169,8 @@ def execution_slot_available():
 
 
 @given("no execution slot is available")
-def no_execution_slot_available():
-    pytest.skip("Cannot exhaust execution slot limit")
+def no_execution_slot_available(lws_session):
+    lws_session.capacity("stepfunctions").exhaust().apply()
 
 
 @given("an event slot is available")
@@ -179,8 +179,8 @@ def event_slot_available():
 
 
 @given("no event slot is available")
-def no_event_slot_available():
-    pytest.skip("Cannot exhaust event slot limit")
+def no_event_slot_available(lws_session):
+    lws_session.capacity("events").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────

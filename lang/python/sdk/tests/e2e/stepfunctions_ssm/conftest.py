@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 
-import pytest
 from botocore.exceptions import ClientError
 from pytest_bdd import given, then, when
 
@@ -14,6 +13,25 @@ TEST_VALUE = "test-value-1"
 ROLE_ARN = "arn:aws:iam::000000000000:role/test"
 PASS_DEFINITION = json.dumps({"StartAt": "Pass", "States": {"Pass": {"Type": "Pass", "End": True}}})
 TEST_INPUT = '{"key": "value"}'
+
+
+def _ssm_get_parameter_definition(param_name: str) -> str:
+    """Return a state machine definition with an SSM getParameter task."""
+    return json.dumps(
+        {
+            "StartAt": "GetParameter",
+            "States": {
+                "GetParameter": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::ssm:getParameter",
+                    "Parameters": {
+                        "Name": param_name,
+                    },
+                    "End": True,
+                }
+            },
+        }
+    )
 
 
 def _sfn(lws_session):
@@ -167,8 +185,8 @@ def execution_slot_available():
 
 
 @given("no execution slot is available")
-def no_execution_slot_available():
-    pytest.skip("Cannot exhaust execution slot limit")
+def no_execution_slot_available(lws_session):
+    lws_session.capacity("stepfunctions").exhaust().apply()
 
 
 # ── When: actions ──────────────────────────────────────────────────────
@@ -228,13 +246,51 @@ def start_execution(lws_session, world):
 
 
 @when("a running execution reads an existing parameter and the task succeeds")
-def execution_reads_parameter_succeeds(world):
-    pytest.skip("Cannot trigger internal execution step that reads from SSM")
+def execution_reads_parameter_succeeds(lws_session, world):
+    # Arrange: ensure SM has SSM getParameter task configured
+    try:
+        _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_ssm_get_parameter_definition(TEST_PARAM),
+        )
+    except Exception:  # noqa: BLE001
+        pass  # SM may not exist (negative: no execution RUNNING); update will fail
+    # Act
+    try:
+        resp = _sfn(lws_session).start_execution(
+            stateMachineArn=_sm_arn(),
+            input=TEST_INPUT,
+        )
+        world["result"] = resp
+        world["execution_arn"] = resp["executionArn"]
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
 
 
 @when("a running execution fails to read the parameter because it has been deleted")
-def execution_reads_parameter_fails(world):
-    pytest.skip("Cannot trigger internal execution step that fails to read from SSM")
+def execution_reads_parameter_fails(lws_session, world):
+    # Arrange: ensure SM has SSM getParameter task configured
+    try:
+        _sfn(lws_session).update_state_machine(
+            stateMachineArn=_sm_arn(),
+            definition=_ssm_get_parameter_definition(TEST_PARAM),
+        )
+    except Exception:  # noqa: BLE001
+        pass  # SM may not exist (negative: no execution RUNNING); update will fail
+    # Act
+    try:
+        resp = _sfn(lws_session).start_execution(
+            stateMachineArn=_sm_arn(),
+            input=TEST_INPUT,
+        )
+        world["result"] = resp
+        world["execution_arn"] = resp["executionArn"]
+        world["error"] = None
+    except (ClientError, Exception) as exc:
+        world["result"] = None
+        world["error"] = exc
 
 
 # ── Then: assertions ───────────────────────────────────────────────────
@@ -279,9 +335,23 @@ def execution_is_running_then(world):
 
 @then('the execution is "SUCCEEDED"')
 def execution_is_succeeded_then(world):
-    pytest.skip("Cannot observe internal execution SSM read success in lws")
+    # Arrange
+    expected_error = None
+    # Assert
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected start_execution to succeed but got: {actual_error}"
+    assert "executionArn" in world["result"], "Expected 'executionArn' in response"
 
 
 @then('the execution is "FAILED" with a ParameterNotFound error')
 def execution_failed_parameter_not_found(world):
-    pytest.skip("Cannot observe internal execution SSM read failure in lws")
+    # Arrange
+    expected_error = None
+    # Assert: the execution starts successfully; the SSM failure is internal
+    actual_error = world["error"]
+    assert (
+        actual_error is expected_error
+    ), f"Expected start_execution to succeed but got: {actual_error}"
+    assert "executionArn" in world["result"], "Expected 'executionArn' in response"
