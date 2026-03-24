@@ -449,3 +449,21 @@ async def handle_list_tags(arn: str, registry: Any) -> Response:
     """Handle ListTags."""
     tags = registry.get_tags(arn)
     return _json_response({"Tags": tags})
+
+
+async def run_async_invocation(
+    compute: Any,
+    body: Any,
+    context: Any,
+    invocation_id: str,
+    state: Any,
+    function_name: str,
+) -> None:
+    """Execute an asynchronous (Event-type) invocation and record its outcome."""
+    try:
+        result = await compute.invoke(body, context)
+        success = not result.error
+    except Exception:  # pylint: disable=broad-except  # noqa: BLE001
+        _logger.error("Async invocation failed for %s", function_name)
+        success = False
+    state.complete_invocation(invocation_id, success=success)

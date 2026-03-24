@@ -6,6 +6,10 @@ import json
 import re
 from typing import Any
 
+from fastapi import Response
+
+from lws.providers.apigateway._apigateway_state import _json_response
+
 
 def _parse_integration_uri(uri: str) -> dict[str, Any] | None:
     """Parse an AWS service integration URI into a service descriptor dict.
@@ -168,3 +172,21 @@ async def _dispatch_integration(
         return await _dispatch_states(request_body, service_providers)
 
     raise ValueError(f"Unsupported service: {service}")
+
+
+def validate_integration_target(uri: str, service_providers: dict[str, Any]) -> Response | None:
+    """Return an error response if the integration target resource does not exist."""
+    descriptor = _parse_integration_uri(uri)
+    if descriptor is None:
+        return None
+    service = descriptor.get("service", "")
+    if service == "sqs":
+        sqs = service_providers.get("sqs")
+        if sqs is not None:
+            queue_name = descriptor.get("queue", "")
+            if queue_name and sqs.get_queue(queue_name) is None:
+                return _json_response(
+                    {"message": f"SQS queue does not exist: {queue_name}"},
+                    status_code=400,
+                )
+    return None

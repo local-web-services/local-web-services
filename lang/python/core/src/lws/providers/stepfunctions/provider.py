@@ -22,7 +22,6 @@ from lws.providers.stepfunctions._provider_helpers import (
     _build_execution_history_events,
     _build_state_machine_description,
     _build_sync_response,
-    _parse_cloud_assembly_config,
     _resolve_definition,
 )
 from lws.providers.stepfunctions._service_task_bridge import (
@@ -205,6 +204,12 @@ class StepFunctionsProvider(IStateMachine):
         definition = self._get_definition(state_machine_name)
         workflow_type = self._workflow_types.get(state_machine_name, WorkflowType.STANDARD)
 
+        if self._service_providers:
+            bridge = ServiceTaskBridge(self._service_providers)
+            error_msg = bridge.validate_execution_preconditions(definition)
+            if error_msg is not None:
+                raise ValueError(error_msg)
+
         if execution_name is None:
             execution_name = str(uuid.uuid4())
 
@@ -335,9 +340,21 @@ class StepFunctionsProvider(IStateMachine):
             raise KeyError(f"State machine config not found: {name}")
 
         if definition is not None:
+            definition_data = _resolve_definition(
+                StateMachineConfig(
+                    name=name,
+                    definition=definition,
+                    role_arn=config.role_arn,
+                )
+            )
+            parsed = parse_definition(definition_data)
+            if self._service_providers:
+                bridge = ServiceTaskBridge(self._service_providers)
+                error_msg = bridge.validate_definition(parsed)
+                if error_msg is not None:
+                    raise ValueError(error_msg)
             config.definition = definition
-            definition_data = _resolve_definition(config)
-            self._definitions[name] = parse_definition(definition_data)
+            self._definitions[name] = parsed
 
         if role_arn is not None:
             config.role_arn = role_arn
@@ -461,29 +478,3 @@ class StepFunctionsProvider(IStateMachine):
         if definition is None:
             raise KeyError(f"State machine not found: {name}")
         return definition
-
-
-# ---------------------------------------------------------------------------
-# Cloud Assembly parsing (P2-17)
-# ---------------------------------------------------------------------------
-
-
-def parse_cloud_assembly_state_machine(
-    logical_id: str,
-    resource_properties: dict[str, Any],
-    resource_mapping: dict[str, str] | None = None,
-) -> StateMachineConfig:
-    """Parse an AWS::StepFunctions::StateMachine from cloud assembly properties.
-
-    Parameters
-    ----------
-    logical_id:
-        The CloudFormation logical ID.
-    resource_properties:
-        The Properties dict from the CloudFormation resource.
-    resource_mapping:
-        Optional mapping of Lambda ARNs to local function names.
-    """
-    return _parse_cloud_assembly_config(
-        logical_id, resource_properties, resource_mapping, StateMachineConfig, WorkflowType
-    )

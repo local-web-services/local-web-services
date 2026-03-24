@@ -1,3 +1,4 @@
 # Disable persistence so each ldk run starts with a clean state.
 # This ensures tofu apply always succeeds against a fresh provider.
 persist: false
+mode: terraform

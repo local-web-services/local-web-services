@@ -328,15 +328,6 @@ class StepFunctionsRouter:
     def _sm_name_from_arn(self, resource_arn: str) -> str:
         return resource_arn.rsplit(":", 1)[-1] if ":" in resource_arn else resource_arn
 
-    def _check_sm_exists(self, resource_arn: str) -> Response | None:
-        sm_name = self._sm_name_from_arn(resource_arn)
-        if sm_name not in self.provider.list_state_machines():
-            return _error_response(
-                "ResourceNotFoundException",
-                f"Resource not found: {resource_arn}",
-            )
-        return None
-
     def _check_sm_lifecycle(self, resource_arn: str) -> Response | None:
         """Return error response if SM is not in ACTIVE state (CREATING or DELETING)."""
         sm_name = self._sm_name_from_arn(resource_arn)
@@ -440,6 +431,11 @@ class StepFunctionsRouter:
             return _error_response(
                 "StateMachineDoesNotExist",
                 f"State machine not found: {sm_arn}",
+            )
+        except ValueError as exc:
+            return _error_response(
+                "InvalidDefinition",
+                str(exc),
             )
         return _json_response({"updateDate": update_date})
 

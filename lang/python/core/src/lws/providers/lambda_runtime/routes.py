@@ -46,6 +46,7 @@ from lws.providers.lambda_runtime._lambda_function_ops import (
     handle_untag_resource,
     handle_update_function_code,
     handle_update_function_configuration,
+    run_async_invocation,
 )
 from lws.providers.lambda_runtime._lambda_registry import LambdaRegistry
 from lws.providers.lambda_runtime._lambda_state import (
@@ -81,6 +82,8 @@ class LambdaManagementRouter:
         lifecycle: ResourceLifecycleConfig | None = None,
         capacity: AwsCapacityConfig | None = None,
         event_source_manager: EventSourceManager | None = None,
+        dynamodb_provider: Any = None,
+        dynamodb_tracker_ref: list | None = None,
     ) -> None:
         self._registry = registry
         self._project_dir = project_dir
@@ -91,6 +94,8 @@ class LambdaManagementRouter:
         self._tracker = ResourceStateTracker(_lc)
         self._capacity = capacity or AwsCapacityConfig()
         self._event_source_manager = event_source_manager
+        self._dynamodb_provider = dynamodb_provider
+        self._dynamodb_tracker_ref = dynamodb_tracker_ref or []
         self.router = APIRouter()
         self._register_routes()
 
@@ -287,7 +292,9 @@ class LambdaManagementRouter:
             invocation_id = str(uuid.uuid4())
             self._state.record_invocation(invocation_id)
             asyncio.create_task(
-                self._run_async_invocation(compute, body, context, invocation_id, function_name)
+                run_async_invocation(
+                    compute, body, context, invocation_id, self._state, function_name
+                )
             )
             return Response(
                 status_code=202,
@@ -301,23 +308,6 @@ class LambdaManagementRouter:
 
         payload = result.payload if result.payload is not None else {}
         return _json_response(payload)
-
-    async def _run_async_invocation(
-        self,
-        compute: Any,
-        body: Any,
-        context: Any,
-        invocation_id: str,
-        function_name: str,
-    ) -> None:
-        """Execute an asynchronous (Event-type) invocation and record its outcome."""
-        try:
-            result = await compute.invoke(body, context)
-            success = not result.error
-        except Exception:  # pylint: disable=broad-except  # noqa: BLE001
-            _logger.error("Async invocation failed for %s", function_name)
-            success = False
-        self._state.complete_invocation(invocation_id, success=success)
 
     # -- Permissions ---------------------------------------------------------
 
@@ -340,8 +330,12 @@ class LambdaManagementRouter:
     # -- Event source mappings -----------------------------------------------
 
     async def _create_event_source_mapping(self, request: Request) -> Response:
+        _dynamodb_tracker = self._dynamodb_tracker_ref[0] if self._dynamodb_tracker_ref else None
         response = await handle_create_event_source_mapping(
-            request, self._state.event_source_mappings
+            request,
+            self._state.event_source_mappings,
+            dynamodb_provider=self._dynamodb_provider,
+            dynamodb_tracker=_dynamodb_tracker,
         )
         if response.status_code in (200, 202) and self._event_source_manager is not None:
             import json  # pylint: disable=import-outside-toplevel
@@ -350,14 +344,6 @@ class LambdaManagementRouter:
             esm_uuid = body.get("UUID", "")
             mapping = self._state.event_source_mappings.get(esm_uuid)
             if mapping is not None:
-                mapping_with_compute = dict(mapping)
-                mapping_with_compute.update(
-                    {
-                        k: v
-                        for k, v in self._registry.compute.items()
-                        if k == mapping.get("FunctionArn", "")
-                    }
-                )
                 await self._event_source_manager.activate(mapping)
         return response
 
@@ -478,6 +464,8 @@ def create_lambda_management_app(
     lifecycle: ResourceLifecycleConfig | None = None,
     capacity: AwsCapacityConfig | None = None,
     event_source_manager: EventSourceManager | None = None,
+    dynamodb_provider: Any = None,
+    dynamodb_tracker_ref: list | None = None,
 ) -> FastAPI:
     """Create a FastAPI app that speaks the Lambda management protocol."""
     if registry is None:
@@ -491,6 +479,8 @@ def create_lambda_management_app(
         lifecycle=lifecycle,
         capacity=capacity,
         event_source_manager=event_source_manager,
+        dynamodb_provider=dynamodb_provider,
+        dynamodb_tracker_ref=dynamodb_tracker_ref,
     )
     app.include_router(router.router)
     return app

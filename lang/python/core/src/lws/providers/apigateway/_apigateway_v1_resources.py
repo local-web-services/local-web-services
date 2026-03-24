@@ -14,6 +14,7 @@ from lws.providers.apigateway._apigateway_state import (
     _json_response,
     _not_found,
 )
+from lws.providers.apigateway._apigateway_v1_dispatch import validate_integration_target
 
 
 class ApiGatewayResourceRouter:
@@ -284,10 +285,14 @@ class ApiGatewayResourceRouter:
             return _not_found("Resource", resource_id)
 
         body = await parse_json_body(request)
+        uri = body.get("uri", "")
+        err = validate_integration_target(uri, self._service_providers)
+        if err is not None:
+            return err
         integration = {
             "type": body.get("type", "AWS_PROXY"),
             "httpMethod": body.get("httpMethod", "POST"),
-            "uri": body.get("uri", ""),
+            "uri": uri,
             "integrationHttpMethod": body.get("integrationHttpMethod", "POST"),
         }
         method = resource["resourceMethods"].get(http_method, {})

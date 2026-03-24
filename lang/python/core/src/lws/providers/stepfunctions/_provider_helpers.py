@@ -351,3 +351,19 @@ def _parse_cloud_assembly_config(
         role_arn=resource_properties.get("RoleArn", ""),
         definition_substitutions={},
     )
+
+
+def parse_cloud_assembly_state_machine(
+    logical_id: str,
+    resource_properties: dict[str, Any],
+    resource_mapping: dict[str, str] | None = None,
+) -> StateMachineConfig:
+    """Parse an AWS::StepFunctions::StateMachine from cloud assembly properties."""
+    from lws.providers.stepfunctions.provider import (  # pylint: disable=import-outside-toplevel
+        StateMachineConfig,
+        WorkflowType,
+    )
+
+    return _parse_cloud_assembly_config(
+        logical_id, resource_properties, resource_mapping, StateMachineConfig, WorkflowType
+    )

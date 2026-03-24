@@ -9,7 +9,10 @@ they can be injected directly into the bridge without HTTP round-trips.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from lws.providers.stepfunctions.asl_parser import StateMachineDefinition
 
 _SERVICE_INTEGRATION_PREFIXES = (
     "arn:aws:states:::dynamodb:",
@@ -111,6 +114,7 @@ class ServiceTaskBridge:
         topic_arn = params.get("TopicArn", "")
         topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
         self._check_sns_topic_exists(sns, topic_name)
+        self._check_sns_topic_lifecycle(topic_name, self._services.get("sns_tracker"))
         message = params.get("Message", "")
         message_id = await sns.publish(topic_name=topic_name, message=message)
         return {"MessageId": message_id}
@@ -138,6 +142,8 @@ class ServiceTaskBridge:
         bucket = params.get("Bucket", "")
         key = params.get("Key", "")
         await self._check_s3_bucket_exists(s3, bucket)
+        self._check_s3_bucket_lifecycle(bucket, self._services.get("s3_tracker"))
+        self._check_s3_capacity(self._services.get("s3_capacity"))
         body_raw = params.get("Body", "")
         body = body_raw.encode("utf-8") if isinstance(body_raw, str) else body_raw
         await s3.put_object(bucket, key, body)
@@ -177,6 +183,97 @@ class ServiceTaskBridge:
             await s3.head_bucket(bucket_name)
         except KeyError as exc:
             raise RuntimeError(f"S3 bucket does not exist: {bucket_name}") from exc
+
+    @staticmethod
+    def _check_s3_bucket_lifecycle(bucket_name: str, s3_tracker: Any) -> None:
+        """Raise RuntimeError if the named S3 bucket is not yet ACTIVE."""
+        if s3_tracker is None:
+            return
+        status = s3_tracker.get_state(bucket_name)
+        if status == "CREATING":
+            raise RuntimeError(f"S3 bucket '{bucket_name}' is not yet ACTIVE")
+
+    @staticmethod
+    def _check_s3_capacity(s3_capacity: Any) -> None:
+        """Raise RuntimeError if S3 object capacity is exhausted."""
+        if s3_capacity is None:
+            return
+        if s3_capacity.is_exhausted:
+            raise RuntimeError("S3 object capacity is exhausted")
+
+    @staticmethod
+    def _check_sns_topic_lifecycle(topic_name: str, sns_tracker: Any) -> None:
+        """Raise RuntimeError if the named SNS topic is not yet ACTIVE."""
+        if sns_tracker is None:
+            return
+        status = sns_tracker.get_state(topic_name)
+        if status == "CREATING":
+            raise RuntimeError(f"SNS topic '{topic_name}' is not yet ACTIVE")
+
+    def validate_definition(self, definition: StateMachineDefinition) -> str | None:
+        """Check that all S3 buckets and SNS topics referenced in *definition* exist.
+
+        Returns an error message if any referenced resource is missing, or None
+        if all resources are valid.
+        """
+        from lws.providers.stepfunctions.asl_parser import (  # pylint: disable=import-outside-toplevel
+            TaskState,
+        )
+
+        s3 = self._services.get("s3")
+        sns = self._services.get("sns")
+
+        for state in definition.states.values():
+            if not isinstance(state, TaskState):
+                continue
+            params = state.parameters or {}
+            if "s3:putObject" in state.resource or "s3:getObject" in state.resource:
+                bucket = params.get("Bucket", "")
+                if (
+                    bucket and s3 is not None and bucket not in s3._buckets
+                ):  # pylint: disable=protected-access
+                    return f"S3 bucket does not exist: {bucket}"
+            if "sns:publish" in state.resource:
+                topic_arn = params.get("TopicArn", "")
+                topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+                if topic_name and sns is not None:
+                    try:
+                        sns.get_topic(topic_name)
+                    except KeyError:
+                        return f"SNS topic does not exist: {topic_name}"
+        return None
+
+    def validate_execution_preconditions(self, definition: StateMachineDefinition) -> str | None:
+        """Check lifecycle state and capacity for all S3/SNS tasks in *definition*.
+
+        Returns an error message if any precondition is violated, or None if
+        all preconditions are satisfied.
+        """
+        from lws.providers.stepfunctions.asl_parser import (  # pylint: disable=import-outside-toplevel
+            TaskState,
+        )
+
+        for state in definition.states.values():
+            if not isinstance(state, TaskState):
+                continue
+            params = state.parameters or {}
+            if "s3:putObject" in state.resource:
+                bucket = params.get("Bucket", "")
+                if bucket:
+                    s3_tracker = self._services.get("s3_tracker")
+                    if s3_tracker is not None and s3_tracker.get_state(bucket) == "CREATING":
+                        return f"S3 bucket '{bucket}' is not yet ACTIVE"
+                    s3_capacity = self._services.get("s3_capacity")
+                    if s3_capacity is not None and s3_capacity.is_exhausted:
+                        return "S3 object capacity is exhausted"
+            if "sns:publish" in state.resource:
+                topic_arn = params.get("TopicArn", "")
+                topic_name = topic_arn.rsplit(":", 1)[-1] if ":" in topic_arn else topic_arn
+                if topic_name:
+                    sns_tracker = self._services.get("sns_tracker")
+                    if sns_tracker is not None and sns_tracker.get_state(topic_name) == "CREATING":
+                        return f"SNS topic '{topic_name}' is not yet ACTIVE"
+        return None
 
     async def _invoke_secretsmanager_get_secret_value(self, payload: Any) -> dict:
         """Invoke SecretsManager getSecretValue via the registered adapter."""
