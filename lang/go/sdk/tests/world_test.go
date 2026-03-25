@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -37,6 +38,28 @@ import (
 )
 
 const basePort = 19401
+
+// syncStripTransport strips the "sync-" hostname prefix that the AWS SDK v2
+// SFN client adds for StartSyncExecution requests so they reach the local fake.
+type syncStripTransport struct {
+	base http.RoundTripper
+}
+
+func (t *syncStripTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	cloned := req.Clone(req.Context())
+	if strings.HasPrefix(cloned.URL.Host, "sync-") {
+		cloned.URL.Host = strings.TrimPrefix(cloned.URL.Host, "sync-")
+	}
+	if strings.HasPrefix(cloned.Host, "sync-") {
+		cloned.Host = strings.TrimPrefix(cloned.Host, "sync-")
+	}
+	return t.base.RoundTrip(cloned)
+}
+
+func newSyncStripHTTPClient() *http.Client {
+	base := &http.Transport{DialContext: (&net.Dialer{}).DialContext}
+	return &http.Client{Transport: &syncStripTransport{base: base}}
+}
 
 var sharedServer *core.Server
 
@@ -191,6 +214,7 @@ func (w *World) SFNClient() *sfn.Client {
 		port := basePort + core.ServiceOffsets["stepfunctions"]
 		w.sfnClient = sfn.NewFromConfig(w.awsCfg, func(o *sfn.Options) {
 			o.BaseEndpoint = aws.String(fmt.Sprintf("http://127.0.0.1:%d", port))
+			o.HTTPClient = newSyncStripHTTPClient()
 		})
 	}
 	return w.sfnClient

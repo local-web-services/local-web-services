@@ -194,6 +194,10 @@ func (h *Handler) createFunction(w http.ResponseWriter, r *http.Request) {
 	var body map[string]interface{}
 	json.NewDecoder(r.Body).Decode(&body) //nolint:errcheck
 	name := str(body, "FunctionName")
+	if _, exists := h.store.functions[name]; exists {
+		jsonErr(w, "ResourceConflictException", "Function already exist: "+name)
+		return
+	}
 	now := time.Now().UTC().Format(time.RFC3339)
 	fn := &Function{
 		Name:         name,
