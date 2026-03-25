@@ -232,12 +232,14 @@ func registerSequenceSteps(sc *godog.ScenarioContext, world *World) {
 			// Derive ARN deterministically if not set.
 			topicArn = fmt.Sprintf("arn:aws:sns:us-east-1:000000000000:%s", seqTopicName)
 		}
-		_, err := world.SNSClient().DeleteTopic(context.Background(), &sns.DeleteTopicInput{
+		resp, err := world.SNSClient().DeleteTopic(context.Background(), &sns.DeleteTopicInput{
 			TopicArn: aws.String(topicArn),
 		})
 		if err != nil && !isNotFound(err) {
-			return err
+			setResult(world, nil, err)
+			return nil
 		}
+		setResult(world, resp, nil)
 		st.topicArn = ""
 		return nil
 	})
@@ -578,17 +580,17 @@ func registerSequenceSteps(sc *godog.ScenarioContext, world *World) {
 
 	sc.Step(`^an execution of the state machine is started$`, func() error {
 		if err := seqEnsureStateMachine(world, st, seqSMName, seqSMDefinitionPass); err != nil {
-			return err
+			setResult(world, nil, err)
+			return nil
 		}
 		res, err := world.SFNClient().StartExecution(context.Background(), &sfn.StartExecutionInput{
 			StateMachineArn: aws.String(st.smArn),
 			Input:           aws.String(`{"pk":"seq-key"}`),
 		})
-		if err != nil {
-			return err
-		}
-		if res.ExecutionArn != nil {
+		setResult(world, res, err)
+		if err == nil && res.ExecutionArn != nil {
 			st.execArn = *res.ExecutionArn
+			world.lastExecArn = *res.ExecutionArn
 		}
 		return nil
 	})
@@ -757,12 +759,14 @@ func registerSequenceSteps(sc *godog.ScenarioContext, world *World) {
 
 	// Used by stepfunctions_events, s3api_events, secretsmanager_events, ssm_events.
 	sc.Step(`^the EventBridge event bus is deleted$`, func() error {
-		_, err := world.EventBridgeClient().DeleteEventBus(context.Background(), &eventbridge.DeleteEventBusInput{
+		resp, err := world.EventBridgeClient().DeleteEventBus(context.Background(), &eventbridge.DeleteEventBusInput{
 			Name: aws.String(seqBusName),
 		})
 		if err != nil && !isNotFound(err) {
-			return err
+			setResult(world, nil, err)
+			return nil
 		}
+		setResult(world, resp, nil)
 		return nil
 	})
 
