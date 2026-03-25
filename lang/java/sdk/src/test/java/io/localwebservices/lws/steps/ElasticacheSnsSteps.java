@@ -273,13 +273,6 @@ public class ElasticacheSnsSteps {
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-  @Then("every \"PUBLISHED\" notification references a cluster that exists")
-  public void everyPublishedNotificationReferencesAClusterThatExists() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every \"PUBLISHED\" notification references a topic that exists")
-  public void everyPublishedNotificationReferencesATopicThatExists() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every \"PUBLISHED\" notification references a cluster that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"PUBLISHED\" notification references a topic that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

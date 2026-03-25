@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assumptions;
 import software.amazon.awssdk.core.SdkBytes;
@@ -72,8 +71,5 @@ public class LambdaS3apiSteps {
   // "the function is {string}" is already registered as a parameterized Given in LambdaSteps;
   // it matches Then the function is "ACTIVE" via Cucumber keyword aliasing.
 
-  @Then("every existing object belongs to an \"ACTIVE\" bucket")
-  public void everyExistingObjectBelongsToAnActiveBucket() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every existing object belongs to an \"ACTIVE\" bucket" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

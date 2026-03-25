@@ -269,8 +269,5 @@ public class S3apiLambdaSteps {
     }
   }
 
-  @Then("every \"IN_PROGRESS\" invocation was triggered by an object in an \"ACTIVE\" bucket")
-  public void everyInProgressInvocationWasTriggeredByAnObjectInAnActiveBucket() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"IN_PROGRESS\" invocation was triggered by an object in an \"ACTIVE\" bucket" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -130,8 +130,5 @@ public class StepfunctionsCognitoSteps {
     // No-op: invariant trivially satisfied in isolated lws context.
   }
 
-  @Then("every succeeded execution recorded which pool it called")
-  public void everySucceededExecutionRecordedWhichPoolItCalled() {
-    // Invariant: trivially satisfied in isolated lws context.
-  }
+  // "every succeeded execution recorded which pool it called" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -299,10 +299,7 @@ public class GlacierSnsSteps {
 
   // ── Safety invariant Then steps ───────────────────────────────────────────────
 
-  @Then("every \"PUBLISHED\" notification references a job that exists")
-  public void everyPublishedNotificationReferencesAJobThatExists() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every \"PUBLISHED\" notification references a job that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 

@@ -136,8 +136,5 @@ public class LambdaElasticacheSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  @Then("every \"CACHED\" entry belongs to an \"AVAILABLE\" cluster")
-  public void everyCachedEntryBelongsToAnAvailableCluster() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"CACHED\" entry belongs to an \"AVAILABLE\" cluster" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

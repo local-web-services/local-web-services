@@ -161,10 +161,7 @@ public class RdsEventsSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  @Then("every \"DELIVERED\" event references a \"DB\" instance that exists")
-  public void everyDeliveredEventReferencesADbInstanceThatExists() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every \"DELIVERED\" event references a \"DB\" instance that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 

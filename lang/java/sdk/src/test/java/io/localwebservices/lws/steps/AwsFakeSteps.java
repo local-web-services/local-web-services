@@ -347,14 +347,6 @@ public class AwsFakeSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  @Then("every {string} operation belongs to an {string} {string} fake")
-  public void everyActiveOperationBelongsToAnActiveAwsFake(
-      String opStatus, String fakeStatus, String fakeType) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every {string} fake is tied to a known service")
-  public void everyAwsFakeIsTiedToAKnownService(String fakeType) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every {string} operation belongs to an {string} {string} fake" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every {string} fake is tied to a known service" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

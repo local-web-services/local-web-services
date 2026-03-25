@@ -644,18 +644,7 @@ public class ElasticacheSteps {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 
-  @Then("every available replication group has a primary cluster assigned")
-  public void everyAvailableReplicationGroupHasAPrimaryClusterAssigned() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every active cluster, replication group, and snapshot has tags")
-  public void everyActiveClusterReplicationGroupAndSnapshotHasTags() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every snapshotting cluster has a corresponding in-progress snapshot")
-  public void everySnapshottingClusterHasACorrespondingInProgressSnapshot() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every available replication group has a primary cluster assigned" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every active cluster, replication group, and snapshot has tags" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every snapshotting cluster has a corresponding in-progress snapshot" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

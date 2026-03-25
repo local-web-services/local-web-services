@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 /**
@@ -53,9 +52,5 @@ public class LambdaSqsProducerSteps {
 
   // ── Then: invariant catch-all steps unique to lambda_sqs_producer ─────────────
 
-  @Then("every \"AVAILABLE\" message belongs to an \"ACTIVE\" queue")
-  public void everyAvailableMessageBelongsToAnActiveQueue() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws
-    // context.
-  }
+  // "every \"AVAILABLE\" message belongs to an \"ACTIVE\" queue" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -309,8 +309,5 @@ public class NeptuneSteps {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 
-  @Then("every backing-up cluster has a corresponding in-progress snapshot")
-  public void everyBackingUpClusterHasACorrespondingInProgressSnapshot() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every backing-up cluster has a corresponding in-progress snapshot" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

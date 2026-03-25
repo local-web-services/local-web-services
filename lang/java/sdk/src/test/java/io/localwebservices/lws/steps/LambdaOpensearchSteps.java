@@ -135,13 +135,6 @@ public class LambdaOpensearchSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  @Then("every indexed document belongs to an existing index")
-  public void everyIndexedDocumentBelongsToAnExistingIndex() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every existing index belongs to an \"ACTIVE\" domain")
-  public void everyExistingIndexBelongsToAnActiveDomain() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every indexed document belongs to an existing index" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing index belongs to an \"ACTIVE\" domain" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

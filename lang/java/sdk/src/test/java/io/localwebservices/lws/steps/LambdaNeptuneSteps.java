@@ -232,8 +232,5 @@ public class LambdaNeptuneSteps {
     }
   }
 
-  @Then("every successful invocation recorded which cluster it queried")
-  public void everySuccessfulInvocationRecordedWhichClusterItQueried() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every successful invocation recorded which cluster it queried" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

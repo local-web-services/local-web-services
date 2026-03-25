@@ -312,20 +312,9 @@ public class RdsSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  @Then("every database instance has a valid status")
-  public void everyDatabaseInstanceHasAValidStatus() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every database snapshot has a valid status")
-  public void everyDatabaseSnapshotHasAValidStatus() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every backing-up instance has a corresponding in-progress snapshot")
-  public void everyBackingUpInstanceHasACorrespondingInProgressSnapshot() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every database instance has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every database snapshot has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every backing-up instance has a corresponding in-progress snapshot" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 

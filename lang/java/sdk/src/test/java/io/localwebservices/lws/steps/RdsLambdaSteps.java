@@ -235,13 +235,6 @@ public class RdsLambdaSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  @Then("every successful invocation references a \"DB\" instance that exists")
-  public void everySuccessfulInvocationReferencesADbInstanceThatExists() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every successful invocation recorded which function it invoked")
-  public void everySuccessfulInvocationRecordedWhichFunctionItInvoked() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every successful invocation references a \"DB\" instance that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which function it invoked" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

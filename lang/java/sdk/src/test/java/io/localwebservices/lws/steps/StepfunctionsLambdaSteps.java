@@ -251,8 +251,5 @@ public class StepfunctionsLambdaSteps {
     // No-op: treat as invariant satisfied.
   }
 
-  @Then("every \"IN_PROGRESS\" invocation has a corresponding \"RUNNING\" execution")
-  public void everyInProgressInvocationHasACorrespondingRunningExecution() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"IN_PROGRESS\" invocation has a corresponding \"RUNNING\" execution" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

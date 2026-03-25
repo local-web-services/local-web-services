@@ -165,13 +165,6 @@ public class ApigatewayLambdaSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  @Then("every \"IN_PROGRESS\" request references an \"ACTIVE\" \"API\"")
-  public void everyInProgressRequestReferencesAnActiveApi() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every \"IN_PROGRESS\" invocation has a corresponding \"IN_PROGRESS\" request")
-  public void everyInProgressInvocationHasACorrespondingInProgressRequest() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"IN_PROGRESS\" request references an \"ACTIVE\" \"API\"" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation has a corresponding \"IN_PROGRESS\" request" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

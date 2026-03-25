@@ -810,20 +810,9 @@ public class DocdbSteps {
 
   // ── Then: model invariants (no-ops) ───────────────────────────────────────
 
-  @Then("every cluster has a valid status")
-  public void everyClusterHasAValidStatus() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every instance has a valid status")
-  public void everyInstanceHasAValidStatus() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every snapshot has a valid status")
-  public void everySnapshotHasAValidStatus() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every cluster has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every instance has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every snapshot has a valid status" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   @Then("a deleted cluster has no non-deleted instances")
   public void aDeletedClusterHasNoNonDeletedInstances() {
@@ -840,10 +829,7 @@ public class DocdbSteps {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
-  @Then("every creating snapshot references a cluster that has not been deleted")
-  public void everyCreatingSnapshotReferencesAClusterThatHasNotBeenDeleted() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every creating snapshot references a cluster that has not been deleted" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   // ── Private helpers ────────────────────────────────────────────────────────
 

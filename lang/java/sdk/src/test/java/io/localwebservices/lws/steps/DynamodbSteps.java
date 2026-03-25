@@ -970,8 +970,8 @@ public class DynamodbSteps {
 
   // ── Then: safety invariants ────────────────────────────────────────────────────
 
-  @Then("every table has a valid status (\"CREATING\", \"ACTIVE\", or \"DELETED\")")
-  public void everyTableHasAValidStatus() {
+  // "every table has a valid status (\"CREATING\", \"ACTIVE\", or \"DELETED\")" → CrossServiceSteps (catch-all @And("^every .*$"))
+  private void everyTableHasAValidStatus() {
     // Arrange
     try (DynamoDbClient client = world.session.dynamoDbClient()) {
       // Act

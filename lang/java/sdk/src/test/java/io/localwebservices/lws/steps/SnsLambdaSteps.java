@@ -120,13 +120,6 @@ public class SnsLambdaSteps {
 
   // ── Invariant Then steps ────────────────────────────────────────────────────────
 
-  @Then("every \"CONFIRMED\" subscription references an \"ACTIVE\" \"SNS\" topic")
-  public void everyConfirmedSubscriptionReferencesAnActiveSnsTopicInSnsLambda() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every \"IN_PROGRESS\" invocation was triggered by a \"CONFIRMED\" subscription")
-  public void everyInProgressInvocationWasTriggeredByAConfirmedSubscription() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"CONFIRMED\" subscription references an \"ACTIVE\" \"SNS\" topic" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"IN_PROGRESS\" invocation was triggered by a \"CONFIRMED\" subscription" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

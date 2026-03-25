@@ -459,15 +459,6 @@ public class ApigatewayDynamodbSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  @Then("every existing item references a table that exists")
-  public void everyExistingItemReferencesATableThatExists() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws
-    // context.
-  }
-
-  @Then("every successful request references an \"API\" that exists")
-  public void everySuccessfulRequestReferencesAnApiThatExists() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws
-    // context.
-  }
+  // "every existing item references a table that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful request references an \"API\" that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

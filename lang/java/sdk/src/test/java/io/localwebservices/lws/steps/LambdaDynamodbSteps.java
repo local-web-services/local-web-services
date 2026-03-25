@@ -177,13 +177,6 @@ public class LambdaDynamodbSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function")
-  public void everyInProgressInvocationReferencesAnActiveLambdaFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every existing item belongs to an \"ACTIVE\" table")
-  public void everyExistingItemBelongsToAnActiveTable() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every existing item belongs to an \"ACTIVE\" table" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

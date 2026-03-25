@@ -142,8 +142,5 @@ public class StepfunctionsRdsSteps {
     // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
   }
 
-  @Then("every succeeded execution recorded which \"DB\" instance it queried")
-  public void everySucceededExecutionRecordedWhichDbInstanceItQueried() {
-    // Invariant: trivially satisfied in isolated lws context.
-  }
+  // "every succeeded execution recorded which \"DB\" instance it queried" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -217,8 +217,5 @@ public class LambdaRdsSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  @Then("every successful invocation recorded which database it queried")
-  public void everySuccessfulInvocationRecordedWhichDatabaseItQueried() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every successful invocation recorded which database it queried" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

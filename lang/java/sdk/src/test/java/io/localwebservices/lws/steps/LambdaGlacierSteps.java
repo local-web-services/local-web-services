@@ -154,8 +154,5 @@ public class LambdaGlacierSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  @Then("every existing archive references a vault that exists")
-  public void everyExistingArchiveReferencesAVaultThatExists() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every existing archive references a vault that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -128,8 +128,5 @@ public class LambdaEventsSteps {
     // @internal: Cannot observe Lambda invocation result in lws.
   }
 
-  @Then("every {string} event references a bus that exists")
-  public void everyEventReferencesABusThatExists(String eventState) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every {string} event references a bus that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

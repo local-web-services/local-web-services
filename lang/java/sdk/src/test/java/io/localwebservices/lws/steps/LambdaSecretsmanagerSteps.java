@@ -217,8 +217,5 @@ public class LambdaSecretsmanagerSteps {
     }
   }
 
-  @Then("every successful invocation recorded which secret it read")
-  public void everySuccessfulInvocationRecordedWhichSecretItRead() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every successful invocation recorded which secret it read" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -227,13 +227,6 @@ public class CognitoLambdaSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  @Then("every {string} invocation is for a {string} user")
-  public void everyInvocationIsForAUser(String invState, String userState) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every {string} user has a corresponding {string} invocation")
-  public void everyUserHasACorrespondingInvocation(String userState, String invState) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every {string} invocation is for a {string} user" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every {string} user has a corresponding {string} invocation" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

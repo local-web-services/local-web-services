@@ -359,13 +359,6 @@ public class LambdaLambdaSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  @Then("every \"IN_PROGRESS\" invocation references an \"ACTIVE\" caller function")
-  public void everyInProgressInvocationReferencesAnActiveCallerFunction() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every successful invocation recorded which callee was invoked")
-  public void everySuccessfulInvocationRecordedWhichCalleeWasInvoked() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" caller function" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which callee was invoked" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

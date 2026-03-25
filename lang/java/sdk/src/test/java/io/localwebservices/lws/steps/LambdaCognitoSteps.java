@@ -205,13 +205,6 @@ public class LambdaCognitoSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  @Then("every {string} invocation references an {string} Lambda function")
-  public void everyInvocationReferencesAnActiveLambdaFunction(String invState, String funcState) {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every successful invocation recorded which pool it called")
-  public void everySuccessfulInvocationRecordedWhichPoolItCalled() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every {string} invocation references an {string} Lambda function" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful invocation recorded which pool it called" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -132,15 +132,8 @@ public class DocdbEventsSteps {
 
   // ── Then: model invariants (no-ops) ───────────────────────────────────────
 
-  @Then("every \"DELIVERED\" event references a cluster that exists")
-  public void everyDeliveredEventReferencesAClusterThatExists() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every \"DELIVERED\" event references a bus that exists")
-  public void everyDeliveredEventReferencesABusThatExists() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"DELIVERED\" event references a cluster that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"DELIVERED\" event references a bus that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   // ── Private helpers ────────────────────────────────────────────────────────
 

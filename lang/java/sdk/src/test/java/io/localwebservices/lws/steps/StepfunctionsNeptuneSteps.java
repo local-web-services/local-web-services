@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.services.neptune.NeptuneClient;
 import software.amazon.awssdk.services.neptune.model.DBCluster;
@@ -71,8 +70,5 @@ public class StepfunctionsNeptuneSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  @Then("every succeeded execution recorded which cluster it queried")
-  public void everySucceededExecutionRecordedWhichClusterItQueried() {
-    // Invariant: trivially satisfied in isolated lws context.
-  }
+  // "every succeeded execution recorded which cluster it queried" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

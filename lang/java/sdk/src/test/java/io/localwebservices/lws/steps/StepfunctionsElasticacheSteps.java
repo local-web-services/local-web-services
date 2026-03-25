@@ -105,8 +105,5 @@ public class StepfunctionsElasticacheSteps {
     // No-op: treat as invariant satisfied.
   }
 
-  @Then("every succeeded execution recorded which cluster it read")
-  public void everySucceededExecutionRecordedWhichClusterItRead() {
-    // Invariant: trivially satisfied in isolated lws context.
-  }
+  // "every succeeded execution recorded which cluster it read" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

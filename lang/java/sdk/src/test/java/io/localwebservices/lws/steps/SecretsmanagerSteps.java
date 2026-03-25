@@ -452,23 +452,9 @@ public class SecretsmanagerSteps {
 
   // ── Invariant catch-all steps ─────────────────────────────────────────────────
 
-  @Then("every \"ACTIVE\" secret has a current version assigned")
-  public void everyActiveSecretQuotedHasACurrentVersionAssigned() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
-    // context.
-  }
-
-  @Then("every active secret has a current version assigned")
-  public void everyActiveSecretHasACurrentVersionAssigned() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
-    // context.
-  }
-
-  @Then("every deleted secret with an open recovery window can still be restored or expired")
-  public void everyDeletedSecretWithAnOpenRecoveryWindowCanStillBeRestoredOrExpired() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated
-    // context.
-  }
+  // "every \"ACTIVE\" secret has a current version assigned" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every active secret has a current version assigned" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every deleted secret with an open recovery window can still be restored or expired" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   @Then("at most one current version exists per secret")
   public void atMostOneCurrentVersionExistsPerSecret() {

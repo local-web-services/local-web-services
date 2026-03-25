@@ -86,8 +86,5 @@ public class StepfunctionsGlacierSteps {
             + expectedSuccess);
   }
 
-  @Then("every succeeded execution recorded which vault it called")
-  public void everySucceededExecutionRecordedWhichVaultItCalled() {
-    // Invariant: trivially satisfied in isolated lws context.
-  }
+  // "every succeeded execution recorded which vault it called" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

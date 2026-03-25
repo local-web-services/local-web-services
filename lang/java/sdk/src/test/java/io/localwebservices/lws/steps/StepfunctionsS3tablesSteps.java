@@ -112,8 +112,5 @@ public class StepfunctionsS3tablesSteps {
     // Arrange / Act / Assert — no-op: invariant trivially satisfied in isolated lws context.
   }
 
-  @Then("every succeeded execution recorded which table it called")
-  public void everySucceededExecutionRecordedWhichTableItCalled() {
-    // Invariant: trivially satisfied in isolated lws context.
-  }
+  // "every succeeded execution recorded which table it called" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

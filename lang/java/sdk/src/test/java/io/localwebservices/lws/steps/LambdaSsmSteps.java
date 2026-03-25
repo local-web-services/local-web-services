@@ -220,8 +220,5 @@ public class LambdaSsmSteps {
     // @internal: Cannot observe Lambda invocation failure in lws.
   }
 
-  @Then("every successful invocation recorded which parameter it read")
-  public void everySuccessfulInvocationRecordedWhichParameterItRead() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every successful invocation recorded which parameter it read" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

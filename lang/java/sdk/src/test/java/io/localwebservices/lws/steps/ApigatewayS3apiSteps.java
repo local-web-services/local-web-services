@@ -439,8 +439,5 @@ public class ApigatewayS3apiSteps {
 
   // ── Then: invariant assertions (no-op) ───────────────────────────────────────
 
-  @Then("every existing object references a bucket that exists")
-  public void everyExistingObjectReferencesABucketThatExists() {
-    // Arrange / Act / Assert — no-op: lws always maintains valid object-bucket references.
-  }
+  // "every existing object references a bucket that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

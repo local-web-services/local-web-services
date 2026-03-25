@@ -210,8 +210,5 @@ public class LambdaStepfunctionsSteps {
     // @internal: Cannot observe Lambda invocation failure via public API in lws.
   }
 
-  @Then("every \"RUNNING\" execution references a state machine that exists")
-  public void everyRunningExecutionReferencesStateMachineThatExists() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"RUNNING\" execution references a state machine that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

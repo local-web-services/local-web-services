@@ -918,10 +918,7 @@ public class MemorydbSteps {
             + expectedSuccess);
   }
 
-  @Then("every active cluster has write durability enabled")
-  public void everyActiveClusterHasWriteDurabilityEnabled() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every active cluster has write durability enabled" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   @Then("no {string} in {string} state is currently associated with a cluster")
   public void noAclInStateIsCurrentlyAssociatedWithACluster(String acl, String state) {
@@ -933,10 +930,7 @@ public class MemorydbSteps {
     // No-op invariant: trivially satisfied in an isolated test context.
   }
 
-  @Then("every active cluster and snapshot has tags")
-  public void everyActiveClusterAndSnapshotHasTags() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every active cluster and snapshot has tags" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 

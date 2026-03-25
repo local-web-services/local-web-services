@@ -195,8 +195,5 @@ public class LambdaS3tablesSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  @Then("every existing record references a table that exists")
-  public void everyExistingRecordReferencesATableThatExists() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every existing record references a table that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

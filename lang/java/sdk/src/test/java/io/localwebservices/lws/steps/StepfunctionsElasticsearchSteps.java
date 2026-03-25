@@ -77,8 +77,5 @@ public class StepfunctionsElasticsearchSteps {
     // No-op: treat as invariant satisfied.
   }
 
-  @Then("every succeeded execution recorded which domain it called")
-  public void everySucceededExecutionRecordedWhichDomainItCalled() {
-    // Invariant: trivially satisfied in isolated lws context.
-  }
+  // "every succeeded execution recorded which domain it called" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

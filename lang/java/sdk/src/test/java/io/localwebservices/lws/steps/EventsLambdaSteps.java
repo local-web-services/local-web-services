@@ -209,13 +209,6 @@ public class EventsLambdaSteps {
 
   // ── Invariant Then steps (no-ops) ─────────────────────────────────────────────
 
-  @Then("every \"IN_PROGRESS\" invocation was triggered by an \"ENABLED\" rule")
-  public void everyInProgressInvocationWasTriggeredByAnEnabledRule() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every \"ENABLED\" rule references an \"ACTIVE\" event bus")
-  public void everyEnabledRuleReferencesAnActiveEventBus() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every \"IN_PROGRESS\" invocation was triggered by an \"ENABLED\" rule" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every \"ENABLED\" rule references an \"ACTIVE\" event bus" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

@@ -1,6 +1,5 @@
 package io.localwebservices.lws.steps;
 
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import software.amazon.awssdk.services.docdb.DocDbClient;
 
@@ -72,8 +71,5 @@ public class StepfunctionsDocdbSteps {
 
   // ── Then: assertions ──────────────────────────────────────────────────────────
 
-  @Then("every succeeded execution recorded which cluster it connected to")
-  public void everySucceededExecutionRecordedWhichClusterItConnectedTo() {
-    // Invariant: trivially satisfied in isolated lws context.
-  }
+  // "every succeeded execution recorded which cluster it connected to" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

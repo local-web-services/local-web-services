@@ -391,15 +391,6 @@ public class DynamodbLambdaSteps {
   // NOTE: "every \"IN_PROGRESS\" invocation references an \"ACTIVE\" Lambda function" is
   // already registered in LambdaDynamodbSteps — not re-registered here.
 
-  @Then("every {string} invocation was initiated by an {string} event source mapping")
-  public void everyInvocationWasInitiatedByAnEventSourceMapping(
-      String invocationState, String esmState) {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws.
-  }
-
-  @Then("every {string} event source mapping references an {string} table with streaming enabled")
-  public void everyEventSourceMappingReferencesAnTableWithStreamingEnabled(
-      String esmState, String tableState) {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in isolated lws.
-  }
+  // "every {string} invocation was initiated by an {string} event source mapping" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every {string} event source mapping references an {string} table with streaming enabled" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

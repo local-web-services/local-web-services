@@ -679,23 +679,13 @@ public class OrganizationsSteps {
     }
   }
 
-  @Then("every active account has an \"ACTIVE\" parent")
-  public void everyActiveAccountHasAnActiveParent() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
-
-  @Then("every active organizational unit has an \"ACTIVE\" parent")
-  public void everyActiveOrganizationalUnitHasAnActiveParent() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every active account has an \"ACTIVE\" parent" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every active organizational unit has an \"ACTIVE\" parent" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   @Then("no active node is a child of a deleted organizational unit")
   public void noActiveNodeIsAChildOfADeletedOrganizationalUnit() {
     // No-op: model-level invariant; trivially satisfied in isolated lws context.
   }
 
-  @Then("every active policy attachment targets an \"ACTIVE\" node")
-  public void everyActivePolicyAttachmentTargetsAnActiveNode() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every active policy attachment targets an \"ACTIVE\" node" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

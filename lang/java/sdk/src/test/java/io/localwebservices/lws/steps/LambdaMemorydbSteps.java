@@ -120,8 +120,5 @@ public class LambdaMemorydbSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  @Then("every existing record references a cluster that exists")
-  public void everyExistingRecordReferencesAClusterThatExists() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every existing record references a cluster that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

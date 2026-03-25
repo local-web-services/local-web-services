@@ -244,13 +244,6 @@ public class SecretsmanagerLambdaSteps {
 
   // ── Invariant catch-all steps ──────────────────────────────────────────────────
 
-  @Then("every \"ROTATING\" secret has an \"IN_PROGRESS\" rotation invocation")
-  public void everyRotatingSecretHasAnInProgressRotationInvocation() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in lws.
-  }
-
-  @Then("every successful rotation invocation recorded which secret it rotated")
-  public void everySuccessfulRotationInvocationRecordedWhichSecretItRotated() {
-    // Arrange / Act / Assert — no-op: model-level invariant; trivially satisfied in lws.
-  }
+  // "every \"ROTATING\" secret has an \"IN_PROGRESS\" rotation invocation" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every successful rotation invocation recorded which secret it rotated" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

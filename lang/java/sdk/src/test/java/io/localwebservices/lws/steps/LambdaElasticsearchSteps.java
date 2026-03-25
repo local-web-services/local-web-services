@@ -145,8 +145,5 @@ public class LambdaElasticsearchSteps {
     // Only reached by @internal scenarios excluded by the tag filter.
   }
 
-  @Then("every existing document references a domain that exists")
-  public void everyExistingDocumentReferencesADomainThatExists() {
-    // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  }
+  // "every existing document references a domain that exists" → CrossServiceSteps (catch-all @And("^every .*$"))
 }

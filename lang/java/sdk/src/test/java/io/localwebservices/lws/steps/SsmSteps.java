@@ -542,15 +542,8 @@ public class SsmSteps {
     }
   }
 
-  @Then("every parameter version is a positive integer")
-  public void everyParameterVersionIsAPositiveInteger() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
-
-  @Then("every parameter has a valid type (String, SecureString, or StringList)")
-  public void everyParameterHasAValidType() {
-    // No-op invariant: trivially satisfied in an isolated test context.
-  }
+  // "every parameter version is a positive integer" → CrossServiceSteps (catch-all @And("^every .*$"))
+  // "every parameter has a valid type (String, SecureString, or StringList)" → CrossServiceSteps (catch-all @And("^every .*$"))
 
   @Then("no parameter exists after it has been deleted")
   public void noParameterExistsAfterItHasBeenDeleted() {
