@@ -216,22 +216,7 @@ When("the Lambda invocation fails", async function (this: SdkWorld) {
 
 // ── Then: cross-service assertions ────────────────────────────────────────────
 
-Then('the event bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const actualResult = await elEbClient(this).send(new ListEventBusesCommand({}));
-  const actualBuses: Array<{ Name?: string }> = actualResult.EventBuses ?? [];
-  // Assert
-  const expectedBus = EL_BUS;
-  const actualFound = actualBuses.some((b) => b.Name === expectedBus);
-  assert.strictEqual(
-    actualFound,
-    true,
-    `Expected event bus '${expectedBus}' to be ACTIVE but not found; expected_bus=${expectedBus}`,
-  );
-});
+// "the event bus is {string}" is registered in cross_service_common.ts.
 
 Then('the function is "ACTIVE"', async function (this: SdkWorld) {
   // Arrange

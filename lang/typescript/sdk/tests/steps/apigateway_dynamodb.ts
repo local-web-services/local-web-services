@@ -398,23 +398,7 @@ Then(
   },
 );
 
-Then('the table is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "No session running");
-  const { DescribeTableCommand } = require("@aws-sdk/client-dynamodb");
-  // Act
-  const result = await apigwDdbDynamoClient(this).send(
-    new DescribeTableCommand({ TableName: APIGW_DYNAMODB_TABLE }),
-  );
-  // Assert
-  const expectedStatus = "ACTIVE";
-  const actualStatus = result.Table?.TableStatus as string;
-  assert.strictEqual(
-    actualStatus,
-    expectedStatus,
-    `Expected table status "${expectedStatus}" but got "${actualStatus}"`,
-  );
-});
+// "the table is {string}" is registered in cross_service_common.ts.
 
 Then(
   'the "API" will write to the table when requests are received',

@@ -525,39 +525,7 @@ When("a dead-letter queue entry is retried or discarded", async function (this: 
 
 // ── Then: assertions ──────────────────────────────────────────────────────────
 
-Then('the event bus is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const actualResult = await ebClient(this).send(new ListEventBusesCommand({}));
-  const actualBuses: Array<{ Name?: string }> = actualResult.EventBuses ?? [];
-  // Assert
-  const expectedBus = EVENTS_TEST_BUS;
-  const actualFound = actualBuses.some((b) => b.Name === expectedBus);
-  assert.strictEqual(
-    actualFound,
-    true,
-    `Expected event bus '${expectedBus}' to be ACTIVE but not found; expected_bus=${expectedBus}`,
-  );
-});
-
-Then('the event bus is "DELETED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListEventBusesCommand } = require("@aws-sdk/client-eventbridge");
-  // Act
-  const actualResult = await ebClient(this).send(new ListEventBusesCommand({}));
-  const actualBuses: Array<{ Name?: string }> = actualResult.EventBuses ?? [];
-  // Assert
-  const expectedBus = EVENTS_TEST_BUS;
-  const actualFound = actualBuses.some((b) => b.Name === expectedBus);
-  assert.strictEqual(
-    actualFound,
-    false,
-    `Expected event bus '${expectedBus}' to be DELETED but found it; expected_bus=${expectedBus}`,
-  );
-});
+// "the event bus is {string}" is registered in cross_service_common.ts.
 
 Then("the event bus details are returned", async function (this: SdkWorld) {
   // Arrange: action performed in When step
@@ -607,7 +575,7 @@ Then(
     const expectedStates = new Set(["ENABLED", "DISABLED", "DELETED"]);
     for (const bus of actualBuses) {
       if (!bus.Name) continue;
-      let rulesResult;
+      let rulesResult: { Rules?: Array<{ Name?: string; State?: string }> };
       try {
         rulesResult = await ebClient(this).send(new ListRulesCommand({ EventBusName: bus.Name }));
       } catch {

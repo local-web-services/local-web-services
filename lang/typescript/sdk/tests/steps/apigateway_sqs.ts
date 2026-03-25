@@ -214,10 +214,7 @@ Given('the "API" has no "SQS" integration configured', async function (this: Sdk
 
 // "the queue exists" is registered in cross_service_common.ts.
 
-Given('the queue is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange / Act / Assert — no-op: SQS queues are ACTIVE immediately after creation.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "the queue is {string}" is registered in cross_service_common.ts.
 
 Given('the queue is not "ACTIVE"', async function (this: SdkWorld) {
   // Arrange
@@ -311,18 +308,7 @@ When('a "REST" "API" is created', async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When('an "SQS" queue is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  // Act
-  try {
-    await apigwSqsCreateQueue(this);
-    this.lastCallResult = { success: true, output: APIGW_SQS_QUEUE };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an {string} queue is created" is registered in cross_service_common.ts.
 
 When(
   'an "SQS" direct integration is configured on the "REST" "API"',
@@ -428,23 +414,7 @@ Then('the "API" is "ACTIVE" with no "SQS" integration configured', async functio
   );
 });
 
-Then('the queue is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListQueuesCommand } = require("@aws-sdk/client-sqs");
-  // Act
-  const result = await apigwSqsSqsClient(this).send(
-    new ListQueuesCommand({ QueueNamePrefix: APIGW_SQS_QUEUE }),
-  );
-  const urls: string[] = result.QueueUrls ?? [];
-  // Assert
-  const expectedCount = 1;
-  const actualCount = urls.filter((u: string) => u.includes(APIGW_SQS_QUEUE)).length;
-  assert.ok(
-    actualCount >= expectedCount,
-    `Expected at least ${expectedCount} queue but found ${actualCount}; expected_count=${expectedCount} actual_count=${actualCount}`,
-  );
-});
+// "the queue is {string}" is registered in cross_service_common.ts.
 
 Then(
   'the "API" will enqueue incoming requests as "SQS" messages without invoking Lambda',
@@ -523,10 +493,7 @@ Then('every "ACCEPTED" request references an "ACTIVE" "API"', async function (th
   assert.ok(this.session, "Expected session to be initialized");
 });
 
-Then('every "AVAILABLE" message belongs to an "ACTIVE" queue', async function (this: SdkWorld) {
-  // No-op: model-level invariant; trivially satisfied in isolated lws context.
-  assert.ok(this.session, "Expected session to be initialized");
-});
+// "every {string} message belongs to an {string} queue" is registered in cross_service_common.ts.
 
 // ── Common rejection assertion ─────────────────────────────────────────────────
 

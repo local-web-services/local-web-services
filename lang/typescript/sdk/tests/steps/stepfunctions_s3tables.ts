@@ -220,25 +220,7 @@ When(
 
 // ── Then: cross-service assertions ────────────────────────────────────────────
 
-Then('the table is "ACTIVE"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const expectedTableName = SFN_S3TABLES_TEST_TABLE_NAME;
-  const { GetTableCommand } = require("@aws-sdk/client-s3tables");
-  // Act
-  const result = await sfnS3TablesS3TablesClient(this).send(
-    new GetTableCommand({
-      tableBucketARN: SFN_S3TABLES_TEST_TABLE_BUCKET_ARN,
-      namespace: SFN_S3TABLES_TEST_NAMESPACE,
-      name: expectedTableName,
-    }),
-  );
-  // Assert
-  assert.ok(
-    result.name,
-    `Expected table "${expectedTableName}" to be ACTIVE but it was not found; expected_table_name=${expectedTableName}`,
-  );
-});
+// "the table is {string}" is registered in cross_service_common.ts.
 
 Then(
   'the table is "DELETING" and "SDK" task calls targeting it will fail',

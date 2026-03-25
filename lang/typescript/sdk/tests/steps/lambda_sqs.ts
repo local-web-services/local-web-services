@@ -244,21 +244,7 @@ When("a Lambda function is deployed", async function (this: SdkWorld) {
   // Assert: captured in lastCallResult
 });
 
-When('an "SQS" queue is created', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { CreateQueueCommand } = require("@aws-sdk/client-sqs");
-  // Act
-  try {
-    const result = await sqsClient(this).send(
-      new CreateQueueCommand({ QueueName: LAMBDA_SQS_TEST_QUEUE }),
-    );
-    this.lastCallResult = { success: true, output: result };
-  } catch (err: unknown) {
-    this.lastCallResult = { success: false, output: null, error: err };
-  }
-  // Assert: captured in lastCallResult
-});
+// "an {string} queue is created" is registered in cross_service_common.ts.
 
 When('the "SQS" queue is configured with a dead-letter queue', async function (this: SdkWorld) {
   // Arrange

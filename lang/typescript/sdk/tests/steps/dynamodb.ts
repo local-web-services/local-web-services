@@ -704,20 +704,7 @@ Then('the table is "ACTIVE" and ready for reads and writes', async function (thi
   );
 });
 
-Then('the table is "DELETED"', async function (this: SdkWorld) {
-  // Arrange
-  assert.ok(this.session, "Expected session to be initialized");
-  const { ListTablesCommand } = require("@aws-sdk/client-dynamodb");
-  // Act
-  const result = await dynamodbClient(this).send(new ListTablesCommand({}));
-  const actualTableNames: string[] = result.TableNames ?? [];
-  // Assert
-  const expectedAbsent = DYNAMODB_TEST_TABLE;
-  assert.ok(
-    !actualTableNames.includes(expectedAbsent),
-    `Expected table "${expectedAbsent}" to be DELETED but found it; expected_absent="${expectedAbsent}"`,
-  );
-});
+// "the table is {string}" is registered in cross_service_common.ts.
 
 Then("the table is deleted", async function (this: SdkWorld) {
   // Arrange

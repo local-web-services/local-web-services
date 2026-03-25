@@ -28,11 +28,6 @@ async function getBucketArn(world: SdkWorld): Promise<string> {
   return found.arn;
 }
 
-async function createBucket(world: SdkWorld): Promise<void> {
-  const { CreateTableBucketCommand } = require("@aws-sdk/client-s3tables");
-  await s3tablesClient(world).send(new CreateTableBucketCommand({ name: S3TABLES_BUCKET_NAME }));
-}
-
 async function createNamespace(world: SdkWorld): Promise<void> {
   const { CreateNamespaceCommand } = require("@aws-sdk/client-s3tables");
   const arn = await getBucketArn(world);
@@ -788,9 +783,7 @@ Then('the table enters "DELETING" state', async function (this: SdkWorld) {
   );
 });
 
-Then('the table is "ACTIVE"', async function (this: SdkWorld) {
-  // @internal: internal state assertion — no-op in public API test context.
-});
+// "the table is {string}" is registered in cross_service_common.ts.
 
 Then('the table is "DELETED" and all its snapshots are "DELETED"', async function (this: SdkWorld) {
   // @internal: internal state assertion — no-op in public API test context.
